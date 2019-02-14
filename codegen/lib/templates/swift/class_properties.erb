@@ -1,0 +1,35 @@
+<%# Properties -%>
+<%- entity.properties.each do |property| -%>
+    public var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {
+<%=   render('swift/method_forward.erb', { method: property }) -%>
+    }
+
+<%- end -%>
+    let rawValue: OpaquePointer
+
+    init(rawValue: OpaquePointer) {
+        self.rawValue = rawValue
+    }
+
+<%# Initializers -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Create') -%>
+<%    if method.return_type.is_nullable -%>
+    public init?(<%= SwiftHelper.parameters(method.parameters) %>) {
+<%=   render('swift/parameter_access.erb', { parameters: method.parameters }) -%>
+        guard let rawValue = TW<%= entity.name %><%= method.name %>(<%= SwiftHelper.arguments(method.parameters).join(', ') %>) else {
+            return nil
+        }
+        self.rawValue = rawValue
+    }
+<%    else -%>
+    public init(<%= SwiftHelper.parameters(method.parameters) %>) {
+<%=   render('swift/parameter_access.erb', { parameters: method.parameters }) -%>
+        rawValue = TW<%= entity.name %><%= method.name %>(<%= SwiftHelper.arguments(method.parameters).join(', ') %>)
+    }
+<%    end -%>
+
+<%  end -%>
+    deinit {
+        TW<%= entity.name %>Delete(rawValue)
+    }

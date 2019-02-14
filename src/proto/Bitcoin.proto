@@ -1,0 +1,120 @@
+syntax = "proto3";
+
+package TW.Bitcoin.Proto;
+option java_package = "com.wallet.crypto.trustapp.proto";
+
+message Transaction {
+    // Transaction data format version.
+    sint32 version = 1;
+
+    // The block number or timestamp at which this transaction is unlocked.
+    uint32 lockTime = 2;
+
+    // A list of 1 or more transaction inputs or sources for coins.
+    repeated TransactionInput inputs = 3;
+
+    // A list of 1 or more transaction outputs or destinations for coins
+    repeated TransactionOutput outputs = 4;
+}
+
+// Bitcoin transaction input.
+message TransactionInput {
+    // Reference to the previous transaction's output.
+    OutPoint previousOutput = 1;
+
+    // Transaction version as defined by the sender.
+    uint32 sequence = 2;
+
+    // Computational script for confirming transaction authorization.
+    bytes script = 3;
+}
+
+// Bitcoin transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction.
+    bytes hash = 1;
+
+    // The index of the specific output in the transaction.
+    uint32 index = 2;
+
+    // Transaction version as defined by the sender.
+    uint32 sequence = 3;
+}
+
+// Bitcoin transaction output.
+message TransactionOutput {
+    // Transaction amount.
+    int64 value = 1;
+
+    // Usually contains the public key as a Bitcoin script setting up conditions to claim this output.
+    bytes script = 2;
+}
+
+message UnspentTransaction {
+    OutPoint out_point = 1;
+    bytes script = 2;
+    int64 amount = 3;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Hash type to use when signing.
+    uint32 hash_type = 1;
+
+    // Amount to send.
+    int64 amount = 2;
+
+    // Transaction fee per byte.
+    int64 byte_fee = 3;
+
+    // Recipient's address.
+    string to_address = 4;
+
+    // Change address.
+    string change_address = 5;
+
+    // Available private keys.
+    repeated bytes private_key = 10;
+
+    // Available redeem scripts indexed by script hash.
+    map<string, bytes> scripts = 11;
+
+    // Available unspent transaction outputs.
+    repeated UnspentTransaction utxo = 12;
+
+    // If sending max amount
+    bool use_max_amount = 13;
+}
+
+/// Describes a preliminary transaction plan.
+message TransactionPlan {
+    /// Amount to be received at the other end.
+    int64 amount = 1;
+
+    /// Maximum available amount.
+    int64 available_amount = 2;
+
+    /// Estimated transaction fee.
+    int64 fee = 3;
+
+    /// Change.
+    int64 change = 4;
+
+    /// Selected unspent transaction outputs.
+    repeated UnspentTransaction utxos = 5;
+};
+
+// Transaction signing output.
+message SigningOutput {
+    // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
+    Transaction transaction = 1;
+
+    // Signed and encoded transaction bytes.
+    bytes encoded = 2;
+
+    // Total transaction fees.
+    int64 fee = 3;
+
+    // Maximum spendable amount.
+    int64 max_amount = 4;
+}

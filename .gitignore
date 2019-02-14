@@ -1,0 +1,11 @@
+.DS_Store
+*~
+*.orig
+
+# Build directories
+.build/
+build/
+xcode/
+
+# Dependencies
+node_modules

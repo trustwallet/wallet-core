@@ -1,0 +1,91 @@
+<%  return if entity.is_a?(EnumDecl) -%>
+#include <jni.h>
+#include <stdio.h>
+#include <string.h>
+
+<% require 'set' -%>
+<%  includes = SortedSet.new([entity.name]) -%>
+<%  entity.static_methods.each do |method| -%>
+<%    includes << method.return_type.name if method.return_type.is_struct || method.return_type.is_class -%>
+<%    method.parameters.each do |param| -%>
+<%      includes << param.type.name if param.type.is_struct || param.type.is_class -%>
+<%    end -%>
+<%  end -%>
+<%  includes.each do |include| -%>
+#include <TrustWalletCore/TW<%= include %>.h>
+<%  end -%>
+
+#include "TWJNI.h"
+#include "<%= entity.name %>.h"
+
+<%# Constructors -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Create') -%>
+jlong JNICALL <%= JNIHelper.function_name(entity: entity, function: method, native_prefix: true) %>(JNIEnv *env, jclass thisClass<%= JNIHelper.parameters(method.parameters) %>) {
+<%=   render('jni/parameter_access.erb', { method: method }) -%>
+    struct TW<%= entity.name %> *instance = TW<%= entity.name %><%= method.name %>(<%= JNIHelper.arguments(method.parameters).join(', ') %>);
+<%=   render('jni/parameter_release.erb', { method: method }) -%>
+    return (jlong) instance;
+}
+
+<%  end -%>
+<%# Destructors -%>
+<%  entity.methods.each do |method| -%>
+<%    next unless method.name.start_with?('Delete') -%>
+void JNICALL <%= JNIHelper.function_name(entity: entity, function: method, native_prefix: true) %>(JNIEnv *env, jclass thisClass, jlong handle) {
+    TW<%= entity.name %>Delete((struct TW<%= entity.name %> *) handle);
+}
+
+<%  end -%>
+<%# Initializers -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Init') -%>
+jbyteArray JNICALL <%= JNIHelper.function_name(entity: entity, function: method) %>(JNIEnv *env, jclass thisClass<%= JNIHelper.parameters(method.parameters.drop(1)) %>) {
+    jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TW<%= entity.name %>));
+    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
+    struct TW<%= entity.name %> *instance = (struct TW<%= entity.name %> *) bytesBuffer;
+<%=   render('jni/parameter_access.erb', { method: method }) -%>
+<%  if method.return_type.name != :void -%>
+    <%= JNIHelper.type(method.return_type) %> result = (<%= JNIHelper.type(method.return_type) %>) TW<%= entity.name %><%= method.name %>(instance, <%= JNIHelper.arguments(method.parameters.drop(1)).join(', ') %>);
+<%  else -%>
+    TW<%= entity.name %><%= method.name %>(instance, <%= JNIHelper.arguments(method.parameters.drop(1)).join(', ') %>);
+<%  end -%>
+<%=   render('jni/parameter_release.erb', { method: method }) -%>
+    (*env)->ReleaseByteArrayElements(env, array, bytesBuffer, 0);
+
+<%  if method.return_type.name != :void -%>
+    if (result) {
+        return array;
+    } else {
+        (*env)->DeleteLocalRef(env, array);
+        return NULL;
+    }
+<%  else -%>
+    return array;
+<%  end -%>
+}
+
+<%  end -%>
+<%# Static properties -%>
+<%  entity.static_properties.each do |method| -%>
+<%=   render('jni/method.erb', { method: method }) %>
+<%  end -%>
+<%# Static methods -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') || method.name.start_with?('Init') -%>
+<%=   render('jni/method.erb', { method: method }) %>
+<%  end -%>
+<%# Properties -%>
+<% entity.properties.each do |method| -%>
+<%=  render('jni/method.erb', { method: method }) %>
+<% end -%>
+<%# Methods -%>
+<% entity.methods.each do |method| -%>
+<%   next if method.name == "Delete" -%>
+<%=  render('jni/method.erb', { method: method }) %>
+<% end -%>
+<%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
+<%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
+<%  if !less.nil? && !equal.nil? -%>
+<%=   render('jni/compare_to.erb', { less: less, equal: equal }) %>
+<%  end -%>

@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+apply plugin: 'org.ajoberstar.grgit'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    sourceSets {
+        main.java.srcDirs += '../../jni/java'
+    }
+    externalNativeBuild {
+        cmake {
+            version "3.10.2"
+            path "../../CMakeLists.txt"
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation 'io.grpc:grpc-protobuf:1.9.0'
+}

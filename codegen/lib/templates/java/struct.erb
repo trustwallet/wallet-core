@@ -1,0 +1,77 @@
+import java.security.InvalidParameterException;
+
+<%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
+<%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
+<%  if !less.nil? && !equal.nil? -%>
+public class <%= entity.name %> implements Comparable<<%= entity.name %>> {
+<%  else -%>
+public class <%= entity.name %> {
+<%  end -%>
+    private byte[] bytes;
+
+    private <%= entity.name %>() {
+    }
+
+    static <%= entity.name %> createFromNative(byte[] bytes) {
+        <%= entity.name %> instance = new <%= entity.name %>();
+        instance.bytes = bytes;
+        return instance;
+    }
+
+<%# Constructor declarations -%>
+<%- entity.static_methods.each do |method| -%>
+<%-   next unless method.name.start_with?('Init') -%>
+    static native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
+<%- end -%>
+
+<%# Static property declarations -%>
+<%- entity.static_properties.each do |property| -%>
+<%-   if should_return_data(property) -%>
+    public static native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters) %>);
+<%-   else -%>
+    public static native <%= JavaHelper.type(property.return_type) %> <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters) %>);
+<%-   end -%>
+<%- end -%>
+<%# Static method declarations -%>
+<%- entity.static_methods.each do |method| -%>
+<%-   next if method.name.start_with?('Init') -%>
+<%-   if should_return_data(method) -%>
+    public static native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters) %>);
+<%-   else -%>
+    public static native <%= JavaHelper.type(method.return_type) %> <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters) %>);
+<%-   end -%>
+<%- end -%>
+<%# Property declarations -%>
+<%- entity.properties.each do |property| -%>
+<%-   if should_return_data(property) -%>
+    public native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
+<%-   else -%>
+    public native <%= JavaHelper.type(property.return_type) %> <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
+<%-   end -%>
+<%- end -%>
+<%# Method declarations -%>
+<%- entity.methods.each do |method| -%>
+<%-   next if method.name.start_with?('Delete') -%>
+<%-   if should_return_data(method) -%>
+    public native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
+<%-   else -%>
+    public native <%= JavaHelper.type(method.return_type) %> <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
+<%-   end -%>
+<%- end -%>
+<%  if !less.nil? && !equal.nil? -%>
+<%    compareMethod = JNIHelper.compareMethod(entity) -%>
+    public native <%= JavaHelper.type(compareMethod.return_type) %> <%= JavaHelper.format_name(compareMethod.name) %>(<%= JavaHelper.parameters(compareMethod.parameters.drop(1)) %>);
+<%  end -%>
+
+<%# Constructors -%>
+<%- entity.static_methods.each do |method| -%>
+<%-   next unless method.name.start_with?('Init') -%>
+    public <%= entity.name %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>) {
+        bytes = <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.arguments(method.parameters.drop(1)) %>);
+        if (bytes == null) {
+            throw new InvalidParameterException();
+        }
+    }
+
+<%- end -%>
+}

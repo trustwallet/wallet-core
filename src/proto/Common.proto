@@ -1,0 +1,17 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+
+package TW.Proto;
+option java_package = "com.wallet.crypto.trustapp.proto";
+
+// Result type.
+message Result {
+    // Whether the operation was successful.
+    bool success = 1;
+
+    // Optional error message, only present if success is false.
+    string error = 2;
+
+    // Result objects, if any.
+    repeated google.protobuf.Any objects = 3;
+}

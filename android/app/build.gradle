@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
+    defaultConfig {
+        applicationId "com.trustwallet.core.app"
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+dependencies {
+    implementation project(':trustwalletcore')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+
+    implementation("android.arch.work:work-runtime:1.0.0-alpha09") {
+        exclude group: 'com.google.guava', module: 'listenablefuture'
+    }
+
+    // Tests
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.1.0-beta02", {
+        exclude group: "com.android.support", module: "support-annotations"
+    })
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.1'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'android.arch.core:core-testing:1.1.1'
+
+    // Mockit
+    testImplementation "org.mockito:mockito-core:2.8.9"
+    testImplementation "org.powermock:powermock-module-junit4:1.7.4"
+    testImplementation "org.powermock:powermock-api-mockito2:1.7.4"
+    testImplementation "org.powermock:powermock-module-junit4-rule:1.7.4"
+    testImplementation "org.powermock:powermock-classloading-xstream:1.7.4"
+
+    implementation 'io.grpc:grpc-protobuf:1.9.0'
+
+}

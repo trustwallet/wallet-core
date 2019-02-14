@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# This script builds a fat static library for iOS devices and simulators.
+#
+
+set -e
+
+echo -e "\n\nBuilding for iOS Device..."
+mkdir -p build/ios-dev
+cmake -H. -Bbuild/ios-dev -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake -DIOS_PLATFORM=OS -DIOS_DEPLOYMENT_TARGET=10.0 -DCMAKE_BUILD_TYPE=Release
+make -C build/ios-dev
+
+echo -e "\nBuilding for iOS Simulator..."
+mkdir -p build/ios-sim
+cmake -H. -Bbuild/ios-sim -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake -DIOS_PLATFORM=SIMULATOR64 -DIOS_DEPLOYMENT_TARGET=10.0 -DCMAKE_BUILD_TYPE=Release
+make -C build/ios-sim
+
+echo -e "\n\nFattenning binary..."
+mkdir -p build/ios
+xcrun lipo -create -output build/ios/libprotobuf.a build/ios-sim/libprotobuf.a build/ios-dev/libprotobuf.a
+xcrun lipo -create -output build/ios/libTrezorCrypto.a build/ios-sim/trezor-crypto/libTrezorCrypto.a build/ios-dev/trezor-crypto/libTrezorCrypto.a
+xcrun lipo -create -output build/ios/libTrustWalletCore.a build/ios-sim/libTrustWalletCore.a build/ios-dev/libTrustWalletCore.a

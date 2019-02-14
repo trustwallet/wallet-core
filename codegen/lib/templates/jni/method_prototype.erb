@@ -1,0 +1,9 @@
+<%
+  method = locals[:method]
+  if method.static
+    parameters = 'jclass thisClass' + JNIHelper.parameters(method.parameters)
+  else
+    parameters = 'jobject thisObject' + JNIHelper.parameters(method.parameters.drop(1))
+  end
+-%>
+<%= JNIHelper.type(method.return_type) %> JNICALL <%= JNIHelper.function_name(entity: entity, function: method) %>(JNIEnv *env, <%= parameters %>)<% -%>

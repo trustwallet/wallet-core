@@ -1,0 +1,22 @@
+<%  less = locals[:less] -%>
+<%  equal = locals[:equal] -%>
+<%  compareMethod = JNIHelper.compareMethod(entity) -%>
+<%= render('jni/method_prototype.erb', { method: compareMethod }) %> {
+<%= render('jni/instance_access.erb', { entity: entity }) %>
+<%= render('jni/parameter_access.erb', { method: compareMethod }) -%>
+<%  if entity.is_struct -%>
+    jboolean equal = (jboolean) TW<%= entity.name %>Equal(*instance, *otherInstance);
+<%  else -%>
+    jboolean equal = (jboolean) TW<%= entity.name %>Equal(instance, otherInstance);
+<%  end -%>
+    if (equal) {
+        return 0;
+    }
+<%  if entity.is_struct -%>
+    jboolean less = (jboolean) TW<%= entity.name %>Less(*instance, *otherInstance);
+<%  else -%>
+    jboolean less = (jboolean) TW<%= entity.name %>Less(instance, otherInstance);
+<%  end -%>
+<%= render('jni/instance_release.erb', { entity: entity }) %>
+    return less ? -1 : 1;
+}

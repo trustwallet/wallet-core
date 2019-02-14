@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+
+CurrentDir = File.dirname(__FILE__)
+
+require 'optparse'
+require 'ostruct'
+
+$LOAD_PATH.unshift(File.join(CurrentDir, '..', 'lib'))
+require 'code_generator'
+require 'parser'
+
+options = OpenStruct.new
+# default input / output path
+options.input = "#{CurrentDir}/../../include/TrustWalletCore"
+options.output = "#{CurrentDir}/../../"
+options.swift = true
+options.java = true
+options.jni_h = true
+options.jni_c = true
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: codegen [options]'
+
+  opts.on('-i', '--input FOLDER', "Input folder with C headers. Default: #{options.input}") do |v|
+    options.swift = v
+  end
+  opts.on('-o', '--output FOLDER', "Output folder. Default: #{options.output}") do |v|
+    options.swift = v
+  end
+  opts.on('-s', '--swift', "Generate Swift code. Default: #{options.swift}") do |v|
+    options.swift = v
+  end
+  opts.on('-j', '--java', "Generate Java code. Default: #{options.java}") do |v|
+    options.java = v
+  end
+  opts.on('-d', '--jnih', "Generate JNI header. Default: #{options.jni_h}") do |v|
+    options.jni_h = v
+  end
+  opts.on('-c', '--jnic', "Generate JNI code. Default: #{options.jni_c}") do |v|
+    options.jni_c = v
+  end
+  opts.on_tail('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+entities = []
+files = []
+Dir.foreach(options.input) do |item|
+  next if ['.', '..'].include?(item)
+
+  entity = Parser.new(path: File.expand_path(File.join(options.input, item))).parse
+  if entity.nil?
+    STDERR.puts "Failed to parse #{item}"
+    next
+  end
+
+  entities << entity
+  files << File.basename(item, '.h').sub(/^TW/, '')
+end
+
+generator = CodeGenerator.new(entities: entities, files: files, output_folder: options.output)
+if options.swift
+  generator.render_swift
+end
+if options.java
+  generator.render_java
+end
+if options.jni_h
+  generator.render_jni_h
+end
+if options.jni_c
+  generator.render_jni_c
+end

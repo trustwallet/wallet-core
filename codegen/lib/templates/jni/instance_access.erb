@@ -1,0 +1,11 @@
+<%  entity = locals[:entity] -%>
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+<%  if entity.is_struct -%>
+    jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
+    jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
+    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, bytesArray, NULL);
+    struct TW<%= entity.name %> *instance = (struct TW<%= entity.name %> *) bytesBuffer;
+<%  else -%>
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TW<%= entity.name %> *instance = (struct TW<%= entity.name %> *) (*env)->GetLongField(env, thisObject, handleFieldID);
+<%  end -%>

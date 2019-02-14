@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# This script runs the iOS tests.
+
+set -e
+
+pushd swift
+xcrun xcodebuild -workspace TrustWalletCore.xcworkspace -scheme TrustWalletCore -sdk iphonesimulator test
+popd

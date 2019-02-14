@@ -1,0 +1,11 @@
+# Xcode
+*.pbxuser
+!default.pbxuser
+xcuserdata/
+
+# Cocoapods
+Pods/
+
+# Generated files
+cpp.xcconfig
+

@@ -1,0 +1,34 @@
+    var rawValue: TW<%= entity.name %>
+
+<%# Properties -%>
+<%- entity.properties.each do |property| -%>
+    public var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {
+<%=   render('swift/method_forward.erb', { method: property }) -%>
+    }
+
+<%- end -%>
+    init(rawValue: TW<%= entity.name %>) {
+        self.rawValue = rawValue
+    }
+
+<%# Initializers -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Init') -%>
+<%    if method.return_type.name == :bool -%>
+    public init?(<%= SwiftHelper.parameters(method.parameters.drop(1)) %>) {
+<%    else -%>
+    public init(<%= SwiftHelper.parameters(method.parameters.drop(1)) %>) {
+<%    end -%>
+<%=   render('swift/parameter_access.erb', { parameters: method.parameters.drop(1) }) -%>
+        rawValue = TW<%= entity.name %>()
+<%    arguments = ['&rawValue'] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
+<%    if method.return_type.name == :bool -%>
+        guard TW<%= entity.name %><%= method.name %>(<%= arguments.join(', ') %>) else {
+            return nil
+        }
+<%    else -%>
+        TW<%= entity.name %><%= method.name %>(<%= arguments.join(', ') %>)
+<%    end -%>
+    }
+
+<%  end -%>

@@ -1,0 +1,5 @@
+<%
+  method = locals[:method]
+  arguments = locals[:arguments] || ['rawValue'] + SwiftHelper.arguments(method.parameters.drop(1))
+-%>
+TW<%= entity.name %><%= method.name %>(<%= arguments.join(', ') %>)

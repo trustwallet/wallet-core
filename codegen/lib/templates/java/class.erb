@@ -1,0 +1,120 @@
+import java.security.InvalidParameterException;
+import java.util.HashSet;
+
+<%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
+<%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
+<%  if !less.nil? && !equal.nil? -%>
+public class <%= entity.name %> implements Comparable<<%= entity.name %>> {
+<%  else -%>
+public class <%= entity.name %> {
+<%  end -%>
+    private long nativeHandle;
+
+<% unless entity.static_methods.detect{ |m| m.name == 'Create' && m.parameters.empty? } -%>
+    private <%= entity.name %>() {
+        nativeHandle = 0;
+    }
+
+<% end -%>
+    static <%= entity.name %> createFromNative(long nativeHandle) {
+        <%= entity.name %> instance = new <%= entity.name %>();
+        instance.nativeHandle = nativeHandle;
+        <%= entity.name %>PhantomReference.register(instance, nativeHandle);
+        return instance;
+    }
+
+<%# Constructor declarations -%>
+<% entity.static_methods.each do |method| -%>
+<%   next unless method.name.start_with?('Create') -%>
+    static native long native<%= method.name %>(<%= JavaHelper.parameters(method.parameters) %>);
+<% end -%>
+<%# Destructor declarations -%>
+<% entity.methods.each do |method| -%>
+<%   next unless method.name.start_with?('Delete') -%>
+    static native void native<%= method.name %>(long handle);
+<% end -%>
+
+<%# Static property declarations -%>
+<%  entity.static_properties.each do |property| -%>
+<%    if should_return_data(property) -%>
+    public static native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters) %>);
+<%    elsif should_return_string(property) -%>
+    public static native String <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters) %>);
+<%    else -%>
+    public static native <%= JavaHelper.type(property.return_type) %> <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters) %>);
+<%    end -%>
+<% end -%>
+<%# Static method declarations -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') -%>
+<%    if should_return_data(method) -%>
+    public static native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters) %>);
+<%    elsif should_return_string(method) -%>
+    public static native String <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters) %>);
+<%    else -%>
+    public static native <%= JavaHelper.type(method.return_type) %> <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters) %>);
+<%    end -%>
+<%  end -%>
+<%# Property declarations -%>
+<%  entity.properties.each do |property| -%>
+<%    if should_return_data(property) -%>
+    public native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
+<%    elsif should_return_string(property) -%>
+    public native String <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
+<%    else -%>
+    public native <%= JavaHelper.type(property.return_type) %> <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
+<%    end -%>
+<%  end -%>
+<%# Method declarations -%>
+<%  entity.methods.each do |method| -%>
+<%    next if method.name.start_with?('Delete') -%>
+<%    if should_return_data(method) -%>
+    public native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
+<%    elsif should_return_string(method) -%>
+    public native String <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
+<%    else -%>
+    public native <%= JavaHelper.type(method.return_type) %> <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
+<%    end -%>
+<%  end -%>
+<%  if !less.nil? && !equal.nil? -%>
+<%    compareMethod = JNIHelper.compareMethod(entity) -%>
+    public native <%= JavaHelper.type(compareMethod.return_type) %> <%= JavaHelper.format_name(compareMethod.name) %>(<%= JavaHelper.parameters(compareMethod.parameters.drop(1)) %>);
+<%  end -%>
+
+<%# Constructors -%>
+<%- entity.static_methods.each do |method| -%>
+    <%- next unless method.name.start_with?('Create') -%>
+    public <%= entity.name %>(<%= JavaHelper.parameters(method.parameters) %>) {
+        nativeHandle = native<%= method.name %>(<%= JavaHelper.arguments(method.parameters) %>);
+        if (nativeHandle == 0) {
+            throw new InvalidParameterException();
+        }
+
+        <%= entity.name %>PhantomReference.register(this, nativeHandle);
+    }
+
+<%- end -%>
+}
+
+class <%= entity.name %>PhantomReference extends java.lang.ref.PhantomReference<<%= entity.name %>> {
+    private static java.util.Set<<%= entity.name %>PhantomReference> references = new HashSet<<%= entity.name %>PhantomReference>();
+    private static java.lang.ref.ReferenceQueue<<%= entity.name %>> queue = new java.lang.ref.ReferenceQueue<<%= entity.name %>>();
+    private long nativeHandle;
+
+    private <%= entity.name %>PhantomReference(<%= entity.name %> referent, long nativeHandle) {
+        super(referent, queue);
+        this.nativeHandle = nativeHandle;
+    }
+
+    static void register(<%= entity.name %> referent, long nativeHandle) {
+        references.add(new <%= entity.name %>PhantomReference(referent, nativeHandle));
+    }
+
+    public static void doDeletes() {
+        <%= entity.name %>PhantomReference ref = (<%= entity.name %>PhantomReference) queue.poll();
+        for (; ref != null; ref = (<%= entity.name %>PhantomReference) queue.poll()) {
+            <%= entity.name %>.nativeDelete(ref.nativeHandle);
+            references.remove(ref);
+        }
+    }
+}

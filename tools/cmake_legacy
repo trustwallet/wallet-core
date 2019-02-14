@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# This script modifies the project so that it build with older versions of
+# cmake.
+
+sed -i '' 's/cmake_minimum_required(VERSION 3.8 FATAL_ERROR)/cmake_minimum_required(VERSION 3.6 FATAL_ERROR)/g' CMakeLists.txt
+sed -i '' 's/ cxx_std_11//g' lib/json/CMakeLists.txt

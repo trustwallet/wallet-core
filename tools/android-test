@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# This script runs the Android tests.
+
+set -e
+
+AVD_NAME="integration-tests"
+PORT=5556
+
+# Make sure it builds before starting an emulator
+pushd android
+./gradlew assembleAndroidTest
+popd
+
+#Calculate the Serial Number of the emulator instance
+SERIAL=emulator-${PORT}
+
+# We have to echo "no" because it will ask us if we want to use a custom hardware profile, and we don't.
+echo -e "\nCreating Android emulator...\n"
+echo "no" | "$ANDROID_HOME/tools/bin/avdmanager" create avd \
+    -n "${AVD_NAME}" \
+    -k "system-images;android-26;google_apis;x86" \
+	-f
+echo -e "\nAVD ${AVD_NAME} created."
+
+# Start the Android Emulator
+"$ANDROID_HOME/emulator/emulator" \
+    -avd ${AVD_NAME} \
+    -netspeed full \
+    -netdelay none \
+    -port ${PORT} &
+
+# Ensure Android Emulator has booted successfully before continuing
+echo -e "\nWaiting for emulator to boot...\n"
+EMU_BOOTED='unknown'
+while [[ ${EMU_BOOTED} != *"stopped"* ]]; do
+    sleep 5
+    EMU_BOOTED=`adb -s ${SERIAL} shell getprop init.svc.bootanim || echo unknown`
+done
+
+duration=$(( SECONDS - start ))
+echo -e "Android Emulator started after $duration seconds.\n\n"
+
+# Run tests
+pushd android
+./gradlew connectedAndroidTest
+popd
+
+# Stop the Android Emulator
+echo -e "\nKilling the Android Emulator"
+adb -s ${SERIAL} emu kill

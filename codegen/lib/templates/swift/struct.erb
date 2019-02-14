@@ -1,0 +1,33 @@
+import Foundation
+
+public struct <%= entity.name %> {
+<%# Static properties -%>
+<% entity.static_properties.each do |property| -%>
+    public static var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {
+        <%- if property.return_type.is_class || property.return_type.is_struct -%>
+        return <%= SwiftHelper.type(property.return_type) %>(rawValue: TW<%= entity.name %><%= property.name %>())
+        <%- else -%>
+        return TW<%= entity.name %><%= property.name %>()
+        <%- end -%>
+    }
+
+<% end -%>
+<%# Static methods -%>
+<% entity.static_methods.each do |method| -%>
+<%   next if method.name.start_with?('Create') || method.name.start_with?('Init') %>
+<%=  render('swift/static_method.erb', { method: method }) -%>
+<% end -%>
+
+<%# Properties -%>
+<% if entity.is_struct -%>
+<%=  render('swift/struct_properties.erb') -%>
+<% else -%>
+<%=  render('swift/class_properties.erb') -%>
+<% end -%>
+
+<%# Methods -%>
+<% entity.methods.each do |method| -%>
+<%   next if method.name == "Delete" -%>
+<%=  render('swift/method.erb', { method: method }) %>
+<% end -%>
+}

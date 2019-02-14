@@ -1,0 +1,19 @@
+<%  parameters = locals[:parameters] -%>
+<%  parameters.each do |param| -%>
+<%    if param.type.name == :data -%>
+        let <%= param.name %>Data = TWDataCreateWithNSData(<%= param.name %>)
+        defer {
+            TWDataDelete(<%= param.name %>Data)
+        }
+<%    elsif param.type.name == :string -%>
+        let <%= param.name %>String = TWStringCreateWithNSString(<%= param.name %>)
+        defer {
+            TWStringDelete(<%= param.name %>String)
+        }
+<%    elsif param.type.is_proto -%>
+        let <%= param.name %>Data = TWDataCreateWithNSData(try! <%= param.name %>.serializedData())
+        defer {
+            TWDataDelete(<%= param.name %>Data)
+        }
+<%    end -%>
+<%  end -%>

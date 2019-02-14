@@ -1,0 +1,14 @@
+.cache/
+.vscode/
+_attic/
+*.o
+*.d
+*.exe
+*~
+tests/aestst
+tests/test_openssl
+tests/test_speed
+tests/test_check
+tests/libtrezor-crypto.so
+*.os
+*.pyc

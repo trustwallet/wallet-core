@@ -1,0 +1,6 @@
+<% param = locals[:param] -%>
+<% name = param.name -%>
+<% type = param.type -%>
+    jclass <%= name %>Class = (*env)->GetObjectClass(env, <%= name %>);
+    jfieldID <%= name %>HandleFieldID = (*env)->GetFieldID(env, <%= name %>Class, "nativeHandle", "J");
+    struct TW<%= type.name %> *<%= name %>Instance = (struct TW<%= type.name %> *) (*env)->GetLongField(env, <%= name %>, <%= name %>HandleFieldID);

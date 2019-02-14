@@ -1,0 +1,49 @@
+<%
+  method = locals[:method]
+  arguments = locals[:arguments] || ['rawValue'] + SwiftHelper.arguments(method.parameters.drop(1))
+  call = render('swift/method_call.erb', { method: method, arguments: arguments })
+
+  # Method returns data
+  if should_return_data(method)
+    if method.return_type.is_nullable -%>
+        guard let result = <%= call %> else {
+            return nil
+        }
+        return TWDataNSData(result)
+<%  else -%>
+        return TWDataNSData(<%= call %>)
+<%  end
+
+  # Method returns a string
+  elsif should_return_string(method)
+    if method.return_type.is_nullable -%>
+        guard let result = <%= call %> else {
+            return nil
+        }
+        return TWStringNSString(result)
+<%  else -%>
+        return TWStringNSString(<%= call %>)
+<%  end
+
+  # Method returns an enum
+  elsif method.return_type.is_enum -%>
+        return <%= method.return_type.name %>(rawValue: <%= call %>.rawValue)!
+<%
+  # Method returns proto
+  elsif method.return_type.is_proto -%>
+        let resultData = TWDataNSData(<%= call %>)
+        return try! <%= method.return_type.name %>(serializedData: resultData)
+<%
+  # Method returns a class or struct
+  elsif method.return_type.is_class || method.return_type.is_struct
+    if method.return_type.is_nullable -%>
+        guard let value = <%= call %> else {
+            return nil
+        }
+        return <%= method.return_type.name %>(rawValue: value)
+<%  else -%>
+        return <%= method.return_type.name %>(rawValue: <%= call %>)
+<%  end
+  else -%>
+        return <%= call %>
+<%end -%>

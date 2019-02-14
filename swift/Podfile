@@ -1,0 +1,9 @@
+platform :ios, '10.0'
+
+target 'TrustWalletCore' do
+  use_frameworks!
+
+  pod 'SwiftProtobuf', '~> 1.2.0'
+
+  target 'TrustWalletCoreTests'
+end

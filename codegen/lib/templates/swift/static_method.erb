@@ -1,0 +1,6 @@
+<%  method = locals[:method] -%>
+<%  arguments = SwiftHelper.arguments(method.parameters) -%>
+    public static func <%= SwiftHelper.format_name(method.name) %>(<%= SwiftHelper.parameters(method.parameters) %>) -> <%= SwiftHelper.type(method.return_type) %> {
+<%= render('swift/parameter_access.erb', { parameters: method.parameters }) -%>
+<%= render('swift/method_forward.erb', { method: method, arguments: arguments }) -%>
+    }

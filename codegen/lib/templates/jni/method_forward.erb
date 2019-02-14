@@ -1,0 +1,97 @@
+<%
+  method = locals[:method]
+  if method.static
+    arguments = locals[:arguments] || JNIHelper.arguments(method.parameters)
+    call = render('jni/method_call.erb', { method: method, arguments: arguments })
+  else
+    instance = (method.entity.is_struct ? '*' : '') + 'instance'
+    arguments = locals[:arguments] || [instance] + JNIHelper.arguments(method.parameters.drop(1))
+    call = render('jni/method_call.erb', { method: method, arguments: arguments })
+  end
+
+  # Method returns data
+  if should_return_data(method) -%>
+    <%= JNIHelper.type(method.return_type) %> result = TWDataJByteArray(<%= call %>, env);
+
+<%= render('jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+
+    return result;
+<%
+  # Method returns a string
+  elsif should_return_string(method) -%>
+    jstring result = TWStringJString(<%= call %>, env);
+
+<%= render('jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+
+    return result;
+<%
+  # Method returns proto
+  elsif method.return_type.is_proto -%>
+    jbyteArray resultData = TWDataJByteArray(<%= call %>, env);
+    jclass resultClass = (*env)->FindClass(env, "<%= JNIHelper.proto_to_class(method.return_type.name) %>");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)L<%= JNIHelper.proto_to_class(method.return_type.name) %>;");
+    jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
+
+    (*env)->DeleteLocalRef(env, resultClass);
+<%= render('jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+
+    return result;
+<%   
+  # Method returns an object
+  elsif should_return_object(method)
+    if method.return_type.is_struct -%>
+    struct TW<%= method.return_type.name %> result = <%= call %>;
+<%  elsif method.return_type.is_class -%>
+    struct TW<%= method.return_type.name %> *result = <%= call %>;
+<%  else -%>
+    TW<%= method.return_type.name %> *result = <%= call %>;
+<%  end -%>
+
+<%= render('jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+
+    jclass class = (*env)->FindClass(env, "com/wallet/crypto/trustapp/jni/<%= method.return_type.name %>");
+<%  if method.return_type.is_struct -%>
+    jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TW<%= method.return_type.name %>));
+    (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TW<%= method.return_type.name %>), (jbyte *) &result);
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lcom/wallet/crypto/trustapp/jni/<%= method.return_type.name %>;");
+    return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
+<%  else -%>
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lcom/wallet/crypto/trustapp/jni/<%= method.return_type.name %>;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+<%  end
+
+  # Method returns void
+  elsif method.return_type.name == :void -%>
+    <%= call %>;
+
+<%= render('jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%  end
+
+  # Method returns a primitive
+  else -%>
+    <%= JNIHelper.type(method.return_type) %> resultValue = (<%= JNIHelper.type(method.return_type) %>) <%= call %>;
+
+<%= render('jni/parameter_release.erb', { method: method }) -%>
+<%  if !method.static %>
+<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%  end -%>
+
+    return resultValue;
+<%end -%>
