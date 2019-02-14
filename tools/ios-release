@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
   s.name         = 'TrustWalletCore'
   s.version      = '#{version}'
   s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/TrustWallet/trust-wallet-core'
+  s.homepage     = 'https://github.com/TrustWallet/wallet-core'
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
 
@@ -76,13 +76,13 @@ PODSPEC
 file = File.new('build/TrustWalletCore.podspec', 'w')
 file.write(podspec)
 file.close
-stdout, stderr, status = Open3.capture3('pod', 'repo', 'push', 'Trust',
+stdout, stderr, status = Open3.capture3('pod', 'trunk', 'push',
                                         '--skip-tests',
                                         '--skip-import-validation',
                                         '--allow-warnings',
                                         file.path)
+puts stdout
 if status != 0
-  puts stdout
   STDERR.puts stderr
   exit 1
 end
