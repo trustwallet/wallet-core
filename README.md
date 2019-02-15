@@ -1,5 +1,7 @@
 # Trust Wallet Core Library
 
+<img src="docs/logo.png" align="left" title="Trust logo" width="64" height="64" hspace="10">
+
 Trust Wallet Core is a cross-platform library that implements low-level cryptographic wallet functionality for all supported blockchains. Most of the code is C++ with a set of strict exported C interfaces. The library provides idiomatic interfaces for all supported languages (currently Swift for iOS and Java for Android). 
 
 
