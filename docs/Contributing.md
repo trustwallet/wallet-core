@@ -96,4 +96,28 @@ The proto file will be used to generate C++ classes and also classes in each sup
 
 ### iOS
 
-Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload a Cocoapod.
+Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload a Cocoapod. You need to be registered as an owner for the pod.
+
+### Android
+
+#### First Time
+
+1. See https://docs.gradle.org/current/userguide/signing_plugin.html to set up GPG signing.
+2. Get a OSSRH username and password, get added to the group ID.
+3. Create `~/.gradle/gradle.properties` and add your information from the previous steps:
+```
+NEXUS_USERNAME=user
+NEXUS_PASSWORD=pass
+
+signing.keyId=00000000
+signing.password=password
+signing.secretKeyRingFile=/Users/me/.gnupg/secring.gpg
+
+org.gradle.daemon=true
+```
+
+#### Every Release
+
+1. Update the `VERSION_NAME` in `android/gradle.properties`.
+2. In the `android` folder run `./gradlew uploadArchive`.
+3. Go to the [Sonatype](https://oss.sonatype.org/#stagingRepositories) webpage. Look for the staging library. It should be at the end of the list. Select it, and press “Close” button.

@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'org.ajoberstar.grgit'
+apply from: 'maven-push.gradle'
 
 android {
     compileSdkVersion 28

@@ -9,19 +9,13 @@ If you want to use wallet core in your project follow these instructions.
 
 ## Android
 
-To include the library in an Android app:
-
-1. Download a release .aar from GitHub (or build yourself using the project in the `android` folder).
-2. Add these lines to you app module's `build.gradle` file:
+Add this dependency to build.gradle:
 
 ```groovy
 dependencies {
-    api fileTree(dir: 'libs', include: ['trustwalletcore-release.aar'])
+    compile 'com.trustwallet.walletcore:walletcore:0.4.0'
 }
 ```
-
-Maven Central option coming soon.
-
 
 ## iOS
 
