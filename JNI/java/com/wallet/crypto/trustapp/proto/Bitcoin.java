@@ -7839,6 +7839,24 @@ public final class Bitcoin {
      * <code>int64 max_amount = 4;</code>
      */
     long getMaxAmount();
+
+    /**
+     * <pre>
+     * Transaction hash
+     * </pre>
+     *
+     * <code>string transaction_hash = 5;</code>
+     */
+    java.lang.String getTransactionHash();
+    /**
+     * <pre>
+     * Transaction hash
+     * </pre>
+     *
+     * <code>string transaction_hash = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getTransactionHashBytes();
   }
   /**
    * <pre>
@@ -7858,6 +7876,7 @@ public final class Bitcoin {
     }
     private SigningOutput() {
       encoded_ = com.google.protobuf.ByteString.EMPTY;
+      transactionHash_ = "";
     }
 
     @java.lang.Override
@@ -7910,6 +7929,12 @@ public final class Bitcoin {
             case 32: {
 
               maxAmount_ = input.readInt64();
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              transactionHash_ = s;
               break;
             }
             default: {
@@ -8016,6 +8041,48 @@ public final class Bitcoin {
       return maxAmount_;
     }
 
+    public static final int TRANSACTION_HASH_FIELD_NUMBER = 5;
+    private volatile java.lang.Object transactionHash_;
+    /**
+     * <pre>
+     * Transaction hash
+     * </pre>
+     *
+     * <code>string transaction_hash = 5;</code>
+     */
+    public java.lang.String getTransactionHash() {
+      java.lang.Object ref = transactionHash_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        transactionHash_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * Transaction hash
+     * </pre>
+     *
+     * <code>string transaction_hash = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTransactionHashBytes() {
+      java.lang.Object ref = transactionHash_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        transactionHash_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -8042,6 +8109,9 @@ public final class Bitcoin {
       if (maxAmount_ != 0L) {
         output.writeInt64(4, maxAmount_);
       }
+      if (!getTransactionHashBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, transactionHash_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -8066,6 +8136,9 @@ public final class Bitcoin {
       if (maxAmount_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(4, maxAmount_);
+      }
+      if (!getTransactionHashBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, transactionHash_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -8093,6 +8166,8 @@ public final class Bitcoin {
           != other.getFee()) return false;
       if (getMaxAmount()
           != other.getMaxAmount()) return false;
+      if (!getTransactionHash()
+          .equals(other.getTransactionHash())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -8116,6 +8191,8 @@ public final class Bitcoin {
       hash = (37 * hash) + MAX_AMOUNT_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getMaxAmount());
+      hash = (37 * hash) + TRANSACTION_HASH_FIELD_NUMBER;
+      hash = (53 * hash) + getTransactionHash().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -8265,6 +8342,8 @@ public final class Bitcoin {
 
         maxAmount_ = 0L;
 
+        transactionHash_ = "";
+
         return this;
       }
 
@@ -8299,6 +8378,7 @@ public final class Bitcoin {
         result.encoded_ = encoded_;
         result.fee_ = fee_;
         result.maxAmount_ = maxAmount_;
+        result.transactionHash_ = transactionHash_;
         onBuilt();
         return result;
       }
@@ -8358,6 +8438,10 @@ public final class Bitcoin {
         }
         if (other.getMaxAmount() != 0L) {
           setMaxAmount(other.getMaxAmount());
+        }
+        if (!other.getTransactionHash().isEmpty()) {
+          transactionHash_ = other.transactionHash_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -8657,6 +8741,95 @@ public final class Bitcoin {
         onChanged();
         return this;
       }
+
+      private java.lang.Object transactionHash_ = "";
+      /**
+       * <pre>
+       * Transaction hash
+       * </pre>
+       *
+       * <code>string transaction_hash = 5;</code>
+       */
+      public java.lang.String getTransactionHash() {
+        java.lang.Object ref = transactionHash_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          transactionHash_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Transaction hash
+       * </pre>
+       *
+       * <code>string transaction_hash = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTransactionHashBytes() {
+        java.lang.Object ref = transactionHash_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          transactionHash_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Transaction hash
+       * </pre>
+       *
+       * <code>string transaction_hash = 5;</code>
+       */
+      public Builder setTransactionHash(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        transactionHash_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Transaction hash
+       * </pre>
+       *
+       * <code>string transaction_hash = 5;</code>
+       */
+      public Builder clearTransactionHash() {
+        
+        transactionHash_ = getDefaultInstance().getTransactionHash();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Transaction hash
+       * </pre>
+       *
+       * <code>string transaction_hash = 5;</code>
+       */
+      public Builder setTransactionHashBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        transactionHash_ = value;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -8788,11 +8961,12 @@ public final class Bitcoin {
       "ctionPlan\022\016\n\006amount\030\001 \001(\003\022\030\n\020available_a" +
       "mount\030\002 \001(\003\022\013\n\003fee\030\003 \001(\003\022\016\n\006change\030\004 \001(\003" +
       "\0223\n\005utxos\030\005 \003(\0132$.TW.Bitcoin.Proto.Unspe" +
-      "ntTransaction\"u\n\rSigningOutput\0222\n\013transa" +
-      "ction\030\001 \001(\0132\035.TW.Bitcoin.Proto.Transacti" +
-      "on\022\017\n\007encoded\030\002 \001(\014\022\013\n\003fee\030\003 \001(\003\022\022\n\nmax_" +
-      "amount\030\004 \001(\003B\"\n com.wallet.crypto.trusta" +
-      "pp.protob\006proto3"
+      "ntTransaction\"\217\001\n\rSigningOutput\0222\n\013trans" +
+      "action\030\001 \001(\0132\035.TW.Bitcoin.Proto.Transact" +
+      "ion\022\017\n\007encoded\030\002 \001(\014\022\013\n\003fee\030\003 \001(\003\022\022\n\nmax" +
+      "_amount\030\004 \001(\003\022\030\n\020transaction_hash\030\005 \001(\tB" +
+      "\"\n com.wallet.crypto.trustapp.protob\006pro" +
+      "to3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -8859,7 +9033,7 @@ public final class Bitcoin {
     internal_static_TW_Bitcoin_Proto_SigningOutput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Bitcoin_Proto_SigningOutput_descriptor,
-        new java.lang.String[] { "Transaction", "Encoded", "Fee", "MaxAmount", });
+        new java.lang.String[] { "Transaction", "Encoded", "Fee", "MaxAmount", "TransactionHash", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
