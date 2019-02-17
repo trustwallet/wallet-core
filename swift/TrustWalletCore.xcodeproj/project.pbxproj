@@ -15,6 +15,38 @@
 		610AEF4D21C1A5C5008ABB74 /* TWBitcoin.h in Headers */ = {isa = PBXBuildFile; fileRef = 610AEF4B21C1A5C5008ABB74 /* TWBitcoin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		610AEF7421C8A934008ABB74 /* TWBitcoinTransactionSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 610AEF7221C8A934008ABB74 /* TWBitcoinTransactionSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		610AEF7621C8A95A008ABB74 /* BitcoinTransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610AEF7521C8A959008ABB74 /* BitcoinTransactionSigner.swift */; };
+		6131E03A2219C53200CF699D /* any.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31D21FF978900E601B3 /* any.cc */; };
+		6131E0412219C54200CF699D /* any.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31921FF978800E601B3 /* any.pb.cc */; };
+		6131E0422219C54200CF699D /* api.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30B21FF978700E601B3 /* api.pb.cc */; };
+		6131E0432219C54200CF699D /* descriptor_database.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31421FF978800E601B3 /* descriptor_database.cc */; };
+		6131E0442219C54200CF699D /* descriptor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B32021FF978900E601B3 /* descriptor.cc */; };
+		6131E0452219C54200CF699D /* descriptor.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31721FF978800E601B3 /* descriptor.pb.cc */; };
+		6131E0462219C54200CF699D /* duration.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31C21FF978900E601B3 /* duration.pb.cc */; };
+		6131E0472219C54200CF699D /* dynamic_message.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31221FF978800E601B3 /* dynamic_message.cc */; };
+		6131E0482219C54200CF699D /* empty.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30E21FF978700E601B3 /* empty.pb.cc */; };
+		6131E0492219C54200CF699D /* extension_set_heavy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31821FF978800E601B3 /* extension_set_heavy.cc */; };
+		6131E04A2219C54200CF699D /* field_mask.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31121FF978800E601B3 /* field_mask.pb.cc */; };
+		6131E04B2219C54200CF699D /* generated_message_reflection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30A21FF978700E601B3 /* generated_message_reflection.cc */; };
+		6131E04C2219C54200CF699D /* generated_message_table_driven.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30F21FF978700E601B3 /* generated_message_table_driven.cc */; };
+		6131E0522219C54700CF699D /* gzip_stream.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33F21FF97A900E601B3 /* gzip_stream.cc */; };
+		6131E0532219C54700CF699D /* printer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33D21FF97A900E601B3 /* printer.cc */; };
+		6131E0542219C54700CF699D /* strtod.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33C21FF97A900E601B3 /* strtod.cc */; };
+		6131E0552219C54700CF699D /* tokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33B21FF97A900E601B3 /* tokenizer.cc */; };
+		6131E0562219C54700CF699D /* zero_copy_stream_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33E21FF97A900E601B3 /* zero_copy_stream_impl.cc */; };
+		6131E0572219C54700CF699D /* map_field.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30C21FF978700E601B3 /* map_field.cc */; };
+		6131E0582219C54700CF699D /* message.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31F21FF978900E601B3 /* message.cc */; };
+		6131E0592219C54700CF699D /* reflection_ops.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31E21FF978900E601B3 /* reflection_ops.cc */; };
+		6131E05A2219C54700CF699D /* service.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31521FF978800E601B3 /* service.cc */; };
+		6131E05B2219C54700CF699D /* source_context.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B32121FF978900E601B3 /* source_context.pb.cc */; };
+		6131E05C2219C54700CF699D /* struct.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31B21FF978900E601B3 /* struct.pb.cc */; };
+		6131E0682219C54E00CF699D /* mathlimits.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B34521FF97CA00E601B3 /* mathlimits.cc */; };
+		6131E0692219C54E00CF699D /* substitute.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B34621FF97CA00E601B3 /* substitute.cc */; };
+		6131E06A2219C54E00CF699D /* text_format.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30D21FF978700E601B3 /* text_format.cc */; };
+		6131E06B2219C54E00CF699D /* timestamp.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30921FF978700E601B3 /* timestamp.pb.cc */; };
+		6131E06C2219C54E00CF699D /* type.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31021FF978800E601B3 /* type.pb.cc */; };
+		6131E06D2219C54E00CF699D /* unknown_field_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31A21FF978900E601B3 /* unknown_field_set.cc */; };
+		6131E06E2219C54E00CF699D /* wire_format.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31621FF978800E601B3 /* wire_format.cc */; };
+		6131E06F2219C54E00CF699D /* wrappers.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31321FF978800E601B3 /* wrappers.pb.cc */; };
 		61346D17220B6F7C00F0141B /* Data+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61346D16220B6F7C00F0141B /* Data+Hex.swift */; };
 		61376FFF220D48E800573D0F /* BinanceSignerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61376FFE220D48E800573D0F /* BinanceSignerTests.swift */; };
 		615D9B9B21CED9C700878D22 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 615D9B9721CED9C700878D22 /* Address.cpp */; };
@@ -207,38 +239,6 @@
 		61A9B2FD21FB855E00E601B3 /* AddressChecksum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B2F521FB855E00E601B3 /* AddressChecksum.cpp */; };
 		61A9B2FE21FB855E00E601B3 /* RLP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B2F621FB855E00E601B3 /* RLP.cpp */; };
 		61A9B2FF21FB855E00E601B3 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B2F721FB855E00E601B3 /* Address.cpp */; };
-		61A9B32221FF978900E601B3 /* timestamp.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30921FF978700E601B3 /* timestamp.pb.cc */; };
-		61A9B32321FF978900E601B3 /* generated_message_reflection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30A21FF978700E601B3 /* generated_message_reflection.cc */; };
-		61A9B32421FF978900E601B3 /* api.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30B21FF978700E601B3 /* api.pb.cc */; };
-		61A9B32521FF978900E601B3 /* map_field.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30C21FF978700E601B3 /* map_field.cc */; };
-		61A9B32621FF978900E601B3 /* text_format.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30D21FF978700E601B3 /* text_format.cc */; };
-		61A9B32721FF978900E601B3 /* empty.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30E21FF978700E601B3 /* empty.pb.cc */; };
-		61A9B32821FF978A00E601B3 /* generated_message_table_driven.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30F21FF978700E601B3 /* generated_message_table_driven.cc */; };
-		61A9B32921FF978A00E601B3 /* type.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31021FF978800E601B3 /* type.pb.cc */; };
-		61A9B32A21FF978A00E601B3 /* field_mask.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31121FF978800E601B3 /* field_mask.pb.cc */; };
-		61A9B32B21FF978A00E601B3 /* dynamic_message.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31221FF978800E601B3 /* dynamic_message.cc */; };
-		61A9B32C21FF978A00E601B3 /* wrappers.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31321FF978800E601B3 /* wrappers.pb.cc */; };
-		61A9B32D21FF978A00E601B3 /* descriptor_database.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31421FF978800E601B3 /* descriptor_database.cc */; };
-		61A9B32E21FF978A00E601B3 /* service.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31521FF978800E601B3 /* service.cc */; };
-		61A9B32F21FF978A00E601B3 /* wire_format.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31621FF978800E601B3 /* wire_format.cc */; };
-		61A9B33021FF978A00E601B3 /* descriptor.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31721FF978800E601B3 /* descriptor.pb.cc */; };
-		61A9B33121FF978A00E601B3 /* extension_set_heavy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31821FF978800E601B3 /* extension_set_heavy.cc */; };
-		61A9B33221FF978A00E601B3 /* any.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31921FF978800E601B3 /* any.pb.cc */; };
-		61A9B33321FF978A00E601B3 /* unknown_field_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31A21FF978900E601B3 /* unknown_field_set.cc */; };
-		61A9B33421FF978A00E601B3 /* struct.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31B21FF978900E601B3 /* struct.pb.cc */; };
-		61A9B33521FF978A00E601B3 /* duration.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31C21FF978900E601B3 /* duration.pb.cc */; };
-		61A9B33621FF978A00E601B3 /* any.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31D21FF978900E601B3 /* any.cc */; };
-		61A9B33721FF978A00E601B3 /* reflection_ops.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31E21FF978900E601B3 /* reflection_ops.cc */; };
-		61A9B33821FF978A00E601B3 /* message.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31F21FF978900E601B3 /* message.cc */; };
-		61A9B33921FF978A00E601B3 /* descriptor.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B32021FF978900E601B3 /* descriptor.cc */; };
-		61A9B33A21FF978A00E601B3 /* source_context.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B32121FF978900E601B3 /* source_context.pb.cc */; };
-		61A9B34021FF97AA00E601B3 /* tokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33B21FF97A900E601B3 /* tokenizer.cc */; };
-		61A9B34121FF97AA00E601B3 /* strtod.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33C21FF97A900E601B3 /* strtod.cc */; };
-		61A9B34221FF97AA00E601B3 /* printer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33D21FF97A900E601B3 /* printer.cc */; };
-		61A9B34321FF97AA00E601B3 /* zero_copy_stream_impl.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33E21FF97A900E601B3 /* zero_copy_stream_impl.cc */; };
-		61A9B34421FF97AA00E601B3 /* gzip_stream.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B33F21FF97A900E601B3 /* gzip_stream.cc */; };
-		61A9B34721FF97CA00E601B3 /* mathlimits.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B34521FF97CA00E601B3 /* mathlimits.cc */; };
-		61A9B34821FF97CA00E601B3 /* substitute.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B34621FF97CA00E601B3 /* substitute.cc */; };
 		61A9B3512200103000E601B3 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A9B34F2200103000E601B3 /* Transaction.h */; };
 		61A9B3522200103000E601B3 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B3502200103000E601B3 /* Transaction.cpp */; };
 		61A9B3622200D85A00E601B3 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A9B35F2200D85A00E601B3 /* Address.h */; };
@@ -1753,17 +1753,14 @@
 				61722BF7220E45BA00D7BA9A /* Binance.pb.cc in Sources */,
 				BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */,
 				61B159D121CC5DBB00CFE93B /* Script.cpp in Sources */,
-				61A9B34121FF97AA00E601B3 /* strtod.cc in Sources */,
 				61722BE3220E457D00D7BA9A /* ChainID.swift in Sources */,
 				61722BE4220E457D00D7BA9A /* Common.pb.swift in Sources */,
 				61735C22219DF044007BF637 /* curve25519-donna-32bit.c in Sources */,
 				61A9B2E821F916FA00E601B3 /* Bech32.cpp in Sources */,
-				61A9B32421FF978900E601B3 /* api.pb.cc in Sources */,
 				61BA0A7221F6C9D9005680E6 /* Signer.cpp in Sources */,
 				61CABADB21ED782E0086D9A0 /* Purpose.swift in Sources */,
 				61722BE2220E457D00D7BA9A /* Binance.pb.swift in Sources */,
 				61735C01219DF044007BF637 /* rc4.c in Sources */,
-				61A9B32321FF978900E601B3 /* generated_message_reflection.cc in Sources */,
 				61CABAE821F0100E0086D9A0 /* HexCoding.cpp in Sources */,
 				61735BF6219DF044007BF637 /* sha2.c in Sources */,
 				61CABAC321ED42620086D9A0 /* scrypt.c in Sources */,
@@ -1773,34 +1770,25 @@
 				61977CCE21C9B9EF00C385D5 /* BitcoinCashAddress.swift in Sources */,
 				61B159E321CC5DBB00CFE93B /* TWData+Hex.cpp in Sources */,
 				61CABADD21EE5EA60086D9A0 /* HRP.swift in Sources */,
-				61A9B34021FF97AA00E601B3 /* tokenizer.cc in Sources */,
 				61B159D821CC5DBB00CFE93B /* TransactionSigner.cpp in Sources */,
 				61735C18219DF044007BF637 /* ed25519-donna-basepoint-table.c in Sources */,
 				61722C07220E461A00D7BA9A /* TWCoinTypeConfiguration.cpp in Sources */,
 				61722C08220E461A00D7BA9A /* TWZcashTAddress.cpp in Sources */,
-				61A9B33021FF978A00E601B3 /* descriptor.pb.cc in Sources */,
 				61A9B2FE21FB855E00E601B3 /* RLP.cpp in Sources */,
 				61722C0D220E461A00D7BA9A /* TWBitcoinScript.cpp in Sources */,
 				61735C06219DF044007BF637 /* cash_addr.c in Sources */,
 				61735C7B219DF044007BF637 /* rfc7539.c in Sources */,
 				61735BFF219DF044007BF637 /* rand.c in Sources */,
-				61A9B32921FF978A00E601B3 /* type.pb.cc in Sources */,
 				61722BF5220E45BA00D7BA9A /* Bitcoin.pb.cc in Sources */,
 				61B159E421CC5DBB00CFE93B /* TWHash.cpp in Sources */,
-				61A9B32521FF978900E601B3 /* map_field.cc in Sources */,
 				61735BFC219DF044007BF637 /* hasher.c in Sources */,
 				6198EA7E21B6B9C2008CB60A /* Data.swift in Sources */,
-				61A9B32C21FF978A00E601B3 /* wrappers.pb.cc in Sources */,
 				61B159D021CC5DBB00CFE93B /* OutPoint.cpp in Sources */,
 				61722BE8220E457D00D7BA9A /* EthereumChainID.swift in Sources */,
 				61722BE6220E457D00D7BA9A /* CoinTypeConfiguration.swift in Sources */,
 				61CABADA21ED782E0086D9A0 /* CoinType.swift in Sources */,
-				61A9B32B21FF978A00E601B3 /* dynamic_message.cc in Sources */,
-				61A9B33421FF978A00E601B3 /* struct.pb.cc in Sources */,
 				61722C09220E461A00D7BA9A /* TWBitcoinTransactionSigner.cpp in Sources */,
-				61A9B32F21FF978A00E601B3 /* wire_format.cc in Sources */,
 				61735BF2219DF044007BF637 /* bip39.c in Sources */,
-				61A9B34421FF97AA00E601B3 /* gzip_stream.cc in Sources */,
 				61722BE5220E457D00D7BA9A /* Bitcoin.pb.swift in Sources */,
 				61BA0A7521F6C9EC005680E6 /* BinanceSigner.swift in Sources */,
 				61A9B3652200D86D00E601B3 /* TendermintAddress.swift in Sources */,
@@ -1809,30 +1797,21 @@
 				6198EA5921B1CC5C008CB60A /* TWFoundationData.m in Sources */,
 				61735C11219DF044007BF637 /* curve25519-donna-helpers.c in Sources */,
 				61B159DD21CC5DBB00CFE93B /* PrivateKey.cpp in Sources */,
-				61A9B32E21FF978A00E601B3 /* service.cc in Sources */,
 				61735C12219DF044007BF637 /* ed25519-keccak.c in Sources */,
 				61735C57219DF044007BF637 /* blake2b.c in Sources */,
-				61A9B34321FF97AA00E601B3 /* zero_copy_stream_impl.cc in Sources */,
 				61B159EA21CC5DBB00CFE93B /* PublicKey.cpp in Sources */,
 				61735C43219DF044007BF637 /* serialize.c in Sources */,
 				61735C75219DF044007BF637 /* chacha_merged.c in Sources */,
 				61735C47219DF044007BF637 /* xmr.c in Sources */,
 				61735C58219DF044007BF637 /* script.c in Sources */,
 				61722C0C220E461A00D7BA9A /* TWBech32Address.cpp in Sources */,
-				61A9B33621FF978A00E601B3 /* any.cc in Sources */,
-				61A9B32621FF978900E601B3 /* text_format.cc in Sources */,
 				61735C7F219DF044007BF637 /* chacha20poly1305.c in Sources */,
-				61A9B32221FF978900E601B3 /* timestamp.pb.cc in Sources */,
-				61A9B32721FF978900E601B3 /* empty.pb.cc in Sources */,
-				61A9B32821FF978A00E601B3 /* generated_message_table_driven.cc in Sources */,
 				61735C67219DF044007BF637 /* ecdsa.c in Sources */,
 				61735C5E219DF044007BF637 /* address.c in Sources */,
 				61735C0C219DF044007BF637 /* curve25519-donna-scalarmult-base.c in Sources */,
 				BBA9012121FDAE4200D2CEF7 /* Transaction.cpp in Sources */,
 				61722C0E220E461A00D7BA9A /* TWZcashTransactionSigner.cpp in Sources */,
 				616E122C21A78094009798FC /* Hash.swift in Sources */,
-				61A9B34721FF97CA00E601B3 /* mathlimits.cc in Sources */,
-				61A9B34821FF97CA00E601B3 /* substitute.cc in Sources */,
 				61735C0E219DF044007BF637 /* ed25519-donna-32bit-tables.c in Sources */,
 				61735C15219DF044007BF637 /* ed25519-sha3.c in Sources */,
 				61B159D221CC5DBB00CFE93B /* TransactionOutput.cpp in Sources */,
@@ -1842,22 +1821,17 @@
 				61CABABF21ED41FC0086D9A0 /* KeyDerivation.swift in Sources */,
 				610AEF7621C8A95A008ABB74 /* BitcoinTransactionSigner.swift in Sources */,
 				6198EA6121B21702008CB60A /* TWFoundationString.m in Sources */,
-				61A9B33521FF978A00E601B3 /* duration.pb.cc in Sources */,
 				61CABAD821ED782E0086D9A0 /* HDVersion.swift in Sources */,
 				61EE6B2321DEB46A001FBB79 /* UnspentSelector.cpp in Sources */,
 				2957C1FC2213AAB8004AFC9E /* Tron.pb.swift in Sources */,
 				615D9B9B21CED9C700878D22 /* Address.cpp in Sources */,
-				61A9B33321FF978A00E601B3 /* unknown_field_set.cc in Sources */,
 				61735C6F219DF044007BF637 /* aes_modes.c in Sources */,
 				61CABAB921ED37160086D9A0 /* AES.swift in Sources */,
 				61722C06220E461A00D7BA9A /* TWTendermintAddress.cpp in Sources */,
-				61A9B34221FF97AA00E601B3 /* printer.cc in Sources */,
 				61B159E121CC5DBB00CFE93B /* TWString+Hex.cpp in Sources */,
 				61A9B3522200103000E601B3 /* Transaction.cpp in Sources */,
 				61B159E221CC5DBB00CFE93B /* TWPublicKey.cpp in Sources */,
-				61A9B33121FF978A00E601B3 /* extension_set_heavy.cc in Sources */,
 				61735C90219E1658007BF637 /* UInt256.swift in Sources */,
-				61A9B33921FF978A00E601B3 /* descriptor.cc in Sources */,
 				61735C39219DF044007BF637 /* ripemd160.c in Sources */,
 				61977CCF21C9B9EF00C385D5 /* BitcoinAddress.swift in Sources */,
 				61CABAD721ED782E0086D9A0 /* P2SHPrefix.swift in Sources */,
@@ -1873,11 +1847,8 @@
 				61735C28219DF044007BF637 /* nem.c in Sources */,
 				61735C2B219DF044007BF637 /* secp256k1.c in Sources */,
 				61735C88219DF64D007BF637 /* SecRandom.m in Sources */,
-				61A9B33A21FF978A00E601B3 /* source_context.pb.cc in Sources */,
-				61A9B32D21FF978A00E601B3 /* descriptor_database.cc in Sources */,
 				6198EA5321AF61F0008CB60A /* BitcoinScript.swift in Sources */,
 				61AAD3A521DEF72500B69A34 /* Base58.swift in Sources */,
-				61A9B33821FF978A00E601B3 /* message.cc in Sources */,
 				61B159E021CC5DBB00CFE93B /* TWData.cpp in Sources */,
 				61722BE7220E457D00D7BA9A /* ZcashTransactionSigner.swift in Sources */,
 				61735C31219DF044007BF637 /* bignum.c in Sources */,
@@ -1888,9 +1859,7 @@
 				61722C0A220E461A00D7BA9A /* TWBinanceSigner.cpp in Sources */,
 				61735C63219DF044007BF637 /* sha3.c in Sources */,
 				61AAD3A321DEF70800B69A34 /* TWBase58.cpp in Sources */,
-				61A9B33721FF978A00E601B3 /* reflection_ops.cc in Sources */,
 				BB3F05B2220BD93E008C6971 /* TAddress.cpp in Sources */,
-				61A9B32A21FF978A00E601B3 /* field_mask.pb.cc in Sources */,
 				61B159E521CC5DBB00CFE93B /* TWPrivateKey.cpp in Sources */,
 				61CABABD21ED41F20086D9A0 /* TWKeyDerivation.cpp in Sources */,
 				6198EA6521B59575008CB60A /* String.swift in Sources */,
@@ -1909,7 +1878,6 @@
 				61A9B3632200D85A00E601B3 /* Address.cpp in Sources */,
 				61735C5B219DF044007BF637 /* bip32.c in Sources */,
 				61735C6C219DF044007BF637 /* aescrypt.c in Sources */,
-				61A9B33221FF978A00E601B3 /* any.pb.cc in Sources */,
 				61735C4C219DF044007BF637 /* base58.c in Sources */,
 				61735CD421A3BFB0007BF637 /* PublicKey.swift in Sources */,
 				61735C65219DF044007BF637 /* base58.c in Sources */,
@@ -1922,26 +1890,58 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6131E0562219C54700CF699D /* zero_copy_stream_impl.cc in Sources */,
+				6131E0462219C54200CF699D /* duration.pb.cc in Sources */,
+				6131E0552219C54700CF699D /* tokenizer.cc in Sources */,
+				6131E03A2219C53200CF699D /* any.cc in Sources */,
 				61FD1FE021F13F83000617B1 /* implicit_weak_message.cc in Sources */,
 				61FD1FE921F13F83000617B1 /* status.cc in Sources */,
 				61FD1FEB21F13F83000617B1 /* stringpiece.cc in Sources */,
 				61FD1FDE21F13F83000617B1 /* generated_message_table_driven_lite.cc in Sources */,
 				61FD1FED21F13F83000617B1 /* structurally_valid.cc in Sources */,
+				6131E0492219C54200CF699D /* extension_set_heavy.cc in Sources */,
+				6131E06D2219C54E00CF699D /* unknown_field_set.cc in Sources */,
 				61FD1FDF21F13F83000617B1 /* generated_message_util.cc in Sources */,
+				6131E0422219C54200CF699D /* api.pb.cc in Sources */,
+				6131E0532219C54700CF699D /* printer.cc in Sources */,
 				61FD1FEA21F13F83000617B1 /* statusor.cc in Sources */,
 				61FD1FE221F13F83000617B1 /* zero_copy_stream_impl_lite.cc in Sources */,
+				6131E06A2219C54E00CF699D /* text_format.cc in Sources */,
+				6131E0452219C54200CF699D /* descriptor.pb.cc in Sources */,
+				6131E0412219C54200CF699D /* any.pb.cc in Sources */,
+				6131E05B2219C54700CF699D /* source_context.pb.cc in Sources */,
+				6131E0592219C54700CF699D /* reflection_ops.cc in Sources */,
 				61FD1FEF21F13F83000617B1 /* time.cc in Sources */,
 				61FD1FE821F13F83000617B1 /* int128.cc in Sources */,
 				61FD1FE721F13F83000617B1 /* common.cc in Sources */,
+				6131E06F2219C54E00CF699D /* wrappers.pb.cc in Sources */,
 				61FD1FE621F13F83000617B1 /* bytestream.cc in Sources */,
+				6131E0542219C54700CF699D /* strtod.cc in Sources */,
+				6131E06B2219C54E00CF699D /* timestamp.pb.cc in Sources */,
 				61FD1FEC21F13F83000617B1 /* stringprintf.cc in Sources */,
+				6131E04A2219C54200CF699D /* field_mask.pb.cc in Sources */,
+				6131E0432219C54200CF699D /* descriptor_database.cc in Sources */,
+				6131E0682219C54E00CF699D /* mathlimits.cc in Sources */,
+				6131E0572219C54700CF699D /* map_field.cc in Sources */,
 				61FD1FEE21F13F83000617B1 /* strutil.cc in Sources */,
+				6131E06E2219C54E00CF699D /* wire_format.cc in Sources */,
+				6131E0692219C54E00CF699D /* substitute.cc in Sources */,
+				6131E0582219C54700CF699D /* message.cc in Sources */,
+				6131E04B2219C54200CF699D /* generated_message_reflection.cc in Sources */,
 				61FD1FE421F13F83000617B1 /* message_lite.cc in Sources */,
+				6131E06C2219C54E00CF699D /* type.pb.cc in Sources */,
 				61FD1FE521F13F83000617B1 /* repeated_field.cc in Sources */,
 				61FD1FF021F13F83000617B1 /* wire_format_lite.cc in Sources */,
+				6131E05C2219C54700CF699D /* struct.pb.cc in Sources */,
+				6131E04C2219C54200CF699D /* generated_message_table_driven.cc in Sources */,
 				61FD1FE321F13F83000617B1 /* zero_copy_stream.cc in Sources */,
+				6131E0522219C54700CF699D /* gzip_stream.cc in Sources */,
 				61FD1FDD21F13F83000617B1 /* extension_set.cc in Sources */,
+				6131E0472219C54200CF699D /* dynamic_message.cc in Sources */,
+				6131E0482219C54200CF699D /* empty.pb.cc in Sources */,
 				61FD1FE121F13F83000617B1 /* coded_stream.cc in Sources */,
+				6131E05A2219C54700CF699D /* service.cc in Sources */,
+				6131E0442219C54200CF699D /* descriptor.cc in Sources */,
 				61FD1FDC21F13F83000617B1 /* arena.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
