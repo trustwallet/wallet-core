@@ -6,7 +6,8 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 
 ### Supported Blockchains
 
-<img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/0.png" width="32" /> <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2.png" width="32" /> <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/145.png" width="32" /> <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5.png" width="32" /> <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/136.png" width="32" /> <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/133.png" width="32" /> <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/714.png" width="32" />
+<a href="https://bitcoin.org" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/0.png" width="32" /></a> <a href="https://litecoin.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2.png" width="32" /></a> <a href="https://www.bitcoincash.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/145.png" width="32" /></a> <a href="https://www.dash.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5.png" width="32" /></a> <a href="https://zcoin.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/136.png" width="32" /></a> <a href="https://z.cash/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/133.png" width="32" /></a> <a href="https://testnet.binance.org" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/714.png" width="32" /></a>
+
 
 # Usage
 
@@ -32,7 +33,9 @@ pod 'TrustWalletCore'
 
 # Contributing
 
-The best way to submit feedback and report bugs is to open a GitHub issue. If you want to contribute code please see [Contributing](docs/Contributing.md).
+The best way to submit feedback and report bugs is to [open a GitHub issue](https://github.com/TrustWallet/wallet-core/issues/new). If you want to contribute code please see [Contributing](docs/Contributing.md).
+
+Request for new blockchain? [🚀 here](https://github.com/TrustWallet/wallet-core/issues/new?template=new_blockchain.md&title=Add+support+for).
 
 # License
 
