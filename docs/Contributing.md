@@ -92,6 +92,17 @@ Since the C language doesn't provide good abstractions for variable-sized arrays
 
 The proto file will be used to generate C++ classes and also classes in each supported client language (Swift, Java, etc.). The code generator will also generate the protobuf serialization code so that library clients don't have to worry about serialization. To generate the Protocol Buffers code run the `tools/generate-files` script when you modify the `src/TrustWalletCore.proto` file.
 
+## Blockchain checklist
+
+When implementing a new blockchain make sure you go through this checklist:
+- [ ] Implement functionality in C++. Put it in a subfolder of `src/`.
+- [ ] Write unit tests. Put them in a subfolder of `tests/`.
+- [ ] Add relevant constants in `TWCointType`, `TWP2SHPrefix`, `TWEthereymChainID`, etc. as necessary.
+- [ ] Write interface header in `include/TrustWalletCore` and implement the interface in `src/interface`.
+    - [ ] Write custom address type if necessary.
+    - [ ] Write interface for signing transactions.
+- [ ] Validate generated code in Android an iOS projects. Write integration tests for each.
+
 ## Releasing
 
 ### iOS
