@@ -51,10 +51,7 @@ Dir.foreach(options.input) do |item|
   next if ['.', '..'].include?(item)
 
   entity = Parser.new(path: File.expand_path(File.join(options.input, item))).parse
-  if entity.nil?
-    STDERR.puts "Failed to parse #{item}"
-    next
-  end
+  next if entity.nil?
 
   entities << entity
   files << File.basename(item, '.h').sub(/^TW/, '')
