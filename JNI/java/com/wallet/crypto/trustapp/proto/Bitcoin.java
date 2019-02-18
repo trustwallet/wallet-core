@@ -137,6 +137,8 @@ public final class Bitcoin {
       super(builder);
     }
     private Transaction() {
+      version_ = 0;
+      lockTime_ = 0;
       inputs_ = java.util.Collections.emptyList();
       outputs_ = java.util.Collections.emptyList();
     }
@@ -176,7 +178,7 @@ public final class Bitcoin {
               break;
             }
             case 26: {
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
                 inputs_ = new java.util.ArrayList<com.wallet.crypto.trustapp.proto.Bitcoin.TransactionInput>();
                 mutable_bitField0_ |= 0x00000004;
               }
@@ -185,7 +187,7 @@ public final class Bitcoin {
               break;
             }
             case 34: {
-              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
                 outputs_ = new java.util.ArrayList<com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOutput>();
                 mutable_bitField0_ |= 0x00000008;
               }
@@ -194,7 +196,7 @@ public final class Bitcoin {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -208,10 +210,10 @@ public final class Bitcoin {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000004) != 0)) {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
           inputs_ = java.util.Collections.unmodifiableList(inputs_);
         }
-        if (((mutable_bitField0_ & 0x00000008) != 0)) {
+        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
           outputs_ = java.util.Collections.unmodifiableList(outputs_);
         }
         this.unknownFields = unknownFields.build();
@@ -434,16 +436,17 @@ public final class Bitcoin {
       }
       com.wallet.crypto.trustapp.proto.Bitcoin.Transaction other = (com.wallet.crypto.trustapp.proto.Bitcoin.Transaction) obj;
 
-      if (getVersion()
-          != other.getVersion()) return false;
-      if (getLockTime()
-          != other.getLockTime()) return false;
-      if (!getInputsList()
-          .equals(other.getInputsList())) return false;
-      if (!getOutputsList()
-          .equals(other.getOutputsList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      boolean result = true;
+      result = result && (getVersion()
+          == other.getVersion());
+      result = result && (getLockTime()
+          == other.getLockTime());
+      result = result && getInputsList()
+          .equals(other.getInputsList());
+      result = result && getOutputsList()
+          .equals(other.getOutputsList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -647,7 +650,7 @@ public final class Bitcoin {
         result.version_ = version_;
         result.lockTime_ = lockTime_;
         if (inputsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0)) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
             inputs_ = java.util.Collections.unmodifiableList(inputs_);
             bitField0_ = (bitField0_ & ~0x00000004);
           }
@@ -656,7 +659,7 @@ public final class Bitcoin {
           result.inputs_ = inputsBuilder_.build();
         }
         if (outputsBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) != 0)) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
             outputs_ = java.util.Collections.unmodifiableList(outputs_);
             bitField0_ = (bitField0_ & ~0x00000008);
           }
@@ -671,35 +674,35 @@ public final class Bitcoin {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -880,7 +883,7 @@ public final class Bitcoin {
       private java.util.List<com.wallet.crypto.trustapp.proto.Bitcoin.TransactionInput> inputs_ =
         java.util.Collections.emptyList();
       private void ensureInputsIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
           inputs_ = new java.util.ArrayList<com.wallet.crypto.trustapp.proto.Bitcoin.TransactionInput>(inputs_);
           bitField0_ |= 0x00000004;
          }
@@ -1181,7 +1184,7 @@ public final class Bitcoin {
           inputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               com.wallet.crypto.trustapp.proto.Bitcoin.TransactionInput, com.wallet.crypto.trustapp.proto.Bitcoin.TransactionInput.Builder, com.wallet.crypto.trustapp.proto.Bitcoin.TransactionInputOrBuilder>(
                   inputs_,
-                  ((bitField0_ & 0x00000004) != 0),
+                  ((bitField0_ & 0x00000004) == 0x00000004),
                   getParentForChildren(),
                   isClean());
           inputs_ = null;
@@ -1192,7 +1195,7 @@ public final class Bitcoin {
       private java.util.List<com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOutput> outputs_ =
         java.util.Collections.emptyList();
       private void ensureOutputsIsMutable() {
-        if (!((bitField0_ & 0x00000008) != 0)) {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
           outputs_ = new java.util.ArrayList<com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOutput>(outputs_);
           bitField0_ |= 0x00000008;
          }
@@ -1493,7 +1496,7 @@ public final class Bitcoin {
           outputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOutput, com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOutput.Builder, com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOutputOrBuilder>(
                   outputs_,
-                  ((bitField0_ & 0x00000008) != 0),
+                  ((bitField0_ & 0x00000008) == 0x00000008),
                   getParentForChildren(),
                   isClean());
           outputs_ = null;
@@ -1503,7 +1506,7 @@ public final class Bitcoin {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -1617,6 +1620,7 @@ public final class Bitcoin {
       super(builder);
     }
     private TransactionInput() {
+      sequence_ = 0;
       script_ = com.google.protobuf.ByteString.EMPTY;
     }
 
@@ -1668,7 +1672,7 @@ public final class Bitcoin {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1817,17 +1821,18 @@ public final class Bitcoin {
       }
       com.wallet.crypto.trustapp.proto.Bitcoin.TransactionInput other = (com.wallet.crypto.trustapp.proto.Bitcoin.TransactionInput) obj;
 
-      if (hasPreviousOutput() != other.hasPreviousOutput()) return false;
+      boolean result = true;
+      result = result && (hasPreviousOutput() == other.hasPreviousOutput());
       if (hasPreviousOutput()) {
-        if (!getPreviousOutput()
-            .equals(other.getPreviousOutput())) return false;
+        result = result && getPreviousOutput()
+            .equals(other.getPreviousOutput());
       }
-      if (getSequence()
-          != other.getSequence()) return false;
-      if (!getScript()
-          .equals(other.getScript())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      result = result && (getSequence()
+          == other.getSequence());
+      result = result && getScript()
+          .equals(other.getScript());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -2031,35 +2036,35 @@ public final class Bitcoin {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2111,7 +2116,7 @@ public final class Bitcoin {
         return this;
       }
 
-      private com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint previousOutput_;
+      private com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint previousOutput_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint, com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint.Builder, com.wallet.crypto.trustapp.proto.Bitcoin.OutPointOrBuilder> previousOutputBuilder_;
       /**
@@ -2345,7 +2350,7 @@ public final class Bitcoin {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -2444,6 +2449,8 @@ public final class Bitcoin {
     }
     private OutPoint() {
       hash_ = com.google.protobuf.ByteString.EMPTY;
+      index_ = 0;
+      sequence_ = 0;
     }
 
     @java.lang.Override
@@ -2486,7 +2493,7 @@ public final class Bitcoin {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -2615,14 +2622,15 @@ public final class Bitcoin {
       }
       com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint other = (com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint) obj;
 
-      if (!getHash()
-          .equals(other.getHash())) return false;
-      if (getIndex()
-          != other.getIndex()) return false;
-      if (getSequence()
-          != other.getSequence()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      boolean result = true;
+      result = result && getHash()
+          .equals(other.getHash());
+      result = result && (getIndex()
+          == other.getIndex());
+      result = result && (getSequence()
+          == other.getSequence());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -2816,35 +2824,35 @@ public final class Bitcoin {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3015,7 +3023,7 @@ public final class Bitcoin {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -3104,6 +3112,7 @@ public final class Bitcoin {
       super(builder);
     }
     private TransactionOutput() {
+      value_ = 0L;
       script_ = com.google.protobuf.ByteString.EMPTY;
     }
 
@@ -3142,7 +3151,7 @@ public final class Bitcoin {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -3251,12 +3260,13 @@ public final class Bitcoin {
       }
       com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOutput other = (com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOutput) obj;
 
-      if (getValue()
-          != other.getValue()) return false;
-      if (!getScript()
-          .equals(other.getScript())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      boolean result = true;
+      result = result && (getValue()
+          == other.getValue());
+      result = result && getScript()
+          .equals(other.getScript());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -3446,35 +3456,35 @@ public final class Bitcoin {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3604,7 +3614,7 @@ public final class Bitcoin {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -3695,6 +3705,7 @@ public final class Bitcoin {
     }
     private UnspentTransaction() {
       script_ = com.google.protobuf.ByteString.EMPTY;
+      amount_ = 0L;
     }
 
     @java.lang.Override
@@ -3745,7 +3756,7 @@ public final class Bitcoin {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -3874,17 +3885,18 @@ public final class Bitcoin {
       }
       com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction other = (com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction) obj;
 
-      if (hasOutPoint() != other.hasOutPoint()) return false;
+      boolean result = true;
+      result = result && (hasOutPoint() == other.hasOutPoint());
       if (hasOutPoint()) {
-        if (!getOutPoint()
-            .equals(other.getOutPoint())) return false;
+        result = result && getOutPoint()
+            .equals(other.getOutPoint());
       }
-      if (!getScript()
-          .equals(other.getScript())) return false;
-      if (getAmount()
-          != other.getAmount()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      result = result && getScript()
+          .equals(other.getScript());
+      result = result && (getAmount()
+          == other.getAmount());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -4085,35 +4097,35 @@ public final class Bitcoin {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4165,7 +4177,7 @@ public final class Bitcoin {
         return this;
       }
 
-      private com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint outPoint_;
+      private com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint outPoint_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint, com.wallet.crypto.trustapp.proto.Bitcoin.OutPoint.Builder, com.wallet.crypto.trustapp.proto.Bitcoin.OutPointOrBuilder> outPointBuilder_;
       /**
@@ -4339,7 +4351,7 @@ public final class Bitcoin {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -4605,10 +4617,14 @@ public final class Bitcoin {
       super(builder);
     }
     private SigningInput() {
+      hashType_ = 0;
+      amount_ = 0L;
+      byteFee_ = 0L;
       toAddress_ = "";
       changeAddress_ = "";
       privateKey_ = java.util.Collections.emptyList();
       utxo_ = java.util.Collections.emptyList();
+      useMaxAmount_ = false;
     }
 
     @java.lang.Override
@@ -4663,7 +4679,7 @@ public final class Bitcoin {
               break;
             }
             case 82: {
-              if (!((mutable_bitField0_ & 0x00000020) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
                 privateKey_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
                 mutable_bitField0_ |= 0x00000020;
               }
@@ -4671,7 +4687,7 @@ public final class Bitcoin {
               break;
             }
             case 90: {
-              if (!((mutable_bitField0_ & 0x00000040) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
                 scripts_ = com.google.protobuf.MapField.newMapField(
                     ScriptsDefaultEntryHolder.defaultEntry);
                 mutable_bitField0_ |= 0x00000040;
@@ -4684,7 +4700,7 @@ public final class Bitcoin {
               break;
             }
             case 98: {
-              if (!((mutable_bitField0_ & 0x00000080) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
                 utxo_ = new java.util.ArrayList<com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction>();
                 mutable_bitField0_ |= 0x00000080;
               }
@@ -4698,7 +4714,7 @@ public final class Bitcoin {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -4712,10 +4728,10 @@ public final class Bitcoin {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000020) != 0)) {
-          privateKey_ = java.util.Collections.unmodifiableList(privateKey_); // C
+        if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
+          privateKey_ = java.util.Collections.unmodifiableList(privateKey_);
         }
-        if (((mutable_bitField0_ & 0x00000080) != 0)) {
+        if (((mutable_bitField0_ & 0x00000080) == 0x00000080)) {
           utxo_ = java.util.Collections.unmodifiableList(utxo_);
         }
         this.unknownFields = unknownFields.build();
@@ -5178,26 +5194,27 @@ public final class Bitcoin {
       }
       com.wallet.crypto.trustapp.proto.Bitcoin.SigningInput other = (com.wallet.crypto.trustapp.proto.Bitcoin.SigningInput) obj;
 
-      if (getHashType()
-          != other.getHashType()) return false;
-      if (getAmount()
-          != other.getAmount()) return false;
-      if (getByteFee()
-          != other.getByteFee()) return false;
-      if (!getToAddress()
-          .equals(other.getToAddress())) return false;
-      if (!getChangeAddress()
-          .equals(other.getChangeAddress())) return false;
-      if (!getPrivateKeyList()
-          .equals(other.getPrivateKeyList())) return false;
-      if (!internalGetScripts().equals(
-          other.internalGetScripts())) return false;
-      if (!getUtxoList()
-          .equals(other.getUtxoList())) return false;
-      if (getUseMaxAmount()
-          != other.getUseMaxAmount()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      boolean result = true;
+      result = result && (getHashType()
+          == other.getHashType());
+      result = result && (getAmount()
+          == other.getAmount());
+      result = result && (getByteFee()
+          == other.getByteFee());
+      result = result && getToAddress()
+          .equals(other.getToAddress());
+      result = result && getChangeAddress()
+          .equals(other.getChangeAddress());
+      result = result && getPrivateKeyList()
+          .equals(other.getPrivateKeyList());
+      result = result && internalGetScripts().equals(
+          other.internalGetScripts());
+      result = result && getUtxoList()
+          .equals(other.getUtxoList());
+      result = result && (getUseMaxAmount()
+          == other.getUseMaxAmount());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -5448,7 +5465,7 @@ public final class Bitcoin {
         result.byteFee_ = byteFee_;
         result.toAddress_ = toAddress_;
         result.changeAddress_ = changeAddress_;
-        if (((bitField0_ & 0x00000020) != 0)) {
+        if (((bitField0_ & 0x00000020) == 0x00000020)) {
           privateKey_ = java.util.Collections.unmodifiableList(privateKey_);
           bitField0_ = (bitField0_ & ~0x00000020);
         }
@@ -5456,7 +5473,7 @@ public final class Bitcoin {
         result.scripts_ = internalGetScripts();
         result.scripts_.makeImmutable();
         if (utxoBuilder_ == null) {
-          if (((bitField0_ & 0x00000080) != 0)) {
+          if (((bitField0_ & 0x00000080) == 0x00000080)) {
             utxo_ = java.util.Collections.unmodifiableList(utxo_);
             bitField0_ = (bitField0_ & ~0x00000080);
           }
@@ -5472,35 +5489,35 @@ public final class Bitcoin {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5896,7 +5913,7 @@ public final class Bitcoin {
 
       private java.util.List<com.google.protobuf.ByteString> privateKey_ = java.util.Collections.emptyList();
       private void ensurePrivateKeyIsMutable() {
-        if (!((bitField0_ & 0x00000020) != 0)) {
+        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
           privateKey_ = new java.util.ArrayList<com.google.protobuf.ByteString>(privateKey_);
           bitField0_ |= 0x00000020;
          }
@@ -5910,8 +5927,7 @@ public final class Bitcoin {
        */
       public java.util.List<com.google.protobuf.ByteString>
           getPrivateKeyList() {
-        return ((bitField0_ & 0x00000020) != 0) ?
-                 java.util.Collections.unmodifiableList(privateKey_) : privateKey_;
+        return java.util.Collections.unmodifiableList(privateKey_);
       }
       /**
        * <pre>
@@ -6149,7 +6165,7 @@ public final class Bitcoin {
       private java.util.List<com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction> utxo_ =
         java.util.Collections.emptyList();
       private void ensureUtxoIsMutable() {
-        if (!((bitField0_ & 0x00000080) != 0)) {
+        if (!((bitField0_ & 0x00000080) == 0x00000080)) {
           utxo_ = new java.util.ArrayList<com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction>(utxo_);
           bitField0_ |= 0x00000080;
          }
@@ -6450,7 +6466,7 @@ public final class Bitcoin {
           utxoBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction, com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction.Builder, com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransactionOrBuilder>(
                   utxo_,
-                  ((bitField0_ & 0x00000080) != 0),
+                  ((bitField0_ & 0x00000080) == 0x00000080),
                   getParentForChildren(),
                   isClean());
           utxo_ = null;
@@ -6498,7 +6514,7 @@ public final class Bitcoin {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -6649,6 +6665,10 @@ public final class Bitcoin {
       super(builder);
     }
     private TransactionPlan() {
+      amount_ = 0L;
+      availableAmount_ = 0L;
+      fee_ = 0L;
+      change_ = 0L;
       utxos_ = java.util.Collections.emptyList();
     }
 
@@ -6697,7 +6717,7 @@ public final class Bitcoin {
               break;
             }
             case 42: {
-              if (!((mutable_bitField0_ & 0x00000010) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
                 utxos_ = new java.util.ArrayList<com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction>();
                 mutable_bitField0_ |= 0x00000010;
               }
@@ -6706,7 +6726,7 @@ public final class Bitcoin {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -6720,7 +6740,7 @@ public final class Bitcoin {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000010) != 0)) {
+        if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
           utxos_ = java.util.Collections.unmodifiableList(utxos_);
         }
         this.unknownFields = unknownFields.build();
@@ -6921,18 +6941,19 @@ public final class Bitcoin {
       }
       com.wallet.crypto.trustapp.proto.Bitcoin.TransactionPlan other = (com.wallet.crypto.trustapp.proto.Bitcoin.TransactionPlan) obj;
 
-      if (getAmount()
-          != other.getAmount()) return false;
-      if (getAvailableAmount()
-          != other.getAvailableAmount()) return false;
-      if (getFee()
-          != other.getFee()) return false;
-      if (getChange()
-          != other.getChange()) return false;
-      if (!getUtxosList()
-          .equals(other.getUtxosList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      boolean result = true;
+      result = result && (getAmount()
+          == other.getAmount());
+      result = result && (getAvailableAmount()
+          == other.getAvailableAmount());
+      result = result && (getFee()
+          == other.getFee());
+      result = result && (getChange()
+          == other.getChange());
+      result = result && getUtxosList()
+          .equals(other.getUtxosList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -7143,7 +7164,7 @@ public final class Bitcoin {
         result.fee_ = fee_;
         result.change_ = change_;
         if (utxosBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) != 0)) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
             utxos_ = java.util.Collections.unmodifiableList(utxos_);
             bitField0_ = (bitField0_ & ~0x00000010);
           }
@@ -7158,35 +7179,35 @@ public final class Bitcoin {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -7423,7 +7444,7 @@ public final class Bitcoin {
       private java.util.List<com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction> utxos_ =
         java.util.Collections.emptyList();
       private void ensureUtxosIsMutable() {
-        if (!((bitField0_ & 0x00000010) != 0)) {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
           utxos_ = new java.util.ArrayList<com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction>(utxos_);
           bitField0_ |= 0x00000010;
          }
@@ -7724,7 +7745,7 @@ public final class Bitcoin {
           utxosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction, com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransaction.Builder, com.wallet.crypto.trustapp.proto.Bitcoin.UnspentTransactionOrBuilder>(
                   utxos_,
-                  ((bitField0_ & 0x00000010) != 0),
+                  ((bitField0_ & 0x00000010) == 0x00000010),
                   getParentForChildren(),
                   isClean());
           utxos_ = null;
@@ -7734,7 +7755,7 @@ public final class Bitcoin {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -7839,6 +7860,24 @@ public final class Bitcoin {
      * <code>int64 max_amount = 4;</code>
      */
     long getMaxAmount();
+
+    /**
+     * <pre>
+     * Transaction id
+     * </pre>
+     *
+     * <code>string transaction_id = 5;</code>
+     */
+    java.lang.String getTransactionId();
+    /**
+     * <pre>
+     * Transaction id
+     * </pre>
+     *
+     * <code>string transaction_id = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getTransactionIdBytes();
   }
   /**
    * <pre>
@@ -7858,6 +7897,9 @@ public final class Bitcoin {
     }
     private SigningOutput() {
       encoded_ = com.google.protobuf.ByteString.EMPTY;
+      fee_ = 0L;
+      maxAmount_ = 0L;
+      transactionId_ = "";
     }
 
     @java.lang.Override
@@ -7912,8 +7954,14 @@ public final class Bitcoin {
               maxAmount_ = input.readInt64();
               break;
             }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              transactionId_ = s;
+              break;
+            }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -8016,6 +8064,48 @@ public final class Bitcoin {
       return maxAmount_;
     }
 
+    public static final int TRANSACTION_ID_FIELD_NUMBER = 5;
+    private volatile java.lang.Object transactionId_;
+    /**
+     * <pre>
+     * Transaction id
+     * </pre>
+     *
+     * <code>string transaction_id = 5;</code>
+     */
+    public java.lang.String getTransactionId() {
+      java.lang.Object ref = transactionId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        transactionId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * Transaction id
+     * </pre>
+     *
+     * <code>string transaction_id = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getTransactionIdBytes() {
+      java.lang.Object ref = transactionId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        transactionId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -8042,6 +8132,9 @@ public final class Bitcoin {
       if (maxAmount_ != 0L) {
         output.writeInt64(4, maxAmount_);
       }
+      if (!getTransactionIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, transactionId_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -8067,6 +8160,9 @@ public final class Bitcoin {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(4, maxAmount_);
       }
+      if (!getTransactionIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, transactionId_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -8082,19 +8178,22 @@ public final class Bitcoin {
       }
       com.wallet.crypto.trustapp.proto.Bitcoin.SigningOutput other = (com.wallet.crypto.trustapp.proto.Bitcoin.SigningOutput) obj;
 
-      if (hasTransaction() != other.hasTransaction()) return false;
+      boolean result = true;
+      result = result && (hasTransaction() == other.hasTransaction());
       if (hasTransaction()) {
-        if (!getTransaction()
-            .equals(other.getTransaction())) return false;
+        result = result && getTransaction()
+            .equals(other.getTransaction());
       }
-      if (!getEncoded()
-          .equals(other.getEncoded())) return false;
-      if (getFee()
-          != other.getFee()) return false;
-      if (getMaxAmount()
-          != other.getMaxAmount()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      result = result && getEncoded()
+          .equals(other.getEncoded());
+      result = result && (getFee()
+          == other.getFee());
+      result = result && (getMaxAmount()
+          == other.getMaxAmount());
+      result = result && getTransactionId()
+          .equals(other.getTransactionId());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -8116,6 +8215,8 @@ public final class Bitcoin {
       hash = (37 * hash) + MAX_AMOUNT_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getMaxAmount());
+      hash = (37 * hash) + TRANSACTION_ID_FIELD_NUMBER;
+      hash = (53 * hash) + getTransactionId().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -8265,6 +8366,8 @@ public final class Bitcoin {
 
         maxAmount_ = 0L;
 
+        transactionId_ = "";
+
         return this;
       }
 
@@ -8299,41 +8402,42 @@ public final class Bitcoin {
         result.encoded_ = encoded_;
         result.fee_ = fee_;
         result.maxAmount_ = maxAmount_;
+        result.transactionId_ = transactionId_;
         onBuilt();
         return result;
       }
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -8358,6 +8462,10 @@ public final class Bitcoin {
         }
         if (other.getMaxAmount() != 0L) {
           setMaxAmount(other.getMaxAmount());
+        }
+        if (!other.getTransactionId().isEmpty()) {
+          transactionId_ = other.transactionId_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -8388,7 +8496,7 @@ public final class Bitcoin {
         return this;
       }
 
-      private com.wallet.crypto.trustapp.proto.Bitcoin.Transaction transaction_;
+      private com.wallet.crypto.trustapp.proto.Bitcoin.Transaction transaction_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           com.wallet.crypto.trustapp.proto.Bitcoin.Transaction, com.wallet.crypto.trustapp.proto.Bitcoin.Transaction.Builder, com.wallet.crypto.trustapp.proto.Bitcoin.TransactionOrBuilder> transactionBuilder_;
       /**
@@ -8657,10 +8765,99 @@ public final class Bitcoin {
         onChanged();
         return this;
       }
+
+      private java.lang.Object transactionId_ = "";
+      /**
+       * <pre>
+       * Transaction id
+       * </pre>
+       *
+       * <code>string transaction_id = 5;</code>
+       */
+      public java.lang.String getTransactionId() {
+        java.lang.Object ref = transactionId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          transactionId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Transaction id
+       * </pre>
+       *
+       * <code>string transaction_id = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getTransactionIdBytes() {
+        java.lang.Object ref = transactionId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          transactionId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Transaction id
+       * </pre>
+       *
+       * <code>string transaction_id = 5;</code>
+       */
+      public Builder setTransactionId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        transactionId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Transaction id
+       * </pre>
+       *
+       * <code>string transaction_id = 5;</code>
+       */
+      public Builder clearTransactionId() {
+        
+        transactionId_ = getDefaultInstance().getTransactionId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Transaction id
+       * </pre>
+       *
+       * <code>string transaction_id = 5;</code>
+       */
+      public Builder setTransactionIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        transactionId_ = value;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -8788,11 +8985,12 @@ public final class Bitcoin {
       "ctionPlan\022\016\n\006amount\030\001 \001(\003\022\030\n\020available_a" +
       "mount\030\002 \001(\003\022\013\n\003fee\030\003 \001(\003\022\016\n\006change\030\004 \001(\003" +
       "\0223\n\005utxos\030\005 \003(\0132$.TW.Bitcoin.Proto.Unspe" +
-      "ntTransaction\"u\n\rSigningOutput\0222\n\013transa" +
-      "ction\030\001 \001(\0132\035.TW.Bitcoin.Proto.Transacti" +
-      "on\022\017\n\007encoded\030\002 \001(\014\022\013\n\003fee\030\003 \001(\003\022\022\n\nmax_" +
-      "amount\030\004 \001(\003B\"\n com.wallet.crypto.trusta" +
-      "pp.protob\006proto3"
+      "ntTransaction\"\215\001\n\rSigningOutput\0222\n\013trans" +
+      "action\030\001 \001(\0132\035.TW.Bitcoin.Proto.Transact" +
+      "ion\022\017\n\007encoded\030\002 \001(\014\022\013\n\003fee\030\003 \001(\003\022\022\n\nmax" +
+      "_amount\030\004 \001(\003\022\026\n\016transaction_id\030\005 \001(\tB\"\n" +
+      " com.wallet.crypto.trustapp.protob\006proto" +
+      "3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -8859,7 +9057,7 @@ public final class Bitcoin {
     internal_static_TW_Bitcoin_Proto_SigningOutput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Bitcoin_Proto_SigningOutput_descriptor,
-        new java.lang.String[] { "Transaction", "Encoded", "Fee", "MaxAmount", });
+        new java.lang.String[] { "Transaction", "Encoded", "Fee", "MaxAmount", "TransactionId", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

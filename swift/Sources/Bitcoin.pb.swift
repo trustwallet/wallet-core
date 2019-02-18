@@ -242,6 +242,12 @@ public struct TW_Bitcoin_Proto_SigningOutput {
     set {_uniqueStorage()._maxAmount = newValue}
   }
 
+  /// Transaction id
+  public var transactionID: String {
+    get {return _storage._transactionID}
+    set {_uniqueStorage()._transactionID = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -667,6 +673,7 @@ extension TW_Bitcoin_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._
     2: .same(proto: "encoded"),
     3: .same(proto: "fee"),
     4: .standard(proto: "max_amount"),
+    5: .standard(proto: "transaction_id"),
   ]
 
   fileprivate class _StorageClass {
@@ -674,6 +681,7 @@ extension TW_Bitcoin_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._
     var _encoded: Data = SwiftProtobuf.Internal.emptyData
     var _fee: Int64 = 0
     var _maxAmount: Int64 = 0
+    var _transactionID: String = String()
 
     static let defaultInstance = _StorageClass()
 
@@ -684,6 +692,7 @@ extension TW_Bitcoin_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._
       _encoded = source._encoded
       _fee = source._fee
       _maxAmount = source._maxAmount
+      _transactionID = source._transactionID
     }
   }
 
@@ -703,6 +712,7 @@ extension TW_Bitcoin_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._
         case 2: try decoder.decodeSingularBytesField(value: &_storage._encoded)
         case 3: try decoder.decodeSingularInt64Field(value: &_storage._fee)
         case 4: try decoder.decodeSingularInt64Field(value: &_storage._maxAmount)
+        case 5: try decoder.decodeSingularStringField(value: &_storage._transactionID)
         default: break
         }
       }
@@ -723,6 +733,9 @@ extension TW_Bitcoin_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._
       if _storage._maxAmount != 0 {
         try visitor.visitSingularInt64Field(value: _storage._maxAmount, fieldNumber: 4)
       }
+      if !_storage._transactionID.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._transactionID, fieldNumber: 5)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -736,6 +749,7 @@ extension TW_Bitcoin_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._
         if _storage._encoded != rhs_storage._encoded {return false}
         if _storage._fee != rhs_storage._fee {return false}
         if _storage._maxAmount != rhs_storage._maxAmount {return false}
+        if _storage._transactionID != rhs_storage._transactionID {return false}
         return true
       }
       if !storagesAreEqual {return false}

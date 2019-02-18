@@ -57,6 +57,9 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let signedTx = output.transaction
         XCTAssertEqual(signedTx.version, 1)
 
+        let txId = output.transactionID
+        XCTAssertEqual(txId, "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd")
+
         XCTAssertEqual(signedTx.inputs.count, 1)  // Only one UTXO available
         XCTAssertEqual(signedTx.inputs[0].script.hexString, "")
 
@@ -64,6 +67,8 @@ class BitcoinTransactionSignerTests: XCTestCase {
         XCTAssertEqual(signedTx.outputs[0].value, 1000)
 
         let encoded = output.encoded
+        let witnessHash = Data(Hash.sha256SHA256(data: encoded).reversed())
+        XCTAssertEqual(witnessHash.hexString, "16a17dd8f6e507220010c56c07a8479e3f909f87791683577d4e6aad61ab113a")
         XCTAssertEqual(encoded.hexString, "01000000" +
             "0001" +
             "01" +
