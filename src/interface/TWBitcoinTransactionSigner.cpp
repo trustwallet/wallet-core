@@ -59,7 +59,7 @@ TW_Proto_Result TWBitcoinTransactionSignerSign(struct TWBitcoinTransactionSigner
     }
     auto txHash = TW::Hash::sha256(TW::Hash::sha256(txHashData));
     std::reverse(txHash.begin(), txHash.end());
-    protoOutput.set_transaction_hash(TW::hex(txHash));
+    protoOutput.set_transaction_id(TW::hex(txHash));
 
     protoResult.set_success(true);
     protoResult.add_objects()->PackFrom(protoOutput);

@@ -118,6 +118,6 @@ message SigningOutput {
     // Maximum spendable amount.
     int64 max_amount = 4;
 
-    // Transaction hash
-    string transaction_hash = 5;
+    // Transaction id
+    string transaction_id = 5;
 }
