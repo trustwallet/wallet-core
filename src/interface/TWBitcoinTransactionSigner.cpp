@@ -54,7 +54,7 @@ TW_Proto_Result TWBitcoinTransactionSignerSign(struct TWBitcoinTransactionSigner
 
     TW::Data txHashData = encoded;
     if (hasWitness) {
-        TW::Data txHashData;
+        txHashData.clear();
         tx.encode(false, txHashData);
     }
     auto txHash = TW::Hash::sha256(TW::Hash::sha256(txHashData));

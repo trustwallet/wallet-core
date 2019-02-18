@@ -84,7 +84,7 @@ public final class Protocol {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -185,12 +185,13 @@ public final class Protocol {
       }
       org.tron.protos.Protocol.AccountId other = (org.tron.protos.Protocol.AccountId) obj;
 
-      if (!getName()
-          .equals(other.getName())) return false;
-      if (!getAddress()
-          .equals(other.getAddress())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      boolean result = true;
+      result = result && getName()
+          .equals(other.getName());
+      result = result && getAddress()
+          .equals(other.getAddress());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -379,35 +380,35 @@ public final class Protocol {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -516,7 +517,7 @@ public final class Protocol {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -647,7 +648,7 @@ public final class Protocol {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -760,15 +761,16 @@ public final class Protocol {
       }
       org.tron.protos.Protocol.authority other = (org.tron.protos.Protocol.authority) obj;
 
-      if (hasAccount() != other.hasAccount()) return false;
+      boolean result = true;
+      result = result && (hasAccount() == other.hasAccount());
       if (hasAccount()) {
-        if (!getAccount()
-            .equals(other.getAccount())) return false;
+        result = result && getAccount()
+            .equals(other.getAccount());
       }
-      if (!getPermissionName()
-          .equals(other.getPermissionName())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      result = result && getPermissionName()
+          .equals(other.getPermissionName());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -963,35 +965,35 @@ public final class Protocol {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1040,7 +1042,7 @@ public final class Protocol {
         return this;
       }
 
-      private org.tron.protos.Protocol.AccountId account_;
+      private org.tron.protos.Protocol.AccountId account_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           org.tron.protos.Protocol.AccountId, org.tron.protos.Protocol.AccountId.Builder, org.tron.protos.Protocol.AccountIdOrBuilder> accountBuilder_;
       /**
@@ -1188,7 +1190,7 @@ public final class Protocol {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -1359,7 +1361,7 @@ public final class Protocol {
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
                 signature_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
                 mutable_bitField0_ |= 0x00000002;
               }
@@ -1367,7 +1369,7 @@ public final class Protocol {
               break;
             }
             case 42: {
-              if (!((mutable_bitField0_ & 0x00000004) != 0)) {
+              if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
                 ret_ = new java.util.ArrayList<org.tron.protos.Protocol.Transaction.Result>();
                 mutable_bitField0_ |= 0x00000004;
               }
@@ -1376,7 +1378,7 @@ public final class Protocol {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1390,10 +1392,10 @@ public final class Protocol {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) != 0)) {
-          signature_ = java.util.Collections.unmodifiableList(signature_); // C
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          signature_ = java.util.Collections.unmodifiableList(signature_);
         }
-        if (((mutable_bitField0_ & 0x00000004) != 0)) {
+        if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
           ret_ = java.util.Collections.unmodifiableList(ret_);
         }
         this.unknownFields = unknownFields.build();
@@ -1521,7 +1523,7 @@ public final class Protocol {
                 break;
               }
               default: {
-                if (!parseUnknownField(
+                if (!parseUnknownFieldProto3(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -2018,18 +2020,19 @@ public final class Protocol {
         }
         org.tron.protos.Protocol.Transaction.Contract other = (org.tron.protos.Protocol.Transaction.Contract) obj;
 
-        if (type_ != other.type_) return false;
-        if (hasParameter() != other.hasParameter()) return false;
+        boolean result = true;
+        result = result && type_ == other.type_;
+        result = result && (hasParameter() == other.hasParameter());
         if (hasParameter()) {
-          if (!getParameter()
-              .equals(other.getParameter())) return false;
+          result = result && getParameter()
+              .equals(other.getParameter());
         }
-        if (!getProvider()
-            .equals(other.getProvider())) return false;
-        if (!getContractName()
-            .equals(other.getContractName())) return false;
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        return true;
+        result = result && getProvider()
+            .equals(other.getProvider());
+        result = result && getContractName()
+            .equals(other.getContractName());
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
       }
 
       @java.lang.Override
@@ -2234,35 +2237,35 @@ public final class Protocol {
 
         @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return super.setField(field, value);
+          return (Builder) super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+          return (Builder) super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+          return (Builder) super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2362,7 +2365,7 @@ public final class Protocol {
           return this;
         }
 
-        private com.google.protobuf.Any parameter_;
+        private com.google.protobuf.Any parameter_ = null;
         private com.google.protobuf.SingleFieldBuilderV3<
             com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> parameterBuilder_;
         /**
@@ -2539,7 +2542,7 @@ public final class Protocol {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFields(unknownFields);
+          return super.setUnknownFieldsProto3(unknownFields);
         }
 
         @java.lang.Override
@@ -2639,8 +2642,11 @@ public final class Protocol {
         super(builder);
       }
       private Result() {
+        fee_ = 0L;
         ret_ = 0;
         contractRet_ = 0;
+        withdrawAmount_ = 0L;
+        unfreezeAmount_ = 0L;
       }
 
       @java.lang.Override
@@ -2695,7 +2701,7 @@ public final class Protocol {
                 break;
               }
               default: {
-                if (!parseUnknownField(
+                if (!parseUnknownFieldProto3(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -3164,16 +3170,17 @@ public final class Protocol {
         }
         org.tron.protos.Protocol.Transaction.Result other = (org.tron.protos.Protocol.Transaction.Result) obj;
 
-        if (getFee()
-            != other.getFee()) return false;
-        if (ret_ != other.ret_) return false;
-        if (contractRet_ != other.contractRet_) return false;
-        if (getWithdrawAmount()
-            != other.getWithdrawAmount()) return false;
-        if (getUnfreezeAmount()
-            != other.getUnfreezeAmount()) return false;
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        return true;
+        boolean result = true;
+        result = result && (getFee()
+            == other.getFee());
+        result = result && ret_ == other.ret_;
+        result = result && contractRet_ == other.contractRet_;
+        result = result && (getWithdrawAmount()
+            == other.getWithdrawAmount());
+        result = result && (getUnfreezeAmount()
+            == other.getUnfreezeAmount());
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
       }
 
       @java.lang.Override
@@ -3376,35 +3383,35 @@ public final class Protocol {
 
         @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return super.setField(field, value);
+          return (Builder) super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+          return (Builder) super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+          return (Builder) super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3632,7 +3639,7 @@ public final class Protocol {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFields(unknownFields);
+          return super.setUnknownFieldsProto3(unknownFields);
         }
 
         @java.lang.Override
@@ -3816,11 +3823,15 @@ public final class Protocol {
       }
       private raw() {
         refBlockBytes_ = com.google.protobuf.ByteString.EMPTY;
+        refBlockNum_ = 0L;
         refBlockHash_ = com.google.protobuf.ByteString.EMPTY;
+        expiration_ = 0L;
         auths_ = java.util.Collections.emptyList();
         data_ = com.google.protobuf.ByteString.EMPTY;
         contract_ = java.util.Collections.emptyList();
         scripts_ = com.google.protobuf.ByteString.EMPTY;
+        timestamp_ = 0L;
+        feeLimit_ = 0L;
       }
 
       @java.lang.Override
@@ -3868,7 +3879,7 @@ public final class Protocol {
                 break;
               }
               case 74: {
-                if (!((mutable_bitField0_ & 0x00000010) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
                   auths_ = new java.util.ArrayList<org.tron.protos.Protocol.authority>();
                   mutable_bitField0_ |= 0x00000010;
                 }
@@ -3882,7 +3893,7 @@ public final class Protocol {
                 break;
               }
               case 90: {
-                if (!((mutable_bitField0_ & 0x00000040) != 0)) {
+                if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
                   contract_ = new java.util.ArrayList<org.tron.protos.Protocol.Transaction.Contract>();
                   mutable_bitField0_ |= 0x00000040;
                 }
@@ -3906,7 +3917,7 @@ public final class Protocol {
                 break;
               }
               default: {
-                if (!parseUnknownField(
+                if (!parseUnknownFieldProto3(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -3920,10 +3931,10 @@ public final class Protocol {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000010) != 0)) {
+          if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
             auths_ = java.util.Collections.unmodifiableList(auths_);
           }
-          if (((mutable_bitField0_ & 0x00000040) != 0)) {
+          if (((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
             contract_ = java.util.Collections.unmodifiableList(contract_);
           }
           this.unknownFields = unknownFields.build();
@@ -4222,28 +4233,29 @@ public final class Protocol {
         }
         org.tron.protos.Protocol.Transaction.raw other = (org.tron.protos.Protocol.Transaction.raw) obj;
 
-        if (!getRefBlockBytes()
-            .equals(other.getRefBlockBytes())) return false;
-        if (getRefBlockNum()
-            != other.getRefBlockNum()) return false;
-        if (!getRefBlockHash()
-            .equals(other.getRefBlockHash())) return false;
-        if (getExpiration()
-            != other.getExpiration()) return false;
-        if (!getAuthsList()
-            .equals(other.getAuthsList())) return false;
-        if (!getData()
-            .equals(other.getData())) return false;
-        if (!getContractList()
-            .equals(other.getContractList())) return false;
-        if (!getScripts()
-            .equals(other.getScripts())) return false;
-        if (getTimestamp()
-            != other.getTimestamp()) return false;
-        if (getFeeLimit()
-            != other.getFeeLimit()) return false;
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        return true;
+        boolean result = true;
+        result = result && getRefBlockBytes()
+            .equals(other.getRefBlockBytes());
+        result = result && (getRefBlockNum()
+            == other.getRefBlockNum());
+        result = result && getRefBlockHash()
+            .equals(other.getRefBlockHash());
+        result = result && (getExpiration()
+            == other.getExpiration());
+        result = result && getAuthsList()
+            .equals(other.getAuthsList());
+        result = result && getData()
+            .equals(other.getData());
+        result = result && getContractList()
+            .equals(other.getContractList());
+        result = result && getScripts()
+            .equals(other.getScripts());
+        result = result && (getTimestamp()
+            == other.getTimestamp());
+        result = result && (getFeeLimit()
+            == other.getFeeLimit());
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
       }
 
       @java.lang.Override
@@ -4477,7 +4489,7 @@ public final class Protocol {
           result.refBlockHash_ = refBlockHash_;
           result.expiration_ = expiration_;
           if (authsBuilder_ == null) {
-            if (((bitField0_ & 0x00000010) != 0)) {
+            if (((bitField0_ & 0x00000010) == 0x00000010)) {
               auths_ = java.util.Collections.unmodifiableList(auths_);
               bitField0_ = (bitField0_ & ~0x00000010);
             }
@@ -4487,7 +4499,7 @@ public final class Protocol {
           }
           result.data_ = data_;
           if (contractBuilder_ == null) {
-            if (((bitField0_ & 0x00000040) != 0)) {
+            if (((bitField0_ & 0x00000040) == 0x00000040)) {
               contract_ = java.util.Collections.unmodifiableList(contract_);
               bitField0_ = (bitField0_ & ~0x00000040);
             }
@@ -4505,35 +4517,35 @@ public final class Protocol {
 
         @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return super.setField(field, value);
+          return (Builder) super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+          return (Builder) super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+          return (Builder) super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4766,7 +4778,7 @@ public final class Protocol {
         private java.util.List<org.tron.protos.Protocol.authority> auths_ =
           java.util.Collections.emptyList();
         private void ensureAuthsIsMutable() {
-          if (!((bitField0_ & 0x00000010) != 0)) {
+          if (!((bitField0_ & 0x00000010) == 0x00000010)) {
             auths_ = new java.util.ArrayList<org.tron.protos.Protocol.authority>(auths_);
             bitField0_ |= 0x00000010;
            }
@@ -4995,7 +5007,7 @@ public final class Protocol {
             authsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 org.tron.protos.Protocol.authority, org.tron.protos.Protocol.authority.Builder, org.tron.protos.Protocol.authorityOrBuilder>(
                     auths_,
-                    ((bitField0_ & 0x00000010) != 0),
+                    ((bitField0_ & 0x00000010) == 0x00000010),
                     getParentForChildren(),
                     isClean());
             auths_ = null;
@@ -5047,7 +5059,7 @@ public final class Protocol {
         private java.util.List<org.tron.protos.Protocol.Transaction.Contract> contract_ =
           java.util.Collections.emptyList();
         private void ensureContractIsMutable() {
-          if (!((bitField0_ & 0x00000040) != 0)) {
+          if (!((bitField0_ & 0x00000040) == 0x00000040)) {
             contract_ = new java.util.ArrayList<org.tron.protos.Protocol.Transaction.Contract>(contract_);
             bitField0_ |= 0x00000040;
            }
@@ -5348,7 +5360,7 @@ public final class Protocol {
             contractBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 org.tron.protos.Protocol.Transaction.Contract, org.tron.protos.Protocol.Transaction.Contract.Builder, org.tron.protos.Protocol.Transaction.ContractOrBuilder>(
                     contract_,
-                    ((bitField0_ & 0x00000040) != 0),
+                    ((bitField0_ & 0x00000040) == 0x00000040),
                     getParentForChildren(),
                     isClean());
             contract_ = null;
@@ -5451,7 +5463,7 @@ public final class Protocol {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFields(unknownFields);
+          return super.setUnknownFieldsProto3(unknownFields);
         }
 
         @java.lang.Override
@@ -5656,17 +5668,18 @@ public final class Protocol {
       }
       org.tron.protos.Protocol.Transaction other = (org.tron.protos.Protocol.Transaction) obj;
 
-      if (hasRawData() != other.hasRawData()) return false;
+      boolean result = true;
+      result = result && (hasRawData() == other.hasRawData());
       if (hasRawData()) {
-        if (!getRawData()
-            .equals(other.getRawData())) return false;
+        result = result && getRawData()
+            .equals(other.getRawData());
       }
-      if (!getSignatureList()
-          .equals(other.getSignatureList())) return false;
-      if (!getRetList()
-          .equals(other.getRetList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      result = result && getSignatureList()
+          .equals(other.getSignatureList());
+      result = result && getRetList()
+          .equals(other.getRetList());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -5869,13 +5882,13 @@ public final class Protocol {
         } else {
           result.rawData_ = rawDataBuilder_.build();
         }
-        if (((bitField0_ & 0x00000002) != 0)) {
+        if (((bitField0_ & 0x00000002) == 0x00000002)) {
           signature_ = java.util.Collections.unmodifiableList(signature_);
           bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.signature_ = signature_;
         if (retBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0)) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
             ret_ = java.util.Collections.unmodifiableList(ret_);
             bitField0_ = (bitField0_ & ~0x00000004);
           }
@@ -5890,35 +5903,35 @@ public final class Protocol {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -6001,7 +6014,7 @@ public final class Protocol {
       }
       private int bitField0_;
 
-      private org.tron.protos.Protocol.Transaction.raw rawData_;
+      private org.tron.protos.Protocol.Transaction.raw rawData_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           org.tron.protos.Protocol.Transaction.raw, org.tron.protos.Protocol.Transaction.raw.Builder, org.tron.protos.Protocol.Transaction.rawOrBuilder> rawDataBuilder_;
       /**
@@ -6120,7 +6133,7 @@ public final class Protocol {
 
       private java.util.List<com.google.protobuf.ByteString> signature_ = java.util.Collections.emptyList();
       private void ensureSignatureIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
           signature_ = new java.util.ArrayList<com.google.protobuf.ByteString>(signature_);
           bitField0_ |= 0x00000002;
          }
@@ -6134,8 +6147,7 @@ public final class Protocol {
        */
       public java.util.List<com.google.protobuf.ByteString>
           getSignatureList() {
-        return ((bitField0_ & 0x00000002) != 0) ?
-                 java.util.Collections.unmodifiableList(signature_) : signature_;
+        return java.util.Collections.unmodifiableList(signature_);
       }
       /**
        * <pre>
@@ -6222,7 +6234,7 @@ public final class Protocol {
       private java.util.List<org.tron.protos.Protocol.Transaction.Result> ret_ =
         java.util.Collections.emptyList();
       private void ensureRetIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
           ret_ = new java.util.ArrayList<org.tron.protos.Protocol.Transaction.Result>(ret_);
           bitField0_ |= 0x00000004;
          }
@@ -6451,7 +6463,7 @@ public final class Protocol {
           retBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.tron.protos.Protocol.Transaction.Result, org.tron.protos.Protocol.Transaction.Result.Builder, org.tron.protos.Protocol.Transaction.ResultOrBuilder>(
                   ret_,
-                  ((bitField0_ & 0x00000004) != 0),
+                  ((bitField0_ & 0x00000004) == 0x00000004),
                   getParentForChildren(),
                   isClean());
           ret_ = null;
@@ -6461,7 +6473,7 @@ public final class Protocol {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -6592,7 +6604,7 @@ public final class Protocol {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -6680,9 +6692,13 @@ public final class Protocol {
         super(builder);
       }
       private raw() {
+        timestamp_ = 0L;
         txTrieRoot_ = com.google.protobuf.ByteString.EMPTY;
         parentHash_ = com.google.protobuf.ByteString.EMPTY;
+        number_ = 0L;
+        witnessId_ = 0L;
         witnessAddress_ = com.google.protobuf.ByteString.EMPTY;
+        version_ = 0;
       }
 
       @java.lang.Override
@@ -6745,7 +6761,7 @@ public final class Protocol {
                 break;
               }
               default: {
-                if (!parseUnknownField(
+                if (!parseUnknownFieldProto3(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -6931,22 +6947,23 @@ public final class Protocol {
         }
         org.tron.protos.Protocol.BlockHeader.raw other = (org.tron.protos.Protocol.BlockHeader.raw) obj;
 
-        if (getTimestamp()
-            != other.getTimestamp()) return false;
-        if (!getTxTrieRoot()
-            .equals(other.getTxTrieRoot())) return false;
-        if (!getParentHash()
-            .equals(other.getParentHash())) return false;
-        if (getNumber()
-            != other.getNumber()) return false;
-        if (getWitnessId()
-            != other.getWitnessId()) return false;
-        if (!getWitnessAddress()
-            .equals(other.getWitnessAddress())) return false;
-        if (getVersion()
-            != other.getVersion()) return false;
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        return true;
+        boolean result = true;
+        result = result && (getTimestamp()
+            == other.getTimestamp());
+        result = result && getTxTrieRoot()
+            .equals(other.getTxTrieRoot());
+        result = result && getParentHash()
+            .equals(other.getParentHash());
+        result = result && (getNumber()
+            == other.getNumber());
+        result = result && (getWitnessId()
+            == other.getWitnessId());
+        result = result && getWitnessAddress()
+            .equals(other.getWitnessAddress());
+        result = result && (getVersion()
+            == other.getVersion());
+        result = result && unknownFields.equals(other.unknownFields);
+        return result;
       }
 
       @java.lang.Override
@@ -7159,35 +7176,35 @@ public final class Protocol {
 
         @java.lang.Override
         public Builder clone() {
-          return super.clone();
+          return (Builder) super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return super.setField(field, value);
+          return (Builder) super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
+          return (Builder) super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
+          return (Builder) super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
+          return (Builder) super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return super.addRepeatedField(field, value);
+          return (Builder) super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -7459,7 +7476,7 @@ public final class Protocol {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFields(unknownFields);
+          return super.setUnknownFieldsProto3(unknownFields);
         }
 
         @java.lang.Override
@@ -7591,15 +7608,16 @@ public final class Protocol {
       }
       org.tron.protos.Protocol.BlockHeader other = (org.tron.protos.Protocol.BlockHeader) obj;
 
-      if (hasRawData() != other.hasRawData()) return false;
+      boolean result = true;
+      result = result && (hasRawData() == other.hasRawData());
       if (hasRawData()) {
-        if (!getRawData()
-            .equals(other.getRawData())) return false;
+        result = result && getRawData()
+            .equals(other.getRawData());
       }
-      if (!getWitnessSignature()
-          .equals(other.getWitnessSignature())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      result = result && getWitnessSignature()
+          .equals(other.getWitnessSignature());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -7794,35 +7812,35 @@ public final class Protocol {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -7871,7 +7889,7 @@ public final class Protocol {
         return this;
       }
 
-      private org.tron.protos.Protocol.BlockHeader.raw rawData_;
+      private org.tron.protos.Protocol.BlockHeader.raw rawData_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
           org.tron.protos.Protocol.BlockHeader.raw, org.tron.protos.Protocol.BlockHeader.raw.Builder, org.tron.protos.Protocol.BlockHeader.rawOrBuilder> rawDataBuilder_;
       /**
@@ -8019,7 +8037,7 @@ public final class Protocol {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -8103,6 +8121,7 @@ public final class Protocol {
     private TransferContract() {
       ownerAddress_ = com.google.protobuf.ByteString.EMPTY;
       toAddress_ = com.google.protobuf.ByteString.EMPTY;
+      amount_ = 0L;
     }
 
     @java.lang.Override
@@ -8145,7 +8164,7 @@ public final class Protocol {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -8262,14 +8281,15 @@ public final class Protocol {
       }
       org.tron.protos.Protocol.TransferContract other = (org.tron.protos.Protocol.TransferContract) obj;
 
-      if (!getOwnerAddress()
-          .equals(other.getOwnerAddress())) return false;
-      if (!getToAddress()
-          .equals(other.getToAddress())) return false;
-      if (getAmount()
-          != other.getAmount()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      boolean result = true;
+      result = result && getOwnerAddress()
+          .equals(other.getOwnerAddress());
+      result = result && getToAddress()
+          .equals(other.getToAddress());
+      result = result && (getAmount()
+          == other.getAmount());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -8460,35 +8480,35 @@ public final class Protocol {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -8626,7 +8646,7 @@ public final class Protocol {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
@@ -8716,6 +8736,7 @@ public final class Protocol {
       assetName_ = com.google.protobuf.ByteString.EMPTY;
       ownerAddress_ = com.google.protobuf.ByteString.EMPTY;
       toAddress_ = com.google.protobuf.ByteString.EMPTY;
+      amount_ = 0L;
     }
 
     @java.lang.Override
@@ -8763,7 +8784,7 @@ public final class Protocol {
               break;
             }
             default: {
-              if (!parseUnknownField(
+              if (!parseUnknownFieldProto3(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -8896,16 +8917,17 @@ public final class Protocol {
       }
       org.tron.protos.Protocol.TransferAssetContract other = (org.tron.protos.Protocol.TransferAssetContract) obj;
 
-      if (!getAssetName()
-          .equals(other.getAssetName())) return false;
-      if (!getOwnerAddress()
-          .equals(other.getOwnerAddress())) return false;
-      if (!getToAddress()
-          .equals(other.getToAddress())) return false;
-      if (getAmount()
-          != other.getAmount()) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
-      return true;
+      boolean result = true;
+      result = result && getAssetName()
+          .equals(other.getAssetName());
+      result = result && getOwnerAddress()
+          .equals(other.getOwnerAddress());
+      result = result && getToAddress()
+          .equals(other.getToAddress());
+      result = result && (getAmount()
+          == other.getAmount());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
     }
 
     @java.lang.Override
@@ -9101,35 +9123,35 @@ public final class Protocol {
 
       @java.lang.Override
       public Builder clone() {
-        return super.clone();
+        return (Builder) super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.setField(field, value);
+        return (Builder) super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return super.clearField(field);
+        return (Builder) super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return super.clearOneof(oneof);
+        return (Builder) super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return super.setRepeatedField(field, index, value);
+        return (Builder) super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return super.addRepeatedField(field, value);
+        return (Builder) super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -9299,7 +9321,7 @@ public final class Protocol {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFields(unknownFields);
+        return super.setUnknownFieldsProto3(unknownFields);
       }
 
       @java.lang.Override
