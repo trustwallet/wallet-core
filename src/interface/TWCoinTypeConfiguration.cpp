@@ -36,6 +36,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeZcash: string = "ZEC"; break;
     case TWCoinTypeBinance: string = "BNB"; break;
     case TWCoinTypeEOS: string = "EOS"; break;
+    case TWCoinTypeRipple: string = "XRP"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -54,6 +55,8 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
         return 18;
+    case TWCoinTypeRipple:
+        return 15;
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeBitcoin:
     case TWCoinTypeDash:
@@ -107,6 +110,9 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeZcash:
         url += "/tx/ZEC/" + txId;
         break;
+    case TWCoinTypeRipple:
+        url += "/explorer/" + txId;
+        break;
     case TWCoinTypeBinance: break;
     default: break;
     }
@@ -135,6 +141,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeZcash: return "https://chain.so";
     case TWCoinTypeBinance: return "https://binance.com";
     case TWCoinTypeEOS: return "https://eospark.com";
+    case TWCoinTypeRipple: return "https://bithomp.com";
     default: return "";
     }
 }
@@ -162,6 +169,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeZcash: string = "zcash"; break;
     case TWCoinTypeBinance: string = "binance"; break;
     case TWCoinTypeEOS: string = "eos"; break;
+    case TWCoinTypeRipple: string = "ripple"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -190,6 +198,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeZcash: string = "Zcash"; break;
     case TWCoinTypeBinance: string = "Binance"; break;
     case TWCoinTypeEOS: string = "EOS"; break;
+    case TWCoinTypeRipple: string = "Ripple"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

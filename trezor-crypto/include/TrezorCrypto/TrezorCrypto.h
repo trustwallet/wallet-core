@@ -8,6 +8,7 @@
 #include <TrezorCrypto/aes.h>
 #include <TrezorCrypto/base32.h>
 #include <TrezorCrypto/base58.h>
+#include <TrezorCrypto/ripple/base58.h>
 #include <TrezorCrypto/bignum.h>
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
@@ -28,3 +29,4 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
+

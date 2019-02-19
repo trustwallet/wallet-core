@@ -22,6 +22,7 @@ add_library(TrezorCrypto
     src/cash_addr.c
     src/memzero.c
     src/scrypt.c
+    src/ripple/base58.c
 )
 
 target_compile_options(TrezorCrypto
