@@ -6,17 +6,15 @@
 
 #include "RLP.h"
 
+#include "../Data.h"
+
 #include <tuple>
 
 using namespace TW;
 using namespace TW::Ethereum;
 using boost::multiprecision::uint256_t;
 
-void append(RLP::Data& data, const RLP::Data& suffix) {
-    data.insert(data.end(), suffix.begin(), suffix.end());
-}
-
-RLP::Data RLP::encode(uint256_t value) noexcept {
+Data RLP::encode(uint256_t value) noexcept {
     using boost::multiprecision::cpp_int;
 
     std::vector<uint8_t> bytes;
@@ -29,7 +27,14 @@ RLP::Data RLP::encode(uint256_t value) noexcept {
     return encode(bytes);
 }
 
-RLP::Data RLP::encode(Transaction transaction) noexcept {
+Data RLP::encodeList(Data encoded) noexcept {
+    auto result = encodeHeader(encoded.size(), 0xc0, 0xf7);
+    result.reserve(result.size() + encoded.size());
+    result.insert(result.end(), encoded.begin(), encoded.end());
+    return result;
+}
+
+Data RLP::encode(Transaction transaction) noexcept {
     auto encoded = Data();
     append(encoded, encode(transaction.nonce));
     append(encoded, encode(transaction.gasPrice));
@@ -40,14 +45,10 @@ RLP::Data RLP::encode(Transaction transaction) noexcept {
     append(encoded, encode(transaction.v));
     append(encoded, encode(transaction.r));
     append(encoded, encode(transaction.s));
-
-    auto result = encodeHeader(encoded.size(), 0xc0, 0xf7);
-    result.reserve(result.size() + encoded.size());
-    result.insert(result.end(), encoded.begin(), encoded.end());
-    return result;
+    return encodeList(encoded);
 }
 
-RLP::Data RLP::encode(RLP::Data data) noexcept {
+Data RLP::encode(Data data) noexcept {
     if (data.size() == 1 && data[0] <= 0x7f) {
         // Fits in single byte, no header
         return data;
@@ -58,7 +59,7 @@ RLP::Data RLP::encode(RLP::Data data) noexcept {
     return encoded;
 }
 
-RLP::Data RLP::encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexcept {
+Data RLP::encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexcept {
     if (size < 56) {
         return {static_cast<uint8_t>(smallTag + size)};
     }
@@ -72,7 +73,7 @@ RLP::Data RLP::encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) n
     return header;
 }
 
-RLP::Data RLP::putint(uint64_t i) noexcept {
+Data RLP::putint(uint64_t i) noexcept {
     if (i < (1l << 8))
         return { static_cast<uint8_t>(i) };
     if (i < (1l << 16))

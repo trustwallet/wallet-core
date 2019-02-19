@@ -64,6 +64,9 @@ struct RLP {
     /// Encodes a transaction.
     static Data encode(Transaction transaction) noexcept;
 
+    /// Wraps encoded data as a list.
+    static Data encodeList(Data encoded) noexcept;
+
     /// Encodes a block of data.
     static Data encode(Data data) noexcept;
 
