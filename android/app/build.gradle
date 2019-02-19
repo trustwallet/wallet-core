@@ -1,10 +1,9 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     defaultConfig {
-        applicationId "com.trustwallet.core.app"
         minSdkVersion 23
         targetSdkVersion 28
         versionCode 1
@@ -32,4 +31,5 @@ dependencies {
     androidTestImplementation 'android.arch.core:core-testing:1.1.1'
 
     implementation 'io.grpc:grpc-protobuf:1.9.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
 }
