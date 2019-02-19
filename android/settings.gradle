@@ -1,1 +1,1 @@
-include ':lib', ':trustwalletcore'
+include ':app', ':trustwalletcore'
