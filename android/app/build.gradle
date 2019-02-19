@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
@@ -21,6 +23,8 @@ android {
 
 dependencies {
     implementation project(':trustwalletcore')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.0.2'
 
     // Tests
     testImplementation 'junit:junit:4.12'
@@ -32,4 +36,7 @@ dependencies {
     androidTestImplementation 'android.arch.core:core-testing:1.1.1'
 
     implementation 'io.grpc:grpc-protobuf:1.9.0'
+}
+repositories {
+    mavenCentral()
 }
