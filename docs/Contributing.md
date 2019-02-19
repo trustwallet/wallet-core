@@ -103,6 +103,8 @@ When implementing a new blockchain make sure you go through this checklist:
     - [ ] Write interface for signing transactions.
 - [ ] Validate generated code in Android an iOS projects. Write integration tests for each.
 
+Also check out the [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain) document.
+
 ## Releasing
 
 ### iOS
