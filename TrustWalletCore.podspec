@@ -128,8 +128,6 @@ Pod::Spec.new do |s|
     'lib/protobuf/src/google/protobuf/util/time_util.cc',
     'lib/protobuf/src/google/protobuf/util/type_resolver_util.cc'
   s.exclude_files =
-    'trezor-crypto/src/gui/*.{c,h}',
-    'trezor-crypto/src/sqlite/*.{c,h}',
     'trezor-crypto/src/rand.c'
   s.public_header_files =
     'include/**/*.h',
@@ -149,7 +147,7 @@ Pod::Spec.new do |s|
       '${PODS_ROOT}/TrustWalletCore/include ' \
       '${PODS_ROOT}/TrustWalletCore/trezor-crypto/include ' \
       '${PODS_ROOT}/TrustWalletCore/lib/protobuf/src ' \
-      '${PODS_ROOT}/TrustWalletCore/lib/json/include',
+      '${PODS_ROOT}/TrustWalletCore/build/nlohmann/src/nlohmann_json',
     'GCC_WARN_UNUSED_FUNCTION' => 'NO',
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
@@ -158,7 +156,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
   }
-  s.prepare_command = 'tools/generate-files && cmake -H. -Bbuild'
+  s.prepare_command = 'tools/generate-files && cmake -H. -Bbuild && make -Cbuild'
 
   s.dependency 'SwiftProtobuf', '~> 1.3.0'
 end
