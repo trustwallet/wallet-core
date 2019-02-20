@@ -138,7 +138,7 @@ Pod::Spec.new do |s|
   s.preserve_paths =
     'trezor-crypto/src/*.{table}',
     'lib/protobuf/src/google/protobuf/**/*.h',
-    'lib/json/include/**/*.hpp',
+    'build/nlohmann/src/nlohmann_json/**/*.hpp',
     'src/proto/*.proto'
   s.xcconfig = {
     'HEADER_SEARCH_PATHS' => '$(inherited) ' \
@@ -158,7 +158,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
   }
-  s.prepare_command = 'tools/generate-files'
+  s.prepare_command = 'tools/generate-files && cmake -H. -Bbuild'
 
   s.dependency 'SwiftProtobuf', '~> 1.3.0'
 end
