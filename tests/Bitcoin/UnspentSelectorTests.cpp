@@ -108,3 +108,13 @@ TEST(UnspentSelector, SelectUnpsentsInsufficient) {
 
     ASSERT_TRUE(selected.empty());
 }
+
+TEST(UnspentSelector, SelectCustomCase) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 794121));
+    utxos.push_back(buildUTXO(transactionOutPoint, 2289357));
+
+    auto selected = UnspentSelector::select(utxos, 2287189, 61);
+
+    ASSERT_EQ(sum(selected), 3083478);
+}
