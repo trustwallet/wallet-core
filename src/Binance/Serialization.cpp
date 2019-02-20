@@ -88,7 +88,7 @@ json Binance::tokensJSON(const ::google::protobuf::RepeatedPtrField<Binance::Pro
     for (auto& token : tokens) {
         json sj;
         sj["denom"] = token.denom();
-        sj["amount"] = std::to_string(token.amount());
+        sj["amount"] = token.amount();
         j.push_back(sj);
     }
     return j;
