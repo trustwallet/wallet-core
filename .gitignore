@@ -9,5 +9,7 @@ xcode/
 
 # Dependencies
 node_modules
+lib/json
+lib/protobuf
 
 .idea/

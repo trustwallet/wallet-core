@@ -18,7 +18,7 @@ end
 
 # Make archive
 puts 'Archiving...'
-includes = Dir.glob('include/**/*.h')
+includes = Dir.glob('include/**/*.h') + Dir.glob('lib/**/*.{h,hpp}')
 sources = Dir.glob('swift/Sources/**/*.{swift,h,m}')
 libs = Dir.glob('build/ios/*.a')
 files = includes + sources + libs

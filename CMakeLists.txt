@@ -38,21 +38,8 @@ endif()
 
 include(ExternalProject)
 
-# JSON
-ExternalProject_Add(
-    nlohmann_json
-    PREFIX "nlohmann"
-    URL https://github.com/nlohmann/json/releases/download/v3.5.0/include.zip
-    URL_HASH SHA256=3564da9c5b0cf2e032f97c69baedf10ddbc98030c337d0327a215ea72259ea21
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-)
-ExternalProject_Get_Property(nlohmann_json SOURCE_DIR)
-set(JSON_INCLUDE_DIR ${SOURCE_DIR})
-
-# Protobuf
-set(ROOT_DIR ${PROJECT_SOURCE_DIR})
+# Dependencies
+include(cmake/JSON.cmake)
 include(cmake/Protobuf.cmake)
 
 # Source files
@@ -81,7 +68,7 @@ target_include_directories(TrustWalletCore
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
-        ${JSON_INCLUDE_DIR}
+        ${json_INCLUDE_DIRS}
 )
 
 if(NOT ANDROID AND NOT IOS_PLATFORM)
