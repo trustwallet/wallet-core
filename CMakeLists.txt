@@ -15,7 +15,7 @@ macro(find_host_package)
   set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endmacro(find_host_package)
 
-find_host_package(Boost)
+find_host_package(Boost REQUIRED)
 
 # Submodules
 find_package(Git QUIET)
@@ -36,8 +36,9 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/lib/googletest/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
-# JSON
 include(ExternalProject)
+
+# JSON
 ExternalProject_Add(
     nlohmann_json
     PREFIX "nlohmann"
