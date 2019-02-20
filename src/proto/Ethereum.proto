@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package TW.Ethereum.Proto;
+option java_package = "com.wallet.crypto.trustapp.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Chain identifier (256-bit number)
+    bytes chain_id = 1;
+
+    // Nonce (256-bit number)
+    bytes nonce = 2;
+
+    // Gas price (256-bit number)
+    bytes gas_price = 3;
+
+    // Gas limit (256-bit number)
+    bytes gas_limit = 4;
+
+    // Recipient's address.
+    string to_address = 5;
+
+    // Amount to send in wei (256-bit numner)
+    bytes amount = 6;
+
+    // Optional payload
+    bytes payload = 7;
+
+    // Private key.
+    bytes private_key = 8;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    bytes v = 2;
+    bytes r = 3;
+    bytes s = 4;
+}

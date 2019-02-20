@@ -14,4 +14,8 @@ namespace TW {
 using byte = std::uint8_t;
 using Data = std::vector<byte>;
 
+inline void append(Data& data, const Data& suffix) {
+    data.insert(data.end(), suffix.begin(), suffix.end());
+}
+
 } // namespace

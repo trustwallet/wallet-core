@@ -307,6 +307,15 @@
 		61CABADD21EE5EA60086D9A0 /* HRP.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CABADC21EE5EA50086D9A0 /* HRP.swift */; };
 		61CABAE821F0100E0086D9A0 /* HexCoding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61CABAE521F0100D0086D9A0 /* HexCoding.cpp */; };
 		61CABAEB21F010160086D9A0 /* Amount.h in Headers */ = {isa = PBXBuildFile; fileRef = 61CABAEA21F010160086D9A0 /* Amount.h */; };
+		61E44460221CD49E006A4FF1 /* Signer.h in Headers */ = {isa = PBXBuildFile; fileRef = 61E4445E221CD49D006A4FF1 /* Signer.h */; };
+		61E44461221CD49E006A4FF1 /* Signer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61E4445F221CD49E006A4FF1 /* Signer.cpp */; };
+		61E44464221CD4B3006A4FF1 /* Ethereum.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E44462221CD4B3006A4FF1 /* Ethereum.pb.swift */; };
+		61E44465221CD4B3006A4FF1 /* EthereumSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E44463221CD4B3006A4FF1 /* EthereumSigner.swift */; };
+		61E44468221CD4CA006A4FF1 /* TWEthereumProto.h in Headers */ = {isa = PBXBuildFile; fileRef = 61E44466221CD4C9006A4FF1 /* TWEthereumProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		61E44469221CD4CA006A4FF1 /* TWEthereumSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 61E44467221CD4C9006A4FF1 /* TWEthereumSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		61E4446B221CD674006A4FF1 /* TWEthereumSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61E4446A221CD674006A4FF1 /* TWEthereumSigner.cpp */; };
+		61E4446E221CD8C0006A4FF1 /* Ethereum.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 61E4446C221CD8C0006A4FF1 /* Ethereum.pb.h */; };
+		61E4446F221CD8C0006A4FF1 /* Ethereum.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61E4446D221CD8C0006A4FF1 /* Ethereum.pb.cc */; };
 		61EE6B2221DEB46A001FBB79 /* UnspentSelector.h in Headers */ = {isa = PBXBuildFile; fileRef = 61EE6B2021DEB46A001FBB79 /* UnspentSelector.h */; };
 		61EE6B2321DEB46A001FBB79 /* UnspentSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61EE6B2121DEB46A001FBB79 /* UnspentSelector.cpp */; };
 		61FD1FDC21F13F83000617B1 /* arena.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61CAC74C21F113C60086D9A0 /* arena.cc */; };
@@ -742,6 +751,15 @@
 		61CACC9021F113CA0086D9A0 /* extension_set.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = extension_set.cc; sourceTree = "<group>"; };
 		61CACC9721F113CA0086D9A0 /* wire_format_lite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wire_format_lite.h; sourceTree = "<group>"; };
 		61CDEB9B219B36C700CDFE83 /* TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		61E4445E221CD49D006A4FF1 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
+		61E4445F221CD49E006A4FF1 /* Signer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signer.cpp; sourceTree = "<group>"; };
+		61E44462221CD4B3006A4FF1 /* Ethereum.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ethereum.pb.swift; sourceTree = "<group>"; };
+		61E44463221CD4B3006A4FF1 /* EthereumSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumSigner.swift; sourceTree = "<group>"; };
+		61E44466221CD4C9006A4FF1 /* TWEthereumProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWEthereumProto.h; sourceTree = "<group>"; };
+		61E44467221CD4C9006A4FF1 /* TWEthereumSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWEthereumSigner.h; sourceTree = "<group>"; };
+		61E4446A221CD674006A4FF1 /* TWEthereumSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWEthereumSigner.cpp; sourceTree = "<group>"; };
+		61E4446C221CD8C0006A4FF1 /* Ethereum.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ethereum.pb.h; sourceTree = "<group>"; };
+		61E4446D221CD8C0006A4FF1 /* Ethereum.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ethereum.pb.cc; sourceTree = "<group>"; };
 		61EE6B2021DEB46A001FBB79 /* UnspentSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnspentSelector.h; sourceTree = "<group>"; };
 		61EE6B2121DEB46A001FBB79 /* UnspentSelector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnspentSelector.cpp; sourceTree = "<group>"; };
 		61FD1FD321F13ECD000617B1 /* libprotobuf-lite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libprotobuf-lite.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -804,6 +822,8 @@
 				61722BF2220E45B900D7BA9A /* Bitcoin.pb.h */,
 				61722BED220E45B900D7BA9A /* Common.pb.cc */,
 				61722BF0220E45B900D7BA9A /* Common.pb.h */,
+				61E4446D221CD8C0006A4FF1 /* Ethereum.pb.cc */,
+				61E4446C221CD8C0006A4FF1 /* Ethereum.pb.h */,
 			);
 			path = proto;
 			sourceTree = "<group>";
@@ -850,7 +870,6 @@
 		617358DF219DF043007BF637 /* TrustWalletCore */ = {
 			isa = PBXGroup;
 			children = (
-				BB211058221C036900571DF7 /* TWRippleAddress.h */,
 				61CABAB421ED36F40086D9A0 /* TWAES.h */,
 				617358E2219DF043007BF637 /* TWBase.h */,
 				61AAD39A21DEF6D300B69A34 /* TWBase58.h */,
@@ -869,6 +888,8 @@
 				61722BD6220E455400D7BA9A /* TWCommonProto.h */,
 				617358E0219DF043007BF637 /* TWData.h */,
 				61A9B36C2202582700E601B3 /* TWEthereumChainID.h */,
+				61E44466221CD4C9006A4FF1 /* TWEthereumProto.h */,
+				61E44467221CD4C9006A4FF1 /* TWEthereumSigner.h */,
 				61735CB821A33D47007BF637 /* TWHash.h */,
 				61CABAC621ED781A0086D9A0 /* TWHDVersion.h */,
 				610AEF4421C04DF6008ABB74 /* TWHDWallet.h */,
@@ -879,6 +900,7 @@
 				617358E1219DF043007BF637 /* TWPrivateKey.h */,
 				61735CC521A382C7007BF637 /* TWPublicKey.h */,
 				61CABAC821ED781A0086D9A0 /* TWPurpose.h */,
+				BB211058221C036900571DF7 /* TWRippleAddress.h */,
 				616E125D21AE14E8009798FC /* TWString.h */,
 				61A9B3662200D87F00E601B3 /* TWTendermintAddress.h */,
 				61735CA2219E311C007BF637 /* TWUInt256.h */,
@@ -1115,7 +1137,6 @@
 		61735CB7219F88C2007BF637 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				BB211061221C045000571DF7 /* RippleAddress.swift */,
 				61CABAB821ED37160086D9A0 /* AES.swift */,
 				61AAD3A421DEF72500B69A34 /* Base58.swift */,
 				6198EA8B21B811CD008CB60A /* Bech32Address.swift */,
@@ -1132,7 +1153,9 @@
 				61722BDD220E457D00D7BA9A /* Common.pb.swift */,
 				6198EA7D21B6B9C2008CB60A /* Data.swift */,
 				61346D16220B6F7C00F0141B /* Data+Hex.swift */,
+				61E44462221CD4B3006A4FF1 /* Ethereum.pb.swift */,
 				61722BE1220E457D00D7BA9A /* EthereumChainID.swift */,
+				61E44463221CD4B3006A4FF1 /* EthereumSigner.swift */,
 				616E122B21A78094009798FC /* Hash.swift */,
 				61CABAD321ED782D0086D9A0 /* HDVersion.swift */,
 				610AEF4821C04E24008ABB74 /* HDWallet.swift */,
@@ -1143,9 +1166,11 @@
 				61735AD1219DF044007BF637 /* PrivateKey.swift */,
 				61735CD221A3BF69007BF637 /* PublicKey.swift */,
 				61CABAD621ED782E0086D9A0 /* Purpose.swift */,
+				BB211061221C045000571DF7 /* RippleAddress.swift */,
 				61735C87219DF64D007BF637 /* SecRandom.m */,
 				6198EA6421B59575008CB60A /* String.swift */,
 				61A9B3642200D86D00E601B3 /* TendermintAddress.swift */,
+				2957C1FB2213AAB8004AFC9E /* Tron.pb.swift */,
 				61735ACD219DF044007BF637 /* TrustWalletCore.h */,
 				6198EA5E21B2021A008CB60A /* TWFoundationData.h */,
 				6198EA5821B1CC5B008CB60A /* TWFoundationData.m */,
@@ -1154,7 +1179,6 @@
 				61735C8F219E1658007BF637 /* UInt256.swift */,
 				BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */,
 				61722BE0220E457D00D7BA9A /* ZcashTransactionSigner.swift */,
-				2957C1FB2213AAB8004AFC9E /* Tron.pb.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -1168,6 +1192,8 @@
 				61A9B2F221FB855E00E601B3 /* AddressChecksum.h */,
 				61A9B2F621FB855E00E601B3 /* RLP.cpp */,
 				61A9B2F321FB855E00E601B3 /* RLP.h */,
+				61E4445F221CD49E006A4FF1 /* Signer.cpp */,
+				61E4445E221CD49D006A4FF1 /* Signer.h */,
 				61A9B3502200103000E601B3 /* Transaction.cpp */,
 				61A9B34F2200103000E601B3 /* Transaction.h */,
 			);
@@ -1217,7 +1243,6 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
-				BB211056221C035F00571DF7 /* TWRippleAddress.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				61AAD3A221DEF70800B69A34 /* TWBase58.cpp */,
 				61722C01220E461A00D7BA9A /* TWBech32Address.cpp */,
@@ -1229,12 +1254,14 @@
 				61722BFC220E461A00D7BA9A /* TWCoinTypeConfiguration.cpp */,
 				61B159B421CC5DBB00CFE93B /* TWData.cpp */,
 				61B159B821CC5DBB00CFE93B /* TWData+Hex.cpp */,
+				61E4446A221CD674006A4FF1 /* TWEthereumSigner.cpp */,
 				61B159B921CC5DBB00CFE93B /* TWHash.cpp */,
 				61B159BC21CC5DBB00CFE93B /* TWHDWallet.cpp */,
 				61722BFA220E461900D7BA9A /* TWHRP.cpp */,
 				61CABABC21ED41F20086D9A0 /* TWKeyDerivation.cpp */,
 				61B159BA21CC5DBB00CFE93B /* TWPrivateKey.cpp */,
 				61B159B721CC5DBB00CFE93B /* TWPublicKey.cpp */,
+				BB211056221C035F00571DF7 /* TWRippleAddress.cpp */,
 				61B159BD21CC5DBB00CFE93B /* TWString.cpp */,
 				61B159B521CC5DBB00CFE93B /* TWString+Hex.cpp */,
 				61722BFB220E461A00D7BA9A /* TWTendermintAddress.cpp */,
@@ -1468,6 +1495,7 @@
 				61735AFF219DF044007BF637 /* hasher.h in Headers */,
 				61735B0C219DF044007BF637 /* ecrypt-types.h in Headers */,
 				6198EA8421B811A2008CB60A /* TWBitcoinOpCodes.h in Headers */,
+				61E4446E221CD8C0006A4FF1 /* Ethereum.pb.h in Headers */,
 				61A9B2FA21FB855E00E601B3 /* AddressChecksum.h in Headers */,
 				61977CC721C9B9D000C385D5 /* TWBitcoinCashAddress.h in Headers */,
 				61735AED219DF044007BF637 /* memzero.h in Headers */,
@@ -1520,6 +1548,7 @@
 				61BA0A7321F6C9D9005680E6 /* Signer.h in Headers */,
 				61735C6D219DF044007BF637 /* aesopt.h in Headers */,
 				61AAD3A021DEF6EB00B69A34 /* HexCoding.h in Headers */,
+				61E44460221CD49E006A4FF1 /* Signer.h in Headers */,
 				61735C5D219DF044007BF637 /* rfc6979.h in Headers */,
 				61B159D521CC5DBB00CFE93B /* TransactionOutput.h in Headers */,
 				BB211052221C032900571DF7 /* base58.h in Headers */,
@@ -1531,6 +1560,7 @@
 				61CABAEB21F010160086D9A0 /* Amount.h in Headers */,
 				61722BF6220E45BA00D7BA9A /* Common.pb.h in Headers */,
 				61735C41219DF044007BF637 /* xmr.h in Headers */,
+				61E44469221CD4CA006A4FF1 /* TWEthereumSigner.h in Headers */,
 				6198EA5F21B2021A008CB60A /* TWFoundationData.h in Headers */,
 				61735C79219DF044007BF637 /* ecrypt-portable.h in Headers */,
 				61735C6B219DF044007BF637 /* aestab.h in Headers */,
@@ -1543,6 +1573,7 @@
 				61735C32219DF044007BF637 /* options.h in Headers */,
 				61735C1E219DF044007BF637 /* ed25519-keccak.h in Headers */,
 				61722BD7220E455500D7BA9A /* TWZcashTransactionSigner.h in Headers */,
+				61E44468221CD4CA006A4FF1 /* TWEthereumProto.h in Headers */,
 				61735AF4219DF044007BF637 /* curve25519-donna-32bit.h in Headers */,
 				61B159C121CC5DBB00CFE93B /* TransactionInput.h in Headers */,
 				61735C76219DF044007BF637 /* rfc7539.h in Headers */,
@@ -1810,7 +1841,9 @@
 				61735C22219DF044007BF637 /* curve25519-donna-32bit.c in Sources */,
 				61A9B2E821F916FA00E601B3 /* Bech32.cpp in Sources */,
 				61BA0A7221F6C9D9005680E6 /* Signer.cpp in Sources */,
+				61E4446B221CD674006A4FF1 /* TWEthereumSigner.cpp in Sources */,
 				BB211057221C035F00571DF7 /* TWRippleAddress.cpp in Sources */,
+				61E4446F221CD8C0006A4FF1 /* Ethereum.pb.cc in Sources */,
 				61CABADB21ED782E0086D9A0 /* Purpose.swift in Sources */,
 				61722BE2220E457D00D7BA9A /* Binance.pb.swift in Sources */,
 				61735C01219DF044007BF637 /* rc4.c in Sources */,
@@ -1850,6 +1883,7 @@
 				6198EA5921B1CC5C008CB60A /* TWFoundationData.m in Sources */,
 				61735C11219DF044007BF637 /* curve25519-donna-helpers.c in Sources */,
 				61B159DD21CC5DBB00CFE93B /* PrivateKey.cpp in Sources */,
+				61E44465221CD4B3006A4FF1 /* EthereumSigner.swift in Sources */,
 				61735C12219DF044007BF637 /* ed25519-keccak.c in Sources */,
 				61735C57219DF044007BF637 /* blake2b.c in Sources */,
 				61B159EA21CC5DBB00CFE93B /* PublicKey.cpp in Sources */,
@@ -1883,6 +1917,7 @@
 				61722C06220E461A00D7BA9A /* TWTendermintAddress.cpp in Sources */,
 				61B159E121CC5DBB00CFE93B /* TWString+Hex.cpp in Sources */,
 				61A9B3522200103000E601B3 /* Transaction.cpp in Sources */,
+				61E44461221CD49E006A4FF1 /* Signer.cpp in Sources */,
 				61B159E221CC5DBB00CFE93B /* TWPublicKey.cpp in Sources */,
 				61735C90219E1658007BF637 /* UInt256.swift in Sources */,
 				61735C39219DF044007BF637 /* ripemd160.c in Sources */,
@@ -1899,6 +1934,7 @@
 				61B159D721CC5DBB00CFE93B /* Transaction.cpp in Sources */,
 				61735C28219DF044007BF637 /* nem.c in Sources */,
 				61735C2B219DF044007BF637 /* secp256k1.c in Sources */,
+				61E44464221CD4B3006A4FF1 /* Ethereum.pb.swift in Sources */,
 				61735C88219DF64D007BF637 /* SecRandom.m in Sources */,
 				6198EA5321AF61F0008CB60A /* BitcoinScript.swift in Sources */,
 				BB21105E221C039B00571DF7 /* Address.cpp in Sources */,

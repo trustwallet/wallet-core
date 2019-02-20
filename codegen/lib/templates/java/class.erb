@@ -10,16 +10,18 @@ public class <%= entity.name %> {
 <%  end -%>
     private long nativeHandle;
 
-<% unless entity.static_methods.detect{ |m| m.name == 'Create' && m.parameters.empty? } -%>
+<%  unless entity.static_methods.detect{ |m| m.name == 'Create' && m.parameters.empty? } -%>
     private <%= entity.name %>() {
         nativeHandle = 0;
     }
 
-<% end -%>
+<%  end -%>
     static <%= entity.name %> createFromNative(long nativeHandle) {
         <%= entity.name %> instance = new <%= entity.name %>();
         instance.nativeHandle = nativeHandle;
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
         <%= entity.name %>PhantomReference.register(instance, nativeHandle);
+<%  end -%>
         return instance;
     }
 
@@ -96,6 +98,7 @@ public class <%= entity.name %> {
 <%- end -%>
 }
 
+<%  unless entity.methods.select{ |x| x.name == "Delete" }.empty? -%>
 class <%= entity.name %>PhantomReference extends java.lang.ref.PhantomReference<<%= entity.name %>> {
     private static java.util.Set<<%= entity.name %>PhantomReference> references = new HashSet<<%= entity.name %>PhantomReference>();
     private static java.lang.ref.ReferenceQueue<<%= entity.name %>> queue = new java.lang.ref.ReferenceQueue<<%= entity.name %>>();
@@ -118,3 +121,4 @@ class <%= entity.name %>PhantomReference extends java.lang.ref.PhantomReference<
         }
     }
 }
+<%  end -%>
