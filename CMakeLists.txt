@@ -47,8 +47,8 @@ ExternalProject_Add(
     BUILD_COMMAND ""
     INSTALL_COMMAND ""
 )
-ExternalProject_Get_property(nlohmann_json SOURCE_DIR)
-include_directories(SOURCE_DIR)
+ExternalProject_Get_Property(nlohmann_json SOURCE_DIR)
+set(JSON_INCLUDE_DIR ${SOURCE_DIR})
 
 # Protobuf
 set(ROOT_DIR ${PROJECT_SOURCE_DIR})
@@ -69,6 +69,7 @@ else()
 
     target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 endif()
+add_dependencies(TrustWalletCore nlohmann_json)
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
@@ -79,6 +80,7 @@ target_include_directories(TrustWalletCore
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
+        ${JSON_INCLUDE_DIR}
 )
 
 if(NOT ANDROID AND NOT IOS_PLATFORM)
