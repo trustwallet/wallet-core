@@ -19,6 +19,17 @@ struct Selection {
     int64_t total;
 };
 
+// Filters utxos that are dust
+std::vector<Proto::UnspentTransaction> filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee) {
+    std::vector<Proto::UnspentTransaction> filteredUtxos;
+    for(auto utxo: selectedUtxos) {
+        if (utxo.amount() > UnspentSelector::calculateSingleInputFee(byteFee)) {
+            filteredUtxos.push_back(utxo);
+        }
+    }
+    return filteredUtxos;
+}
+
 // Slice Array
 // [0,1,2,3,4,5,6,7,8,9].eachSlices(3)
 // >
@@ -37,7 +48,7 @@ static inline auto slice(const T& elements, size_t sliceSize) {
 }
 
 template<typename T>
-std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee) {
+std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
     // if target value is zero, fee is zero
     if (targetValue == 0) {
         return {};
@@ -50,7 +61,6 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
 
     // definitions for the following caluculation
     const auto doubleTargetValue = targetValue * 2;
-    auto numOutputs = 2; // if allow multiple output, it will be changed.
 
     // Get all possible utxo selections up to a maximum size, sort by total amount
     auto sortedUtxos = utxos;
@@ -81,7 +91,7 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
             std::sort(slices.begin(), slices.end(), [distFrom2x](const std::vector<Proto::UnspentTransaction>& lhs, const std::vector<Proto::UnspentTransaction>& rhs) {
                 return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
             });
-            return slices.front();
+            return filterDustInput(slices.front(), byteFee);
         }
     }
 
@@ -94,7 +104,7 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
             return sum(slice) < targetWithFee;
         }), slices.end());
         if (!slices.empty()) {
-            return slices.front();
+            return filterDustInput(slices.front(), byteFee);
         }
     }
 
@@ -106,5 +116,9 @@ int64_t UnspentSelector::calculateFee(size_t inputs, size_t outputs, int64_t byt
     return int64_t(txsize) * byteFee;
 }
 
-template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee);
-template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee);
+int64_t UnspentSelector::calculateSingleInputFee(int64_t byteFee) {
+    return int64_t(148) * byteFee;
+}
+
+template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);
+template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);
