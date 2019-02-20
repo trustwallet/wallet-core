@@ -37,8 +37,18 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/lib/googletest/CMakeLists.txt")
 endif()
 
 # JSON
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(lib/json)
+include(ExternalProject)
+ExternalProject_Add(
+    nlohmann_json
+    PREFIX "nlohmann"
+    URL https://github.com/nlohmann/json/releases/download/v3.5.0/include.zip
+    URL_HASH SHA256=3564da9c5b0cf2e032f97c69baedf10ddbc98030c337d0327a215ea72259ea21
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+)
+ExternalProject_Get_property(nlohmann_json SOURCE_DIR)
+include_directories(SOURCE_DIR)
 
 # Protobuf
 set(ROOT_DIR ${PROJECT_SOURCE_DIR})
@@ -51,13 +61,13 @@ if(${ANDROID})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     find_library(log-lib log)
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost nlohmann_json::nlohmann_json)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
 else()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/proto/*.cc src/*.cpp src/*.h)
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost nlohmann_json::nlohmann_json)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 endif()
 
 # Define headers for this library. PUBLIC headers are used for compiling the
