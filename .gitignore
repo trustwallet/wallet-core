@@ -9,3 +9,5 @@ xcode/
 
 # Dependencies
 node_modules
+
+.idea/
