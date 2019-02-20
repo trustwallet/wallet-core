@@ -5,11 +5,17 @@ project(TrustWalletCore)
 set (CMAKE_CXX_STANDARD 17)
 add_subdirectory(trezor-crypto)
 
-if(IOS_PLATFORM)
+macro(find_host_package)
+  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY NEVER)
+  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE NEVER)
+  find_package(${ARGN})
+  set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
+  set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+  set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+endmacro(find_host_package)
+
 find_host_package(Boost)
-else()
-find_package(Boost)
-endif()
 
 # Submodules
 find_package(Git QUIET)
