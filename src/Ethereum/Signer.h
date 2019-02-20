@@ -37,3 +37,9 @@ protected:
 };
 
 }} // namespace
+
+/// Wrapper for C interface.
+struct TWEthereumSigner {
+    TW::Ethereum::Signer impl;
+};
+
