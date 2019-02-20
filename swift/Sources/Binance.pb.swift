@@ -24,7 +24,7 @@ public struct TW_Binance_Proto_Transaction {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+  /// int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
   /// 0xF0625DEE                  // prefix
   public var msgs: [Data] = []
 
@@ -94,10 +94,10 @@ public struct TW_Binance_Proto_TradeOrder {
   public var symbol: String = String()
 
   /// only accept 2 for now, meaning limit order
-  public var ordertype: UInt64 = 0
+  public var ordertype: Int64 = 0
 
   /// 1 for buy and 2 fory sell
-  public var side: UInt64 = 0
+  public var side: Int64 = 0
 
   /// price of the order, which is the real price multiplied by 1e8 (10^8) and rounded to integer
   public var price: Int64 = 0
@@ -106,7 +106,7 @@ public struct TW_Binance_Proto_TradeOrder {
   public var quantity: Int64 = 0
 
   /// 1 for Good Till Expire(GTE) order and 3 for Immediate Or Cancel (IOC)
-  public var timeinforce: UInt64 = 0
+  public var timeinforce: Int64 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -483,11 +483,11 @@ extension TW_Binance_Proto_TradeOrder: SwiftProtobuf.Message, SwiftProtobuf._Mes
       case 1: try decoder.decodeSingularBytesField(value: &self.sender)
       case 2: try decoder.decodeSingularStringField(value: &self.id)
       case 3: try decoder.decodeSingularStringField(value: &self.symbol)
-      case 4: try decoder.decodeSingularUInt64Field(value: &self.ordertype)
-      case 5: try decoder.decodeSingularUInt64Field(value: &self.side)
+      case 4: try decoder.decodeSingularInt64Field(value: &self.ordertype)
+      case 5: try decoder.decodeSingularInt64Field(value: &self.side)
       case 6: try decoder.decodeSingularInt64Field(value: &self.price)
       case 7: try decoder.decodeSingularInt64Field(value: &self.quantity)
-      case 8: try decoder.decodeSingularUInt64Field(value: &self.timeinforce)
+      case 8: try decoder.decodeSingularInt64Field(value: &self.timeinforce)
       default: break
       }
     }
@@ -504,10 +504,10 @@ extension TW_Binance_Proto_TradeOrder: SwiftProtobuf.Message, SwiftProtobuf._Mes
       try visitor.visitSingularStringField(value: self.symbol, fieldNumber: 3)
     }
     if self.ordertype != 0 {
-      try visitor.visitSingularUInt64Field(value: self.ordertype, fieldNumber: 4)
+      try visitor.visitSingularInt64Field(value: self.ordertype, fieldNumber: 4)
     }
     if self.side != 0 {
-      try visitor.visitSingularUInt64Field(value: self.side, fieldNumber: 5)
+      try visitor.visitSingularInt64Field(value: self.side, fieldNumber: 5)
     }
     if self.price != 0 {
       try visitor.visitSingularInt64Field(value: self.price, fieldNumber: 6)
@@ -516,7 +516,7 @@ extension TW_Binance_Proto_TradeOrder: SwiftProtobuf.Message, SwiftProtobuf._Mes
       try visitor.visitSingularInt64Field(value: self.quantity, fieldNumber: 7)
     }
     if self.timeinforce != 0 {
-      try visitor.visitSingularUInt64Field(value: self.timeinforce, fieldNumber: 8)
+      try visitor.visitSingularInt64Field(value: self.timeinforce, fieldNumber: 8)
     }
     try unknownFields.traverse(visitor: &visitor)
   }

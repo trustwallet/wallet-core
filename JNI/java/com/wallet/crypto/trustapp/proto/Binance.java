@@ -20,7 +20,7 @@ public final class Binance {
 
     /**
      * <pre>
-     * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+     * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
      * 0xF0625DEE                  // prefix
      * </pre>
      *
@@ -29,7 +29,7 @@ public final class Binance {
     java.util.List<com.google.protobuf.ByteString> getMsgsList();
     /**
      * <pre>
-     * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+     * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
      * 0xF0625DEE                  // prefix
      * </pre>
      *
@@ -38,7 +38,7 @@ public final class Binance {
     int getMsgsCount();
     /**
      * <pre>
-     * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+     * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
      * 0xF0625DEE                  // prefix
      * </pre>
      *
@@ -226,7 +226,7 @@ public final class Binance {
     private java.util.List<com.google.protobuf.ByteString> msgs_;
     /**
      * <pre>
-     * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+     * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
      * 0xF0625DEE                  // prefix
      * </pre>
      *
@@ -238,7 +238,7 @@ public final class Binance {
     }
     /**
      * <pre>
-     * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+     * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
      * 0xF0625DEE                  // prefix
      * </pre>
      *
@@ -249,7 +249,7 @@ public final class Binance {
     }
     /**
      * <pre>
-     * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+     * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
      * 0xF0625DEE                  // prefix
      * </pre>
      *
@@ -782,7 +782,7 @@ public final class Binance {
       }
       /**
        * <pre>
-       * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+       * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
        * 0xF0625DEE                  // prefix
        * </pre>
        *
@@ -794,7 +794,7 @@ public final class Binance {
       }
       /**
        * <pre>
-       * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+       * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
        * 0xF0625DEE                  // prefix
        * </pre>
        *
@@ -805,7 +805,7 @@ public final class Binance {
       }
       /**
        * <pre>
-       * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+       * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
        * 0xF0625DEE                  // prefix
        * </pre>
        *
@@ -816,7 +816,7 @@ public final class Binance {
       }
       /**
        * <pre>
-       * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+       * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
        * 0xF0625DEE                  // prefix
        * </pre>
        *
@@ -834,7 +834,7 @@ public final class Binance {
       }
       /**
        * <pre>
-       * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+       * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
        * 0xF0625DEE                  // prefix
        * </pre>
        *
@@ -851,7 +851,7 @@ public final class Binance {
       }
       /**
        * <pre>
-       * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+       * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
        * 0xF0625DEE                  // prefix
        * </pre>
        *
@@ -867,7 +867,7 @@ public final class Binance {
       }
       /**
        * <pre>
-       * uint64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
+       * int64 SIZE-OF-ENCODED      // varint encoded length of the structure after encoding
        * 0xF0625DEE                  // prefix
        * </pre>
        *
@@ -2429,7 +2429,7 @@ public final class Binance {
      * only accept 2 for now, meaning limit order
      * </pre>
      *
-     * <code>uint64 ordertype = 4;</code>
+     * <code>int64 ordertype = 4;</code>
      */
     long getOrdertype();
 
@@ -2438,7 +2438,7 @@ public final class Binance {
      * 1 for buy and 2 fory sell
      * </pre>
      *
-     * <code>uint64 side = 5;</code>
+     * <code>int64 side = 5;</code>
      */
     long getSide();
 
@@ -2465,7 +2465,7 @@ public final class Binance {
      * 1 for Good Till Expire(GTE) order and 3 for Immediate Or Cancel (IOC)
      * </pre>
      *
-     * <code>uint64 timeinforce = 8;</code>
+     * <code>int64 timeinforce = 8;</code>
      */
     long getTimeinforce();
   }
@@ -2535,12 +2535,12 @@ public final class Binance {
             }
             case 32: {
 
-              ordertype_ = input.readUInt64();
+              ordertype_ = input.readInt64();
               break;
             }
             case 40: {
 
-              side_ = input.readUInt64();
+              side_ = input.readInt64();
               break;
             }
             case 48: {
@@ -2555,7 +2555,7 @@ public final class Binance {
             }
             case 64: {
 
-              timeinforce_ = input.readUInt64();
+              timeinforce_ = input.readInt64();
               break;
             }
             default: {
@@ -2694,7 +2694,7 @@ public final class Binance {
      * only accept 2 for now, meaning limit order
      * </pre>
      *
-     * <code>uint64 ordertype = 4;</code>
+     * <code>int64 ordertype = 4;</code>
      */
     public long getOrdertype() {
       return ordertype_;
@@ -2707,7 +2707,7 @@ public final class Binance {
      * 1 for buy and 2 fory sell
      * </pre>
      *
-     * <code>uint64 side = 5;</code>
+     * <code>int64 side = 5;</code>
      */
     public long getSide() {
       return side_;
@@ -2746,7 +2746,7 @@ public final class Binance {
      * 1 for Good Till Expire(GTE) order and 3 for Immediate Or Cancel (IOC)
      * </pre>
      *
-     * <code>uint64 timeinforce = 8;</code>
+     * <code>int64 timeinforce = 8;</code>
      */
     public long getTimeinforce() {
       return timeinforce_;
@@ -2776,10 +2776,10 @@ public final class Binance {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, symbol_);
       }
       if (ordertype_ != 0L) {
-        output.writeUInt64(4, ordertype_);
+        output.writeInt64(4, ordertype_);
       }
       if (side_ != 0L) {
-        output.writeUInt64(5, side_);
+        output.writeInt64(5, side_);
       }
       if (price_ != 0L) {
         output.writeInt64(6, price_);
@@ -2788,7 +2788,7 @@ public final class Binance {
         output.writeInt64(7, quantity_);
       }
       if (timeinforce_ != 0L) {
-        output.writeUInt64(8, timeinforce_);
+        output.writeInt64(8, timeinforce_);
       }
       unknownFields.writeTo(output);
     }
@@ -2811,11 +2811,11 @@ public final class Binance {
       }
       if (ordertype_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(4, ordertype_);
+          .computeInt64Size(4, ordertype_);
       }
       if (side_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(5, side_);
+          .computeInt64Size(5, side_);
       }
       if (price_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
@@ -2827,7 +2827,7 @@ public final class Binance {
       }
       if (timeinforce_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(8, timeinforce_);
+          .computeInt64Size(8, timeinforce_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3404,7 +3404,7 @@ public final class Binance {
        * only accept 2 for now, meaning limit order
        * </pre>
        *
-       * <code>uint64 ordertype = 4;</code>
+       * <code>int64 ordertype = 4;</code>
        */
       public long getOrdertype() {
         return ordertype_;
@@ -3414,7 +3414,7 @@ public final class Binance {
        * only accept 2 for now, meaning limit order
        * </pre>
        *
-       * <code>uint64 ordertype = 4;</code>
+       * <code>int64 ordertype = 4;</code>
        */
       public Builder setOrdertype(long value) {
         
@@ -3427,7 +3427,7 @@ public final class Binance {
        * only accept 2 for now, meaning limit order
        * </pre>
        *
-       * <code>uint64 ordertype = 4;</code>
+       * <code>int64 ordertype = 4;</code>
        */
       public Builder clearOrdertype() {
         
@@ -3442,7 +3442,7 @@ public final class Binance {
        * 1 for buy and 2 fory sell
        * </pre>
        *
-       * <code>uint64 side = 5;</code>
+       * <code>int64 side = 5;</code>
        */
       public long getSide() {
         return side_;
@@ -3452,7 +3452,7 @@ public final class Binance {
        * 1 for buy and 2 fory sell
        * </pre>
        *
-       * <code>uint64 side = 5;</code>
+       * <code>int64 side = 5;</code>
        */
       public Builder setSide(long value) {
         
@@ -3465,7 +3465,7 @@ public final class Binance {
        * 1 for buy and 2 fory sell
        * </pre>
        *
-       * <code>uint64 side = 5;</code>
+       * <code>int64 side = 5;</code>
        */
       public Builder clearSide() {
         
@@ -3556,7 +3556,7 @@ public final class Binance {
        * 1 for Good Till Expire(GTE) order and 3 for Immediate Or Cancel (IOC)
        * </pre>
        *
-       * <code>uint64 timeinforce = 8;</code>
+       * <code>int64 timeinforce = 8;</code>
        */
       public long getTimeinforce() {
         return timeinforce_;
@@ -3566,7 +3566,7 @@ public final class Binance {
        * 1 for Good Till Expire(GTE) order and 3 for Immediate Or Cancel (IOC)
        * </pre>
        *
-       * <code>uint64 timeinforce = 8;</code>
+       * <code>int64 timeinforce = 8;</code>
        */
       public Builder setTimeinforce(long value) {
         
@@ -3579,7 +3579,7 @@ public final class Binance {
        * 1 for Good Till Expire(GTE) order and 3 for Immediate Or Cancel (IOC)
        * </pre>
        *
-       * <code>uint64 timeinforce = 8;</code>
+       * <code>int64 timeinforce = 8;</code>
        */
       public Builder clearTimeinforce() {
         
@@ -11718,9 +11718,9 @@ public final class Binance {
       "signature\030\002 \001(\014\022\026\n\016account_number\030\003 \001(\003\022" +
       "\020\n\010sequence\030\004 \001(\003\032\010\n\006PubKey\"\217\001\n\nTradeOrd" +
       "er\022\016\n\006sender\030\001 \001(\014\022\n\n\002id\030\002 \001(\t\022\016\n\006symbol" +
-      "\030\003 \001(\t\022\021\n\tordertype\030\004 \001(\004\022\014\n\004side\030\005 \001(\004\022" +
+      "\030\003 \001(\t\022\021\n\tordertype\030\004 \001(\003\022\014\n\004side\030\005 \001(\003\022" +
       "\r\n\005price\030\006 \001(\003\022\020\n\010quantity\030\007 \001(\003\022\023\n\013time" +
-      "inforce\030\010 \001(\004\"A\n\020CancelTradeOrder\022\016\n\006sen" +
+      "inforce\030\010 \001(\003\"A\n\020CancelTradeOrder\022\016\n\006sen" +
       "der\030\001 \001(\014\022\016\n\006symbol\030\002 \001(\t\022\r\n\005refid\030\004 \001(\t" +
       "\"\264\002\n\tSendOrder\0221\n\006inputs\030\001 \003(\0132!.TW.Bina" +
       "nce.Proto.SendOrder.Input\0223\n\007outputs\030\002 \003" +
