@@ -16,7 +16,7 @@
 #include "TWJNI.h"
 #include "PublicKey.h"
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_PublicKey_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data) {
     jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TWPublicKey));
     jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
     struct TWPublicKey *instance = (struct TWPublicKey *) bytesBuffer;
@@ -33,7 +33,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_initWithData(JN
     }
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_isValid(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jboolean JNICALL Java_wallet_core_jni_PublicKey_isValid(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jboolean resultValue = (jboolean) TWPublicKeyIsValid(dataData);
 
@@ -42,7 +42,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_isValid(JNIEnv *e
     return resultValue;
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_recover(JNIEnv *env, jclass thisClass, jbyteArray signature, jbyteArray message) {
+jobject JNICALL Java_wallet_core_jni_PublicKey_recover(JNIEnv *env, jclass thisClass, jbyteArray signature, jbyteArray message) {
     TWData *signatureData = TWDataCreateWithJByteArray(env, signature);
     TWData *messageData = TWDataCreateWithJByteArray(env, message);
     struct TWPublicKey result = TWPublicKeyRecover(signatureData, messageData);
@@ -50,14 +50,14 @@ jobject JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_recover(JNIEnv *en
     TWDataDelete(signatureData);
     TWDataDelete(messageData);
 
-    jclass class = (*env)->FindClass(env, "com/wallet/crypto/trustapp/jni/PublicKey");
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/PublicKey");
     jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TWPublicKey));
     (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TWPublicKey), (jbyte *) &result);
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lcom/wallet/crypto/trustapp/jni/PublicKey;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/PublicKey;");
     return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_isCompressed(JNIEnv *env, jobject thisObject) {
+jboolean JNICALL Java_wallet_core_jni_PublicKey_isCompressed(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
     jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
@@ -74,7 +74,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_isCompressed(JNIE
     return resultValue;
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_compressed(JNIEnv *env, jobject thisObject) {
+jobject JNICALL Java_wallet_core_jni_PublicKey_compressed(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
     jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
@@ -88,14 +88,14 @@ jobject JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_compressed(JNIEnv 
     (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
-    jclass class = (*env)->FindClass(env, "com/wallet/crypto/trustapp/jni/PublicKey");
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/PublicKey");
     jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TWPublicKey));
     (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TWPublicKey), (jbyte *) &result);
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lcom/wallet/crypto/trustapp/jni/PublicKey;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/PublicKey;");
     return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_data(JNIEnv *env, jobject thisObject) {
+jbyteArray JNICALL Java_wallet_core_jni_PublicKey_data(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
     jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
@@ -112,7 +112,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_data(JNIEnv *en
     return result;
 }
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_description(JNIEnv *env, jobject thisObject) {
+jstring JNICALL Java_wallet_core_jni_PublicKey_description(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
     jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
@@ -129,7 +129,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_description(JNIEnv
     return result;
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_PublicKey_verify(JNIEnv *env, jobject thisObject, jbyteArray signature, jbyteArray message) {
+jboolean JNICALL Java_wallet_core_jni_PublicKey_verify(JNIEnv *env, jobject thisObject, jbyteArray signature, jbyteArray message) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
     jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);

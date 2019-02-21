@@ -16,7 +16,7 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_EthereumSigner_sign(JNIEnv *env, jclass thisClass, jobject input);
+jobject JNICALL Java_wallet_core_jni_EthereumSigner_sign(JNIEnv *env, jclass thisClass, jobject input);
 
 
 TW_EXTERN_C_END

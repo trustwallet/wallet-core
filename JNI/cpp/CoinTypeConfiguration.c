@@ -16,7 +16,7 @@
 #include "TWJNI.h"
 #include "CoinTypeConfiguration.h"
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getSymbol(JNIEnv *env, jclass thisClass, jobject type) {
+jstring JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getSymbol(JNIEnv *env, jclass thisClass, jobject type) {
     jclass typeClass = (*env)->GetObjectClass(env, type);
     jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
     jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);
@@ -27,7 +27,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getSym
     return result;
 }
 
-jint JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getDecimals(JNIEnv *env, jclass thisClass, jobject type) {
+jint JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getDecimals(JNIEnv *env, jclass thisClass, jobject type) {
     jclass typeClass = (*env)->GetObjectClass(env, type);
     jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
     jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);
@@ -38,7 +38,7 @@ jint JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getDecima
     return resultValue;
 }
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getTransactionURL(JNIEnv *env, jclass thisClass, jobject type, jstring transactionID) {
+jstring JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getTransactionURL(JNIEnv *env, jclass thisClass, jobject type, jstring transactionID) {
     jclass typeClass = (*env)->GetObjectClass(env, type);
     jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
     jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);
@@ -51,7 +51,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getTra
     return result;
 }
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getID(JNIEnv *env, jclass thisClass, jobject type) {
+jstring JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getID(JNIEnv *env, jclass thisClass, jobject type) {
     jclass typeClass = (*env)->GetObjectClass(env, type);
     jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
     jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);
@@ -62,7 +62,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getID(
     return result;
 }
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getName(JNIEnv *env, jclass thisClass, jobject type) {
+jstring JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getName(JNIEnv *env, jclass thisClass, jobject type) {
     jclass typeClass = (*env)->GetObjectClass(env, type);
     jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
     jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);

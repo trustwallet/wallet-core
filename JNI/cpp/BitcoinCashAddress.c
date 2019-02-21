@@ -17,7 +17,7 @@
 #include "TWJNI.h"
 #include "BitcoinCashAddress.h"
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWithString(JNIEnv *env, jclass thisClass, jstring string) {
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_initWithString(JNIEnv *env, jclass thisClass, jstring string) {
     jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TWBitcoinCashAddress));
     jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
     struct TWBitcoinCashAddress *instance = (struct TWBitcoinCashAddress *) bytesBuffer;
@@ -34,7 +34,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWi
     }
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data) {
     jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TWBitcoinCashAddress));
     jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
     struct TWBitcoinCashAddress *instance = (struct TWBitcoinCashAddress *) bytesBuffer;
@@ -51,7 +51,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWi
     }
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey) {
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_initWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey) {
     jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TWBitcoinCashAddress));
     jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
     struct TWBitcoinCashAddress *instance = (struct TWBitcoinCashAddress *) bytesBuffer;
@@ -74,7 +74,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWi
     }
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {
+jboolean JNICALL Java_wallet_core_jni_BitcoinCashAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {
     jclass lhsClass = (*env)->GetObjectClass(env, lhs);
     jfieldID lhsBytesFieldID = (*env)->GetFieldID(env, lhsClass, "bytes", "[B");
     jbyteArray lhsBytesArray = (*env)->GetObjectField(env, lhs, lhsBytesFieldID);
@@ -97,7 +97,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_equals(J
     return resultValue;
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_isValid(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jboolean JNICALL Java_wallet_core_jni_BitcoinCashAddress_isValid(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jboolean resultValue = (jboolean) TWBitcoinCashAddressIsValid(dataData);
 
@@ -106,7 +106,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_isValid(
     return resultValue;
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string) {
+jboolean JNICALL Java_wallet_core_jni_BitcoinCashAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string) {
     TWString *stringString = TWStringCreateWithJString(env, string);
     jboolean resultValue = (jboolean) TWBitcoinCashAddressIsValidString(stringString);
 
@@ -115,7 +115,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_isValidS
     return resultValue;
 }
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_description(JNIEnv *env, jobject thisObject) {
+jstring JNICALL Java_wallet_core_jni_BitcoinCashAddress_description(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
     jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
@@ -132,7 +132,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_descripti
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_data(JNIEnv *env, jobject thisObject) {
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_data(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
     jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
@@ -149,7 +149,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_data(J
     return result;
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_legacyAddress(JNIEnv *env, jobject thisObject) {
+jobject JNICALL Java_wallet_core_jni_BitcoinCashAddress_legacyAddress(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
     jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
@@ -163,10 +163,10 @@ jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_legacyAdd
     (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
-    jclass class = (*env)->FindClass(env, "com/wallet/crypto/trustapp/jni/BitcoinAddress");
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/BitcoinAddress");
     jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TWBitcoinAddress));
     (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TWBitcoinAddress), (jbyte *) &result);
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lcom/wallet/crypto/trustapp/jni/BitcoinAddress;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/BitcoinAddress;");
     return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
 }
 

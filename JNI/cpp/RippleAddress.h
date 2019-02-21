@@ -16,25 +16,25 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_RippleAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string);
+jlong JNICALL Java_wallet_core_jni_RippleAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_RippleAddress_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
+jlong JNICALL Java_wallet_core_jni_RippleAddress_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_RippleAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey);
+jlong JNICALL Java_wallet_core_jni_RippleAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey);
 
 JNIEXPORT
-void JNICALL Java_com_wallet_crypto_trustapp_jni_RippleAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
+void JNICALL Java_wallet_core_jni_RippleAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_RippleAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
+jboolean JNICALL Java_wallet_core_jni_RippleAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_RippleAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);
+jboolean JNICALL Java_wallet_core_jni_RippleAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_RippleAddress_description(JNIEnv *env, jobject thisObject);
+jstring JNICALL Java_wallet_core_jni_RippleAddress_description(JNIEnv *env, jobject thisObject);
 
 
 TW_EXTERN_C_END

@@ -17,14 +17,14 @@
 #include "TWJNI.h"
 #include "Bech32Address.h"
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string) {
+jlong JNICALL Java_wallet_core_jni_Bech32Address_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string) {
     TWString *stringString = TWStringCreateWithJString(env, string);
     struct TWBech32Address *instance = TWBech32AddressCreateWithString(stringString);
     TWStringDelete(stringString);
     return (jlong) instance;
 }
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_nativeCreateWithData(JNIEnv *env, jclass thisClass, jobject hrp, jbyteArray data) {
+jlong JNICALL Java_wallet_core_jni_Bech32Address_nativeCreateWithData(JNIEnv *env, jclass thisClass, jobject hrp, jbyteArray data) {
     jclass hrpClass = (*env)->GetObjectClass(env, hrp);
     jmethodID hrpValueMethodID = (*env)->GetMethodID(env, hrpClass, "value", "()I");
     jint hrpValue = (*env)->CallIntMethod(env, hrp, hrpValueMethodID);
@@ -35,7 +35,7 @@ jlong JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_nativeCreateWith
     return (jlong) instance;
 }
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject hrp, jobject publicKey) {
+jlong JNICALL Java_wallet_core_jni_Bech32Address_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject hrp, jobject publicKey) {
     jclass hrpClass = (*env)->GetObjectClass(env, hrp);
     jmethodID hrpValueMethodID = (*env)->GetMethodID(env, hrpClass, "value", "()I");
     jint hrpValue = (*env)->CallIntMethod(env, hrp, hrpValueMethodID);
@@ -52,11 +52,11 @@ jlong JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_nativeCreateWith
     return (jlong) instance;
 }
 
-void JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
+void JNICALL Java_wallet_core_jni_Bech32Address_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
     TWBech32AddressDelete((struct TWBech32Address *) handle);
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {
+jboolean JNICALL Java_wallet_core_jni_Bech32Address_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {
     jclass lhsClass = (*env)->GetObjectClass(env, lhs);
     jfieldID lhsHandleFieldID = (*env)->GetFieldID(env, lhsClass, "nativeHandle", "J");
     struct TWBech32Address *lhsInstance = (struct TWBech32Address *) (*env)->GetLongField(env, lhs, lhsHandleFieldID);
@@ -71,7 +71,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_equals(JNIEnv
     return resultValue;
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_isValidString(JNIEnv *env, jclass thisClass, jstring string) {
+jboolean JNICALL Java_wallet_core_jni_Bech32Address_isValidString(JNIEnv *env, jclass thisClass, jstring string) {
     TWString *stringString = TWStringCreateWithJString(env, string);
     jboolean resultValue = (jboolean) TWBech32AddressIsValidString(stringString);
 
@@ -80,7 +80,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_isValidString
     return resultValue;
 }
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_description(JNIEnv *env, jobject thisObject) {
+jstring JNICALL Java_wallet_core_jni_Bech32Address_description(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWBech32Address *instance = (struct TWBech32Address *) (*env)->GetLongField(env, thisObject, handleFieldID);
@@ -93,7 +93,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_description(JN
     return result;
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_hrp(JNIEnv *env, jobject thisObject) {
+jobject JNICALL Java_wallet_core_jni_Bech32Address_hrp(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWBech32Address *instance = (struct TWBech32Address *) (*env)->GetLongField(env, thisObject, handleFieldID);
@@ -106,7 +106,7 @@ jobject JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_hrp(JNIEnv *en
     return resultValue;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Bech32Address_witnessProgram(JNIEnv *env, jobject thisObject) {
+jbyteArray JNICALL Java_wallet_core_jni_Bech32Address_witnessProgram(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWBech32Address *instance = (struct TWBech32Address *) (*env)->GetLongField(env, thisObject, handleFieldID);

@@ -1,7 +1,7 @@
 package com.trustwallet.core.app
 
 import com.trustwallet.core.app.utils.Numeric
-import com.wallet.crypto.trustapp.jni.UInt256
+import wallet.core.jni.UInt256
 import org.junit.Assert.*
 import org.junit.Test
 

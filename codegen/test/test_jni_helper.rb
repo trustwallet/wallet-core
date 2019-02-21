@@ -11,7 +11,7 @@ class JNIHelperTest < Test::Unit::TestCase
     entity = EntityDecl.new(name: 'Test', is_struct: false)
     method = FunctionDecl.new(name: 'Function', entity: entity, is_method: true)
     name = JNIHelper.function_name(entity: entity, function: method)
-    assert_equal(name, 'Java_com_wallet_crypto_trustapp_jni_Test_function')
+    assert_equal(name, 'Java_wallet_core_jni_Test_function')
   end
 
   def test_type

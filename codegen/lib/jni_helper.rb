@@ -15,9 +15,9 @@ module JNIHelper
   # Transforms a method/property name to a JNI function name
   def self.function_name(entity:, function:, native_prefix: false)
     if native_prefix
-      "Java_com_wallet_crypto_trustapp_jni_#{entity.name}_native#{function.name}"
+      "Java_wallet_core_jni_#{entity.name}_native#{function.name}"
     else
-      "Java_com_wallet_crypto_trustapp_jni_#{entity.name}_#{format_name(function.name)}"
+      "Java_wallet_core_jni_#{entity.name}_#{format_name(function.name)}"
     end
   end
 
@@ -27,9 +27,9 @@ module JNIHelper
     return nil if parts.count < 3 || parts[0] != 'TW'
 
     if parts.count == 3
-      "com/wallet/crypto/trustapp/proto/Common$#{parts.last}"
+      "wallet/core/jni/proto/Common$#{parts.last}"
     else
-      "com/wallet/crypto/trustapp/proto/#{parts[2]}$#{parts[3]}"
+      "wallet/core/jni/proto/#{parts[2]}$#{parts[3]}"
     end
   end
 

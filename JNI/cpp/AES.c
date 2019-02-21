@@ -16,7 +16,7 @@
 #include "TWJNI.h"
 #include "AES.h"
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_cbcencrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv) {
+jbyteArray JNICALL Java_wallet_core_jni_AES_cbcencrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv) {
     TWData *keyData = TWDataCreateWithJByteArray(env, key);
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     TWData *ivData = TWDataCreateWithJByteArray(env, iv);
@@ -29,7 +29,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_cbcencrypt(JNIEnv *en
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_cbcdecrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv) {
+jbyteArray JNICALL Java_wallet_core_jni_AES_cbcdecrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv) {
     TWData *keyData = TWDataCreateWithJByteArray(env, key);
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     TWData *ivData = TWDataCreateWithJByteArray(env, iv);
@@ -42,7 +42,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_cbcdecrypt(JNIEnv *en
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_ctrencrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv) {
+jbyteArray JNICALL Java_wallet_core_jni_AES_ctrencrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv) {
     TWData *keyData = TWDataCreateWithJByteArray(env, key);
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     TWData *ivData = TWDataCreateWithJByteArray(env, iv);
@@ -55,7 +55,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_ctrencrypt(JNIEnv *en
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_ctrdecrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv) {
+jbyteArray JNICALL Java_wallet_core_jni_AES_ctrdecrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv) {
     TWData *keyData = TWDataCreateWithJByteArray(env, key);
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     TWData *ivData = TWDataCreateWithJByteArray(env, iv);

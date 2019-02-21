@@ -16,7 +16,7 @@
 #include "TWJNI.h"
 #include "BitcoinTransactionSigner.h"
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinTransactionSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input) {
+jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input) {
     jclass inputClass = (*env)->GetObjectClass(env, input);
     jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
     jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
@@ -27,18 +27,18 @@ jlong JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinTransactionSigner_nativ
     return (jlong) instance;
 }
 
-void JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
+void JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
     TWBitcoinTransactionSignerDelete((struct TWBitcoinTransactionSigner *) handle);
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinTransactionSigner_plan(JNIEnv *env, jobject thisObject) {
+jobject JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_plan(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWBitcoinTransactionSigner *instance = (struct TWBitcoinTransactionSigner *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     jbyteArray resultData = TWDataJByteArray(TWBitcoinTransactionSignerPlan(instance), env);
-    jclass resultClass = (*env)->FindClass(env, "com/wallet/crypto/trustapp/proto/Proto$TransactionPlan");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lcom/wallet/crypto/trustapp/proto/Proto$TransactionPlan;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Proto$TransactionPlan");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Proto$TransactionPlan;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);
@@ -48,14 +48,14 @@ jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinTransactionSigner_pla
     return result;
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinTransactionSigner_sign(JNIEnv *env, jobject thisObject) {
+jobject JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_sign(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWBitcoinTransactionSigner *instance = (struct TWBitcoinTransactionSigner *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     jbyteArray resultData = TWDataJByteArray(TWBitcoinTransactionSignerSign(instance), env);
-    jclass resultClass = (*env)->FindClass(env, "com/wallet/crypto/trustapp/proto/Common$Result");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lcom/wallet/crypto/trustapp/proto/Common$Result;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Common$Result");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Common$Result;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);

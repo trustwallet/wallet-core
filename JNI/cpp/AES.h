@@ -16,16 +16,16 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_cbcencrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv);
+jbyteArray JNICALL Java_wallet_core_jni_AES_cbcencrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_cbcdecrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv);
+jbyteArray JNICALL Java_wallet_core_jni_AES_cbcdecrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_ctrencrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv);
+jbyteArray JNICALL Java_wallet_core_jni_AES_ctrencrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_AES_ctrdecrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv);
+jbyteArray JNICALL Java_wallet_core_jni_AES_ctrdecrypt(JNIEnv *env, jclass thisClass, jbyteArray key, jbyteArray data, jbyteArray iv);
 
 
 TW_EXTERN_C_END

@@ -16,19 +16,19 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input);
+jlong JNICALL Java_wallet_core_jni_ZcashTransactionSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_nativeCreateWithPlan(JNIEnv *env, jclass thisClass, jobject input, jobject plan);
+jlong JNICALL Java_wallet_core_jni_ZcashTransactionSigner_nativeCreateWithPlan(JNIEnv *env, jclass thisClass, jobject input, jobject plan);
 
 JNIEXPORT
-void JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
+void JNICALL Java_wallet_core_jni_ZcashTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_plan(JNIEnv *env, jobject thisObject);
+jobject JNICALL Java_wallet_core_jni_ZcashTransactionSigner_plan(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_sign(JNIEnv *env, jobject thisObject);
+jobject JNICALL Java_wallet_core_jni_ZcashTransactionSigner_sign(JNIEnv *env, jobject thisObject);
 
 
 TW_EXTERN_C_END

@@ -2,7 +2,7 @@ syntax = "proto3";
 import "google/protobuf/any.proto";
 
 package TW.Proto;
-option java_package = "com.wallet.crypto.trustapp.proto";
+option java_package = "wallet.core.jni.proto";
 
 // Result type.
 message Result {

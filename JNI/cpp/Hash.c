@@ -16,7 +16,7 @@
 #include "TWJNI.h"
 #include "Hash.h"
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha1(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha1(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashSHA1(dataData), env);
 
@@ -25,7 +25,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha1(JNIEnv *env, jc
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha256(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha256(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashSHA256(dataData), env);
 
@@ -34,7 +34,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha256(JNIEnv *env, 
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha512(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha512(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashSHA512(dataData), env);
 
@@ -43,7 +43,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha512(JNIEnv *env, 
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_keccak256(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_keccak256(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashKeccak256(dataData), env);
 
@@ -52,7 +52,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_keccak256(JNIEnv *en
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_keccak512(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_keccak512(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashKeccak512(dataData), env);
 
@@ -61,7 +61,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_keccak512(JNIEnv *en
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha3256(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha3256(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashSHA3_256(dataData), env);
 
@@ -70,7 +70,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha3256(JNIEnv *env,
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha3512(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha3512(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashSHA3_512(dataData), env);
 
@@ -79,7 +79,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha3512(JNIEnv *env,
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_ripemd(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_ripemd(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashRIPEMD(dataData), env);
 
@@ -88,7 +88,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_ripemd(JNIEnv *env, 
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_blake2b(JNIEnv *env, jclass thisClass, jbyteArray data, jsize size) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_blake2b(JNIEnv *env, jclass thisClass, jbyteArray data, jsize size) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashBlake2b(dataData, size), env);
 
@@ -97,7 +97,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_blake2b(JNIEnv *env,
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha256RIPEMD(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha256RIPEMD(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashSHA256RIPEMD(dataData), env);
 
@@ -106,7 +106,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha256RIPEMD(JNIEnv 
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha256SHA256(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha256SHA256(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jbyteArray result = TWDataJByteArray(TWHashSHA256SHA256(dataData), env);
 

@@ -18,9 +18,9 @@ module JavaHelper
     return nil if parts.count < 3 || parts[0] != 'TW'
 
     if parts.count == 3
-      "com.wallet.crypto.trustapp.proto.Common.#{parts.last}"
+      "wallet.core.jni.proto.Common.#{parts.last}"
     else
-      "com.wallet.crypto.trustapp.proto.#{parts[1]}.#{parts.last}"
+      "wallet.core.jni.proto.#{parts[1]}.#{parts.last}"
     end
   end
 

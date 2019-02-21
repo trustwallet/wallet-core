@@ -16,31 +16,31 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWithString(JNIEnv *env, jclass thisClass, jstring string);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_initWithString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_initWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_initWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
+jboolean JNICALL Java_wallet_core_jni_BitcoinCashAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_isValid(JNIEnv *env, jclass thisClass, jbyteArray data);
+jboolean JNICALL Java_wallet_core_jni_BitcoinCashAddress_isValid(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);
+jboolean JNICALL Java_wallet_core_jni_BitcoinCashAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_description(JNIEnv *env, jobject thisObject);
+jstring JNICALL Java_wallet_core_jni_BitcoinCashAddress_description(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_data(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_data(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinCashAddress_legacyAddress(JNIEnv *env, jobject thisObject);
+jobject JNICALL Java_wallet_core_jni_BitcoinCashAddress_legacyAddress(JNIEnv *env, jobject thisObject);
 
 
 TW_EXTERN_C_END

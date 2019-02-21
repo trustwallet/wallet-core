@@ -1,7 +1,7 @@
 package com.trustwallet.core.app
 
 import com.trustwallet.core.app.utils.Numeric
-import com.wallet.crypto.trustapp.jni.Hash
+import wallet.core.jni.Hash
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
