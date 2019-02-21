@@ -16,31 +16,31 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_nativeCreate(JNIEnv *env, jclass thisClass);
+jlong JNICALL Java_wallet_core_jni_PrivateKey_nativeCreate(JNIEnv *env, jclass thisClass);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
+jlong JNICALL Java_wallet_core_jni_PrivateKey_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_nativeCreateCopy(JNIEnv *env, jclass thisClass, jobject key);
+jlong JNICALL Java_wallet_core_jni_PrivateKey_nativeCreateCopy(JNIEnv *env, jclass thisClass, jobject key);
 
 JNIEXPORT
-void JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
+void JNICALL Java_wallet_core_jni_PrivateKey_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_isValid(JNIEnv *env, jclass thisClass, jbyteArray data);
+jboolean JNICALL Java_wallet_core_jni_PrivateKey_isValid(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_data(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_data(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_getPublicKey(JNIEnv *env, jobject thisObject, jboolean compressed);
+jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKey(JNIEnv *env, jobject thisObject, jboolean compressed);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_sign(JNIEnv *env, jobject thisObject, jbyteArray digest);
+jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_sign(JNIEnv *env, jobject thisObject, jbyteArray digest);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_PrivateKey_signAsDER(JNIEnv *env, jobject thisObject, jbyteArray digest);
+jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_signAsDER(JNIEnv *env, jobject thisObject, jbyteArray digest);
 
 
 TW_EXTERN_C_END

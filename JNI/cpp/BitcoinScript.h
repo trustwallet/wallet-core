@@ -16,70 +16,70 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_nativeCreate(JNIEnv *env, jclass thisClass);
+jlong JNICALL Java_wallet_core_jni_BitcoinScript_nativeCreate(JNIEnv *env, jclass thisClass);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
+jlong JNICALL Java_wallet_core_jni_BitcoinScript_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_nativeCreateCopy(JNIEnv *env, jclass thisClass, jobject script);
+jlong JNICALL Java_wallet_core_jni_BitcoinScript_nativeCreateCopy(JNIEnv *env, jclass thisClass, jobject script);
 
 JNIEXPORT
-void JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
+void JNICALL Java_wallet_core_jni_BitcoinScript_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
+jboolean JNICALL Java_wallet_core_jni_BitcoinScript_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_buildPayToPublicKeyHash(JNIEnv *env, jclass thisClass, jbyteArray hash);
+jobject JNICALL Java_wallet_core_jni_BitcoinScript_buildPayToPublicKeyHash(JNIEnv *env, jclass thisClass, jbyteArray hash);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_buildPayToScriptHash(JNIEnv *env, jclass thisClass, jbyteArray scriptHash);
+jobject JNICALL Java_wallet_core_jni_BitcoinScript_buildPayToScriptHash(JNIEnv *env, jclass thisClass, jbyteArray scriptHash);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_buildPayToWitnessPubkeyHash(JNIEnv *env, jclass thisClass, jbyteArray hash);
+jobject JNICALL Java_wallet_core_jni_BitcoinScript_buildPayToWitnessPubkeyHash(JNIEnv *env, jclass thisClass, jbyteArray hash);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_buildPayToWitnessScriptHash(JNIEnv *env, jclass thisClass, jbyteArray scriptHash);
+jobject JNICALL Java_wallet_core_jni_BitcoinScript_buildPayToWitnessScriptHash(JNIEnv *env, jclass thisClass, jbyteArray scriptHash);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_buildForAddress(JNIEnv *env, jclass thisClass, jstring address);
+jobject JNICALL Java_wallet_core_jni_BitcoinScript_buildForAddress(JNIEnv *env, jclass thisClass, jstring address);
 
 JNIEXPORT
-jsize JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_size(JNIEnv *env, jobject thisObject);
+jsize JNICALL Java_wallet_core_jni_BitcoinScript_size(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_data(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinScript_data(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_scriptHash(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinScript_scriptHash(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_isPayToScriptHash(JNIEnv *env, jobject thisObject);
+jboolean JNICALL Java_wallet_core_jni_BitcoinScript_isPayToScriptHash(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_isPayToWitnessScriptHash(JNIEnv *env, jobject thisObject);
+jboolean JNICALL Java_wallet_core_jni_BitcoinScript_isPayToWitnessScriptHash(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_isWitnessProgram(JNIEnv *env, jobject thisObject);
+jboolean JNICALL Java_wallet_core_jni_BitcoinScript_isWitnessProgram(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_matchPayToPubkey(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinScript_matchPayToPubkey(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_matchPayToPubkeyHash(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinScript_matchPayToPubkeyHash(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_matchPayToScriptHash(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinScript_matchPayToScriptHash(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_matchPayToWitnessPublicKeyHash(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinScript_matchPayToWitnessPublicKeyHash(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_matchPayToWitnessScriptHash(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinScript_matchPayToWitnessScriptHash(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_BitcoinScript_encode(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_BitcoinScript_encode(JNIEnv *env, jobject thisObject);
 
 
 TW_EXTERN_C_END

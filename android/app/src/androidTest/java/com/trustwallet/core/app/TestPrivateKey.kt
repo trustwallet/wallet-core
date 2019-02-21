@@ -1,8 +1,8 @@
 package com.trustwallet.core.app
 
 import com.trustwallet.core.app.utils.Numeric
-import com.wallet.crypto.trustapp.jni.Hash
-import com.wallet.crypto.trustapp.jni.PrivateKey
+import wallet.core.jni.Hash
+import wallet.core.jni.PrivateKey
 import org.junit.Assert.*
 import org.junit.Test
 

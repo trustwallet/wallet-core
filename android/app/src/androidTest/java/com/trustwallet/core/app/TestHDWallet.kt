@@ -1,10 +1,10 @@
 package com.trustwallet.core.app
 
 import com.trustwallet.core.app.utils.Numeric
-import com.wallet.crypto.trustapp.jni.CoinType
-import com.wallet.crypto.trustapp.jni.HDVersion
-import com.wallet.crypto.trustapp.jni.HDWallet
-import com.wallet.crypto.trustapp.jni.Purpose
+import wallet.core.jni.CoinType
+import wallet.core.jni.HDVersion
+import wallet.core.jni.HDWallet
+import wallet.core.jni.Purpose
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test

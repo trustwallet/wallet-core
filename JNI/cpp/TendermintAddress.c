@@ -17,14 +17,14 @@
 #include "TWJNI.h"
 #include "TendermintAddress.h"
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string) {
+jlong JNICALL Java_wallet_core_jni_TendermintAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string) {
     TWString *stringString = TWStringCreateWithJString(env, string);
     struct TWTendermintAddress *instance = TWTendermintAddressCreateWithString(stringString);
     TWStringDelete(stringString);
     return (jlong) instance;
 }
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeCreateWithKeyHash(JNIEnv *env, jclass thisClass, jobject hrp, jbyteArray keyHash) {
+jlong JNICALL Java_wallet_core_jni_TendermintAddress_nativeCreateWithKeyHash(JNIEnv *env, jclass thisClass, jobject hrp, jbyteArray keyHash) {
     jclass hrpClass = (*env)->GetObjectClass(env, hrp);
     jmethodID hrpValueMethodID = (*env)->GetMethodID(env, hrpClass, "value", "()I");
     jint hrpValue = (*env)->CallIntMethod(env, hrp, hrpValueMethodID);
@@ -35,7 +35,7 @@ jlong JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeCreate
     return (jlong) instance;
 }
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject hrp, jobject publicKey) {
+jlong JNICALL Java_wallet_core_jni_TendermintAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject hrp, jobject publicKey) {
     jclass hrpClass = (*env)->GetObjectClass(env, hrp);
     jmethodID hrpValueMethodID = (*env)->GetMethodID(env, hrpClass, "value", "()I");
     jint hrpValue = (*env)->CallIntMethod(env, hrp, hrpValueMethodID);
@@ -52,11 +52,11 @@ jlong JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeCreate
     return (jlong) instance;
 }
 
-void JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
+void JNICALL Java_wallet_core_jni_TendermintAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
     TWTendermintAddressDelete((struct TWTendermintAddress *) handle);
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {
+jboolean JNICALL Java_wallet_core_jni_TendermintAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {
     jclass lhsClass = (*env)->GetObjectClass(env, lhs);
     jfieldID lhsHandleFieldID = (*env)->GetFieldID(env, lhsClass, "nativeHandle", "J");
     struct TWTendermintAddress *lhsInstance = (struct TWTendermintAddress *) (*env)->GetLongField(env, lhs, lhsHandleFieldID);
@@ -71,7 +71,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_equals(JN
     return resultValue;
 }
 
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string) {
+jboolean JNICALL Java_wallet_core_jni_TendermintAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string) {
     TWString *stringString = TWStringCreateWithJString(env, string);
     jboolean resultValue = (jboolean) TWTendermintAddressIsValidString(stringString);
 
@@ -80,7 +80,7 @@ jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_isValidSt
     return resultValue;
 }
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_description(JNIEnv *env, jobject thisObject) {
+jstring JNICALL Java_wallet_core_jni_TendermintAddress_description(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWTendermintAddress *instance = (struct TWTendermintAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
@@ -93,7 +93,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_descriptio
     return result;
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_hrp(JNIEnv *env, jobject thisObject) {
+jobject JNICALL Java_wallet_core_jni_TendermintAddress_hrp(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWTendermintAddress *instance = (struct TWTendermintAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
@@ -106,7 +106,7 @@ jobject JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_hrp(JNIEnv
     return resultValue;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_keyHash(JNIEnv *env, jobject thisObject) {
+jbyteArray JNICALL Java_wallet_core_jni_TendermintAddress_keyHash(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWTendermintAddress *instance = (struct TWTendermintAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);

@@ -16,31 +16,31 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string);
+jlong JNICALL Java_wallet_core_jni_TendermintAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeCreateWithKeyHash(JNIEnv *env, jclass thisClass, jobject hrp, jbyteArray keyHash);
+jlong JNICALL Java_wallet_core_jni_TendermintAddress_nativeCreateWithKeyHash(JNIEnv *env, jclass thisClass, jobject hrp, jbyteArray keyHash);
 
 JNIEXPORT
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject hrp, jobject publicKey);
+jlong JNICALL Java_wallet_core_jni_TendermintAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject hrp, jobject publicKey);
 
 JNIEXPORT
-void JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
+void JNICALL Java_wallet_core_jni_TendermintAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
+jboolean JNICALL Java_wallet_core_jni_TendermintAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
 
 JNIEXPORT
-jboolean JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);
+jboolean JNICALL Java_wallet_core_jni_TendermintAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_description(JNIEnv *env, jobject thisObject);
+jstring JNICALL Java_wallet_core_jni_TendermintAddress_description(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_hrp(JNIEnv *env, jobject thisObject);
+jobject JNICALL Java_wallet_core_jni_TendermintAddress_hrp(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_TendermintAddress_keyHash(JNIEnv *env, jobject thisObject);
+jbyteArray JNICALL Java_wallet_core_jni_TendermintAddress_keyHash(JNIEnv *env, jobject thisObject);
 
 
 TW_EXTERN_C_END

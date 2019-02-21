@@ -16,7 +16,7 @@
 #include "TWJNI.h"
 #include "Base58.h"
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_Base58_encode(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jstring JNICALL Java_wallet_core_jni_Base58_encode(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jstring result = TWStringJString(TWBase58Encode(dataData), env);
 
@@ -25,7 +25,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_Base58_encode(JNIEnv *env, j
     return result;
 }
 
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_Base58_encodeNoCheck(JNIEnv *env, jclass thisClass, jbyteArray data) {
+jstring JNICALL Java_wallet_core_jni_Base58_encodeNoCheck(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
     jstring result = TWStringJString(TWBase58EncodeNoCheck(dataData), env);
 
@@ -34,7 +34,7 @@ jstring JNICALL Java_com_wallet_crypto_trustapp_jni_Base58_encodeNoCheck(JNIEnv 
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Base58_decode(JNIEnv *env, jclass thisClass, jstring string) {
+jbyteArray JNICALL Java_wallet_core_jni_Base58_decode(JNIEnv *env, jclass thisClass, jstring string) {
     TWString *stringString = TWStringCreateWithJString(env, string);
     jbyteArray result = TWDataJByteArray(TWBase58Decode(stringString), env);
 
@@ -43,7 +43,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Base58_decode(JNIEnv *env
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Base58_decodeNoCheck(JNIEnv *env, jclass thisClass, jstring string) {
+jbyteArray JNICALL Java_wallet_core_jni_Base58_decodeNoCheck(JNIEnv *env, jclass thisClass, jstring string) {
     TWString *stringString = TWStringCreateWithJString(env, string);
     jbyteArray result = TWDataJByteArray(TWBase58DecodeNoCheck(stringString), env);
 

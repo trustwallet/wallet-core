@@ -16,13 +16,13 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_KeyDerivation_scrypt(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jlong n, jint r, jint p, jsize keyLength);
+jbyteArray JNICALL Java_wallet_core_jni_KeyDerivation_scrypt(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jlong n, jint r, jint p, jsize keyLength);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_KeyDerivation_pbkdf2256(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jint iterations, jsize keyLength);
+jbyteArray JNICALL Java_wallet_core_jni_KeyDerivation_pbkdf2256(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jint iterations, jsize keyLength);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_KeyDerivation_pbkdf2512(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jint iterations, jsize keyLength);
+jbyteArray JNICALL Java_wallet_core_jni_KeyDerivation_pbkdf2512(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jint iterations, jsize keyLength);
 
 
 TW_EXTERN_C_END

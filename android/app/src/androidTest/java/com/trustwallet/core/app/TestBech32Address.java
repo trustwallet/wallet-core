@@ -1,8 +1,8 @@
 package com.trustwallet.core.app;
 
-import com.wallet.crypto.trustapp.jni.Bech32Address;
-import com.wallet.crypto.trustapp.jni.HRP;
-import com.wallet.crypto.trustapp.jni.PublicKey;
+import wallet.core.jni.Bech32Address;
+import wallet.core.jni.HRP;
+import wallet.core.jni.PublicKey;
 
 import org.junit.Test;
 

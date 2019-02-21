@@ -16,19 +16,19 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getSymbol(JNIEnv *env, jclass thisClass, jobject type);
+jstring JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getSymbol(JNIEnv *env, jclass thisClass, jobject type);
 
 JNIEXPORT
-jint JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getDecimals(JNIEnv *env, jclass thisClass, jobject type);
+jint JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getDecimals(JNIEnv *env, jclass thisClass, jobject type);
 
 JNIEXPORT
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getTransactionURL(JNIEnv *env, jclass thisClass, jobject type, jstring transactionID);
+jstring JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getTransactionURL(JNIEnv *env, jclass thisClass, jobject type, jstring transactionID);
 
 JNIEXPORT
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getID(JNIEnv *env, jclass thisClass, jobject type);
+jstring JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getID(JNIEnv *env, jclass thisClass, jobject type);
 
 JNIEXPORT
-jstring JNICALL Java_com_wallet_crypto_trustapp_jni_CoinTypeConfiguration_getName(JNIEnv *env, jclass thisClass, jobject type);
+jstring JNICALL Java_wallet_core_jni_CoinTypeConfiguration_getName(JNIEnv *env, jclass thisClass, jobject type);
 
 
 TW_EXTERN_C_END

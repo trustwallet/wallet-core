@@ -3,8 +3,8 @@ package com.trustwallet.core.app
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexBytes
-import com.wallet.crypto.trustapp.jni.BitcoinTransactionSigner
-import com.wallet.crypto.trustapp.proto.Bitcoin
+import wallet.core.jni.BitcoinTransactionSigner
+import wallet.core.jni.proto.Bitcoin
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -69,7 +69,7 @@ class TestBitcoinSigning {
         assert(result.success)
         assertEquals(1, result.objectsCount)
 
-        val output = result.getObjects(0).unpack(com.wallet.crypto.trustapp.proto.Bitcoin.SigningOutput::class.java)
+        val output = result.getObjects(0).unpack(wallet.core.jni.proto.Bitcoin.SigningOutput::class.java)
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
         assertEquals(1, signedTransaction.version)
@@ -136,7 +136,7 @@ class TestBitcoinSigning {
         assert(result.success)
         assertEquals(1, result.objectsCount)
 
-        val output = result.getObjects(0).unpack(com.wallet.crypto.trustapp.proto.Bitcoin.SigningOutput::class.java)
+        val output = result.getObjects(0).unpack(Bitcoin.SigningOutput::class.java)
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
         assertEquals(1, signedTransaction.version)

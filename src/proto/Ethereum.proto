@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package TW.Ethereum.Proto;
-option java_package = "com.wallet.crypto.trustapp.proto";
+option java_package = "wallet.core.jni.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {

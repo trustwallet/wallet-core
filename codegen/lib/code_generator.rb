@@ -44,7 +44,7 @@ class CodeGenerator
   end
 
   def render_java
-    render_template(header: 'java/header.erb', template: 'java.erb', output_subfolder: 'jni/java/com/wallet/crypto/trustapp/jni', extension: 'java')
+    render_template(header: 'java/header.erb', template: 'java.erb', output_subfolder: 'jni/java/wallet/core/jni', extension: 'java')
   end
 
   def render_jni_h

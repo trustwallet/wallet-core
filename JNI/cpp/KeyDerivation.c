@@ -16,7 +16,7 @@
 #include "TWJNI.h"
 #include "KeyDerivation.h"
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_KeyDerivation_scrypt(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jlong n, jint r, jint p, jsize keyLength) {
+jbyteArray JNICALL Java_wallet_core_jni_KeyDerivation_scrypt(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jlong n, jint r, jint p, jsize keyLength) {
     TWString *passwordString = TWStringCreateWithJString(env, password);
     TWData *saltData = TWDataCreateWithJByteArray(env, salt);
     jbyteArray result = TWDataJByteArray(TWKeyDerivationScrypt(passwordString, saltData, n, r, p, keyLength), env);
@@ -27,7 +27,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_KeyDerivation_scrypt(JNIE
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_KeyDerivation_pbkdf2256(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jint iterations, jsize keyLength) {
+jbyteArray JNICALL Java_wallet_core_jni_KeyDerivation_pbkdf2256(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jint iterations, jsize keyLength) {
     TWString *passwordString = TWStringCreateWithJString(env, password);
     TWData *saltData = TWDataCreateWithJByteArray(env, salt);
     jbyteArray result = TWDataJByteArray(TWKeyDerivationPBKDF2_256(passwordString, saltData, iterations, keyLength), env);
@@ -38,7 +38,7 @@ jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_KeyDerivation_pbkdf2256(J
     return result;
 }
 
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_KeyDerivation_pbkdf2512(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jint iterations, jsize keyLength) {
+jbyteArray JNICALL Java_wallet_core_jni_KeyDerivation_pbkdf2512(JNIEnv *env, jclass thisClass, jstring password, jbyteArray salt, jint iterations, jsize keyLength) {
     TWString *passwordString = TWStringCreateWithJString(env, password);
     TWData *saltData = TWDataCreateWithJByteArray(env, salt);
     jbyteArray result = TWDataJByteArray(TWKeyDerivationPBKDF2_512(passwordString, saltData, iterations, keyLength), env);

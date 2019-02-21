@@ -16,14 +16,14 @@
 #include "TWJNI.h"
 #include "EthereumSigner.h"
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_EthereumSigner_sign(JNIEnv *env, jclass thisClass, jobject input) {
+jobject JNICALL Java_wallet_core_jni_EthereumSigner_sign(JNIEnv *env, jclass thisClass, jobject input) {
     jclass inputClass = (*env)->GetObjectClass(env, input);
     jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
     jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
     TWData *inputData = TWDataCreateWithJByteArray(env, inputByteArray);
     jbyteArray resultData = TWDataJByteArray(TWEthereumSignerSign(inputData), env);
-    jclass resultClass = (*env)->FindClass(env, "com/wallet/crypto/trustapp/proto/Proto$SigningOutput");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lcom/wallet/crypto/trustapp/proto/Proto$SigningOutput;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Proto$SigningOutput");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Proto$SigningOutput;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);

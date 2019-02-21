@@ -16,7 +16,7 @@
 #include "TWJNI.h"
 #include "ZcashTransactionSigner.h"
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input) {
+jlong JNICALL Java_wallet_core_jni_ZcashTransactionSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input) {
     jclass inputClass = (*env)->GetObjectClass(env, input);
     jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
     jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
@@ -27,7 +27,7 @@ jlong JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_nativeC
     return (jlong) instance;
 }
 
-jlong JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_nativeCreateWithPlan(JNIEnv *env, jclass thisClass, jobject input, jobject plan) {
+jlong JNICALL Java_wallet_core_jni_ZcashTransactionSigner_nativeCreateWithPlan(JNIEnv *env, jclass thisClass, jobject input, jobject plan) {
     jclass inputClass = (*env)->GetObjectClass(env, input);
     jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
     jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
@@ -44,18 +44,18 @@ jlong JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_nativeC
     return (jlong) instance;
 }
 
-void JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
+void JNICALL Java_wallet_core_jni_ZcashTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
     TWZcashTransactionSignerDelete((struct TWZcashTransactionSigner *) handle);
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_plan(JNIEnv *env, jobject thisObject) {
+jobject JNICALL Java_wallet_core_jni_ZcashTransactionSigner_plan(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWZcashTransactionSigner *instance = (struct TWZcashTransactionSigner *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     jbyteArray resultData = TWDataJByteArray(TWZcashTransactionSignerPlan(instance), env);
-    jclass resultClass = (*env)->FindClass(env, "com/wallet/crypto/trustapp/proto/Proto$TransactionPlan");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lcom/wallet/crypto/trustapp/proto/Proto$TransactionPlan;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Proto$TransactionPlan");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Proto$TransactionPlan;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);
@@ -65,14 +65,14 @@ jobject JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_plan(
     return result;
 }
 
-jobject JNICALL Java_com_wallet_crypto_trustapp_jni_ZcashTransactionSigner_sign(JNIEnv *env, jobject thisObject) {
+jobject JNICALL Java_wallet_core_jni_ZcashTransactionSigner_sign(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWZcashTransactionSigner *instance = (struct TWZcashTransactionSigner *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     jbyteArray resultData = TWDataJByteArray(TWZcashTransactionSignerSign(instance), env);
-    jclass resultClass = (*env)->FindClass(env, "com/wallet/crypto/trustapp/proto/Common$Result");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lcom/wallet/crypto/trustapp/proto/Common$Result;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Common$Result");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Common$Result;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);

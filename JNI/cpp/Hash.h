@@ -16,37 +16,37 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha1(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha1(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha256(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha256(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha512(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha512(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_keccak256(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_keccak256(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_keccak512(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_keccak512(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha3256(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha3256(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha3512(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha3512(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_ripemd(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_ripemd(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_blake2b(JNIEnv *env, jclass thisClass, jbyteArray data, jsize size);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_blake2b(JNIEnv *env, jclass thisClass, jbyteArray data, jsize size);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha256RIPEMD(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha256RIPEMD(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
-jbyteArray JNICALL Java_com_wallet_crypto_trustapp_jni_Hash_sha256SHA256(JNIEnv *env, jclass thisClass, jbyteArray data);
+jbyteArray JNICALL Java_wallet_core_jni_Hash_sha256SHA256(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 
 TW_EXTERN_C_END

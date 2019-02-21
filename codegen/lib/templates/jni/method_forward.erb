@@ -61,17 +61,17 @@
 <%=   render('jni/instance_release.erb', { entity: entity }) %>
 <%  end -%>
 
-    jclass class = (*env)->FindClass(env, "com/wallet/crypto/trustapp/jni/<%= method.return_type.name %>");
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/<%= method.return_type.name %>");
 <%  if method.return_type.is_struct -%>
     jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TW<%= method.return_type.name %>));
     (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TW<%= method.return_type.name %>), (jbyte *) &result);
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lcom/wallet/crypto/trustapp/jni/<%= method.return_type.name %>;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/<%= method.return_type.name %>;");
     return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
 <%  else -%>
     if (result == NULL) {
         return NULL;
     }
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lcom/wallet/crypto/trustapp/jni/<%= method.return_type.name %>;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/<%= method.return_type.name %>;");
     return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 <%  end
 
