@@ -28,8 +28,10 @@ struct TransactionBuilder {
             output_size = 1;
 
             auto input_size = 0;
-            for(auto utxo: input.utxo()) {
-                if (utxo.amount() > UnspentSelector::calculateSingleInputFee(input.byte_fee())) { input_size++; }
+            for (auto utxo: input.utxo()) {
+                if (utxo.amount() > UnspentSelector::calculateSingleInputFee(input.byte_fee())) { 
+                    input_size++; 
+                }
             }
 
             plan.amount -= UnspentSelector::calculateFee(input_size, output_size, input.byte_fee());
