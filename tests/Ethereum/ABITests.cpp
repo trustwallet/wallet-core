@@ -21,9 +21,9 @@ TEST(ABI, EncodeTrue) {
 
 TEST(ABI, EncodeFalse) {
     Data encoded;
-    encode(true, encoded);
+    encode(false, encoded);
 
-    EXPECT_EQ(hex(encoded), "0000000000000000000000000000000000000000000000000000000000000001");
+    EXPECT_EQ(hex(encoded), "0000000000000000000000000000000000000000000000000000000000000000");
 }
 
 TEST(ABI, EncodeUInt) {
