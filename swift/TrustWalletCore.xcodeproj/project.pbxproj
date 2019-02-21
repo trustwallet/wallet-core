@@ -340,6 +340,9 @@
 		61FD1FEF21F13F83000617B1 /* time.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61CAC6ED21F113C60086D9A0 /* time.cc */; };
 		61FD1FF021F13F83000617B1 /* wire_format_lite.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61CAC89D21F113C70086D9A0 /* wire_format_lite.cc */; };
 		61FD1FF621F1401F000617B1 /* libprotobuf-lite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 61FD1FD321F13ECD000617B1 /* libprotobuf-lite.a */; };
+		61FE4B19221F64B200C65017 /* EthereumAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FE4B18221F64B200C65017 /* EthereumAddress.swift */; };
+		61FE4B1B221F64BD00C65017 /* TWEthereumAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 61FE4B1A221F64BD00C65017 /* TWEthereumAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		61FE4B1D221F64D500C65017 /* TWEthereumAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61FE4B1C221F64D500C65017 /* TWEthereumAddress.cpp */; };
 		BB158441220AADE700657CDA /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = BB15843F220AADE700657CDA /* Transaction.h */; };
 		BB158447220AADF800657CDA /* TransactionBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = BB158444220AADF700657CDA /* TransactionBuilder.h */; };
 		BB211052221C032900571DF7 /* base58.h in Headers */ = {isa = PBXBuildFile; fileRef = BB211051221C032800571DF7 /* base58.h */; };
@@ -764,6 +767,9 @@
 		61EE6B2121DEB46A001FBB79 /* UnspentSelector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnspentSelector.cpp; sourceTree = "<group>"; };
 		61FCE682221E287000B38E9C /* unknown_field_set.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unknown_field_set.h; sourceTree = "<group>"; };
 		61FD1FD321F13ECD000617B1 /* libprotobuf-lite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libprotobuf-lite.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		61FE4B18221F64B200C65017 /* EthereumAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumAddress.swift; sourceTree = "<group>"; };
+		61FE4B1A221F64BD00C65017 /* TWEthereumAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWEthereumAddress.h; sourceTree = "<group>"; };
+		61FE4B1C221F64D500C65017 /* TWEthereumAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWEthereumAddress.cpp; sourceTree = "<group>"; };
 		667A8CF3B4C135CBB4CAC72E /* Pods-TrustWalletCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore/Pods-TrustWalletCore.release.xcconfig"; sourceTree = "<group>"; };
 		7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore_TrustWalletCoreTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FA8B7BB1E3133C07DD22764 /* Pods-TrustWalletCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore.debug.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore/Pods-TrustWalletCore.debug.xcconfig"; sourceTree = "<group>"; };
@@ -888,6 +894,7 @@
 				61A8C5F82208C10A004DA312 /* TWCoinTypeConfiguration.h */,
 				61722BD6220E455400D7BA9A /* TWCommonProto.h */,
 				617358E0219DF043007BF637 /* TWData.h */,
+				61FE4B1A221F64BD00C65017 /* TWEthereumAddress.h */,
 				61A9B36C2202582700E601B3 /* TWEthereumChainID.h */,
 				61E44466221CD4C9006A4FF1 /* TWEthereumProto.h */,
 				61E44467221CD4C9006A4FF1 /* TWEthereumSigner.h */,
@@ -1155,6 +1162,7 @@
 				6198EA7D21B6B9C2008CB60A /* Data.swift */,
 				61346D16220B6F7C00F0141B /* Data+Hex.swift */,
 				61E44462221CD4B3006A4FF1 /* Ethereum.pb.swift */,
+				61FE4B18221F64B200C65017 /* EthereumAddress.swift */,
 				61722BE1220E457D00D7BA9A /* EthereumChainID.swift */,
 				61E44463221CD4B3006A4FF1 /* EthereumSigner.swift */,
 				616E122B21A78094009798FC /* Hash.swift */,
@@ -1255,6 +1263,7 @@
 				61722BFC220E461A00D7BA9A /* TWCoinTypeConfiguration.cpp */,
 				61B159B421CC5DBB00CFE93B /* TWData.cpp */,
 				61B159B821CC5DBB00CFE93B /* TWData+Hex.cpp */,
+				61FE4B1C221F64D500C65017 /* TWEthereumAddress.cpp */,
 				61E4446A221CD674006A4FF1 /* TWEthereumSigner.cpp */,
 				61B159B921CC5DBB00CFE93B /* TWHash.cpp */,
 				61B159BC21CC5DBB00CFE93B /* TWHDWallet.cpp */,
@@ -1496,6 +1505,7 @@
 				61735C23219DF044007BF637 /* ed25519-hash-custom-sha3.h in Headers */,
 				61735AFF219DF044007BF637 /* hasher.h in Headers */,
 				61735B0C219DF044007BF637 /* ecrypt-types.h in Headers */,
+				61FE4B1B221F64BD00C65017 /* TWEthereumAddress.h in Headers */,
 				6198EA8421B811A2008CB60A /* TWBitcoinOpCodes.h in Headers */,
 				61E4446E221CD8C0006A4FF1 /* Ethereum.pb.h in Headers */,
 				61A9B2FA21FB855E00E601B3 /* AddressChecksum.h in Headers */,
@@ -1864,6 +1874,7 @@
 				61722C08220E461A00D7BA9A /* TWZcashTAddress.cpp in Sources */,
 				61A9B2FE21FB855E00E601B3 /* RLP.cpp in Sources */,
 				61722C0D220E461A00D7BA9A /* TWBitcoinScript.cpp in Sources */,
+				61FE4B1D221F64D500C65017 /* TWEthereumAddress.cpp in Sources */,
 				61735C06219DF044007BF637 /* cash_addr.c in Sources */,
 				61735C7B219DF044007BF637 /* rfc7539.c in Sources */,
 				61735BFF219DF044007BF637 /* rand.c in Sources */,
@@ -1951,6 +1962,7 @@
 				61722C0A220E461A00D7BA9A /* TWBinanceSigner.cpp in Sources */,
 				61735C63219DF044007BF637 /* sha3.c in Sources */,
 				61AAD3A321DEF70800B69A34 /* TWBase58.cpp in Sources */,
+				61FE4B19221F64B200C65017 /* EthereumAddress.swift in Sources */,
 				BB211062221C045000571DF7 /* RippleAddress.swift in Sources */,
 				BB3F05B2220BD93E008C6971 /* TAddress.cpp in Sources */,
 				61B159E521CC5DBB00CFE93B /* TWPrivateKey.cpp in Sources */,

@@ -49,3 +49,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
 }
     
 }} // namespace
+
+/// Wrapper for C interface.
+struct TWEthereumAddress {
+    TW::Ethereum::Address impl;
+};
