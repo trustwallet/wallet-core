@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
     submodules: true
   }
 
-  protobuf_dir = 'build/prodtobuf/src/protobuf_ext'
+  protobuf_dir = 'build/protobuf/src/protobuf_ext'
   s.source_files =
     'src/**/*.{c,cc,cpp,h}',
     'include/**/*.h',
