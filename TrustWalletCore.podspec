@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   }
 
   protobuf_dir = 'build/protobuf/src/protobuf_ext'
+  json_dir = 'build/nlohmann/src/nlohmann_json'
   s.source_files =
     'src/**/*.{c,cc,cpp,h}',
     'include/**/*.h',
@@ -137,7 +138,7 @@ Pod::Spec.new do |s|
   s.preserve_paths =
     'trezor-crypto/src/*.{table}',
     "#{protobuf_dir}/src/**/*.h",
-    'lib/json/include/**/*.hpp',
+    "#{json_dir}/**/*.hpp",
     'src/proto/*.proto'
   s.xcconfig = {
     'HEADER_SEARCH_PATHS' => '$(inherited) ' \
@@ -147,8 +148,8 @@ Pod::Spec.new do |s|
       '/usr/local/include' \
       '${PODS_ROOT}/TrustWalletCore/include ' \
       '${PODS_ROOT}/TrustWalletCore/trezor-crypto/include ' \
-      "${PODS_ROOT}/TrustWalletCore/#{protobuf_dir}/src" \
-      '${PODS_ROOT}/TrustWalletCore/lib/json/include',
+      "${PODS_ROOT}/TrustWalletCore/#{protobuf_dir}/src " \
+      "${PODS_ROOT}/TrustWalletCore/#{json_dir} ",
     'GCC_WARN_UNUSED_FUNCTION' => 'NO',
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
@@ -157,7 +158,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
   }
-  s.prepare_command = 'tools/generate-files && cmake -H. -Bbuild && make -Cbuild && make -Cbuild install'
+  s.prepare_command = 'tools/generate-files && cmake -H. -Bbuild && make -Cbuild protobuf_ext nlohmann_json'
 
   s.dependency 'SwiftProtobuf', '~> 1.3.0'
 end
