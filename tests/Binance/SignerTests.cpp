@@ -128,6 +128,9 @@ TEST(BinanceSigner, BuildSend) {
     outputCoin->set_amount(1'001'000'000);
 
     auto signer = Binance::Signer(std::move(signingInput));
+    auto signature = signer.sign();
+    ASSERT_EQ(hex(signature.begin(), signature.end()), "c65a13440f18a155bd971ee40b9e0dd58586f5bf344e12ec4c76c439aebca8c7789bab7bfbfb4ce89aadc4a02df225b6b6efc861c13bbeb5f7a3eea2d7ffc80f");
+
     auto result = signer.build();
 
     ASSERT_EQ(hex(result.begin(), result.end()), "cc01"
@@ -140,7 +143,7 @@ TEST(BinanceSigner, BuildSend) {
             "0a26"
             "eb5ae987"
             "21026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502"
-            "1240""82f3ba6c58810e66091b1c0ab8487709b96fdc66e365aa827eeb4f51eb774dc63601f3841484f28e22292d82ff2551711a8196feedcf78139c0670fb54766b1f"
+            "1240""c65a13440f18a155bd971ee40b9e0dd58586f5bf344e12ec4c76c439aebca8c7789bab7bfbfb4ce89aadc4a02df225b6b6efc861c13bbeb5f7a3eea2d7ffc80f"
             "1813"
             "2017"
         "1a04""74657374"
@@ -195,7 +198,7 @@ TEST(BinanceSigner, BuildSend2) {
             "0a26"
             "eb5ae987"
             "21027e69d96640300433654e016d218a8d7ffed751023d8efe81e55dedbd6754c971"
-            "1240""8e005453d5a6109d1d0a03b0383f20fb1c77bfa39d4230489627873161a2876e60104b94131331f0a7aec574834f74c8720654b1b1b16a8672a5f5f7c74b215a"
+            "1240""8b23eecfa8237a27676725173e58154e6c204bb291b31c3b7b507c8f04e2773909ba70e01b54f4bd0bc76669f5712a5a66b9508acdf3aa5e4fde75fbe57622a1"
             "2001"
     );
 }

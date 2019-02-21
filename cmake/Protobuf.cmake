@@ -153,8 +153,3 @@ set_target_properties(
 )
 
 target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1)
-
-install(TARGETS protobuf
-    ARCHIVE DESTINATION ${protobuf_PREFIX}/lib
-    PUBLIC_HEADER DESTINATION ${protobuf_PREFIX}/include
-)
