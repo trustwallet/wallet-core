@@ -10,22 +10,10 @@
 
 set -e
 
-PROTOC="$PWD/lib/protobuf/src/protoc"
-
-# Build Protobuf
-git submodule update --init
-if [ ! -f "$PROTOC" ]; then
-    pushd lib/protobuf
-    ./autogen.sh
-    ./configure
-    pushd src
-    make -j4 protoc
-    popd
-    popd
-fi
+PROTOBUF_DIR="$PWD/build/protobuf/src/protobuf_ext/"
 
 # Generate Java, C++ and Swift Protobuf files
-$PROTOC -I=lib/protobuf/src -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
+protoc -I=$PROTOBUF_DIR/src -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
 
 # Generate JS Protobuf files
 pushd js
@@ -39,5 +27,5 @@ pushd protobuf-plugin
 mkdir -p build
 cmake -H. -Bbuild
 make -Cbuild
-protoc -I=../lib/protobuf/src -I=../src/proto --plugin=build/protoc-gen-int --int_out ../include/TrustWalletCore ../src/proto/*.proto
+protoc -I=../$PROTOBUF_DIR/src -I=../src/proto --plugin=build/protoc-gen-int --int_out ../include/TrustWalletCore ../src/proto/*.proto
 popd

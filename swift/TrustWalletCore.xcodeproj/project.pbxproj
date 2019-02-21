@@ -762,6 +762,7 @@
 		61E4446D221CD8C0006A4FF1 /* Ethereum.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ethereum.pb.cc; sourceTree = "<group>"; };
 		61EE6B2021DEB46A001FBB79 /* UnspentSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnspentSelector.h; sourceTree = "<group>"; };
 		61EE6B2121DEB46A001FBB79 /* UnspentSelector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnspentSelector.cpp; sourceTree = "<group>"; };
+		61FCE682221E287000B38E9C /* unknown_field_set.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unknown_field_set.h; sourceTree = "<group>"; };
 		61FD1FD321F13ECD000617B1 /* libprotobuf-lite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libprotobuf-lite.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		667A8CF3B4C135CBB4CAC72E /* Pods-TrustWalletCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore/Pods-TrustWalletCore.release.xcconfig"; sourceTree = "<group>"; };
 		7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore_TrustWalletCoreTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1331,6 +1332,7 @@
 				61A9B30921FF978700E601B3 /* timestamp.pb.cc */,
 				61A9B31021FF978800E601B3 /* type.pb.cc */,
 				61A9B31A21FF978900E601B3 /* unknown_field_set.cc */,
+				61FCE682221E287000B38E9C /* unknown_field_set.h */,
 				61CAC8A021F113C70086D9A0 /* wire_format_lite_inl.h */,
 				61CAC89D21F113C70086D9A0 /* wire_format_lite.cc */,
 				61CACC9721F113CA0086D9A0 /* wire_format_lite.h */,
@@ -1338,7 +1340,7 @@
 				61A9B31321FF978800E601B3 /* wrappers.pb.cc */,
 			);
 			name = protobuf;
-			path = ../lib/protobuf/src/google/protobuf;
+			path = ../build/protobuf/src/protobuf_ext/src/google/protobuf;
 			sourceTree = "<group>";
 		};
 		61CAC6AE21F113C60086D9A0 /* stubs */ = {
@@ -2306,7 +2308,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9873B38DWV;
-				HEADER_SEARCH_PATHS = "${SRCROOT}/../lib/protobuf/src";
+				HEADER_SEARCH_PATHS = "${SRCROOT}/../build/protobuf/src/protobuf_ext/src";
 				OTHER_CFLAGS = "-DHAVE_PTHREAD=1";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2321,7 +2323,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9873B38DWV;
-				HEADER_SEARCH_PATHS = "${SRCROOT}/../lib/protobuf/src";
+				HEADER_SEARCH_PATHS = "${SRCROOT}/../build/protobuf/src/protobuf_ext/src";
 				OTHER_CFLAGS = "-DHAVE_PTHREAD=1";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

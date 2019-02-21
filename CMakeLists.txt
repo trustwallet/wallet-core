@@ -15,7 +15,7 @@ macro(find_host_package)
   set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 endmacro(find_host_package)
 
-find_host_package(Boost)
+find_host_package(Boost REQUIRED)
 
 # Submodules
 find_package(Git QUIET)
@@ -36,12 +36,10 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/lib/googletest/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
-# JSON
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(lib/json)
+include(ExternalProject)
 
-# Protobuf
-set(ROOT_DIR ${PROJECT_SOURCE_DIR})
+# Dependencies
+include(cmake/JSON.cmake)
 include(cmake/Protobuf.cmake)
 
 # Source files
@@ -51,14 +49,15 @@ if(${ANDROID})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     find_library(log-lib log)
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost nlohmann_json::nlohmann_json)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
 else()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/proto/*.cc src/*.cpp src/*.h)
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost nlohmann_json::nlohmann_json)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 endif()
+add_dependencies(TrustWalletCore nlohmann_json)
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
@@ -69,6 +68,7 @@ target_include_directories(TrustWalletCore
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
+        ${json_INCLUDE_DIRS}
 )
 
 if(NOT ANDROID AND NOT IOS_PLATFORM)

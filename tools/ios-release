@@ -18,7 +18,7 @@ end
 
 # Make archive
 puts 'Archiving...'
-includes = Dir.glob('include/**/*.h')
+includes = Dir.glob('include/**/*.h') + Dir.glob('lib/**/*.{h,hpp}')
 sources = Dir.glob('swift/Sources/**/*.{swift,h,m}')
 libs = Dir.glob('build/ios/*.a')
 files = includes + sources + libs
@@ -76,15 +76,5 @@ PODSPEC
 file = File.new('build/TrustWalletCore.podspec', 'w')
 file.write(podspec)
 file.close
-stdout, stderr, status = Open3.capture3('pod', 'trunk', 'push',
-                                        '--skip-tests',
-                                        '--skip-import-validation',
-                                        '--allow-warnings',
-                                        file.path)
-puts stdout
-if status != 0
-  STDERR.puts stderr
-  exit 1
-end
 
-puts "Done! Version #{version} is now live."
+puts "Done. Please run 'pod trunk push --allow-warnings #{file.path}'"

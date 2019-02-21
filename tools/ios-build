@@ -9,6 +9,7 @@ echo -e "\n\nBuilding for iOS Device..."
 mkdir -p build/ios-dev
 cmake -H. -Bbuild/ios-dev -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake -DIOS_PLATFORM=OS -DIOS_DEPLOYMENT_TARGET=10.0 -DCMAKE_BUILD_TYPE=Release
 make -C build/ios-dev
+make -C build/ios-dev install
 
 echo -e "\nBuilding for iOS Simulator..."
 mkdir -p build/ios-sim
