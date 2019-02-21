@@ -136,7 +136,7 @@ Pod::Spec.new do |s|
 
   s.preserve_paths =
     'trezor-crypto/src/*.{table}',
-    "#{protobuf_dir}/src/**/*.h",
+    'lib/protobuf/src/**/*.h',
     'lib/json/include/**/*.hpp',
     'src/proto/*.proto'
   s.xcconfig = {
@@ -148,7 +148,7 @@ Pod::Spec.new do |s|
       '${PODS_ROOT}/TrustWalletCore/include ' \
       '${PODS_ROOT}/TrustWalletCore/trezor-crypto/include ' \
       '${PODS_ROOT}/TrustWalletCore/lib/protobuf/src ' \
-      '${PODS_ROOT}/TrustWalletCore/build/nlohmann/src/nlohmann_json',
+      '${PODS_ROOT}/TrustWalletCore/lib/json/include',
     'GCC_WARN_UNUSED_FUNCTION' => 'NO',
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
