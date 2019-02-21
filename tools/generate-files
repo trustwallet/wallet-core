@@ -11,26 +11,9 @@
 set -e
 
 PROTOBUF_DIR="$PWD/build/protobuf/src/protobuf_ext/"
-PROTOC="$PROTOBUF_DIR/src/protoc"
-
-if [ ! -d "$PROTOBUF_DIR" ]; then
-    cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DGIT_SUBMODULE=OFF
-    make -Cbuild
-fi
-
-# Build Protobuf
-if [ ! -f "$PROTOC" ]; then
-    pushd "$PROTOBUF_DIR"
-    ./autogen.sh
-    ./configure
-    pushd src
-    make -j4 protoc
-    popd
-    popd
-fi
 
 # Generate Java, C++ and Swift Protobuf files
-$PROTOC -I=$PROTOBUF_DIR/src -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
+protoc -I=$PROTOBUF_DIR/src -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
 
 # Generate JS Protobuf files
 pushd js

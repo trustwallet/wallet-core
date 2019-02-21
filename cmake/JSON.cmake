@@ -12,7 +12,7 @@ ExternalProject_Add(
 
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/nlohmann/json.hpp <INSTALL_DIR>/include/nlohmann
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/nlohmann <INSTALL_DIR>/include/nlohmann
 )
 ExternalProject_Get_Property(nlohmann_json source_dir)
 
