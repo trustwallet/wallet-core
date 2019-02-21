@@ -10,12 +10,17 @@
 
 set -e
 
-PROTOC="$PWD/lib/protobuf/src/protoc"
+PROTOBUF_DIR="$PWD/build/protobuf/src/protobuf_ext/"
+PROTOC="$PROTOBUF_DIR/src/protoc"
+
+if [ ! -d "$PROTOBUF_DIR" ]; then
+    cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DGIT_SUBMODULE=OFF
+    make -Cbuild
+fi
 
 # Build Protobuf
-git submodule update --init
 if [ ! -f "$PROTOC" ]; then
-    pushd lib/protobuf
+    pushd "$PROTOBUF_DIR"
     ./autogen.sh
     ./configure
     pushd src
@@ -25,7 +30,7 @@ if [ ! -f "$PROTOC" ]; then
 fi
 
 # Generate Java, C++ and Swift Protobuf files
-$PROTOC -I=lib/protobuf/src -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
+$PROTOC -I=$PROTOBUF_DIR/src -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
 
 # Generate JS Protobuf files
 pushd js
@@ -39,5 +44,5 @@ pushd protobuf-plugin
 mkdir -p build
 cmake -H. -Bbuild
 make -Cbuild
-protoc -I=../lib/protobuf/src -I=../src/proto --plugin=build/protoc-gen-int --int_out ../include/TrustWalletCore ../src/proto/*.proto
+protoc -I=../$PROTOBUF_DIR/src -I=../src/proto --plugin=build/protoc-gen-int --int_out ../include/TrustWalletCore ../src/proto/*.proto
 popd
