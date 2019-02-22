@@ -14,35 +14,18 @@ namespace TW {
 using int256_t = boost::multiprecision::int256_t;
 using uint256_t = boost::multiprecision::uint256_t;
 
-template <typename T, typename Data>
-T load(const Data& data);
-
-/// Loads a `int256_t` from a collection of bytes.
-template <typename Data>
-inline int256_t load(const Data& data) {
-    int256_t result;
-    import_bits(result, std::begin(data), std::end(data));
-    return result;
-}
-
 /// Loads a `uint256_t` from a collection of bytes.
-template <typename Data>
-inline uint256_t load(const Data& data) {
+template <typename D>
+uint256_t load(const D& data) {
+    using boost::multiprecision::cpp_int;
     uint256_t result;
-    import_bits(result, std::begin(data), std::end(data));
+    import_bits(result, std::cbegin(data), std::cend(data));
     return result;
-}
-
-/// Stores a `int256_t` as a collection of bytes.
-inline Data store(const int256_t& v) {
-    Data bytes;
-    bytes.reserve(32);
-    export_bits(v, std::back_inserter(bytes), 8);
-    return bytes;
 }
 
 /// Stores a `uint256_t` as a collection of bytes.
 inline Data store(const uint256_t& v) {
+    using boost::multiprecision::cpp_int;
     Data bytes;
     bytes.reserve(32);
     export_bits(v, std::back_inserter(bytes), 8);

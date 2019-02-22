@@ -19,15 +19,15 @@ TW_Ethereum_Proto_SigningOutput TWEthereumSignerSign(TW_Ethereum_Proto_SigningIn
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction(
-        /* nonce: */ load<uint256_t>(input.nonce()),
-        /* gasPrice: */ load<uint256_t>(input.gas_price()),
-        /* gasLimit: */ load<uint256_t>(input.gas_limit()),
+        /* nonce: */ load(input.nonce()),
+        /* gasPrice: */ load(input.gas_price()),
+        /* gasLimit: */ load(input.gas_limit()),
         /* to: */ Address(input.to_address()),
-        /* amount: */ load<uint256_t>(input.amount()),
+        /* amount: */ load(input.amount()),
         /* payload: */ Data(input.payload().begin(), input.payload().end())
     );
 
-    auto signer = Signer(load<uint256_t>(input.chain_id()));
+    auto signer = Signer(load(input.chain_id()));
     signer.sign(key, transaction);
 
     auto protoOutput = Proto::SigningOutput();

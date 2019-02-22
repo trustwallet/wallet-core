@@ -37,9 +37,9 @@ Data Transaction::encode() const noexcept {
     append(encoded, encodeClauses(clauses));
     append(encoded, RLP::encode(gasPriceCoef));
     append(encoded, RLP::encode(gas));
-    append(encoded, RLP::encode(dependOn));
+    append(encoded, RLP::encode(dependsOn));
     append(encoded, RLP::encode(nonce));
-    append(encoded, RLP::encodeList(reversed));
+    append(encoded, RLP::encodeList(reserved));
     if (!signature.empty()) {
         append(encoded, RLP::encode(signature));
     }

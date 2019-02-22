@@ -7,9 +7,9 @@
 #pragma once
 
 #include "../Ethereum/Address.h"
+#include "../proto/VeChain.pb.h"
 #include "../Data.h"
-
-#include <boost/multiprecision/cpp_int.hpp>
+#include "../uint256.h"
 
 namespace TW {
 namespace VeChain {
@@ -17,11 +17,20 @@ namespace VeChain {
 class Clause {
 public:
     Ethereum::Address to;
-    boost::multiprecision::uint256_t value;
+    uint256_t value;
     Data data;
 
     Clause() = default;
-    Clause(Ethereum::Address to, boost::multiprecision::uint256_t value, Data data = {}) : to(to), value(value), data(data) {}
+    Clause(Ethereum::Address to, uint256_t value, Data data = {}) : to(to), value(value), data(data) {}
+
+    /// Decodes from a proto representation.
+    Clause(const Proto::Clause& proto)
+        : Clause(
+            Ethereum::Address(proto.to()),
+            load(proto.value()),
+            Data(proto.data().begin(), proto.data().end())
+        )
+    {}
 };
 
 }} // namespace
