@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2957C1FC2213AAB8004AFC9E /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2957C1FB2213AAB8004AFC9E /* Tron.pb.swift */; };
 		34339D36023473D76FAF18EE /* Pods_TrustWalletCore_TrustWalletCoreTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */; };
 		467181FB9EFC0E4C01DDB460 /* Pods_TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */; };
 		610AEF4521C04DF6008ABB74 /* TWHDWallet.h in Headers */ = {isa = PBXBuildFile; fileRef = 610AEF4421C04DF6008ABB74 /* TWHDWallet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -395,7 +394,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2957C1FB2213AAB8004AFC9E /* Tron.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.pb.swift; sourceTree = "<group>"; };
 		36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5407F36D3F0E141D422B55FB /* Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore-TrustWalletCoreTests/Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig"; sourceTree = "<group>"; };
 		610AEF4421C04DF6008ABB74 /* TWHDWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWHDWallet.h; sourceTree = "<group>"; };
@@ -1191,7 +1189,6 @@
 				61735C87219DF64D007BF637 /* SecRandom.m */,
 				6198EA6421B59575008CB60A /* String.swift */,
 				61A9B3642200D86D00E601B3 /* TendermintAddress.swift */,
-				2957C1FB2213AAB8004AFC9E /* Tron.pb.swift */,
 				61735ACD219DF044007BF637 /* TrustWalletCore.h */,
 				6198EA5E21B2021A008CB60A /* TWFoundationData.h */,
 				6198EA5821B1CC5B008CB60A /* TWFoundationData.m */,
@@ -1950,7 +1947,6 @@
 				6198EA6121B21702008CB60A /* TWFoundationString.m in Sources */,
 				61CABAD821ED782E0086D9A0 /* HDVersion.swift in Sources */,
 				61EE6B2321DEB46A001FBB79 /* UnspentSelector.cpp in Sources */,
-				2957C1FC2213AAB8004AFC9E /* Tron.pb.swift in Sources */,
 				615D9B9B21CED9C700878D22 /* Address.cpp in Sources */,
 				61735C6F219DF044007BF637 /* aes_modes.c in Sources */,
 				61CABAB921ED37160086D9A0 /* AES.swift in Sources */,
