@@ -32,6 +32,7 @@ public:
     void sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept;
 
 protected:
+    /// Computes the transaction hash.
     Data hash(const Ethereum::Transaction& transaction) const noexcept;
 };
 

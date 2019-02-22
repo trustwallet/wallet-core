@@ -34,10 +34,18 @@ public:
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 
 public:
+    /// Signs a hash with the given private key for the given chain identifier.
+    ///
+    /// @returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t> sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept;
+
+    /// R, S, and V values for the given chain identifier and signature.
+    ///
+    /// @returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID, const std::array<byte, 65>& signature) noexcept;
 
 protected:
+    /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
 };
 
