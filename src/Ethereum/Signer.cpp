@@ -9,10 +9,31 @@
 using namespace TW;
 using namespace TW::Ethereum;
 
+std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chainID, const std::array<byte, 65>& signature) noexcept {
+    boost::multiprecision::uint256_t r, s, v;
+    import_bits(r, signature.begin(), signature.begin() + 32);
+    import_bits(s, signature.begin() + 32, signature.begin() + 64);
+    import_bits(v, signature.begin() + 64, signature.begin() + 65);
+    v += 27;
+
+    boost::multiprecision::uint256_t newV;
+    if (chainID != 0) {
+        import_bits(newV, signature.begin() + 64, signature.begin() + 65);
+        newV += 35 + chainID + chainID;
+    } else {
+        newV = v;
+    }
+    return std::make_tuple(r, s, newV);
+}
+
+std::tuple<uint256_t, uint256_t, uint256_t> Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
+    auto signature = privateKey.sign(hash);
+    return values(chainID, signature);
+}
+
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
     auto hash = this->hash(transaction);
-    auto signature = privateKey.sign(hash);
-    auto tuple = values(signature);
+    auto tuple = Signer::sign(chainID, privateKey, hash);
 
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
@@ -31,21 +52,4 @@ Data Signer::hash(const Transaction& transaction) const noexcept {
     append(encoded, RLP::encode(0));
     append(encoded, RLP::encode(0));
     return Hash::keccak256(RLP::encodeList(encoded));
-}
-
-std::tuple<boost::multiprecision::uint256_t, boost::multiprecision::uint256_t, boost::multiprecision::uint256_t> Signer::values(const std::array<byte, 65>& signature) const noexcept {
-    boost::multiprecision::uint256_t r, s, v;
-    import_bits(r, signature.begin(), signature.begin() + 32);
-    import_bits(s, signature.begin() + 32, signature.begin() + 64);
-    import_bits(v, signature.begin() + 64, signature.begin() + 65);
-    v += 27;
-
-    boost::multiprecision::uint256_t newV;
-    if (chainID != 0) {
-        import_bits(newV, signature.begin() + 64, signature.begin() + 65);
-        newV += 35 + chainID + chainID;
-    } else {
-        newV = v;
-    }
-    return std::make_tuple(r, s, newV);
 }

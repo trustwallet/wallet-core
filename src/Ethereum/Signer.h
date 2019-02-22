@@ -20,6 +20,8 @@
 namespace TW {
 namespace Ethereum {
 
+typedef boost::multiprecision::uint256_t uint256_t;
+
 /// Helper class that performs Ethereum transaction signing.
 class Signer {
 public:
@@ -31,9 +33,12 @@ public:
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 
+public:
+    static std::tuple<uint256_t, uint256_t, uint256_t> sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept;
+    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID, const std::array<byte, 65>& signature) noexcept;
+
 protected:
     Data hash(const Transaction& transaction) const noexcept;
-    std::tuple<boost::multiprecision::uint256_t, boost::multiprecision::uint256_t, boost::multiprecision::uint256_t> values(const std::array<byte, 65>& signature) const noexcept;
 };
 
 }} // namespace

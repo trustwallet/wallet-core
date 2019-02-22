@@ -5,14 +5,14 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "../Ethereum/Signer.h"
 
 using namespace TW;
 using namespace TW::Wanchain;
 
 void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept {
     auto hash = this->hash(transaction);
-    auto signature = privateKey.sign(hash);
-    auto tuple = values(signature);
+    auto tuple = Ethereum::Signer::sign(chainID, privateKey, hash);
 
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
@@ -32,21 +32,4 @@ Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
     append(encoded, Ethereum::RLP::encode(0));
     append(encoded, Ethereum::RLP::encode(0));
     return Hash::keccak256(Ethereum::RLP::encodeList(encoded));
-}
-
-std::tuple<boost::multiprecision::uint256_t, boost::multiprecision::uint256_t, boost::multiprecision::uint256_t> Signer::values(const std::array<byte, 65>& signature) const noexcept {
-    boost::multiprecision::uint256_t r, s, v;
-    import_bits(r, signature.begin(), signature.begin() + 32);
-    import_bits(s, signature.begin() + 32, signature.begin() + 64);
-    import_bits(v, signature.begin() + 64, signature.begin() + 65);
-    v += 27;
-
-    boost::multiprecision::uint256_t newV;
-    if (chainID != 0) {
-        import_bits(newV, signature.begin() + 64, signature.begin() + 65);
-        newV += 35 + chainID + chainID;
-    } else {
-        newV = v;
-    }
-    return std::make_tuple(r, s, newV);
 }

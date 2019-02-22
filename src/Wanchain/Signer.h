@@ -33,7 +33,6 @@ public:
 
 protected:
     Data hash(const Ethereum::Transaction& transaction) const noexcept;
-    std::tuple<boost::multiprecision::uint256_t, boost::multiprecision::uint256_t, boost::multiprecision::uint256_t> values(const std::array<byte, 65>& signature) const noexcept;
 };
 
 }} // namespace
