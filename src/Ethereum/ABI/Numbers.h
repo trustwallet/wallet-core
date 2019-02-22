@@ -7,13 +7,11 @@
 #pragma once
 
 #include "../../Data.h"
-#include <boost/multiprecision/cpp_int.hpp>
+#include "../../uint256.h"
 
 namespace TW {
 namespace Ethereum {
 
-typedef boost::multiprecision::uint256_t uint256_t;
-typedef boost::multiprecision::int256_t int256_t;
 static constexpr std::size_t encodedIntSize = 32;
 
 // uint256_t
@@ -27,9 +25,7 @@ std::size_t size(uint256_t) {
 }
 
 void encode(uint256_t value, Data& data) {
-    Data bytes;
-    bytes.reserve(encodedIntSize);
-    export_bits(value, std::back_inserter(bytes), 8);
+    Data bytes = store(value);
 
     append(data, Data(encodedIntSize - bytes.size()));
     append(data, bytes);
