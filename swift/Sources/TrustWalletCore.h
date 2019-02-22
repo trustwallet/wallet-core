@@ -46,5 +46,6 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWRippleAddress.h>
 #include <TrustWalletCore/TWTendermintAddress.h>
 #include <TrustWalletCore/TWUInt256.h>
+#include <TrustWalletCore/TWWanchainSigner.h>
 #include <TrustWalletCore/TWZcashTAddress.h>
 #include <TrustWalletCore/TWZcashTransactionSigner.h>
