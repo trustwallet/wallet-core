@@ -118,7 +118,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value10, "https://poaexplorer.com/txid/search/123");
 
     auto value11 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeThunderToken, txId));
-    assertStringsEqual(value11, "https://scan.thundercore.com/tx/123");
+    assertStringsEqual(value11, "https://scan.thundercore.com/transactions/123");
 
     auto value12 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTomoChain, txId));
     assertStringsEqual(value12, "https://scan.tomochain.com/txs/123");
