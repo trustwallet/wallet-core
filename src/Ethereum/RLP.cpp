@@ -17,7 +17,7 @@ using boost::multiprecision::uint256_t;
 Data RLP::encode(uint256_t value) noexcept {
     using boost::multiprecision::cpp_int;
 
-    std::vector<uint8_t> bytes;
+    Data bytes;
     export_bits(value, std::back_inserter(bytes), 8);
 
     if (bytes.empty() || (bytes.size() == 1 && bytes[0] == 0)) {
