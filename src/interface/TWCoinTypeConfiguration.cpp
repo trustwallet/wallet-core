@@ -89,7 +89,6 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
-    case TWCoinTypeThunderToken:
     case TWCoinTypeWanChain:
     case TWCoinTypeZcoin:
     case TWCoinTypeEOS:
@@ -105,6 +104,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         url += "/#/transaction/" + txId;
         break;
     case TWCoinTypeVeChain:
+    case TWCoinTypeThunderToken:
         url += "/transactions/" + txId;
         break;
     case TWCoinTypeZcash:
