@@ -59,14 +59,14 @@ public final class Ripple {
         getDestinationBytes();
 
     /**
-     * <code>int32 destination_tag = 7;</code>
+     * <code>int64 destination_tag = 7;</code>
      */
-    int getDestinationTag();
+    long getDestinationTag();
 
     /**
-     * <code>int32 flags = 8;</code>
+     * <code>int64 flags = 8;</code>
      */
-    int getFlags();
+    long getFlags();
 
     /**
      * <code>bytes private_key = 9;</code>
@@ -96,8 +96,8 @@ public final class Ripple {
       lastLedgerSequence_ = 0;
       account_ = "";
       destination_ = "";
-      destinationTag_ = 0;
-      flags_ = 0;
+      destinationTag_ = 0L;
+      flags_ = 0L;
       privateKey_ = com.google.protobuf.ByteString.EMPTY;
     }
 
@@ -159,12 +159,12 @@ public final class Ripple {
             }
             case 56: {
 
-              destinationTag_ = input.readInt32();
+              destinationTag_ = input.readInt64();
               break;
             }
             case 64: {
 
-              flags_ = input.readInt32();
+              flags_ = input.readInt64();
               break;
             }
             case 74: {
@@ -309,20 +309,20 @@ public final class Ripple {
     }
 
     public static final int DESTINATION_TAG_FIELD_NUMBER = 7;
-    private int destinationTag_;
+    private long destinationTag_;
     /**
-     * <code>int32 destination_tag = 7;</code>
+     * <code>int64 destination_tag = 7;</code>
      */
-    public int getDestinationTag() {
+    public long getDestinationTag() {
       return destinationTag_;
     }
 
     public static final int FLAGS_FIELD_NUMBER = 8;
-    private int flags_;
+    private long flags_;
     /**
-     * <code>int32 flags = 8;</code>
+     * <code>int64 flags = 8;</code>
      */
-    public int getFlags() {
+    public long getFlags() {
       return flags_;
     }
 
@@ -367,11 +367,11 @@ public final class Ripple {
       if (!getDestinationBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, destination_);
       }
-      if (destinationTag_ != 0) {
-        output.writeInt32(7, destinationTag_);
+      if (destinationTag_ != 0L) {
+        output.writeInt64(7, destinationTag_);
       }
-      if (flags_ != 0) {
-        output.writeInt32(8, flags_);
+      if (flags_ != 0L) {
+        output.writeInt64(8, flags_);
       }
       if (!privateKey_.isEmpty()) {
         output.writeBytes(9, privateKey_);
@@ -407,13 +407,13 @@ public final class Ripple {
       if (!getDestinationBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, destination_);
       }
-      if (destinationTag_ != 0) {
+      if (destinationTag_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, destinationTag_);
+          .computeInt64Size(7, destinationTag_);
       }
-      if (flags_ != 0) {
+      if (flags_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(8, flags_);
+          .computeInt64Size(8, flags_);
       }
       if (!privateKey_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
@@ -479,9 +479,11 @@ public final class Ripple {
       hash = (37 * hash) + DESTINATION_FIELD_NUMBER;
       hash = (53 * hash) + getDestination().hashCode();
       hash = (37 * hash) + DESTINATION_TAG_FIELD_NUMBER;
-      hash = (53 * hash) + getDestinationTag();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getDestinationTag());
       hash = (37 * hash) + FLAGS_FIELD_NUMBER;
-      hash = (53 * hash) + getFlags();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getFlags());
       hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getPrivateKey().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
@@ -633,9 +635,9 @@ public final class Ripple {
 
         destination_ = "";
 
-        destinationTag_ = 0;
+        destinationTag_ = 0L;
 
-        flags_ = 0;
+        flags_ = 0L;
 
         privateKey_ = com.google.protobuf.ByteString.EMPTY;
 
@@ -742,10 +744,10 @@ public final class Ripple {
           destination_ = other.destination_;
           onChanged();
         }
-        if (other.getDestinationTag() != 0) {
+        if (other.getDestinationTag() != 0L) {
           setDestinationTag(other.getDestinationTag());
         }
-        if (other.getFlags() != 0) {
+        if (other.getFlags() != 0L) {
           setFlags(other.getFlags());
         }
         if (other.getPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
@@ -1022,54 +1024,54 @@ public final class Ripple {
         return this;
       }
 
-      private int destinationTag_ ;
+      private long destinationTag_ ;
       /**
-       * <code>int32 destination_tag = 7;</code>
+       * <code>int64 destination_tag = 7;</code>
        */
-      public int getDestinationTag() {
+      public long getDestinationTag() {
         return destinationTag_;
       }
       /**
-       * <code>int32 destination_tag = 7;</code>
+       * <code>int64 destination_tag = 7;</code>
        */
-      public Builder setDestinationTag(int value) {
+      public Builder setDestinationTag(long value) {
         
         destinationTag_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 destination_tag = 7;</code>
+       * <code>int64 destination_tag = 7;</code>
        */
       public Builder clearDestinationTag() {
         
-        destinationTag_ = 0;
+        destinationTag_ = 0L;
         onChanged();
         return this;
       }
 
-      private int flags_ ;
+      private long flags_ ;
       /**
-       * <code>int32 flags = 8;</code>
+       * <code>int64 flags = 8;</code>
        */
-      public int getFlags() {
+      public long getFlags() {
         return flags_;
       }
       /**
-       * <code>int32 flags = 8;</code>
+       * <code>int64 flags = 8;</code>
        */
-      public Builder setFlags(int value) {
+      public Builder setFlags(long value) {
         
         flags_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 flags = 8;</code>
+       * <code>int64 flags = 8;</code>
        */
       public Builder clearFlags() {
         
-        flags_ = 0;
+        flags_ = 0L;
         onChanged();
         return this;
       }
@@ -1665,8 +1667,8 @@ public final class Ripple {
       "ingInput\022\016\n\006amount\030\001 \001(\003\022\013\n\003fee\030\002 \001(\003\022\020\n" +
       "\010sequence\030\003 \001(\005\022\034\n\024last_ledger_sequence\030" +
       "\004 \001(\005\022\017\n\007account\030\005 \001(\t\022\023\n\013destination\030\006 " +
-      "\001(\t\022\027\n\017destination_tag\030\007 \001(\005\022\r\n\005flags\030\010 " +
-      "\001(\005\022\023\n\013private_key\030\t \001(\014\" \n\rSigningOutpu" +
+      "\001(\t\022\027\n\017destination_tag\030\007 \001(\003\022\r\n\005flags\030\010 " +
+      "\001(\003\022\023\n\013private_key\030\t \001(\014\" \n\rSigningOutpu" +
       "t\022\017\n\007encoded\030\001 \001(\014B\"\n com.wallet.crypto." +
       "trustapp.protob\006proto3"
     };

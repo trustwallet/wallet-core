@@ -37,9 +37,9 @@ public struct TW_Ripple_Proto_SigningInput {
 
   public var destination: String = String()
 
-  public var destinationTag: Int32 = 0
+  public var destinationTag: Int64 = 0
 
-  public var flags: Int32 = 0
+  public var flags: Int64 = 0
 
   public var privateKey: Data = SwiftProtobuf.Internal.emptyData
 
@@ -88,8 +88,8 @@ extension TW_Ripple_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 4: try decoder.decodeSingularInt32Field(value: &self.lastLedgerSequence)
       case 5: try decoder.decodeSingularStringField(value: &self.account)
       case 6: try decoder.decodeSingularStringField(value: &self.destination)
-      case 7: try decoder.decodeSingularInt32Field(value: &self.destinationTag)
-      case 8: try decoder.decodeSingularInt32Field(value: &self.flags)
+      case 7: try decoder.decodeSingularInt64Field(value: &self.destinationTag)
+      case 8: try decoder.decodeSingularInt64Field(value: &self.flags)
       case 9: try decoder.decodeSingularBytesField(value: &self.privateKey)
       default: break
       }
@@ -116,10 +116,10 @@ extension TW_Ripple_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
       try visitor.visitSingularStringField(value: self.destination, fieldNumber: 6)
     }
     if self.destinationTag != 0 {
-      try visitor.visitSingularInt32Field(value: self.destinationTag, fieldNumber: 7)
+      try visitor.visitSingularInt64Field(value: self.destinationTag, fieldNumber: 7)
     }
     if self.flags != 0 {
-      try visitor.visitSingularInt32Field(value: self.flags, fieldNumber: 8)
+      try visitor.visitSingularInt64Field(value: self.flags, fieldNumber: 8)
     }
     if !self.privateKey.isEmpty {
       try visitor.visitSingularBytesField(value: self.privateKey, fieldNumber: 9)
