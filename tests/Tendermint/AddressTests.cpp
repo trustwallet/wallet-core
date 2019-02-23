@@ -17,6 +17,14 @@
 namespace TW {
 namespace Tendermint {
 
+TEST(Address, Valid) {
+    ASSERT_TRUE(Address::isValid("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2"));
+}
+
+TEST(Address, Invalid) {
+    ASSERT_FALSE(Address::isValid("bnb1grpf0955h0ykzq3ar6nmum7y6gdfl6lxfn46h2"));
+}
+
 TEST(Address, FromKeyHash) {
     auto privateKey = PrivateKey(parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832"));
     auto publicKeyData = privateKey.getPublicKey(true);

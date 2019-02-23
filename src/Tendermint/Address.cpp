@@ -21,9 +21,8 @@ bool Address::isValid(const std::string& addr) {
     }
 
     Data conv;
-    if (!Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin() + 1, dec.second.end())) ||
-        conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 || (dec.second[0] == 0 &&
-        conv.size() != 20 && conv.size() != 32)) {
+    auto success = Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
+    if (!success || conv.size() < 2 || conv.size() > 40) {
         return false;
     }
 
@@ -38,15 +37,6 @@ Address::Address(const std::string& hrp, const PublicKey& publicKey) : hrp(hrp),
 std::pair<Address, bool> Address::decode(const std::string& addr) {
     auto dec = Bech32::decode(addr);
     if (dec.second.empty()) {
-        return std::make_pair(Address(), false);
-    }
-
-    bool test;
-    if (dec.first == HRP_BINANCE) {
-        test = false;
-    } else if (dec.first == HRP_BINANCE_TEST) {
-        test = true;
-    } else {
         return std::make_pair(Address(), false);
     }
 
