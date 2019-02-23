@@ -6,7 +6,7 @@
 
 #include "Transaction.h"
 #include "BinaryCoding.h"
-#include "../HexCoding.cpp"
+#include "../HexCoding.h"
 
 using namespace TW;
 using namespace TW::Ripple;
