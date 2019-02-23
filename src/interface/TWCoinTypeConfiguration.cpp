@@ -26,7 +26,6 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeICON:  string =  "ICX"; break;
     case TWCoinTypeLitecoin: string = "LTC"; break;
     case TWCoinTypePoa: string = "POA"; break;
-    case TWCoinTypeTest: string = "TEST"; break;
     case TWCoinTypeThunderToken: string = "TT"; break;
     case TWCoinTypeTomoChain: string = "TOMO"; break;
     case TWCoinTypeTron: string = "TRX"; break;
@@ -67,7 +66,6 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
      return 8;
     case TWCoinTypeTron:
         return 6;
-    case TWCoinTypeTest:
     case TWCoinTypeEOS: //TODO
     default:
         return 0;
@@ -131,7 +129,6 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeICON: return "https://tracker.icon.foundation";
     case TWCoinTypeLitecoin: return "https://blockchair.com/litecoin";
     case TWCoinTypePoa: return "https://poaexplorer.com";
-    case TWCoinTypeTest: return "";
     case TWCoinTypeThunderToken: return "https://scan.thundercore.com";
     case TWCoinTypeTomoChain: return "https://scan.tomochain.com";
     case TWCoinTypeTron: return "https://tronscan.org";
@@ -159,7 +156,6 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeICON:  string =  "icon"; break;
     case TWCoinTypeLitecoin: string = "litecoin"; break;
     case TWCoinTypePoa: string = "poa"; break;
-    case TWCoinTypeTest: string = "test"; break;
     case TWCoinTypeThunderToken: string = "thundertoken"; break;
     case TWCoinTypeTomoChain: string = "tomochain"; break;
     case TWCoinTypeTron: string = "tron"; break;
@@ -188,7 +184,6 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeICON:  string =  "ICON"; break;
     case TWCoinTypeLitecoin: string = "Litecoin"; break;
     case TWCoinTypePoa: string = "POA Network"; break;
-    case TWCoinTypeTest: string = "Test"; break;
     case TWCoinTypeThunderToken: string = "Thunder Token"; break;
     case TWCoinTypeTomoChain: string = "TomoChain"; break;
     case TWCoinTypeTron: string = "Tron"; break;
