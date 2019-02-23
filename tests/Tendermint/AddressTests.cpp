@@ -17,8 +17,12 @@
 namespace TW {
 namespace Tendermint {
 
-TEST(Address, IsValid) {
+TEST(Address, Valid) {
     ASSERT_TRUE(Address::isValid("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2"));
+}
+
+TEST(Address, Invalid) {
+    ASSERT_FALSE(Address::isValid("bnb1grpf0955h0ykzq3ar6nmum7y6gdfl6lxfn46h2"));
 }
 
 TEST(Address, FromKeyHash) {
