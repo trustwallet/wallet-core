@@ -107,6 +107,14 @@ Also check out the [Adding Support for a New Blockchain](https://github.com/Trus
 
 ## Releasing
 
+Before releasing please update the version numbers in `android/gradle.properties` and `TrustWalletCore.podspec` and commit this change. Then create a new git tag for that number and push (replace 0.0.0 with the actual version number):
+
+```
+git tag 0.0.0
+git push
+git push origin 0.0.0
+```
+
 ### iOS
 
 Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload a Cocoapod. You need to be registered as an owner for the pod.
