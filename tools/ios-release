@@ -31,7 +31,6 @@ end
 
 # Upload archive
 system("aws s3 cp #{file_name} s3://wallet-core/ --acl public-read")
-system("rm -f #{file_name}")
 
 # Upload Cocoapod
 puts 'Publishing...'
