@@ -23,7 +23,6 @@ public enum CoinType {
     ICON (74),
     LITECOIN (2),
     POA (178),
-    TEST (1),
     THUNDERTOKEN (1001),
     TOMOCHAIN (889),
     TRON (195),

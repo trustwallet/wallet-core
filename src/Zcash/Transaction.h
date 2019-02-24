@@ -70,8 +70,3 @@ struct Transaction {
 };
 
 }} // namespace
-
-/// Wrapper for C interface.
-struct TWZcashTransaction {
-    TW::Zcash::Transaction impl;
-};

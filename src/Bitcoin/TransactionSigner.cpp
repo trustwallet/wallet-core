@@ -217,10 +217,10 @@ Data TransactionSigner<Transaction>::pushAll(const std::vector<Data>& results) {
             data.push_back(encodeNumber(result[0]));
         } else if (result.size() < OP_PUSHDATA1) {
             data.push_back(static_cast<uint8_t>(result.size()));
-        } else if (result.size() <= 0xff) { // swiftlint:disable:this empty_count
+        } else if (result.size() <= 0xff) {
             data.push_back(OP_PUSHDATA1);
             data.push_back(static_cast<uint8_t>(result.size()));
-        } else if (result.size() <= 0xffff) { // swiftlint:disable:this empty_count
+        } else if (result.size() <= 0xffff) {
             data.push_back(OP_PUSHDATA2);
             encode16(result.size(), data);
         } else {
