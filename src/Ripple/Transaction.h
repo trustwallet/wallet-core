@@ -14,10 +14,10 @@ namespace TW {
 namespace Ripple {
 
 enum class FieldType: int {
-    int16 = 1,
-    int32 = 2,
-    amount = 6,
-    vl = 7,
+    int16   = 1,
+    int32   = 2,
+    amount  = 6,
+    vl      = 7,
     account = 8
 };
 

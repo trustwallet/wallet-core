@@ -43,11 +43,11 @@ static inline void encode64(uint64_t val, std::vector<uint8_t>& data) {
 
 /// Encodes a field type.
 static inline void encodeType(FieldType type, int key, std::vector<uint8_t>& data) {
-    int _type = int(type);
+    const auto typeValue = static_cast<int>(type);
     if (key <= 0xf) {
-        data.push_back(static_cast<uint8_t>((_type << 4) | key));
+        data.push_back(static_cast<uint8_t>((typeValue << 4) | key));
     } else {
-        data.push_back(static_cast<uint8_t>(_type << 4));
+        data.push_back(static_cast<uint8_t>(typeValue << 4));
         data.push_back(static_cast<uint8_t>(key));
     }
 }
