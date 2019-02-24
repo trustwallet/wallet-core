@@ -370,6 +370,18 @@
 		BB21105E221C039B00571DF7 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB21105C221C039B00571DF7 /* Address.cpp */; };
 		BB211060221C03D500571DF7 /* RippleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB21105F221C03D500571DF7 /* RippleTests.swift */; };
 		BB211062221C045000571DF7 /* RippleAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB211061221C045000571DF7 /* RippleAddress.swift */; };
+		BB2422CF22217AE7000663D0 /* TWRippleSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2422CD22217AE7000663D0 /* TWRippleSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BB2422D022217AE7000663D0 /* TWRippleProto.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2422CE22217AE7000663D0 /* TWRippleProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BB2422D322217B08000663D0 /* RippleSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2422D122217B08000663D0 /* RippleSigner.swift */; };
+		BB2422D422217B08000663D0 /* Ripple.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2422D222217B08000663D0 /* Ripple.pb.swift */; };
+		BB2422D722217B4D000663D0 /* Ripple.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = BB2422D522217B4D000663D0 /* Ripple.pb.cc */; };
+		BB2422D822217B4D000663D0 /* Ripple.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2422D622217B4D000663D0 /* Ripple.pb.h */; };
+		BB2422DE22217B58000663D0 /* Signer.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2422D922217B58000663D0 /* Signer.h */; };
+		BB2422DF22217B58000663D0 /* Signer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB2422DA22217B58000663D0 /* Signer.cpp */; };
+		BB2422E022217B58000663D0 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB2422DB22217B58000663D0 /* Transaction.cpp */; };
+		BB2422E122217B58000663D0 /* BinaryCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2422DC22217B58000663D0 /* BinaryCoding.h */; };
+		BB2422E222217B58000663D0 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2422DD22217B58000663D0 /* Transaction.h */; };
+		BB2422E422217B90000663D0 /* TWRippleSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB2422E322217B90000663D0 /* TWRippleSigner.cpp */; };
 		BB2E390B21F6EF17002A5139 /* TWZcashTAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2E390A21F6EF17002A5139 /* TWZcashTAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BB3F05B2220BD93E008C6971 /* TAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB3F05B0220BD93E008C6971 /* TAddress.cpp */; };
 		BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BB3F05B1220BD93E008C6971 /* TAddress.h */; };
@@ -818,6 +830,18 @@
 		BB21105C221C039B00571DF7 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
 		BB21105F221C03D500571DF7 /* RippleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RippleTests.swift; sourceTree = "<group>"; };
 		BB211061221C045000571DF7 /* RippleAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RippleAddress.swift; sourceTree = "<group>"; };
+		BB2422CD22217AE7000663D0 /* TWRippleSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWRippleSigner.h; sourceTree = "<group>"; };
+		BB2422CE22217AE7000663D0 /* TWRippleProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWRippleProto.h; sourceTree = "<group>"; };
+		BB2422D122217B08000663D0 /* RippleSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RippleSigner.swift; sourceTree = "<group>"; };
+		BB2422D222217B08000663D0 /* Ripple.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ripple.pb.swift; sourceTree = "<group>"; };
+		BB2422D522217B4D000663D0 /* Ripple.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ripple.pb.cc; sourceTree = "<group>"; };
+		BB2422D622217B4D000663D0 /* Ripple.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ripple.pb.h; sourceTree = "<group>"; };
+		BB2422D922217B58000663D0 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
+		BB2422DA22217B58000663D0 /* Signer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signer.cpp; sourceTree = "<group>"; };
+		BB2422DB22217B58000663D0 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transaction.cpp; sourceTree = "<group>"; };
+		BB2422DC22217B58000663D0 /* BinaryCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryCoding.h; sourceTree = "<group>"; };
+		BB2422DD22217B58000663D0 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transaction.h; sourceTree = "<group>"; };
+		BB2422E322217B90000663D0 /* TWRippleSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWRippleSigner.cpp; sourceTree = "<group>"; };
 		BB2E390A21F6EF17002A5139 /* TWZcashTAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWZcashTAddress.h; sourceTree = "<group>"; };
 		BB3F05B0220BD93E008C6971 /* TAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TAddress.cpp; sourceTree = "<group>"; };
 		BB3F05B1220BD93E008C6971 /* TAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAddress.h; sourceTree = "<group>"; };
@@ -857,6 +881,8 @@
 		61376FDB220CE38900573D0F /* proto */ = {
 			isa = PBXGroup;
 			children = (
+				BB2422D522217B4D000663D0 /* Ripple.pb.cc */,
+				BB2422D622217B4D000663D0 /* Ripple.pb.h */,
 				61722BF1220E45B900D7BA9A /* Binance.pb.cc */,
 				61722BEE220E45B900D7BA9A /* Binance.pb.h */,
 				61722BEF220E45B900D7BA9A /* Bitcoin.pb.cc */,
@@ -916,6 +942,8 @@
 		617358DF219DF043007BF637 /* TrustWalletCore */ = {
 			isa = PBXGroup;
 			children = (
+				BB2422CE22217AE7000663D0 /* TWRippleProto.h */,
+				BB2422CD22217AE7000663D0 /* TWRippleSigner.h */,
 				61CABAB421ED36F40086D9A0 /* TWAES.h */,
 				617358E2219DF043007BF637 /* TWBase.h */,
 				61AAD39A21DEF6D300B69A34 /* TWBase58.h */,
@@ -1187,6 +1215,8 @@
 		61735CB7219F88C2007BF637 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				BB2422D222217B08000663D0 /* Ripple.pb.swift */,
+				BB2422D122217B08000663D0 /* RippleSigner.swift */,
 				61CABAB821ED37160086D9A0 /* AES.swift */,
 				61AAD3A421DEF72500B69A34 /* Base58.swift */,
 				6198EA8B21B811CD008CB60A /* Bech32Address.swift */,
@@ -1296,6 +1326,7 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
+				BB2422E322217B90000663D0 /* TWRippleSigner.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				61AAD3A221DEF70800B69A34 /* TWBase58.cpp */,
 				61722C01220E461A00D7BA9A /* TWBech32Address.cpp */,
@@ -1524,6 +1555,11 @@
 		BB21105A221C039A00571DF7 /* Ripple */ = {
 			isa = PBXGroup;
 			children = (
+				BB2422DC22217B58000663D0 /* BinaryCoding.h */,
+				BB2422DA22217B58000663D0 /* Signer.cpp */,
+				BB2422D922217B58000663D0 /* Signer.h */,
+				BB2422DB22217B58000663D0 /* Transaction.cpp */,
+				BB2422DD22217B58000663D0 /* Transaction.h */,
 				BB21105B221C039A00571DF7 /* Address.h */,
 				BB21105C221C039B00571DF7 /* Address.cpp */,
 			);
@@ -1564,6 +1600,7 @@
 				61B159D421CC5DBB00CFE93B /* Bech32Address.h in Headers */,
 				61735AF9219DF044007BF637 /* bip32.h in Headers */,
 				61735B04219DF044007BF637 /* rand.h in Headers */,
+				BB2422CF22217AE7000663D0 /* TWRippleSigner.h in Headers */,
 				61735B0B219DF044007BF637 /* secp256k1.h in Headers */,
 				61735C13219DF044007BF637 /* ed25519-hash-custom.h in Headers */,
 				61735AFA219DF044007BF637 /* ecdsa.h in Headers */,
@@ -1619,6 +1656,7 @@
 				61722BD9220E455500D7BA9A /* TWBinanceProto.h in Headers */,
 				61735CB921A33D47007BF637 /* TWHash.h in Headers */,
 				61CABACF21ED781B0086D9A0 /* TWCoinType.h in Headers */,
+				BB2422E122217B58000663D0 /* BinaryCoding.h in Headers */,
 				61CABABB21ED41E50086D9A0 /* TWKeyDerivation.h in Headers */,
 				61B159CE21CC5DBB00CFE93B /* TransactionSigner.h in Headers */,
 				61735C83219DF044007BF637 /* TrustWalletCore.h in Headers */,
@@ -1653,6 +1691,7 @@
 				616E125F21AE14E8009798FC /* TWString.h in Headers */,
 				61B159DC21CC5DBB00CFE93B /* PublicKey.h in Headers */,
 				61735BFE219DF044007BF637 /* script.h in Headers */,
+				BB2422E222217B58000663D0 /* Transaction.h in Headers */,
 				61735C32219DF044007BF637 /* options.h in Headers */,
 				61735C1E219DF044007BF637 /* ed25519-keccak.h in Headers */,
 				61722BD7220E455500D7BA9A /* TWZcashTransactionSigner.h in Headers */,
@@ -1662,6 +1701,7 @@
 				61735C76219DF044007BF637 /* rfc7539.h in Headers */,
 				61735AFE219DF044007BF637 /* base32.h in Headers */,
 				61735B0F219DF044007BF637 /* ecrypt-sync.h in Headers */,
+				BB2422DE22217B58000663D0 /* Signer.h in Headers */,
 				61722BD8220E455500D7BA9A /* TWBitcoinProto.h in Headers */,
 				61FE4B1F221F732D00C65017 /* TWWanchainSigner.h in Headers */,
 				61735AFB219DF044007BF637 /* pbkdf2.h in Headers */,
@@ -1676,6 +1716,7 @@
 				61B159DF21CC5DBB00CFE93B /* PrivateKey.h in Headers */,
 				61CABACC21ED781B0086D9A0 /* TWHDVersion.h in Headers */,
 				61CABAC121ED42520086D9A0 /* scrypt.h in Headers */,
+				BB2422D022217AE7000663D0 /* TWRippleProto.h in Headers */,
 				61EE6B2221DEB46A001FBB79 /* UnspentSelector.h in Headers */,
 				61A9B3622200D85A00E601B3 /* Address.h in Headers */,
 				617744442220977E00C210D9 /* uint256.h in Headers */,
@@ -1686,6 +1727,7 @@
 				61B159DE21CC5DBB00CFE93B /* Hash.h in Headers */,
 				61735B0E219DF044007BF637 /* ecrypt-config.h in Headers */,
 				61735C49219DF044007BF637 /* range_proof.h in Headers */,
+				BB2422D822217B4D000663D0 /* Ripple.pb.h in Headers */,
 				61735B02219DF044007BF637 /* bip39.h in Headers */,
 				61735AF3219DF044007BF637 /* modm-donna-32bit.h in Headers */,
 				610AEF7421C8A934008ABB74 /* TWBitcoinTransactionSigner.h in Headers */,
@@ -1961,6 +2003,7 @@
 				61735BFC219DF044007BF637 /* hasher.c in Sources */,
 				6198EA7E21B6B9C2008CB60A /* Data.swift in Sources */,
 				61B159D021CC5DBB00CFE93B /* OutPoint.cpp in Sources */,
+				BB2422D422217B08000663D0 /* Ripple.pb.swift in Sources */,
 				61722BE8220E457D00D7BA9A /* EthereumChainID.swift in Sources */,
 				61FE4B21221F733E00C65017 /* WanchainSigner.swift in Sources */,
 				61FE4B4422208E5000C65017 /* VeChain.pb.cc in Sources */,
@@ -1980,6 +2023,7 @@
 				61735C12219DF044007BF637 /* ed25519-keccak.c in Sources */,
 				61735C57219DF044007BF637 /* blake2b.c in Sources */,
 				61B159EA21CC5DBB00CFE93B /* PublicKey.cpp in Sources */,
+				BB2422DF22217B58000663D0 /* Signer.cpp in Sources */,
 				61735C43219DF044007BF637 /* serialize.c in Sources */,
 				61735C75219DF044007BF637 /* chacha_merged.c in Sources */,
 				61735C47219DF044007BF637 /* xmr.c in Sources */,
@@ -1990,6 +2034,7 @@
 				61735C5E219DF044007BF637 /* address.c in Sources */,
 				61735C0C219DF044007BF637 /* curve25519-donna-scalarmult-base.c in Sources */,
 				BBA9012121FDAE4200D2CEF7 /* Transaction.cpp in Sources */,
+				BB2422E422217B90000663D0 /* TWRippleSigner.cpp in Sources */,
 				61722C0E220E461A00D7BA9A /* TWZcashTransactionSigner.cpp in Sources */,
 				616E122C21A78094009798FC /* Hash.swift in Sources */,
 				61735C0E219DF044007BF637 /* ed25519-donna-32bit-tables.c in Sources */,
@@ -2003,15 +2048,18 @@
 				6198EA6121B21702008CB60A /* TWFoundationString.m in Sources */,
 				61CABAD821ED782E0086D9A0 /* HDVersion.swift in Sources */,
 				61EE6B2321DEB46A001FBB79 /* UnspentSelector.cpp in Sources */,
+				BB2422D322217B08000663D0 /* RippleSigner.swift in Sources */,
 				615D9B9B21CED9C700878D22 /* Address.cpp in Sources */,
 				61735C6F219DF044007BF637 /* aes_modes.c in Sources */,
 				61CABAB921ED37160086D9A0 /* AES.swift in Sources */,
+				BB2422D722217B4D000663D0 /* Ripple.pb.cc in Sources */,
 				61722C06220E461A00D7BA9A /* TWTendermintAddress.cpp in Sources */,
 				61B159E121CC5DBB00CFE93B /* TWString+Hex.cpp in Sources */,
 				61A9B3522200103000E601B3 /* Transaction.cpp in Sources */,
 				61E44461221CD49E006A4FF1 /* Signer.cpp in Sources */,
 				61B159E221CC5DBB00CFE93B /* TWPublicKey.cpp in Sources */,
 				61735C90219E1658007BF637 /* UInt256.swift in Sources */,
+				BB2422E022217B58000663D0 /* Transaction.cpp in Sources */,
 				61735C39219DF044007BF637 /* ripemd160.c in Sources */,
 				61977CCF21C9B9EF00C385D5 /* BitcoinAddress.swift in Sources */,
 				61CABAD721ED782E0086D9A0 /* P2SHPrefix.swift in Sources */,

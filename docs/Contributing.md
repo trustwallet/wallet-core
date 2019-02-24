@@ -52,6 +52,10 @@ Use the `bootstrap.sh` script in the root folder to quickly build and test. Afte
 * Android: `tools/android-test`
 * iOS: `tools/ios-test`
 
+How to generate a Xcode project:
+
+`cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug -DGIT_SUBMODULE=OFF`
+
 ## C Headers
 
 The wallet core code generator parses C headers for class and struct definitions. Headers need to be in the `include/TrustWalletCode` folder and start with the `TW` prefix followed by the class or sturct name. Inside each header file there needs to be exactly one class or struct defition.
