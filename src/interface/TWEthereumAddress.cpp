@@ -30,11 +30,17 @@ bool TWEthereumAddressIsValidString(TWString *_Nonnull string) {
 
 struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
+    if (!Address::isValid(*s)) {
+        return nullptr;
+    }
     return new TWEthereumAddress{ Address(*s) };
 }
 
 struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_Nonnull keyHash) {
     auto d = reinterpret_cast<const Data*>(keyHash);
+    if (!Address::isValid(*d)) {
+        return nullptr;
+    }
     return new TWEthereumAddress{ Address(*d) };
 }
 
