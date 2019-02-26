@@ -28,7 +28,7 @@ dependencies {
 
 ## iOS
 
-We currenlty support only CocoaPods. Add this line to your Podfile and run `pod install`:
+We currently support only CocoaPods. Add this line to your Podfile and run `pod install`:
 
 ```ruby
 pod 'TrustWalletCore'
