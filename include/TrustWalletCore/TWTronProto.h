@@ -8,9 +8,9 @@
 
 #include "TWData.h"
 
-typedef TWData *_Nonnull TW_Tron_Proto_AccountId;
-typedef TWData *_Nonnull TW_Tron_Proto_authority;
-typedef TWData *_Nonnull TW_Tron_Proto_Transaction;
-typedef TWData *_Nonnull TW_Tron_Proto_BlockHeader;
 typedef TWData *_Nonnull TW_Tron_Proto_TransferContract;
 typedef TWData *_Nonnull TW_Tron_Proto_TransferAssetContract;
+typedef TWData *_Nonnull TW_Tron_Proto_BlockHeader;
+typedef TWData *_Nonnull TW_Tron_Proto_Transaction;
+typedef TWData *_Nonnull TW_Tron_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Tron_Proto_SigningOutput;

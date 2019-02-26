@@ -285,6 +285,18 @@
 		61BA0A7521F6C9EC005680E6 /* BinanceSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A7421F6C9EC005680E6 /* BinanceSigner.swift */; };
 		61BA0A7821F7DB29005680E6 /* Serialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A7621F7DB29005680E6 /* Serialization.cpp */; };
 		61BA0A7921F7DB29005680E6 /* Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 61BA0A7721F7DB29005680E6 /* Serialization.h */; };
+		61C4E8B12225C3960020A917 /* TronSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8AF2225C3930020A917 /* TronSigner.swift */; };
+		61C4E8B22225C3960020A917 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8B02225C3940020A917 /* Tron.pb.swift */; };
+		61C4E8B52225C3A20020A917 /* TWTronSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 61C4E8B32225C3A20020A917 /* TWTronSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		61C4E8B62225C3A20020A917 /* TWTronProto.h in Headers */ = {isa = PBXBuildFile; fileRef = 61C4E8B42225C3A20020A917 /* TWTronProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		61C4E8B82225C3B70020A917 /* TWTronSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8B72225C3B70020A917 /* TWTronSigner.cpp */; };
+		61C4E8C02225C3C50020A917 /* Signer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8BA2225C3C50020A917 /* Signer.cpp */; };
+		61C4E8C12225C3C50020A917 /* TronInternal.proto in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8BC2225C3C50020A917 /* TronInternal.proto */; };
+		61C4E8C22225C3C50020A917 /* TronInternal.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 61C4E8BD2225C3C50020A917 /* TronInternal.pb.h */; };
+		61C4E8C32225C3C50020A917 /* TronInternal.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8BE2225C3C50020A917 /* TronInternal.pb.cc */; };
+		61C4E8C42225C3C50020A917 /* Signer.h in Headers */ = {isa = PBXBuildFile; fileRef = 61C4E8BF2225C3C50020A917 /* Signer.h */; };
+		61C4E8C72225C43E0020A917 /* Tron.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 61C4E8C52225C43D0020A917 /* Tron.pb.h */; };
+		61C4E8C82225C43E0020A917 /* Tron.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8C62225C43D0020A917 /* Tron.pb.cc */; };
 		61CABAB521ED36F50086D9A0 /* TWAES.h in Headers */ = {isa = PBXBuildFile; fileRef = 61CABAB421ED36F40086D9A0 /* TWAES.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61CABAB721ED37070086D9A0 /* TWAES.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61CABAB621ED37070086D9A0 /* TWAES.cpp */; };
 		61CABAB921ED37160086D9A0 /* AES.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61CABAB821ED37160086D9A0 /* AES.swift */; };
@@ -706,6 +718,18 @@
 		61BA0A7421F6C9EC005680E6 /* BinanceSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinanceSigner.swift; sourceTree = "<group>"; };
 		61BA0A7621F7DB29005680E6 /* Serialization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serialization.cpp; sourceTree = "<group>"; };
 		61BA0A7721F7DB29005680E6 /* Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serialization.h; sourceTree = "<group>"; };
+		61C4E8AF2225C3930020A917 /* TronSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronSigner.swift; sourceTree = "<group>"; };
+		61C4E8B02225C3940020A917 /* Tron.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.pb.swift; sourceTree = "<group>"; };
+		61C4E8B32225C3A20020A917 /* TWTronSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTronSigner.h; sourceTree = "<group>"; };
+		61C4E8B42225C3A20020A917 /* TWTronProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTronProto.h; sourceTree = "<group>"; };
+		61C4E8B72225C3B70020A917 /* TWTronSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWTronSigner.cpp; sourceTree = "<group>"; };
+		61C4E8BA2225C3C50020A917 /* Signer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signer.cpp; sourceTree = "<group>"; };
+		61C4E8BC2225C3C50020A917 /* TronInternal.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = TronInternal.proto; sourceTree = "<group>"; };
+		61C4E8BD2225C3C50020A917 /* TronInternal.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TronInternal.pb.h; sourceTree = "<group>"; };
+		61C4E8BE2225C3C50020A917 /* TronInternal.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TronInternal.pb.cc; sourceTree = "<group>"; };
+		61C4E8BF2225C3C50020A917 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
+		61C4E8C52225C43D0020A917 /* Tron.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tron.pb.h; sourceTree = "<group>"; };
+		61C4E8C62225C43D0020A917 /* Tron.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tron.pb.cc; sourceTree = "<group>"; };
 		61CABAB421ED36F40086D9A0 /* TWAES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWAES.h; sourceTree = "<group>"; };
 		61CABAB621ED37070086D9A0 /* TWAES.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWAES.cpp; sourceTree = "<group>"; };
 		61CABAB821ED37160086D9A0 /* AES.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AES.swift; sourceTree = "<group>"; };
@@ -881,8 +905,6 @@
 		61376FDB220CE38900573D0F /* proto */ = {
 			isa = PBXGroup;
 			children = (
-				BB2422D522217B4D000663D0 /* Ripple.pb.cc */,
-				BB2422D622217B4D000663D0 /* Ripple.pb.h */,
 				61722BF1220E45B900D7BA9A /* Binance.pb.cc */,
 				61722BEE220E45B900D7BA9A /* Binance.pb.h */,
 				61722BEF220E45B900D7BA9A /* Bitcoin.pb.cc */,
@@ -891,6 +913,10 @@
 				61722BF0220E45B900D7BA9A /* Common.pb.h */,
 				61E4446D221CD8C0006A4FF1 /* Ethereum.pb.cc */,
 				61E4446C221CD8C0006A4FF1 /* Ethereum.pb.h */,
+				BB2422D522217B4D000663D0 /* Ripple.pb.cc */,
+				BB2422D622217B4D000663D0 /* Ripple.pb.h */,
+				61C4E8C62225C43D0020A917 /* Tron.pb.cc */,
+				61C4E8C52225C43D0020A917 /* Tron.pb.h */,
 				61FE4B4222208E5000C65017 /* VeChain.pb.cc */,
 				61FE4B4322208E5000C65017 /* VeChain.pb.h */,
 			);
@@ -921,6 +947,7 @@
 				616D040F220A544400A776E8 /* Result.h */,
 				BB21105A221C039A00571DF7 /* Ripple */,
 				61A9B35C2200D85A00E601B3 /* Tendermint */,
+				61C4E8B92225C3C50020A917 /* Tron */,
 				617744432220977400C210D9 /* uint256.h */,
 				61FE4B3022208E0200C65017 /* VeChain */,
 				61FE4B26221F736400C65017 /* Wanchain */,
@@ -942,8 +969,6 @@
 		617358DF219DF043007BF637 /* TrustWalletCore */ = {
 			isa = PBXGroup;
 			children = (
-				BB2422CE22217AE7000663D0 /* TWRippleProto.h */,
-				BB2422CD22217AE7000663D0 /* TWRippleSigner.h */,
 				61CABAB421ED36F40086D9A0 /* TWAES.h */,
 				617358E2219DF043007BF637 /* TWBase.h */,
 				61AAD39A21DEF6D300B69A34 /* TWBase58.h */,
@@ -976,8 +1001,12 @@
 				61735CC521A382C7007BF637 /* TWPublicKey.h */,
 				61CABAC821ED781A0086D9A0 /* TWPurpose.h */,
 				BB211058221C036900571DF7 /* TWRippleAddress.h */,
+				BB2422CE22217AE7000663D0 /* TWRippleProto.h */,
+				BB2422CD22217AE7000663D0 /* TWRippleSigner.h */,
 				616E125D21AE14E8009798FC /* TWString.h */,
 				61A9B3662200D87F00E601B3 /* TWTendermintAddress.h */,
+				61C4E8B42225C3A20020A917 /* TWTronProto.h */,
+				61C4E8B32225C3A20020A917 /* TWTronSigner.h */,
 				61735CA2219E311C007BF637 /* TWUInt256.h */,
 				61FE4B2B22208DED00C65017 /* TWVeChainProto.h */,
 				61FE4B2C22208DED00C65017 /* TWVeChainSigner.h */,
@@ -1215,6 +1244,8 @@
 		61735CB7219F88C2007BF637 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				61C4E8B02225C3940020A917 /* Tron.pb.swift */,
+				61C4E8AF2225C3930020A917 /* TronSigner.swift */,
 				BB2422D222217B08000663D0 /* Ripple.pb.swift */,
 				BB2422D122217B08000663D0 /* RippleSigner.swift */,
 				61CABAB821ED37160086D9A0 /* AES.swift */,
@@ -1326,7 +1357,6 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
-				BB2422E322217B90000663D0 /* TWRippleSigner.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				61AAD3A221DEF70800B69A34 /* TWBase58.cpp */,
 				61722C01220E461A00D7BA9A /* TWBech32Address.cpp */,
@@ -1347,9 +1377,11 @@
 				61B159BA21CC5DBB00CFE93B /* TWPrivateKey.cpp */,
 				61B159B721CC5DBB00CFE93B /* TWPublicKey.cpp */,
 				BB211056221C035F00571DF7 /* TWRippleAddress.cpp */,
+				BB2422E322217B90000663D0 /* TWRippleSigner.cpp */,
 				61B159BD21CC5DBB00CFE93B /* TWString.cpp */,
 				61B159B521CC5DBB00CFE93B /* TWString+Hex.cpp */,
 				61722BFB220E461A00D7BA9A /* TWTendermintAddress.cpp */,
+				61C4E8B72225C3B70020A917 /* TWTronSigner.cpp */,
 				61A9B64322026E0800E601B3 /* TWUInt256.cpp */,
 				61FE4B3C22208E0F00C65017 /* TWVeChainSigner.cpp */,
 				61FE4B22221F734C00C65017 /* TWWanchainSigner.cpp */,
@@ -1368,6 +1400,26 @@
 				61BA0A7021F6C9D9005680E6 /* Signer.h */,
 			);
 			path = Binance;
+			sourceTree = "<group>";
+		};
+		61C4E8B92225C3C50020A917 /* Tron */ = {
+			isa = PBXGroup;
+			children = (
+				61C4E8BA2225C3C50020A917 /* Signer.cpp */,
+				61C4E8BB2225C3C50020A917 /* Protobuf */,
+				61C4E8BF2225C3C50020A917 /* Signer.h */,
+			);
+			path = Tron;
+			sourceTree = "<group>";
+		};
+		61C4E8BB2225C3C50020A917 /* Protobuf */ = {
+			isa = PBXGroup;
+			children = (
+				61C4E8BC2225C3C50020A917 /* TronInternal.proto */,
+				61C4E8BD2225C3C50020A917 /* TronInternal.pb.h */,
+				61C4E8BE2225C3C50020A917 /* TronInternal.pb.cc */,
+			);
+			path = Protobuf;
 			sourceTree = "<group>";
 		};
 		61CAC6A621F113C60086D9A0 /* protobuf */ = {
@@ -1615,9 +1667,11 @@
 				61A9B2FA21FB855E00E601B3 /* AddressChecksum.h in Headers */,
 				61977CC721C9B9D000C385D5 /* TWBitcoinCashAddress.h in Headers */,
 				61735AED219DF044007BF637 /* memzero.h in Headers */,
+				61C4E8B52225C3A20020A917 /* TWTronSigner.h in Headers */,
 				61735AEF219DF044007BF637 /* blake2s.h in Headers */,
 				61CABAB521ED36F50086D9A0 /* TWAES.h in Headers */,
 				61735AF2219DF044007BF637 /* ed25519-donna-basepoint-table.h in Headers */,
+				61C4E8C72225C43E0020A917 /* Tron.pb.h in Headers */,
 				BB211059221C036A00571DF7 /* TWRippleAddress.h in Headers */,
 				61735B09219DF044007BF637 /* blake256.h in Headers */,
 				61722BDA220E455500D7BA9A /* TWCommonProto.h in Headers */,
@@ -1630,6 +1684,7 @@
 				61A9B3672200D87F00E601B3 /* TWTendermintAddress.h in Headers */,
 				61735C61219DF044007BF637 /* blake2_common.h in Headers */,
 				616D0411220A544400A776E8 /* Result.h in Headers */,
+				61C4E8B62225C3A20020A917 /* TWTronProto.h in Headers */,
 				61735AD6219DF044007BF637 /* TWBase.h in Headers */,
 				61735B03219DF044007BF637 /* aes.h in Headers */,
 				615D9B9E21CED9C700878D22 /* CashAddress.h in Headers */,
@@ -1659,6 +1714,7 @@
 				BB2422E122217B58000663D0 /* BinaryCoding.h in Headers */,
 				61CABABB21ED41E50086D9A0 /* TWKeyDerivation.h in Headers */,
 				61B159CE21CC5DBB00CFE93B /* TransactionSigner.h in Headers */,
+				61C4E8C42225C3C50020A917 /* Signer.h in Headers */,
 				61735C83219DF044007BF637 /* TrustWalletCore.h in Headers */,
 				61977CC621C9B9D000C385D5 /* TWBitcoinAddress.h in Headers */,
 				61AAD39B21DEF6D300B69A34 /* TWBase58.h in Headers */,
@@ -1696,6 +1752,7 @@
 				61735C1E219DF044007BF637 /* ed25519-keccak.h in Headers */,
 				61722BD7220E455500D7BA9A /* TWZcashTransactionSigner.h in Headers */,
 				61E44468221CD4CA006A4FF1 /* TWEthereumProto.h in Headers */,
+				61C4E8C22225C3C50020A917 /* TronInternal.pb.h in Headers */,
 				61735AF4219DF044007BF637 /* curve25519-donna-32bit.h in Headers */,
 				61B159C121CC5DBB00CFE93B /* TransactionInput.h in Headers */,
 				61735C76219DF044007BF637 /* rfc7539.h in Headers */,
@@ -1967,11 +2024,13 @@
 				BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */,
 				61B159D121CC5DBB00CFE93B /* Script.cpp in Sources */,
 				61722BE3220E457D00D7BA9A /* ChainID.swift in Sources */,
+				61C4E8B22225C3960020A917 /* Tron.pb.swift in Sources */,
 				61722BE4220E457D00D7BA9A /* Common.pb.swift in Sources */,
 				61735C22219DF044007BF637 /* curve25519-donna-32bit.c in Sources */,
 				61A9B2E821F916FA00E601B3 /* Bech32.cpp in Sources */,
 				61BA0A7221F6C9D9005680E6 /* Signer.cpp in Sources */,
 				61E4446B221CD674006A4FF1 /* TWEthereumSigner.cpp in Sources */,
+				61C4E8C82225C43E0020A917 /* Tron.pb.cc in Sources */,
 				BB211057221C035F00571DF7 /* TWRippleAddress.cpp in Sources */,
 				61E4446F221CD8C0006A4FF1 /* Ethereum.pb.cc in Sources */,
 				61CABADB21ED782E0086D9A0 /* Purpose.swift in Sources */,
@@ -1984,6 +2043,7 @@
 				61FE4B29221F736400C65017 /* Signer.cpp in Sources */,
 				61A9B2FF21FB855E00E601B3 /* Address.cpp in Sources */,
 				61B159DB21CC5DBB00CFE93B /* TransactionInput.cpp in Sources */,
+				61C4E8B12225C3960020A917 /* TronSigner.swift in Sources */,
 				61977CCE21C9B9EF00C385D5 /* BitcoinCashAddress.swift in Sources */,
 				61B159E321CC5DBB00CFE93B /* TWData+Hex.cpp in Sources */,
 				61CABADD21EE5EA60086D9A0 /* HRP.swift in Sources */,
@@ -1995,6 +2055,7 @@
 				61FE4B4122208E1C00C65017 /* VeChain.pb.swift in Sources */,
 				61722C0D220E461A00D7BA9A /* TWBitcoinScript.cpp in Sources */,
 				61FE4B1D221F64D500C65017 /* TWEthereumAddress.cpp in Sources */,
+				61C4E8B82225C3B70020A917 /* TWTronSigner.cpp in Sources */,
 				61735C06219DF044007BF637 /* cash_addr.c in Sources */,
 				61735C7B219DF044007BF637 /* rfc7539.c in Sources */,
 				61735BFF219DF044007BF637 /* rand.c in Sources */,
@@ -2010,6 +2071,7 @@
 				61722BE6220E457D00D7BA9A /* CoinTypeConfiguration.swift in Sources */,
 				61CABADA21ED782E0086D9A0 /* CoinType.swift in Sources */,
 				61722C09220E461A00D7BA9A /* TWBitcoinTransactionSigner.cpp in Sources */,
+				61C4E8C02225C3C50020A917 /* Signer.cpp in Sources */,
 				61735BF2219DF044007BF637 /* bip39.c in Sources */,
 				61722BE5220E457D00D7BA9A /* Bitcoin.pb.swift in Sources */,
 				61BA0A7521F6C9EC005680E6 /* BinanceSigner.swift in Sources */,
@@ -2022,6 +2084,7 @@
 				61E44465221CD4B3006A4FF1 /* EthereumSigner.swift in Sources */,
 				61735C12219DF044007BF637 /* ed25519-keccak.c in Sources */,
 				61735C57219DF044007BF637 /* blake2b.c in Sources */,
+				61C4E8C12225C3C50020A917 /* TronInternal.proto in Sources */,
 				61B159EA21CC5DBB00CFE93B /* PublicKey.cpp in Sources */,
 				BB2422DF22217B58000663D0 /* Signer.cpp in Sources */,
 				61735C43219DF044007BF637 /* serialize.c in Sources */,
@@ -2060,6 +2123,7 @@
 				61B159E221CC5DBB00CFE93B /* TWPublicKey.cpp in Sources */,
 				61735C90219E1658007BF637 /* UInt256.swift in Sources */,
 				BB2422E022217B58000663D0 /* Transaction.cpp in Sources */,
+				61C4E8C32225C3C50020A917 /* TronInternal.pb.cc in Sources */,
 				61735C39219DF044007BF637 /* ripemd160.c in Sources */,
 				61977CCF21C9B9EF00C385D5 /* BitcoinAddress.swift in Sources */,
 				61CABAD721ED782E0086D9A0 /* P2SHPrefix.swift in Sources */,

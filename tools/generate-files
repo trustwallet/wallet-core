@@ -15,6 +15,9 @@ PROTOBUF_DIR="$PWD/build/protobuf/src/protobuf_ext/"
 # Generate Java, C++ and Swift Protobuf files
 protoc -I=$PROTOBUF_DIR/src -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
 
+# Generate internal Protobuf files
+protoc -I=$PROTOBUF_DIR/src -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
+
 # Generate JS Protobuf files
 pushd js
 mkdir -p proto
