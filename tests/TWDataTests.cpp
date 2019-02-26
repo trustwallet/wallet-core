@@ -4,8 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
 #include "TWTestUtilities.h"
+
+#include <gtest/gtest.h>
 
 TEST(DataTests, ParseHex) {
     auto zero = DATA("0x0");

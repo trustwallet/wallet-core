@@ -4,11 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWBech32Address.h>
 #include <TrustWalletCore/TWPublicKey.h>
+
+#include <gtest/gtest.h>
 
 const char *address1 = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
 const char *address2 = "bc1qr583w2swedy2acd7rung055k8t3n7udp7vyzyg";

@@ -4,10 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWUInt256.h>
+
+#include <gtest/gtest.h>
 
 TEST(TWUInt256Tests, ZeroIsZero) {
     auto zero = TWUInt256Zero();

@@ -4,11 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
+#include "Hash.h"
+#include "HexCoding.h"
 #include "TWTestUtilities.h"
 
-#include "../src/Hash.h"
-#include "../src/HexCoding.h"
+#include <gtest/gtest.h>
 
 using namespace TW;
 

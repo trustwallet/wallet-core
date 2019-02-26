@@ -4,10 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "TWTestUtilities.h"
+
 #include <TrustWalletCore/TWHRP.h>
 
-#include "gtest/gtest.h"
-#include "TWTestUtilities.h"
+#include <gtest/gtest.h>
 
 TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPUnknown), nullptr);

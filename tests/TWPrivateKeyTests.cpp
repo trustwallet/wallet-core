@@ -4,12 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
+
+#include <gtest/gtest.h>
 
 TEST(PrivateKeyTests, CreateInvalid) {
     uint8_t bytes[] = {0xde, 0xad, 0xbe, 0xef};

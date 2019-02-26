@@ -5,18 +5,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
 #include "TWTestUtilities.h"
 
-#include "../src/Zcash/Transaction.h"
-#include "../src/Bitcoin/OutPoint.h"
-#include "../src/Bitcoin/TransactionBuilder.h"
-#include "../src/Bitcoin/TransactionSigner.h"
-#include "../src/PublicKey.h"
-#include "../src/HexCoding.h"
+#include "Bitcoin/OutPoint.h"
+#include "Bitcoin/TransactionBuilder.h"
+#include "Bitcoin/TransactionSigner.h"
+#include "HexCoding.h"
+#include "PublicKey.h"
+#include "Zcash/Transaction.h"
 
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHDWallet.h>
+
+#include <gtest/gtest.h>
 
 using namespace TW;
 using namespace Zcash;

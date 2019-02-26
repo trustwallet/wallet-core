@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
+#include "Bitcoin/Transaction.h"
+#include "HexCoding.h"
 #include "TWTestUtilities.h"
 
-#include "../src/HexCoding.h"
-#include "../src/Bitcoin/Transaction.h"
-
 #include <TrustWalletCore/TWBitcoinScript.h>
+
+#include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Bitcoin;

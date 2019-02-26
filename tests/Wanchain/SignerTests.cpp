@@ -4,12 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
+#include "Ethereum/Address.h"
+#include "Ethereum/RLP.h"
+#include "HexCoding.h"
+#include "Wanchain/Signer.h"
 
-#include "../src/Ethereum/Address.h"
-#include "../src/Ethereum/RLP.h"
-#include "../src/HexCoding.h"
-#include "../src/Wanchain/Signer.h"
+#include <gtest/gtest.h>
 
 namespace TW {
 namespace Wanchain {

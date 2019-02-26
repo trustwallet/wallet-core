@@ -4,10 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWAES.h>
+
+#include <gtest/gtest.h>
 
 auto key = DATA("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
 

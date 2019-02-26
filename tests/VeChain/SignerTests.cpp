@@ -4,10 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
+#include "HexCoding.h"
+#include "VeChain/Signer.h"
 
-#include "../src/HexCoding.h"
-#include "../src/VeChain/Signer.h"
+#include <gtest/gtest.h>
 
 namespace TW {
 namespace VeChain {
