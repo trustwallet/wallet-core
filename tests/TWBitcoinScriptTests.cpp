@@ -4,11 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
+
+#include <gtest/gtest.h>
 
 TEST(BitcoinScript, ScriptHash) {
     auto pkData = DATA("cf5007e19af3641199f21f3fa54dff2fa2627471");

@@ -4,7 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
+#include "Bitcoin/OutPoint.h"
+#include "Bitcoin/Script.h"
+#include "Bitcoin/Transaction.h"
+#include "Bitcoin/TransactionBuilder.h"
+#include "Bitcoin/TransactionSigner.h"
+#include "Hash.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
+#include "proto/Bitcoin.pb.h"
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWBech32Address.h>
@@ -13,15 +21,7 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
-#include "../src/Hash.h"
-#include "../src/HexCoding.h"
-#include "../src/PrivateKey.h"
-#include "../src/Bitcoin/OutPoint.h"
-#include "../src/Bitcoin/Script.h"
-#include "../src/Bitcoin/Transaction.h"
-#include "../src/Bitcoin/TransactionBuilder.h"
-#include "../src/Bitcoin/TransactionSigner.h"
-#include "../src/proto/Bitcoin.pb.h"
+#include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Bitcoin;

@@ -4,10 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
+#include "Bech32.h"
+#include "Bitcoin/Bech32Address.h"
 
-#include "../src/Bech32.h"
-#include "../src/Bitcoin/Bech32Address.h"
+#include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Bitcoin;

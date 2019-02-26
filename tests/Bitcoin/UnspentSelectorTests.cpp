@@ -4,11 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
-#include "../src/Bitcoin/OutPoint.h"
-#include "../src/Bitcoin/Script.h"
-#include "../src/Bitcoin/UnspentSelector.h"
-#include "../src/proto/Bitcoin.pb.h"
+#include "Bitcoin/OutPoint.h"
+#include "Bitcoin/Script.h"
+#include "Bitcoin/UnspentSelector.h"
+#include "proto/Bitcoin.pb.h"
+
+#include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Bitcoin;
