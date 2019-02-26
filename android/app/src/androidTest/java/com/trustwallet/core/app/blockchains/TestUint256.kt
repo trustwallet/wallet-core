@@ -1,4 +1,4 @@
-package com.trustwallet.core.app
+package com.trustwallet.core.app.blockchains
 
 import com.trustwallet.core.app.utils.Numeric
 import wallet.core.jni.UInt256

@@ -1,4 +1,4 @@
-package com.trustwallet.core.app;
+package com.trustwallet.core.app.blockchains;
 
 import wallet.core.jni.Bech32Address;
 import wallet.core.jni.HRP;

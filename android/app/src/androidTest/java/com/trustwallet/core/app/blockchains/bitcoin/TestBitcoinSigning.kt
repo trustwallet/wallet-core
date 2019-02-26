@@ -1,4 +1,4 @@
-package com.trustwallet.core.app
+package com.trustwallet.core.app.blockchains.bitcoin
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
