@@ -28,7 +28,7 @@ protocol::TransferContract to_internal(const Proto::TransferContract& transfer) 
     internal.set_owner_address(ownerAddressData, ownerAddressSize);
 
     uint8_t toAddressData[base58Capacity];
-    int toAddressSize = base58_decode_check(transfer.owner_address().c_str(), HASHER_SHA2D, toAddressData, (int)base58Capacity);
+    int toAddressSize = base58_decode_check(transfer.to_address().c_str(), HASHER_SHA2D, toAddressData, (int)base58Capacity);
     internal.set_to_address(toAddressData, toAddressSize);
 
     internal.set_amount(transfer.amount());
