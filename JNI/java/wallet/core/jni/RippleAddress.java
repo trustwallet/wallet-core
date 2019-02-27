@@ -34,6 +34,7 @@ public class RippleAddress {
     public static native boolean equals(RippleAddress lhs, RippleAddress rhs);
     public static native boolean isValidString(String string);
     public native String description();
+    public native byte[] keyHash();
 
     public RippleAddress(String string) {
         nativeHandle = nativeCreateWithString(string);

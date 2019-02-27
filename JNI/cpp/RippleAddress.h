@@ -36,6 +36,9 @@ jboolean JNICALL Java_wallet_core_jni_RippleAddress_isValidString(JNIEnv *env, j
 JNIEXPORT
 jstring JNICALL Java_wallet_core_jni_RippleAddress_description(JNIEnv *env, jobject thisObject);
 
+JNIEXPORT
+jbyteArray JNICALL Java_wallet_core_jni_RippleAddress_keyHash(JNIEnv *env, jobject thisObject);
+
 
 TW_EXTERN_C_END
 

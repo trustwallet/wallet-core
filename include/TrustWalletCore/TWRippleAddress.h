@@ -37,7 +37,7 @@ struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWRippleAddress *_Nullable TWRippleAddressCreateWithPublicKey(struct TWPublicKey publicKey);
+struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey publicKey);
 
 TW_EXPORT_METHOD
 void TWRippleAddressDelete(struct TWRippleAddress *_Nonnull address);
@@ -45,5 +45,9 @@ void TWRippleAddressDelete(struct TWRippleAddress *_Nonnull address);
 /// Returns the address string representation.
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWRippleAddressDescription(struct TWRippleAddress *_Nonnull address);
+
+/// Returns the key hash.
+TW_EXPORT_PROPERTY
+TWData *_Nonnull TWRippleAddressKeyHash(struct TWRippleAddress *_Nonnull address);
 
 TW_EXTERN_C_END

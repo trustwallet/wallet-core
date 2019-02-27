@@ -37,7 +37,7 @@ struct TWIconAddress *_Nullable TWIconAddressCreateWithKeyHash(TWData *_Nonnull 
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWIconAddress *_Nullable TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, enum TWIconAddressType type);
+struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, enum TWIconAddressType type);
 
 TW_EXPORT_METHOD
 void TWIconAddressDelete(struct TWIconAddress *_Nonnull address);
@@ -46,7 +46,7 @@ void TWIconAddressDelete(struct TWIconAddress *_Nonnull address);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWIconAddressDescription(struct TWIconAddress *_Nonnull address);
 
-/// Returns the witness program
+/// Returns the key hash.
 TW_EXPORT_PROPERTY
 TWData *_Nonnull TWIconAddressKeyHash(struct TWIconAddress *_Nonnull address);
 

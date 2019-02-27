@@ -85,3 +85,16 @@ jstring JNICALL Java_wallet_core_jni_RippleAddress_description(JNIEnv *env, jobj
     return result;
 }
 
+jbyteArray JNICALL Java_wallet_core_jni_RippleAddress_keyHash(JNIEnv *env, jobject thisObject) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWRippleAddress *instance = (struct TWRippleAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    jbyteArray result = TWDataJByteArray(TWRippleAddressKeyHash(instance), env);
+
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    return result;
+}
+

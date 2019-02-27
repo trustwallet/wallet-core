@@ -59,11 +59,8 @@ public final class IconAddress {
         self.rawValue = rawValue
     }
 
-    public init?(publicKey: PublicKey, type: IconAddressType) {
-        guard let rawValue = TWIconAddressCreateWithPublicKey(publicKey.rawValue, TWIconAddressType(rawValue: type.rawValue)) else {
-            return nil
-        }
-        self.rawValue = rawValue
+    public init(publicKey: PublicKey, type: IconAddressType) {
+        rawValue = TWIconAddressCreateWithPublicKey(publicKey.rawValue, TWIconAddressType(rawValue: type.rawValue))
     }
 
     deinit {

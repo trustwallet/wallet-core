@@ -44,7 +44,7 @@ struct TWBech32Address *_Nullable TWBech32AddressCreateWithData(enum TWHRP hrp, 
     return new TWBech32Address{ Bech32Address(stringForHRP(hrp), 0, *d) };
 }
 
-struct TWBech32Address *_Nullable TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey) {
+struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey) {
     std::vector<uint8_t> data;
     if (TWPublicKeyIsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);

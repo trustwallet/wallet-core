@@ -27,6 +27,10 @@ public final class RippleAddress {
         return TWStringNSString(TWRippleAddressDescription(rawValue))
     }
 
+    public var keyHash: Data {
+        return TWDataNSData(TWRippleAddressKeyHash(rawValue))
+    }
+
     let rawValue: OpaquePointer
 
     init(rawValue: OpaquePointer) {
@@ -55,11 +59,8 @@ public final class RippleAddress {
         self.rawValue = rawValue
     }
 
-    public init?(publicKey: PublicKey) {
-        guard let rawValue = TWRippleAddressCreateWithPublicKey(publicKey.rawValue) else {
-            return nil
-        }
-        self.rawValue = rawValue
+    public init(publicKey: PublicKey) {
+        rawValue = TWRippleAddressCreateWithPublicKey(publicKey.rawValue)
     }
 
     deinit {

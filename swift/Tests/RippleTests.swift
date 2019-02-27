@@ -17,7 +17,7 @@ class RippleTests: XCTestCase {
         let pubkey = key.getPublicKey(compressed: true)
         let address = RippleAddress(publicKey: pubkey)
 
-        XCTAssertEqual(address?.description, "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav")
+        XCTAssertEqual(address.description, "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav")
     }
 
     func testSigner() {
