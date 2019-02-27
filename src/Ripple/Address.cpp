@@ -6,10 +6,13 @@
 
 #include "Address.h"
 
+#include "../HexCoding.h"
+
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ripple/base58.h>
 #include <TrezorCrypto/ecdsa.h>
-#include "../HexCoding.h"
+
+#include <cassert>
 
 using namespace TW::Ripple;
 
@@ -32,27 +35,27 @@ Address::Address(const std::string& string) {
     assert(size == Address::size);
     std::vector<uint8_t> vec(&buffer[0], &buffer[128]);
     auto str = TW::hex(vec);
-    memcpy(bytes, buffer, Address::size);
+    std::copy(buffer, buffer + Address::size, bytes.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
     assert(isValid(data));
-    std::copy(data.begin(), data.end(), bytes);
+    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
     /// see type prefix: https://developers.ripple.com/base58-encodings.html
     bytes[0] = 0x00;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes + 1);
+    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
 }
 
 std::string Address::string() const {
     size_t size = 0;
-    base58_encode(nullptr, &size, bytes, Address::size, xrp_b58digits);
+    base58_encode(nullptr, &size, bytes.data(), Address::size, xrp_b58digits);
     size += 16;
 
     std::string str(size, ' ');
-    xrp_base58_encode_check(bytes, Address::size, HASHER_SHA2D, &str[0], size);
+    xrp_base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
 
     return std::string(str.c_str());
 }

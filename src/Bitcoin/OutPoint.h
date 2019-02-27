@@ -6,10 +6,12 @@
 
 #pragma once
 
+#include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
 
+#include <array>
 #include <algorithm>
-#include <string.h>
+#include <cstring>
 
 namespace TW {
 namespace Bitcoin {
@@ -18,7 +20,7 @@ namespace Bitcoin {
 class OutPoint {
 public:
     /// The hash of the referenced transaction.
-    uint8_t hash[32];
+    std::array<byte, 32> hash;
 
     /// The index of the specific output in the transaction.
     uint32_t index;
@@ -26,14 +28,14 @@ public:
     /// Initializes an out-point reference with a hash and an index.
     template <typename T>
     OutPoint(const T& h, uint32_t index) {
-        std::copy(std::begin(h), std::end(h), hash);
+        std::copy(std::begin(h), std::end(h), hash.begin());
         this->index = index;
     }
 
     /// Initializes an out-point from a Protobuf out-point.
     OutPoint(const Proto::OutPoint& other) {
         assert(other.hash().size() == 32);
-        std::copy(other.hash().begin(), other.hash().end(), hash);
+        std::copy(other.hash().begin(), other.hash().end(), hash.begin());
         index = other.index();
     }
 
@@ -41,12 +43,12 @@ public:
     void encode(std::vector<uint8_t>& data) const;
 
     friend bool operator<(const OutPoint& a, const OutPoint& b) {
-        int cmp = memcmp(a.hash, b.hash, 32);
+        int cmp = std::memcmp(a.hash.data(), b.hash.data(), 32);
         return cmp < 0 || (cmp == 0 && a.index < b.index);
     }
 
     friend bool operator==(const OutPoint& a, const OutPoint& b) {
-        int cmp = memcmp(a.hash, b.hash, 32);
+        int cmp = std::memcmp(a.hash.data(), b.hash.data(), 32);
         return (cmp == 0 && a.index == b.index);
     }
 

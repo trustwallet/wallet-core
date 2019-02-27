@@ -9,6 +9,8 @@
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
+#include <cassert>
+
 using namespace TW::Bitcoin;
 
 bool Address::isValid(const std::string& string) {
@@ -30,26 +32,26 @@ Address::Address(const std::string& string) {
     int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
     assert(size == Address::size);
 
-    memcpy(bytes, buffer, Address::size);
+    std::copy(buffer, buffer + Address::size, bytes.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
     assert(isValid(data));
-    std::copy(data.begin(), data.end(), bytes);
+    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey, uint8_t prefix) {
     bytes[0] = prefix;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes + 1);
+    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
 }
 
 std::string Address::string() const {
     size_t size = 0;
-    b58enc(nullptr, &size, bytes, Address::size);
+    b58enc(nullptr, &size, bytes.data(), Address::size);
     size += 16;
 
     std::string str(size, ' ');
-    base58_encode_check(bytes, Address::size, HASHER_SHA2D, &str[0], size);
+    base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
 
     return str;
 }

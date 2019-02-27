@@ -354,7 +354,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
 
     auto utxo0Script = Script(parse_hex("a9149993a429037b5d912407a71c252019287b8d27a587"));
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_hash(outpoint0.hash, 32);
+    utxo->mutable_out_point()->set_hash(outpoint0.hash.data(), outpoint0.hash.size());
     utxo->mutable_out_point()->set_index(outpoint0.index);
     utxo->mutable_out_point()->set_sequence(UINT32_MAX);
     utxo->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());

@@ -21,7 +21,7 @@ public:
     static const size_t size = 34;
 
     /// Address data consisting of a prefix byte followed by the public key hash.
-    uint8_t bytes[size];
+    std::array<byte, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
     template<typename T>
@@ -49,7 +49,7 @@ public:
 };
 
 static inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
-    return memcmp(lhs.bytes, rhs.bytes, CashAddress::size) == 0;
+    return lhs.bytes == rhs.bytes;
 }
 
 }} // namespace

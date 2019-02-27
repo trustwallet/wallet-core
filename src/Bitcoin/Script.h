@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include "../Data.h"
+
+#include <string>
 #include <vector>
 
 namespace TW {
@@ -14,7 +17,7 @@ namespace Bitcoin {
 class Script {
 public:
     /// Script raw bytes.
-    std::vector<uint8_t> bytes;
+    Data bytes;
 
     /// Initializes an empty script.
     Script() = default;
@@ -24,7 +27,7 @@ public:
     Script(It begin, It end) : bytes(begin, end) {}
 
     /// Initializaes a script with a collection of raw bytes by moving.
-    Script(std::vector<uint8_t>&& bytes) : bytes(bytes) {}
+    Script(Data&& bytes) : bytes(bytes) {}
 
     /// Whether the script is empty.
     bool empty() const {
@@ -32,7 +35,7 @@ public:
     }
 
     /// Returns the script's script hash.
-    std::vector<uint8_t> hash() const;
+    Data hash() const;
 
     /// Determines whether this is a pay-to-script-hash (P2SH) script.
     bool isPayToScriptHash() const;
@@ -44,40 +47,40 @@ public:
     bool isWitnessProgram() const;
 
     /// Matches the script to a pay-to-public-key (P2PK) script.
-    bool matchPayToPubkey(std::vector<uint8_t>& publicKey) const;
+    bool matchPayToPubkey(Data& publicKey) const;
 
     /// Matches the script to a pay-to-public-key-hash (P2PKH).
-    bool matchPayToPubkeyHash(std::vector<uint8_t>& keyHash) const;
+    bool matchPayToPubkeyHash(Data& keyHash) const;
 
     /// Matches the script to a pay-to-script-hash (P2SH).
-    bool matchPayToScriptHash(std::vector<uint8_t>& scriptHash) const;
+    bool matchPayToScriptHash(Data& scriptHash) const;
 
     /// Matches the script to a pay-to-witness-public-key-hash (P2WPKH).
-    bool matchPayToWitnessPublicKeyHash(std::vector<uint8_t>& keyHash) const;
+    bool matchPayToWitnessPublicKeyHash(Data& keyHash) const;
 
     /// Matches the script to a pay-to-witness-script-hash (P2WSH).
-    bool matchPayToWitnessScriptHash(std::vector<uint8_t>& scriptHash) const;
+    bool matchPayToWitnessScriptHash(Data& scriptHash) const;
 
     /// Matches the script to a multisig script.
-    bool matchMultisig(std::vector<std::vector<uint8_t>>& publicKeys, int& required) const;
+    bool matchMultisig(std::vector<Data>& publicKeys, int& required) const;
 
     /// Builds a pay-to-public-key-hash (P2PKH) script from a public key hash.
-    static Script buildPayToPublicKeyHash(const std::vector<uint8_t>& hash);
+    static Script buildPayToPublicKeyHash(const Data& hash);
 
     /// Builds a pay-to-script-hash (P2SH) script from a script hash.
-    static Script buildPayToScriptHash(const std::vector<uint8_t>& scriptHash);
+    static Script buildPayToScriptHash(const Data& scriptHash);
 
     /// Builds a pay-to-witness-public-key-hash (P2WPKH) script from a public key hash.
-    static Script buildPayToWitnessPubkeyHash(const std::vector<uint8_t>& hash);
+    static Script buildPayToWitnessPubkeyHash(const Data& hash);
 
     /// Builds a pay-to-witness-script-hash (P2WSH) script from a script hash.
-    static Script buildPayToWitnessScriptHash(const std::vector<uint8_t>& scriptHash);
+    static Script buildPayToWitnessScriptHash(const Data& scriptHash);
 
     /// Builds a pay-to-public-key-hash (P2PKH) script appropriate for the given address.
     static Script buildForAddress(const std::string& address);
 
     /// Encodes the script.
-    void encode(std::vector<uint8_t>& data) const;
+    void encode(Data& data) const;
 
 private:
 
@@ -87,7 +90,7 @@ private:
     /// \param opcode [out] the opcode.
     /// \param operand [out] the opcode's operand.
     /// \returns whether an opcode was available.
-    bool getScriptOp(size_t& index, uint8_t& opcode, std::vector<uint8_t>& operand) const;
+    bool getScriptOp(size_t& index, uint8_t& opcode, Data& operand) const;
 };
 
 inline bool operator==(const Script& lhs, const Script& rhs) { return lhs.bytes == rhs.bytes; }

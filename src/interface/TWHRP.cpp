@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWHRP.h>
 
-#include <string.h>
+#include <cstring>
 
 const char* stringForHRP(enum TWHRP hrp) {
     switch (hrp) {
@@ -20,15 +20,15 @@ const char* stringForHRP(enum TWHRP hrp) {
 }
 
 enum TWHRP hrpForString(const char *_Nonnull string) {
-    if (strcmp(string, HRP_BITCOIN) == 0) {
+    if (std::strcmp(string, HRP_BITCOIN) == 0) {
         return TWHRPBitcoin;
-    } else if (strcmp(string, HRP_LITECOIN) == 0) {
+    } else if (std::strcmp(string, HRP_LITECOIN) == 0) {
         return TWHRPLitecoin;
-    } else if (strcmp(string, HRP_BITCOINCASH) == 0) {
+    } else if (std::strcmp(string, HRP_BITCOINCASH) == 0) {
         return TWHRPBitcoinCash;
-    } else if (strcmp(string, HRP_BINANCE) == 0) {
+    } else if (std::strcmp(string, HRP_BINANCE) == 0) {
         return TWHRPBinance;
-    } else if (strcmp(string, HRP_BINANCE_TEST) == 0) {
+    } else if (std::strcmp(string, HRP_BINANCE_TEST) == 0) {
         return TWHRPBinanceTest;
     } else {
         return TWHRPUnknown;

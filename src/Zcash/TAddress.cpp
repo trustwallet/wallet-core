@@ -9,6 +9,8 @@
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
+#include <cassert>
+
 using namespace TW::Zcash;
 
 bool TAddress::isValid(const std::string& string) {

@@ -9,6 +9,9 @@
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/cash_addr.h>
 
+#include <cassert>
+#include <cstring>
+
 using namespace TW::Bitcoin;
 
 /// Cash address human-readable part
@@ -24,7 +27,7 @@ bool CashAddress::isValid(const std::string& string) {
     if (cash_decode(hrp, data, &dataLen, string.c_str()) == 0 || dataLen != CashAddress::size) {
         return false;
     }
-    if (strcmp(hrp, cashHRP) != 0) {
+    if (std::strcmp(hrp, cashHRP) != 0) {
         return false;
     }
     return true;
@@ -36,14 +39,14 @@ CashAddress::CashAddress(const std::string& string) {
     size_t dataLen;
     auto success = cash_decode(hrp, data, &dataLen, string.c_str()) != 0;
     assert(success && "Invalid cash address string");
-    assert(strcmp(hrp, cashHRP) == 0);
+    assert(std::strcmp(hrp, cashHRP) == 0);
     assert(dataLen == CashAddress::size);
-    memcpy(bytes, data, CashAddress::size);
+    std::copy(data, data + CashAddress::size, bytes.begin());
 }
 
 CashAddress::CashAddress(const std::vector<uint8_t>& data) {
     assert(isValid(data));
-    std::copy(data.begin(), data.end(), bytes);
+    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 CashAddress::CashAddress(const PublicKey& publicKey) {
@@ -52,20 +55,20 @@ CashAddress::CashAddress(const PublicKey& publicKey) {
     ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, payload + 1);
 
     size_t outlen = 0;
-    auto success = cash_addr_to_data(bytes, &outlen, payload, 21) != 0;
+    auto success = cash_addr_to_data(bytes.data(), &outlen, payload, 21) != 0;
     assert(success && outlen == CashAddress::size);
 }
 
 std::string CashAddress::string() const {
     char result[129];
-    cash_encode(result, cashHRP, bytes, CashAddress::size);
+    cash_encode(result, cashHRP, bytes.data(), CashAddress::size);
     return result;
 }
 
 Address CashAddress::legacyAddress() const {
     std::vector<uint8_t> result(Address::size);
     size_t outlen = 0;
-    cash_data_to_addr(result.data(), &outlen, bytes, CashAddress::size);
+    cash_data_to_addr(result.data(), &outlen, bytes.data(), CashAddress::size);
     assert(outlen == 21 && "Invalid length");
     return Address(result);
 }

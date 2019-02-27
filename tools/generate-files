@@ -13,7 +13,11 @@ set -e
 PROTOBUF_DIR="$PWD/build/protobuf/src/protobuf_ext/"
 
 # Generate Java, C++ and Swift Protobuf files
-protoc -I=$PROTOBUF_DIR/src -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
+if [ -x "$(command -v protoc-gen-swift)" ]; then
+    protoc -I=$PROTOBUF_DIR/src -I=src/proto --cpp_out=src/proto --java_out=JNI/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
+else
+    protoc -I=$PROTOBUF_DIR/src -I=src/proto --cpp_out=src/proto --java_out=JNI/java src/proto/*.proto
+fi
 
 # Generate internal Protobuf files
 protoc -I=$PROTOBUF_DIR/src -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
@@ -30,5 +34,5 @@ pushd protobuf-plugin
 mkdir -p build
 cmake -H. -Bbuild
 make -Cbuild
-protoc -I=../$PROTOBUF_DIR/src -I=../src/proto --plugin=build/protoc-gen-int --int_out ../include/TrustWalletCore ../src/proto/*.proto
+protoc -I=$PROTOBUF_DIR/src -I=../src/proto --plugin=build/protoc-gen-int --int_out ../include/TrustWalletCore ../src/proto/*.proto
 popd

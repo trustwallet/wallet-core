@@ -19,6 +19,9 @@
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
 
+#include <algorithm>
+#include <cassert>
+
 using namespace TW::Bitcoin;
 
 std::vector<uint8_t> Script::hash() const {
@@ -255,7 +258,7 @@ Script Script::buildForAddress(const std::string& string) {
             // address starts with 1/L
             auto data = std::vector<uint8_t>();
             data.reserve(Address::size - 1);
-            std::copy(address.bytes + 1, address.bytes + Address::size, std::back_inserter(data));
+            std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToPublicKeyHash(data);
         }
         auto p2sh = std::find(p2shPrefixes.begin(), p2shPrefixes.end(), address.bytes[0]);
@@ -263,7 +266,7 @@ Script Script::buildForAddress(const std::string& string) {
             // address starts with 3/M
             auto data = std::vector<uint8_t>();
             data.reserve(Address::size - 1);
-            std::copy(address.bytes + 1, address.bytes + Address::size, std::back_inserter(data));
+            std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToScriptHash(data);
         }
     } else if (Bech32Address::isValid(string)) {

@@ -7,6 +7,7 @@
 #include "Bech32.h"
 #include "Bitcoin/Bech32Address.h"
 
+#include <cstring>
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -161,7 +162,7 @@ TEST(Bech32Address, ValidAddress) {
         ASSERT_TRUE(dec.second);
 
         std::vector<uint8_t> spk = segwit_scriptpubkey(dec.first.witnessVersion, dec.first.witnessProgram);
-        ASSERT_TRUE(spk.size() == valid_address[i].scriptPubKeyLen && memcmp(&spk[0], valid_address[i].scriptPubKey, spk.size()) == 0);
+        ASSERT_TRUE(spk.size() == valid_address[i].scriptPubKeyLen && std::memcmp(&spk[0], valid_address[i].scriptPubKey, spk.size()) == 0);
         
         std::string recode = dec.first.encode();
         ASSERT_FALSE(recode.empty());
