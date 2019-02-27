@@ -33,11 +33,11 @@ struct TWIconAddress *_Nullable TWIconAddressCreateWithString(TWString *_Nonnull
 
 /// Creates an address from a key hash.
 TW_EXPORT_STATIC_METHOD
-struct TWIconAddress *_Nullable TWIconAddressCreateWithKeyHash(TWData *_Nonnull keyHash, TWIconAddressType type);
+struct TWIconAddress *_Nullable TWIconAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWIconAddressType type);
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWIconAddress *_Nullable TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, TWIconAddressType type);
+struct TWIconAddress *_Nullable TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, enum TWIconAddressType type);
 
 TW_EXPORT_METHOD
 void TWIconAddressDelete(struct TWIconAddress *_Nonnull address);

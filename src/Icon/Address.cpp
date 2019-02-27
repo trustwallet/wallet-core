@@ -10,6 +10,8 @@
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 
+#include <TrezorCrypto/sha3.h>
+
 using namespace TW;
 using namespace TW::Icon;
 
@@ -31,11 +33,14 @@ Address::Address(const std::string& string) {
 
     if (std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin())) {
         type = TWIconAddressTypeAddress;
-    }
-    if (std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
+    } else if (std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
         type = TWIconAddressTypeContract;
+    } else {
+        assert(false && "Invalid address prefix");
+        type = TWIconAddressTypeAddress;
     }
-    const auto data = parse_hex(string.begin() + 1, string.end());
+
+    const auto data = parse_hex(string.begin() + 2, string.end());
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
@@ -45,7 +50,8 @@ Address::Address(const std::vector<uint8_t>& data, TWIconAddressType type) : typ
 }
 
 Address::Address(const PublicKey& publicKey, TWIconAddressType type) : type(type) {
-    const auto hash = Hash::sha3_256(publicKey.bytes);
+    auto hash = std::array<uint8_t, Hash::sha256Size>();
+    sha3_256(publicKey.bytes.data() + 1, PublicKey::uncompressedSize - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 
