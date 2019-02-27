@@ -44,7 +44,7 @@ struct TWIconAddress *_Nullable TWIconAddressCreateWithKeyHash(TWData *_Nonnull 
     return new TWIconAddress{ Address(*d, type) };
 }
 
-struct TWIconAddress *_Nullable TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, TWIconAddressType type) {
+struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, TWIconAddressType type) {
     Data data;
     if (TWPublicKeyIsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);

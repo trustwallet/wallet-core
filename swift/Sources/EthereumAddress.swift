@@ -59,11 +59,8 @@ public final class EthereumAddress {
         self.rawValue = rawValue
     }
 
-    public init?(publicKey: PublicKey) {
-        guard let rawValue = TWEthereumAddressCreateWithPublicKey(publicKey.rawValue) else {
-            return nil
-        }
-        self.rawValue = rawValue
+    public init(publicKey: PublicKey) {
+        rawValue = TWEthereumAddressCreateWithPublicKey(publicKey.rawValue)
     }
 
     deinit {

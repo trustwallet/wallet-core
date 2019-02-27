@@ -44,7 +44,7 @@ struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_
     return new TWEthereumAddress{ Address(*d) };
 }
 
-struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
+struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
     Data data;
     if (TWPublicKeyIsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);

@@ -44,7 +44,7 @@ struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithKeyHash(enum 
     return new TWTendermintAddress{ Address(stringForHRP(hrp), *d) };
 }
 
-struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey) {
+struct TWTendermintAddress *_Nonnull TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey) {
     std::vector<uint8_t> data;
     if (TWPublicKeyIsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);

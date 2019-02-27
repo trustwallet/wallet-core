@@ -39,7 +39,7 @@ struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull
     return new TWRippleAddress{ Address(*d) };
 }
 
-struct TWRippleAddress *_Nullable TWRippleAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
+struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
     std::vector<uint8_t> data;
     if (TWPublicKeyIsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
