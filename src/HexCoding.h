@@ -9,8 +9,11 @@
 #include "Data.h"
 
 #include <string>
+#include <tuple>
 
 namespace TW {
+
+std::tuple<uint8_t, bool> value(uint8_t c);
 
 /// Converts a range of bytes to a hexadecimal string representation.
 template<typename Iter>
@@ -50,6 +53,47 @@ inline std::string hex(uint64_t value) {
 /// Parses a string of hexadecimal values.
 ///
 /// \returns the array or parsed bytes or an empty array if the string is not valid hexadecimal.
-Data parse_hex(const std::string& string);
+template <typename Iter>
+inline Data parse_hex(const Iter begin, const Iter end) {
+    auto it = begin;
+
+    // Skip `0x`
+    if (end - begin >= 2 && *begin == '0' && *(begin + 1) == 'x') {
+        it += 2;
+    }
+
+    Data result;
+    result.reserve(((end - begin) + 1) / 2);
+
+    while (it != end) {
+        auto high = value(*it);
+        if (!std::get<1>(high)) {
+            return {};
+        }
+        it += 1;
+
+        if (it == end) {
+            result.push_back(std::get<0>(high));
+            break;
+        }
+
+        auto low = value(*it);
+        if (!std::get<1>(low)) {
+            return {};
+        }
+        it += 1;
+
+        result.push_back((std::get<0>(high) << 4) | std::get<0>(low));
+    }
+
+    return result;
+}
+
+/// Parses a string of hexadecimal values.
+///
+/// \returns the array or parsed bytes or an empty array if the string is not valid hexadecimal.
+inline Data parse_hex(const std::string& string) {
+    return parse_hex(string.begin(), string.end());
+}
 
 } // namespace
