@@ -50,7 +50,7 @@ TWString *_Nonnull TWTendermintAddressDescription(struct TWTendermintAddress *_N
 TW_EXPORT_PROPERTY
 enum TWHRP TWTendermintAddressHRP(struct TWTendermintAddress *_Nonnull address);
 
-/// Returns the witness program
+/// Returns the key hash.
 TW_EXPORT_PROPERTY
 TWData *_Nonnull TWTendermintAddressKeyHash(struct TWTendermintAddress *_Nonnull address);
 

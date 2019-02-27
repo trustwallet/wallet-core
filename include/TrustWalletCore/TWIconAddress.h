@@ -46,7 +46,7 @@ void TWIconAddressDelete(struct TWIconAddress *_Nonnull address);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWIconAddressDescription(struct TWIconAddress *_Nonnull address);
 
-/// Returns the witness program
+/// Returns the key hash.
 TW_EXPORT_PROPERTY
 TWData *_Nonnull TWIconAddressKeyHash(struct TWIconAddress *_Nonnull address);
 
