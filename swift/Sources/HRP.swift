@@ -11,6 +11,7 @@ public enum HRP: UInt32, CustomStringConvertible  {
     case unknown = 0
     case bitcoin = 1
     case litecoin = 2
+    case viacoin = 14
     case bitcoinCash = 3
     case binance = 4
     case binanceTest = 5
@@ -20,6 +21,7 @@ public enum HRP: UInt32, CustomStringConvertible  {
         case .unknown: return ""
         case .bitcoin: return "bc"
         case .litecoin: return "ltc"
+        case .viacoin: return "via"
         case .bitcoinCash: return "bitcoincash"
         case .binance: return "bnb"
         case .binanceTest: return "tbnb"

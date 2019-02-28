@@ -13,6 +13,8 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Bitcoin()
     case .litecoin:
         return Litecoin()
+    case .viacoin:
+        return Viacoin()
     case .ethereum:
         return Ethereum()
     case .ethereumClassic:

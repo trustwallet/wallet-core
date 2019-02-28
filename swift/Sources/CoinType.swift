@@ -19,6 +19,7 @@ public enum CoinType: UInt32 {
     case go = 6060
     case icon = 74
     case litecoin = 2
+    case viacoin = 14
     case poa = 178
     case thunderToken = 1001
     case tomoChain = 889

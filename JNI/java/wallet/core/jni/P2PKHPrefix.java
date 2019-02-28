@@ -13,6 +13,7 @@ package wallet.core.jni;
 public enum P2PKHPrefix {
     BITCOIN ((byte) 0x00),
     LITECOIN ((byte) 0x30),
+    VIACOIN ((byte) 0x47),
     DASH ((byte) 0x4C),
     ZCOIN ((byte) 0x52),
     ZCASHT ((byte) 0xB8);

@@ -10,6 +10,7 @@
 public enum P2SHPrefix: UInt8 {
     case bitcoin = 0x05
     case litecoin = 0x32
+    case viacoin = 0x21
     case dash = 0x10
     case zcoin = 0x07
     case zcashT = 0xBD

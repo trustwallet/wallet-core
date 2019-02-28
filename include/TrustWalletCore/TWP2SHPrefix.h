@@ -16,6 +16,7 @@ TW_EXPORT_ENUM(uint8_t)
 enum TWP2SHPrefix {
     TWP2SHPrefixBitcoin = 0x05,
     TWP2SHPrefixLitecoin = 0x32,
+    TWP2SHPrefixViacoin = 0x21,
     TWP2SHPrefixDash = 0x10,
     TWP2SHPrefixZcoin = 0x07,
     TWP2SHPrefixZcashT = 0xBD,

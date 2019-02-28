@@ -22,6 +22,7 @@ public enum CoinType {
     GO (6060),
     ICON (74),
     LITECOIN (2),
+    VIACOIN (14),
     POA (178),
     THUNDERTOKEN (1001),
     TOMOCHAIN (889),

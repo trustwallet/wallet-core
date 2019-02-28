@@ -14,6 +14,7 @@ public enum HRP {
     UNKNOWN (0),
     BITCOIN (1),
     LITECOIN (2),
+    VIACOIN (14),
     BITCOINCASH (3),
     BINANCE (4),
     BINANCETEST (5);
@@ -29,6 +30,7 @@ public enum HRP {
         case UNKNOWN: return "";
         case BITCOIN: return "bc";
         case LITECOIN: return "ltc";
+        case VIACOIN: return "via";
         case BITCOINCASH: return "bitcoincash";
         case BINANCE: return "bnb";
         case BINANCETEST: return "tbnb";

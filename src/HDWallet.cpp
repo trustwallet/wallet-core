@@ -116,6 +116,10 @@ std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& e
         auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_LITECOIN);
         string = address.encode();
     } break;
+    case TWCoinTypeViacoin: {
+        auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_VIACOIN);
+        string = address.encode();
+    } break;
     case TWCoinTypeBitcoinCash: {
         auto address = Bitcoin::CashAddress(reinterpret_cast<PublicKey&>(publicKey));
         string = address.string();
