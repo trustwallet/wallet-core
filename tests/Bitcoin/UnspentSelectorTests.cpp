@@ -119,3 +119,12 @@ TEST(UnspentSelector, SelectCustomCase) {
 
     ASSERT_EQ(sum(selected), 3083478);
 }
+
+TEST(UnspentSelector, SelectMaxCase) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 10189534));
+    auto selected = UnspentSelector::select(utxos, 10189342, 1);
+
+    ASSERT_EQ(sum(selected), 10189534);
+    ASSERT_TRUE(selected.size() > 0);
+}
