@@ -67,11 +67,9 @@ public struct BitcoinAddress {
         }
     }
 
-    public init?(publicKey: PublicKey, prefix: UInt8) {
+    public init(publicKey: PublicKey, prefix: UInt8) {
         rawValue = TWBitcoinAddress()
-        guard TWBitcoinAddressInitWithPublicKey(&rawValue, publicKey.rawValue, prefix) else {
-            return nil
-        }
+        TWBitcoinAddressInitWithPublicKey(&rawValue, publicKey.rawValue, prefix)
     }
 
 

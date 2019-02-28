@@ -59,13 +59,11 @@ bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWD
     return true;
 }
 
-bool TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
+void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
     address->bytes[0] = prefix;
 
     auto compressed = TWPublicKeyCompressed(publicKey);
     ecdsa_get_pubkeyhash(compressed.bytes, HASHER_SHA2_RIPEMD,  address->bytes + 1);
-
-    return true;
 }
 
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) {
