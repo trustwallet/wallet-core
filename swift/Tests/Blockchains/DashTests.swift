@@ -17,7 +17,7 @@ class DashAddressTests: XCTestCase {
     }
 
     func testExtendedKeys() {
-        let wallet = HDWallet(mnemonic: "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", passphrase: "TREZOR")
+        let wallet = testWallet
 
         let xprv = wallet.getExtendedPrivateKey(for: .bip44, coin: .dash, version: .xprv)
         let xpub = wallet.getExtendedPubKey(for: .bip44, coin: .dash, version: .xpub)

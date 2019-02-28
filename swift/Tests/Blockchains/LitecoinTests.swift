@@ -38,7 +38,7 @@ class LitecoinTests: XCTestCase {
     }
 
     func testExtendedKeys() {
-        let wallet = HDWallet(mnemonic: "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", passphrase: "TREZOR")
+        let wallet = testWallet
 
         // .bip44
         let lptv = wallet.getExtendedPrivateKey(for: .bip44, coin: .litecoin, version: .ltpv)
