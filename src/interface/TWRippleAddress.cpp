@@ -60,5 +60,5 @@ TWString *_Nonnull TWRippleAddressDescription(struct TWRippleAddress *_Nonnull a
 }
 
 TWData *_Nonnull TWRippleAddressKeyHash(struct TWRippleAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes, Address::size);
+    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::size);
 }
