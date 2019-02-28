@@ -46,7 +46,7 @@ public func blockchain(coin: CoinType) -> Blockchain {
     case .binance:
         return BinanceChainTestnet()
     case .ripple:
-        fatalError("not implemented")
+        return Ripple()
     case .zcash:
         return Zcash()
     }
