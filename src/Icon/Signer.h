@@ -9,16 +9,29 @@
 #include "../proto/Icon.pb.h"
 #include "../Data.h"
 
+#include <map>
+#include <string>
+
 namespace TW {
 namespace Icon {
 
 class Signer {
 public:
+    const Proto::SigningInput& input;
+
+    Signer(const Proto::SigningInput& input) : input(input) {}
+
     /// Signs an Icon transaction.
-    static Data sign(const Proto::SigningInput& input) noexcept;
+    Proto::SigningOutput sign() const noexcept;
 
     /// Signature pre-image.
-    static std::string preImage(const Proto::SigningInput& input) noexcept;
+    std::string preImage() const noexcept;
+
+    /// Encodes a signed transaction as JSON.
+    std::string encode(const Data& signature) const noexcept;
+
+private:
+    std::map<std::string, std::string> parameters() const noexcept;
 };
 
 }} // namespace

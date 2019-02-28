@@ -32,7 +32,7 @@ message SigningInput {
 
 // Transaction signing output.
 message SigningOutput {
-    // Encoded transaction (signature pre-image).
+    // JSON-encoded transaction parameters.
     string encoded = 1;
 
     // Signature.

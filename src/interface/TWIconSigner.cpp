@@ -17,14 +17,9 @@ TW_Icon_Proto_SigningOutput TWIconSignerSign(TW_Icon_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
-    auto protoOutput = Proto::SigningOutput();
+    const auto signer = Signer(input);
+    const auto output = signer.sign();
 
-    const auto encoded = Signer::preImage(input);
-    protoOutput.set_encoded(encoded);
-
-    const auto signature = Signer::sign(input);
-    protoOutput.set_signature(signature.data(), signature.size());
-
-    auto serialized = protoOutput.SerializeAsString();
+    auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

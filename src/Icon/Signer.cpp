@@ -5,15 +5,18 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+
+#include "../Base64.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
 #include "../uint256.h"
 
-#include <algorithm>
 #include <boost/multiprecision/cpp_int.hpp>
+#include <nlohmann/json.hpp>
+
+#include <algorithm>
 #include <iostream>
-#include <map>
 #include <sstream>
 
 using namespace TW;
@@ -34,7 +37,7 @@ std::string to_hex(const std::string& n) {
     return "0x" + std::string(start, s.end());
 }
 
-std::map<std::string, std::string> parameters(const Proto::SigningInput& input) {
+std::map<std::string, std::string> Signer::parameters() const noexcept {
     auto params = std::map<std::string, std::string>();
     params["from"] = input.from_address();
     params["to"] = input.to_address();
@@ -47,19 +50,40 @@ std::map<std::string, std::string> parameters(const Proto::SigningInput& input) 
     return params;
 }
 
-std::string Signer::preImage(const Proto::SigningInput& input) noexcept {
+std::string Signer::preImage() const noexcept {
     std::string txHash = "icx_sendTransaction";
-    auto params = parameters(input);
-    for (auto [key, value] : parameters(input)) {
+    const auto params = parameters();
+    for (auto [key, value] : params) {
         txHash += "." + key + "." + value;
     }
     return txHash;
 }
 
-Data Signer::sign(const Proto::SigningInput& input) noexcept {
-    const auto hash = Hash::sha3_256(Signer::preImage(input));
+std::string Signer::encode(const Data& signature) const noexcept {
+    auto json = nlohmann::json();
+    json["from"] = input.from_address();
+    json["to"] = input.to_address();
+    json["timestamp"] = to_hex(input.timestamp());
+    json["nonce"] = to_hex(input.nonce());
+    json["stepLimit"] = to_hex(input.step_limit());
+    json["value"] = to_hex(input.value());
+    json["nid"] = to_hex(input.network_id());
+    json["version"] = "0x3";
+    json["signature"] = Base64::encode(signature);
+    return json.dump();
+}
+
+Proto::SigningOutput Signer::sign() const noexcept {
+    const auto hash = Hash::sha3_256(Signer::preImage());
 
     const auto key = PrivateKey(input.private_key());
     const auto signature = key.sign(hash);
-    return Data(signature.begin(), signature.end());
+
+    auto output = Proto::SigningOutput();
+    output.set_signature(signature.data(), signature.size());
+
+    auto encoded = encode(Data(signature.begin(), signature.end()));
+    output.set_encoded(encoded.data(), encoded.size());
+
+    return output;
 }
