@@ -14,6 +14,7 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y \
     git \
     libicu-dev \
+    libssl-dev \
     ninja-build \
     nodejs \
     pkg-config \
@@ -37,7 +38,7 @@ RUN cd /usr/local/src \
     && curl -fSsOL https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION.tar.gz \
     && tar xvf cmake-$CMAKE_VERSION.tar.gz \ 
     && cd cmake-$CMAKE_VERSION \
-    && ./bootstrap \
+    && ./bootstrap --system-curl \
     && make \
     && make install \
     && cd .. \
