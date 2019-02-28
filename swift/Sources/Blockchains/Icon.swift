@@ -6,6 +6,9 @@
 
 import Foundation
 
+public typealias TWIconSigningInput = TW_Icon_Proto_SigningInput
+public typealias TWIconSigningOutput = TW_Icon_Proto_SigningOutput
+
 public final class Icon: Ethereum {
     /// Chain identifier.
     public override var chainID: Int {
