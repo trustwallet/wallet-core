@@ -14,6 +14,8 @@
 
 #include <TrezorCrypto/base58.h>
 
+#include <cassert>
+
 using namespace TW;
 using namespace TW::Tron;
 

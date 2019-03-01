@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(TrustWalletCore)
 
-set (CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 add_subdirectory(trezor-crypto)
 
 macro(find_host_package)
@@ -58,6 +60,7 @@ else()
     target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 endif()
 add_dependencies(TrustWalletCore nlohmann_json)
+set_property(TARGET TrustWalletCore PROPERTY CXX_STANDARD 17)
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.

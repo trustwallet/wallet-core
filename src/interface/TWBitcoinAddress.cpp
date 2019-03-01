@@ -12,10 +12,12 @@
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
+#include <cstring>
+
 using namespace TW::Bitcoin;
 
 bool TWBitcoinAddressEqual(struct TWBitcoinAddress lhs, struct TWBitcoinAddress rhs) {
-    return memcmp(lhs.bytes, rhs.bytes, Address::size) == 0;
+    return std::memcmp(lhs.bytes, rhs.bytes, Address::size) == 0;
 }
 
 bool TWBitcoinAddressIsValid(TWData *_Nonnull data) {

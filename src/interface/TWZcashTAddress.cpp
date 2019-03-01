@@ -9,11 +9,13 @@
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
+
+#include <cstring>
 #include <string>
 #include <vector>
 
 bool TWZcashTAddressEqual(struct TWZcashTAddress lhs, struct TWZcashTAddress rhs) {
-    return memcmp(lhs.bytes, rhs.bytes, TWZcashTAddressSize) == 0;
+    return std::memcmp(lhs.bytes, rhs.bytes, TWZcashTAddressSize) == 0;
 }
 
 bool TWZcashTAddressIsValid(TWData *_Nonnull data) {

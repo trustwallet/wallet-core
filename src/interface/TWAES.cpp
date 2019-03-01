@@ -7,8 +7,9 @@
 #include <TrustWalletCore/TWAES.h>
 
 #include <TrezorCrypto/aes.h>
-#include <assert.h>
-#include <string.h>
+
+#include <cassert>
+#include <cstring>
 
 TWData *_Nullable TWAESCBCEncrypt(TWData *_Nonnull key, TWData *_Nonnull data, TWData *_Nonnull iv) {
     aes_encrypt_ctx ctx;
@@ -24,7 +25,7 @@ TWData *_Nullable TWAESCBCEncrypt(TWData *_Nonnull key, TWData *_Nonnull data, T
     }
     if (i < TWDataSize(data)) {
         uint8_t padded[16] = {0};
-        memcpy(padded, TWDataBytes(data) + i, TWDataSize(data) - i);
+        std::memcpy(padded, TWDataBytes(data) + i, TWDataSize(data) - i);
         aes_cbc_encrypt(padded, TWDataBytes(result) + i, 16, TWDataBytes(iv), &ctx);
     }
 

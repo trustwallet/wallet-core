@@ -9,6 +9,8 @@
 #include "../Bitcoin/BinaryCoding.h"
 #include "../Hash.h"
 
+#include <cassert>
+
 using namespace TW;
 using namespace TW::Zcash;
 
@@ -188,7 +190,7 @@ Bitcoin::Proto::Transaction Transaction::proto() const {
 
     for (const auto& input : inputs) {
         auto protoInput = protoTx.add_inputs();
-        protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash, 32);
+        protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(), input.previousOutput.hash.size());
         protoInput->mutable_previousoutput()->set_index(input.previousOutput.index);
         protoInput->set_sequence(input.sequence);
         protoInput->set_script(input.script.bytes.data(), input.script.bytes.size());

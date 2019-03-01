@@ -10,14 +10,15 @@
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
 
-#include <string.h>
+#include <cassert>
+#include <cstring>
 #include <vector>
 
 static const size_t dataSize = 34;
 static const char* const hrp = "bitcoincash";
 
 bool TWBitcoinCashAddressEqual(struct TWBitcoinCashAddress lhs, struct TWBitcoinCashAddress rhs) {
-    return memcmp(lhs.bytes, rhs.bytes, dataSize) == 0;
+    return std::memcmp(lhs.bytes, rhs.bytes, dataSize) == 0;
 }
 
 bool TWBitcoinCashAddressIsValid(TWData *_Nonnull data) {

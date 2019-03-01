@@ -27,7 +27,7 @@ inline auto sum(const std::vector<Proto::UnspentTransaction>& utxos) {
 inline auto buildUTXO(const OutPoint& outPoint, int64_t amount) {
     Proto::UnspentTransaction utxo;
     utxo.set_amount(amount);
-    utxo.mutable_out_point()->set_hash(outPoint.hash, 32);
+    utxo.mutable_out_point()->set_hash(outPoint.hash.data(), outPoint.hash.size());
     utxo.mutable_out_point()->set_index(outPoint.index);
     return utxo;
 }
