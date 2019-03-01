@@ -15,6 +15,7 @@
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
+#include <TrezorCrypto/ed25519.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 
@@ -24,6 +25,7 @@ namespace {
     HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin);
     HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin, uint32_t account, uint32_t change, uint32_t address);
     HDNode getMasterNode(const HDWallet& wallet);
+    HDNode getMasterNodeWithED25519(const HDWallet& wallet);
 }
 
 bool HDWallet::isValid(const std::string& mnemonic) {
@@ -58,6 +60,19 @@ PrivateKey HDWallet::getKey(TWPurpose purpose, TWCoinType coin, uint32_t account
     auto node = getNode(*this, purpose, coin, account, change, address);
     auto data = Data(node.private_key, node.private_key  + PrivateKey::size);
     return PrivateKey(data);
+}
+
+Data HDWallet::getAionKey(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const {
+    auto node = getNode(*this, purpose, coin, account, change, address);
+    auto privateKeyData = Data(node.private_key, node.private_key + PrivateKey::size);
+
+    unsigned char publicKey[32];
+    ed25519_publickey(privateKeyData.data(), publicKey);
+
+    Data publicKeyData(publicKey, publicKey + 32);
+    append(privateKeyData, publicKeyData);
+    
+    return privateKeyData;
 }
 
 std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
@@ -146,22 +161,36 @@ std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& e
 
 namespace {
     HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin) {
-        auto node = getMasterNode(wallet);
+        auto coinIsAion = coin == TWCoinTypeAion;
+        
+        auto node = coinIsAion ? getMasterNodeWithED25519(wallet) : getMasterNode(wallet);
         hdnode_private_ckd(&node, purpose | 0x80000000);
         hdnode_private_ckd(&node, coin | 0x80000000);
         return node;
     }
 
     HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin, uint32_t account, uint32_t change, uint32_t address) {
-        auto node = getMasterNode(wallet);
+        auto coinIsAion = coin == TWCoinTypeAion;
+        
+        auto node = coinIsAion ? getMasterNodeWithED25519(wallet) : getMasterNode(wallet);
         hdnode_private_ckd(&node, purpose | 0x80000000);
         hdnode_private_ckd(&node, coin | 0x80000000);
         hdnode_private_ckd(&node, account | 0x80000000);
-        hdnode_private_ckd(&node, change);
-        hdnode_private_ckd(&node, address);
+        
+        auto correctedChange = coinIsAion ? (change | 0x80000000) : change;
+        auto correctedAddress = coinIsAion ? (address | 0x80000000) : address;
+        
+        hdnode_private_ckd(&node, correctedChange);
+        hdnode_private_ckd(&node, correctedAddress);
         return node;
     }
 
+    HDNode getMasterNodeWithED25519(const HDWallet& wallet) {
+        auto node = HDNode();
+        hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, ED25519_NAME, &node);
+        return node;
+    }
+    
     HDNode getMasterNode(const HDWallet& wallet) {
         auto node = HDNode();
         hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, SECP256K1_NAME, &node);

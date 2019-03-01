@@ -39,6 +39,11 @@ TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
     return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
 }
 
+TWData *_Nonnull TWHDWalletGetAionKey(struct TWHDWallet *_Nonnull wallet, TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
+    auto aionKey = wallet->impl.getAionKey(purpose, coin, account, change, address);
+    return TWDataCreateWithBytes(aionKey.data(), aionKey.size());
+}
+
 struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
     return new TWPrivateKey{ wallet->impl.getKey(purpose, coin, account, change, address) };
 }

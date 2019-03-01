@@ -48,6 +48,10 @@ TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet);
 
+/// Generates Aion private key at the specified derivation path.
+TW_EXPORT_METHOD
+TWData *_Nonnull TWHDWalletGetAionKey(struct TWHDWallet *_Nonnull wallet, TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
+
 /// Generates the private key at the specified derivation path.
 TW_EXPORT_METHOD
 struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);

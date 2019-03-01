@@ -88,6 +88,15 @@ TEST(HDWallet, DeriveBitcoin) {
     assertHexEqual(publicKeyData, "047ea5dff03f677502c4a1d73c5ac897200e56b155e876774c8fba0cc22f80b9414ec07cda7b1c9a84c2e04ea2746c21afacc5e91b47427c453c3f1a4a3e983ce5");
 }
 
+TEST(HDWallet, AionPrivateKey) {
+    auto words = STRING("zero behind diesel afraid edge salad drop episode high pear twin resource");
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    
+    auto privateKeyData = WRAPD(TWHDWalletGetAionKey(wallet.get(), TWPurposeBIP44, TWCoinTypeAion, 0, 0, 0));
+    
+    assertHexEqual(privateKeyData, "db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9a775daa30b33fda3091768f0561c8042ee23cb48a6a3e5d7e8248b13d04a48a7");
+}
+
 TEST(HDWallet, ExtendedKeys) {
     auto words = STRING("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
