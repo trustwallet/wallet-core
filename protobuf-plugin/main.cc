@@ -18,7 +18,7 @@ class Generator : public  compiler::CodeGenerator {
         io::Printer printer(output.get(), '$');
         
         printer.Print(
-            "// Copyright © 2017-2018 Trust.\n"
+            "// Copyright © 2017-2019 Trust Wallet.\n"
             "//\n"
             "// This file is part of Trust. The full Trust copyright notice, including\n"
             "// terms governing use, modification, and redistribution, is contained in the\n"
