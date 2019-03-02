@@ -14,7 +14,10 @@ open class Tezos: Blockchain {
 
   /// Returns the address associated with a public key.
   open override func address(for publicKey: PublicKey) -> Address {
-    fatalError("TODO(keefertaylor): Implement.")
+    // TODO(keefertaylor): Handle compression.
+    let data = Hash.blake2b(data: publicKey.data, size: 20)
+    let s = Base58.encode(data: [6, 161, 159]  + data)
+    return TezosAddress(string: s)!
   }
 
   /// Returns the address given its string representation.

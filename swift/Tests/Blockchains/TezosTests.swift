@@ -53,4 +53,13 @@ class TezosTests: XCTestCase {
 
     XCTAssertNil(address)
   }
+
+  public func testAddressFromPublicKey() {
+    let privateKey = PrivateKey(data: Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!)!
+    let publicKey = privateKey.getPublicKey(compressed: false)
+
+    let address = tezos.address(for: publicKey)
+
+    XCTAssertEqual(address.description, "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM")
+  }
 }
