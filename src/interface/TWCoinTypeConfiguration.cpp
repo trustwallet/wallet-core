@@ -115,8 +115,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeTezos:
         url += "/" + txId;
         break;
-    case TWCoinTypeBinance:
-        break;    
+    case TWCoinTypeBinance: break;    
     default: break;
     }
     return TWStringCreateWithUTF8Bytes(url.c_str());
