@@ -7,32 +7,29 @@
 import TrustWalletCore
 import XCTest
 
-/// Static constants for tests.
-extension String {
-  public static let validTezosAddress = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
-}
-
 class TezosAddressTests: XCTestCase {
   public func testDescription() {
-    guard let address = TezosAddress(string: .validTezosAddress) else {
+    let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
+    guard let address = TezosAddress(string: validAddressString) else {
       XCTFail("Expected a valid address")
       return
     }
-    XCTAssertEqual(address.description, .validTezosAddress)
+    XCTAssertEqual(address.description, validAddressString)
   }
 
   public func testValidAddress() {
-    guard let validTezosAddressData = Base58.decodeNoCheck(string: .validTezosAddress) else {
+    let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
+    guard let validTezosAddressData = Base58.decodeNoCheck(string: validAddressString) else {
       XCTFail("Couldn't decode address to data.")
       return
     }
 
     // Verify static helper methods.
-    XCTAssertTrue(TezosAddress.isValidString(string: .validTezosAddress))
+    XCTAssertTrue(TezosAddress.isValidString(string: validAddressString))
     XCTAssertTrue(TezosAddress.isValid(data: validTezosAddressData))
 
     // Verify an address can be instantiated from the valid address.
-    XCTAssertNotNil(TezosAddress(string: .validTezosAddress))
+    XCTAssertNotNil(TezosAddress(string: validAddressString))
   }
 
   public func testInvalidAddresses() {
