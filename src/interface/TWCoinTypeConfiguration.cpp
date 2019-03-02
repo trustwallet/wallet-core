@@ -112,9 +112,10 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeRipple:
         url += "/explorer/" + txId;
         break;
-    case TWCoinTypeBinance:
     case TWCoinTypeTezos:
-       break;
+        url += "/" + txId;
+        break;
+    case TWCoinTypeBinance: break;    
     default: break;
     }
     return TWStringCreateWithUTF8Bytes(url.c_str());
@@ -142,7 +143,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeBinance: return "https://binance.com";
     case TWCoinTypeEOS: return "https://eospark.com";
     case TWCoinTypeRipple: return "https://bithomp.com";
-    case TWCoinTypeTezos: return "https://tzscan.io";
+    case TWCoinTypeTezos: return "https://tzscan.io";    
     default: return "";
     }
 }
@@ -170,7 +171,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeBinance: string = "binance"; break;
     case TWCoinTypeEOS: string = "eos"; break;
     case TWCoinTypeRipple: string = "ripple"; break;
-    case TWCoinTypeTezos: string = "tezos"; break;
+    case TWCoinTypeTezos: string = "tezos"; break;    
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -199,8 +200,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeBinance: string = "Binance"; break;
     case TWCoinTypeEOS: string = "EOS"; break;
     case TWCoinTypeRipple: string = "Ripple"; break;
-    case TWCoinTypeTezos
-      : string = "Tezos"; break;
+    case TWCoinTypeTezos: string = "Tezos"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
