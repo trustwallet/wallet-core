@@ -7,8 +7,9 @@
 import Foundation
 
 public struct TezosAddress: Address {
-  private static let prefixBytes: [UInt8] = [6, 161, 159] // tz1
+  private static let prefixBytes = Data([6, 161, 159]) // tz1
   private static let checksumLength = 4
+  private static let outputLength = 20
 
   public var data: Data
 
@@ -59,5 +60,10 @@ public struct TezosAddress: Address {
       return nil
     }
     self.data = data
+  }
+
+  /// Creates an address from a PublicKey.
+  public init(publicKey: PublicKey) {
+    self.data = TezosAddress.prefixBytes + Hash.blake2b(data: publicKey.data, size: TezosAddress.outputLength)
   }
 }
