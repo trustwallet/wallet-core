@@ -112,8 +112,10 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeRipple:
         url += "/explorer/" + txId;
         break;
-    case TWCoinTypeBinance:
     case TWCoinTypeTezos:
+        url += "/" + txId;
+        break;
+    case TWCoinTypeBinance:
         break;    
     default: break;
     }

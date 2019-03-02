@@ -61,6 +61,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value18 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
     assertStringsEqual(value18, "EOS");
+
+    auto value19 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
+    assertStringsEqual(value19, "XTZ");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -83,6 +86,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 0);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -147,6 +151,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto zecTxId = TWStringCreateWithUTF8Bytes("d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
     auto value20 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, zecTxId));
     assertStringsEqual(value20, "https://chain.so/tx/ZEC/d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
+    
+    auto value21 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
+    assertStringsEqual(value21, "https://tzscan.io/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -200,6 +207,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value18 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
     assertStringsEqual(value18, "eos");
+    
+    auto value19 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
+    assertStringsEqual(value19, "tezos");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -253,4 +263,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value18 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
     assertStringsEqual(value18, "EOS");
+    
+    auto value19 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
+    assertStringsEqual(value19, "Tezos");
 }
