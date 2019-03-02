@@ -1,0 +1,458 @@
+{
+    "id": "629aad29-0b22-488e-a0e7-b4219d4f311c",
+    "crypto": {
+        "ciphertext": "4291c2fc6a795fe47ec7088141f2147c2d7a9d6e1ba278db749814785691c2474e4f1e8f3ed1b749bb2d2fc17823d20df68453b60756206c99014596ad5a01c83e28371b70b751155e",
+        "cipherparams": {
+            "iv": "845ad39a8de952a4e1aa3571447c1c17"
+        },
+        "kdf": "scrypt",
+        "kdfparams": {
+            "r": 8,
+            "p": 6,
+            "n": 4096,
+            "dklen": 32,
+            "salt": "d9a4d9dc469dfe7f88ed989d6e4fead702c2f9bc88ccf103504135a26edfa2c8"
+        },
+        "mac": "b45a6719309ac2f4633184260f52b9023cc0329ecb4292e15ad76d5390412c7e",
+        "cipher": "aes-128-ctr"
+    },
+    "type": "mnemonic",
+    "activeAccounts": [
+        {
+            "extendedPublicKey": null,
+            "addressData": "7ej1ja2iLDpJ22DU+CutQoq2X4k=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 60,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": null,
+            "addressData": "FxhZcpw8EaSkhp\/JH\/HuDKKjxwU=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 61,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": null,
+            "addressData": "ffBmcn8NI\/c1q+MNNl06xWrea\/U=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 178,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": null,
+            "addressData": "oqpnftPt0PMEpjOsYcXU0KZ\/n08=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 820,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": null,
+            "addressData": "3t+cLcn+FBUxs2ltFsMzh\/f0tbA=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 6060,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": null,
+            "addressData": "TIm07H\/df0VOlw0ah0Ix\/doXrfE=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 5718350,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": null,
+            "addressData": "v+ul+5Ij5NSPIRyu5kysEJj1i6s=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 818,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": "xpub6Bexzv5CY3vQuWh3wYctPUyRJzM5s5ALFJjpVXMQ9UK2ejNgz2yBgwi1XGgPtkANN1ePCW5boFM3n1BbgCdjSxDUFxypoiui2G82eqWF8tw",
+            "addressData": "QZmutwP82BLJFQDPVCKMe6Am8hvP",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 195,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": null,
+            "addressData": "AvC7QMR\/iwpTpoeLH5WST9xV3Go=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 74,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": "zpub6r97AegwVxVbJeuDAWP5KQgX5y4Q6KyFUrsFQRn8yzSXrnmpwg1ZKHSWwECR1Kiqgr4h93WN5kdS48KC6hVFniuZHqVFXjULZZkCwurqyPn",
+            "addressData": "U1tw0pACv1NMFwtY83RIephWj9w=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 84,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": "xpub6CXJza9JkJbzFJzArwoRndudWHi8uUJXjEkaLJhpp34qjEDaqmgcebgNTQWM2t1DJ8cSCGMdxTSkAv63Ph3MH8JEoHmn7SXkrdqvYk7LYsF",
+            "addressData": "AAAJDwYdGhUIBRIcGQAMFxUPFAAKBxAcAREdGwYQDgIdAA==",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 145,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": "zpub6r325DSArPph2pUKkZPLCPuay1FWU1rtzAwhPGQtzCQDHYjRdXXc18JTzavLLhg69au4PqDrXeSu7NE4FMeEEifd4kiJHdwtmzPj5WU6zKG",
+            "addressData": "\/o8fjPgmiZzswPoiEyg387zUzjg=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 84,
+                        "hardened": true
+                    },
+                    {
+                        "value": 2,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": null,
+            "addressData": "WCWVL+Pv0Gry\/lSe+4VIZ3e1TGM=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 889,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": "xpub6CAWAth6M24e3nnXEYvaMdSQA1Grdy9mcgRx4uAjF2g8SCz449hz7cmvMiyjxhuXimraCSyJQobNUEGg3fPXDrerZPdJMMvwiDVv76JrWDd",
+            "addressData": "TKRunMhsW51ATcHqcQ53YzKZR89w",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 5,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": "xpub6BkifZ2MAiU21qVgxLkZpSXVPzUbEjfecXRby1E6p9dpa7UYbMjKpbMvaFnyAUAfB5pFnzyCqDtvWKQDgYu9KiYoJUqcXrNbB9xfdSUYHpP",
+            "addressData": "Usr0k+l9Zt50ovl6aRRbz7SvrAid",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 136,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        }
+    ],
+    "version": 3
+}

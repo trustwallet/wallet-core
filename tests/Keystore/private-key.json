@@ -1,0 +1,53 @@
+{
+    "coin": 60,
+    "id": "3051ca7d-3d36-4a4a-acc2-09e9083732b0",
+    "crypto": {
+        "ciphertext": "4d273bb23aa3e38118e353dd0805585357e83480002434b7fd3305232a7fe38b",
+        "cipherparams": {
+            "iv": "06b3b1853e7ed8e5630a8b0fea68ab95"
+        },
+        "kdf": "scrypt",
+        "kdfparams": {
+            "r": 8,
+            "p": 6,
+            "n": 4096,
+            "dklen": 32,
+            "salt": "0a0045d86f3262a4858fd4656ac160852ed7f0e924c060c2d68631bff0787ecc"
+        },
+        "mac": "ed2bd65fedbc91bf1222a7049d7663856256fec5e3e7a858ca671c572b339ab3",
+        "cipher": "aes-128-ctr"
+    },
+    "type": "private-key",
+    "activeAccounts": [
+        {
+            "extendedPublicKey": null,
+            "addressData": "XpwnFWphKi1RbHTHqArxB4VvhTk=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 60,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        }
+    ],
+    "version": 3
+}
