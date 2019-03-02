@@ -7,7 +7,11 @@
 import Foundation
 
 public struct TezosAddress: Address {
-  private static let prefixBytes = Data([6, 161, 159]) // tz1
+  private static let prefixes = [
+    "tz1": Data([6, 161, 159]),
+    "tz2": Data([6, 161, 161]),
+    "tz3": Data([6, 161, 164])
+  ]
   private static let checksumLength = 4
   private static let outputLength = 20
 
@@ -21,20 +25,22 @@ public struct TezosAddress: Address {
   public static func isValid(data: Data) -> Bool {
     let bytes = [UInt8](data)
 
-    // Check that the prefix is correct.
-    for (i, byte) in prefixBytes.enumerated() where bytes[i] != byte {
-      return false
-    }
+    // Verify a prefix matches
+    for prefix in prefixes.values {
+      guard bytes.starts(with: prefix) else {
+        continue
+      }
 
-    // Validate that the checksum is correct.
-    let expectedChecksum = bytes.suffix(checksumLength)
-    let bytesToChecksum = bytes.prefix(upTo: bytes.count - checksumLength)
-    let calculatedChecksum = calculateChecksum(Data(bytesToChecksum))
-    guard expectedChecksum.elementsEqual(calculatedChecksum, by: { $0 == $1 }) else {
-      return false
+      // Validate that the checksum is correct.
+      let expectedChecksum = bytes.suffix(checksumLength)
+      let bytesToChecksum = bytes.prefix(upTo: bytes.count - checksumLength)
+      let calculatedChecksum = calculateChecksum(Data(bytesToChecksum))
+      guard expectedChecksum.elementsEqual(calculatedChecksum, by: { $0 == $1 }) else {
+        return false
+      }
+      return true
     }
-
-    return true
+    return false
   }
 
   /// Validates that the string is a valid address.
@@ -64,6 +70,6 @@ public struct TezosAddress: Address {
 
   /// Creates an address from a PublicKey.
   public init(publicKey: PublicKey) {
-    self.data = TezosAddress.prefixBytes + Hash.blake2b(data: publicKey.data, size: TezosAddress.outputLength)
+    self.data = TezosAddress.prefixes["tz1"]! + Hash.blake2b(data: publicKey.data, size: TezosAddress.outputLength)
   }
 }

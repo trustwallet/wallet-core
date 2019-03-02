@@ -18,18 +18,25 @@ class TezosAddressTests: XCTestCase {
   }
 
   public func testValidAddress() {
-    let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
-    guard let validTezosAddressData = Base58.decodeNoCheck(string: validAddressString) else {
-      XCTFail("Couldn't decode address to data.")
-      return
+    let validAddresses = [
+      "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don",
+      "tz2Rh3NYeLxrqTuvaZJmaMiVMqCajeXMWtYo",
+      "tz3RDC3Jdn4j15J7bBHZd29EUee9gVB1CxD9"
+    ]
+
+    for validAddress in validAddresses {
+      guard let validTezosAddressData = Base58.decodeNoCheck(string: validAddress) else {
+        XCTFail("Couldn't decode address to data.")
+        return
+      }
+
+      // Verify static helper methods.
+      XCTAssertTrue(TezosAddress.isValidString(string: validAddress))
+      XCTAssertTrue(TezosAddress.isValid(data: validTezosAddressData))
+
+      // Verify an address can be instantiated from the valid address.
+      XCTAssertNotNil(TezosAddress(string: validAddress))
     }
-
-    // Verify static helper methods.
-    XCTAssertTrue(TezosAddress.isValidString(string: validAddressString))
-    XCTAssertTrue(TezosAddress.isValid(data: validTezosAddressData))
-
-    // Verify an address can be instantiated from the valid address.
-    XCTAssertNotNil(TezosAddress(string: validAddressString))
   }
 
   public func testInvalidAddresses() {
