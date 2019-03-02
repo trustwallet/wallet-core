@@ -64,7 +64,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeZcash:
      return 8;
     case TWCoinTypeRipple:
-    case TWCoinTypeTezos: // TODO(keefertaylor): Verify this.
+    case TWCoinTypeTezos:
     case TWCoinTypeTron:
         return 6;
     case TWCoinTypeEOS: //TODO
@@ -199,7 +199,8 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeBinance: string = "Binance"; break;
     case TWCoinTypeEOS: string = "EOS"; break;
     case TWCoinTypeRipple: string = "Ripple"; break;
-    case TWCoinTypeTezos: string = "Tezos"; break;
+    case TWCoinTypeTezos
+      : string = "Tezos"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
