@@ -8,8 +8,7 @@ import TrustWalletCore
 import XCTest
 
 class TezosAddressTests: XCTestCase {
-    TezosAdd
+  public func testValidAddresses() {
     XCTAssertTrue(true)
   }
-
 }
