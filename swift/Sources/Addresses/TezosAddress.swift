@@ -38,7 +38,7 @@ public struct TezosAddress: Address {
 
   /// Validates that the string is a valid address.
   public static func isValidString(string: String) -> Bool {
-    guard let decodedData = Base58.decode(string: string) else {
+    guard let decodedData = Base58.decodeNoCheck(string: string) else {
       return false
     }
     return isValid(data: decodedData)
