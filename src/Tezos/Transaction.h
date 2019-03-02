@@ -29,6 +29,7 @@ public:
     uint256_t s = uint256_t();
 
     Transaction() = default;
+    
     // TODO: validate transaction componenets
     Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, const std::vector<uint8_t>& payload)
         : nonce(nonce)

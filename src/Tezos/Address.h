@@ -18,6 +18,7 @@ namespace Ethereum {
 class Address {
 public:
     /// Number of bytes in an address.
+    // TODO: validate size
     static const size_t size = 20;
 
     /// Address data consisting of a prefix byte followed by the public key hash.
@@ -47,7 +48,7 @@ public:
 static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
-    
+
 }} // namespace
 
 /// Wrapper for C interface.
