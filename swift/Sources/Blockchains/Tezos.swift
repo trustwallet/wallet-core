@@ -8,26 +8,22 @@ import Foundation
 
 /// Tezos blockchain.
 open class Tezos: Blockchain {
-//  /// Chain identifier.
-//  open var chainID: Int {
-//    return 1
-//  }
-//
-  /// SLIP-044 coin type.
   open override var coinType: CoinType {
     return .tezos
   }
 
-//  open override func address(for publicKey: PublicKey) -> Address {
-//    return EthereumAddress(publicKey: publicKey)
-//  }
-//
-//  open override func address(string: String) -> Address? {
-//    return EthereumAddress(string: string)
-//  }
-//
-//  open override func address(data: Data) -> Address? {
-//    return EthereumAddress(keyHash: data)
-//  }
-//}
+  /// Returns the address associated with a public key.
+  open override func address(for publicKey: PublicKey) -> Address {
+    fatalError("TODO(keefertaylor): Implement.")
+  }
+
+  /// Returns the address given its string representation.
+  open override func address(string: String) -> Address? {
+    fatalError("TODO(keefertaylor): Implement.")
+  }
+
+  /// Returns the address given its raw representation.
+  open override func address(data: Data) -> Address? {
+    fatalError("TODO(keefertaylor): Implement.")
+  }
 }
