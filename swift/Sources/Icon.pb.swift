@@ -60,7 +60,7 @@ public struct TW_Icon_Proto_SigningOutput {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// Encoded transaction (signature pre-image).
+  /// JSON-encoded transaction parameters.
   public var encoded: String = String()
 
   /// Signature.

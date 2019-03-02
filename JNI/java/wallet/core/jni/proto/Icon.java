@@ -1301,7 +1301,7 @@ public final class Icon {
 
     /**
      * <pre>
-     * Encoded transaction (signature pre-image).
+     * JSON-encoded transaction parameters.
      * </pre>
      *
      * <code>string encoded = 1;</code>
@@ -1309,7 +1309,7 @@ public final class Icon {
     java.lang.String getEncoded();
     /**
      * <pre>
-     * Encoded transaction (signature pre-image).
+     * JSON-encoded transaction parameters.
      * </pre>
      *
      * <code>string encoded = 1;</code>
@@ -1418,7 +1418,7 @@ public final class Icon {
     private volatile java.lang.Object encoded_;
     /**
      * <pre>
-     * Encoded transaction (signature pre-image).
+     * JSON-encoded transaction parameters.
      * </pre>
      *
      * <code>string encoded = 1;</code>
@@ -1437,7 +1437,7 @@ public final class Icon {
     }
     /**
      * <pre>
-     * Encoded transaction (signature pre-image).
+     * JSON-encoded transaction parameters.
      * </pre>
      *
      * <code>string encoded = 1;</code>
@@ -1796,7 +1796,7 @@ public final class Icon {
       private java.lang.Object encoded_ = "";
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1815,7 +1815,7 @@ public final class Icon {
       }
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1835,7 +1835,7 @@ public final class Icon {
       }
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1852,7 +1852,7 @@ public final class Icon {
       }
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1865,7 +1865,7 @@ public final class Icon {
       }
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
