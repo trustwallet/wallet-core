@@ -35,7 +35,6 @@ enum TWCoinType {
     TWCoinTypeZcoin = 136,
     TWCoinTypeZcash = 133,
     TWCoinTypeRipple = 144,
-    TWCoinTypeTezos = 1729,
 };
 
 TW_EXTERN_C_END

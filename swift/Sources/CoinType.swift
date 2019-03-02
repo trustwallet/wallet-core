@@ -29,5 +29,4 @@ public enum CoinType: UInt32 {
     case zcoin = 136
     case zcash = 133
     case ripple = 144
-    case tezos = 1729
 }
