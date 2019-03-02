@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace TW {
-namespace Ethereum {
+namespace Tezos {
 
 class Address {
 public:
