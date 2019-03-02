@@ -48,7 +48,7 @@ struct DerivationPath {
         return static_cast<TWPurpose>(indices[0].value);
     }
 
-    void setPurpose(TWPurpose v) {    
+    void setPurpose(TWPurpose v) {
         indices[0] = DerivationPathIndex(v, /* hardened: */true);
     }
 
@@ -75,7 +75,7 @@ struct DerivationPath {
     void setChange(uint32_t v) {
         indices[3] = DerivationPathIndex(v, /* hardened: */false);
     }
-    
+
     uint32_t address() const {
         return indices[4].value;
     }
@@ -106,11 +106,11 @@ struct DerivationPath {
     std::string string() const noexcept;
 };
 
-bool operator==(const DerivationPathIndex& lhs, const DerivationPathIndex& rhs) {
+inline bool operator==(const DerivationPathIndex& lhs, const DerivationPathIndex& rhs) {
     return lhs.value == rhs.value && lhs.hardened == rhs.hardened;
 }
 
-bool operator==(const DerivationPath& lhs, const DerivationPath& rhs) {
+inline bool operator==(const DerivationPath& lhs, const DerivationPath& rhs) {
     return std::equal(lhs.indices.begin(), lhs.indices.end(), rhs.indices.begin(), rhs.indices.end());
 }
 

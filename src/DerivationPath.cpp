@@ -15,22 +15,19 @@ DerivationPath::DerivationPath(const std::string& string) {
     auto it = string.data();
     const auto end = string.data() + string.size();
 
-    if (it == end || *it != 'm') {
-        throw std::invalid_argument("String should start with 'm/'");
+    if (it != end && *it == 'm') {
+        ++it;
     }
-    ++it;
-
-    if (it == end || *it != '/') {
-        throw std::invalid_argument("String should start with 'm/'");
+    if (it != end && *it == '/') {
+        ++it;
     }
-    ++it;
 
     while (it != end) {
         uint32_t value;
         if (std::sscanf(it, "%d", &value) != 1) {
             throw std::invalid_argument("Invalid component");
         }
-        while (isdigit(*it)) {
+        while (it != end && isdigit(*it)) {
             ++it;
         }
 
@@ -40,7 +37,10 @@ DerivationPath::DerivationPath(const std::string& string) {
         }
         indices.emplace_back(value, hardened);
 
-        if (it != end && *it != '/') {
+        if (it == end) {
+            break;
+        }
+        if (*it != '/') {
             throw std::invalid_argument("Components should be separated by '/'");
         }
         ++it;
