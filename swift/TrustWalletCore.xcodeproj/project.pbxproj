@@ -439,6 +439,8 @@
 		61FE4B4122208E1C00C65017 /* VeChain.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FE4B3F22208E1C00C65017 /* VeChain.pb.swift */; };
 		61FE4B4422208E5000C65017 /* VeChain.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61FE4B4222208E5000C65017 /* VeChain.pb.cc */; };
 		61FE4B4522208E5000C65017 /* VeChain.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 61FE4B4322208E5000C65017 /* VeChain.pb.h */; };
+		777FF65F222C790F00ED2140 /* TWTezosAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777FF65E222C790E00ED2140 /* TWTezosAddress.cpp */; };
+		777FF666222C7D7400ED2140 /* TWTezosAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 777FF665222C7D7400ED2140 /* TWTezosAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		77B1EB45222AB79A00EA4FCE /* TezosAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB3C222AB77A00EA4FCE /* TezosAddressTests.swift */; };
 		77B1EB49222AB87F00EA4FCE /* Tezos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB48222AB87F00EA4FCE /* Tezos.swift */; };
 		77B1EB4B222AC69100EA4FCE /* TezosAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB4A222AC69100EA4FCE /* TezosAddress.swift */; };
@@ -977,6 +979,8 @@
 		61FE4B4222208E5000C65017 /* VeChain.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VeChain.pb.cc; sourceTree = "<group>"; };
 		61FE4B4322208E5000C65017 /* VeChain.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VeChain.pb.h; sourceTree = "<group>"; };
 		667A8CF3B4C135CBB4CAC72E /* Pods-TrustWalletCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore/Pods-TrustWalletCore.release.xcconfig"; sourceTree = "<group>"; };
+		777FF65E222C790E00ED2140 /* TWTezosAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TWTezosAddress.cpp; path = interface/TWTezosAddress.cpp; sourceTree = "<group>"; };
+		777FF665222C7D7400ED2140 /* TWTezosAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWTezosAddress.h; sourceTree = "<group>"; };
 		77B1EB3C222AB77A00EA4FCE /* TezosAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddressTests.swift; sourceTree = "<group>"; };
 		77B1EB48222AB87F00EA4FCE /* Tezos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tezos.swift; sourceTree = "<group>"; };
 		77B1EB4A222AC69100EA4FCE /* TezosAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddress.swift; sourceTree = "<group>"; };
@@ -1088,6 +1092,7 @@
 				61B159BF21CC5DBB00CFE93B /* PublicKey.cpp */,
 				61B159AF21CC5DBB00CFE93B /* PublicKey.h */,
 				616D040F220A544400A776E8 /* Result.h */,
+				777FF65E222C790E00ED2140 /* TWTezosAddress.cpp */,
 				BB21105A221C039A00571DF7 /* Ripple */,
 				61A9B35C2200D85A00E601B3 /* Tendermint */,
 				61C4E8B92225C3C50020A917 /* Tron */,
@@ -1118,6 +1123,7 @@
 				6198EA8321B811A2008CB60A /* TWBech32Address.h */,
 				61722BD5220E455400D7BA9A /* TWBinanceProto.h */,
 				61BA0A6A21F6C929005680E6 /* TWBinanceSigner.h */,
+				777FF665222C7D7400ED2140 /* TWTezosAddress.h */,
 				610AEF4B21C1A5C5008ABB74 /* TWBitcoin.h */,
 				61977CC421C9B9D000C385D5 /* TWBitcoinAddress.h */,
 				61977CC521C9B9D000C385D5 /* TWBitcoinCashAddress.h */,
@@ -1956,6 +1962,7 @@
 				61A9B2E721F916FA00E601B3 /* Bech32.h in Headers */,
 				610AEF4521C04DF6008ABB74 /* TWHDWallet.h in Headers */,
 				61735AF5219DF044007BF637 /* ed25519-donna-impl-base.h in Headers */,
+				777FF666222C7D7400ED2140 /* TWTezosAddress.h in Headers */,
 				61FE4B4522208E5000C65017 /* VeChain.pb.h in Headers */,
 				61735C45219DF044007BF637 /* base58.h in Headers */,
 				61735C7D219DF044007BF637 /* ecrypt-machine.h in Headers */,
@@ -2357,6 +2364,7 @@
 				61E813CE2227212600D4D2C9 /* TWIconSigner.cpp in Sources */,
 				61E813C82227211B00D4D2C9 /* Address.cpp in Sources */,
 				61C4E8E522260B150020A917 /* BinanceChain.swift in Sources */,
+				777FF65F222C790F00ED2140 /* TWTezosAddress.cpp in Sources */,
 				61722BE8220E457D00D7BA9A /* EthereumChainID.swift in Sources */,
 				61FE4B21221F733E00C65017 /* WanchainSigner.swift in Sources */,
 				61E813C02227210600D4D2C9 /* IconAddress.swift in Sources */,

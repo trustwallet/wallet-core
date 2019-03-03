@@ -55,7 +55,7 @@ TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress address);
 TW_EXPORT_PROPERTY
 TWData *_Nonnull TWTezosAddressData(struct TWTezosAddress address);
 
-TW_EXPORT_PROPERTY
+TW_EXPORT_STATIC_METHOD
 TWString *_Nullable TWTezosForge();
 
 TW_EXTERN_C_END
