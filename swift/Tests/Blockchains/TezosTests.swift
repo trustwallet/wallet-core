@@ -15,6 +15,7 @@ class TezosTests: XCTestCase {
   }
 
   public func testForge() {
+    TWTezosAddressForge();
   }
 
   public func testAddressFromString_validAddress() {
