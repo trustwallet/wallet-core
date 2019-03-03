@@ -96,7 +96,7 @@ uint16_t Address::crc16(uint8_t *bytes, uint32_t length) {
 
     for (auto i = 0; i < length; i++) {
         auto byte = bytes[i];
-        for (bitidx=0; bitidx < 8; bitidx++) {
+        for (auto bitidx = 0; bitidx < 8; bitidx++) {
             bit = ((byte >> (7 - bitidx) & 1) == 1);
             c15 = ((crc >> 15 & 1) == 1);
             crc <<= 1;
