@@ -6,6 +6,16 @@
 
 #include <string>
 
-std::string signOperationList() {
-  return "";
+#include "proto/Tezos.pb.h"
+#include "Tezos/TWTezosForger.h"
+
+std::string signOperation(TW::Tezos::Proto::OperationList operationList) {
+  auto forgedBytesHex = forgeBranch(operationList.branch());
+  for (auto operation : operationList.operations()) {
+    forgedBytesHex += forgeOperation(operation);
+  }
+
+  // TODO: Sign.
+
+  return forgedBytesHex;
 }

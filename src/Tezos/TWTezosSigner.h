@@ -8,4 +8,6 @@
 
 #include <string>
 
-std::string signOperation();
+#include "proto/Tezos.pb.h"
+
+std::string signOperation(TW::Tezos::Proto::OperationList);

@@ -445,6 +445,8 @@
 		777FF66A222C853000ED2140 /* TWTezosForger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777FF668222C853000ED2140 /* TWTezosForger.cpp */; };
 		777FF66D222C8E8B00ED2140 /* TWTezosSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 777FF66B222C8E8B00ED2140 /* TWTezosSigner.h */; };
 		777FF66E222C8E8B00ED2140 /* TWTezosSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777FF66C222C8E8B00ED2140 /* TWTezosSigner.cpp */; };
+		777FF671222C8F6500ED2140 /* Tezos.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 777FF66F222C8F6300ED2140 /* Tezos.pb.cc */; };
+		777FF672222C8F6500ED2140 /* Tezos.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 777FF670222C8F6400ED2140 /* Tezos.pb.h */; };
 		77B1EB45222AB79A00EA4FCE /* TezosAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB3C222AB77A00EA4FCE /* TezosAddressTests.swift */; };
 		77B1EB49222AB87F00EA4FCE /* Tezos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB48222AB87F00EA4FCE /* Tezos.swift */; };
 		77B1EB4B222AC69100EA4FCE /* TezosAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB4A222AC69100EA4FCE /* TezosAddress.swift */; };
@@ -989,6 +991,8 @@
 		777FF668222C853000ED2140 /* TWTezosForger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TWTezosForger.cpp; path = Tezos/TWTezosForger.cpp; sourceTree = "<group>"; };
 		777FF66B222C8E8B00ED2140 /* TWTezosSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TWTezosSigner.h; path = Tezos/TWTezosSigner.h; sourceTree = "<group>"; };
 		777FF66C222C8E8B00ED2140 /* TWTezosSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TWTezosSigner.cpp; path = Tezos/TWTezosSigner.cpp; sourceTree = "<group>"; };
+		777FF66F222C8F6300ED2140 /* Tezos.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tezos.pb.cc; sourceTree = "<group>"; };
+		777FF670222C8F6400ED2140 /* Tezos.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tezos.pb.h; sourceTree = "<group>"; };
 		77B1EB3C222AB77A00EA4FCE /* TezosAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddressTests.swift; sourceTree = "<group>"; };
 		77B1EB48222AB87F00EA4FCE /* Tezos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tezos.swift; sourceTree = "<group>"; };
 		77B1EB4A222AC69100EA4FCE /* TezosAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddress.swift; sourceTree = "<group>"; };
@@ -1071,6 +1075,8 @@
 				BB2422D622217B4D000663D0 /* Ripple.pb.h */,
 				61C4E8C62225C43D0020A917 /* Tron.pb.cc */,
 				61C4E8C52225C43D0020A917 /* Tron.pb.h */,
+				777FF66F222C8F6300ED2140 /* Tezos.pb.cc */,
+				777FF670222C8F6400ED2140 /* Tezos.pb.h */,
 				61FE4B4222208E5000C65017 /* VeChain.pb.cc */,
 				61FE4B4322208E5000C65017 /* VeChain.pb.h */,
 			);
@@ -2058,6 +2064,7 @@
 				61A9B3622200D85A00E601B3 /* Address.h in Headers */,
 				617744442220977E00C210D9 /* uint256.h in Headers */,
 				61735B00219DF044007BF637 /* sha2.h in Headers */,
+				777FF672222C8F6500ED2140 /* Tezos.pb.h in Headers */,
 				61E813C72227211B00D4D2C9 /* Address.h in Headers */,
 				61735B05219DF044007BF637 /* ed25519.h in Headers */,
 				BB158441220AADE700657CDA /* Transaction.h in Headers */,
@@ -2332,6 +2339,7 @@
 				61722BE3220E457D00D7BA9A /* ChainID.swift in Sources */,
 				61C4E8B22225C3960020A917 /* Tron.pb.swift in Sources */,
 				61722BE4220E457D00D7BA9A /* Common.pb.swift in Sources */,
+				777FF671222C8F6500ED2140 /* Tezos.pb.cc in Sources */,
 				61735C22219DF044007BF637 /* curve25519-donna-32bit.c in Sources */,
 				61A9B2E821F916FA00E601B3 /* Bech32.cpp in Sources */,
 				61BA0A7221F6C9D9005680E6 /* Signer.cpp in Sources */,

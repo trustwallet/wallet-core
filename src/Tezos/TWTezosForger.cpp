@@ -9,6 +9,8 @@
 
 #include <TrezorCrypto/base58.h>
 
+#include "proto/Tezos.pb.h"
+
 // Decode the given base 58 string and drop the given prefix from decoded data.
 // Returns output length which output data placed in the inparameter.
 int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint8_t *prefix, uint8_t *output) {
@@ -28,10 +30,6 @@ int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint
   for (int i = 0; i < outputLength; i++) {
     output[i] = decodedInput[i + prefixLength];
   }
-
-//  for (int i = 0; i < outputLength; i++) {
-//    printf("%d, ", output[i]);
-//  }
 
   return outputLength;
 }
@@ -133,31 +131,36 @@ std::string forgeZarith(int input) {
   return result;
 }
 
-//std::string forge()  {
-//  // TODO: This is hardcoded to forge a transaction, support reveals.
-//  // TODO: Tests. Inputs are different address types (tz1, kt1) for source, dest.
-//  auto branch = "BMNY6Jkas7BzKb7wDLCFoQ4YxfYoieU7Xmo1ED3Y9Lo3ZvVGdgW";
-//  auto source = "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW";
-//  auto destination = "tz1hx8hMmmeyDBi6WJgpKwK4n5S2qAEpavx2";
-//
-//  auto fee = 1272;
-//  auto gasLimit = 10100;
-//  auto storageLimit = 257;
-//
-//  auto addressCounter = 30738;
-//
-//  auto amount = 1;
-//
-//  auto forgedBranch = forgeBranch(branch);
-////  auto forgedSource = forgeAddress(source);
-////  auto forgedFee = forgeZarith(fee);
-////  auto forgedAddressCounter = forgeZarith(addressCounter);
-////  auto forgedGasLimit = forgeZarith(gasLimit);
-////  auto forgedStorageLimit = forgeZarith(storageLimit);
-////  auto forgedAmount = forgeZarith(amount);
-////  auto forgedDestination = forgeAddress(destination);
-////
-////  auto result = forgedBranch + forgedSource + forgedFee + forgedAddressCounter + forgedGasLimit + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
-////  return TWStringCreateWithUTF8Bytes(result.data());
-//  return "";
-//}
+// Forge an operation with TransactionOperationData.
+std::string forgeTransactionOperation(TW::Tezos::Proto::Operation operation) {
+  assert(operation.has_transaction_operation_data());
+
+  auto forgedSource = forgeAddress(operation.source());
+  auto forgedFee = forgeZarith(operation.fee());
+  auto forgedCounter = forgeZarith(operation.counter());
+  auto forgedGasLimit = forgeZarith(operation.gas_limit());
+  auto forgedStorageLimit = forgeZarith(operation.storage_limit());
+  auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
+  auto forgedDestination = forgeAddress(operation.transaction_operation_data().destination());
+
+  return forgedSource + forgedFee + forgedCounter + forgedGasLimit + forgedStorageLimit + forgedAmount +
+  forgedDestination + forgeBool(false);
+}
+
+// Forge an operation with RevealOperationData.
+std::string forgeRevealOperation(TW::Tezos::Proto::Operation operation) {
+  // TODO: Implement.
+  return nullptr;
+}
+
+std::string forgeOperation(TW::Tezos::Proto::Operation operation) {
+  switch (operation.kind()) {
+    case TW::Tezos::Proto::Operation_OperationKind_REVEAL:
+      return forgeRevealOperation(operation);
+    case TW::Tezos::Proto::Operation_OperationKind_TRANSACTION:
+      return forgeTransactionOperation(operation);
+    default:
+      assert(false);
+      return nullptr;
+  }
+}
