@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -25,12 +25,12 @@ public:
     static const size_t keySize = 32;
 
     /// Address data consisting of a prefix byte followed by the public key hash.
-    std::array<byte, STELLAR_KEY_SIZE> bytes;
+    std::array<byte, keySize> bytes;
 
     /// Determines whether a collection of bytes makes a valid Stellar address.
     template<typename T>
     static bool isValid(const T& data) {
-        return data.size() == STELLAR_ADDRESS_SIZE;
+        return data.size() == size;
     }
 
     /// Determines whether a string makes a valid  address.

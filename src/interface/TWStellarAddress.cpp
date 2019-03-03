@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -57,5 +57,5 @@ TWString *_Nonnull TWStellarAddressDescription(struct TWStellarAddress *_Nonnull
 }
 
 TWData *_Nonnull TWStellarAddressKeyHash(struct TWStellarAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::STELLAR_KEY_SIZE);
+    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::size);
 }
