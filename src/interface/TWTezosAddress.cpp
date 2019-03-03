@@ -9,11 +9,15 @@
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
+#include "HexCoding.h"
+#include "Tezos/TWTezosForger.h"
 
 #include <cstring>
 #include <string>
 #include <vector>
 #include <array>
+#include <tuple>
+
 
 bool TWTezosAddressEqual(struct TWTezosAddress lhs, struct TWTezosAddress rhs) {
     return std::memcmp(lhs.bytes, rhs.bytes, TWTezosAddressSize) == 0;
@@ -23,154 +27,46 @@ bool TWTezosAddressIsValid(TWData *_Nonnull data) {
     return TWDataSize(data) == TWTezosAddressSize;
 }
 
-// Decode the given base 58 string and drop the given prefix from decoded data.
-// Returns output length which output data placed in the inparameter.
-int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint8_t *prefix, uint8_t *output) {
-  size_t capacity = 128;
-  uint8_t decodedInput[capacity];
-  int decodedLength = base58_decode_check(input.data(), HASHER_SHA2D, decodedInput, (int)capacity);
 
-  // Verify that the prefix was correct.
-  for (int i = 0; i < prefixLength; i++) {
-    if (decodedInput[i] != prefix[i]) {
-      return 0;
-    }
-  }
+//
 
-  // Drop the prefix from branch.
-  int outputLength = decodedLength - prefixLength;
-  for (int i = 0; i < outputLength; i++) {
-    output[i] = decodedInput[i + prefixLength];
-  }
+//
+//
+//
 
-  return outputLength;
+//
+//
+//
+
+//
+//
+//
+//bool TWTezosAddressIsValidString(TWString *_Nonnull string) {
+//    auto str = TWStringUTF8Bytes(string);
+//
+//    size_t capacity = 128;
+//    uint8_t buffer[capacity];
+//
+//    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
+//    if (size != TWTezosAddressSize) {
+//        return false;
+//    }
+//
+//    return true;
+//}
+
+TWString *_Nullable TWTezosAddressForge() {
+  auto input = "tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt";
+  auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
+  auto result1 = forgeBranch(branch);
+  auto result2 = forgeAddress(input);
+
+  return nullptr;
 }
 
-
-std::string forgePublicKeyHash(const std::string &publicKeyHash) {
-  size_t prefixLength = 3;
-  uint8_t prefix[prefixLength];
-  prefix[0] = 6;
-  prefix[1] = 161;
-  prefix[2] = 159;
-
-  size_t capacity = 128;
-  uint8_t decoded[capacity];
-
-  int decodedLength = checkDecodeAndDropPrefix(publicKeyHash, prefixLength, prefix, decoded);
-
-  std::string result = "01"; // TODO: Hardcoded to tz1, consider expanding.
-  // TODO: Append decoded here as a hex string.
-
-  return result;
-}
-
-
-std::string forgeBranch(const std::string& branch) {
-  size_t capacity = 128;
-  uint8_t decodedBranch[capacity];
-
-  // TODO: There must be a better way to initialize arrays.
-  size_t prefixLength = 2;
-  uint8_t prefix[prefixLength];
-  prefix[0] = 1;
-  prefix[1] = 52;
-  int decodedBranchLength = checkDecodeAndDropPrefix(branch, prefixLength, prefix, decodedBranch);
-
-  std::string result = "";
-  // TODO: Hex encode decoded branch and append to result
-  return result;
-}
-
-std::string forgeAddress(const std::string &address) {
-  std::string result = "";
-  if (address[0] == 'K') {
-    size_t prefixLength = 3;
-    uint8_t prefix[prefixLength];
-    prefix[0] = 2;
-    prefix[1] = 90;
-    prefix[2] = 121;
-
-    size_t capacity = 128;
-    uint8_t decoded[capacity];
-
-    int decodedLength = checkDecodeAndDropPrefix(address, prefixLength, prefix, decoded);
-
-    result += "01";
-    // TODO: Append decoded here as a hex string.
-    result += "00";
-  } else {
-    result = result + "00";
-    result += forgePublicKeyHash(address);
-  }
-  return result;
-}
-
-std::string forgeZarith(int input) {
-  std::string result = "";
-  while (true) {
-    if (input < 128) {
-      if (input < 16) {
-        result += "0";
-      }
-      result += input; // TODO: encode input to hex.
-      break;
-    } else {
-      int b = input % 128;
-      input -= b;
-      input /= 128;
-      b += 128;
-      result += b; // TODO: encode b to hex.
-    }
-  }
-  return result;
-}
-
-std::string forgeBool(bool input) {
-  return input ? "ff" : "00";
-}
-
-TWString * TWTezosForge() {
-  // TODO: This is hardcoded to forge a transaction, support reveals.
-  // TODO: Tests. Inputs are different address types (tz1, kt1) for source, dest.
-  auto branch = "BMNY6Jkas7BzKb7wDLCFoQ4YxfYoieU7Xmo1ED3Y9Lo3ZvVGdgW";
-  auto source = "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW";
-  auto destination = "tz1hx8hMmmeyDBi6WJgpKwK4n5S2qAEpavx2";
-
-  auto fee = 1272;
-  auto gasLimit = 10100;
-  auto storageLimit = 257;
-
-  auto addressCounter = 30738;
-
-  auto amount = 1;
-
-  auto forgedBranch = forgeBranch(branch);
-  auto forgedSource = forgeAddress(source);
-  auto forgedFee = forgeZarith(fee);
-  auto forgedAddressCounter = forgeZarith(addressCounter);
-  auto forgedGasLimit = forgeZarith(gasLimit);
-  auto forgedStorageLimit = forgeZarith(storageLimit);
-  auto forgedAmount = forgeZarith(amount);
-  auto forgedDestination = forgeAddress(destination);
-
-  auto result = forgedBranch + forgedSource + forgedFee + forgedAddressCounter + forgedGasLimit + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
-  return TWStringCreateWithUTF8Bytes(result.data());
-}
-
-bool TWTezosAddressIsValidString(TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
-
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != TWTezosAddressSize) {
-        return false;
-    }
-
-    return true;
-}
+// 3756ef37b1be849e3114643faa5847cabf9a896d3bfe4dd51448de68e91da1
+// 3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0108000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992
+// f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100
 
 bool TWTezosAddressInitWithString(struct TWTezosAddress *_Nonnull address, TWString *_Nonnull string) {
     auto str = TWStringUTF8Bytes(string);

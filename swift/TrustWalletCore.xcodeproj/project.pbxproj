@@ -441,6 +441,8 @@
 		61FE4B4522208E5000C65017 /* VeChain.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 61FE4B4322208E5000C65017 /* VeChain.pb.h */; };
 		777FF65F222C790F00ED2140 /* TWTezosAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777FF65E222C790E00ED2140 /* TWTezosAddress.cpp */; };
 		777FF666222C7D7400ED2140 /* TWTezosAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 777FF665222C7D7400ED2140 /* TWTezosAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		777FF669222C853000ED2140 /* TWTezosForger.h in Headers */ = {isa = PBXBuildFile; fileRef = 777FF667222C852F00ED2140 /* TWTezosForger.h */; };
+		777FF66A222C853000ED2140 /* TWTezosForger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777FF668222C853000ED2140 /* TWTezosForger.cpp */; };
 		77B1EB45222AB79A00EA4FCE /* TezosAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB3C222AB77A00EA4FCE /* TezosAddressTests.swift */; };
 		77B1EB49222AB87F00EA4FCE /* Tezos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB48222AB87F00EA4FCE /* Tezos.swift */; };
 		77B1EB4B222AC69100EA4FCE /* TezosAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB4A222AC69100EA4FCE /* TezosAddress.swift */; };
@@ -981,6 +983,8 @@
 		667A8CF3B4C135CBB4CAC72E /* Pods-TrustWalletCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore/Pods-TrustWalletCore.release.xcconfig"; sourceTree = "<group>"; };
 		777FF65E222C790E00ED2140 /* TWTezosAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TWTezosAddress.cpp; path = interface/TWTezosAddress.cpp; sourceTree = "<group>"; };
 		777FF665222C7D7400ED2140 /* TWTezosAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWTezosAddress.h; sourceTree = "<group>"; };
+		777FF667222C852F00ED2140 /* TWTezosForger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TWTezosForger.h; path = Tezos/TWTezosForger.h; sourceTree = "<group>"; };
+		777FF668222C853000ED2140 /* TWTezosForger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TWTezosForger.cpp; path = Tezos/TWTezosForger.cpp; sourceTree = "<group>"; };
 		77B1EB3C222AB77A00EA4FCE /* TezosAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddressTests.swift; sourceTree = "<group>"; };
 		77B1EB48222AB87F00EA4FCE /* Tezos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tezos.swift; sourceTree = "<group>"; };
 		77B1EB4A222AC69100EA4FCE /* TezosAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddress.swift; sourceTree = "<group>"; };
@@ -1093,6 +1097,8 @@
 				61B159AF21CC5DBB00CFE93B /* PublicKey.h */,
 				616D040F220A544400A776E8 /* Result.h */,
 				777FF65E222C790E00ED2140 /* TWTezosAddress.cpp */,
+				777FF668222C853000ED2140 /* TWTezosForger.cpp */,
+				777FF667222C852F00ED2140 /* TWTezosForger.h */,
 				BB21105A221C039A00571DF7 /* Ripple */,
 				61A9B35C2200D85A00E601B3 /* Tendermint */,
 				61C4E8B92225C3C50020A917 /* Tron */,
@@ -2007,6 +2013,7 @@
 				6198EA5F21B2021A008CB60A /* TWFoundationData.h in Headers */,
 				61735C79219DF044007BF637 /* ecrypt-portable.h in Headers */,
 				61735C6B219DF044007BF637 /* aestab.h in Headers */,
+				777FF669222C853000ED2140 /* TWTezosForger.h in Headers */,
 				61722BF4220E45BA00D7BA9A /* Binance.pb.h in Headers */,
 				61722BEB220E45A300D7BA9A /* BinaryCoding.h in Headers */,
 				616D0410220A544400A776E8 /* Data.h in Headers */,
@@ -2492,6 +2499,7 @@
 				61B159E521CC5DBB00CFE93B /* TWPrivateKey.cpp in Sources */,
 				61CABABD21ED41F20086D9A0 /* TWKeyDerivation.cpp in Sources */,
 				6198EA6521B59575008CB60A /* String.swift in Sources */,
+				777FF66A222C853000ED2140 /* TWTezosForger.cpp in Sources */,
 				61735BF3219DF044007BF637 /* hmac.c in Sources */,
 				6198EA8C21B811CD008CB60A /* Bech32Address.swift in Sources */,
 				61735BFA219DF044007BF637 /* base32.c in Sources */,
