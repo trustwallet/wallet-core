@@ -18,7 +18,7 @@ class Address {
 public:
 
     // 56 character base-32 encoded string
-    static const size_t STELLAR_ADDRESS_SIZE = 56;
+    static const size_t size = 56;
     // Decodes to 35 bytes
     static const size_t STELLAR_ADDRESS_SIZE_RAW = 35;
     // Raw key size is 32 bytes
