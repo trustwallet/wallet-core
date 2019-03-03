@@ -8,6 +8,9 @@
 
 #include "proto/Tezos.pb.h"
 #include "Tezos/TWTezosForger.h"
+#include "HexCoding.h"
+#include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWString.h>
 
 std::string signOperation(TW::Tezos::Proto::OperationList operationList) {
   auto forgedBytesHex = forgeBranch(operationList.branch());
@@ -15,7 +18,14 @@ std::string signOperation(TW::Tezos::Proto::OperationList operationList) {
     forgedBytesHex += forgeOperation(operation);
   }
 
-  // TODO: Sign.
+  // TODO: Work out how to move std::String to TWString.
+  auto watermark = "03";
+  auto watermarkedForgedBytesHex = watermark + forgedBytesHex;
+  auto twStringRep = TWStringCreateWithUTF8Bytes("TODO: Put watermarekdForgedBytesHexHere");
+  auto watermarkedBytes = TWDataCreateWithHexString(twStringRep);
+  auto hashedBytes = TWHashBlake2b(watermarkedBytes, 32);
+
+  // TODO: Figure out how PriveKey is injected, and sign.
 
   return forgedBytesHex;
 }
