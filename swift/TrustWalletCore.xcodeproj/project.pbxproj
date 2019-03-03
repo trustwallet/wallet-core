@@ -443,6 +443,8 @@
 		777FF666222C7D7400ED2140 /* TWTezosAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 777FF665222C7D7400ED2140 /* TWTezosAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		777FF669222C853000ED2140 /* TWTezosForger.h in Headers */ = {isa = PBXBuildFile; fileRef = 777FF667222C852F00ED2140 /* TWTezosForger.h */; };
 		777FF66A222C853000ED2140 /* TWTezosForger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777FF668222C853000ED2140 /* TWTezosForger.cpp */; };
+		777FF66D222C8E8B00ED2140 /* TWTezosSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 777FF66B222C8E8B00ED2140 /* TWTezosSigner.h */; };
+		777FF66E222C8E8B00ED2140 /* TWTezosSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777FF66C222C8E8B00ED2140 /* TWTezosSigner.cpp */; };
 		77B1EB45222AB79A00EA4FCE /* TezosAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB3C222AB77A00EA4FCE /* TezosAddressTests.swift */; };
 		77B1EB49222AB87F00EA4FCE /* Tezos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB48222AB87F00EA4FCE /* Tezos.swift */; };
 		77B1EB4B222AC69100EA4FCE /* TezosAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77B1EB4A222AC69100EA4FCE /* TezosAddress.swift */; };
@@ -985,6 +987,8 @@
 		777FF665222C7D7400ED2140 /* TWTezosAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWTezosAddress.h; sourceTree = "<group>"; };
 		777FF667222C852F00ED2140 /* TWTezosForger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TWTezosForger.h; path = Tezos/TWTezosForger.h; sourceTree = "<group>"; };
 		777FF668222C853000ED2140 /* TWTezosForger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TWTezosForger.cpp; path = Tezos/TWTezosForger.cpp; sourceTree = "<group>"; };
+		777FF66B222C8E8B00ED2140 /* TWTezosSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TWTezosSigner.h; path = Tezos/TWTezosSigner.h; sourceTree = "<group>"; };
+		777FF66C222C8E8B00ED2140 /* TWTezosSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TWTezosSigner.cpp; path = Tezos/TWTezosSigner.cpp; sourceTree = "<group>"; };
 		77B1EB3C222AB77A00EA4FCE /* TezosAddressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddressTests.swift; sourceTree = "<group>"; };
 		77B1EB48222AB87F00EA4FCE /* Tezos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tezos.swift; sourceTree = "<group>"; };
 		77B1EB4A222AC69100EA4FCE /* TezosAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosAddress.swift; sourceTree = "<group>"; };
@@ -1096,9 +1100,11 @@
 				61B159BF21CC5DBB00CFE93B /* PublicKey.cpp */,
 				61B159AF21CC5DBB00CFE93B /* PublicKey.h */,
 				616D040F220A544400A776E8 /* Result.h */,
-				777FF65E222C790E00ED2140 /* TWTezosAddress.cpp */,
-				777FF668222C853000ED2140 /* TWTezosForger.cpp */,
+				777FF66C222C8E8B00ED2140 /* TWTezosSigner.cpp */,
+				777FF66B222C8E8B00ED2140 /* TWTezosSigner.h */,
 				777FF667222C852F00ED2140 /* TWTezosForger.h */,
+				777FF668222C853000ED2140 /* TWTezosForger.cpp */,
+				777FF65E222C790E00ED2140 /* TWTezosAddress.cpp */,
 				BB21105A221C039A00571DF7 /* Ripple */,
 				61A9B35C2200D85A00E601B3 /* Tendermint */,
 				61C4E8B92225C3C50020A917 /* Tron */,
@@ -2034,6 +2040,7 @@
 				BB2422DE22217B58000663D0 /* Signer.h in Headers */,
 				61722BD8220E455500D7BA9A /* TWBitcoinProto.h in Headers */,
 				61FE4B1F221F732D00C65017 /* TWWanchainSigner.h in Headers */,
+				777FF66D222C8E8B00ED2140 /* TWTezosSigner.h in Headers */,
 				61735AFB219DF044007BF637 /* pbkdf2.h in Headers */,
 				61735AF1219DF044007BF637 /* address.h in Headers */,
 				61BA0A7921F7DB29005680E6 /* Serialization.h in Headers */,
@@ -2480,6 +2487,7 @@
 				BB21105E221C039B00571DF7 /* Address.cpp in Sources */,
 				61E814392227594F00D4D2C9 /* PublicKeyExtension.swift in Sources */,
 				61FE4B3D22208E0F00C65017 /* TWVeChainSigner.cpp in Sources */,
+				777FF66E222C8E8B00ED2140 /* TWTezosSigner.cpp in Sources */,
 				61AAD3A521DEF72500B69A34 /* Base58.swift in Sources */,
 				61FE4B23221F734C00C65017 /* TWWanchainSigner.cpp in Sources */,
 				61B159E021CC5DBB00CFE93B /* TWData.cpp in Sources */,
