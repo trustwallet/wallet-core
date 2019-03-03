@@ -23,6 +23,7 @@ public enum CoinType {
     ICON (74),
     LITECOIN (2),
     POA (178),
+    TEZOS (1729),
     THUNDERTOKEN (1001),
     TOMOCHAIN (889),
     TRON (195),
@@ -30,8 +31,7 @@ public enum CoinType {
     WANCHAIN (5718350),
     ZCOIN (136),
     ZCASH (133),
-    RIPPLE (144),
-    TEZOS (1729);
+    RIPPLE (144);
 
     private final int value;
     CoinType(int value) {
