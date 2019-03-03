@@ -9,14 +9,11 @@
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
-#include "HexCoding.h"
-#include "Tezos/TWTezosForger.h"
 
 #include <cstring>
 #include <string>
 #include <vector>
 #include <array>
-#include <tuple>
 
 
 bool TWTezosAddressEqual(struct TWTezosAddress lhs, struct TWTezosAddress rhs) {
@@ -27,46 +24,19 @@ bool TWTezosAddressIsValid(TWData *_Nonnull data) {
     return TWDataSize(data) == TWTezosAddressSize;
 }
 
+bool TWTezosAddressIsValidString(TWString *_Nonnull string) {
+    auto str = TWStringUTF8Bytes(string);
 
-//
+    size_t capacity = 128;
+    uint8_t buffer[capacity];
 
-//
-//
-//
+    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
+    if (size != TWTezosAddressSize) {
+        return false;
+    }
 
-//
-//
-//
-
-//
-//
-//
-//bool TWTezosAddressIsValidString(TWString *_Nonnull string) {
-//    auto str = TWStringUTF8Bytes(string);
-//
-//    size_t capacity = 128;
-//    uint8_t buffer[capacity];
-//
-//    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-//    if (size != TWTezosAddressSize) {
-//        return false;
-//    }
-//
-//    return true;
-//}
-
-TWString *_Nullable TWTezosAddressForge() {
-  auto input = "tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt";
-  auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
-  auto result1 = forgeBranch(branch);
-  auto result2 = forgeAddress(input);
-
-  return nullptr;
+    return true;
 }
-
-// 3756ef37b1be849e3114643faa5847cabf9a896d3bfe4dd51448de68e91da1
-// 3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0108000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992
-// f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100
 
 bool TWTezosAddressInitWithString(struct TWTezosAddress *_Nonnull address, TWString *_Nonnull string) {
     auto str = TWStringUTF8Bytes(string);
