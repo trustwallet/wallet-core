@@ -22,7 +22,7 @@ public:
     // Decodes to 35 bytes
     static const size_t rawSize = 35;
     // Raw key size is 32 bytes
-    static const size_t STELLAR_KEY_SIZE = 32;
+    static const size_t keySize = 32;
 
     /// Address data consisting of a prefix byte followed by the public key hash.
     std::array<byte, STELLAR_KEY_SIZE> bytes;
