@@ -25,16 +25,6 @@ enum class StoredKeyType {
     mnemonicPhrase
 };
 
-/// Errors thrown when decrypting a key.
-enum class DecryptionError {
-    unsupportedKDF,
-    unsupportedCipher,
-    unsupportedCoin,
-    invalidKeyFile,
-    invalidCipher,
-    invalidPassword,
-};
-
 /// Represents a key stored as an encrypted file.
 struct StoredKey {
     /// Type of key stored.
@@ -49,7 +39,13 @@ struct StoredKey {
     /// Active accounts.
     std::vector<Account> accounts;
 
-    StoredKey(StoredKeyType type, Data payload) : type(type), payload(payload), id(), accounts() {}
+    /// Initializes a `StoredKey` with a type and an encrypted payload.
+    StoredKey(StoredKeyType type, EncryptionParameters payload) : type(type), payload(payload), id(), accounts() {}
+
+    /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
+    ///
+    /// This contstructor will encrypt the provided data with default encryption parameters.
+    StoredKey(StoredKeyType type, const std::string& password, Data data) : type(type), payload(password, data), id(), accounts() {}
 
     /// Loads and decrypts a stored key from a file.
     ///

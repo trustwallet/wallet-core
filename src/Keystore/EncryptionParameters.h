@@ -16,6 +16,16 @@
 namespace TW {
 namespace Keystore {
 
+/// Errors thrown when decrypting a key.
+enum class DecryptionError {
+    unsupportedKDF,
+    unsupportedCipher,
+    unsupportedCoin,
+    invalidKeyFile,
+    invalidCipher,
+    invalidPassword,
+};
+
 struct EncryptionParameters {
     /// Encrypted data.
     Data encrypted;
@@ -50,6 +60,9 @@ struct EncryptionParameters {
 
     /// Initializes `EncryptionParameters` with a JSON object.
     EncryptionParameters(const nlohmann::json& json);
+
+    /// Decrypts the payload with the given password.
+    Data decrypt(const std::string& password) const;
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;

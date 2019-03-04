@@ -51,31 +51,26 @@ namespace TypeString {
 }
 
 StoredKey::StoredKey(const nlohmann::json& json) {
-    auto version = json[CodingKeys::version].get<int>();
-    if (version != 3) {
-        throw DecryptionError::invalidKeyFile;
-    }
-
-    if (json[CodingKeys::type] && json[CodingKeys::type].get<std::string>() == TypeString::mnemonic) {
+    if (json.count(CodingKeys::type) != 0 && json[CodingKeys::type].get<std::string>() == TypeString::mnemonic) {
         type = StoredKeyType::mnemonicPhrase;
     }  else {
         type = StoredKeyType::privateKey;
     }
 
-    if (json[CodingKeys::id]) {
+    if (json.count(CodingKeys::id) != 0) {
         id = json[CodingKeys::id].get<std::string>();
     }
 
-    if (json[CodingKeys::crypto]) {
+    if (json.count(CodingKeys::crypto) != 0) {
         payload = EncryptionParameters(json[CodingKeys::crypto]);
-    } else if (json[UppercaseCodingKeys::crypto]) {
+    } else if (json.count(UppercaseCodingKeys::crypto) != 0) {
         // Workaround for myEtherWallet files
         payload = EncryptionParameters(json[UppercaseCodingKeys::crypto]);
     } else {
         throw DecryptionError::invalidKeyFile;
     }
 
-    if (json[CodingKeys::activeAccounts].is_array()) {
+    if (json.count(CodingKeys::activeAccounts) != 0 && json[CodingKeys::activeAccounts].is_array()) {
         for (auto& accountJSON : json[CodingKeys::activeAccounts]) {
             accounts.emplace_back(accountJSON);
         }
@@ -83,7 +78,7 @@ StoredKey::StoredKey(const nlohmann::json& json) {
 
     if (accounts.empty() && json[CodingKeys::address].is_string()) {
         TWCoinType coin = TWCoinTypeEthereum;
-        if (json[CodingKeys::coin]) {
+        if (json.count(CodingKeys::coin) != 0) {
             coin = json[CodingKeys::coin].get<TWCoinType>();
         }
         auto address = json[CodingKeys::address].get<std::string>();
@@ -92,27 +87,29 @@ StoredKey::StoredKey(const nlohmann::json& json) {
 }
 
 nlohmann::json StoredKey::json() const {
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    switch type {
-    case .encryptedKey:
-        try container.encode(TypeString.privateKey, forKey: .type)
-    case .hierarchicalDeterministicWallet:
-        try container.encode(TypeString.mnemonic, forKey: .type)
-    }
-    try container.encode(id, forKey: .id)
-    try container.encodeIfPresent(address?.description, forKey: .address)
-    try container.encode(crypto, forKey: .crypto)
-    try container.encode(version, forKey: .version)
-    try container.encode(activeAccounts, forKey: .activeAccounts)
-    try container.encodeIfPresent(coin, forKey: .coin)
-}
+    nlohmann::json j;
+    j[CodingKeys::version] = 3;
 
-public static func address(for coin: CoinType?, addressString: String) -> Address? {
-    guard let coin = coin else {
-        guard let data = Data(hexString: addressString) else {
-            return nil
-        }
-        return EthereumAddress(keyHash: data)
+    switch (type) {
+    case StoredKeyType::privateKey:
+        j[CodingKeys::type] = TypeString::privateKey;
+        break;
+    case StoredKeyType::mnemonicPhrase:
+        j[CodingKeys::type] = TypeString::mnemonic;
+        break;
     }
-    return blockchain(coin: coin).address(string: addressString)
+
+    if (id) {
+        j[CodingKeys::id] = *id;
+    }
+
+    j[CodingKeys::crypto] = payload.json();
+
+    nlohmann::json accountsJSON = nlohmann::json::array();
+    for (const auto& account : accounts) {
+        accountsJSON.push_back(account.json());
+    }
+    j[CodingKeys::activeAccounts] = accountsJSON;
+
+    return j;
 }

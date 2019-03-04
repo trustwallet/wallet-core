@@ -2,17 +2,17 @@
     "coin": 60,
     "id": "3051ca7d-3d36-4a4a-acc2-09e9083732b0",
     "crypto": {
-        "ciphertext": "4d273bb23aa3e38118e353dd0805585357e83480002434b7fd3305232a7fe38b",
+        "ciphertext": "d172bf743a674da9cdad04534d56926ef8358534d458fffccd4e6ad2fbde479c",
         "cipherparams": {
-            "iv": "06b3b1853e7ed8e5630a8b0fea68ab95"
+            "iv": "83dbcc02d8ccb40e466191a123791e0e"
         },
         "kdf": "scrypt",
         "kdfparams": {
-            "r": 8,
-            "p": 6,
-            "n": 4096,
+            "r": 1,
+            "p": 8,
+            "n": 262144,
             "dklen": 32,
-            "salt": "0a0045d86f3262a4858fd4656ac160852ed7f0e924c060c2d68631bff0787ecc"
+            "salt": "ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19"
         },
         "mac": "ed2bd65fedbc91bf1222a7049d7663856256fec5e3e7a858ca671c572b339ab3",
         "cipher": "aes-128-ctr"

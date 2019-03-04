@@ -8,8 +8,15 @@
 
 #include "../HexCoding.h"
 
+#include <TrezorCrypto/rand.h>
+
 using namespace TW;
 using namespace TW::Keystore;
+
+AESParameters::AESParameters() {
+    iv = Data(blockSize, 0);
+    random_buffer(iv.data(), blockSize);
+}
 
 namespace CodingKeys {
     static const auto iv = "iv";

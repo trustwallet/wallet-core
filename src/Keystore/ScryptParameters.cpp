@@ -6,10 +6,15 @@
 
 #include "ScryptParameters.h"
 
+#include <TrezorCrypto/rand.h>
 #include <limits>
 
 using namespace TW;
 using namespace TW::Keystore;
+
+ScryptParameters::ScryptParameters() : salt(32) {
+    random_buffer(salt.data(), salt.size());
+}
 
 std::optional<ScryptValidationError> ScryptParameters::validate() const {
     if (desiredKeyLength > ((static_cast<uint64_t>(1) << 32) - 1) * 32) {

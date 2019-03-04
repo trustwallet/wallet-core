@@ -9,7 +9,6 @@
 #include "../Data.h"
 
 #include <nlohmann/json.hpp>
-#include <TrezorCrypto/rand.h>
 
 namespace TW {
 namespace Keystore {
@@ -21,10 +20,7 @@ struct AESParameters {
     Data iv;
 
     /// Initializes `AESParameters` with a random `iv` for AES 128.
-    AESParameters() {
-        iv = Data(blockSize, 0);
-        random_buffer(iv.data(), blockSize);
-    }
+    AESParameters();
 
     /// Initializes `AESParameters` with a JSON object.
     AESParameters(const nlohmann::json& json);

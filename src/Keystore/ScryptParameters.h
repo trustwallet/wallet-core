@@ -11,7 +11,6 @@
 
 #include <nlohmann/json.hpp>
 #include <optional>
-#include <TrezorCrypto/rand.h>
 
 namespace TW {
 namespace Keystore {
@@ -63,9 +62,7 @@ struct ScryptParameters {
     uint32_t r = defaultR;
 
     /// Initializes with default scrypt parameters and a random salt.
-    ScryptParameters() : salt(32) {
-        random_buffer(salt.data(), salt.size());
-    }
+    ScryptParameters();
 
     /// Initializes `ScryptParameters` with all values.
     ///

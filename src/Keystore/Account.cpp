@@ -30,10 +30,9 @@ Account::Account(const nlohmann::json& json) {
         derivationPath = DerivationPath(json[CodingKeys::derivationPath].get<std::string>());
     }
 
-    derivationPath = DerivationPath(json[CodingKeys::derivationPath].get<std::string>());
-    if (json[CodingKeys::address].is_string()) {
+    if (json.count(CodingKeys::address) != 0 && json[CodingKeys::address].is_string()) {
         address = json[CodingKeys::address].get<std::string>();
-    } else if (json[CodingKeys::addressData].is_string()) {
+    } else if (json.count(CodingKeys::addressData) != 0 && json[CodingKeys::addressData].is_string()) {
         address = json[CodingKeys::addressData].get<std::string>();
         // TODO: get properly encoded address string
     }
