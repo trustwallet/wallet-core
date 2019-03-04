@@ -1,16 +1,24 @@
 PODS:
+  - BigInt (3.1.0):
+    - SipHash (~> 1.2)
+  - SipHash (1.2.2)
   - SwiftProtobuf (1.2.0)
 
 DEPENDENCIES:
+  - BigInt
   - SwiftProtobuf (~> 1.2.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - BigInt
+    - SipHash
     - SwiftProtobuf
 
 SPEC CHECKSUMS:
+  BigInt: 76b5dfdfa3e2e478d4ffdf161aeede5502e2742f
+  SipHash: fad90a4683e420c52ef28063063dbbce248ea6d4
   SwiftProtobuf: 91a9856079044ef4ec762b2344c763cd9e5a73c1
 
-PODFILE CHECKSUM: bcab653390ccf2f8e377a439713b531df60e7b01
+PODFILE CHECKSUM: e909d021cb0b6eac1aacce046cbe61a684819cd8
 
 COCOAPODS: 1.6.0

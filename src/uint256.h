@@ -17,6 +17,9 @@ using uint256_t = boost::multiprecision::uint256_t;
 /// Loads a `uint256_t` from a collection of bytes.
 template <typename D>
 uint256_t load(const D& data) {
+    if (std::empty(data)) {
+        return uint256_t(0);
+    }
     using boost::multiprecision::cpp_int;
     uint256_t result;
     import_bits(result, std::cbegin(data), std::cend(data));

@@ -4,6 +4,7 @@ target 'TrustWalletCore' do
   use_frameworks!
 
   pod 'SwiftProtobuf', '~> 1.2.0'
+  pod 'BigInt'
 
   target 'TrustWalletCoreTests'
 end
