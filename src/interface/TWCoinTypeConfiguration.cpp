@@ -35,8 +35,12 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeZcash: string = "ZEC"; break;
     case TWCoinTypeBinance: string = "BNB"; break;
     case TWCoinTypeRipple: string = "XRP"; break;
+<<<<<<< master
     case TWCoinTypeTezos: string = "XTZ"; break;
     case TWCoinTypeNimiq: string = "NIM"; break;
+=======
+    case TWCoinTypeStellar: string = "XLM"; break;
+>>>>>>> HEAD~10
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -63,6 +67,8 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeZcoin:
     case TWCoinTypeZcash:
      return 8;
+    case TWCoinTypeStellar:
+        return 7;
     case TWCoinTypeRipple:
     case TWCoinTypeTezos:
     case TWCoinTypeTron:
@@ -82,6 +88,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeStellar:
         url += "/transaction/" + txId;
         break;
     case TWCoinTypeEthereum:
@@ -118,7 +125,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeNimiq:
         url += "/#" + txId;
         break;
-    case TWCoinTypeBinance: break;    
+    case TWCoinTypeBinance: break;
     default: break;
     }
     return TWStringCreateWithUTF8Bytes(url.c_str());
@@ -145,8 +152,12 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeZcash: return "https://chain.so";
     case TWCoinTypeBinance: return "https://binance.com";
     case TWCoinTypeRipple: return "https://bithomp.com";
-    case TWCoinTypeTezos: return "https://tzscan.io";    
+<<<<<<< master
+    case TWCoinTypeTezos: return "https://tzscan.io";
     case TWCoinTypeNimiq: return "https://nimiq.watch";
+=======
+    case  TWCoinTypeStellar: return "https://stellarscan.io";
+>>>>>>> HEAD~10
     default: return "";
     }
 }
@@ -173,8 +184,9 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeZcash: string = "zcash"; break;
     case TWCoinTypeBinance: string = "binance"; break;
     case TWCoinTypeRipple: string = "ripple"; break;
-    case TWCoinTypeTezos: string = "tezos"; break;    
+    case TWCoinTypeTezos: string = "tezos"; break;
     case TWCoinTypeNimiq: string = "nimiq"; break;
+    case TWCoinTypeStellar: string = "stellar"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -204,6 +216,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeRipple: string = "Ripple"; break;
     case TWCoinTypeTezos: string = "Tezos"; break;
     case TWCoinTypeNimiq: string = "Nimiq"; break;
+    case TWCoinTypeStellar: string = "Stellar"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

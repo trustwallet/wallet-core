@@ -10,7 +10,7 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_ENUM()
+TW_EXPORT_ENUM(uint32_t)
 enum class TWStellarVersionByte : uint8_t {
     TWStellarVersionByteAccountID = (6 << 3), // G
     TWStellarVersionByteSeed = (18 << 3), // S
