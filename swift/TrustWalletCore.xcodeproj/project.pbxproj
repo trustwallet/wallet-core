@@ -1637,13 +1637,13 @@
 				61C4E9122226144E0020A917 /* BitconCashTests.swift */,
 				61E813DB2227526600D4D2C9 /* DashTests.swift */,
 				61C4E90A222614200020A917 /* EOSTests.swift */,
+				BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */,
 				61C4E914222614590020A917 /* LitecoinTests.swift */,
 				BB21105F221C03D500571DF7 /* RippleTests.swift */,
 				61C4E90E222614310020A917 /* TronTests.swift */,
 				61C4E908222614120020A917 /* WanchainTests.swift */,
 				61E813D92227522F00D4D2C9 /* ZcashTests.swift */,
 				61C4E916222614640020A917 /* ZcoinTests.swift */,
-				BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -2185,16 +2185,12 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-TrustWalletCore-TrustWalletCoreTests/Pods-TrustWalletCore-TrustWalletCoreTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
-				"${BUILT_PRODUCTS_DIR}/SipHash/SipHash.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SipHash.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;

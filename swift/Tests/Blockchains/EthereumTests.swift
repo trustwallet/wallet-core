@@ -6,36 +6,18 @@
 
 import XCTest
 import TrustWalletCore
-import BigInt
 
 class EthereumTests: XCTestCase {
-
-    func testBigIntSerialize() {
-        let data = BigInt(21000).magnitude.serialize()
-        let input = TW_Ethereum_Proto_SigningInput.with {
-            $0.gasLimit = data
-        }
-
-        XCTAssertEqual(data.hexString, "5208")
-        XCTAssertEqual(input.gasLimit, data)
-    }
-
     func testSigner() {
         let input = TW_Ethereum_Proto_SigningInput.with {
-            $0.chainID = BigUInt(1).serialize()
-            $0.nonce = BigInt(9).magnitude.serialize()
-            $0.gasPrice = BigInt(20_000_000_000).magnitude.serialize()
-            $0.gasLimit = BigInt(21_000).magnitude.serialize()
+            $0.chainID = Data(hexString: "01")!
+            $0.nonce = Data(hexString: "09")!
+            $0.gasPrice = Data(hexString: "04a817c800")!
+            $0.gasLimit = Data(hexString: "5208")!
             $0.toAddress = "0x3535353535353535353535353535353535353535"
-            $0.amount = BigInt(1_000_000_000_000_000_000).magnitude.serialize()
+            $0.amount = Data(hexString: "0de0b6b3a7640000")!
             $0.privateKey = Data(hexString: "0x4646464646464646464646464646464646464646464646464646464646464646")!
         }
-
-        XCTAssertEqual(input.chainID.hexString, "01")
-        XCTAssertEqual(input.nonce.hexString, "09")
-        XCTAssertEqual(input.gasPrice.hexString, "04a817c800")
-        XCTAssertEqual(input.gasLimit.hexString, "5208")
-        XCTAssertEqual(input.amount.hexString, "0de0b6b3a7640000")
 
         let output = EthereumSigner.sign(input: input)
 
