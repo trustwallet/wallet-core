@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 ARG CLANG_VERSION=7.0.1
 ARG CMAKE_VERSION=3.13.4
-ARG PROTOBUF_VERSION=3.6.1
+ARG PROTOBUF_VERSION=3.7.0
 
 # Install the basics
 RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils
@@ -36,7 +36,7 @@ RUN curl -fSsL https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_
 ENV CMAKE_VERSION=$CMAKE_VERSION
 RUN cd /usr/local/src \
     && curl -fSsOL https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION.tar.gz \
-    && tar xvf cmake-$CMAKE_VERSION.tar.gz \ 
+    && tar xvf cmake-$CMAKE_VERSION.tar.gz \
     && cd cmake-$CMAKE_VERSION \
     && ./bootstrap --system-curl \
     && make \

@@ -78,7 +78,6 @@ public final class Tron {
     private TransferContract() {
       ownerAddress_ = "";
       toAddress_ = "";
-      amount_ = 0L;
     }
 
     @java.lang.Override
@@ -123,7 +122,7 @@ public final class Tron {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -308,15 +307,14 @@ public final class Tron {
       }
       wallet.core.jni.proto.Tron.TransferContract other = (wallet.core.jni.proto.Tron.TransferContract) obj;
 
-      boolean result = true;
-      result = result && getOwnerAddress()
-          .equals(other.getOwnerAddress());
-      result = result && getToAddress()
-          .equals(other.getToAddress());
-      result = result && (getAmount()
-          == other.getAmount());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getOwnerAddress()
+          .equals(other.getOwnerAddress())) return false;
+      if (!getToAddress()
+          .equals(other.getToAddress())) return false;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -507,35 +505,35 @@ public final class Tron {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -807,7 +805,7 @@ public final class Tron {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -940,7 +938,6 @@ public final class Tron {
       assetName_ = "";
       ownerAddress_ = "";
       toAddress_ = "";
-      amount_ = 0L;
     }
 
     @java.lang.Override
@@ -991,7 +988,7 @@ public final class Tron {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1224,17 +1221,16 @@ public final class Tron {
       }
       wallet.core.jni.proto.Tron.TransferAssetContract other = (wallet.core.jni.proto.Tron.TransferAssetContract) obj;
 
-      boolean result = true;
-      result = result && getAssetName()
-          .equals(other.getAssetName());
-      result = result && getOwnerAddress()
-          .equals(other.getOwnerAddress());
-      result = result && getToAddress()
-          .equals(other.getToAddress());
-      result = result && (getAmount()
-          == other.getAmount());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getAssetName()
+          .equals(other.getAssetName())) return false;
+      if (!getOwnerAddress()
+          .equals(other.getOwnerAddress())) return false;
+      if (!getToAddress()
+          .equals(other.getToAddress())) return false;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1430,35 +1426,35 @@ public final class Tron {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1823,7 +1819,7 @@ public final class Tron {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1920,12 +1916,9 @@ public final class Tron {
       super(builder);
     }
     private BlockHeader() {
-      timestamp_ = 0L;
       txTrieRoot_ = com.google.protobuf.ByteString.EMPTY;
       parentHash_ = com.google.protobuf.ByteString.EMPTY;
-      number_ = 0L;
       witnessAddress_ = com.google.protobuf.ByteString.EMPTY;
-      version_ = 0;
     }
 
     @java.lang.Override
@@ -1983,7 +1976,7 @@ public final class Tron {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -2148,21 +2141,20 @@ public final class Tron {
       }
       wallet.core.jni.proto.Tron.BlockHeader other = (wallet.core.jni.proto.Tron.BlockHeader) obj;
 
-      boolean result = true;
-      result = result && (getTimestamp()
-          == other.getTimestamp());
-      result = result && getTxTrieRoot()
-          .equals(other.getTxTrieRoot());
-      result = result && getParentHash()
-          .equals(other.getParentHash());
-      result = result && (getNumber()
-          == other.getNumber());
-      result = result && getWitnessAddress()
-          .equals(other.getWitnessAddress());
-      result = result && (getVersion()
-          == other.getVersion());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
+      if (!getTxTrieRoot()
+          .equals(other.getTxTrieRoot())) return false;
+      if (!getParentHash()
+          .equals(other.getParentHash())) return false;
+      if (getNumber()
+          != other.getNumber()) return false;
+      if (!getWitnessAddress()
+          .equals(other.getWitnessAddress())) return false;
+      if (getVersion()
+          != other.getVersion()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -2369,35 +2361,35 @@ public final class Tron {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2625,7 +2617,7 @@ public final class Tron {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -2763,8 +2755,6 @@ public final class Tron {
       super(builder);
     }
     private Transaction() {
-      timestamp_ = 0L;
-      expiration_ = 0L;
     }
 
     @java.lang.Override
@@ -2843,7 +2833,7 @@ public final class Tron {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -3096,33 +3086,30 @@ public final class Tron {
       }
       wallet.core.jni.proto.Tron.Transaction other = (wallet.core.jni.proto.Tron.Transaction) obj;
 
-      boolean result = true;
-      result = result && (getTimestamp()
-          == other.getTimestamp());
-      result = result && (getExpiration()
-          == other.getExpiration());
-      result = result && (hasBlockHeader() == other.hasBlockHeader());
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
+      if (getExpiration()
+          != other.getExpiration()) return false;
+      if (hasBlockHeader() != other.hasBlockHeader()) return false;
       if (hasBlockHeader()) {
-        result = result && getBlockHeader()
-            .equals(other.getBlockHeader());
+        if (!getBlockHeader()
+            .equals(other.getBlockHeader())) return false;
       }
-      result = result && getContractOneofCase().equals(
-          other.getContractOneofCase());
-      if (!result) return false;
+      if (!getContractOneofCase().equals(other.getContractOneofCase())) return false;
       switch (contractOneofCase_) {
         case 10:
-          result = result && getTransfer()
-              .equals(other.getTransfer());
+          if (!getTransfer()
+              .equals(other.getTransfer())) return false;
           break;
         case 11:
-          result = result && getTransferAsset()
-              .equals(other.getTransferAsset());
+          if (!getTransferAsset()
+              .equals(other.getTransferAsset())) return false;
           break;
         case 0:
         default:
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -3353,35 +3340,35 @@ public final class Tron {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3537,7 +3524,7 @@ public final class Tron {
         return this;
       }
 
-      private wallet.core.jni.proto.Tron.BlockHeader blockHeader_ = null;
+      private wallet.core.jni.proto.Tron.BlockHeader blockHeader_;
       private com.google.protobuf.SingleFieldBuilderV3<
           wallet.core.jni.proto.Tron.BlockHeader, wallet.core.jni.proto.Tron.BlockHeader.Builder, wallet.core.jni.proto.Tron.BlockHeaderOrBuilder> blockHeaderBuilder_;
       /**
@@ -3964,7 +3951,7 @@ public final class Tron {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -4111,7 +4098,7 @@ public final class Tron {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -4240,16 +4227,15 @@ public final class Tron {
       }
       wallet.core.jni.proto.Tron.SigningInput other = (wallet.core.jni.proto.Tron.SigningInput) obj;
 
-      boolean result = true;
-      result = result && (hasTransaction() == other.hasTransaction());
+      if (hasTransaction() != other.hasTransaction()) return false;
       if (hasTransaction()) {
-        result = result && getTransaction()
-            .equals(other.getTransaction());
+        if (!getTransaction()
+            .equals(other.getTransaction())) return false;
       }
-      result = result && getPrivateKey()
-          .equals(other.getPrivateKey());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -4444,35 +4430,35 @@ public final class Tron {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4521,7 +4507,7 @@ public final class Tron {
         return this;
       }
 
-      private wallet.core.jni.proto.Tron.Transaction transaction_ = null;
+      private wallet.core.jni.proto.Tron.Transaction transaction_;
       private com.google.protobuf.SingleFieldBuilderV3<
           wallet.core.jni.proto.Tron.Transaction, wallet.core.jni.proto.Tron.Transaction.Builder, wallet.core.jni.proto.Tron.TransactionOrBuilder> transactionBuilder_;
       /**
@@ -4717,7 +4703,7 @@ public final class Tron {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -4867,7 +4853,7 @@ public final class Tron {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -5008,17 +4994,16 @@ public final class Tron {
       }
       wallet.core.jni.proto.Tron.SigningOutput other = (wallet.core.jni.proto.Tron.SigningOutput) obj;
 
-      boolean result = true;
-      result = result && getId()
-          .equals(other.getId());
-      result = result && getSignature()
-          .equals(other.getSignature());
-      result = result && getRefBlockBytes()
-          .equals(other.getRefBlockBytes());
-      result = result && getRefBlockHash()
-          .equals(other.getRefBlockHash());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getId()
+          .equals(other.getId())) return false;
+      if (!getSignature()
+          .equals(other.getSignature())) return false;
+      if (!getRefBlockBytes()
+          .equals(other.getRefBlockBytes())) return false;
+      if (!getRefBlockHash()
+          .equals(other.getRefBlockHash())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -5217,35 +5202,35 @@ public final class Tron {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5442,7 +5427,7 @@ public final class Tron {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
