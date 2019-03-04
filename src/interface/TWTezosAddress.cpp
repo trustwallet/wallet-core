@@ -61,24 +61,17 @@ bool TWTezosAddressInitWithData(struct TWTezosAddress *_Nonnull address, TWData 
     return true;
 }
 
-bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
-    // Zcash taddr has two prefix bytes, the first byte is the same 0x1c -> t
-    address->bytes[0] = 0x1c;
-    address->bytes[1] = prefix;
-
-    auto compressed = TWPublicKeyCompressed(publicKey);
-    ecdsa_get_pubkeyhash(compressed.bytes, HASHER_SHA2_RIPEMD,  address->bytes + 2);
-
+bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, struct TWPublicKey publicKey) {
     return true;
 }
 
-TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress address) {
+TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress *_Nonnull address) {
     size_t size = 0;
-    b58enc(nullptr, &size, address.bytes, TWTezosAddressSize);
+    b58enc(nullptr, &size, address -> bytes, TWTezosAddressSize);
     size += 16;
 
     std::vector<char> str(size);
-    base58_encode_check(address.bytes, TWTezosAddressSize, HASHER_SHA2D, str.data(), size);
+    base58_encode_check(address -> bytes, TWTezosAddressSize, HASHER_SHA2D, str.data(), size);
 
     return TWStringCreateWithUTF8Bytes(str.data());
 }

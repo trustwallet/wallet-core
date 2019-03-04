@@ -23,9 +23,9 @@ struct TWTezosAddress {
     uint8_t bytes[22];
 };
 
-/// Compares two addresses for equality.
-TW_EXPORT_STATIC_METHOD
-bool TWTezosAddressEqual(struct TWTezosAddress lhs, struct TWTezosAddress rhs);
+/// Returns the address base58 string representation.
+TW_EXPORT_PROPERTY
+TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress *_Nonnull address);
 
 /// Determines if the data is a valid Bitcoin address.
 TW_EXPORT_STATIC_METHOD
@@ -39,23 +39,12 @@ bool TWTezosAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 bool TWTezosAddressInitWithString(struct TWTezosAddress *_Nonnull address, TWString *_Nonnull string);
 
-/// Initializes an address from raw data.
-TW_EXPORT_STATIC_METHOD
-bool TWTezosAddressInitWithData(struct TWTezosAddress *_Nonnull address, TWData *_Nonnull data);
-
 /// Initializes an address from a public key and a prefix byte.
 TW_EXPORT_STATIC_METHOD
-bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix);
-
-/// Returns the address base58 string representation.
-TW_EXPORT_PROPERTY
-TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress address);
+bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, struct TWPublicKey publicKey);
 
 /// Returns the address data.
 TW_EXPORT_PROPERTY
 TWData *_Nonnull TWTezosAddressData(struct TWTezosAddress address);
-
-TW_EXPORT_STATIC_METHOD
-TWString *_Nullable TWTezosAddressForge();
 
 TW_EXTERN_C_END
