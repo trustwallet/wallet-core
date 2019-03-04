@@ -6,7 +6,7 @@
 
 #include "Transaction.h"
 
-#include "../Bitcoin/BinaryCoding.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 
 #include <cassert>
@@ -31,10 +31,10 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, int index, uint
     auto data = Data{};
 
     // header
-    Bitcoin::encode32(version, data);
+    encode32LE(version, data);
 
     // nVersionGroupId
-    Bitcoin::encode32(versionGroupId, data);
+    encode32LE(versionGroupId, data);
 
     // Input prevouts (none/all, depending on flags)
     if ((hashType & TWSignatureHashTypeAnyoneCanPay) == 0) {
@@ -78,16 +78,16 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, int index, uint
     data.insert(std::end(data), std::begin(hashShieldedOutputs), std::end(hashShieldedOutputs));
 
     // Locktime
-    Bitcoin::encode32(lockTime, data);
+    encode32LE(lockTime, data);
 
     // ExpiryHeight
-    Bitcoin::encode32(expiryHeight, data);
+    encode32LE(expiryHeight, data);
 
     // ValueBalance
-    Bitcoin::encode64(valueBalance, data);
+    encode64LE(valueBalance, data);
 
     // Sighash type
-    Bitcoin::encode32(hashType, data);
+    encode32LE(hashType, data);
 
     // The input being signed (replacing the scriptSig with scriptCode + amount)
     // The prevout may already be contained in hashPrevout, and the nSequence
@@ -95,8 +95,8 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, int index, uint
     reinterpret_cast<const TW::Bitcoin::OutPoint&>(inputs[index].previousOutput).encode(data);
     scriptCode.encode(data);
 
-    Bitcoin::encode64(amount, data);
-    Bitcoin::encode32(inputs[index].sequence, data);
+    encode64LE(amount, data);
+    encode32LE(inputs[index].sequence, data);
 
     return data;
 }
@@ -114,7 +114,7 @@ Data Transaction::getPrevoutHash() const {
 Data Transaction::getSequenceHash() const {
     auto data = Data{};
     for (auto& input : inputs) {
-        Bitcoin::encode32(input.sequence, data);
+        encode32LE(input.sequence, data);
     }
     auto hash = TW::Hash::blake2b(data, 32, sequenceHashPersonalization);
     return hash;
@@ -145,31 +145,31 @@ Data Transaction::getShieldedOutputsHash() const {
 }
 
 void Transaction::encode(Data& data) const {
-    Bitcoin::encode32(version, data);
-    Bitcoin::encode32(versionGroupId, data);
+    encode32LE(version, data);
+    encode32LE(versionGroupId, data);
 
     // vin
-    Bitcoin::writeCompactSize(inputs.size(), data);
+    writeCompactSize(inputs.size(), data);
     for (auto& input : inputs) {
         input.encode(data);
     }
 
     // vout
-    Bitcoin::writeCompactSize(outputs.size(), data);
+    writeCompactSize(outputs.size(), data);
     for (auto& output : outputs) {
         output.encode(data);
     }
 
-    Bitcoin::encode32(lockTime, data);
-    Bitcoin::encode32(expiryHeight, data);
-    Bitcoin::encode64(valueBalance, data);
+    encode32LE(lockTime, data);
+    encode32LE(expiryHeight, data);
+    encode64LE(valueBalance, data);
 
     // vShieldedSpend
-    Bitcoin::writeCompactSize(0, data);
+    writeCompactSize(0, data);
     // vShieldedOutput
-    Bitcoin::writeCompactSize(0, data);
+    writeCompactSize(0, data);
     // vJoinSplit
-    Bitcoin::writeCompactSize(0, data);
+    writeCompactSize(0, data);
 }
 
 Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType, uint64_t amount, TWBitcoinSignatureVersion version) const {
