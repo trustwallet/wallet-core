@@ -68,6 +68,5 @@ TEST(TWTezosForger, ForgeTransactionOperation) {
   auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0108000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
 
   auto output = forgeOperation(transactionOperation);
-
   ASSERT_EQ(output, expected);
 }

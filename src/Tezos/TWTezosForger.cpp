@@ -33,16 +33,6 @@ int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint
   return outputLength;
 }
 
-// Convert the given byte buffer to a hex string.
-// TODO: Figure out how to use TrustCore's hex functions.
-std::string hexStr(uint8_t *data, int len) {
-  std::stringstream ss;
-  ss<<std::hex;
-  for(int i(0);i<len;++i)
-    ss<<(int)data[i];
-  return ss.str();
-}
-
 // Forge the given branch to a hex encoded string.
 std::string forgeBranch(const std::string branch) {
   size_t capacity = 128;
@@ -77,7 +67,7 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
 
   int decodedLength = checkDecodeAndDropPrefix(publicKeyHash, prefixLength, prefix, decoded);
 
-  std::string result = "01";
+  std::string result = "00";
   result += TW::hex(decoded, decoded + decodedLength);
   return result;
 }
@@ -115,14 +105,18 @@ std::string forgeZarith(int input) {
       if (input < 16) {
         result += "0";
       }
-      result += input; // TODO: encode input to hex.
+      std::stringstream ss;
+      ss << std::hex << input;
+      result += ss.str();
       break;
     } else {
       int b = input % 128;
       input -= b;
       input /= 128;
       b += 128;
-      result += b; // TODO: encode b to hex.
+      std::stringstream ss;
+      ss << std::hex << b;
+      result += ss.str();
     }
   }
   return result;
