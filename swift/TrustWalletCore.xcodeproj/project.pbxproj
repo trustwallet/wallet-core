@@ -206,10 +206,7 @@
 		61735C83219DF044007BF637 /* TrustWalletCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 61735ACD219DF044007BF637 /* TrustWalletCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61735C84219DF044007BF637 /* PrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61735AD1219DF044007BF637 /* PrivateKey.swift */; };
 		61735C88219DF64D007BF637 /* SecRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 61735C87219DF64D007BF637 /* SecRandom.m */; };
-		61735C90219E1658007BF637 /* UInt256.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61735C8F219E1658007BF637 /* UInt256.swift */; };
-		61735C98219E1A81007BF637 /* UInt256Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61735C97219E1A81007BF637 /* UInt256Tests.swift */; };
 		61735C9A219E1A81007BF637 /* TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61CDEB9B219B36C700CDFE83 /* TrustWalletCore.framework */; };
-		61735CA3219E311C007BF637 /* TWUInt256.h in Headers */ = {isa = PBXBuildFile; fileRef = 61735CA2219E311C007BF637 /* TWUInt256.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61735CB921A33D47007BF637 /* TWHash.h in Headers */ = {isa = PBXBuildFile; fileRef = 61735CB821A33D47007BF637 /* TWHash.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61735CC721A382C7007BF637 /* TWPublicKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 61735CC521A382C7007BF637 /* TWPublicKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61735CD421A3BFB0007BF637 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61735CD221A3BF69007BF637 /* PublicKey.swift */; };
@@ -245,7 +242,6 @@
 		61A9B3652200D86D00E601B3 /* TendermintAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B3642200D86D00E601B3 /* TendermintAddress.swift */; };
 		61A9B3672200D87F00E601B3 /* TWTendermintAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A9B3662200D87F00E601B3 /* TWTendermintAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61A9B36D2202582700E601B3 /* TWEthereumChainID.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A9B36C2202582700E601B3 /* TWEthereumChainID.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		61A9B64422026E0800E601B3 /* TWUInt256.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B64322026E0800E601B3 /* TWUInt256.cpp */; };
 		61AAD39B21DEF6D300B69A34 /* TWBase58.h in Headers */ = {isa = PBXBuildFile; fileRef = 61AAD39A21DEF6D300B69A34 /* TWBase58.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61AAD3A021DEF6EB00B69A34 /* HexCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 61AAD39D21DEF6EB00B69A34 /* HexCoding.h */; };
 		61AAD3A321DEF70800B69A34 /* TWBase58.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61AAD3A221DEF70800B69A34 /* TWBase58.cpp */; };
@@ -463,6 +459,7 @@
 		BB2E390B21F6EF17002A5139 /* TWZcashTAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BB2E390A21F6EF17002A5139 /* TWZcashTAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BB3F05B2220BD93E008C6971 /* TAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB3F05B0220BD93E008C6971 /* TAddress.cpp */; };
 		BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BB3F05B1220BD93E008C6971 /* TAddress.h */; };
+		BB4C2C28222CF8EA00BF42BB /* EthereumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */; };
 		BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */; };
 		BBA9012121FDAE4200D2CEF7 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */; };
 /* End PBXBuildFile section */
@@ -671,11 +668,8 @@
 		61735AD2219DF044007BF637 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61735C86219DF242007BF637 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		61735C87219DF64D007BF637 /* SecRandom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecRandom.m; sourceTree = "<group>"; };
-		61735C8F219E1658007BF637 /* UInt256.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt256.swift; sourceTree = "<group>"; };
 		61735C95219E1A81007BF637 /* TrustWalletCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrustWalletCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		61735C97219E1A81007BF637 /* UInt256Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt256Tests.swift; sourceTree = "<group>"; };
 		61735C99219E1A81007BF637 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		61735CA2219E311C007BF637 /* TWUInt256.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWUInt256.h; sourceTree = "<group>"; };
 		61735CB821A33D47007BF637 /* TWHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWHash.h; sourceTree = "<group>"; };
 		61735CC521A382C7007BF637 /* TWPublicKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TWPublicKey.h; sourceTree = "<group>"; };
 		61735CD221A3BF69007BF637 /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
@@ -744,7 +738,6 @@
 		61A9B3642200D86D00E601B3 /* TendermintAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TendermintAddress.swift; sourceTree = "<group>"; };
 		61A9B3662200D87F00E601B3 /* TWTendermintAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTendermintAddress.h; sourceTree = "<group>"; };
 		61A9B36C2202582700E601B3 /* TWEthereumChainID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWEthereumChainID.h; sourceTree = "<group>"; };
-		61A9B64322026E0800E601B3 /* TWUInt256.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWUInt256.cpp; sourceTree = "<group>"; };
 		61AAD39A21DEF6D300B69A34 /* TWBase58.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBase58.h; sourceTree = "<group>"; };
 		61AAD39D21DEF6EB00B69A34 /* HexCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HexCoding.h; sourceTree = "<group>"; };
 		61AAD3A221DEF70800B69A34 /* TWBase58.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWBase58.cpp; sourceTree = "<group>"; };
@@ -1001,6 +994,7 @@
 		BB2E390A21F6EF17002A5139 /* TWZcashTAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWZcashTAddress.h; sourceTree = "<group>"; };
 		BB3F05B0220BD93E008C6971 /* TAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TAddress.cpp; sourceTree = "<group>"; };
 		BB3F05B1220BD93E008C6971 /* TAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAddress.h; sourceTree = "<group>"; };
+		BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTests.swift; sourceTree = "<group>"; };
 		BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZcashTAddress.swift; sourceTree = "<group>"; };
 		BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transaction.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1146,7 +1140,6 @@
 				61A9B3662200D87F00E601B3 /* TWTendermintAddress.h */,
 				61C4E8B42225C3A20020A917 /* TWTronProto.h */,
 				61C4E8B32225C3A20020A917 /* TWTronSigner.h */,
-				61735CA2219E311C007BF637 /* TWUInt256.h */,
 				61FE4B2B22208DED00C65017 /* TWVeChainProto.h */,
 				61FE4B2C22208DED00C65017 /* TWVeChainSigner.h */,
 				61FE4B1E221F732C00C65017 /* TWWanchainSigner.h */,
@@ -1379,7 +1372,6 @@
 				61E813EF2227585900D4D2C9 /* PublicKeyTests.swift */,
 				61E813F12227586800D4D2C9 /* PurposeTests.swift */,
 				61E813F32227587600D4D2C9 /* SlipTests.swift */,
-				61735C97219E1A81007BF637 /* UInt256Tests.swift */,
 				61C4E904222613DC0020A917 /* Addresses */,
 				61C4E905222613E70020A917 /* Blockchains */,
 			);
@@ -1440,7 +1432,6 @@
 				61A9B3642200D86D00E601B3 /* TendermintAddress.swift */,
 				61C4E8B02225C3940020A917 /* Tron.pb.swift */,
 				61C4E8AF2225C3930020A917 /* TronSigner.swift */,
-				61735C8F219E1658007BF637 /* UInt256.swift */,
 				61FE4B3F22208E1C00C65017 /* VeChain.pb.swift */,
 				61FE4B3E22208E1C00C65017 /* VeChainSigner.swift */,
 				61FE4B20221F733E00C65017 /* WanchainSigner.swift */,
@@ -1540,7 +1531,6 @@
 				61B159B521CC5DBB00CFE93B /* TWString+Hex.cpp */,
 				61722BFB220E461A00D7BA9A /* TWTendermintAddress.cpp */,
 				61C4E8B72225C3B70020A917 /* TWTronSigner.cpp */,
-				61A9B64322026E0800E601B3 /* TWUInt256.cpp */,
 				61FE4B3C22208E0F00C65017 /* TWVeChainSigner.cpp */,
 				61FE4B22221F734C00C65017 /* TWWanchainSigner.cpp */,
 				61722BFD220E461A00D7BA9A /* TWZcashTAddress.cpp */,
@@ -1647,6 +1637,7 @@
 				61C4E9122226144E0020A917 /* BitconCashTests.swift */,
 				61E813DB2227526600D4D2C9 /* DashTests.swift */,
 				61C4E90A222614200020A917 /* EOSTests.swift */,
+				BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */,
 				61C4E914222614590020A917 /* LitecoinTests.swift */,
 				BB21105F221C03D500571DF7 /* RippleTests.swift */,
 				61C4E90E222614310020A917 /* TronTests.swift */,
@@ -2059,7 +2050,6 @@
 				61E813D12227213500D4D2C9 /* Icon.pb.h in Headers */,
 				61735C1C219DF044007BF637 /* ed25519-hash-custom-keccak.h in Headers */,
 				61735B06219DF044007BF637 /* nem.h in Headers */,
-				61735CA3219E311C007BF637 /* TWUInt256.h in Headers */,
 				61CABACE21ED781B0086D9A0 /* TWPurpose.h in Headers */,
 				61722BF8220E45BA00D7BA9A /* Bitcoin.pb.h in Headers */,
 			);
@@ -2271,7 +2261,6 @@
 				61C4E921222615120020A917 /* TronAddressTests.swift in Sources */,
 				61C4E922222615120020A917 /* WanchainAddressTests.swift in Sources */,
 				61C4E91B2226150F0020A917 /* EOSTests.swift in Sources */,
-				61735C98219E1A81007BF637 /* UInt256Tests.swift in Sources */,
 				61C4E91C2226150F0020A917 /* LitecoinTests.swift in Sources */,
 				61C4E91D2226150F0020A917 /* TronTests.swift in Sources */,
 				6198EA8021B6BFC9008CB60A /* DataTests.swift in Sources */,
@@ -2280,6 +2269,7 @@
 				61C4E91E2226150F0020A917 /* WanchainTests.swift in Sources */,
 				61E81434222758E100D4D2C9 /* PublicKeyTests.swift in Sources */,
 				61E81432222758E100D4D2C9 /* PrivateKeyTests.swift in Sources */,
+				BB4C2C28222CF8EA00BF42BB /* EthereumTests.swift in Sources */,
 				61C4E91F2226150F0020A917 /* ZcoinTests.swift in Sources */,
 				616D0413220A6C5B00A776E8 /* BitcoinTransactionSignerTests.swift in Sources */,
 				61E813E82227535A00D4D2C9 /* ZcashTests.swift in Sources */,
@@ -2394,7 +2384,6 @@
 				61735C0E219DF044007BF637 /* ed25519-donna-32bit-tables.c in Sources */,
 				61735C15219DF044007BF637 /* ed25519-sha3.c in Sources */,
 				61B159D221CC5DBB00CFE93B /* TransactionOutput.cpp in Sources */,
-				61A9B64422026E0800E601B3 /* TWUInt256.cpp in Sources */,
 				61C4E924222615300020A917 /* PrivateKey+Bitcoin.swift in Sources */,
 				61C4E8EF22260B150020A917 /* Zcoin.swift in Sources */,
 				61735C69219DF044007BF637 /* aeskey.c in Sources */,
@@ -2424,7 +2413,6 @@
 				61A9B3522200103000E601B3 /* Transaction.cpp in Sources */,
 				61E44461221CD49E006A4FF1 /* Signer.cpp in Sources */,
 				61B159E221CC5DBB00CFE93B /* TWPublicKey.cpp in Sources */,
-				61735C90219E1658007BF637 /* UInt256.swift in Sources */,
 				BB2422E022217B58000663D0 /* Transaction.cpp in Sources */,
 				61C4E8E722260B150020A917 /* Zcash.swift in Sources */,
 				61C4E8C32225C3C50020A917 /* TronInternal.pb.cc in Sources */,

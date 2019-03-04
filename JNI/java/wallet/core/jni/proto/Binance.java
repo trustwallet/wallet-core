@@ -123,7 +123,6 @@ public final class Binance {
       msgs_ = java.util.Collections.emptyList();
       signatures_ = java.util.Collections.emptyList();
       memo_ = "";
-      source_ = 0L;
       data_ = com.google.protobuf.ByteString.EMPTY;
     }
 
@@ -152,7 +151,7 @@ public final class Binance {
               done = true;
               break;
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 msgs_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
                 mutable_bitField0_ |= 0x00000001;
               }
@@ -160,7 +159,7 @@ public final class Binance {
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 signatures_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
                 mutable_bitField0_ |= 0x00000002;
               }
@@ -184,7 +183,7 @@ public final class Binance {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -198,11 +197,11 @@ public final class Binance {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          msgs_ = java.util.Collections.unmodifiableList(msgs_);
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          msgs_ = java.util.Collections.unmodifiableList(msgs_); // C
         }
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          signatures_ = java.util.Collections.unmodifiableList(signatures_);
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
+          signatures_ = java.util.Collections.unmodifiableList(signatures_); // C
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -443,19 +442,18 @@ public final class Binance {
       }
       wallet.core.jni.proto.Binance.Transaction other = (wallet.core.jni.proto.Binance.Transaction) obj;
 
-      boolean result = true;
-      result = result && getMsgsList()
-          .equals(other.getMsgsList());
-      result = result && getSignaturesList()
-          .equals(other.getSignaturesList());
-      result = result && getMemo()
-          .equals(other.getMemo());
-      result = result && (getSource()
-          == other.getSource());
-      result = result && getData()
-          .equals(other.getData());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getMsgsList()
+          .equals(other.getMsgsList())) return false;
+      if (!getSignaturesList()
+          .equals(other.getSignaturesList())) return false;
+      if (!getMemo()
+          .equals(other.getMemo())) return false;
+      if (getSource()
+          != other.getSource()) return false;
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -651,12 +649,12 @@ public final class Binance {
         wallet.core.jni.proto.Binance.Transaction result = new wallet.core.jni.proto.Binance.Transaction(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((bitField0_ & 0x00000001) != 0)) {
           msgs_ = java.util.Collections.unmodifiableList(msgs_);
           bitField0_ = (bitField0_ & ~0x00000001);
         }
         result.msgs_ = msgs_;
-        if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((bitField0_ & 0x00000002) != 0)) {
           signatures_ = java.util.Collections.unmodifiableList(signatures_);
           bitField0_ = (bitField0_ & ~0x00000002);
         }
@@ -671,35 +669,35 @@ public final class Binance {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -775,7 +773,7 @@ public final class Binance {
 
       private java.util.List<com.google.protobuf.ByteString> msgs_ = java.util.Collections.emptyList();
       private void ensureMsgsIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           msgs_ = new java.util.ArrayList<com.google.protobuf.ByteString>(msgs_);
           bitField0_ |= 0x00000001;
          }
@@ -790,7 +788,8 @@ public final class Binance {
        */
       public java.util.List<com.google.protobuf.ByteString>
           getMsgsList() {
-        return java.util.Collections.unmodifiableList(msgs_);
+        return ((bitField0_ & 0x00000001) != 0) ?
+                 java.util.Collections.unmodifiableList(msgs_) : msgs_;
       }
       /**
        * <pre>
@@ -882,7 +881,7 @@ public final class Binance {
 
       private java.util.List<com.google.protobuf.ByteString> signatures_ = java.util.Collections.emptyList();
       private void ensureSignaturesIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           signatures_ = new java.util.ArrayList<com.google.protobuf.ByteString>(signatures_);
           bitField0_ |= 0x00000002;
          }
@@ -896,7 +895,8 @@ public final class Binance {
        */
       public java.util.List<com.google.protobuf.ByteString>
           getSignaturesList() {
-        return java.util.Collections.unmodifiableList(signatures_);
+        return ((bitField0_ & 0x00000002) != 0) ?
+                 java.util.Collections.unmodifiableList(signatures_) : signatures_;
       }
       /**
        * <pre>
@@ -1150,7 +1150,7 @@ public final class Binance {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1255,8 +1255,6 @@ public final class Binance {
     private Signature() {
       pubKey_ = com.google.protobuf.ByteString.EMPTY;
       signature_ = com.google.protobuf.ByteString.EMPTY;
-      accountNumber_ = 0L;
-      sequence_ = 0L;
     }
 
     @java.lang.Override
@@ -1304,7 +1302,7 @@ public final class Binance {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1383,7 +1381,7 @@ public final class Binance {
                 done = true;
                 break;
               default: {
-                if (!parseUnknownFieldProto3(
+                if (!parseUnknownField(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -1452,9 +1450,8 @@ public final class Binance {
         }
         wallet.core.jni.proto.Binance.Signature.PubKey other = (wallet.core.jni.proto.Binance.Signature.PubKey) obj;
 
-        boolean result = true;
-        result = result && unknownFields.equals(other.unknownFields);
-        return result;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
       }
 
       @java.lang.Override
@@ -1634,35 +1631,35 @@ public final class Binance {
 
         @java.lang.Override
         public Builder clone() {
-          return (Builder) super.clone();
+          return super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.setField(field, value);
+          return super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return (Builder) super.clearField(field);
+          return super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return (Builder) super.clearOneof(oneof);
+          return super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return (Builder) super.setRepeatedField(field, index, value);
+          return super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.addRepeatedField(field, value);
+          return super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1707,7 +1704,7 @@ public final class Binance {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFieldsProto3(unknownFields);
+          return super.setUnknownFields(unknownFields);
         }
 
         @java.lang.Override
@@ -1875,17 +1872,16 @@ public final class Binance {
       }
       wallet.core.jni.proto.Binance.Signature other = (wallet.core.jni.proto.Binance.Signature) obj;
 
-      boolean result = true;
-      result = result && getPubKey()
-          .equals(other.getPubKey());
-      result = result && getSignature()
-          .equals(other.getSignature());
-      result = result && (getAccountNumber()
-          == other.getAccountNumber());
-      result = result && (getSequence()
-          == other.getSequence());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getPubKey()
+          .equals(other.getPubKey())) return false;
+      if (!getSignature()
+          .equals(other.getSignature())) return false;
+      if (getAccountNumber()
+          != other.getAccountNumber()) return false;
+      if (getSequence()
+          != other.getSequence()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -2082,35 +2078,35 @@ public final class Binance {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2325,7 +2321,7 @@ public final class Binance {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -2485,11 +2481,6 @@ public final class Binance {
       sender_ = com.google.protobuf.ByteString.EMPTY;
       id_ = "";
       symbol_ = "";
-      ordertype_ = 0L;
-      side_ = 0L;
-      price_ = 0L;
-      quantity_ = 0L;
-      timeinforce_ = 0L;
     }
 
     @java.lang.Override
@@ -2559,7 +2550,7 @@ public final class Binance {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -2844,25 +2835,24 @@ public final class Binance {
       }
       wallet.core.jni.proto.Binance.TradeOrder other = (wallet.core.jni.proto.Binance.TradeOrder) obj;
 
-      boolean result = true;
-      result = result && getSender()
-          .equals(other.getSender());
-      result = result && getId()
-          .equals(other.getId());
-      result = result && getSymbol()
-          .equals(other.getSymbol());
-      result = result && (getOrdertype()
-          == other.getOrdertype());
-      result = result && (getSide()
-          == other.getSide());
-      result = result && (getPrice()
-          == other.getPrice());
-      result = result && (getQuantity()
-          == other.getQuantity());
-      result = result && (getTimeinforce()
-          == other.getTimeinforce());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getSender()
+          .equals(other.getSender())) return false;
+      if (!getId()
+          .equals(other.getId())) return false;
+      if (!getSymbol()
+          .equals(other.getSymbol())) return false;
+      if (getOrdertype()
+          != other.getOrdertype()) return false;
+      if (getSide()
+          != other.getSide()) return false;
+      if (getPrice()
+          != other.getPrice()) return false;
+      if (getQuantity()
+          != other.getQuantity()) return false;
+      if (getTimeinforce()
+          != other.getTimeinforce()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -3082,35 +3072,35 @@ public final class Binance {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3590,7 +3580,7 @@ public final class Binance {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -3749,7 +3739,7 @@ public final class Binance {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -3934,15 +3924,14 @@ public final class Binance {
       }
       wallet.core.jni.proto.Binance.CancelTradeOrder other = (wallet.core.jni.proto.Binance.CancelTradeOrder) obj;
 
-      boolean result = true;
-      result = result && getSender()
-          .equals(other.getSender());
-      result = result && getSymbol()
-          .equals(other.getSymbol());
-      result = result && getRefid()
-          .equals(other.getRefid());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getSender()
+          .equals(other.getSender())) return false;
+      if (!getSymbol()
+          .equals(other.getSymbol())) return false;
+      if (!getRefid()
+          .equals(other.getRefid())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -4132,35 +4121,35 @@ public final class Binance {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -4435,7 +4424,7 @@ public final class Binance {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -4579,7 +4568,7 @@ public final class Binance {
               done = true;
               break;
             case 10: {
-              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
                 inputs_ = new java.util.ArrayList<wallet.core.jni.proto.Binance.SendOrder.Input>();
                 mutable_bitField0_ |= 0x00000001;
               }
@@ -4588,7 +4577,7 @@ public final class Binance {
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 outputs_ = new java.util.ArrayList<wallet.core.jni.proto.Binance.SendOrder.Output>();
                 mutable_bitField0_ |= 0x00000002;
               }
@@ -4597,7 +4586,7 @@ public final class Binance {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -4611,10 +4600,10 @@ public final class Binance {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
           inputs_ = java.util.Collections.unmodifiableList(inputs_);
         }
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           outputs_ = java.util.Collections.unmodifiableList(outputs_);
         }
         this.unknownFields = unknownFields.build();
@@ -4671,7 +4660,6 @@ public final class Binance {
       }
       private Token() {
         denom_ = "";
-        amount_ = 0L;
       }
 
       @java.lang.Override
@@ -4710,7 +4698,7 @@ public final class Binance {
                 break;
               }
               default: {
-                if (!parseUnknownFieldProto3(
+                if (!parseUnknownField(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -4835,13 +4823,12 @@ public final class Binance {
         }
         wallet.core.jni.proto.Binance.SendOrder.Token other = (wallet.core.jni.proto.Binance.SendOrder.Token) obj;
 
-        boolean result = true;
-        result = result && getDenom()
-            .equals(other.getDenom());
-        result = result && (getAmount()
-            == other.getAmount());
-        result = result && unknownFields.equals(other.unknownFields);
-        return result;
+        if (!getDenom()
+            .equals(other.getDenom())) return false;
+        if (getAmount()
+            != other.getAmount()) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
       }
 
       @java.lang.Override
@@ -5031,35 +5018,35 @@ public final class Binance {
 
         @java.lang.Override
         public Builder clone() {
-          return (Builder) super.clone();
+          return super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.setField(field, value);
+          return super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return (Builder) super.clearField(field);
+          return super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return (Builder) super.clearOneof(oneof);
+          return super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return (Builder) super.setRepeatedField(field, index, value);
+          return super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.addRepeatedField(field, value);
+          return super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5206,7 +5193,7 @@ public final class Binance {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFieldsProto3(unknownFields);
+          return super.setUnknownFields(unknownFields);
         }
 
         @java.lang.Override
@@ -5336,7 +5323,7 @@ public final class Binance {
                 break;
               }
               case 18: {
-                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                   coins_ = new java.util.ArrayList<wallet.core.jni.proto.Binance.SendOrder.Token>();
                   mutable_bitField0_ |= 0x00000002;
                 }
@@ -5345,7 +5332,7 @@ public final class Binance {
                 break;
               }
               default: {
-                if (!parseUnknownFieldProto3(
+                if (!parseUnknownField(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -5359,7 +5346,7 @@ public final class Binance {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((mutable_bitField0_ & 0x00000002) != 0)) {
             coins_ = java.util.Collections.unmodifiableList(coins_);
           }
           this.unknownFields = unknownFields.build();
@@ -5476,13 +5463,12 @@ public final class Binance {
         }
         wallet.core.jni.proto.Binance.SendOrder.Input other = (wallet.core.jni.proto.Binance.SendOrder.Input) obj;
 
-        boolean result = true;
-        result = result && getAddress()
-            .equals(other.getAddress());
-        result = result && getCoinsList()
-            .equals(other.getCoinsList());
-        result = result && unknownFields.equals(other.unknownFields);
-        return result;
+        if (!getAddress()
+            .equals(other.getAddress())) return false;
+        if (!getCoinsList()
+            .equals(other.getCoinsList())) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
       }
 
       @java.lang.Override
@@ -5670,7 +5656,7 @@ public final class Binance {
           int to_bitField0_ = 0;
           result.address_ = address_;
           if (coinsBuilder_ == null) {
-            if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            if (((bitField0_ & 0x00000002) != 0)) {
               coins_ = java.util.Collections.unmodifiableList(coins_);
               bitField0_ = (bitField0_ & ~0x00000002);
             }
@@ -5685,35 +5671,35 @@ public final class Binance {
 
         @java.lang.Override
         public Builder clone() {
-          return (Builder) super.clone();
+          return super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.setField(field, value);
+          return super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return (Builder) super.clearField(field);
+          return super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return (Builder) super.clearOneof(oneof);
+          return super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return (Builder) super.setRepeatedField(field, index, value);
+          return super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.addRepeatedField(field, value);
+          return super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -5818,7 +5804,7 @@ public final class Binance {
         private java.util.List<wallet.core.jni.proto.Binance.SendOrder.Token> coins_ =
           java.util.Collections.emptyList();
         private void ensureCoinsIsMutable() {
-          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (!((bitField0_ & 0x00000002) != 0)) {
             coins_ = new java.util.ArrayList<wallet.core.jni.proto.Binance.SendOrder.Token>(coins_);
             bitField0_ |= 0x00000002;
            }
@@ -6047,7 +6033,7 @@ public final class Binance {
             coinsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 wallet.core.jni.proto.Binance.SendOrder.Token, wallet.core.jni.proto.Binance.SendOrder.Token.Builder, wallet.core.jni.proto.Binance.SendOrder.TokenOrBuilder>(
                     coins_,
-                    ((bitField0_ & 0x00000002) == 0x00000002),
+                    ((bitField0_ & 0x00000002) != 0),
                     getParentForChildren(),
                     isClean());
             coins_ = null;
@@ -6057,7 +6043,7 @@ public final class Binance {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFieldsProto3(unknownFields);
+          return super.setUnknownFields(unknownFields);
         }
 
         @java.lang.Override
@@ -6187,7 +6173,7 @@ public final class Binance {
                 break;
               }
               case 18: {
-                if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                   coins_ = new java.util.ArrayList<wallet.core.jni.proto.Binance.SendOrder.Token>();
                   mutable_bitField0_ |= 0x00000002;
                 }
@@ -6196,7 +6182,7 @@ public final class Binance {
                 break;
               }
               default: {
-                if (!parseUnknownFieldProto3(
+                if (!parseUnknownField(
                     input, unknownFields, extensionRegistry, tag)) {
                   done = true;
                 }
@@ -6210,7 +6196,7 @@ public final class Binance {
           throw new com.google.protobuf.InvalidProtocolBufferException(
               e).setUnfinishedMessage(this);
         } finally {
-          if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((mutable_bitField0_ & 0x00000002) != 0)) {
             coins_ = java.util.Collections.unmodifiableList(coins_);
           }
           this.unknownFields = unknownFields.build();
@@ -6327,13 +6313,12 @@ public final class Binance {
         }
         wallet.core.jni.proto.Binance.SendOrder.Output other = (wallet.core.jni.proto.Binance.SendOrder.Output) obj;
 
-        boolean result = true;
-        result = result && getAddress()
-            .equals(other.getAddress());
-        result = result && getCoinsList()
-            .equals(other.getCoinsList());
-        result = result && unknownFields.equals(other.unknownFields);
-        return result;
+        if (!getAddress()
+            .equals(other.getAddress())) return false;
+        if (!getCoinsList()
+            .equals(other.getCoinsList())) return false;
+        if (!unknownFields.equals(other.unknownFields)) return false;
+        return true;
       }
 
       @java.lang.Override
@@ -6521,7 +6506,7 @@ public final class Binance {
           int to_bitField0_ = 0;
           result.address_ = address_;
           if (coinsBuilder_ == null) {
-            if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            if (((bitField0_ & 0x00000002) != 0)) {
               coins_ = java.util.Collections.unmodifiableList(coins_);
               bitField0_ = (bitField0_ & ~0x00000002);
             }
@@ -6536,35 +6521,35 @@ public final class Binance {
 
         @java.lang.Override
         public Builder clone() {
-          return (Builder) super.clone();
+          return super.clone();
         }
         @java.lang.Override
         public Builder setField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.setField(field, value);
+          return super.setField(field, value);
         }
         @java.lang.Override
         public Builder clearField(
             com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return (Builder) super.clearField(field);
+          return super.clearField(field);
         }
         @java.lang.Override
         public Builder clearOneof(
             com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return (Builder) super.clearOneof(oneof);
+          return super.clearOneof(oneof);
         }
         @java.lang.Override
         public Builder setRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             int index, java.lang.Object value) {
-          return (Builder) super.setRepeatedField(field, index, value);
+          return super.setRepeatedField(field, index, value);
         }
         @java.lang.Override
         public Builder addRepeatedField(
             com.google.protobuf.Descriptors.FieldDescriptor field,
             java.lang.Object value) {
-          return (Builder) super.addRepeatedField(field, value);
+          return super.addRepeatedField(field, value);
         }
         @java.lang.Override
         public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -6669,7 +6654,7 @@ public final class Binance {
         private java.util.List<wallet.core.jni.proto.Binance.SendOrder.Token> coins_ =
           java.util.Collections.emptyList();
         private void ensureCoinsIsMutable() {
-          if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (!((bitField0_ & 0x00000002) != 0)) {
             coins_ = new java.util.ArrayList<wallet.core.jni.proto.Binance.SendOrder.Token>(coins_);
             bitField0_ |= 0x00000002;
            }
@@ -6898,7 +6883,7 @@ public final class Binance {
             coinsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
                 wallet.core.jni.proto.Binance.SendOrder.Token, wallet.core.jni.proto.Binance.SendOrder.Token.Builder, wallet.core.jni.proto.Binance.SendOrder.TokenOrBuilder>(
                     coins_,
-                    ((bitField0_ & 0x00000002) == 0x00000002),
+                    ((bitField0_ & 0x00000002) != 0),
                     getParentForChildren(),
                     isClean());
             coins_ = null;
@@ -6908,7 +6893,7 @@ public final class Binance {
         @java.lang.Override
         public final Builder setUnknownFields(
             final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFieldsProto3(unknownFields);
+          return super.setUnknownFields(unknownFields);
         }
 
         @java.lang.Override
@@ -7080,13 +7065,12 @@ public final class Binance {
       }
       wallet.core.jni.proto.Binance.SendOrder other = (wallet.core.jni.proto.Binance.SendOrder) obj;
 
-      boolean result = true;
-      result = result && getInputsList()
-          .equals(other.getInputsList());
-      result = result && getOutputsList()
-          .equals(other.getOutputsList());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getInputsList()
+          .equals(other.getInputsList())) return false;
+      if (!getOutputsList()
+          .equals(other.getOutputsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -7279,7 +7263,7 @@ public final class Binance {
         wallet.core.jni.proto.Binance.SendOrder result = new wallet.core.jni.proto.Binance.SendOrder(this);
         int from_bitField0_ = bitField0_;
         if (inputsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          if (((bitField0_ & 0x00000001) != 0)) {
             inputs_ = java.util.Collections.unmodifiableList(inputs_);
             bitField0_ = (bitField0_ & ~0x00000001);
           }
@@ -7288,7 +7272,7 @@ public final class Binance {
           result.inputs_ = inputsBuilder_.build();
         }
         if (outputsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             outputs_ = java.util.Collections.unmodifiableList(outputs_);
             bitField0_ = (bitField0_ & ~0x00000002);
           }
@@ -7302,35 +7286,35 @@ public final class Binance {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -7429,7 +7413,7 @@ public final class Binance {
       private java.util.List<wallet.core.jni.proto.Binance.SendOrder.Input> inputs_ =
         java.util.Collections.emptyList();
       private void ensureInputsIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+        if (!((bitField0_ & 0x00000001) != 0)) {
           inputs_ = new java.util.ArrayList<wallet.core.jni.proto.Binance.SendOrder.Input>(inputs_);
           bitField0_ |= 0x00000001;
          }
@@ -7658,7 +7642,7 @@ public final class Binance {
           inputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               wallet.core.jni.proto.Binance.SendOrder.Input, wallet.core.jni.proto.Binance.SendOrder.Input.Builder, wallet.core.jni.proto.Binance.SendOrder.InputOrBuilder>(
                   inputs_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
+                  ((bitField0_ & 0x00000001) != 0),
                   getParentForChildren(),
                   isClean());
           inputs_ = null;
@@ -7669,7 +7653,7 @@ public final class Binance {
       private java.util.List<wallet.core.jni.proto.Binance.SendOrder.Output> outputs_ =
         java.util.Collections.emptyList();
       private void ensureOutputsIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           outputs_ = new java.util.ArrayList<wallet.core.jni.proto.Binance.SendOrder.Output>(outputs_);
           bitField0_ |= 0x00000002;
          }
@@ -7898,7 +7882,7 @@ public final class Binance {
           outputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               wallet.core.jni.proto.Binance.SendOrder.Output, wallet.core.jni.proto.Binance.SendOrder.Output.Builder, wallet.core.jni.proto.Binance.SendOrder.OutputOrBuilder>(
                   outputs_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           outputs_ = null;
@@ -7908,7 +7892,7 @@ public final class Binance {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -8013,7 +7997,6 @@ public final class Binance {
     private TokenFreezeOrder() {
       from_ = com.google.protobuf.ByteString.EMPTY;
       symbol_ = "";
-      amount_ = 0L;
     }
 
     @java.lang.Override
@@ -8057,7 +8040,7 @@ public final class Binance {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -8214,15 +8197,14 @@ public final class Binance {
       }
       wallet.core.jni.proto.Binance.TokenFreezeOrder other = (wallet.core.jni.proto.Binance.TokenFreezeOrder) obj;
 
-      boolean result = true;
-      result = result && getFrom()
-          .equals(other.getFrom());
-      result = result && getSymbol()
-          .equals(other.getSymbol());
-      result = result && (getAmount()
-          == other.getAmount());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getFrom()
+          .equals(other.getFrom())) return false;
+      if (!getSymbol()
+          .equals(other.getSymbol())) return false;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -8413,35 +8395,35 @@ public final class Binance {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -8664,7 +8646,7 @@ public final class Binance {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -8769,7 +8751,6 @@ public final class Binance {
     private TokenUnfreezeOrder() {
       from_ = com.google.protobuf.ByteString.EMPTY;
       symbol_ = "";
-      amount_ = 0L;
     }
 
     @java.lang.Override
@@ -8813,7 +8794,7 @@ public final class Binance {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -8970,15 +8951,14 @@ public final class Binance {
       }
       wallet.core.jni.proto.Binance.TokenUnfreezeOrder other = (wallet.core.jni.proto.Binance.TokenUnfreezeOrder) obj;
 
-      boolean result = true;
-      result = result && getFrom()
-          .equals(other.getFrom());
-      result = result && getSymbol()
-          .equals(other.getSymbol());
-      result = result && (getAmount()
-          == other.getAmount());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getFrom()
+          .equals(other.getFrom())) return false;
+      if (!getSymbol()
+          .equals(other.getSymbol())) return false;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -9169,35 +9149,35 @@ public final class Binance {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -9420,7 +9400,7 @@ public final class Binance {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -9604,12 +9584,8 @@ public final class Binance {
     }
     private SigningInput() {
       chainId_ = "";
-      accountNumber_ = 0L;
-      sequence_ = 0L;
-      source_ = 0L;
       memo_ = "";
       privateKey_ = com.google.protobuf.ByteString.EMPTY;
-      testNet_ = false;
     }
 
     @java.lang.Override
@@ -9744,7 +9720,7 @@ public final class Binance {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -10182,50 +10158,47 @@ public final class Binance {
       }
       wallet.core.jni.proto.Binance.SigningInput other = (wallet.core.jni.proto.Binance.SigningInput) obj;
 
-      boolean result = true;
-      result = result && getChainId()
-          .equals(other.getChainId());
-      result = result && (getAccountNumber()
-          == other.getAccountNumber());
-      result = result && (getSequence()
-          == other.getSequence());
-      result = result && (getSource()
-          == other.getSource());
-      result = result && getMemo()
-          .equals(other.getMemo());
-      result = result && getPrivateKey()
-          .equals(other.getPrivateKey());
-      result = result && (getTestNet()
-          == other.getTestNet());
-      result = result && getOrderOneofCase().equals(
-          other.getOrderOneofCase());
-      if (!result) return false;
+      if (!getChainId()
+          .equals(other.getChainId())) return false;
+      if (getAccountNumber()
+          != other.getAccountNumber()) return false;
+      if (getSequence()
+          != other.getSequence()) return false;
+      if (getSource()
+          != other.getSource()) return false;
+      if (!getMemo()
+          .equals(other.getMemo())) return false;
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (getTestNet()
+          != other.getTestNet()) return false;
+      if (!getOrderOneofCase().equals(other.getOrderOneofCase())) return false;
       switch (orderOneofCase_) {
         case 8:
-          result = result && getTradeOrder()
-              .equals(other.getTradeOrder());
+          if (!getTradeOrder()
+              .equals(other.getTradeOrder())) return false;
           break;
         case 9:
-          result = result && getCancelTradeOrder()
-              .equals(other.getCancelTradeOrder());
+          if (!getCancelTradeOrder()
+              .equals(other.getCancelTradeOrder())) return false;
           break;
         case 10:
-          result = result && getSendOrder()
-              .equals(other.getSendOrder());
+          if (!getSendOrder()
+              .equals(other.getSendOrder())) return false;
           break;
         case 11:
-          result = result && getFreezeOrder()
-              .equals(other.getFreezeOrder());
+          if (!getFreezeOrder()
+              .equals(other.getFreezeOrder())) return false;
           break;
         case 12:
-          result = result && getUnfreezeOrder()
-              .equals(other.getUnfreezeOrder());
+          if (!getUnfreezeOrder()
+              .equals(other.getUnfreezeOrder())) return false;
           break;
         case 0:
         default:
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -10505,35 +10478,35 @@ public final class Binance {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -11592,7 +11565,7 @@ public final class Binance {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override

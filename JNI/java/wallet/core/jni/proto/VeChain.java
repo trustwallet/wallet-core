@@ -113,7 +113,7 @@ public final class VeChain {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -270,15 +270,14 @@ public final class VeChain {
       }
       wallet.core.jni.proto.VeChain.Clause other = (wallet.core.jni.proto.VeChain.Clause) obj;
 
-      boolean result = true;
-      result = result && getTo()
-          .equals(other.getTo());
-      result = result && getValue()
-          .equals(other.getValue());
-      result = result && getData()
-          .equals(other.getData());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getTo()
+          .equals(other.getTo())) return false;
+      if (!getValue()
+          .equals(other.getValue())) return false;
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -468,35 +467,35 @@ public final class VeChain {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -722,7 +721,7 @@ public final class VeChain {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -924,14 +923,8 @@ public final class VeChain {
       super(builder);
     }
     private SigningInput() {
-      chainTag_ = 0;
-      blockRef_ = 0L;
-      expiration_ = 0;
       clauses_ = java.util.Collections.emptyList();
-      gasPriceCoef_ = 0;
-      gas_ = 0L;
       dependsOn_ = com.google.protobuf.ByteString.EMPTY;
-      nonce_ = 0L;
       privateKey_ = com.google.protobuf.ByteString.EMPTY;
     }
 
@@ -975,7 +968,7 @@ public final class VeChain {
               break;
             }
             case 34: {
-              if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+              if (!((mutable_bitField0_ & 0x00000008) != 0)) {
                 clauses_ = new java.util.ArrayList<wallet.core.jni.proto.VeChain.Clause>();
                 mutable_bitField0_ |= 0x00000008;
               }
@@ -1009,7 +1002,7 @@ public final class VeChain {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1023,7 +1016,7 @@ public final class VeChain {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
+        if (((mutable_bitField0_ & 0x00000008) != 0)) {
           clauses_ = java.util.Collections.unmodifiableList(clauses_);
         }
         this.unknownFields = unknownFields.build();
@@ -1319,27 +1312,26 @@ public final class VeChain {
       }
       wallet.core.jni.proto.VeChain.SigningInput other = (wallet.core.jni.proto.VeChain.SigningInput) obj;
 
-      boolean result = true;
-      result = result && (getChainTag()
-          == other.getChainTag());
-      result = result && (getBlockRef()
-          == other.getBlockRef());
-      result = result && (getExpiration()
-          == other.getExpiration());
-      result = result && getClausesList()
-          .equals(other.getClausesList());
-      result = result && (getGasPriceCoef()
-          == other.getGasPriceCoef());
-      result = result && (getGas()
-          == other.getGas());
-      result = result && getDependsOn()
-          .equals(other.getDependsOn());
-      result = result && (getNonce()
-          == other.getNonce());
-      result = result && getPrivateKey()
-          .equals(other.getPrivateKey());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getChainTag()
+          != other.getChainTag()) return false;
+      if (getBlockRef()
+          != other.getBlockRef()) return false;
+      if (getExpiration()
+          != other.getExpiration()) return false;
+      if (!getClausesList()
+          .equals(other.getClausesList())) return false;
+      if (getGasPriceCoef()
+          != other.getGasPriceCoef()) return false;
+      if (getGas()
+          != other.getGas()) return false;
+      if (!getDependsOn()
+          .equals(other.getDependsOn())) return false;
+      if (getNonce()
+          != other.getNonce()) return false;
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1564,7 +1556,7 @@ public final class VeChain {
         result.blockRef_ = blockRef_;
         result.expiration_ = expiration_;
         if (clausesBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             clauses_ = java.util.Collections.unmodifiableList(clauses_);
             bitField0_ = (bitField0_ & ~0x00000008);
           }
@@ -1584,35 +1576,35 @@ public final class VeChain {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1823,7 +1815,7 @@ public final class VeChain {
       private java.util.List<wallet.core.jni.proto.VeChain.Clause> clauses_ =
         java.util.Collections.emptyList();
       private void ensureClausesIsMutable() {
-        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           clauses_ = new java.util.ArrayList<wallet.core.jni.proto.VeChain.Clause>(clauses_);
           bitField0_ |= 0x00000008;
          }
@@ -2178,7 +2170,7 @@ public final class VeChain {
           clausesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               wallet.core.jni.proto.VeChain.Clause, wallet.core.jni.proto.VeChain.Clause.Builder, wallet.core.jni.proto.VeChain.ClauseOrBuilder>(
                   clauses_,
-                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           clauses_ = null;
@@ -2384,7 +2376,7 @@ public final class VeChain {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -2512,7 +2504,7 @@ public final class VeChain {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -2621,13 +2613,12 @@ public final class VeChain {
       }
       wallet.core.jni.proto.VeChain.SigningOutput other = (wallet.core.jni.proto.VeChain.SigningOutput) obj;
 
-      boolean result = true;
-      result = result && getEncoded()
-          .equals(other.getEncoded());
-      result = result && getSignature()
-          .equals(other.getSignature());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getEncoded()
+          .equals(other.getEncoded())) return false;
+      if (!getSignature()
+          .equals(other.getSignature())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -2816,35 +2807,35 @@ public final class VeChain {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2977,7 +2968,7 @@ public final class VeChain {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
