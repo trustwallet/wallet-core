@@ -14,11 +14,11 @@ TEST(TWTezosForger, ForgeBranch) {
   
   auto output = forgeBranch(input);
 
-  ASSERT_EQ(ouput, expected)
+  ASSERT_EQ(output, expected);
 }
 
 TEST(TWTezosForger, ForgeBoolTrue) {
-  auto expected = "00";
+  auto expected = "ff";
   
   auto output = forgeBool(true);
   
@@ -26,7 +26,7 @@ TEST(TWTezosForger, ForgeBoolTrue) {
 }
 
 TEST(TWTezosForger, ForgeBoolFalse) {
-  auto expected = "FF";
+  auto expected = "00";
   
   auto output = forgeBool(false);
 
