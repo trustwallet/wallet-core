@@ -31,6 +31,12 @@ class EthereumTests: XCTestCase {
             $0.privateKey = Data(hexString: "0x4646464646464646464646464646464646464646464646464646464646464646")!
         }
 
+        XCTAssertEqual(input.chainID.hexString, "01")
+        XCTAssertEqual(input.nonce.hexString, "")
+        XCTAssertEqual(input.gasPrice.hexString, "04a817c800")
+        XCTAssertEqual(input.gasLimit.hexString, "5208")
+        XCTAssertEqual(input.amount.hexString, "0de0b6b3a7640000")
+
         let output = EthereumSigner.sign(input: input)
 
         XCTAssertEqual(output.encoded.hexString, "28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa63627667cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d8300")
