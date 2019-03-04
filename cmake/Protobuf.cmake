@@ -1,23 +1,4 @@
-set(protobuf_PREFIX ${PROJECT_SOURCE_DIR}/lib/protobuf)
-file(MAKE_DIRECTORY ${protobuf_PREFIX})
-
-ExternalProject_Add(
-    protobuf_ext
-
-    URL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.0/protobuf-cpp-3.7.0.tar.gz
-    URL_HASH SHA256=797e759e6daf644be4c09070d4777d178b538dca310cc4956fde4b51b02ba2d3
-
-    PREFIX "protobuf"
-    INSTALL_DIR ${protobuf_PREFIX}
-
-    UPDATE_COMMAND ""
-    PATCH_COMMAND ""
-    CONFIGURE_COMMAND <SOURCE_DIR>/configure --prefix <INSTALL_DIR>
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-)
-ExternalProject_Get_Property(protobuf_ext source_dir)
-set(protobuf_SOURCE_DIR ${source_dir})
+set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/protobuf/staging/protobuf-3.7.0)
 
 set(protobuf_SOURCE_FILES
     ${protobuf_SOURCE_DIR}/src/google/protobuf/stubs/bytestream.cc
@@ -136,13 +117,11 @@ set(protobuf_SOURCE_FILES
     ${protobuf_SOURCE_DIR}/src/google/protobuf/util/time_util.cc
     ${protobuf_SOURCE_DIR}/src/google/protobuf/util/type_resolver_util.cc
 )
-set_source_files_properties(${protobuf_SOURCE_FILES} PROPERTIES GENERATED TRUE)
 
 file(GLOB_RECURSE protobuf_HEADER_FILES ${protobuf_SOURCE_DIR}/src/**/*.h)
 include_directories(${protobuf_SOURCE_DIR}/src)
 
 add_library(protobuf ${protobuf_SOURCE_FILES})
-add_dependencies(protobuf protobuf_ext)
 set_target_properties(
     protobuf
     PROPERTIES

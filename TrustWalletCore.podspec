@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
     submodules: true
   }
 
-  protobuf_dir = 'build/protobuf/src/protobuf_ext'
-  json_dir = 'build/nlohmann/src/nlohmann_json'
+  protobuf_dir = 'build/protobuf/staging/protobuf-3.7.0'
+  json_dir = 'build/local/include/nlohmann'
   s.source_files =
     'src/**/*.{c,cc,cpp,h}',
     'include/**/*.h',
@@ -158,7 +158,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
   }
-  s.prepare_command = 'tools/generate-files && cmake -H. -Bbuild && make -Cbuild protobuf_ext nlohmann_json'
+  s.prepare_command = 'tools/install-dependencies && tools/generate-files'
 
   s.dependency 'SwiftProtobuf', '~> 1.3.0'
 end
