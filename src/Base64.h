@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+#define BOOST_NO_AUTO_PTR
 
 #include "Data.h"
 
@@ -15,7 +16,7 @@
 
 namespace TW {
 namespace Base64 {
-    
+
 Data decode(const std::string& val) {
     using namespace boost::archive::iterators;
     using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
