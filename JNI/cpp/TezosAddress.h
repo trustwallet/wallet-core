@@ -19,22 +19,13 @@ JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_jni_TezosAddress_initWithString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jbyteArray JNICALL Java_wallet_core_jni_TezosAddress_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
-
-JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_jni_TezosAddress_initWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey, jchar prefix);
-
-JNIEXPORT
-jboolean JNICALL Java_wallet_core_jni_TezosAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
 
 JNIEXPORT
 jboolean JNICALL Java_wallet_core_jni_TezosAddress_isValid(JNIEnv *env, jclass thisClass, jbyteArray data);
 
 JNIEXPORT
 jboolean JNICALL Java_wallet_core_jni_TezosAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);
-
-JNIEXPORT
-jstring JNICALL Java_wallet_core_jni_TezosAddress_forge(JNIEnv *env, jclass thisClass);
 
 JNIEXPORT
 jstring JNICALL Java_wallet_core_jni_TezosAddress_description(JNIEnv *env, jobject thisObject);

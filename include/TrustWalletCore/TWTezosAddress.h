@@ -14,9 +14,9 @@ TW_EXTERN_C_BEGIN
 
 struct TWPublicKey;
 
-static const size_t TWTezosAddressSize = 22;
+static const size_t TWTezosAddressSize = 27;
 
-/// Represents a transparent Zcash address.
+/// Represents a Tezos address.
 TW_EXPORT_STRUCT
 struct TWTezosAddress {
     /// Address data consisting of two prefix bytes followed by the public key hash.
@@ -27,11 +27,11 @@ struct TWTezosAddress {
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress *_Nonnull address);
 
-/// Determines if the data is a valid Bitcoin address.
+/// Determines if the data is a valid Tezos address.
 TW_EXPORT_STATIC_METHOD
 bool TWTezosAddressIsValid(TWData *_Nonnull data);
 
-/// Determines if the string is a valid Bitcoin address.
+/// Determines if the string is a valid Tezos address.
 TW_EXPORT_STATIC_METHOD
 bool TWTezosAddressIsValidString(TWString *_Nonnull string);
 
@@ -39,12 +39,12 @@ bool TWTezosAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 bool TWTezosAddressInitWithString(struct TWTezosAddress *_Nonnull address, TWString *_Nonnull string);
 
-/// Initializes an address from a public key and a prefix byte.
+/// Initializes an address from a public key.
 TW_EXPORT_STATIC_METHOD
 bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, struct TWPublicKey publicKey);
 
 /// Returns the address data.
 TW_EXPORT_PROPERTY
-TWData *_Nonnull TWTezosAddressData(struct TWTezosAddress address);
+TWData *_Nonnull TWTezosAddressData(struct TWTezosAddress *_Nonnull address);
 
 TW_EXTERN_C_END
