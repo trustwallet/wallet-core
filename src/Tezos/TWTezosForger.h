@@ -17,3 +17,4 @@ std::string forgeOperation(TW::Tezos::Proto::Operation);
 std::string forgeBool(bool);
 std::string forgeAddress(std::string);
 std::string forgeZarith(std::string);
+std::string forgePublicKey(std::string publicKey);
