@@ -7,7 +7,7 @@
 #include "HexCoding.h"
 #include <string>
 #include <sstream>
-
+#include <array>
 #include <TrezorCrypto/base58.h>
 
 #include "proto/Tezos.pb.h"
@@ -60,14 +60,32 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
   uint8_t prefix[prefixLength];
   prefix[0] = 6;
   prefix[1] = 161;
-  prefix[2] = 159;
+
+  std::string result = "0";
+
+  // Adjust prefix based on tz1, tz2 or tz3.
+  switch (publicKeyHash[2]) {
+    case '1':
+      result += "0";
+      prefix[2] = 159;
+      break;
+    case '2':
+      result += "1";
+      prefix[2] = 161;
+      break;
+    case '3':
+      result += "2";
+      prefix[2] = 164;
+      break;
+    default:
+      assert(false);
+      return nullptr;
+  }
 
   size_t capacity = 128;
   uint8_t decoded[capacity];
-
   int decodedLength = checkDecodeAndDropPrefix(publicKeyHash, prefixLength, prefix, decoded);
 
-  std::string result = "00";
   result += TW::hex(decoded, decoded + decodedLength);
   return result;
 }

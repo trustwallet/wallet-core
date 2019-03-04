@@ -34,8 +34,26 @@ TEST(TWTezosForger, ForgeBoolFalse) {
 }
 
 TEST(TWTezosForger, ForgeAddress_tz1) {
-  auto input = "KT1HiGcq47Yek7dcre7So2yfWTLU83FTBaf1";
-  auto expected = "0164244bbdc7790d7896b6a52ac49802cfe4eafc4b00";
+  auto input = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don";
+  auto expected = "0000cfa4aae60f5d9389752d41e320da224d43287fe2";
+
+  auto output = forgeAddress(input);
+
+  ASSERT_EQ(output, expected);
+}
+
+TEST(TWTezosForger, ForgeAddress_tz2) {
+  auto input = "tz2Rh3NYeLxrqTuvaZJmaMiVMqCajeXMWtYo";
+  auto expected = "0001be99dd914e38388ec80432818b517759e3524f16";
+
+  auto output = forgeAddress(input);
+
+  ASSERT_EQ(output, expected);
+}
+
+TEST(TWTezosForger, ForgeAddress_tz3) {
+  auto input = "tz3RDC3Jdn4j15J7bBHZd29EUee9gVB1CxD9";
+  auto expected = "0002358cbffa97149631cfb999fa47f0035fb1ea8636";
 
   auto output = forgeAddress(input);
 
@@ -65,7 +83,7 @@ TEST(TWTezosForger, ForgeTransactionOperation) {
   transactionOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
   transactionOperation.set_allocated_transaction_operation_data(&transactionOperationData);
 
-  auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0108000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
+  auto expected = "08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
 
   auto output = forgeOperation(transactionOperation);
   ASSERT_EQ(output, expected);
