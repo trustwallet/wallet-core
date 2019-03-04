@@ -51,16 +51,6 @@ TEST(TWTezosForger, ForgeAddress_KT1) {
   ASSERT_EQ(output, expected);
 }
 
-TEST(TWTezosForger, ForgeZarith_large) {
-  auto input = "245";
-  auto expected = "f501";
-
-  auto output = forgeAddress(input);
-
-  ASSERT_EQ(output, expected);
-}
-
-
 TEST(TWTezosForger, ForgeTransactionOperation) {
   auto transactionOperationData = TW::Tezos::Proto::TransactionOperationData();
   transactionOperationData.set_amount(1);
