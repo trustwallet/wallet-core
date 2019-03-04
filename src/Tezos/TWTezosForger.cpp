@@ -184,9 +184,6 @@ std::string forgeRevealOperation(TW::Tezos::Proto::Operation operation) {
   auto forgedPublicKey = forgePublicKey(operation.reveal_operation_data().public_key());
 
   return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit + forgedStorageLimit + forgedPublicKey;
-
-  // TODO: Implement.
-  return nullptr;
 }
 
 std::string forgeOperation(TW::Tezos::Proto::Operation operation) {

@@ -97,3 +97,22 @@ TEST(TWTezosForger, ForgeTransactionOperation) {
   auto output = forgeOperation(transactionOperation);
   ASSERT_EQ(output, expected);
 }
+
+TEST(TWTezosForger, ForgeRevealOperation) {
+  auto revealOperationData = TW::Tezos::Proto::RevealOperationData();
+  revealOperationData.set_public_key("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
+
+  auto revealOperation = TW::Tezos::Proto::Operation();
+  revealOperation.set_fee(1272);
+  revealOperation.set_kind(::TW::Tezos::Proto::Operation_OperationKind_REVEAL);
+  revealOperation.set_counter(30738);
+  revealOperation.set_gas_limit(10100);
+  revealOperation.set_storage_limit(257);
+  revealOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+  revealOperation.set_allocated_transaction_operation_data(&revealOperationData);
+  
+  auto expected = "07000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
+  
+  auto output = forgeOperation(revealOperation);
+  ASSERT_EQ(output, expected);
+}
