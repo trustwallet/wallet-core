@@ -9,6 +9,7 @@
 #include <TrustWalletCore/TWEthereumSigner.h>
 #include "Ethereum/Transaction.h"
 #include "Data.h"
+#include "HexCoding.h"
 #include "uint256.h"
 #include "proto/Ethereum.pb.h"
 
@@ -25,19 +26,20 @@ TEST(TWEthereumSigner, EmptyValue) {
 }
 
 TEST(TWEthereumSigner, BigInt) {
-    /// From Swift BigInt(21000).magnitude.serialize()
-    Data bytes = {0x52, 0x08};
-    auto limit = uint256_t(21000);
-    auto loaded = load(bytes);
-    ASSERT_EQ(loaded, limit);
+    // Check uint256_t loading
+    Data expectedData = {0x52, 0x08};
+    auto value = uint256_t(21000);
+    auto loaded = load(expectedData);
+    ASSERT_EQ(loaded, value);
 
-    /// But it becomes "R\b" after assigning to SigningInput
+    // Check proto storing
     Proto::SigningInput input;
-    input.set_gas_limit("R\b");
+    auto storedData = store(value);
+    input.set_gas_limit(storedData.data(), storedData.size());
+    ASSERT_EQ(hex(input.gas_limit()), hex(expectedData));
 
-    auto limit2 = uint256_t(10504);
-    auto loaded2 = load(input.gas_limit());
-    ASSERT_EQ(limit2, loaded2);
-
-    ASSERT_EQ(loaded2, loaded);
+    // Check proto loading
+    auto protoData = Data(input.gas_limit().begin(), input.gas_limit().end());
+    auto protoLoaded = load(protoData);
+    ASSERT_EQ(protoLoaded, value);
 }
