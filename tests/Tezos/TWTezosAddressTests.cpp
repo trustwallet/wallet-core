@@ -68,12 +68,13 @@ TEST(TWTezosAddress, TestAddressFromPrivateKey) {
   TWString *expectedAddressString = TWStringCreateWithUTF8Bytes(expectedAddress.c_str());
 
   std::string privateKeyHex= "2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54";
-  TWString *privateKeyString = TWStringCreateWithUTF8Bytes(privateKeyHex.c_str());
+  TWString *privateKeyString = T(privateKeyHex.c_str());  
   TWData *privateKeyData = TWDataCreateWithHexString(privateKeyString);
   TWPrivateKey *privateKey = TWPrivateKeyCreateWithData(privateKeyData);
   TWPublicKey publicKey = TWPrivateKeyGetPublicKey(privateKey, false);
 
   TWTezosAddress *tezosAddress;
   ASSERT_TRUE(TWTezosAddressInitWithPublicKey(tezosAddress, publicKey));
+  TWTezosAddressDescription(tezosAddress);
   // ASSERT_EQ(TWTezosAddressDescription(tezosAddress), expectedAddressString);
 }

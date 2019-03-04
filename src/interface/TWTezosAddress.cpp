@@ -76,7 +76,7 @@ bool TWTezosAddressInitWithString(struct TWTezosAddress *_Nonnull address, TWStr
 
 bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, struct TWPublicKey publicKey) {
   std::array<std::uint8_t, 3> prefix {6, 161, 159};
-  TWData *data = TWDataCreateWithSize(TWTezosAddressSize);
+  TWData *data = TWDataCreateWithSize(prefix.size());
   for (size_t i = 0; i < prefix.size(); i++) {
     TWDataSet(data, i, prefix[i]);
   }
@@ -84,11 +84,15 @@ bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, st
   TWData *publicKeyData = TWPublicKeyData(publicKey);
   TWData *publicKeyHash = TWHashBlake2b(publicKeyData, 20);
   TWDataAppendData(data, publicKeyHash);
-  TWString *addressString = TWBase58Encode(publicKeyHash);
+  TWString *addressString = TWBase58Encode(data);
+
+  printBytes(data);
+
   return TWTezosAddressInitWithString(address, addressString);
 }
 
 TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress *_Nonnull address) {
+  printf("%s", TWStringUTF8Bytes(TWBase58EncodeNoCheck(TWTezosAddressData(address))));
   TWData *addressData = TWTezosAddressData(address);
   return TWBase58EncodeNoCheck(addressData);
 }
