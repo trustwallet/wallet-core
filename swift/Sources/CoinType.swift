@@ -30,6 +30,7 @@ public enum CoinType: UInt32 {
     case zcash = 133
     case zcoin = 136
     case nimiq = 242
+    case stellar = 148
 
     public var purpose: Purpose {
         return Purpose(rawValue: TWCoinTypePurpose(TWCoinType(rawValue: rawValue)).rawValue)!
@@ -56,5 +57,4 @@ public enum CoinType: UInt32 {
     public func deriveAddress(privateKey: PrivateKey) -> String {
         return TWStringNSString(TWCoinTypeDeriveAddress(TWCoinType(rawValue: rawValue), privateKey.rawValue))
     }
-
 }

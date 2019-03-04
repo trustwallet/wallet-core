@@ -10,12 +10,12 @@
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_ENUM(uint32_t)
-enum class TWStellarVersionByte : uint8_t {
-    TWStellarVersionByteAccountID = (6 << 3), // G
-    TWStellarVersionByteSeed = (18 << 3), // S
-    TWStellarVersionBytePreAuthTX = (19 << 3), // T
-    TWStellarVersionByteSHA256Hash = (23 << 3) // X
+TW_EXPORT_ENUM(uint16_t)
+enum TWStellarVersionByte {
+    TWStellarVersionByteAccountID = 0x30, // G
+    TWStellarVersionByteSeed = 0xc0, // S
+    TWStellarVersionBytePreAuthTX = 0xc8, // T
+    TWStellarVersionByteSHA256Hash = 0x118, // X
 };
 
 TW_EXTERN_C_END
