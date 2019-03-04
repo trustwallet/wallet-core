@@ -4,7 +4,7 @@ file(MAKE_DIRECTORY ${protobuf_PREFIX})
 ExternalProject_Add(
     protobuf_ext
 
-    URL https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protobuf-cpp-3.6.1.tar.gz
+    URL https://github.com/protocolbuffers/protobuf/releases/download/v3.7.0/protobuf-cpp-3.7.0.tar.gz
     URL_HASH SHA256=b3732e471a9bb7950f090fd0457ebd2536a9ba0891b7f3785919c654fe2a2529
 
     PREFIX "protobuf"

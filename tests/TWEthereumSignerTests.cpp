@@ -39,7 +39,6 @@ TEST(TWEthereumSigner, BigInt) {
     ASSERT_EQ(hex(input.gas_limit()), hex(expectedData));
 
     // Check proto loading
-    auto protoData = Data(input.gas_limit().begin(), input.gas_limit().end());
-    auto protoLoaded = load(protoData);
+    auto protoLoaded = load(input.gas_limit());
     ASSERT_EQ(protoLoaded, value);
 }
