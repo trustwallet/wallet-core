@@ -6,11 +6,11 @@
 
 #include "TransactionOutput.h"
 
-#include "BinaryCoding.h"
+#include "../BinaryCoding.h"
 
 using namespace TW::Bitcoin;
 
 void TransactionOutput::encode(std::vector<uint8_t>& data) const {
-    encode64(value, data);
+    encode64LE(value, data);
     script.encode(data);
 }
