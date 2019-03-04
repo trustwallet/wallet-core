@@ -11,7 +11,7 @@
 TEST(TWTezosForger, ForgeBranch) {
   auto input = "BMNY6Jkas7BzKb7wDLCFoQ4YxfYoieU7Xmo1ED3Y9Lo3ZvVGdgW";
   auto expected = "da8eb4f57f98a647588b47d29483d1edfdbec1428c11609cee0da6e0f27cfc38";
-  
+
   auto output = forgeBranch(input);
 
   ASSERT_EQ(output, expected);
@@ -19,15 +19,15 @@ TEST(TWTezosForger, ForgeBranch) {
 
 TEST(TWTezosForger, ForgeBoolTrue) {
   auto expected = "ff";
-  
+
   auto output = forgeBool(true);
-  
+
   ASSERT_EQ(output, expected);
 }
 
 TEST(TWTezosForger, ForgeBoolFalse) {
   auto expected = "00";
-  
+
   auto output = forgeBool(false);
 
   ASSERT_EQ(output, expected);
@@ -36,7 +36,7 @@ TEST(TWTezosForger, ForgeBoolFalse) {
 TEST(TWTezosForger, ForgeAddress_tz1) {
   auto input = "KT1HiGcq47Yek7dcre7So2yfWTLU83FTBaf1";
   auto expected = "0164244bbdc7790d7896b6a52ac49802cfe4eafc4b00";
-  
+
   auto output = forgeAddress(input);
 
   ASSERT_EQ(output, expected);
@@ -45,30 +45,11 @@ TEST(TWTezosForger, ForgeAddress_tz1) {
 TEST(TWTezosForger, ForgeAddress_KT1) {
   auto input = "KT1HiGcq47Yek7dcre7So2yfWTLU83FTBaf1";
   auto expected = "0164244bbdc7790d7896b6a52ac49802cfe4eafc4b00";
-  
+
   auto output = forgeAddress(input);
 
   ASSERT_EQ(output, expected);
 }
-
-TEST(TWTezosForger, ForgeZarith_small) {
-  auto input = "50";
-  auto expected = "32";
-  
-  auto output = forgeAddress(input);
-  
-  ASSERT_EQ(output, expected);  
-}
-
-TEST(TWTezosForger, ForgeZarith_large) {
-  auto input = "245";
-  auto expected = "f501";
-  
-  auto output = forgeAddress(input);
-  
-  ASSERT_EQ(output, expected);  
-}
-
 
 TEST(TWTezosForger, ForgeTransactionOperation) {
   auto transactionOperationData = TW::Tezos::Proto::TransactionOperationData();
@@ -87,6 +68,5 @@ TEST(TWTezosForger, ForgeTransactionOperation) {
   auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0108000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
 
   auto output = forgeOperation(transactionOperation);
-    
-  ASSERT_EQ(output, expected);    
+  ASSERT_EQ(output, expected);
 }

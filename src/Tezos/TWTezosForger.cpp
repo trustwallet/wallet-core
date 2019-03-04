@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "HexCoding.h"
 #include <string>
 #include <sstream>
 
@@ -27,21 +28,9 @@ int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint
 
   // Drop the prefix from branch.
   int outputLength = decodedLength - prefixLength;
-  for (int i = 0; i < outputLength; i++) {
-    output[i] = decodedInput[i + prefixLength];
-  }
+  std::copy(decodedInput + prefixLength, decodedInput + prefixLength + outputLength, output);
 
   return outputLength;
-}
-
-// Convert the given byte buffer to a hex string.
-// TODO: Figure out how to use TrustCore's hex functions.
-std::string hexStr(uint8_t *data, int len) {
-  std::stringstream ss;
-  ss<<std::hex;
-  for(int i(0);i<len;++i)
-    ss<<(int)data[i];
-  return ss.str();
 }
 
 // Forge the given branch to a hex encoded string.
@@ -56,9 +45,7 @@ std::string forgeBranch(const std::string branch) {
   prefix[1] = 52;
   int decodedBranchLength = checkDecodeAndDropPrefix(branch, prefixLength, prefix, decodedBranch);
 
-  std::string result = "";
-  result += hexStr(decodedBranch, decodedBranchLength);
-  return result;
+  return TW::hex(decodedBranch, decodedBranch + decodedBranchLength);
 }
 
 // Forge the given boolean into a hex encoded string.
@@ -80,8 +67,8 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
 
   int decodedLength = checkDecodeAndDropPrefix(publicKeyHash, prefixLength, prefix, decoded);
 
-  std::string result = "01";
-  result += hexStr(decoded, decodedLength);
+  std::string result = "00";
+  result += TW::hex(decoded, decoded + decodedLength);
   return result;
 }
 
@@ -101,7 +88,7 @@ std::string forgeAddress(const std::string address) {
 
     int decodedLength = checkDecodeAndDropPrefix(address, prefixLength, prefix, decoded);
     result += "01";
-    result += hexStr(decoded, decodedLength);
+    result += TW::hex(decoded, decoded + decodedLength);
     result += "00";
   } else {
     result = result + "00";
@@ -118,14 +105,18 @@ std::string forgeZarith(int input) {
       if (input < 16) {
         result += "0";
       }
-      result += input; // TODO: encode input to hex.
+      std::stringstream ss;
+      ss << std::hex << input;
+      result += ss.str();
       break;
     } else {
       int b = input % 128;
       input -= b;
       input /= 128;
       b += 128;
-      result += b; // TODO: encode b to hex.
+      std::stringstream ss;
+      ss << std::hex << b;
+      result += ss.str();
     }
   }
   return result;
