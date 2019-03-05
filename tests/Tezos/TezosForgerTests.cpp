@@ -198,4 +198,3 @@ TEST(TWTezosForger, ForgeOperationList_TransactionAndReveal) {
   auto output = forgeOperationList(operationList);
   ASSERT_EQ(output, expected);
 }
-

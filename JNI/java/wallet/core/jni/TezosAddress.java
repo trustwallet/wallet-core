@@ -24,25 +24,15 @@ public class TezosAddress {
     }
 
     static native byte[] initWithString(String string);
-    static native byte[] initWithData(byte[] data);
     static native byte[] initWithPublicKey(PublicKey publicKey, byte prefix);
 
-    public static native boolean equals(TezosAddress lhs, TezosAddress rhs);
     public static native boolean isValid(byte[] data);
     public static native boolean isValidString(String string);
-    public static native String forge();
     public native String description();
     public native byte[] data();
 
     public TezosAddress(String string) {
         bytes = initWithString(string);
-        if (bytes == null) {
-            throw new InvalidParameterException();
-        }
-    }
-
-    public TezosAddress(byte[] data) {
-        bytes = initWithData(data);
         if (bytes == null) {
             throw new InvalidParameterException();
         }

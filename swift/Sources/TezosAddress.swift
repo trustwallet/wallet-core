@@ -11,10 +11,6 @@ import Foundation
 
 public struct TezosAddress {
 
-    public static func == (lhs: TezosAddress, rhs: TezosAddress) -> Bool {
-        return TWTezosAddressEqual(lhs.rawValue, rhs.rawValue)
-    }
-
     public static func isValid(data: Data) -> Bool {
         let dataData = TWDataCreateWithNSData(data)
         defer {
@@ -29,10 +25,6 @@ public struct TezosAddress {
             TWStringDelete(stringString)
         }
         return TWTezosAddressIsValidString(stringString)
-    }
-
-    public static func forge() -> String? {
-        return TWTezosAddressForge()
     }
 
     var rawValue: TWTezosAddress
@@ -56,17 +48,6 @@ public struct TezosAddress {
         }
         rawValue = TWTezosAddress()
         guard TWTezosAddressInitWithString(&rawValue, stringString) else {
-            return nil
-        }
-    }
-
-    public init?(data: Data) {
-        let dataData = TWDataCreateWithNSData(data)
-        defer {
-            TWDataDelete(dataData)
-        }
-        rawValue = TWTezosAddress()
-        guard TWTezosAddressInitWithData(&rawValue, dataData) else {
             return nil
         }
     }
