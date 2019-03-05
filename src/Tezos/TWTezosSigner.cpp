@@ -18,7 +18,6 @@ std::string signOperation(TW::Tezos::Proto::OperationList operationList) {
     forgedBytesHex += forgeOperation(operation);
   }
 
-  // TODO: Work out how to move std::String to TWString.
   auto watermark = "03";
   auto watermarkedForgedBytesHex = watermark + forgedBytesHex;
   auto twStringRep = TWStringCreateWithUTF8Bytes("TODO: Put watermarekdForgedBytesHexHere");

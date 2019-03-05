@@ -7,6 +7,7 @@
 #include "HexCoding.h"
 #include <string>
 #include <sstream>
+#include <stdexcept>
 #include <array>
 #include <TrezorCrypto/base58.h>
 
@@ -77,7 +78,7 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
       prefix[2] = 164;
       break;
     default:
-      assert(false);
+      throw std::invalid_argument( "Invalid Prefix" );
   }
 
   size_t capacity = 128;
@@ -159,7 +160,9 @@ std::string forgePublicKey(std::string publicKey) {
 
 // Forge an operation with TransactionOperationData.
 std::string forgeTransactionOperation(TW::Tezos::Proto::Operation operation) {
-  assert(operation.has_transaction_operation_data());
+  if (!operation.has_transaction_operation_data()) {
+    throw std::invalid_argument( "Operation does not have transaction operation data" );
+  };
 
   auto forgedSource = forgeAddress(operation.source());
   auto forgedFee = forgeZarith(operation.fee());
@@ -191,8 +194,7 @@ std::string forgeOperation(TW::Tezos::Proto::Operation operation) {
     case TW::Tezos::Proto::Operation_OperationKind_TRANSACTION:
       return forgeTransactionOperation(operation);
     default:
-      assert(false);
-      return nullptr;
+      throw std::invalid_argument( "Invalid Operation Kind" );
   }
 }
 
