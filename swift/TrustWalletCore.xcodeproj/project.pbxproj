@@ -1704,7 +1704,7 @@
 				61A9B31321FF978800E601B3 /* wrappers.pb.cc */,
 			);
 			name = protobuf;
-			path = ../build/protobuf/src/protobuf_ext/src/google/protobuf;
+			path = "../build/protobuf/staging/protobuf-3.7.0/src/google/protobuf";
 			sourceTree = "<group>";
 		};
 		61CAC6AE21F113C60086D9A0 /* stubs */ = {
@@ -2765,8 +2765,7 @@
 					"$(inherited)",
 					"${SRCROOT}/../include",
 					"${SRCROOT}/../trezor-crypto/include",
-					"${SRCROOT}/../lib/protobuf/src",
-					"${SRCROOT}/../lib/json/include",
+					"${SRCROOT}/../build/local/include",
 				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2807,8 +2806,7 @@
 					"$(inherited)",
 					"${SRCROOT}/../include",
 					"${SRCROOT}/../trezor-crypto/include",
-					"${SRCROOT}/../lib/protobuf/src",
-					"${SRCROOT}/../lib/json/include",
+					"${SRCROOT}/../build/local/include",
 				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2820,7 +2818,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9873B38DWV;
-				HEADER_SEARCH_PATHS = "${SRCROOT}/../build/protobuf/src/protobuf_ext/src";
 				OTHER_CFLAGS = "-DHAVE_PTHREAD=1";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2835,7 +2832,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9873B38DWV;
-				HEADER_SEARCH_PATHS = "${SRCROOT}/../build/protobuf/src/protobuf_ext/src";
 				OTHER_CFLAGS = "-DHAVE_PTHREAD=1";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
