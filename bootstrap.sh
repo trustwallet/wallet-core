@@ -4,15 +4,14 @@
 set -e
 
 echo "#### Initializing... ####"
-git submodule update --init
-cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DGIT_SUBMODULE=OFF
+tools/install-dependencies
 
 echo "#### Generating files... ####"
-make -Cbuild protobuf_ext
 tools/generate-files
 
 echo "#### Building... ####"
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
 make -Cbuild tests
 
 echo "#### Testing... ####"
-build/tests/tests
+build/tests/tests tests
