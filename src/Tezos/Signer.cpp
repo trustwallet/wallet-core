@@ -8,6 +8,7 @@
 
 #include "OperationList.h"
 #include "Signer.h"
+#include "../Hash.h"
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWString.h>
@@ -16,7 +17,7 @@
 using namespace TW;
 using namespace TW::Tezos;
 
-std::string Signer::signOperation(const PrivateKey& privateKey, OperationList operationList) {
+Data Signer::signOperation(const PrivateKey& privateKey, OperationList operationList) {
   auto forgedBytesHex = operationList.forge();
 
   auto watermark = "03";
@@ -24,5 +25,5 @@ std::string Signer::signOperation(const PrivateKey& privateKey, OperationList op
   auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
   auto signature = privateKey.sign(hash);
 
-  return signature;
+  return Data(signature.begin(), signature.end());
 }

@@ -7,9 +7,10 @@
 #pragma once
 
 #include "OperationList.h"
-#include <string>
+#include "../Data.h"
+#include "../PrivateKey.h"
 
-#include "proto/Tezos.pb.h"
+#include <string>
 
 namespace TW {
 namespace Tezos {
@@ -18,7 +19,7 @@ namespace Tezos {
 class Signer {
 public:
     /// Signs the given transaction.
-    std::string signOperation(OperationList);
+    Data signOperation(const PrivateKey& privateKey, OperationList operationList);
 };
 
 }} // namespace
