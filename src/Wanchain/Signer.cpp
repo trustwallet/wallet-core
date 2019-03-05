@@ -19,7 +19,7 @@ void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transacti
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
+Data Signer::encode(const Ethereum::Transaction& transaction) const noexcept {
     auto encoded = Data();
     append(encoded, Ethereum::RLP::encode(1));
     append(encoded, Ethereum::RLP::encode(transaction.nonce));
@@ -31,5 +31,10 @@ Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
     append(encoded, Ethereum::RLP::encode(chainID));
     append(encoded, Ethereum::RLP::encode(0));
     append(encoded, Ethereum::RLP::encode(0));
-    return Hash::keccak256(Ethereum::RLP::encodeList(encoded));
+    return Ethereum::RLP::encodeList(encoded);
+}
+
+Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
+    const auto encoded = Signer::encode(transaction);
+    return Hash::keccak256(encoded);
 }
