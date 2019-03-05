@@ -46,7 +46,7 @@ TEST(TWTezosAddress, TestValidAddresses) {
   }
 }
 
-TEST(TWTezosAddress, TestInalidAddresses) {
+TEST(TWTezosAddress, TestInvalidAddresses) {
   std::array<std::string, 3> invalidAddresses {
     "NmH7tmeJUmHcncBDvpr7aJNEBk7rp5zYsB1qt", // Invalid prefix, valid checksum
     "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAAA", // Valid prefix, invalid checksum

@@ -18,13 +18,6 @@
 #include <vector>
 #include <array>
 
-void printBytes(TWData *_Nonnull data) {
-  for (size_t i = 0; i < TWDataSize(data); i++) {
-    printf("%d, ", TWDataGet(data, i));
-  }
-  printf("\n\n");
-}
-
 bool TWTezosAddressIsValid(TWData *_Nonnull data) {
   // Verify prefix is correct.
   std::array<std::uint8_t, 3> prefix {6, 161, 159};

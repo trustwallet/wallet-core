@@ -6,13 +6,17 @@
 
 #include <string>
 
+#include "Signer.h"
 #include "proto/Tezos.pb.h"
 #include "Tezos/TWTezosForger.h"
 #include "HexCoding.h"
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWString.h>
 
-std::string signOperation(TW::Tezos::Proto::OperationList operationList) {
+using namespace TW;
+using namespace TW::Tezos;
+
+std::string Signer::signOperation(TW::Tezos::Proto::OperationList operationList) {
   auto forgedBytesHex = forgeBranch(operationList.branch());
   for (auto operation : operationList.operations()) {
     forgedBytesHex += forgeOperation(operation);

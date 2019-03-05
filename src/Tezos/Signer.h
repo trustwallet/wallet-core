@@ -10,4 +10,19 @@
 
 #include "proto/Tezos.pb.h"
 
-std::string signOperation(TW::Tezos::Proto::OperationList);
+namespace TW {
+namespace Tezos {
+
+/// Helper class that performs Tezos transaction signing.
+class Signer {
+public:
+    /// Signs the given transaction.
+    std::string signOperation(Tezos::Proto::OperationList);
+};
+
+}} // namespace
+
+/// Wrapper for C interface.
+struct TWTezosSigner {
+    TW::Tezos::Signer impl;
+};
