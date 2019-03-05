@@ -16,12 +16,18 @@ PublicKey PublicKey::compressed() const {
         return *this;
     }
 
-    std::array<uint8_t, compressedSize> newBytes;
+    std::array<uint8_t, secp256k1Size> newBytes;
     newBytes[0] = 0x02 | (bytes[64] & 0x01);
-    std::copy(bytes.begin() + 1, bytes.begin() + compressedSize - 1, newBytes.begin() + 1);
+    std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size - 1, newBytes.begin() + 1);
     return PublicKey(newBytes);
 }
 
 bool PublicKey::verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const {
-    return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
+    switch (type()) {
+    case PublicKeyType::secp256k1:
+    case PublicKeyType::secp256k1Extended:
+        return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
+    case PublicKeyType::ed25519:
+        return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+    }
 }

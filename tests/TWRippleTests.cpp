@@ -19,8 +19,8 @@ TEST(Ripple, ExtendedKeys) {
         STRING("TREZOR").get()
     ));
 
-    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeRipple, TWHDVersionXPUB));
-    auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeRipple, TWHDVersionXPRV));
+    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWCurveSECP256k1, TWPurposeBIP44, TWCoinTypeRipple, TWHDVersionXPUB));
+    auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWCurveSECP256k1, TWPurposeBIP44, TWCoinTypeRipple, TWHDVersionXPRV));
 
     assertStringsEqual(xpub, "xpub6D9oDY4gqFBtsFEonh5GTDiUm6nmij373YWzmYdshcnM4AFzdhUf55iZD33vNU2ZqfQJU5wiCJUgisMt2RHKDzhi1PbZfh5Y2NiiYJAQqUn");
     assertStringsEqual(xprv, "xprv9zASp2XnzsdbemALgfYG65mkD4xHKGKFgKbPyAEG9HFNBMvr6AAQXHQ5MmqM66EnbJfe9TvYMy1bucz7hSQjG43NVizRZwJJYfLmeKo4nVB");
@@ -28,8 +28,8 @@ TEST(Ripple, ExtendedKeys) {
 
 TEST(Ripple, DerivePubkeyFromXpub) {
     auto xpub = STRING("xpub6D9oDY4gqFBtsFEonh5GTDiUm6nmij373YWzmYdshcnM4AFzdhUf55iZD33vNU2ZqfQJU5wiCJUgisMt2RHKDzhi1PbZfh5Y2NiiYJAQqUn");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto pubKey6 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWHDVersionXPUB, TWHDVersionXPRV, 0, 6);
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
+    auto pubKey6 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 6);
 
     auto address2 = TWRippleAddressCreateWithPublicKey(pubKey2);
     auto address2String = WRAPS(TWRippleAddressDescription(address2));
@@ -43,7 +43,7 @@ TEST(Ripple, DerivePubkeyFromXpub) {
 
 TEST(Ripple, DeriveAddressFromXpub) {
     auto xpub = STRING("xpub6D9oDY4gqFBtsFEonh5GTDiUm6nmij373YWzmYdshcnM4AFzdhUf55iZD33vNU2ZqfQJU5wiCJUgisMt2RHKDzhi1PbZfh5Y2NiiYJAQqUn");
-    auto address = WRAPS(TWHDWalletGetAddressFromExtended(xpub.get(), TWCoinTypeRipple, 0, 0));
+    auto address = WRAPS(TWHDWalletGetAddressFromExtended(xpub.get(), TWCurveSECP256k1, TWCoinTypeRipple, 0, 0));
 
     assertStringsEqual(address, "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav");
 }

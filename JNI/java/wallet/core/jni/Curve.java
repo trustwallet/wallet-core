@@ -10,32 +10,21 @@
 package wallet.core.jni;
 
 
-public enum CoinType {
-    BINANCE (714),
-    BITCOIN (0),
-    BITCOINCASH (145),
-    CALLISTO (820),
-    DASH (5),
-    EOS (194),
-    ETHEREUM (60),
-    ETHEREUMCLASSIC (61),
-    GO (6060),
-    ICON (74),
-    LITECOIN (2),
-    POA (178),
-    THUNDERTOKEN (1001),
-    TOMOCHAIN (889),
-    TRON (195),
-    VECHAIN (818),
-    WANCHAIN (5718350),
-    ZCOIN (136),
-    ZCASH (133),
-    RIPPLE (144),
-    TEZOS (1729);
+public enum Curve {
+    SECP256K1 (0),
+    ED25519 (1);
 
     private final int value;
-    CoinType(int value) {
+    Curve(int value) {
         this.value = value;
     }
     public int value() { return value; }
+
+    public String toString() {
+        switch (this) {
+        case SECP256K1: return "secp256k1";
+        case ED25519: return "ed25519";
+        default: return "";
+        }
+    }
 }

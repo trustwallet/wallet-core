@@ -25,7 +25,7 @@ TEST(IconAddress, Valid) {
 
 TEST(IconAddress, FromPrivateKey) {
     const auto privateKey = PrivateKey(parse_hex("94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f"));
-    const auto publicKey = PublicKey(privateKey.getPublicKey(false));
+    const auto publicKey = PublicKey(privateKey.getPublicKey(PublicKeyType::secp256k1Extended));
     const auto address = Address(publicKey, TWIconAddressTypeAddress);
     ASSERT_EQ(address.string(), "hx98c0832ca5bd8e8bf355ca9491888aa9725c2c48");
 }

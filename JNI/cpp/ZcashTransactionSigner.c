@@ -54,8 +54,8 @@ jobject JNICALL Java_wallet_core_jni_ZcashTransactionSigner_plan(JNIEnv *env, jo
     struct TWZcashTransactionSigner *instance = (struct TWZcashTransactionSigner *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     jbyteArray resultData = TWDataJByteArray(TWZcashTransactionSignerPlan(instance), env);
-    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Proto$TransactionPlan");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Proto$TransactionPlan;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Bitcoin$TransactionPlan");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Bitcoin$TransactionPlan;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);

@@ -61,7 +61,7 @@ open class Blockchain: Hashable {
 
 public extension Blockchain {
     func derive(from extendedPubkey: String, at path: DerivationPath) -> String? {
-        return TrustWalletCore.HDWallet.getAddressFromExtended(extended: extendedPubkey, coinType: path.coinType, change: path.change, address: path.address)
+        return TrustWalletCore.HDWallet.getAddressFromExtended(extended: extendedPubkey, curve: .secp256k1, coinType: path.coinType, change: path.change, address: path.address)
     }
 
     func derivePubkey(from extendedPubkey: String, at path: DerivationPath) -> PublicKey? {
@@ -69,6 +69,6 @@ public extension Blockchain {
             let xprvVer = xprvVersion else {
             return nil
         }
-        return TrustWalletCore.HDWallet.getPublicKeyFromExtended(extended: extendedPubkey, versionPublic: xpubVer, versionPrivate: xprvVer, change: path.change, address: path.address)
+        return TrustWalletCore.HDWallet.getPublicKeyFromExtended(extended: extendedPubkey, curve: .secp256k1, versionPublic: xpubVer, versionPrivate: xprvVer, change: path.change, address: path.address)
     }
 }

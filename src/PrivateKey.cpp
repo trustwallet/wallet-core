@@ -18,30 +18,48 @@ PrivateKey::~PrivateKey() {
     std::fill(bytes.begin(), bytes.end(), 0);
 }
 
-std::vector<uint8_t> PrivateKey::getPublicKey(bool compressed) const {
-    std::vector<uint8_t> result;
-    if (compressed)  {
-        result.resize(PublicKey::compressedSize);
+PublicKey PrivateKey::getPublicKey(PublicKeyType type) const {
+    Data result;
+    switch (type) {
+    case PublicKeyType::secp256k1:
+        result.resize(PublicKey::secp256k1Size);
         ecdsa_get_public_key33(&secp256k1, bytes.data(), result.data());
-     } else {
-        result.resize(PublicKey::uncompressedSize);
+        break;
+    case PublicKeyType::secp256k1Extended:
+        result.resize(PublicKey::secp256k1ExtendedSize);
         ecdsa_get_public_key65(&secp256k1, bytes.data(), result.data());
-     }
-
-    return result;
+        break;
+    case PublicKeyType::ed25519:
+        result.resize(PublicKey::ed25519Size);
+        result[0] = 1;
+        ed25519_publickey(bytes.data(), result.data() + 1);
+        break;
+    }
+    return PublicKey(result);
 }
 
-std::array<uint8_t, 65> PrivateKey::sign(const std::vector<uint8_t>& digest) const {
-    std::array<uint8_t, 65> result;
-    bool success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data(), result.data() + 64, NULL) == 0;
+Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
+    Data result;
+    bool success = true;
+    switch (curve) {
+    case TWCurveSECP256k1:
+        result.resize(65);
+        success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data(), result.data() + 64, NULL) == 0;
+        break;
+    case TWCurveEd25519:
+        result.resize(64);
+        const auto publicKey = getPublicKey(PublicKeyType::ed25519);
+	    ed25519_sign(digest.data(), digest.size(), bytes.data(), publicKey.bytes.data(), result.data());
+    }
+
     if (!success) {
         return {};
     }
     return result;
 }
 
-std::vector<uint8_t> PrivateKey::signAsDER(const std::vector<uint8_t>&  digest) const {
-    std::array<uint8_t, 64> sig;
+Data PrivateKey::signAsDER(const Data& digest, TWCurve curve) const {
+    Data sig(64);
     bool success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), sig.data(), NULL, NULL) == 0;
     if (!success) {
         return {};
@@ -50,7 +68,7 @@ std::vector<uint8_t> PrivateKey::signAsDER(const std::vector<uint8_t>&  digest) 
     uint8_t resultBytes[72];
     size_t size = ecdsa_sig_to_der(sig.data(), resultBytes);
 
-    auto result = std::vector<uint8_t>{};
+    auto result = Data{};
     std::copy(resultBytes, resultBytes + size, std::back_inserter(result));
     return result;
 }
