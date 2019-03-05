@@ -14,6 +14,10 @@ class TezosTests: XCTestCase {
     XCTAssertEqual(tezos.coinType, .tezos)
   }
 
+  public func testForge() {
+//    TWTezosAddressForge();
+  }
+
   public func testAddressFromString_validAddress() {
     let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
     let address = tezos.address(string: validAddressString)
