@@ -119,6 +119,7 @@ TEST(TWTezosForger, ForgeRevealOperation) {
 TEST(TWTezosForger, ForgeOperationList_TransactionOnly) {
   auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
   auto operationList = TW::Tezos::Proto::OperationList();
+  operationList.set_branch(branch);
   auto transactionOperation = operationList.add_operations();
 
   auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
@@ -142,6 +143,7 @@ TEST(TWTezosForger, ForgeOperationList_TransactionOnly) {
 TEST(TWTezosForger, ForgeOperationList_RevealOnly) {
   auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
   auto operationList = TW::Tezos::Proto::OperationList();
+  operationList.set_branch(branch);
   auto revealOperation = operationList.add_operations();
 
   auto revealOperationData = new TW::Tezos::Proto::RevealOperationData();
@@ -164,33 +166,36 @@ TEST(TWTezosForger, ForgeOperationList_RevealOnly) {
 TEST(TWTezosForger, ForgeOperationList_TransactionAndReveal) {
   auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
   auto operationList = TW::Tezos::Proto::OperationList();
+  operationList.set_branch(branch);
 
   auto revealOperation = operationList.add_operations();
+
+  auto transactionOperation = operationList.add_operations();
+
+  auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
+  transactionOperationData->set_amount(1);
+  // originally: tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt
+  // made this a self transaction to match output
+  transactionOperationData->set_destination("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+
+  transactionOperation -> set_fee(1272);
+  transactionOperation -> set_kind(::TW::Tezos::Proto::Operation_OperationKind_TRANSACTION);
+  transactionOperation -> set_counter(30739);
+  transactionOperation -> set_gas_limit(10100);
+  transactionOperation -> set_storage_limit(257);
+  transactionOperation -> set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+  transactionOperation -> set_allocated_transaction_operation_data(transactionOperationData);
 
   auto revealOperationData = new TW::Tezos::Proto::RevealOperationData();
   revealOperationData->set_public_key("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
 
   revealOperation -> set_fee(1272);
   revealOperation -> set_kind(::TW::Tezos::Proto::Operation_OperationKind_REVEAL);
-  revealOperation -> set_counter(30739);
+  revealOperation -> set_counter(30738);
   revealOperation -> set_gas_limit(10100);
   revealOperation -> set_storage_limit(257);
   revealOperation -> set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
   revealOperation -> set_allocated_reveal_operation_data(revealOperationData);
-
-  auto transactionOperation = operationList.add_operations();
-
-  auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
-  transactionOperationData->set_amount(1);
-  transactionOperationData->set_destination("tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt");
-
-  transactionOperation -> set_fee(1272);
-  transactionOperation -> set_kind(::TW::Tezos::Proto::Operation_OperationKind_TRANSACTION);
-  transactionOperation -> set_counter(30738);
-  transactionOperation -> set_gas_limit(10100);
-  transactionOperation -> set_storage_limit(257);
-  transactionOperation -> set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
-  transactionOperation -> set_allocated_transaction_operation_data(transactionOperationData);
 
   auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0107000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b9572100";
 

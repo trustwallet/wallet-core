@@ -38,7 +38,6 @@ std::string forgeBranch(const std::string branch) {
   size_t capacity = 128;
   uint8_t decodedBranch[capacity];
 
-  // TODO: There must be a better way to initialize arrays.
   size_t prefixLength = 2;
   uint8_t prefix[prefixLength];
   prefix[0] = 1;
