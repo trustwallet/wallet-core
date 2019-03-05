@@ -35,7 +35,8 @@ cd "$JSON_DIR"
 if [ ! -f include.zip ]; then
     curl -fSsOL https://github.com/nlohmann/json/releases/download/v$JSON_VERSION/include.zip
 fi
-unzip -d "$PREFIX" -f include.zip
+unzip -d "$PREFIX" -o include.zip
+ls $PREFIX/include
 
 # Download Protobuf sources
 export PROTOBUF_VERSION=3.7.0
