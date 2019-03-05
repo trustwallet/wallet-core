@@ -11,7 +11,7 @@
 #include <gtest/gtest.h>
 using namespace TW::Tezos;
 
-TEST(TezosTransaction, serializePayment) {
+TEST(TezosTransaction, forgePayment) {
   TransactionType type = TransactionType::PAYMENT;
   auto tx1 = Transaction(
     Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
@@ -29,7 +29,7 @@ TEST(TezosTransaction, serializePayment) {
   ASSERT_EQ(serialized1, expected);
 }
 
-TEST(TezosTransaction, serializeReveal) {
+TEST(TezosTransaction, forgeReveal) {
   TransactionType type = TransactionType::REVEAL;
   auto tx1 = Transaction(
     Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
