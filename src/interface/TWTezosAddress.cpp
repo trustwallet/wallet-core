@@ -86,13 +86,10 @@ bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, st
   TWDataAppendData(data, publicKeyHash);
   TWString *addressString = TWBase58Encode(data);
 
-  printBytes(data);
-
   return TWTezosAddressInitWithString(address, addressString);
 }
 
 TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress *_Nonnull address) {
-  printf("%s", TWStringUTF8Bytes(TWBase58EncodeNoCheck(TWTezosAddressData(address))));
   TWData *addressData = TWTezosAddressData(address);
   return TWBase58EncodeNoCheck(addressData);
 }

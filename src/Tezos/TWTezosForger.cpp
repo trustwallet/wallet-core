@@ -79,7 +79,6 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
       break;
     default:
       assert(false);
-      return nullptr;
   }
 
   size_t capacity = 128;
@@ -140,6 +139,7 @@ std::string forgeZarith(int input) {
   return result;
 }
 
+
 // Forge the given public key into a hex encoded string.
 std::string forgePublicKey(std::string publicKey) {
   std::string result = "00";
@@ -169,9 +169,8 @@ std::string forgeTransactionOperation(TW::Tezos::Proto::Operation operation) {
   auto forgedStorageLimit = forgeZarith(operation.storage_limit());
   auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
   auto forgedDestination = forgeAddress(operation.transaction_operation_data().destination());
-
-  return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit + forgedStorageLimit + forgedAmount +
-  forgedDestination + forgeBool(false);
+  return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+      + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
 }
 
 // Forge an operation with RevealOperationData.
@@ -205,8 +204,6 @@ std::string forgeOperationList(TW::Tezos::Proto::OperationList operationList) {
     TW::Tezos::Proto::Operation operation = operationList.operations(i);
     result += forgeOperation(operation);
   }
-
-
 
   return result;
 }
