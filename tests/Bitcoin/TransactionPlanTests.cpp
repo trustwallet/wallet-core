@@ -16,7 +16,7 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-auto txOutPoint = OutPoint(std::vector<uint8_t>(32), 0);
+auto const txOutPoint = OutPoint(std::vector<uint8_t>(32), 0);
 
 inline auto sum(const std::vector<Proto::UnspentTransaction>& utxos) {
     int64_t s = 0u;
