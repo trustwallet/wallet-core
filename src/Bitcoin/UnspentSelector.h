@@ -23,9 +23,11 @@ public:
     ///
     /// \returns the list of selected utxos or an empty list if there are insufficient funds.
     template<typename T>
-    static std::vector<Proto::UnspentTransaction> select(const T& utxos, int64_t targetValue, int64_t byteFee);
+    static std::vector<Proto::UnspentTransaction> select(const T& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
 
     static int64_t calculateFee(size_t inputs, size_t outputs = 2, int64_t byteFee = 1);
+
+    static int64_t calculateSingleInputFee(int64_t byteFee);
 
     template<typename T>
     static inline int64_t sum(const T& utxos) {

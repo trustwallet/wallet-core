@@ -19,6 +19,8 @@ Reason:
 ## Checklist
 
 <!-- Sample Checklist -->
+
+- [ ] Coin configuration
 - [ ] Coin configuration
 - - [ ] coin type / decimals
 - - [ ] recommended tx block explorer
@@ -27,10 +29,20 @@ Reason:
 - - [ ] from public key / string
 - - [ ] validation
 - [ ] Transaction
-- - [ ] serialization
-- - [ ] signing
+- - [ ] serialization / encoding
+- [ ] Signer
+- - [ ] signing input / output protobuf messages
+- - [ ] signature
 - [ ] C interfaces
-- - [ ] Validate generated code in Android and iOS projects
+- - [ ] TW[Blockchain]Address
+- - [ ] TW[Blockchain]Transaction / TW[Blockchain]Signer
 - [ ] Tests
 - - [ ] Unit test
-- - [ ] integration test ( Java / Swift)
+- - [ ] C Interface test ( Java / Swift)
+- [ ] RPC documentation
+- - [ ] query balance
+- - [ ] query fee
+- - [ ] query transaction list
+- - [ ] query transaction detail
+- - [ ] submit rawtx
+- - [ ] blockchain info (block height)

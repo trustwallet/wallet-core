@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
-#include "BinaryCoding.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 
 using namespace TW;

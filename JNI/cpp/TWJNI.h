@@ -13,7 +13,6 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
-#include <TrustWalletCore/TWUInt256.h>
 
 #include <TrustWalletCore/TWBitcoinOpCodes.h>
 #include <TrustWalletCore/TWBitcoinScript.h>

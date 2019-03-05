@@ -4,8 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Transaction.h"
 #include "BinaryCoding.h"
+#include "Transaction.h"
+#include "../BinaryCoding.h"
 #include "../HexCoding.h"
 
 using namespace TW;
@@ -19,22 +20,22 @@ Data Transaction::serialize() const {
     /// field must be sorted by field type then by field name
     /// "type"
     encodeType(FieldType::int16, 2, data);
-    encode16(uint16_t(TransactionType::payment), data);
+    encode16BE(uint16_t(TransactionType::payment), data);
     /// "flags"
     encodeType(FieldType::int32, 2, data);
-    encode32(flags, data);
+    encode32BE(flags, data);
     /// "sequence"
     encodeType(FieldType::int32, 4, data);
-    encode32(sequence, data);
+    encode32BE(sequence, data);
     /// "destinationTag"
     if (destination_tag > 0) {
         encodeType(FieldType::int32, 14, data);
-        encode32(destination_tag, data);
+        encode32BE(destination_tag, data);
     }
     /// "lastLedgerSequence"
     if (last_ledger_sequence > 0) {
         encodeType(FieldType::int32, 27, data);
-        encode32(last_ledger_sequence, data);
+        encode32BE(last_ledger_sequence, data);
     }
     /// "amount"
     encodeType(FieldType::amount, 1, data);
@@ -63,7 +64,7 @@ Data Transaction::serialize() const {
 
 Data Transaction::getPreImage() const {
     auto preImage = Data();
-    encode32(NETWORK_PREFIX, preImage);
+    encode32BE(NETWORK_PREFIX, preImage);
     append(preImage, serialize());
     return preImage;
 }
@@ -73,7 +74,7 @@ Data Transaction::serializeAmount(int64_t amount) {
         return Data();
     }
     auto data = Data();
-    encode64(uint64_t(amount), data);
+    encode64BE(uint64_t(amount), data);
     /// clear first bit to indicate XRP
     data[0] &= 0x7F;
     /// set second bit to indicate positive number
