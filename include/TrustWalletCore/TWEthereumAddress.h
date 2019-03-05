@@ -12,7 +12,7 @@
 
 TW_EXTERN_C_BEGIN
 
-struct TWPublicKey;
+struct TWPublicKeySecp256k1;
 
 /// Represents an Ethereum address.
 TW_EXPORT_CLASS
@@ -36,7 +36,7 @@ struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey publicKey);
+struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKeySecp256k1 publicKey);
 
 TW_EXPORT_METHOD
 void TWEthereumAddressDelete(struct TWEthereumAddress *_Nonnull address);

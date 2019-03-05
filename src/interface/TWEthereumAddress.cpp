@@ -10,7 +10,7 @@
 #include "../Ethereum/Address.h"
 
 #include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPublicKeySecp256k1.h>
 
 #include <TrezorCrypto/ecdsa.h>
 #include <memory>
@@ -44,9 +44,9 @@ struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_
     return new TWEthereumAddress{ Address(*d) };
 }
 
-struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
+struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKeySecp256k1 publicKey) {
     Data data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
+    if (TWPublicKeySecp256k1IsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
     } else {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);

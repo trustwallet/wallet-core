@@ -9,7 +9,7 @@
 #include "../Ripple/Address.h"
 
 #include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPublicKeySecp256k1.h>
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/ripple/base58.h>
@@ -39,9 +39,9 @@ struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull
     return new TWRippleAddress{ Address(*d) };
 }
 
-struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
+struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKeySecp256k1 publicKey) {
     std::vector<uint8_t> data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
+    if (TWPublicKeySecp256k1IsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
     } else {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);

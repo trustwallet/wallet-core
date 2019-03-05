@@ -17,6 +17,7 @@
 
 using namespace TW;
 using namespace TW::Bitcoin;
+using namespace TW::secp256k1;
 
 template<typename Transaction>
 Result<Transaction> TransactionSigner<Transaction>::sign() {

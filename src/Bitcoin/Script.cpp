@@ -12,7 +12,7 @@
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"
-#include "../PublicKey.h"
+#include "../PublicKeySecp256k1.h"
 #include "../Zcash/TAddress.h"
 
 #include <TrustWalletCore/TWBitcoinOpCodes.h>
@@ -23,6 +23,7 @@
 #include <cassert>
 
 using namespace TW::Bitcoin;
+using namespace TW::secp256k1;
 
 std::vector<uint8_t> Script::hash() const {
     return TW::Hash::ripemd(TW::Hash::sha256(bytes));
@@ -134,7 +135,7 @@ bool Script::matchMultisig(std::vector<std::vector<uint8_t>>& keys, int& require
         if (!res) {
             break;
         }
-        if (!TW::PublicKey::isValid(operand)) {
+        if (!PublicKey::isValid(operand)) {
             break;
         }
         keys.push_back(operand);

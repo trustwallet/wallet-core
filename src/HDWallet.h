@@ -7,8 +7,8 @@
 #pragma once
 
 #include "Data.h"
-#include "PrivateKey.h"
-#include "PublicKey.h"
+#include "PrivateKeySecp256k1.h"
+#include "PublicKeySecp256k1.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHDVersion.h>
@@ -17,6 +17,8 @@
 #include <array>
 #include <optional>
 #include <string>
+
+using namespace TW::secp256k1;
 
 namespace TW {
 

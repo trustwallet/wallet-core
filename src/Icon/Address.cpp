@@ -8,7 +8,7 @@
 
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "../PrivateKey.h"
+#include "../PrivateKeySecp256k1.h"
 
 #include <TrezorCrypto/sha3.h>
 

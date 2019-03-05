@@ -4,12 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "PublicKey.h"
+#include "PublicKeySecp256k1.h"
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/secp256k1.h>
 
 using namespace TW;
+using namespace TW::secp256k1;
 
 PublicKey PublicKey::compressed() const {
     if (isCompressed()) {
@@ -23,5 +24,5 @@ PublicKey PublicKey::compressed() const {
 }
 
 bool PublicKey::verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const {
-    return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
+    return ecdsa_verify_digest(&curve_secp256k1, bytes.data(), signature.data(), message.data()) == 0;
 }

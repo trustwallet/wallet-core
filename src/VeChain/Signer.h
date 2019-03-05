@@ -10,7 +10,7 @@
 
 #include "../Data.h"
 #include "../Hash.h"
-#include "../PrivateKey.h"
+#include "../PrivateKeySecp256k1.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>

@@ -11,8 +11,6 @@
 using namespace TW;
 using namespace TW::Ripple;
 
-const int MIN_FEE = 10;
-const int MAX_FEE = 1000000;
 const int FLAG_FULLY_CANONICAL = 0x80000000;
 
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {

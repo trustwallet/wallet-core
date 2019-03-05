@@ -13,7 +13,7 @@
 
 TW_EXTERN_C_BEGIN
 
-struct TWPublicKey;
+struct TWPublicKeySecp256k1;
 
 /// Represents a Tendermint address.
 TW_EXPORT_CLASS
@@ -37,7 +37,7 @@ struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithKeyHash(enum 
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey);
+struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKeySecp256k1 publicKey);
 
 TW_EXPORT_METHOD
 void TWTendermintAddressDelete(struct TWTendermintAddress *_Nonnull address);

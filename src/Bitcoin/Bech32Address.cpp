@@ -12,6 +12,7 @@
 #include <TrezorCrypto/ecdsa.h>
 
 using namespace TW::Bitcoin;
+using namespace TW::secp256k1;
 typedef std::vector<uint8_t> Data;
 
 bool Bech32Address::isValid(const std::string& addr) {

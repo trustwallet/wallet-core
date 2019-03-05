@@ -19,6 +19,7 @@
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 
 using namespace TW;
+using namespace TW::secp256k1;
 
 namespace {
     HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin);

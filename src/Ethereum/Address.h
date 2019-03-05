@@ -6,11 +6,13 @@
 
 #pragma once
 
-#include "../PublicKey.h"
+#include "../PublicKeySecp256k1.h"
 
 #include <array>
 #include <stdint.h>
 #include <vector>
+
+using namespace TW::secp256k1;
 
 namespace TW {
 namespace Ethereum {

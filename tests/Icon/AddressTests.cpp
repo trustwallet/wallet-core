@@ -6,7 +6,7 @@
 
 #include "Icon/Address.h"
 #include "HexCoding.h"
-#include "PrivateKey.h"
+#include "PrivateKeySecp256k1.h"
 
 #include <gtest/gtest.h>
 

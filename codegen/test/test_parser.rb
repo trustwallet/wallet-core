@@ -43,11 +43,11 @@ class ParserTest < Test::Unit::TestCase
   end
 
   def test_parse_public_key
-    parser = Parser.new(path: File.expand_path(File.join(File.dirname(__FILE__), '../../include/TrustWalletCore/TWPublicKey.h')))
+    parser = Parser.new(path: File.expand_path(File.join(File.dirname(__FILE__), '../../include/TrustWalletCore/TWPublicKeySecp256k1.h')))
     parser.parse
 
     assert_not_nil(parser.entity)
-    assert_equal(parser.entity.name, 'PublicKey')
+    assert_equal(parser.entity.name, 'PublicKeySecp256k1')
     assert_true(parser.entity.is_struct)
   end
 end

@@ -2,7 +2,7 @@ package com.trustwallet.core.app.blockchains;
 
 import wallet.core.jni.Bech32Address;
 import wallet.core.jni.HRP;
-import wallet.core.jni.PublicKey;
+import wallet.core.jni.PublicKeySecp256k1;
 
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ public class TestBech32Address {
                 (byte) 0xd5, (byte) 0x81, (byte) 0x07, (byte) 0xd9, (byte) 0xff, (byte) 0xbc, (byte) 0xe7, (byte) 0x1c,
                 (byte) 0x84, (byte) 0x20, (byte) 0xb7, (byte) 0x79, (byte) 0xf4, (byte) 0x84, (byte) 0xdb, (byte) 0xa1
         };
-        PublicKey publicKey = new PublicKey(data);
+        PublicKeySecp256k1 publicKey = new PublicKeySecp256k1(data);
         Bech32Address address = new Bech32Address(HRP.BITCOIN, publicKey);
         assertEquals(address.description(), "bc1qrq6gs660qewd282en83n6em9s4rlslj3cd2wmg");
     }
@@ -35,7 +35,7 @@ public class TestBech32Address {
                 (byte) 0xd5, (byte) 0x81, (byte) 0x07, (byte) 0xd9, (byte) 0xff, (byte) 0xbc, (byte) 0xe7, (byte) 0x1c,
                 (byte) 0x84, (byte) 0x20, (byte) 0xb7, (byte) 0x79, (byte) 0xf4, (byte) 0x84, (byte) 0xdb, (byte) 0xa1
         };
-        PublicKey publicKey = new PublicKey(data);
+        PublicKeySecp256k1 publicKey = new PublicKeySecp256k1(data);
         Bech32Address address = new Bech32Address(HRP.BITCOIN, publicKey);
         assertEquals(address.description(), "bc1qrq6gs660qewd282en83n6em9s4rlslj3cd2wmg");
     }
