@@ -140,6 +140,24 @@ std::string forgeZarith(int input) {
   return result;
 }
 
+// Forge the given public key into a hex encoded string.
+std::string forgePublicKey(std::string publicKey) {
+  std::string result = "00";
+
+  size_t prefixLength = 4;
+  uint8_t prefix[prefixLength];
+  prefix[0] = 13;
+  prefix[1] = 15;
+  prefix[2] = 37;
+  prefix[3] = 217;
+
+  size_t capacity = 128;
+  uint8_t decoded[capacity];
+  int decodedLength = checkDecodeAndDropPrefix(publicKey, prefixLength, prefix, decoded);
+  result += TW::hex(decoded, decoded + decodedLength);
+  return result;
+}
+
 // Forge an operation with TransactionOperationData.
 std::string forgeTransactionOperation(TW::Tezos::Proto::Operation operation) {
   assert(operation.has_transaction_operation_data());
@@ -152,14 +170,20 @@ std::string forgeTransactionOperation(TW::Tezos::Proto::Operation operation) {
   auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
   auto forgedDestination = forgeAddress(operation.transaction_operation_data().destination());
 
-  return forgedSource + forgedFee + forgedCounter + forgedGasLimit + forgedStorageLimit + forgedAmount +
+  return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit + forgedStorageLimit + forgedAmount +
   forgedDestination + forgeBool(false);
 }
 
 // Forge an operation with RevealOperationData.
 std::string forgeRevealOperation(TW::Tezos::Proto::Operation operation) {
-  // TODO: Implement.
-  return nullptr;
+  auto forgedSource = forgeAddress(operation.source());
+  auto forgedFee = forgeZarith(operation.fee());
+  auto forgedCounter = forgeZarith(operation.counter());
+  auto forgedGasLimit = forgeZarith(operation.gas_limit());
+  auto forgedStorageLimit = forgeZarith(operation.storage_limit());
+  auto forgedPublicKey = forgePublicKey(operation.reveal_operation_data().public_key());
+
+  return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit + forgedStorageLimit + forgedPublicKey;
 }
 
 std::string forgeOperation(TW::Tezos::Proto::Operation operation) {
@@ -172,4 +196,17 @@ std::string forgeOperation(TW::Tezos::Proto::Operation operation) {
       assert(false);
       return nullptr;
   }
+}
+
+std::string forgeOperationList(TW::Tezos::Proto::OperationList operationList) {
+  std::string result = forgeBranch(operationList.branch());
+
+  for (int i = 0; i < operationList.operations_size(); i++) {
+    TW::Tezos::Proto::Operation operation = operationList.operations(i);
+    result += forgeOperation(operation);
+  }
+
+
+
+  return result;
 }
