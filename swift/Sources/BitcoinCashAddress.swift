@@ -71,7 +71,7 @@ public struct BitcoinCashAddress {
         }
     }
 
-    public init(publicKey: PublicKey) {
+    public init(publicKey: PublicKeySecp256k1) {
         rawValue = TWBitcoinCashAddress()
         TWBitcoinCashAddressInitWithPublicKey(&rawValue, publicKey.rawValue)
     }

@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include <TrustWalletCore/TWBitcoinCashAddress.h>
-#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPublicKeySecp256k1.h>
 
 #include "TWJNI.h"
 #include "BitcoinCashAddress.h"
@@ -59,7 +59,7 @@ jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_initWithPublicKey(JNI
     jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
     jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
     jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
+    struct TWPublicKeySecp256k1 *publicKeyInstance = (struct TWPublicKeySecp256k1 *) publicKeyBytesBuffer;
     TWBitcoinCashAddressInitWithPublicKey(instance, *publicKeyInstance);
     (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
     (*env)->DeleteLocalRef(env, publicKeyBytesArray);

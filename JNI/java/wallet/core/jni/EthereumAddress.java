@@ -28,7 +28,7 @@ public class EthereumAddress {
 
     static native long nativeCreateWithString(String string);
     static native long nativeCreateWithKeyHash(byte[] keyHash);
-    static native long nativeCreateWithPublicKey(PublicKey publicKey);
+    static native long nativeCreateWithPublicKey(PublicKeySecp256k1 publicKey);
     static native void nativeDelete(long handle);
 
     public static native boolean equals(EthereumAddress lhs, EthereumAddress rhs);
@@ -54,7 +54,7 @@ public class EthereumAddress {
         EthereumAddressPhantomReference.register(this, nativeHandle);
     }
 
-    public EthereumAddress(PublicKey publicKey) {
+    public EthereumAddress(PublicKeySecp256k1 publicKey) {
         nativeHandle = nativeCreateWithPublicKey(publicKey);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();

@@ -6,9 +6,9 @@
 
 import Foundation
 
-extension PrivateKey: Hashable {
+extension PrivateKeySecp256k1: Hashable {
     /// Private key size in bytes.
-    public static let size = TWPrivateKeySize
+    public static let size = TWPrivateKeySecp256k1Size
 
     // MARK: Hashable
 
@@ -16,7 +16,7 @@ extension PrivateKey: Hashable {
         hasher.combine(data)
     }
 
-    public static func == (lhs: PrivateKey, rhs: PrivateKey) -> Bool {
+    public static func == (lhs: PrivateKeySecp256k1, rhs: PrivateKeySecp256k1) -> Bool {
         return lhs.data == rhs.data
     }
 }

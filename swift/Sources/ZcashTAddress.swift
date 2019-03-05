@@ -67,7 +67,7 @@ public struct ZcashTAddress {
         }
     }
 
-    public init?(publicKey: PublicKey, prefix: UInt8) {
+    public init?(publicKey: PublicKeySecp256k1, prefix: UInt8) {
         rawValue = TWZcashTAddress()
         guard TWZcashTAddressInitWithPublicKey(&rawValue, publicKey.rawValue, prefix) else {
             return nil

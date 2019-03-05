@@ -25,7 +25,7 @@ public class BitcoinCashAddress {
 
     static native byte[] initWithString(String string);
     static native byte[] initWithData(byte[] data);
-    static native byte[] initWithPublicKey(PublicKey publicKey);
+    static native byte[] initWithPublicKey(PublicKeySecp256k1 publicKey);
 
     public static native boolean equals(BitcoinCashAddress lhs, BitcoinCashAddress rhs);
     public static native boolean isValid(byte[] data);
@@ -48,7 +48,7 @@ public class BitcoinCashAddress {
         }
     }
 
-    public BitcoinCashAddress(PublicKey publicKey) {
+    public BitcoinCashAddress(PublicKeySecp256k1 publicKey) {
         bytes = initWithPublicKey(publicKey);
         if (bytes == null) {
             throw new InvalidParameterException();

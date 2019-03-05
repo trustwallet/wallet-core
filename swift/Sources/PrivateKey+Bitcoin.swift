@@ -6,7 +6,7 @@
 
 import Foundation
 
-extension PrivateKey {
+extension PrivateKeySecp256k1 {
     /// Creates a `PrivateKey` from a Bitcoin WIF (wallet import format) string.
 
     static let prefixSet = Set([
@@ -20,7 +20,7 @@ extension PrivateKey {
         guard let decoded = Base58.decode(string: wif) else {
             return nil
         }
-        guard PrivateKey.prefixSet.contains(decoded[0]) else {
+        guard PrivateKeySecp256k1.prefixSet.contains(decoded[0]) else {
             return nil
         }
         if decoded.count == 34 && decoded.last != 0x01 {

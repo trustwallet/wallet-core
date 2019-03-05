@@ -39,7 +39,7 @@ public final class Dash: Bitcoin {
         super.init(purpose: purpose)
     }
 
-    override public func address(for publicKey: PublicKey) -> Address {
+    override public func address(for publicKey: PublicKeySecp256k1) -> Address {
         return BitcoinAddress(publicKey: publicKey, prefix: p2pkhPrefix)
     }
 }
