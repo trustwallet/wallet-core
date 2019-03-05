@@ -25,5 +25,8 @@ Data Signer::signOperation(const PrivateKey& privateKey, OperationList operation
   auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
   auto signature = privateKey.sign(hash);
 
-  return Data(signature.begin(), signature.end());
+  Data result = Data(watermarkedForgedBytesHex.begin(), watermarkedForgedBytesHex.end());
+  Data signature_data = Data(signature.begin(), signature.end());
+  append(result, signature_data);
+  return result;
 }
