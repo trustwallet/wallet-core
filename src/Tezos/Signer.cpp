@@ -11,20 +11,18 @@
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWString.h>
+#include <TrezorCrypto/blake2b.h>
 
 using namespace TW;
 using namespace TW::Tezos;
 
-std::string Signer::signOperation(OperationList operationList) {
+std::string Signer::signOperation(const PrivateKey& privateKey, OperationList operationList) {
   auto forgedBytesHex = operationList.forge();
 
   auto watermark = "03";
   auto watermarkedForgedBytesHex = watermark + forgedBytesHex;
-  auto twStringRep = TWStringCreateWithUTF8Bytes("TODO: Put watermarekdForgedBytesHexHere");
-  auto watermarkedBytes = TWDataCreateWithHexString(twStringRep);
-  auto hashedBytes = TWHashBlake2b(watermarkedBytes, 32);
+  auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
+  auto signature = privateKey.sign(hash);
 
-  // TODO: Figure out how PriveKey is injected, and sign.
-
-  return forgedBytesHex;
+  return signature;
 }
