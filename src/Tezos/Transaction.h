@@ -32,7 +32,9 @@ public:
     TransactionType transaction_type;
 
     Transaction() = default;
-    Transaction(Address source, int64_t fee, int64_t counter, int64_t gas_limit, int64_t storage_limit, int64_t amount, std::variant<Address, PublicKey> destination_or_public_key, TransactionType transaction_type)
+    Transaction(Address source, int64_t fee, int64_t counter, int64_t gas_limit,
+        int64_t storage_limit, int64_t amount, std::variant<Address,
+        PublicKey> destination_or_public_key, TransactionType transaction_type)
     : source(source)
     , fee(fee)
     , counter(counter)
