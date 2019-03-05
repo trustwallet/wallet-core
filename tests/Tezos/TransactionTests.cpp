@@ -11,8 +11,6 @@
 #include <gtest/gtest.h>
 using namespace TW::Tezos;
 
-// Tezos::PublicKey(""),
-
 TEST(TezosTransaction, serializePayment) {
   TransactionType type = TransactionType::PAYMENT;
   auto tx1 = Transaction(
@@ -26,7 +24,7 @@ TEST(TezosTransaction, serializePayment) {
     type
   );
   auto expected = "08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
-  auto serialized1 = tx1.serialize();
+  auto serialized1 = tx1.forge();
 
   ASSERT_EQ(serialized1, expected);
 }
@@ -44,7 +42,7 @@ TEST(TezosTransaction, serializeReveal) {
     type
   );
   auto expected = "07000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
-  auto serialized1 = tx1.serialize();
+  auto serialized1 = tx1.forge();
 
   ASSERT_EQ(serialized1, expected);
 }

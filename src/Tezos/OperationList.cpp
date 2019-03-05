@@ -6,17 +6,18 @@
 
 #include "Address.h"
 #include "HexCoding.h"
+#include "OperationList.h"
 #include "Transaction.h"
 #include "TWTezosForger.h"
 
 using namespace TW;
 using namespace TW::Tezos;
 
-Address::Address(const std::string& str) {
+OperationList::OperationList(const std::string& str) {
   branch = str;
 }
 
-void add_operation(Transaction transaction) {
+void OperationList::add_operation(Transaction transaction) {
   operation_list.push_back(transaction);
 }
 

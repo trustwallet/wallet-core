@@ -14,7 +14,7 @@
 using namespace std;
 using namespace TW::Tezos;
 
-string Transaction::serialize() {
+string Transaction::forge() {
   auto forgedSource = source.forge();
   auto forgedFee = forgeZarith(fee);
   auto forgedCounter = forgeZarith(counter);

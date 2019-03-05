@@ -21,5 +21,5 @@ public:
 
 /// Wrapper for C interface.
 struct TWTezosPublicKey {
-    TW::Tezos::Address impl;
+    TW::Tezos::PublicKey impl;
 };
