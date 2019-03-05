@@ -96,7 +96,7 @@ std::string forgeAddress(const std::string address) {
     result += TW::hex(decoded, decoded + decodedLength);
     result += "00";
   } else {
-    // tz1 address
+    // implicit address
     result += "00";
     result += forgePublicKeyHash(address);
   }
