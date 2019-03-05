@@ -33,5 +33,6 @@ npm run generate
 popd
 
 # Generate Proto interface file
+cmake -H. -Bbuild
 make -Cbuild protoc-gen-int
 "$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=build/protobuf-plugin/protoc-gen-int --int_out include/TrustWalletCore src/proto/*.proto
