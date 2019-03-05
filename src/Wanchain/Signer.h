@@ -31,6 +31,9 @@ public:
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept;
 
+    /// Encodes a transaction.
+    Data encode(const Ethereum::Transaction& transaction) const noexcept;
+
 protected:
     /// Computes the transaction hash.
     Data hash(const Ethereum::Transaction& transaction) const noexcept;

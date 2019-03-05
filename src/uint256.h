@@ -15,11 +15,24 @@ using int256_t = boost::multiprecision::int256_t;
 using uint256_t = boost::multiprecision::uint256_t;
 
 /// Loads a `uint256_t` from a collection of bytes.
-template <typename D>
-uint256_t load(const D& data) {
+inline uint256_t load(const Data& data) {
     using boost::multiprecision::cpp_int;
+    if (std::empty(data)) {
+        return uint256_t(0);
+    }
     uint256_t result;
-    import_bits(result, std::cbegin(data), std::cend(data));
+    import_bits(result, data.begin(), data.end());
+    return result;
+}
+
+/// Loads a `uint256_t` from Protobuf bytes (which are wrongly represented as std::string).
+inline uint256_t load(const std::string& data) {
+    using boost::multiprecision::cpp_int;
+    if (std::empty(data)) {
+        return uint256_t(0);
+    }
+    uint256_t result;
+    import_bits(result, reinterpret_cast<const byte*>(data.data()), reinterpret_cast<const byte*>(data.data() + data.size()));
     return result;
 }
 

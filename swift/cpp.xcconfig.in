@@ -4,4 +4,5 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-HEADER_SEARCH_PATHS = $SRCROOT/../src @Boost_INCLUDE_DIRS@ @JSON_INCLUDE_DIR@
+HEADER_SEARCH_PATHS = $(SRCROOT)/../src @Boost_INCLUDE_DIRS@
+SYSTEM_HEADER_SEARCH_PATHS = $(SRCROOT)/../src/build/local/include $(SRCROOT)/../build/protobuf/staging/protobuf-3.7.0/src

@@ -9,8 +9,8 @@
 #include "Address.h"
 #include "Bech32Address.h"
 #include "CashAddress.h"
-#include "BinaryCoding.h"
 
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../PublicKey.h"
 #include "../Zcash/TAddress.h"
@@ -184,13 +184,13 @@ bool Script::getScriptOp(size_t& index, uint8_t& opcode, std::vector<uint8_t>& o
         if (bytes.size() - index < 2) {
             return false;
         }
-        size = static_cast<size_t>(decode16(bytes.data() + index));
+        size = static_cast<size_t>(decode16LE(bytes.data() + index));
         index += 2;
     } else if (opcode == OP_PUSHDATA4) {
         if (bytes.size() - index < 4) {
             return false;
         }
-        size = static_cast<size_t>(decode32(bytes.data() + index));
+        size = static_cast<size_t>(decode32LE(bytes.data() + index));
         index += 4;
     }
     if (bytes.size() - index < size) {
@@ -243,7 +243,7 @@ Script Script::buildPayToWitnessScriptHash(const std::vector<uint8_t>& scriptHas
 }
 
 void Script::encode(std::vector<uint8_t>& data) const {
-    Bitcoin::writeCompactSize(bytes.size(), data);
+    writeCompactSize(bytes.size(), data);
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 

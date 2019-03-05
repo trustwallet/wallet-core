@@ -192,7 +192,7 @@ public final class Ethereum {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -449,25 +449,24 @@ public final class Ethereum {
       }
       wallet.core.jni.proto.Ethereum.SigningInput other = (wallet.core.jni.proto.Ethereum.SigningInput) obj;
 
-      boolean result = true;
-      result = result && getChainId()
-          .equals(other.getChainId());
-      result = result && getNonce()
-          .equals(other.getNonce());
-      result = result && getGasPrice()
-          .equals(other.getGasPrice());
-      result = result && getGasLimit()
-          .equals(other.getGasLimit());
-      result = result && getToAddress()
-          .equals(other.getToAddress());
-      result = result && getAmount()
-          .equals(other.getAmount());
-      result = result && getPayload()
-          .equals(other.getPayload());
-      result = result && getPrivateKey()
-          .equals(other.getPrivateKey());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getChainId()
+          .equals(other.getChainId())) return false;
+      if (!getNonce()
+          .equals(other.getNonce())) return false;
+      if (!getGasPrice()
+          .equals(other.getGasPrice())) return false;
+      if (!getGasLimit()
+          .equals(other.getGasLimit())) return false;
+      if (!getToAddress()
+          .equals(other.getToAddress())) return false;
+      if (!getAmount()
+          .equals(other.getAmount())) return false;
+      if (!getPayload()
+          .equals(other.getPayload())) return false;
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -686,35 +685,35 @@ public final class Ethereum {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1160,7 +1159,7 @@ public final class Ethereum {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1306,7 +1305,7 @@ public final class Ethereum {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1443,17 +1442,16 @@ public final class Ethereum {
       }
       wallet.core.jni.proto.Ethereum.SigningOutput other = (wallet.core.jni.proto.Ethereum.SigningOutput) obj;
 
-      boolean result = true;
-      result = result && getEncoded()
-          .equals(other.getEncoded());
-      result = result && getV()
-          .equals(other.getV());
-      result = result && getR()
-          .equals(other.getR());
-      result = result && getS()
-          .equals(other.getS());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getEncoded()
+          .equals(other.getEncoded())) return false;
+      if (!getV()
+          .equals(other.getV())) return false;
+      if (!getR()
+          .equals(other.getR())) return false;
+      if (!getS()
+          .equals(other.getS())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1652,35 +1650,35 @@ public final class Ethereum {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1865,7 +1863,7 @@ public final class Ethereum {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override

@@ -29,7 +29,7 @@ module JNIHelper
     if parts.count == 3
       "wallet/core/jni/proto/Common$#{parts.last}"
     else
-      "wallet/core/jni/proto/#{parts[2]}$#{parts[3]}"
+      "wallet/core/jni/proto/#{parts[1]}$#{parts[3]}"
     end
   end
 

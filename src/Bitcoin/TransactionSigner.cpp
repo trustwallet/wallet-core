@@ -8,9 +8,9 @@
 
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
-#include "BinaryCoding.h"
 #include "UnspentSelector.h"
 
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../Zcash/Transaction.h"
@@ -222,10 +222,10 @@ Data TransactionSigner<Transaction>::pushAll(const std::vector<Data>& results) {
             data.push_back(static_cast<uint8_t>(result.size()));
         } else if (result.size() <= 0xffff) {
             data.push_back(OP_PUSHDATA2);
-            encode16(result.size(), data);
+            encode16LE(result.size(), data);
         } else {
             data.push_back(OP_PUSHDATA4);
-            encode32(result.size(), data);
+            encode32LE(result.size(), data);
         }
         std::copy(begin(result), end(result), back_inserter(data));
     }
