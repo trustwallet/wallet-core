@@ -41,8 +41,7 @@ TEST(TWTezosAddress, TestValidAddresses) {
     ASSERT_TRUE(TWTezosAddressInitWithString(tezosAddress, tezosAddressString));
 
     TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
-    // TODO: Why does this line crash the test?
-    // ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));
+    ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));
   }
 }
 
