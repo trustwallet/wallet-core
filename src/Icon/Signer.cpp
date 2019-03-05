@@ -9,7 +9,7 @@
 #include "../Base64.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "../PrivateKey.h"
+#include "../PrivateKeySecp256k1.h"
 #include "../uint256.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
@@ -21,6 +21,7 @@
 
 using namespace TW;
 using namespace TW::Icon;
+using namespace TW::secp256k1;
 
 std::string to_hex(int64_t i) {
     std::stringstream ss;

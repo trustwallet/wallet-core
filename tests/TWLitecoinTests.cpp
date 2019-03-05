@@ -13,13 +13,13 @@
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
-#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
 
 #include <gtest/gtest.h>
 
 TEST(Litecoin, LegacyAddress) {
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
-    auto publicKey = TWPrivateKeyGetPublicKey(privateKey.get(), true);
+    auto privateKey = WRAP(TWPrivateKeySecp256k1, TWPrivateKeySecp256k1CreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
+    auto publicKey = TWPrivateKeySecp256k1GetPublicKey(privateKey.get(), true);
     auto address = TWBitcoinAddress();
     TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixLitecoin);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
@@ -27,8 +27,8 @@ TEST(Litecoin, LegacyAddress) {
 }
 
 TEST(Litecoin, Address) {
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625").get()));
-    auto publicKey = TWPrivateKeyGetPublicKey(privateKey.get(), true);
+    auto privateKey = WRAP(TWPrivateKeySecp256k1, TWPrivateKeySecp256k1CreateWithData(DATA("55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625").get()));
+    auto publicKey = TWPrivateKeySecp256k1GetPublicKey(privateKey.get(), true);
     auto address = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPLitecoin, publicKey));
     auto string = WRAPS(TWBech32AddressDescription(address.get()));
 

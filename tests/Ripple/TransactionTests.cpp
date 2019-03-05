@@ -8,8 +8,8 @@
 #include "Ripple/Transaction.h"
 #include "Ripple/BinaryCoding.h"
 #include "HexCoding.h"
-#include "PrivateKey.h"
-#include "PublicKey.h"
+#include "PrivateKeySecp256k1.h"
+#include "PublicKeySecp256k1.h"
 
 #include <gtest/gtest.h>
 

@@ -11,7 +11,7 @@
 #include "Bitcoin/TransactionSigner.h"
 #include "Hash.h"
 #include "HexCoding.h"
-#include "PrivateKey.h"
+#include "PrivateKeySecp256k1.h"
 #include "proto/Bitcoin.pb.h"
 #include "TWTestUtilities.h"
 
@@ -19,12 +19,13 @@
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWBitcoinTransactionSigner.h>
 #include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Bitcoin;
+using namespace TW::secp256k1;
 
 TEST(BitcoinSigning, EncodeP2WPKH) {
     auto emptyScript = WRAP(TWBitcoinScript, TWBitcoinScriptCreate());

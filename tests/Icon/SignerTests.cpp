@@ -6,10 +6,12 @@
 
 #include "HexCoding.h"
 #include "Icon/Signer.h"
-#include "PrivateKey.h"
+#include "PrivateKeySecp256k1.h"
 #include "uint256.h"
 
 #include <gtest/gtest.h>
+
+using namespace TW::secp256k1;
 
 namespace TW {
 namespace Icon {

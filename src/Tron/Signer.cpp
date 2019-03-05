@@ -18,6 +18,7 @@
 
 using namespace TW;
 using namespace TW::Tron;
+using namespace TW::secp256k1;
 
 size_t base58Capacity = 128;
 

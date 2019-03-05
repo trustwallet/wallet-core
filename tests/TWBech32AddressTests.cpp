@@ -7,7 +7,7 @@
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWBech32Address.h>
-#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPublicKeySecp256k1.h>
 
 #include <gtest/gtest.h>
 
@@ -16,8 +16,8 @@ const char *address2 = "bc1qr583w2swedy2acd7rung055k8t3n7udp7vyzyg";
 
 TEST(TWBech32Address, PublicKeyToAddress) {
     auto pkData = DATA("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798");
-    auto publicKey = TWPublicKey();
-    TWPublicKeyInitWithData(&publicKey, pkData.get());
+    auto publicKey = TWPublicKeySecp256k1();
+    TWPublicKeySecp256k1InitWithData(&publicKey, pkData.get());
     
     auto address = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPBitcoin, publicKey));
     auto string = WRAPS(TWBech32AddressDescription(address.get()));

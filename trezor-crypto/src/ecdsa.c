@@ -934,7 +934,7 @@ void uncompress_coords(const ecdsa_curve *curve, uint8_t odd, const bignum256 *x
 int ecdsa_read_pubkey(const ecdsa_curve *curve, const uint8_t *pub_key, curve_point *pub)
 {
 	if (!curve) {
-		curve = &secp256k1;
+		curve = &curve_secp256k1;
 	}
 	if (pub_key[0] == 0x04) {
 		bn_read_be(pub_key + 1, &(pub->x));

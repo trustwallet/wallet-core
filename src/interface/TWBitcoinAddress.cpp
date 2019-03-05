@@ -8,7 +8,7 @@
 
 #include "../Bitcoin/Address.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPublicKeySecp256k1.h>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
@@ -61,10 +61,10 @@ bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWD
     return true;
 }
 
-void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
+void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKeySecp256k1 publicKey, uint8_t prefix) {
     address->bytes[0] = prefix;
 
-    auto compressed = TWPublicKeyCompressed(publicKey);
+    auto compressed = TWPublicKeySecp256k1Compressed(publicKey);
     ecdsa_get_pubkeyhash(compressed.bytes, HASHER_SHA2_RIPEMD,  address->bytes + 1);
 }
 
