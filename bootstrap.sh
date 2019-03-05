@@ -5,12 +5,12 @@ set -e
 
 echo "#### Initializing... ####"
 tools/install-dependencies
-cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
 
 echo "#### Generating files... ####"
 tools/generate-files
 
 echo "#### Building... ####"
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
 make -Cbuild tests
 
 echo "#### Testing... ####"
