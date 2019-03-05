@@ -22,8 +22,8 @@ jobject JNICALL Java_wallet_core_jni_RippleSigner_sign(JNIEnv *env, jclass thisC
     jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
     TWData *inputData = TWDataCreateWithJByteArray(env, inputByteArray);
     jbyteArray resultData = TWDataJByteArray(TWRippleSignerSign(inputData), env);
-    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Proto$SigningOutput");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Proto$SigningOutput;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Ripple$SigningOutput");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Ripple$SigningOutput;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);
