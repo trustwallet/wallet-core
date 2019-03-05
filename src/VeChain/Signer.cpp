@@ -16,6 +16,6 @@ using namespace TW::VeChain;
 Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
     auto encoded = transaction.encode();
     auto hash = Hash::blake2b(encoded, 32);
-    auto signature = privateKey.sign(hash);
+    auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return Data(signature.begin(), signature.end());
 }

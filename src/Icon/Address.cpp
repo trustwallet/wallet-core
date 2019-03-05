@@ -51,7 +51,7 @@ Address::Address(const std::vector<uint8_t>& data, TWIconAddressType type) : typ
 
 Address::Address(const PublicKey& publicKey, TWIconAddressType type) : type(type) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
-    sha3_256(publicKey.bytes.data() + 1, PublicKey::uncompressedSize - 1, hash.data());
+    sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 
