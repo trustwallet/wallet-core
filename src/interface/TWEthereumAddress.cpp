@@ -47,9 +47,9 @@ struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_
 struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
     Data data;
     if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
+        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::secp256k1Size);
     } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
+        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::secp256k1ExtendedSize);
     }
     return new TWEthereumAddress{ Address(PublicKey(data)) };
 }

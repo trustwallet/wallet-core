@@ -6,6 +6,11 @@
 
 #pragma once
 
+#include "Data.h"
+#include "PublicKey.h"
+
+#include <TrustWalletCore/TWCurve.h>
+
 #include <array>
 #include <vector>
 
@@ -49,14 +54,14 @@ public:
 
     ~PrivateKey();
 
-    /// Returns the public key data for this private key.
-    std::vector<uint8_t> getPublicKey(bool compressed) const;
+    /// Returns the public key for this private key.
+    PublicKey getPublicKey(PublicKeyType type) const;
 
-    /// Signs a digest using ECDSA secp256k1.
-    std::array<uint8_t, 65> sign(const std::vector<uint8_t>&  digest) const;
+    /// Signs a digest using the given ECDSA curve.
+    Data sign(const Data& digest, TWCurve curve) const;
 
-    /// Signs a digest using ECDSA secp256k1. The result is encoded with DER.
-    std::vector<uint8_t> signAsDER(const std::vector<uint8_t>&  digest) const;
+    /// Signs a digest using the given ECDSA curve. The result is encoded with DER.
+    Data signAsDER(const Data& digest, TWCurve curve) const;
 };
 
 inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes == rhs.bytes; }

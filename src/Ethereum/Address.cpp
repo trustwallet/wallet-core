@@ -34,7 +34,7 @@ Address::Address(const std::vector<uint8_t>& data) {
 
 Address::Address(const PublicKey& publicKey) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
-    keccak_256(publicKey.bytes.data() + 1, PublicKey::uncompressedSize - 1, hash.data());
+    keccak_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 
