@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "OperationList.h"
 #include <string>
 
 #include "proto/Tezos.pb.h"
@@ -18,6 +19,7 @@ class Signer {
 public:
     /// Signs the given transaction.
     std::string signOperation(Tezos::Proto::OperationList);
+    std::string signOperation(OperationList);
 };
 
 }} // namespace

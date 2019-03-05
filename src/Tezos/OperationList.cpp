@@ -24,9 +24,8 @@ std::string OperationList::forge() const {
   // TODO: branch can be refactored to a general datatype with prefix and content
   std::string result = forgeBranch(branch);
 
-  for (int i = 0; i < transaction_list.size(); i++) {
-    Transaction t = operation_list[i];
-    result += forgeOperation(operation);
+  for (auto operation : operation_list) {
+    result += operation.forge();
   }
   return result;
 }

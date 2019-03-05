@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Transaction"
+#include "Transaction.h"
 #include "proto/Tezos.pb.h"
 #include <string>
 
@@ -9,7 +9,7 @@ namespace Tezos {
 
 class OperationList {
 public:
-    string branch;
+    std::string branch;
     std::vector< Transaction > operation_list;
     OperationList(const std::string& string);
     void add_operation(Transaction transaction);
