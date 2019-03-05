@@ -1,0 +1,32 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#include "Address.h"
+#include "HexCoding.h"
+#include "OperationList.h"
+#include "Transaction.h"
+#include "TWTezosForger.h"
+
+using namespace TW;
+using namespace TW::Tezos;
+
+OperationList::OperationList(const std::string& str) {
+  branch = str;
+}
+
+void OperationList::add_operation(Transaction transaction) {
+  operation_list.push_back(transaction);
+}
+
+std::string OperationList::forge() const {
+  // TODO: branch can be refactored to a general datatype with prefix and content
+  std::string result = forgeBranch(branch);
+
+  for (auto operation : operation_list) {
+    result += operation.forge();
+  }
+  return result;
+}

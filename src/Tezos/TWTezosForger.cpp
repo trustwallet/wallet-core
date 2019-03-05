@@ -7,6 +7,7 @@
 #include "HexCoding.h"
 #include <string>
 #include <sstream>
+#include <stdexcept>
 #include <array>
 #include <TrezorCrypto/base58.h>
 
@@ -22,7 +23,7 @@ int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint
   // Verify that the prefix was correct.
   for (int i = 0; i < prefixLength; i++) {
     if (decodedInput[i] != prefix[i]) {
-      return 0;
+      throw std::invalid_argument( "Invalid Prefix" );
     }
   }
 
@@ -36,16 +37,12 @@ int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint
 // Forge the given branch to a hex encoded string.
 std::string forgeBranch(const std::string branch) {
   size_t capacity = 128;
-  uint8_t decodedBranch[capacity];
-
-  // TODO: There must be a better way to initialize arrays.
+  uint8_t decoded[capacity];
   size_t prefixLength = 2;
-  uint8_t prefix[prefixLength];
-  prefix[0] = 1;
-  prefix[1] = 52;
-  int decodedBranchLength = checkDecodeAndDropPrefix(branch, prefixLength, prefix, decodedBranch);
+  uint8_t prefix[] = {1, 52};
 
-  return TW::hex(decodedBranch, decodedBranch + decodedBranchLength);
+  int decodedLength = checkDecodeAndDropPrefix(branch, prefixLength, prefix, decoded);
+  return TW::hex(decoded, decoded + decodedLength);
 }
 
 // Forge the given boolean into a hex encoded string.
@@ -54,14 +51,13 @@ std::string forgeBool(bool input) {
 }
 
 // Forge the given public key hash into a hex encoded string.
-// Note: This function only supports tz1 addresses.
+// Note: This function supports tz1, tz2 and tz3 addresses.
 std::string forgePublicKeyHash(const std::string &publicKeyHash) {
-  size_t prefixLength = 3;
-  uint8_t prefix[prefixLength];
-  prefix[0] = 6;
-  prefix[1] = 161;
-
   std::string result = "0";
+  size_t prefixLength = 3;
+  uint8_t prefix[] = {6, 161, 0};
+  size_t capacity = 128;
+  uint8_t decoded[capacity];
 
   // Adjust prefix based on tz1, tz2 or tz3.
   switch (publicKeyHash[2]) {
@@ -78,14 +74,9 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
       prefix[2] = 164;
       break;
     default:
-      assert(false);
-      return nullptr;
+      throw std::invalid_argument( "Invalid Prefix" );
   }
-
-  size_t capacity = 128;
-  uint8_t decoded[capacity];
   int decodedLength = checkDecodeAndDropPrefix(publicKeyHash, prefixLength, prefix, decoded);
-
   result += TW::hex(decoded, decoded + decodedLength);
   return result;
 }
@@ -96,11 +87,7 @@ std::string forgeAddress(const std::string address) {
   std::string result = "";
   if (address[0] == 'K') {
     size_t prefixLength = 3;
-    uint8_t prefix[prefixLength];
-    prefix[0] = 2;
-    prefix[1] = 90;
-    prefix[2] = 121;
-
+    uint8_t prefix[3] = {2, 90, 121};
     size_t capacity = 128;
     uint8_t decoded[capacity];
 
@@ -109,7 +96,8 @@ std::string forgeAddress(const std::string address) {
     result += TW::hex(decoded, decoded + decodedLength);
     result += "00";
   } else {
-    result = result + "00";
+    // implicit address
+    result += "00";
     result += forgePublicKeyHash(address);
   }
   return result;
@@ -142,25 +130,20 @@ std::string forgeZarith(int input) {
 
 // Forge the given public key into a hex encoded string.
 std::string forgePublicKey(std::string publicKey) {
-  std::string result = "00";
-
   size_t prefixLength = 4;
-  uint8_t prefix[prefixLength];
-  prefix[0] = 13;
-  prefix[1] = 15;
-  prefix[2] = 37;
-  prefix[3] = 217;
-
+  uint8_t prefix[] = {13, 15, 37, 217};
   size_t capacity = 128;
   uint8_t decoded[capacity];
   int decodedLength = checkDecodeAndDropPrefix(publicKey, prefixLength, prefix, decoded);
-  result += TW::hex(decoded, decoded + decodedLength);
-  return result;
+
+  return "00" + TW::hex(decoded, decoded + decodedLength);
 }
 
 // Forge an operation with TransactionOperationData.
 std::string forgeTransactionOperation(TW::Tezos::Proto::Operation operation) {
-  assert(operation.has_transaction_operation_data());
+  if (!operation.has_transaction_operation_data()) {
+    throw std::invalid_argument( "Operation does not have transaction operation data" );
+  };
 
   auto forgedSource = forgeAddress(operation.source());
   auto forgedFee = forgeZarith(operation.fee());
@@ -170,8 +153,8 @@ std::string forgeTransactionOperation(TW::Tezos::Proto::Operation operation) {
   auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
   auto forgedDestination = forgeAddress(operation.transaction_operation_data().destination());
 
-  return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit + forgedStorageLimit + forgedAmount +
-  forgedDestination + forgeBool(false);
+  return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+      + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
 }
 
 // Forge an operation with RevealOperationData.
@@ -193,16 +176,14 @@ std::string forgeOperation(TW::Tezos::Proto::Operation operation) {
     case TW::Tezos::Proto::Operation_OperationKind_TRANSACTION:
       return forgeTransactionOperation(operation);
     default:
-      assert(false);
-      return nullptr;
+      throw std::invalid_argument( "Invalid Operation Kind" );
   }
 }
 
 std::string forgeOperationList(TW::Tezos::Proto::OperationList operationList) {
   std::string result = forgeBranch(operationList.branch());
 
-  for (int i = 0; i < operationList.operations_size(); i++) {
-    TW::Tezos::Proto::Operation operation = operationList.operations(i);
+  for (auto operation : operationList.operations()) {
     result += forgeOperation(operation);
   }
   return result;
