@@ -11,6 +11,9 @@ using namespace TW;
 using namespace TW::Wanchain;
 
 void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept {
+    transaction.v = chainID;
+    transaction.r = 0;
+    transaction.s = 0;
     auto hash = this->hash(transaction);
     auto tuple = Ethereum::Signer::sign(chainID, privateKey, hash);
 
@@ -19,7 +22,7 @@ void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transacti
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
+Data Signer::encode(const Ethereum::Transaction& transaction) const noexcept {
     auto encoded = Data();
     append(encoded, Ethereum::RLP::encode(1));
     append(encoded, Ethereum::RLP::encode(transaction.nonce));
@@ -28,8 +31,13 @@ Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
     append(encoded, Ethereum::RLP::encode(transaction.to.bytes));
     append(encoded, Ethereum::RLP::encode(transaction.amount));
     append(encoded, Ethereum::RLP::encode(transaction.payload));
-    append(encoded, Ethereum::RLP::encode(chainID));
-    append(encoded, Ethereum::RLP::encode(0));
-    append(encoded, Ethereum::RLP::encode(0));
-    return Hash::keccak256(Ethereum::RLP::encodeList(encoded));
+    append(encoded, Ethereum::RLP::encode(transaction.v));
+    append(encoded, Ethereum::RLP::encode(transaction.r));
+    append(encoded, Ethereum::RLP::encode(transaction.s));
+    return Ethereum::RLP::encodeList(encoded);
+}
+
+Data Signer::hash(const Ethereum::Transaction& transaction) const noexcept {
+    const auto encoded = Signer::encode(transaction);
+    return Hash::keccak256(encoded);
 }

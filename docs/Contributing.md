@@ -19,7 +19,7 @@ Keep this in mind when adding to the library:
 
 * Install Xcode
 * Install Xcode command line tools: `xcode-select --install`
-* Install CMake, boost, protobuf: `brew install cmake ninja boost protobuf swift-protobuf autoconf automake libtool`
+* Install CMake, boost, protobuf: `brew install cmake ninja boost autoconf automake libtool`
 * Install [Android Studio](https://developer.android.com/studio/index.html)
 * Install the [Android NDK](https://developer.android.com/ndk/guides/)
 
@@ -44,19 +44,19 @@ This project has a number of different pieces. Each piece lives in its own subfo
 
 Use the `bootstrap.sh` script in the root folder to quickly build and test.
 
-The build pipeline uses CMake. If you add or rename files you need to re-run cmake: `cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DGIT_SUBMODULE=OFF`. If you only change existing files and want to run the tests you only need to run make: `make -C build tests`.
+The build pipeline uses CMake. If you add or rename files you need to re-run cmake: `cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug`. If you only change existing files and want to run the tests you only need to run make: `make -C build tests`.
 
 If you change interface files in the include folder you need to regenerate the interface code: `codegen/bin/codegen`. Run `codegen/bin/codegen -h` to get usage information on the tool. Note that currently if you add a new interface header file you need to manually add that file as a public header to the iOS project, otherwise iOS tests will fail.
 
 ## Testing
 
-Use the `bootstrap.sh` script in the root folder to quickly build and test. After you have run either `bootstrap.sh` or `cmake`, run `make -C build tests && build/tests/tests`. This will run all the C++ tests. To run integration tests on each platform run the respective script in the tools folder:
+Use the `bootstrap.sh` script in the root folder to quickly build and test. After you have run either `bootstrap.sh` or `cmake`, run `make -C build tests && build/tests/tests tests`. This will run all the C++ tests. To run integration tests on each platform run the respective script in the tools folder:
 * Android: `tools/android-test`
 * iOS: `tools/ios-test`
 
 How to generate a Xcode project:
 
-`cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug -DGIT_SUBMODULE=OFF`
+`cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug`
 
 ## C Headers
 
