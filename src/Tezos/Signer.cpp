@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "HexCoding.h"
 #include "OperationList.h"
 #include "Signer.h"
 

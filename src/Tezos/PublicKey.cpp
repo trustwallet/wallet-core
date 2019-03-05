@@ -8,6 +8,7 @@
 #include "PublicKey.h"
 #include "HexCoding.h"
 
+using namespace TW;
 using namespace TW::Tezos;
 
 PublicKey::PublicKey(const std::string& pkey) {
@@ -21,5 +22,5 @@ std::string PublicKey::forge() const {
   uint8_t decoded[capacity];
   int decodedLength = checkDecodeAndDropPrefix(public_key, prefixLength, prefix, decoded);
 
-  return "00" + TW::hex(decoded, decoded + decodedLength);
+  return "00" + hex(decoded, decoded + decodedLength);
 }

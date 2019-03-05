@@ -1,8 +1,5 @@
 #pragma once
 
-#include "../Data.h"
-#include "../PublicKey.h"
-
 #include <string>
 
 namespace TW {

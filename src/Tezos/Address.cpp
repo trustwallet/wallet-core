@@ -8,9 +8,6 @@
 #include "BinaryCoding.h"
 #include "HexCoding.h"
 
-#include <TrezorCrypto/base58.h>
-#include <TrezorCrypto/ecdsa.h>
-
 using namespace TW;
 using namespace TW::Tezos;
 
