@@ -11,6 +11,9 @@ using namespace TW;
 using namespace TW::Wanchain;
 
 void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept {
+    transaction.v = chainID;
+    transaction.r = 0;
+    transaction.s = 0;
     auto hash = this->hash(transaction);
     auto tuple = Ethereum::Signer::sign(chainID, privateKey, hash);
 
@@ -28,9 +31,9 @@ Data Signer::encode(const Ethereum::Transaction& transaction) const noexcept {
     append(encoded, Ethereum::RLP::encode(transaction.to.bytes));
     append(encoded, Ethereum::RLP::encode(transaction.amount));
     append(encoded, Ethereum::RLP::encode(transaction.payload));
-    append(encoded, Ethereum::RLP::encode(chainID));
-    append(encoded, Ethereum::RLP::encode(0));
-    append(encoded, Ethereum::RLP::encode(0));
+    append(encoded, Ethereum::RLP::encode(transaction.v));
+    append(encoded, Ethereum::RLP::encode(transaction.r));
+    append(encoded, Ethereum::RLP::encode(transaction.s));
     return Ethereum::RLP::encodeList(encoded);
 }
 
