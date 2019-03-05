@@ -23,7 +23,7 @@
 
 #include <TrezorCrypto/secp256k1.h>
 
-const ecdsa_curve curve_secp256k1 = {
+const ecdsa_curve secp256k1 = {
 	/* .prime */ {
 		/*.val =*/ {0x3ffffc2f, 0x3ffffffb, 0x3fffffff, 0x3fffffff, 0x3fffffff, 0x3fffffff, 0x3fffffff, 0x3fffffff, 0xffff}
 	},
@@ -55,7 +55,7 @@ const ecdsa_curve curve_secp256k1 = {
 
 const curve_info secp256k1_info = {
 	.bip32_name = "Bitcoin seed",
-	.params = &curve_secp256k1,
+	.params = &secp256k1,
 	.hasher_base58 = HASHER_SHA2D,
 	.hasher_sign = HASHER_SHA2D,
 	.hasher_pubkey = HASHER_SHA2_RIPEMD,
@@ -64,7 +64,7 @@ const curve_info secp256k1_info = {
 
 const curve_info secp256k1_decred_info = {
 	.bip32_name = "Bitcoin seed",
-	.params = &curve_secp256k1,
+	.params = &secp256k1,
 	.hasher_base58 = HASHER_BLAKED,
 	.hasher_sign = HASHER_BLAKE,
 	.hasher_pubkey = HASHER_BLAKE_RIPEMD,
@@ -73,7 +73,7 @@ const curve_info secp256k1_decred_info = {
 
 const curve_info secp256k1_smart_info = {
 	.bip32_name = "Bitcoin seed",
-	.params = &curve_secp256k1,
+	.params = &secp256k1,
 	.hasher_base58 = HASHER_SHA3K,
 	.hasher_sign = HASHER_SHA2,
 	.hasher_pubkey = HASHER_SHA2_RIPEMD,

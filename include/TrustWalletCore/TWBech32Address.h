@@ -13,7 +13,7 @@
 
 TW_EXTERN_C_BEGIN
 
-struct TWPublicKeySecp256k1;
+struct TWPublicKey;
 
 /// Represents a BIP 0173 address.
 TW_EXPORT_CLASS
@@ -37,7 +37,7 @@ struct TWBech32Address *_Nullable TWBech32AddressCreateWithData(enum TWHRP hrp, 
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKeySecp256k1 publicKey);
+struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey);
 
 TW_EXPORT_METHOD
 void TWBech32AddressDelete(struct TWBech32Address *_Nonnull address);

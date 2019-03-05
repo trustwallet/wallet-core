@@ -12,7 +12,6 @@
 #include <cassert>
 
 using namespace TW::Zcash;
-using namespace TW::secp256k1;
 
 bool TAddress::isValid(const std::string& string) {
     size_t capacity = 128;

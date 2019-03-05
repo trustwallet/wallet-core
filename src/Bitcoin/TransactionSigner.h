@@ -12,7 +12,7 @@
 #include "TransactionBuilder.h"
 #include "TransactionInput.h"
 #include "../Hash.h"
-#include "../PrivateKeySecp256k1.h"
+#include "../PrivateKey.h"
 #include "../Result.h"
 #include "../proto/Bitcoin.pb.h"
 #include "../Zcash/Transaction.h"

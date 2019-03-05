@@ -8,7 +8,7 @@
 
 #include "../Data.h"
 #include "../Hash.h"
-#include "../PrivateKeySecp256k1.h"
+#include "../PrivateKey.h"
 #include "Transaction.h"
 
 namespace TW {

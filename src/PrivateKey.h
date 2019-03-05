@@ -10,7 +10,6 @@
 #include <vector>
 
 namespace TW {
-namespace ed25519 {
 
 class PrivateKey {
 public:
@@ -51,18 +50,21 @@ public:
     ~PrivateKey();
 
     /// Returns the public key data for this private key.
-    std::array<uint8_t, 32> getPublicKey() const;
+    std::vector<uint8_t> getPublicKey(bool compressed) const;
 
-    /// Signs a digest using Ed25519.
-    std::array<uint8_t, 64> sign(const std::vector<uint8_t>&  digest) const;
+    /// Signs a digest using ECDSA secp256k1.
+    std::array<uint8_t, 65> sign(const std::vector<uint8_t>&  digest) const;
+
+    /// Signs a digest using ECDSA secp256k1. The result is encoded with DER.
+    std::vector<uint8_t> signAsDER(const std::vector<uint8_t>&  digest) const;
 };
 
 inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes == rhs.bytes; }
 inline bool operator!=(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes != rhs.bytes; }
 
-}} // namespace
+} // namespace
 
 /// Wrapper for C interface.
-struct TWPrivateKeyEd25519 {
-    TW::ed25519::PrivateKey impl;
+struct TWPrivateKey {
+    TW::PrivateKey impl;
 };

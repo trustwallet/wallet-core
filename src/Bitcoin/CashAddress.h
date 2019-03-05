@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Address.h"
-#include "../PublicKeySecp256k1.h"
+#include "../PublicKey.h"
 
 #include <stdint.h>
 #include <string>

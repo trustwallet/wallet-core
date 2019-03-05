@@ -14,13 +14,13 @@
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
-#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
+#include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
 
 TEST(ZCoin, Address) {
-    auto privateKey = WRAP(TWPrivateKeySecp256k1, TWPrivateKeySecp256k1CreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
-    auto publicKey = TWPrivateKeySecp256k1GetPublicKey(privateKey.get(), true);
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
+    auto publicKey = TWPrivateKeyGetPublicKey(privateKey.get(), true);
     auto address = TWBitcoinAddress();
     TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcoin);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));

@@ -8,8 +8,8 @@
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <gtest/gtest.h>
 #include <thread>
@@ -66,14 +66,14 @@ TEST(HDWallet, SeedNoPassword) {
 
 TEST(HDWallet, Derive) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key0 = WRAP(TWPrivateKeySecp256k1, TWHDWalletGetKey(wallet.get(), TWPurposeBIP44, TWCoinTypeEthereum, 0, 0, 0));
-    auto key1 = WRAP(TWPrivateKeySecp256k1, TWHDWalletGetKey(wallet.get(), TWPurposeBIP44, TWCoinTypeEthereum, 0, 0, 1));
+    auto key0 = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWPurposeBIP44, TWCoinTypeEthereum, 0, 0, 0));
+    auto key1 = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWPurposeBIP44, TWCoinTypeEthereum, 0, 0, 1));
 
-    auto publicKey0 = TWPrivateKeySecp256k1GetPublicKey(key0.get(), false);
-    auto publicKey0Data = WRAPD(TWPublicKeySecp256k1Data(publicKey0));
+    auto publicKey0 = TWPrivateKeyGetPublicKey(key0.get(), false);
+    auto publicKey0Data = WRAPD(TWPublicKeyData(publicKey0));
 
-    auto publicKey1 = TWPrivateKeySecp256k1GetPublicKey(key1.get(), false);
-    auto publicKey1Data = WRAPD(TWPublicKeySecp256k1Data(publicKey1));
+    auto publicKey1 = TWPrivateKeyGetPublicKey(key1.get(), false);
+    auto publicKey1Data = WRAPD(TWPublicKeyData(publicKey1));
 
     assertHexEqual(publicKey0Data, "0414acbe5a06c68210fcbb77763f9612e45a526990aeb69d692d705f276f558a5ae68268e9389bb099ed5ac84d8d6861110f63644f6e5b447e3f86b4bab5dee011");
     assertHexEqual(publicKey1Data, "046ef32307b329cd4fb8934b36211aa71b2e2d20e693737f04ee0189c450fb6578222b6da98ddddfddbc299b981bebeed0c975514334c80a0144df5d8ed91cb549");
@@ -81,9 +81,9 @@ TEST(HDWallet, Derive) {
 
 TEST(HDWallet, DeriveBitcoin) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key = WRAP(TWPrivateKeySecp256k1, TWHDWalletGetKey(wallet.get(), TWPurposeBIP84, TWCoinTypeBitcoin, 0, 0, 0));
-    auto publicKey = TWPrivateKeySecp256k1GetPublicKey(key.get(), false);
-    auto publicKeyData = WRAPD(TWPublicKeySecp256k1Data(publicKey));
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWPurposeBIP84, TWCoinTypeBitcoin, 0, 0, 0));
+    auto publicKey = TWPrivateKeyGetPublicKey(key.get(), false);
+    auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
     
     assertHexEqual(publicKeyData, "047ea5dff03f677502c4a1d73c5ac897200e56b155e876774c8fba0cc22f80b9414ec07cda7b1c9a84c2e04ea2746c21afacc5e91b47427c453c3f1a4a3e983ce5");
 }
@@ -114,8 +114,8 @@ TEST(HDWallet, PublicKeyFromX) {
     auto xpubAddr2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
     auto xpubAddr9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
 
-    auto data2 = WRAPD(TWPublicKeySecp256k1Data(xpubAddr2));
-    auto data9 = WRAPD(TWPublicKeySecp256k1Data(xpubAddr9));
+    auto data2 = WRAPD(TWPublicKeyData(xpubAddr2));
+    auto data9 = WRAPD(TWPublicKeyData(xpubAddr9));
 
     assertHexEqual(data2, "0338994349b3a804c44bbec55c2824443ebb9e475dfdad14f4b1a01a97d42751b3");
     assertHexEqual(data9, "03786c1d274f2c804ff9a57d8e7289c281d4aef15e17187ad9f9c3722d81a6ae66");
@@ -126,8 +126,8 @@ TEST(HDWallet, PublicKeyFromY) {
     auto ypubAddr3 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), TWHDVersionYPUB, TWHDVersionYPRV, 0, 3);
     auto ypubAddr10 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), TWHDVersionYPUB, TWHDVersionYPRV, 0, 10);
 
-    auto data3 = WRAPD(TWPublicKeySecp256k1Data(ypubAddr3));
-    auto data10 = WRAPD(TWPublicKeySecp256k1Data(ypubAddr10));
+    auto data3 = WRAPD(TWPublicKeyData(ypubAddr3));
+    auto data10 = WRAPD(TWPublicKeyData(ypubAddr10));
 
     assertHexEqual(data3, "0299bd0bdc081a9888fac95a33e8bebcdeeb57cf7477f2f0721362f3a51a157227");
     assertHexEqual(data10, "03a39ad9c0d19bb43c45643582614298c96b0f7c9462c0de789c69013b0d609d1c");
@@ -138,8 +138,8 @@ TEST(HDWallet, PublicKeyFromZ) {
     auto zpubAddr4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
     auto zpubAddr11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
 
-    auto data4 = WRAPD(TWPublicKeySecp256k1Data(zpubAddr4));
-    auto data11 = WRAPD(TWPublicKeySecp256k1Data(zpubAddr11));
+    auto data4 = WRAPD(TWPublicKeyData(zpubAddr4));
+    auto data11 = WRAPD(TWPublicKeyData(zpubAddr11));
 
     assertHexEqual(data4, "03995137c8eb3b223c904259e9b571a8939a0ec99b0717684c3936407ca8538c1b");
     assertHexEqual(data11, "0226a07edd0227fa6bc36239c0bd4db83d5e488f8fb1eeb68f89a5be916aad2d60");

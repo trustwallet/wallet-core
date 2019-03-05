@@ -436,7 +436,7 @@ void hdnode_public_ckd_address_optimized(const curve_point *pub, const uint8_t *
 	uint8_t child_pubkey[33];
 	curve_point b;
 
-	hdnode_public_ckd_cp(&curve_secp256k1, pub, chain_code, i, &b, NULL);
+	hdnode_public_ckd_cp(&secp256k1, pub, chain_code, i, &b, NULL);
 	child_pubkey[0] = 0x02 | (b.y.val[0] & 0x01);
 	bn_write_be(&b.x, child_pubkey + 1);
 

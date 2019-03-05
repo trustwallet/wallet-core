@@ -7,7 +7,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.BinanceSigner
 import wallet.core.jni.HRP
-import wallet.core.jni.PrivateKeySecp256k1 as PrivateKey
+import wallet.core.jni.PrivateKey
 import wallet.core.jni.TendermintAddress
 import wallet.core.jni.proto.Binance
 

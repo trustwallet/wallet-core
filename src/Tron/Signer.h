@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../Data.h"
-#include "../PrivateKeySecp256k1.h"
+#include "../PrivateKey.h"
 #include "../proto/Tron.pb.h"
 
 namespace TW {

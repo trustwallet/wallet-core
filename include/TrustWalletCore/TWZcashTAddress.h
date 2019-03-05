@@ -45,7 +45,7 @@ bool TWZcashTAddressInitWithData(struct TWZcashTAddress *_Nonnull address, TWDat
 
 /// Initializes an address from a public key and a prefix byte.
 TW_EXPORT_STATIC_METHOD
-bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, struct TWPublicKeySecp256k1 publicKey, uint8_t prefix);
+bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix);
 
 /// Returns the address base58 string representation.
 TW_EXPORT_PROPERTY

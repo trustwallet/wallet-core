@@ -10,7 +10,7 @@
 #include "../Icon/Address.h"
 
 #include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <TrezorCrypto/ecdsa.h>
 #include <memory>
@@ -44,9 +44,9 @@ struct TWIconAddress *_Nullable TWIconAddressCreateWithKeyHash(TWData *_Nonnull 
     return new TWIconAddress{ Address(*d, type) };
 }
 
-struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKeySecp256k1 publicKey, TWIconAddressType type) {
+struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, TWIconAddressType type) {
     Data data;
-    if (TWPublicKeySecp256k1IsCompressed(publicKey)) {
+    if (TWPublicKeyIsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
     } else {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);

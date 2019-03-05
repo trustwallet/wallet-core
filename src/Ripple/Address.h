@@ -7,11 +7,9 @@
 #pragma once
 
 #include "../Data.h"
-#include "../PublicKeySecp256k1.h"
+#include "../PublicKey.h"
 
 #include <string>
-
-using namespace TW::secp256k1;
 
 namespace TW {
 namespace Ripple {

@@ -11,7 +11,7 @@
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
 #include "HexCoding.h"
-#include "PublicKeySecp256k1.h"
+#include "PublicKey.h"
 #include "Zcash/Transaction.h"
 
 #include <TrustWalletCore/TWBitcoinScript.h>

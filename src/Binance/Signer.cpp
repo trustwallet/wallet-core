@@ -8,7 +8,7 @@
 
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "../PrivateKeySecp256k1.h"
+#include "../PrivateKey.h"
 #include "Serialization.h"
 
 #include <google/protobuf/io/coded_stream.h>
@@ -17,7 +17,6 @@
 
 using namespace TW;
 using namespace TW::Binance;
-using namespace TW::secp256k1;
 
 // Message prefixes
 static const auto sendOrderPrefix = std::vector<uint8_t>{ 0x2A, 0x2C, 0x87, 0xFA };

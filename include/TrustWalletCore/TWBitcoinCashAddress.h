@@ -45,7 +45,7 @@ bool TWBitcoinCashAddressInitWithData(struct TWBitcoinCashAddress *_Nonnull addr
 
 /// Initializes an address from a public key and a prefix byte.
 TW_EXPORT_STATIC_METHOD
-void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull address, struct TWPublicKeySecp256k1 publicKey);
+void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull address, struct TWPublicKey publicKey);
 
 /// Returns the address base58 string representation.
 TW_EXPORT_PROPERTY

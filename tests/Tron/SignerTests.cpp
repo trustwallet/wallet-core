@@ -6,7 +6,7 @@
 
 #include "Bitcoin/Address.h"
 #include "HexCoding.h"
-#include "PrivateKeySecp256k1.h"
+#include "PrivateKey.h"
 #include "proto/Tron.pb.h"
 #include "Tron/Signer.h"
 

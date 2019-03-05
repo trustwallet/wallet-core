@@ -8,7 +8,7 @@
 
 #include "TWBase.h"
 #include "TWData.h"
-#include "TWPublicKeySecp256k1.h"
+#include "TWPublicKey.h"
 
 TW_EXTERN_C_BEGIN
 

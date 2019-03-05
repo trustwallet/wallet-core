@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
-#include "PrivateKeySecp256k1.h"
-#include "PublicKeySecp256k1.h"
+#include "PrivateKey.h"
+#include "PublicKey.h"
 #include "Tendermint/Address.h"
 
 #include "../TWTestUtilities.h"

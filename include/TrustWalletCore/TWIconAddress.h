@@ -13,7 +13,7 @@
 
 TW_EXTERN_C_BEGIN
 
-struct TWPublicKeySecp256k1;
+struct TWPublicKey;
 
 /// Represents an Icon address.
 TW_EXPORT_CLASS
@@ -37,7 +37,7 @@ struct TWIconAddress *_Nullable TWIconAddressCreateWithKeyHash(TWData *_Nonnull 
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKeySecp256k1 publicKey, enum TWIconAddressType type);
+struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, enum TWIconAddressType type);
 
 TW_EXPORT_METHOD
 void TWIconAddressDelete(struct TWIconAddress *_Nonnull address);

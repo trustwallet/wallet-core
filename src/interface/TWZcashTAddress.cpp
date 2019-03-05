@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWZcashTAddress.h>
 
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
@@ -59,12 +59,12 @@ bool TWZcashTAddressInitWithData(struct TWZcashTAddress *_Nonnull address, TWDat
     return true;
 }
 
-bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, struct TWPublicKeySecp256k1 publicKey, uint8_t prefix) {
+bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
     // Zcash taddr has two prefix bytes, the first byte is the same 0x1c -> t
     address->bytes[0] = 0x1c;
     address->bytes[1] = prefix;
 
-    auto compressed = TWPublicKeySecp256k1Compressed(publicKey);
+    auto compressed = TWPublicKeyCompressed(publicKey);
     ecdsa_get_pubkeyhash(compressed.bytes, HASHER_SHA2_RIPEMD,  address->bytes + 2);
 
     return true;

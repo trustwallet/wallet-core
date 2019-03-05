@@ -17,15 +17,15 @@
 #include <TrustWalletCore/TWBitcoinTransactionSigner.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
+#include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
 
 TEST(BitcoinCash, LegacyToCashAddr) {
-    auto privateKey = WRAP(TWPrivateKeySecp256k1, TWPrivateKeySecp256k1CreateWithData(DATA("28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4").get()));
-    auto publicKey = TWPrivateKeySecp256k1GetPublicKey(privateKey.get(), true);
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4").get()));
+    auto publicKey = TWPrivateKeyGetPublicKey(privateKey.get(), true);
     auto address = TWBitcoinAddress();
     TWBitcoinAddressInitWithPublicKey(&address, publicKey, 0);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));

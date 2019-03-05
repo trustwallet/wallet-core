@@ -10,7 +10,7 @@
 #include "../Ethereum/Transaction.h"
 #include "../Data.h"
 #include "../Hash.h"
-#include "../PrivateKeySecp256k1.h"
+#include "../PrivateKey.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>

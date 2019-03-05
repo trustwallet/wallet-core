@@ -10,7 +10,7 @@
 #include "../Bech32.h"
 
 #include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWHRP.h>
 
 #include <TrezorCrypto/ecdsa.h>
@@ -44,9 +44,9 @@ struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithKeyHash(enum 
     return new TWTendermintAddress{ Address(stringForHRP(hrp), *d) };
 }
 
-struct TWTendermintAddress *_Nonnull TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKeySecp256k1 publicKey) {
+struct TWTendermintAddress *_Nonnull TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey) {
     std::vector<uint8_t> data;
-    if (TWPublicKeySecp256k1IsCompressed(publicKey)) {
+    if (TWPublicKeyIsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
     } else {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);

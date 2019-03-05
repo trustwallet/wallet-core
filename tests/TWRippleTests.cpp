@@ -8,7 +8,7 @@
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
+#include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWRippleAddress.h>
 
 #include <gtest/gtest.h>

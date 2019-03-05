@@ -6,12 +6,10 @@
 
 #pragma once
 
-#include "../PublicKeySecp256k1.h"
+#include "../PublicKey.h"
 
 #include <stdint.h>
 #include <string>
-
-using namespace TW::secp256k1;
 
 namespace TW {
 namespace Bitcoin {

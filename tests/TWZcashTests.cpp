@@ -10,16 +10,16 @@
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
-#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPurpose.h>
 #include <TrustWalletCore/TWZcashTAddress.h>
 
 #include <gtest/gtest.h>
 
 TEST(Zcash, TransparentAddress) {
-    auto privateKey = WRAP(TWPrivateKeySecp256k1, TWPrivateKeySecp256k1CreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
-    auto publicKey = TWPrivateKeySecp256k1GetPublicKey(privateKey.get(), true);
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
+    auto publicKey = TWPrivateKeyGetPublicKey(privateKey.get(), true);
     auto address = TWZcashTAddress();
     TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
     auto addressString = WRAPS(TWZcashTAddressDescription(address));
@@ -31,8 +31,8 @@ TEST(Zcash, DeriveTransparentAddress) {
     auto passphrase = STRING("TREZOR");
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key = WRAP(TWPrivateKeySecp256k1, TWHDWalletGetKey(wallet.get(), TWPurposeBIP44, TWCoinTypeZcash, 0, 0, 5));
-    auto publicKey = TWPrivateKeySecp256k1GetPublicKey(key.get(), false);
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWPurposeBIP44, TWCoinTypeZcash, 0, 0, 5));
+    auto publicKey = TWPrivateKeyGetPublicKey(key.get(), false);
 
     TWZcashTAddress address;
     TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);

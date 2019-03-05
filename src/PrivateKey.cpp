@@ -4,16 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "PrivateKeySecp256k1.h"
+#include "PrivateKey.h"
 
-#include "PublicKeySecp256k1.h"
+#include "PublicKey.h"
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/secp256k1.h>
 
 using namespace TW;
-using namespace TW::secp256k1;
 
 PrivateKey::~PrivateKey() {
     std::fill(bytes.begin(), bytes.end(), 0);
@@ -23,10 +22,10 @@ std::vector<uint8_t> PrivateKey::getPublicKey(bool compressed) const {
     std::vector<uint8_t> result;
     if (compressed)  {
         result.resize(PublicKey::compressedSize);
-        ecdsa_get_public_key33(&curve_secp256k1, bytes.data(), result.data());
+        ecdsa_get_public_key33(&secp256k1, bytes.data(), result.data());
      } else {
         result.resize(PublicKey::uncompressedSize);
-        ecdsa_get_public_key65(&curve_secp256k1, bytes.data(), result.data());
+        ecdsa_get_public_key65(&secp256k1, bytes.data(), result.data());
      }
 
     return result;
@@ -34,7 +33,7 @@ std::vector<uint8_t> PrivateKey::getPublicKey(bool compressed) const {
 
 std::array<uint8_t, 65> PrivateKey::sign(const std::vector<uint8_t>& digest) const {
     std::array<uint8_t, 65> result;
-    bool success = ecdsa_sign_digest(&curve_secp256k1, bytes.data(), digest.data(), result.data(), result.data() + 64, NULL) == 0;
+    bool success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data(), result.data() + 64, NULL) == 0;
     if (!success) {
         return {};
     }
@@ -43,7 +42,7 @@ std::array<uint8_t, 65> PrivateKey::sign(const std::vector<uint8_t>& digest) con
 
 std::vector<uint8_t> PrivateKey::signAsDER(const std::vector<uint8_t>&  digest) const {
     std::array<uint8_t, 64> sig;
-    bool success = ecdsa_sign_digest(&curve_secp256k1, bytes.data(), digest.data(), sig.data(), NULL, NULL) == 0;
+    bool success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), sig.data(), NULL, NULL) == 0;
     if (!success) {
         return {};
     }

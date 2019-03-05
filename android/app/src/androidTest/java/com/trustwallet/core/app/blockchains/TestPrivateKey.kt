@@ -2,7 +2,7 @@ package com.trustwallet.core.app.blockchains
 
 import com.trustwallet.core.app.utils.Numeric
 import wallet.core.jni.Hash
-import wallet.core.jni.PrivateKeySecp256k1 as PrivateKey
+import wallet.core.jni.PrivateKey
 import org.junit.Assert.*
 import org.junit.Test
 
