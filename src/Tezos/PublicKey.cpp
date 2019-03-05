@@ -7,7 +7,6 @@
 #include "Address.h"
 #include "PublicKey.h"
 #include "HexCoding.h"
-#include "TWTezosForger.h"
 
 using namespace TW::Tezos;
 

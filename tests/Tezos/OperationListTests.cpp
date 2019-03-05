@@ -31,7 +31,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionOnly) {
     257,
     1,
     Address("tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt"),
-    TransactionType::PAYMENT
+    OperationKind::TRANSACTION
   );
 
   op_list.add_operation(tx1);
@@ -53,7 +53,7 @@ TEST(TezosOperationList, ForgeOperationList_RevealOnly) {
     257,
     1,
     PublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
-    TransactionType::REVEAL
+    OperationKind::REVEAL
   );
 
   op_list.add_operation(tx1);
@@ -72,7 +72,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
     257,
     1,
     PublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
-    TransactionType::REVEAL
+    OperationKind::REVEAL
   );
   op_list.add_operation(tx1);
   auto tx2 = Transaction(
@@ -83,7 +83,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
     257,
     1,
     Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
-    TransactionType::PAYMENT
+    OperationKind::TRANSACTION
   );
   op_list.add_operation(tx2);
 

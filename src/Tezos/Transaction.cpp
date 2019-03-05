@@ -5,10 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "BinaryCoding.h"
 #include "PublicKey.h"
-#include "TWTezosForger.h"
 #include "Transaction.h"
-#include "../proto/Tezos.pb.h"
 #include <variant>
 #include <sstream>
 
@@ -47,7 +46,7 @@ string Transaction::forge() {
   auto forgedGasLimit = forgeZarith(gas_limit);
   auto forgedStorageLimit = forgeZarith(storage_limit);
 
-  if (transaction_type == TransactionType::REVEAL) {
+  if (kind == OperationKind::REVEAL) {
     auto forgedPublicKey = std::get<PublicKey>(destination_or_public_key).forge();
 
     return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit

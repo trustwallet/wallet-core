@@ -6,11 +6,9 @@
 
 #include <string>
 
+#include "HexCoding.h"
 #include "OperationList.h"
 #include "Signer.h"
-#include "proto/Tezos.pb.h"
-#include "TWTezosForger.h"
-#include "HexCoding.h"
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWString.h>

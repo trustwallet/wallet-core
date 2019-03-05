@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Tezos/Address.h"
+#include "Tezos/BinaryCoding.h"
 #include "Tezos/PublicKey.h"
 #include "Tezos/Transaction.h"
 

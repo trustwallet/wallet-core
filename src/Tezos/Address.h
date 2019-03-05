@@ -23,6 +23,3 @@ public:
 struct TWTezosAddress {
     TW::Tezos::Address impl;
 };
-
-int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint8_t *prefix, uint8_t *output);
-std::string forgeBool(bool input);

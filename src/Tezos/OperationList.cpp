@@ -5,10 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "BinaryCoding.h"
 #include "HexCoding.h"
 #include "OperationList.h"
 #include "Transaction.h"
-#include "TWTezosForger.h"
 
 using namespace TW;
 using namespace TW::Tezos;
