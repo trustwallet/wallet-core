@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPublicKeySecp256k1.h>
 #include <TrustWalletCore/TWTendermintAddress.h>
 
 #include "TWJNI.h"
@@ -43,7 +43,7 @@ jlong JNICALL Java_wallet_core_jni_TendermintAddress_nativeCreateWithPublicKey(J
     jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
     jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
     jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
+    struct TWPublicKeySecp256k1 *publicKeyInstance = (struct TWPublicKeySecp256k1 *) publicKeyBytesBuffer;
     struct TWTendermintAddress *instance = TWTendermintAddressCreateWithPublicKey(hrpValue, *publicKeyInstance);
     (*env)->DeleteLocalRef(env, hrpClass);
     (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);

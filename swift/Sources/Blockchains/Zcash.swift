@@ -36,7 +36,7 @@ public class Zcash: Bitcoin {
         super.init(purpose: purpose)
     }
 
-    override public func address(for publicKey: PublicKey) -> Address {
+    override public func address(for publicKey: PublicKeySecp256k1) -> Address {
         return ZcashTAddress(publicKey: publicKey.compressed, prefix: p2pkhPrefix)!
     }
 

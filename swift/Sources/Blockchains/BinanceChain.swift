@@ -20,7 +20,7 @@ public class BinanceChain: Blockchain {
         return .binance
     }
 
-    override public func address(for publicKey: PublicKey) -> Address {
+    override public func address(for publicKey: PublicKeySecp256k1) -> Address {
         return TendermintAddress(hrp: hrp, publicKey: publicKey.compressed)!
     }
 

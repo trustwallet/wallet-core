@@ -4,9 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-public extension PublicKeySecp256k1 {
-    /// Returns the ripemd160 hash of the sha2 hash of the compressed public key data.
-    public var bitcoinKeyHash: Data {
-        return Hash.sha256RIPEMD(data: compressed.data)
-    }
-}
+import TrustWalletCore
+
+public typealias PrivateKey = PrivateKeySecp256k1
+public typealias PublicKey = PublicKeySecp256k1

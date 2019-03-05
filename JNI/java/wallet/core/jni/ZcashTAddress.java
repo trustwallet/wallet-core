@@ -25,7 +25,7 @@ public class ZcashTAddress {
 
     static native byte[] initWithString(String string);
     static native byte[] initWithData(byte[] data);
-    static native byte[] initWithPublicKey(PublicKey publicKey, byte prefix);
+    static native byte[] initWithPublicKey(PublicKeySecp256k1 publicKey, byte prefix);
 
     public static native boolean equals(ZcashTAddress lhs, ZcashTAddress rhs);
     public static native boolean isValid(byte[] data);
@@ -47,7 +47,7 @@ public class ZcashTAddress {
         }
     }
 
-    public ZcashTAddress(PublicKey publicKey, byte prefix) {
+    public ZcashTAddress(PublicKeySecp256k1 publicKey, byte prefix) {
         bytes = initWithPublicKey(publicKey, prefix);
         if (bytes == null) {
             throw new InvalidParameterException();

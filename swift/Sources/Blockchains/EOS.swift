@@ -15,7 +15,7 @@ public final class EOS: Blockchain {
         return .eos
     }
 
-    public override func address(for publicKey: PublicKey) -> Address {
+    public override func address(for publicKey: PublicKeySecp256k1) -> Address {
         let compressed = publicKey.compressed
         let check = Hash.ripemd(data: compressed.data)[0..<4]
         return EOSAddress(data: compressed.data + check)!

@@ -59,7 +59,7 @@ public final class IconAddress {
         self.rawValue = rawValue
     }
 
-    public init(publicKey: PublicKey, type: IconAddressType) {
+    public init(publicKey: PublicKeySecp256k1, type: IconAddressType) {
         rawValue = TWIconAddressCreateWithPublicKey(publicKey.rawValue, TWIconAddressType(rawValue: type.rawValue))
     }
 

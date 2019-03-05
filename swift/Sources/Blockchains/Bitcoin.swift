@@ -76,7 +76,7 @@ open class Bitcoin: Blockchain {
         return true
     }
 
-    override open func address(for publicKey: PublicKey) -> Address {
+    override open func address(for publicKey: PublicKeySecp256k1) -> Address {
         switch coinPurpose {
         case .bip44:
             let hash = Data([p2pkhPrefix]) + publicKey.bitcoinKeyHash
@@ -109,7 +109,7 @@ open class Bitcoin: Blockchain {
         super.init(purpose: purpose)
     }
 
-    open func compatibleAddress(for publicKey: PublicKey) -> Address {
+    open func compatibleAddress(for publicKey: PublicKeySecp256k1) -> Address {
         return BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: p2shPrefix)
     }
 
@@ -121,7 +121,7 @@ open class Bitcoin: Blockchain {
         return BitcoinAddress(data: data)
     }
 
-    open func legacyAddress(for publicKey: PublicKey) -> Address {
+    open func legacyAddress(for publicKey: PublicKeySecp256k1) -> Address {
         return BitcoinAddress(publicKey: publicKey, prefix: p2pkhPrefix)
     }
 

@@ -59,7 +59,7 @@ public final class EthereumAddress {
         self.rawValue = rawValue
     }
 
-    public init(publicKey: PublicKey) {
+    public init(publicKey: PublicKeySecp256k1) {
         rawValue = TWEthereumAddressCreateWithPublicKey(publicKey.rawValue)
     }
 

@@ -24,7 +24,7 @@ public class BitcoinCash: Bitcoin {
         return false
     }
 
-    override public func address(for publicKey: PublicKey) -> Address {
+    override public func address(for publicKey: PublicKeySecp256k1) -> Address {
         return BitcoinCashAddress(publicKey: publicKey)
     }
 

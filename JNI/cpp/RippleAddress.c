@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPublicKeySecp256k1.h>
 #include <TrustWalletCore/TWRippleAddress.h>
 
 #include "TWJNI.h"
@@ -36,7 +36,7 @@ jlong JNICALL Java_wallet_core_jni_RippleAddress_nativeCreateWithPublicKey(JNIEn
     jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
     jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
     jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
+    struct TWPublicKeySecp256k1 *publicKeyInstance = (struct TWPublicKeySecp256k1 *) publicKeyBytesBuffer;
     struct TWRippleAddress *instance = TWRippleAddressCreateWithPublicKey(*publicKeyInstance);
     (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
     (*env)->DeleteLocalRef(env, publicKeyBytesArray);
