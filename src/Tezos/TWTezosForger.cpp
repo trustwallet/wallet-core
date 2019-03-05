@@ -205,8 +205,5 @@ std::string forgeOperationList(TW::Tezos::Proto::OperationList operationList) {
     TW::Tezos::Proto::Operation operation = operationList.operations(i);
     result += forgeOperation(operation);
   }
-
-
-
   return result;
 }

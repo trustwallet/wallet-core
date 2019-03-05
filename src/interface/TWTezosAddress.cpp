@@ -18,13 +18,6 @@
 #include <vector>
 #include <array>
 
-void printBytes(TWData *_Nonnull data) {
-  for (size_t i = 0; i < TWDataSize(data); i++) {
-    printf("%d, ", TWDataGet(data, i));
-  }
-  printf("\n\n");
-}
-
 bool TWTezosAddressIsValid(TWData *_Nonnull data) {
   // Verify prefix is correct.
   std::array<std::uint8_t, 3> prefix {6, 161, 159};
@@ -86,13 +79,10 @@ bool TWTezosAddressInitWithPublicKey(struct TWTezosAddress *_Nonnull address, st
   TWDataAppendData(data, publicKeyHash);
   TWString *addressString = TWBase58Encode(data);
 
-  printBytes(data);
-
   return TWTezosAddressInitWithString(address, addressString);
 }
 
 TWString *_Nonnull TWTezosAddressDescription(struct TWTezosAddress *_Nonnull address) {
-  printf("%s", TWStringUTF8Bytes(TWBase58EncodeNoCheck(TWTezosAddressData(address))));
   TWData *addressData = TWTezosAddressData(address);
   return TWBase58EncodeNoCheck(addressData);
 }
