@@ -15,32 +15,6 @@ namespace Ripple {
 
 enum class FieldType;
 
-/// Encodes a 16-bit value into the provided buffer.
-static inline void encode16(uint16_t val, std::vector<uint8_t>& data) {
-    data.push_back (static_cast<unsigned char> (val >> 8));
-    data.push_back (static_cast<unsigned char> (val & 0xff));
-}
-
-/// Encodes a 32-bit value into the provided buffer.
-static inline void encode32(uint32_t val, std::vector<uint8_t>& data) {
-    data.push_back(static_cast<uint8_t>((val >> 24)));
-    data.push_back(static_cast<uint8_t>((val >> 16) & 0xff));
-    data.push_back(static_cast<uint8_t>((val >> 8) & 0xff));
-    data.push_back(static_cast<uint8_t>(val));
-}
-
-/// Encodes a 64-bit value into the provided buffer.
-static inline void encode64(uint64_t val, std::vector<uint8_t>& data) {
-    data.push_back(static_cast<uint8_t>((val >> 56)));
-    data.push_back(static_cast<uint8_t>((val >> 48) & 0xff));
-    data.push_back(static_cast<uint8_t>((val >> 40) & 0xff));
-    data.push_back(static_cast<uint8_t>((val >> 32) & 0xff));
-    data.push_back(static_cast<uint8_t>((val >> 24) & 0xff));
-    data.push_back(static_cast<uint8_t>((val >> 16) & 0xff));
-    data.push_back(static_cast<uint8_t>((val >> 8) & 0xff));
-    data.push_back(static_cast<uint8_t>(val & 0xff));
-}
-
 /// Encodes a field type.
 static inline void encodeType(FieldType type, int key, std::vector<uint8_t>& data) {
     const auto typeValue = static_cast<int>(type);
