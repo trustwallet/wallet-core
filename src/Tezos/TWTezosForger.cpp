@@ -197,3 +197,16 @@ std::string forgeOperation(TW::Tezos::Proto::Operation operation) {
       return nullptr;
   }
 }
+
+std::string forgeOperationList(TW::Tezos::Proto::OperationList operationList) {
+  std::string result = forgeBranch(operationList.branch());
+
+  for (int i = 0; i < operationList.operations_size(); i++) {
+    TW::Tezos::Proto::Operation operation = operationList.operations(i);
+    result += forgeOperation(operation);
+  }
+
+
+
+  return result;
+}

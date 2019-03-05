@@ -10,11 +10,12 @@
 
 #include "proto/Tezos.pb.h"
 
-std::string forgeBranch(std::string);
-std::string forgeOperation(TW::Tezos::Proto::Operation);
+std::string forgeOperationList(TW::Tezos::Proto::OperationList);
 
 // Exposed for testing.
 std::string forgeBool(bool);
 std::string forgeAddress(std::string);
 std::string forgeZarith(std::string);
 std::string forgePublicKey(std::string publicKey);
+std::string forgeBranch(std::string);
+std::string forgeOperation(TW::Tezos::Proto::Operation);
