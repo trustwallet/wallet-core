@@ -21,7 +21,7 @@ TEST(TWTezosAddress, TestDescription) {
   TWString *tezosAddressString = TWStringCreateWithUTF8Bytes(address.c_str());
   TWTezosAddress *tezosAddress;
   TWTezosAddressInitWithString(tezosAddress, tezosAddressString);
-  
+
   TWData *tezosAddressData = TWBase58DecodeNoCheck(tezosAddressString);
   TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
   ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));
@@ -39,9 +39,9 @@ TEST(TWTezosAddress, TestValidAddresses) {
     ASSERT_TRUE(TWTezosAddressIsValidString(tezosAddressString));
     ASSERT_TRUE(TWTezosAddressIsValid(tezosAddressData));
     ASSERT_TRUE(TWTezosAddressInitWithString(tezosAddress, tezosAddressString));
-    
+
     TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
-    // TODO: FIXME
+    // TODO: Why does this line crash the test?
     // ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));
   }
 }
@@ -67,14 +67,16 @@ TEST(TWTezosAddress, TestAddressFromPrivateKey) {
   std::string expectedAddress = "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM";
   TWString *expectedAddressString = TWStringCreateWithUTF8Bytes(expectedAddress.c_str());
 
-  std::string privateKeyHex= "2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54";
-  TWString *privateKeyString = T(privateKeyHex.c_str());  
+  std::string privateKeyHex= "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+  TWString *privateKeyString = TWStringCreateWithUTF8Bytes(privateKeyHex.c_str());
   TWData *privateKeyData = TWDataCreateWithHexString(privateKeyString);
   TWPrivateKey *privateKey = TWPrivateKeyCreateWithData(privateKeyData);
   TWPublicKey publicKey = TWPrivateKeyGetPublicKey(privateKey, false);
 
   TWTezosAddress *tezosAddress;
   ASSERT_TRUE(TWTezosAddressInitWithPublicKey(tezosAddress, publicKey));
-  TWTezosAddressDescription(tezosAddress);
-  // ASSERT_EQ(TWTezosAddressDescription(tezosAddress), expectedAddressString);
+  
+  TWData *tezosAddressData = TWBase58DecodeNoCheck(expectedAddressString);
+  TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
+  ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));
 }
