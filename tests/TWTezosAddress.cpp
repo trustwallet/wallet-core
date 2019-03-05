@@ -41,7 +41,8 @@ TEST(TWTezosAddress, TestValidAddresses) {
     ASSERT_TRUE(TWTezosAddressInitWithString(tezosAddress, tezosAddressString));
 
     TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
-    ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));
+    bool result = TWDataEqual(tezosAddressData, tezosAddressData);
+    ASSERT_TRUE(result);
   }
 }
 
