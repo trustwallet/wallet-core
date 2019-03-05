@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   }
 
   protobuf_dir = 'build/protobuf/staging/protobuf-3.7.0'
-  json_dir = 'build/local/include/nlohmann'
+  include_dir = 'build/local/include'
   s.source_files =
     'src/**/*.{c,cc,cpp,h}',
     'include/**/*.h',
@@ -138,7 +138,7 @@ Pod::Spec.new do |s|
   s.preserve_paths =
     'trezor-crypto/src/*.{table}',
     "#{protobuf_dir}/src/**/*.h",
-    "#{json_dir}/**/*.hpp",
+    "#{include_dir}/nlohmann/**/*.hpp",
     'src/proto/*.proto'
   s.xcconfig = {
     'HEADER_SEARCH_PATHS' => '$(inherited) ' \
@@ -149,7 +149,7 @@ Pod::Spec.new do |s|
       '${PODS_ROOT}/TrustWalletCore/include ' \
       '${PODS_ROOT}/TrustWalletCore/trezor-crypto/include ' \
       "${PODS_ROOT}/TrustWalletCore/#{protobuf_dir}/src " \
-      "${PODS_ROOT}/TrustWalletCore/#{json_dir} ",
+      "${PODS_ROOT}/TrustWalletCore/#{include_dir} ",
     'GCC_WARN_UNUSED_FUNCTION' => 'NO',
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
