@@ -77,7 +77,7 @@ Proto::SigningOutput Signer::sign() const noexcept {
     const auto hash = Hash::sha3_256(Signer::preImage());
 
     const auto key = PrivateKey(input.private_key());
-    const auto signature = key.sign(hash);
+    const auto signature = key.sign(hash, TWCurveSECP256k1);
 
     auto output = Proto::SigningOutput();
     output.set_signature(signature.data(), signature.size());

@@ -42,7 +42,7 @@ public:
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID, const std::array<byte, 65>& signature) noexcept;
+    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID, const Data& signature) noexcept;
 
 protected:
     /// Computes the transaction hash.

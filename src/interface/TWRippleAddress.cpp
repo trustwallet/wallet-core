@@ -42,9 +42,9 @@ struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull
 struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
     std::vector<uint8_t> data;
     if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
+        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::secp256k1Size);
     } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
+        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::secp256k1ExtendedSize);
     }
     const auto address = Address(PublicKey(data));
     return new TWRippleAddress{ std::move(address) };

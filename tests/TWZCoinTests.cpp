@@ -33,8 +33,8 @@ TEST(ZCoin, ExtendedKeys) {
         STRING("TREZOR").get()
     ));
 
-    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeZcoin, TWHDVersionXPUB));
-    auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeZcoin, TWHDVersionXPRV));
+    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWCurveSECP256k1, TWPurposeBIP44, TWCoinTypeZcoin, TWHDVersionXPUB));
+    auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWCurveSECP256k1, TWPurposeBIP44, TWCoinTypeZcoin, TWHDVersionXPRV));
 
     assertStringsEqual(xpub, "xpub6Cb8Q6pDeS8PdKNbDv9Hvq4WpJXL3JvKvmHHwR1wD2H543hiCUE1f1tB5AXE6yg13k7xZ6PzEXMNUFHXk6kkx4RYte8VB1i4tCX9rwQVR4a");
     assertStringsEqual(xprv, "xprv9ybmzbHKp4a6QqJ87tcHZh7nGGgqdrCUZYMh92cKegk6BFNZevum7DZhDuVDqqMdcBT9B4wJSEmwJW9JNdkMcUUjEWKqppxNrJjKFSyKsCr");
@@ -42,8 +42,8 @@ TEST(ZCoin, ExtendedKeys) {
 
 TEST(Zcoin, DeriveFromXpub) {
     auto xpub = STRING("xpub6Cb8Q6pDeS8PdKNbDv9Hvq4WpJXL3JvKvmHHwR1wD2H543hiCUE1f1tB5AXE6yg13k7xZ6PzEXMNUFHXk6kkx4RYte8VB1i4tCX9rwQVR4a");
-    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
-    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
+    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
+    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
 
     TWBitcoinAddress address3;
     TWBitcoinAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixZcoin);
