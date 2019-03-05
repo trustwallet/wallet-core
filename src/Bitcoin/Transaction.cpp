@@ -6,8 +6,8 @@
 
 #include "Transaction.h"
 
-#include "BinaryCoding.h"
 #include "Bech32Address.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 
 #include <TrustWalletCore/TWBitcoin.h>
@@ -22,7 +22,7 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, int inde
     auto data = std::vector<uint8_t>{};
 
     // Version
-    encode32(version, data);
+    encode32LE(version, data);
 
     // Input prevouts (none/all, depending on flags)
     if ((hashType & TWSignatureHashTypeAnyoneCanPay) == 0) {
@@ -46,8 +46,8 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, int inde
     reinterpret_cast<const TW::Bitcoin::OutPoint&>(inputs[index].previousOutput).encode(data);
     scriptCode.encode(data);
 
-    encode64(amount, data);
-    encode32(inputs[index].sequence, data);
+    encode64LE(amount, data);
+    encode32LE(inputs[index].sequence, data);
 
     // Outputs (none/one/all, depending on flags)
     if (!TWSignatureHashTypeIsSingle(hashType) && !TWSignatureHashTypeIsNone(hashType)) {
@@ -63,10 +63,10 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, int inde
     }
 
     // Locktime
-    encode32(lockTime, data);
+    encode32LE(lockTime, data);
 
     // Sighash type
-    encode32(hashType, data);
+    encode32LE(hashType, data);
 
     return data;
 }
@@ -84,7 +84,7 @@ std::vector<uint8_t> Transaction::getPrevoutHash() const {
 std::vector<uint8_t> Transaction::getSequenceHash() const {
     auto data = std::vector<uint8_t>{};
     for (auto& input : inputs) {
-        encode32(input.sequence, data);
+        encode32LE(input.sequence, data);
     }
     auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
     return hash;
@@ -101,7 +101,7 @@ std::vector<uint8_t> Transaction::getOutputsHash() const {
 
 
 void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
-    encode32(version, data);
+    encode32LE(version, data);
 
     if (witness) {
         // Use extended format in case witnesses are to be serialized.
@@ -109,12 +109,12 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
         data.push_back(1);
     }
 
-    Bitcoin::writeCompactSize(inputs.size(), data);
+    writeCompactSize(inputs.size(), data);
     for (auto& input : inputs) {
         input.encode(data);
     }
 
-    Bitcoin::writeCompactSize(outputs.size(), data);
+    writeCompactSize(outputs.size(), data);
     for (auto& output : outputs) {
         output.encode(data);
     }
@@ -125,7 +125,7 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
         }
     }
 
-    encode32(lockTime, data);
+    encode32LE(lockTime, data);
 }
 
 std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, size_t index, uint32_t hashType, uint64_t amount, TWBitcoinSignatureVersion version) const {
@@ -150,10 +150,10 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
 
     auto data = std::vector<uint8_t>{};
 
-    encode32(version, data);
+    encode32LE(version, data);
 
     auto serializedInputCount = (hashType & TWSignatureHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
-    Bitcoin::writeCompactSize(serializedInputCount, data);
+    writeCompactSize(serializedInputCount, data);
     for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
         serializeInput(subindex, scriptCode, index, hashType, data);
     }
@@ -161,7 +161,7 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     auto hashNone = (hashType & 0x1f) == TWSignatureHashTypeNone;
     auto hashSingle = (hashType & 0x1f) == TWSignatureHashTypeSingle;
     auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index+1 : outputs.size());
-    Bitcoin::writeCompactSize(serializedOutputCount, data);
+    writeCompactSize(serializedOutputCount, data);
     for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
             auto output = TransactionOutput(-1, {});
@@ -172,10 +172,10 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     }
 
     // Locktime
-    encode32(lockTime, data);
+    encode32LE(lockTime, data);
 
     // Sighash type
-    encode32(hashType, data);
+    encode32LE(hashType, data);
 
     auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
     return hash;
@@ -191,7 +191,7 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
 
     // Serialize the script
     if (subindex != index) {
-        Bitcoin::writeCompactSize(0, data);
+        writeCompactSize(0, data);
     } else {
         scriptCode.encode(data);
     }
@@ -200,9 +200,9 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
     auto hashNone = (hashType & 0x1f) == TWSignatureHashTypeNone;
     auto hashSingle = (hashType & 0x1f) == TWSignatureHashTypeSingle;
     if (subindex != index && (hashSingle || hashNone)) {
-        encode32(0, data);
+        encode32LE(0, data);
     } else {
-        encode32(inputs[subindex].sequence, data);
+        encode32LE(inputs[subindex].sequence, data);
     }
 }
 

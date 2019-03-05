@@ -7,3 +7,7 @@ fun ByteArray.toHex(): String {
 fun String.toHexBytes(): ByteArray {
     return Numeric.hexStringToByteArray(this)
 }
+
+fun String.toHexByteArray(): ByteArray {
+    return  Numeric.hexStringToByteArray(this)
+}

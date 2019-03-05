@@ -8,7 +8,7 @@
 
 #include "Protobuf/TronInternal.pb.h"
 
-#include "../Bitcoin/BinaryCoding.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
@@ -83,7 +83,7 @@ void setBlockReference(const Proto::Transaction& transaction, protocol::Transact
 
     const auto blockHeight = transaction.block_header().number();
     auto heightData = Data();
-    Bitcoin::encode64(blockHeight, heightData);
+    encode64LE(blockHeight, heightData);
     std::reverse(heightData.begin(), heightData.end());
     internal.mutable_raw_data()->set_ref_block_bytes(heightData.data() + heightData.size() - 2, 2);
 }

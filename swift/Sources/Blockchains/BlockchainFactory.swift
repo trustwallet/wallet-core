@@ -49,5 +49,7 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Ripple()
     case .zcash:
         return Zcash()
+    case .tezos:
+        return Tezos()
     }
 }

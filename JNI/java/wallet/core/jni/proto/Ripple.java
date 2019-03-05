@@ -90,14 +90,8 @@ public final class Ripple {
       super(builder);
     }
     private SigningInput() {
-      amount_ = 0L;
-      fee_ = 0L;
-      sequence_ = 0;
-      lastLedgerSequence_ = 0;
       account_ = "";
       destination_ = "";
-      destinationTag_ = 0L;
-      flags_ = 0L;
       privateKey_ = com.google.protobuf.ByteString.EMPTY;
     }
 
@@ -173,7 +167,7 @@ public final class Ripple {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -434,27 +428,26 @@ public final class Ripple {
       }
       wallet.core.jni.proto.Ripple.SigningInput other = (wallet.core.jni.proto.Ripple.SigningInput) obj;
 
-      boolean result = true;
-      result = result && (getAmount()
-          == other.getAmount());
-      result = result && (getFee()
-          == other.getFee());
-      result = result && (getSequence()
-          == other.getSequence());
-      result = result && (getLastLedgerSequence()
-          == other.getLastLedgerSequence());
-      result = result && getAccount()
-          .equals(other.getAccount());
-      result = result && getDestination()
-          .equals(other.getDestination());
-      result = result && (getDestinationTag()
-          == other.getDestinationTag());
-      result = result && (getFlags()
-          == other.getFlags());
-      result = result && getPrivateKey()
-          .equals(other.getPrivateKey());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (getFee()
+          != other.getFee()) return false;
+      if (getSequence()
+          != other.getSequence()) return false;
+      if (getLastLedgerSequence()
+          != other.getLastLedgerSequence()) return false;
+      if (!getAccount()
+          .equals(other.getAccount())) return false;
+      if (!getDestination()
+          .equals(other.getDestination())) return false;
+      if (getDestinationTag()
+          != other.getDestinationTag()) return false;
+      if (getFlags()
+          != other.getFlags()) return false;
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -682,35 +675,35 @@ public final class Ripple {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1107,7 +1100,7 @@ public final class Ripple {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1216,7 +1209,7 @@ public final class Ripple {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1301,11 +1294,10 @@ public final class Ripple {
       }
       wallet.core.jni.proto.Ripple.SigningOutput other = (wallet.core.jni.proto.Ripple.SigningOutput) obj;
 
-      boolean result = true;
-      result = result && getEncoded()
-          .equals(other.getEncoded());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getEncoded()
+          .equals(other.getEncoded())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1489,35 +1481,35 @@ public final class Ripple {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1594,7 +1586,7 @@ public final class Ripple {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override

@@ -6,66 +6,51 @@
 #include <algorithm>
 
 #include <google/protobuf/stubs/common.h>
-#include <google/protobuf/stubs/port.h>
 #include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/extension_set.h>
 #include <google/protobuf/wire_format_lite_inl.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/generated_message_reflection.h>
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
-// This is a temporary google only hack
-#ifdef GOOGLE_PROTOBUF_ENFORCE_UNIQUENESS
-#include "third_party/protobuf/version.h"
-#endif
 // @@protoc_insertion_point(includes)
+#include <google/protobuf/port_def.inc>
 
-namespace protobuf_TronInternal_2eproto {
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_TronInternal_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_BlockHeader_raw;
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_TronInternal_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_Contract;
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_TronInternal_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_raw;
-}  // namespace protobuf_TronInternal_2eproto
-namespace protobuf_google_2fprotobuf_2fany_2eproto {
-extern PROTOBUF_INTERNAL_EXPORT_protobuf_google_2fprotobuf_2fany_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_Any;
-}  // namespace protobuf_google_2fprotobuf_2fany_2eproto
+extern PROTOBUF_INTERNAL_EXPORT_TronInternal_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_BlockHeader_raw_TronInternal_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_TronInternal_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_Contract_TronInternal_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_TronInternal_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_raw_TronInternal_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_google_2fprotobuf_2fany_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_Any_google_2fprotobuf_2fany_2eproto;
 namespace protocol {
 class Transaction_ContractDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<Transaction_Contract>
-      _instance;
+  ::google::protobuf::internal::ExplicitlyConstructed<Transaction_Contract> _instance;
 } _Transaction_Contract_default_instance_;
 class Transaction_rawDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<Transaction_raw>
-      _instance;
+  ::google::protobuf::internal::ExplicitlyConstructed<Transaction_raw> _instance;
 } _Transaction_raw_default_instance_;
 class TransactionDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<Transaction>
-      _instance;
+  ::google::protobuf::internal::ExplicitlyConstructed<Transaction> _instance;
 } _Transaction_default_instance_;
 class BlockHeader_rawDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<BlockHeader_raw>
-      _instance;
+  ::google::protobuf::internal::ExplicitlyConstructed<BlockHeader_raw> _instance;
 } _BlockHeader_raw_default_instance_;
 class BlockHeaderDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<BlockHeader>
-      _instance;
+  ::google::protobuf::internal::ExplicitlyConstructed<BlockHeader> _instance;
 } _BlockHeader_default_instance_;
 class TransferContractDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<TransferContract>
-      _instance;
+  ::google::protobuf::internal::ExplicitlyConstructed<TransferContract> _instance;
 } _TransferContract_default_instance_;
 class TransferAssetContractDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<TransferAssetContract>
-      _instance;
+  ::google::protobuf::internal::ExplicitlyConstructed<TransferAssetContract> _instance;
 } _TransferAssetContract_default_instance_;
 }  // namespace protocol
-namespace protobuf_TronInternal_2eproto {
-static void InitDefaultsTransaction_Contract() {
+static void InitDefaultsTransaction_Contract_TronInternal_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
@@ -76,11 +61,11 @@ static void InitDefaultsTransaction_Contract() {
   ::protocol::Transaction_Contract::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_Contract =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsTransaction_Contract}, {
-      &protobuf_google_2fprotobuf_2fany_2eproto::scc_info_Any.base,}};
+::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_Contract_TronInternal_2eproto =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsTransaction_Contract_TronInternal_2eproto}, {
+      &scc_info_Any_google_2fprotobuf_2fany_2eproto.base,}};
 
-static void InitDefaultsTransaction_raw() {
+static void InitDefaultsTransaction_raw_TronInternal_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
@@ -91,11 +76,11 @@ static void InitDefaultsTransaction_raw() {
   ::protocol::Transaction_raw::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_raw =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsTransaction_raw}, {
-      &protobuf_TronInternal_2eproto::scc_info_Transaction_Contract.base,}};
+::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_raw_TronInternal_2eproto =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsTransaction_raw_TronInternal_2eproto}, {
+      &scc_info_Transaction_Contract_TronInternal_2eproto.base,}};
 
-static void InitDefaultsTransaction() {
+static void InitDefaultsTransaction_TronInternal_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
@@ -106,11 +91,11 @@ static void InitDefaultsTransaction() {
   ::protocol::Transaction::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_Transaction =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsTransaction}, {
-      &protobuf_TronInternal_2eproto::scc_info_Transaction_raw.base,}};
+::google::protobuf::internal::SCCInfo<1> scc_info_Transaction_TronInternal_2eproto =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsTransaction_TronInternal_2eproto}, {
+      &scc_info_Transaction_raw_TronInternal_2eproto.base,}};
 
-static void InitDefaultsBlockHeader_raw() {
+static void InitDefaultsBlockHeader_raw_TronInternal_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
@@ -121,10 +106,10 @@ static void InitDefaultsBlockHeader_raw() {
   ::protocol::BlockHeader_raw::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_BlockHeader_raw =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsBlockHeader_raw}, {}};
+::google::protobuf::internal::SCCInfo<0> scc_info_BlockHeader_raw_TronInternal_2eproto =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsBlockHeader_raw_TronInternal_2eproto}, {}};
 
-static void InitDefaultsBlockHeader() {
+static void InitDefaultsBlockHeader_TronInternal_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
@@ -135,11 +120,11 @@ static void InitDefaultsBlockHeader() {
   ::protocol::BlockHeader::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<1> scc_info_BlockHeader =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsBlockHeader}, {
-      &protobuf_TronInternal_2eproto::scc_info_BlockHeader_raw.base,}};
+::google::protobuf::internal::SCCInfo<1> scc_info_BlockHeader_TronInternal_2eproto =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsBlockHeader_TronInternal_2eproto}, {
+      &scc_info_BlockHeader_raw_TronInternal_2eproto.base,}};
 
-static void InitDefaultsTransferContract() {
+static void InitDefaultsTransferContract_TronInternal_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
@@ -150,10 +135,10 @@ static void InitDefaultsTransferContract() {
   ::protocol::TransferContract::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_TransferContract =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsTransferContract}, {}};
+::google::protobuf::internal::SCCInfo<0> scc_info_TransferContract_TronInternal_2eproto =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsTransferContract_TronInternal_2eproto}, {}};
 
-static void InitDefaultsTransferAssetContract() {
+static void InitDefaultsTransferAssetContract_TronInternal_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
@@ -164,87 +149,88 @@ static void InitDefaultsTransferAssetContract() {
   ::protocol::TransferAssetContract::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_TransferAssetContract =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsTransferAssetContract}, {}};
+::google::protobuf::internal::SCCInfo<0> scc_info_TransferAssetContract_TronInternal_2eproto =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsTransferAssetContract_TronInternal_2eproto}, {}};
 
-void InitDefaults() {
-  ::google::protobuf::internal::InitSCC(&scc_info_Transaction_Contract.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_Transaction_raw.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_Transaction.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_BlockHeader_raw.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_BlockHeader.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_TransferContract.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_TransferAssetContract.base);
+void InitDefaults_TronInternal_2eproto() {
+  ::google::protobuf::internal::InitSCC(&scc_info_Transaction_Contract_TronInternal_2eproto.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_Transaction_raw_TronInternal_2eproto.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_Transaction_TronInternal_2eproto.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_BlockHeader_raw_TronInternal_2eproto.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_BlockHeader_TronInternal_2eproto.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_TransferContract_TronInternal_2eproto.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_TransferAssetContract_TronInternal_2eproto.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[7];
-const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[1];
+::google::protobuf::Metadata file_level_metadata_TronInternal_2eproto[7];
+const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors_TronInternal_2eproto[1];
+constexpr ::google::protobuf::ServiceDescriptor const** file_level_service_descriptors_TronInternal_2eproto = nullptr;
 
-const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+const ::google::protobuf::uint32 TableStruct_TronInternal_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_Contract, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_Contract, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_Contract, type_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_Contract, parameter_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_Contract, provider_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_Contract, type_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_Contract, parameter_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_Contract, provider_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_raw, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_raw, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_raw, ref_block_bytes_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_raw, ref_block_num_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_raw, ref_block_hash_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_raw, expiration_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_raw, contract_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_raw, timestamp_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction_raw, fee_limit_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_raw, ref_block_bytes_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_raw, ref_block_num_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_raw, ref_block_hash_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_raw, expiration_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_raw, contract_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_raw, timestamp_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction_raw, fee_limit_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::Transaction, raw_data_),
+  PROTOBUF_FIELD_OFFSET(::protocol::Transaction, raw_data_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader_raw, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader_raw, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader_raw, timestamp_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader_raw, tx_trie_root_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader_raw, parent_hash_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader_raw, number_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader_raw, witness_id_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader_raw, witness_address_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader_raw, version_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader_raw, timestamp_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader_raw, tx_trie_root_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader_raw, parent_hash_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader_raw, number_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader_raw, witness_id_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader_raw, witness_address_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader_raw, version_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader, raw_data_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::BlockHeader, witness_signature_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader, raw_data_),
+  PROTOBUF_FIELD_OFFSET(::protocol::BlockHeader, witness_signature_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferContract, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferContract, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferContract, owner_address_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferContract, to_address_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferContract, amount_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferContract, owner_address_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferContract, to_address_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferContract, amount_),
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferAssetContract, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferAssetContract, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferAssetContract, asset_name_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferAssetContract, owner_address_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferAssetContract, to_address_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::protocol::TransferAssetContract, amount_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferAssetContract, asset_name_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferAssetContract, owner_address_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferAssetContract, to_address_),
+  PROTOBUF_FIELD_OFFSET(::protocol::TransferAssetContract, amount_),
 };
-static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+static const ::google::protobuf::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::protocol::Transaction_Contract)},
   { 8, -1, sizeof(::protocol::Transaction_raw)},
   { 20, -1, sizeof(::protocol::Transaction)},
@@ -264,74 +250,58 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&::protocol::_TransferAssetContract_default_instance_),
 };
 
-void protobuf_AssignDescriptors() {
-  AddDescriptors();
-  AssignDescriptors(
-      "TronInternal.proto", schemas, file_default_instances, TableStruct::offsets,
-      file_level_metadata, file_level_enum_descriptors, NULL);
-}
+::google::protobuf::internal::AssignDescriptorsTable assign_descriptors_table_TronInternal_2eproto = {
+  {}, AddDescriptors_TronInternal_2eproto, "TronInternal.proto", schemas,
+  file_default_instances, TableStruct_TronInternal_2eproto::offsets,
+  file_level_metadata_TronInternal_2eproto, 7, file_level_enum_descriptors_TronInternal_2eproto, file_level_service_descriptors_TronInternal_2eproto,
+};
 
-void protobuf_AssignDescriptorsOnce() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, protobuf_AssignDescriptors);
-}
+const char descriptor_table_protodef_TronInternal_2eproto[] =
+  "\n\022TronInternal.proto\022\010protocol\032\031google/p"
+  "rotobuf/any.proto\"\325\003\n\013Transaction\022+\n\010raw"
+  "_data\030\001 \001(\0132\031.protocol.Transaction.raw\032\334"
+  "\001\n\010Contract\0229\n\004type\030\001 \001(\0162+.protocol.Tra"
+  "nsaction.Contract.ContractType\022\'\n\tparame"
+  "ter\030\002 \001(\0132\024.google.protobuf.Any\022\020\n\010provi"
+  "der\030\003 \001(\014\"Z\n\014ContractType\022\031\n\025AccountCrea"
+  "teContract\020\000\022\024\n\020TransferContract\020\001\022\031\n\025Tr"
+  "ansferAssetContract\020\002\032\271\001\n\003raw\022\027\n\017ref_blo"
+  "ck_bytes\030\001 \001(\014\022\025\n\rref_block_num\030\003 \001(\003\022\026\n"
+  "\016ref_block_hash\030\004 \001(\014\022\022\n\nexpiration\030\010 \001("
+  "\003\0220\n\010contract\030\013 \003(\0132\036.protocol.Transacti"
+  "on.Contract\022\021\n\ttimestamp\030\016 \001(\003\022\021\n\tfee_li"
+  "mit\030\022 \001(\003\"\351\001\n\013BlockHeader\022+\n\010raw_data\030\001 "
+  "\001(\0132\031.protocol.BlockHeader.raw\022\031\n\021witnes"
+  "s_signature\030\002 \001(\014\032\221\001\n\003raw\022\021\n\ttimestamp\030\001"
+  " \001(\003\022\024\n\014tx_trie_root\030\002 \001(\014\022\023\n\013parent_has"
+  "h\030\003 \001(\014\022\016\n\006number\030\007 \001(\003\022\022\n\nwitness_id\030\010 "
+  "\001(\003\022\027\n\017witness_address\030\t \001(\014\022\017\n\007version\030"
+  "\n \001(\005\"M\n\020TransferContract\022\025\n\rowner_addre"
+  "ss\030\001 \001(\014\022\022\n\nto_address\030\002 \001(\014\022\016\n\006amount\030\003"
+  " \001(\003\"f\n\025TransferAssetContract\022\022\n\nasset_n"
+  "ame\030\001 \001(\014\022\025\n\rowner_address\030\002 \001(\014\022\022\n\nto_a"
+  "ddress\030\003 \001(\014\022\016\n\006amount\030\004 \001(\003b\006proto3"
+  ;
+::google::protobuf::internal::DescriptorTable descriptor_table_TronInternal_2eproto = {
+  false, InitDefaults_TronInternal_2eproto, 
+  descriptor_table_protodef_TronInternal_2eproto,
+  "TronInternal.proto", &assign_descriptors_table_TronInternal_2eproto, 956,
+};
 
-void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
-void protobuf_RegisterTypes(const ::std::string&) {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 7);
-}
-
-void AddDescriptorsImpl() {
-  InitDefaults();
-  static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\022TronInternal.proto\022\010protocol\032\031google/p"
-      "rotobuf/any.proto\"\325\003\n\013Transaction\022+\n\010raw"
-      "_data\030\001 \001(\0132\031.protocol.Transaction.raw\032\334"
-      "\001\n\010Contract\0229\n\004type\030\001 \001(\0162+.protocol.Tra"
-      "nsaction.Contract.ContractType\022\'\n\tparame"
-      "ter\030\002 \001(\0132\024.google.protobuf.Any\022\020\n\010provi"
-      "der\030\003 \001(\014\"Z\n\014ContractType\022\031\n\025AccountCrea"
-      "teContract\020\000\022\024\n\020TransferContract\020\001\022\031\n\025Tr"
-      "ansferAssetContract\020\002\032\271\001\n\003raw\022\027\n\017ref_blo"
-      "ck_bytes\030\001 \001(\014\022\025\n\rref_block_num\030\003 \001(\003\022\026\n"
-      "\016ref_block_hash\030\004 \001(\014\022\022\n\nexpiration\030\010 \001("
-      "\003\0220\n\010contract\030\013 \003(\0132\036.protocol.Transacti"
-      "on.Contract\022\021\n\ttimestamp\030\016 \001(\003\022\021\n\tfee_li"
-      "mit\030\022 \001(\003\"\351\001\n\013BlockHeader\022+\n\010raw_data\030\001 "
-      "\001(\0132\031.protocol.BlockHeader.raw\022\031\n\021witnes"
-      "s_signature\030\002 \001(\014\032\221\001\n\003raw\022\021\n\ttimestamp\030\001"
-      " \001(\003\022\024\n\014tx_trie_root\030\002 \001(\014\022\023\n\013parent_has"
-      "h\030\003 \001(\014\022\016\n\006number\030\007 \001(\003\022\022\n\nwitness_id\030\010 "
-      "\001(\003\022\027\n\017witness_address\030\t \001(\014\022\017\n\007version\030"
-      "\n \001(\005\"M\n\020TransferContract\022\025\n\rowner_addre"
-      "ss\030\001 \001(\014\022\022\n\nto_address\030\002 \001(\014\022\016\n\006amount\030\003"
-      " \001(\003\"f\n\025TransferAssetContract\022\022\n\nasset_n"
-      "ame\030\001 \001(\014\022\025\n\rowner_address\030\002 \001(\014\022\022\n\nto_a"
-      "ddress\030\003 \001(\014\022\016\n\006amount\030\004 \001(\003b\006proto3"
+void AddDescriptors_TronInternal_2eproto() {
+  static constexpr ::google::protobuf::internal::InitFunc deps[1] =
+  {
+    ::AddDescriptors_google_2fprotobuf_2fany_2eproto,
   };
-  ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 956);
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
-    "TronInternal.proto", &protobuf_RegisterTypes);
-  ::protobuf_google_2fprotobuf_2fany_2eproto::AddDescriptors();
+ ::google::protobuf::internal::AddDescriptors(&descriptor_table_TronInternal_2eproto, deps, 1);
 }
 
-void AddDescriptors() {
-  static ::google::protobuf::internal::once_flag once;
-  ::google::protobuf::internal::call_once(once, AddDescriptorsImpl);
-}
-// Force AddDescriptors() to be called at dynamic initialization time.
-struct StaticDescriptorInitializer {
-  StaticDescriptorInitializer() {
-    AddDescriptors();
-  }
-} static_descriptor_initializer;
-}  // namespace protobuf_TronInternal_2eproto
+// Force running AddDescriptors() at dynamic initialization time.
+static bool dynamic_init_dummy_TronInternal_2eproto = []() { AddDescriptors_TronInternal_2eproto(); return true; }();
 namespace protocol {
 const ::google::protobuf::EnumDescriptor* Transaction_Contract_ContractType_descriptor() {
-  protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return protobuf_TronInternal_2eproto::file_level_enum_descriptors[0];
+  ::google::protobuf::internal::AssignDescriptors(&assign_descriptors_table_TronInternal_2eproto);
+  return file_level_enum_descriptors_TronInternal_2eproto[0];
 }
 bool Transaction_Contract_ContractType_IsValid(int value) {
   switch (value) {
@@ -359,11 +329,20 @@ void Transaction_Contract::InitAsDefaultInstance() {
   ::protocol::_Transaction_Contract_default_instance_._instance.get_mutable()->parameter_ = const_cast< ::google::protobuf::Any*>(
       ::google::protobuf::Any::internal_default_instance());
 }
+class Transaction_Contract::HasBitSetters {
+ public:
+  static const ::google::protobuf::Any& parameter(const Transaction_Contract* msg);
+};
+
+const ::google::protobuf::Any&
+Transaction_Contract::HasBitSetters::parameter(const Transaction_Contract* msg) {
+  return *msg->parameter_;
+}
 void Transaction_Contract::clear_parameter() {
-  if (GetArenaNoVirtual() == NULL && parameter_ != NULL) {
+  if (GetArenaNoVirtual() == nullptr && parameter_ != nullptr) {
     delete parameter_;
   }
-  parameter_ = NULL;
+  parameter_ = nullptr;
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Transaction_Contract::kTypeFieldNumber;
@@ -372,15 +351,13 @@ const int Transaction_Contract::kProviderFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Transaction_Contract::Transaction_Contract()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_TronInternal_2eproto::scc_info_Transaction_Contract.base);
+  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:protocol.Transaction.Contract)
 }
 Transaction_Contract::Transaction_Contract(const Transaction_Contract& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   provider_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.provider().size() > 0) {
@@ -389,13 +366,15 @@ Transaction_Contract::Transaction_Contract(const Transaction_Contract& from)
   if (from.has_parameter()) {
     parameter_ = new ::google::protobuf::Any(*from.parameter_);
   } else {
-    parameter_ = NULL;
+    parameter_ = nullptr;
   }
   type_ = from.type_;
   // @@protoc_insertion_point(copy_constructor:protocol.Transaction.Contract)
 }
 
 void Transaction_Contract::SharedCtor() {
+  ::google::protobuf::internal::InitSCC(
+      &scc_info_Transaction_Contract_TronInternal_2eproto.base);
   provider_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&parameter_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&type_) -
@@ -415,13 +394,8 @@ void Transaction_Contract::SharedDtor() {
 void Transaction_Contract::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* Transaction_Contract::descriptor() {
-  ::protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const Transaction_Contract& Transaction_Contract::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_TronInternal_2eproto::scc_info_Transaction_Contract.base);
+  ::google::protobuf::internal::InitSCC(&::scc_info_Transaction_Contract_TronInternal_2eproto.base);
   return *internal_default_instance();
 }
 
@@ -433,17 +407,90 @@ void Transaction_Contract::Clear() {
   (void) cached_has_bits;
 
   provider_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (GetArenaNoVirtual() == NULL && parameter_ != NULL) {
+  if (GetArenaNoVirtual() == nullptr && parameter_ != nullptr) {
     delete parameter_;
   }
-  parameter_ = NULL;
+  parameter_ = nullptr;
   type_ = 0;
   _internal_metadata_.Clear();
 }
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+const char* Transaction_Contract::_InternalParse(const char* begin, const char* end, void* object,
+                  ::google::protobuf::internal::ParseContext* ctx) {
+  auto msg = static_cast<Transaction_Contract*>(object);
+  ::google::protobuf::int32 size; (void)size;
+  int depth; (void)depth;
+  ::google::protobuf::uint32 tag;
+  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
+  auto ptr = begin;
+  while (ptr < end) {
+    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
+    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+    switch (tag >> 3) {
+      // .protocol.Transaction.Contract.ContractType type = 1;
+      case 1: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 8) goto handle_unusual;
+        ::google::protobuf::uint64 val = ::google::protobuf::internal::ReadVarint(&ptr);
+        msg->set_type(static_cast<::protocol::Transaction_Contract_ContractType>(val));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      // .google.protobuf.Any parameter = 2;
+      case 2: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 18) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        parser_till_end = ::google::protobuf::Any::_InternalParse;
+        object = msg->mutable_parameter();
+        if (size > end - ptr) goto len_delim_till_end;
+        ptr += size;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
+            {parser_till_end, object}, ptr - size, ptr));
+        break;
+      }
+      // bytes provider = 3;
+      case 3: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 26) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_provider();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->EndGroup(tag);
+          return ptr;
+        }
+        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
+          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
+        ptr = res.first;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
+        if (res.second) return ptr;
+      }
+    }  // switch
+  }  // while
+  return ptr;
+string_till_end:
+  static_cast<::std::string*>(object)->clear();
+  static_cast<::std::string*>(object)->reserve(size);
+  goto len_delim_till_end;
+len_delim_till_end:
+  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
+                               {parser_till_end, object}, size);
+}
+#else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool Transaction_Contract::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:protocol.Transaction.Contract)
   for (;;) {
@@ -453,9 +500,8 @@ bool Transaction_Contract::MergePartialFromCodedStream(
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // .protocol.Transaction.Contract.ContractType type = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
-          int value;
+        if (static_cast< ::google::protobuf::uint8>(tag) == (8 & 0xFF)) {
+          int value = 0;
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
                  input, &value)));
@@ -468,8 +514,7 @@ bool Transaction_Contract::MergePartialFromCodedStream(
 
       // .google.protobuf.Any parameter = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (18 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_parameter()));
         } else {
@@ -480,8 +525,7 @@ bool Transaction_Contract::MergePartialFromCodedStream(
 
       // bytes provider = 3;
       case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (26 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_provider()));
         } else {
@@ -509,6 +553,7 @@ failure:
   return false;
 #undef DO_
 }
+#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void Transaction_Contract::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
@@ -525,7 +570,7 @@ void Transaction_Contract::SerializeWithCachedSizes(
   // .google.protobuf.Any parameter = 2;
   if (this->has_parameter()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->_internal_parameter(), output);
+      2, HasBitSetters::parameter(this), output);
   }
 
   // bytes provider = 3;
@@ -534,16 +579,15 @@ void Transaction_Contract::SerializeWithCachedSizes(
       3, this->provider(), output);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+        _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:protocol.Transaction.Contract)
 }
 
 ::google::protobuf::uint8* Transaction_Contract::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+    ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:protocol.Transaction.Contract)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
@@ -558,7 +602,7 @@ void Transaction_Contract::SerializeWithCachedSizes(
   if (this->has_parameter()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        2, this->_internal_parameter(), deterministic, target);
+        2, HasBitSetters::parameter(this), target);
   }
 
   // bytes provider = 3;
@@ -568,9 +612,9 @@ void Transaction_Contract::SerializeWithCachedSizes(
         3, this->provider(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+        _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:protocol.Transaction.Contract)
   return target;
@@ -580,11 +624,15 @@ size_t Transaction_Contract::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:protocol.Transaction.Contract)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+        _internal_metadata_.unknown_fields());
   }
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // bytes provider = 3;
   if (this->provider().size() > 0) {
     total_size += 1 +
@@ -614,9 +662,9 @@ void Transaction_Contract::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:protocol.Transaction.Contract)
   GOOGLE_DCHECK_NE(&from, this);
   const Transaction_Contract* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const Transaction_Contract>(
+      ::google::protobuf::DynamicCastToGenerated<Transaction_Contract>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:protocol.Transaction.Contract)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
@@ -668,16 +716,16 @@ void Transaction_Contract::Swap(Transaction_Contract* other) {
 }
 void Transaction_Contract::InternalSwap(Transaction_Contract* other) {
   using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
   provider_.Swap(&other->provider_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(parameter_, other->parameter_);
   swap(type_, other->type_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
 ::google::protobuf::Metadata Transaction_Contract::GetMetadata() const {
-  protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages];
+  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_TronInternal_2eproto);
+  return ::file_level_metadata_TronInternal_2eproto[kIndexInFileMessages];
 }
 
 
@@ -685,6 +733,10 @@ void Transaction_Contract::InternalSwap(Transaction_Contract* other) {
 
 void Transaction_raw::InitAsDefaultInstance() {
 }
+class Transaction_raw::HasBitSetters {
+ public:
+};
+
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Transaction_raw::kRefBlockBytesFieldNumber;
 const int Transaction_raw::kRefBlockNumFieldNumber;
@@ -696,15 +748,13 @@ const int Transaction_raw::kFeeLimitFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Transaction_raw::Transaction_raw()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_TronInternal_2eproto::scc_info_Transaction_raw.base);
+  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:protocol.Transaction.raw)
 }
 Transaction_raw::Transaction_raw(const Transaction_raw& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL),
+      _internal_metadata_(nullptr),
       contract_(from.contract_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ref_block_bytes_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
@@ -722,6 +772,8 @@ Transaction_raw::Transaction_raw(const Transaction_raw& from)
 }
 
 void Transaction_raw::SharedCtor() {
+  ::google::protobuf::internal::InitSCC(
+      &scc_info_Transaction_raw_TronInternal_2eproto.base);
   ref_block_bytes_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ref_block_hash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&ref_block_num_, 0, static_cast<size_t>(
@@ -742,13 +794,8 @@ void Transaction_raw::SharedDtor() {
 void Transaction_raw::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* Transaction_raw::descriptor() {
-  ::protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const Transaction_raw& Transaction_raw::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_TronInternal_2eproto::scc_info_Transaction_raw.base);
+  ::google::protobuf::internal::InitSCC(&::scc_info_Transaction_raw_TronInternal_2eproto.base);
   return *internal_default_instance();
 }
 
@@ -768,9 +815,120 @@ void Transaction_raw::Clear() {
   _internal_metadata_.Clear();
 }
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+const char* Transaction_raw::_InternalParse(const char* begin, const char* end, void* object,
+                  ::google::protobuf::internal::ParseContext* ctx) {
+  auto msg = static_cast<Transaction_raw*>(object);
+  ::google::protobuf::int32 size; (void)size;
+  int depth; (void)depth;
+  ::google::protobuf::uint32 tag;
+  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
+  auto ptr = begin;
+  while (ptr < end) {
+    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
+    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+    switch (tag >> 3) {
+      // bytes ref_block_bytes = 1;
+      case 1: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_ref_block_bytes();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // int64 ref_block_num = 3;
+      case 3: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 24) goto handle_unusual;
+        msg->set_ref_block_num(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      // bytes ref_block_hash = 4;
+      case 4: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 34) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_ref_block_hash();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // int64 expiration = 8;
+      case 8: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 64) goto handle_unusual;
+        msg->set_expiration(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      // repeated .protocol.Transaction.Contract contract = 11;
+      case 11: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 90) goto handle_unusual;
+        do {
+          ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+          GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+          parser_till_end = ::protocol::Transaction_Contract::_InternalParse;
+          object = msg->add_contract();
+          if (size > end - ptr) goto len_delim_till_end;
+          ptr += size;
+          GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
+              {parser_till_end, object}, ptr - size, ptr));
+          if (ptr >= end) break;
+        } while ((::google::protobuf::io::UnalignedLoad<::google::protobuf::uint64>(ptr) & 255) == 90 && (ptr += 1));
+        break;
+      }
+      // int64 timestamp = 14;
+      case 14: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 112) goto handle_unusual;
+        msg->set_timestamp(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      // int64 fee_limit = 18;
+      case 18: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 144) goto handle_unusual;
+        msg->set_fee_limit(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->EndGroup(tag);
+          return ptr;
+        }
+        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
+          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
+        ptr = res.first;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
+        if (res.second) return ptr;
+      }
+    }  // switch
+  }  // while
+  return ptr;
+string_till_end:
+  static_cast<::std::string*>(object)->clear();
+  static_cast<::std::string*>(object)->reserve(size);
+  goto len_delim_till_end;
+len_delim_till_end:
+  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
+                               {parser_till_end, object}, size);
+}
+#else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool Transaction_raw::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:protocol.Transaction.raw)
   for (;;) {
@@ -780,8 +938,7 @@ bool Transaction_raw::MergePartialFromCodedStream(
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // bytes ref_block_bytes = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_ref_block_bytes()));
         } else {
@@ -792,8 +949,7 @@ bool Transaction_raw::MergePartialFromCodedStream(
 
       // int64 ref_block_num = 3;
       case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (24 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -806,8 +962,7 @@ bool Transaction_raw::MergePartialFromCodedStream(
 
       // bytes ref_block_hash = 4;
       case 4: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (34 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_ref_block_hash()));
         } else {
@@ -818,8 +973,7 @@ bool Transaction_raw::MergePartialFromCodedStream(
 
       // int64 expiration = 8;
       case 8: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(64u /* 64 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (64 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -832,8 +986,7 @@ bool Transaction_raw::MergePartialFromCodedStream(
 
       // repeated .protocol.Transaction.Contract contract = 11;
       case 11: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(90u /* 90 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (90 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                 input, add_contract()));
         } else {
@@ -844,8 +997,7 @@ bool Transaction_raw::MergePartialFromCodedStream(
 
       // int64 timestamp = 14;
       case 14: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(112u /* 112 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (112 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -858,8 +1010,7 @@ bool Transaction_raw::MergePartialFromCodedStream(
 
       // int64 fee_limit = 18;
       case 18: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(144u /* 144 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (144 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -889,6 +1040,7 @@ failure:
   return false;
 #undef DO_
 }
+#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void Transaction_raw::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
@@ -937,16 +1089,15 @@ void Transaction_raw::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt64(18, this->fee_limit(), output);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+        _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:protocol.Transaction.raw)
 }
 
 ::google::protobuf::uint8* Transaction_raw::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+    ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:protocol.Transaction.raw)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
@@ -980,7 +1131,7 @@ void Transaction_raw::SerializeWithCachedSizes(
       n = static_cast<unsigned int>(this->contract_size()); i < n; i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        11, this->contract(static_cast<int>(i)), deterministic, target);
+        11, this->contract(static_cast<int>(i)), target);
   }
 
   // int64 timestamp = 14;
@@ -993,9 +1144,9 @@ void Transaction_raw::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(18, this->fee_limit(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+        _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:protocol.Transaction.raw)
   return target;
@@ -1005,11 +1156,15 @@ size_t Transaction_raw::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:protocol.Transaction.raw)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+        _internal_metadata_.unknown_fields());
   }
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // repeated .protocol.Transaction.Contract contract = 11;
   {
     unsigned int count = static_cast<unsigned int>(this->contract_size());
@@ -1072,9 +1227,9 @@ void Transaction_raw::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:protocol.Transaction.raw)
   GOOGLE_DCHECK_NE(&from, this);
   const Transaction_raw* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const Transaction_raw>(
+      ::google::protobuf::DynamicCastToGenerated<Transaction_raw>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:protocol.Transaction.raw)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
@@ -1137,6 +1292,7 @@ void Transaction_raw::Swap(Transaction_raw* other) {
 }
 void Transaction_raw::InternalSwap(Transaction_raw* other) {
   using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
   CastToBase(&contract_)->InternalSwap(CastToBase(&other->contract_));
   ref_block_bytes_.Swap(&other->ref_block_bytes_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
@@ -1146,12 +1302,11 @@ void Transaction_raw::InternalSwap(Transaction_raw* other) {
   swap(expiration_, other->expiration_);
   swap(timestamp_, other->timestamp_);
   swap(fee_limit_, other->fee_limit_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
 ::google::protobuf::Metadata Transaction_raw::GetMetadata() const {
-  protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages];
+  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_TronInternal_2eproto);
+  return ::file_level_metadata_TronInternal_2eproto[kIndexInFileMessages];
 }
 
 
@@ -1161,31 +1316,40 @@ void Transaction::InitAsDefaultInstance() {
   ::protocol::_Transaction_default_instance_._instance.get_mutable()->raw_data_ = const_cast< ::protocol::Transaction_raw*>(
       ::protocol::Transaction_raw::internal_default_instance());
 }
+class Transaction::HasBitSetters {
+ public:
+  static const ::protocol::Transaction_raw& raw_data(const Transaction* msg);
+};
+
+const ::protocol::Transaction_raw&
+Transaction::HasBitSetters::raw_data(const Transaction* msg) {
+  return *msg->raw_data_;
+}
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Transaction::kRawDataFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Transaction::Transaction()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_TronInternal_2eproto::scc_info_Transaction.base);
+  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:protocol.Transaction)
 }
 Transaction::Transaction(const Transaction& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   if (from.has_raw_data()) {
     raw_data_ = new ::protocol::Transaction_raw(*from.raw_data_);
   } else {
-    raw_data_ = NULL;
+    raw_data_ = nullptr;
   }
   // @@protoc_insertion_point(copy_constructor:protocol.Transaction)
 }
 
 void Transaction::SharedCtor() {
-  raw_data_ = NULL;
+  ::google::protobuf::internal::InitSCC(
+      &scc_info_Transaction_TronInternal_2eproto.base);
+  raw_data_ = nullptr;
 }
 
 Transaction::~Transaction() {
@@ -1200,13 +1364,8 @@ void Transaction::SharedDtor() {
 void Transaction::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* Transaction::descriptor() {
-  ::protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const Transaction& Transaction::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_TronInternal_2eproto::scc_info_Transaction.base);
+  ::google::protobuf::internal::InitSCC(&::scc_info_Transaction_TronInternal_2eproto.base);
   return *internal_default_instance();
 }
 
@@ -1217,16 +1376,62 @@ void Transaction::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  if (GetArenaNoVirtual() == NULL && raw_data_ != NULL) {
+  if (GetArenaNoVirtual() == nullptr && raw_data_ != nullptr) {
     delete raw_data_;
   }
-  raw_data_ = NULL;
+  raw_data_ = nullptr;
   _internal_metadata_.Clear();
 }
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+const char* Transaction::_InternalParse(const char* begin, const char* end, void* object,
+                  ::google::protobuf::internal::ParseContext* ctx) {
+  auto msg = static_cast<Transaction*>(object);
+  ::google::protobuf::int32 size; (void)size;
+  int depth; (void)depth;
+  ::google::protobuf::uint32 tag;
+  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
+  auto ptr = begin;
+  while (ptr < end) {
+    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
+    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+    switch (tag >> 3) {
+      // .protocol.Transaction.raw raw_data = 1;
+      case 1: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        parser_till_end = ::protocol::Transaction_raw::_InternalParse;
+        object = msg->mutable_raw_data();
+        if (size > end - ptr) goto len_delim_till_end;
+        ptr += size;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
+            {parser_till_end, object}, ptr - size, ptr));
+        break;
+      }
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->EndGroup(tag);
+          return ptr;
+        }
+        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
+          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
+        ptr = res.first;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
+        if (res.second) return ptr;
+      }
+    }  // switch
+  }  // while
+  return ptr;
+len_delim_till_end:
+  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
+                               {parser_till_end, object}, size);
+}
+#else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool Transaction::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:protocol.Transaction)
   for (;;) {
@@ -1236,8 +1441,7 @@ bool Transaction::MergePartialFromCodedStream(
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // .protocol.Transaction.raw raw_data = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_raw_data()));
         } else {
@@ -1265,6 +1469,7 @@ failure:
   return false;
 #undef DO_
 }
+#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void Transaction::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
@@ -1275,19 +1480,18 @@ void Transaction::SerializeWithCachedSizes(
   // .protocol.Transaction.raw raw_data = 1;
   if (this->has_raw_data()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->_internal_raw_data(), output);
+      1, HasBitSetters::raw_data(this), output);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+        _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:protocol.Transaction)
 }
 
 ::google::protobuf::uint8* Transaction::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+    ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:protocol.Transaction)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1296,12 +1500,12 @@ void Transaction::SerializeWithCachedSizes(
   if (this->has_raw_data()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        1, this->_internal_raw_data(), deterministic, target);
+        1, HasBitSetters::raw_data(this), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+        _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:protocol.Transaction)
   return target;
@@ -1311,11 +1515,15 @@ size_t Transaction::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:protocol.Transaction)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+        _internal_metadata_.unknown_fields());
   }
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // .protocol.Transaction.raw raw_data = 1;
   if (this->has_raw_data()) {
     total_size += 1 +
@@ -1332,9 +1540,9 @@ void Transaction::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:protocol.Transaction)
   GOOGLE_DCHECK_NE(&from, this);
   const Transaction* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const Transaction>(
+      ::google::protobuf::DynamicCastToGenerated<Transaction>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:protocol.Transaction)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
@@ -1379,13 +1587,13 @@ void Transaction::Swap(Transaction* other) {
 }
 void Transaction::InternalSwap(Transaction* other) {
   using std::swap;
-  swap(raw_data_, other->raw_data_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(raw_data_, other->raw_data_);
 }
 
 ::google::protobuf::Metadata Transaction::GetMetadata() const {
-  protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages];
+  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_TronInternal_2eproto);
+  return ::file_level_metadata_TronInternal_2eproto[kIndexInFileMessages];
 }
 
 
@@ -1393,6 +1601,10 @@ void Transaction::InternalSwap(Transaction* other) {
 
 void BlockHeader_raw::InitAsDefaultInstance() {
 }
+class BlockHeader_raw::HasBitSetters {
+ public:
+};
+
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int BlockHeader_raw::kTimestampFieldNumber;
 const int BlockHeader_raw::kTxTrieRootFieldNumber;
@@ -1404,15 +1616,13 @@ const int BlockHeader_raw::kVersionFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 BlockHeader_raw::BlockHeader_raw()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_TronInternal_2eproto::scc_info_BlockHeader_raw.base);
+  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:protocol.BlockHeader.raw)
 }
 BlockHeader_raw::BlockHeader_raw(const BlockHeader_raw& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   tx_trie_root_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.tx_trie_root().size() > 0) {
@@ -1433,6 +1643,8 @@ BlockHeader_raw::BlockHeader_raw(const BlockHeader_raw& from)
 }
 
 void BlockHeader_raw::SharedCtor() {
+  ::google::protobuf::internal::InitSCC(
+      &scc_info_BlockHeader_raw_TronInternal_2eproto.base);
   tx_trie_root_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   parent_hash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   witness_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
@@ -1455,13 +1667,8 @@ void BlockHeader_raw::SharedDtor() {
 void BlockHeader_raw::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* BlockHeader_raw::descriptor() {
-  ::protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const BlockHeader_raw& BlockHeader_raw::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_TronInternal_2eproto::scc_info_BlockHeader_raw.base);
+  ::google::protobuf::internal::InitSCC(&::scc_info_BlockHeader_raw_TronInternal_2eproto.base);
   return *internal_default_instance();
 }
 
@@ -1481,9 +1688,119 @@ void BlockHeader_raw::Clear() {
   _internal_metadata_.Clear();
 }
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+const char* BlockHeader_raw::_InternalParse(const char* begin, const char* end, void* object,
+                  ::google::protobuf::internal::ParseContext* ctx) {
+  auto msg = static_cast<BlockHeader_raw*>(object);
+  ::google::protobuf::int32 size; (void)size;
+  int depth; (void)depth;
+  ::google::protobuf::uint32 tag;
+  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
+  auto ptr = begin;
+  while (ptr < end) {
+    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
+    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+    switch (tag >> 3) {
+      // int64 timestamp = 1;
+      case 1: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 8) goto handle_unusual;
+        msg->set_timestamp(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      // bytes tx_trie_root = 2;
+      case 2: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 18) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_tx_trie_root();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // bytes parent_hash = 3;
+      case 3: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 26) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_parent_hash();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // int64 number = 7;
+      case 7: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 56) goto handle_unusual;
+        msg->set_number(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      // int64 witness_id = 8;
+      case 8: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 64) goto handle_unusual;
+        msg->set_witness_id(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      // bytes witness_address = 9;
+      case 9: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 74) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_witness_address();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // int32 version = 10;
+      case 10: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 80) goto handle_unusual;
+        msg->set_version(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->EndGroup(tag);
+          return ptr;
+        }
+        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
+          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
+        ptr = res.first;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
+        if (res.second) return ptr;
+      }
+    }  // switch
+  }  // while
+  return ptr;
+string_till_end:
+  static_cast<::std::string*>(object)->clear();
+  static_cast<::std::string*>(object)->reserve(size);
+  goto len_delim_till_end;
+len_delim_till_end:
+  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
+                               {parser_till_end, object}, size);
+}
+#else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool BlockHeader_raw::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:protocol.BlockHeader.raw)
   for (;;) {
@@ -1493,8 +1810,7 @@ bool BlockHeader_raw::MergePartialFromCodedStream(
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // int64 timestamp = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (8 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -1507,8 +1823,7 @@ bool BlockHeader_raw::MergePartialFromCodedStream(
 
       // bytes tx_trie_root = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (18 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_tx_trie_root()));
         } else {
@@ -1519,8 +1834,7 @@ bool BlockHeader_raw::MergePartialFromCodedStream(
 
       // bytes parent_hash = 3;
       case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (26 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_parent_hash()));
         } else {
@@ -1531,8 +1845,7 @@ bool BlockHeader_raw::MergePartialFromCodedStream(
 
       // int64 number = 7;
       case 7: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(56u /* 56 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (56 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -1545,8 +1858,7 @@ bool BlockHeader_raw::MergePartialFromCodedStream(
 
       // int64 witness_id = 8;
       case 8: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(64u /* 64 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (64 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -1559,8 +1871,7 @@ bool BlockHeader_raw::MergePartialFromCodedStream(
 
       // bytes witness_address = 9;
       case 9: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(74u /* 74 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (74 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_witness_address()));
         } else {
@@ -1571,8 +1882,7 @@ bool BlockHeader_raw::MergePartialFromCodedStream(
 
       // int32 version = 10;
       case 10: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(80u /* 80 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (80 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
@@ -1602,6 +1912,7 @@ failure:
   return false;
 #undef DO_
 }
+#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void BlockHeader_raw::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
@@ -1647,16 +1958,15 @@ void BlockHeader_raw::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(10, this->version(), output);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+        _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:protocol.BlockHeader.raw)
 }
 
 ::google::protobuf::uint8* BlockHeader_raw::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+    ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:protocol.BlockHeader.raw)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
@@ -1702,9 +2012,9 @@ void BlockHeader_raw::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(10, this->version(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+        _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:protocol.BlockHeader.raw)
   return target;
@@ -1714,11 +2024,15 @@ size_t BlockHeader_raw::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:protocol.BlockHeader.raw)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+        _internal_metadata_.unknown_fields());
   }
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // bytes tx_trie_root = 2;
   if (this->tx_trie_root().size() > 0) {
     total_size += 1 +
@@ -1777,9 +2091,9 @@ void BlockHeader_raw::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:protocol.BlockHeader.raw)
   GOOGLE_DCHECK_NE(&from, this);
   const BlockHeader_raw* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const BlockHeader_raw>(
+      ::google::protobuf::DynamicCastToGenerated<BlockHeader_raw>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:protocol.BlockHeader.raw)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
@@ -1845,6 +2159,7 @@ void BlockHeader_raw::Swap(BlockHeader_raw* other) {
 }
 void BlockHeader_raw::InternalSwap(BlockHeader_raw* other) {
   using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
   tx_trie_root_.Swap(&other->tx_trie_root_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   parent_hash_.Swap(&other->parent_hash_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
@@ -1855,12 +2170,11 @@ void BlockHeader_raw::InternalSwap(BlockHeader_raw* other) {
   swap(number_, other->number_);
   swap(witness_id_, other->witness_id_);
   swap(version_, other->version_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
 ::google::protobuf::Metadata BlockHeader_raw::GetMetadata() const {
-  protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages];
+  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_TronInternal_2eproto);
+  return ::file_level_metadata_TronInternal_2eproto[kIndexInFileMessages];
 }
 
 
@@ -1870,21 +2184,28 @@ void BlockHeader::InitAsDefaultInstance() {
   ::protocol::_BlockHeader_default_instance_._instance.get_mutable()->raw_data_ = const_cast< ::protocol::BlockHeader_raw*>(
       ::protocol::BlockHeader_raw::internal_default_instance());
 }
+class BlockHeader::HasBitSetters {
+ public:
+  static const ::protocol::BlockHeader_raw& raw_data(const BlockHeader* msg);
+};
+
+const ::protocol::BlockHeader_raw&
+BlockHeader::HasBitSetters::raw_data(const BlockHeader* msg) {
+  return *msg->raw_data_;
+}
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int BlockHeader::kRawDataFieldNumber;
 const int BlockHeader::kWitnessSignatureFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 BlockHeader::BlockHeader()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_TronInternal_2eproto::scc_info_BlockHeader.base);
+  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:protocol.BlockHeader)
 }
 BlockHeader::BlockHeader(const BlockHeader& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   witness_signature_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.witness_signature().size() > 0) {
@@ -1893,14 +2214,16 @@ BlockHeader::BlockHeader(const BlockHeader& from)
   if (from.has_raw_data()) {
     raw_data_ = new ::protocol::BlockHeader_raw(*from.raw_data_);
   } else {
-    raw_data_ = NULL;
+    raw_data_ = nullptr;
   }
   // @@protoc_insertion_point(copy_constructor:protocol.BlockHeader)
 }
 
 void BlockHeader::SharedCtor() {
+  ::google::protobuf::internal::InitSCC(
+      &scc_info_BlockHeader_TronInternal_2eproto.base);
   witness_signature_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  raw_data_ = NULL;
+  raw_data_ = nullptr;
 }
 
 BlockHeader::~BlockHeader() {
@@ -1916,13 +2239,8 @@ void BlockHeader::SharedDtor() {
 void BlockHeader::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* BlockHeader::descriptor() {
-  ::protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const BlockHeader& BlockHeader::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_TronInternal_2eproto::scc_info_BlockHeader.base);
+  ::google::protobuf::internal::InitSCC(&::scc_info_BlockHeader_TronInternal_2eproto.base);
   return *internal_default_instance();
 }
 
@@ -1934,16 +2252,81 @@ void BlockHeader::Clear() {
   (void) cached_has_bits;
 
   witness_signature_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (GetArenaNoVirtual() == NULL && raw_data_ != NULL) {
+  if (GetArenaNoVirtual() == nullptr && raw_data_ != nullptr) {
     delete raw_data_;
   }
-  raw_data_ = NULL;
+  raw_data_ = nullptr;
   _internal_metadata_.Clear();
 }
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+const char* BlockHeader::_InternalParse(const char* begin, const char* end, void* object,
+                  ::google::protobuf::internal::ParseContext* ctx) {
+  auto msg = static_cast<BlockHeader*>(object);
+  ::google::protobuf::int32 size; (void)size;
+  int depth; (void)depth;
+  ::google::protobuf::uint32 tag;
+  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
+  auto ptr = begin;
+  while (ptr < end) {
+    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
+    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+    switch (tag >> 3) {
+      // .protocol.BlockHeader.raw raw_data = 1;
+      case 1: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        parser_till_end = ::protocol::BlockHeader_raw::_InternalParse;
+        object = msg->mutable_raw_data();
+        if (size > end - ptr) goto len_delim_till_end;
+        ptr += size;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
+            {parser_till_end, object}, ptr - size, ptr));
+        break;
+      }
+      // bytes witness_signature = 2;
+      case 2: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 18) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_witness_signature();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->EndGroup(tag);
+          return ptr;
+        }
+        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
+          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
+        ptr = res.first;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
+        if (res.second) return ptr;
+      }
+    }  // switch
+  }  // while
+  return ptr;
+string_till_end:
+  static_cast<::std::string*>(object)->clear();
+  static_cast<::std::string*>(object)->reserve(size);
+  goto len_delim_till_end;
+len_delim_till_end:
+  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
+                               {parser_till_end, object}, size);
+}
+#else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool BlockHeader::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:protocol.BlockHeader)
   for (;;) {
@@ -1953,8 +2336,7 @@ bool BlockHeader::MergePartialFromCodedStream(
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // .protocol.BlockHeader.raw raw_data = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_raw_data()));
         } else {
@@ -1965,8 +2347,7 @@ bool BlockHeader::MergePartialFromCodedStream(
 
       // bytes witness_signature = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (18 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_witness_signature()));
         } else {
@@ -1994,6 +2375,7 @@ failure:
   return false;
 #undef DO_
 }
+#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void BlockHeader::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
@@ -2004,7 +2386,7 @@ void BlockHeader::SerializeWithCachedSizes(
   // .protocol.BlockHeader.raw raw_data = 1;
   if (this->has_raw_data()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->_internal_raw_data(), output);
+      1, HasBitSetters::raw_data(this), output);
   }
 
   // bytes witness_signature = 2;
@@ -2013,16 +2395,15 @@ void BlockHeader::SerializeWithCachedSizes(
       2, this->witness_signature(), output);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+        _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:protocol.BlockHeader)
 }
 
 ::google::protobuf::uint8* BlockHeader::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+    ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:protocol.BlockHeader)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2031,7 +2412,7 @@ void BlockHeader::SerializeWithCachedSizes(
   if (this->has_raw_data()) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        1, this->_internal_raw_data(), deterministic, target);
+        1, HasBitSetters::raw_data(this), target);
   }
 
   // bytes witness_signature = 2;
@@ -2041,9 +2422,9 @@ void BlockHeader::SerializeWithCachedSizes(
         2, this->witness_signature(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+        _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:protocol.BlockHeader)
   return target;
@@ -2053,11 +2434,15 @@ size_t BlockHeader::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:protocol.BlockHeader)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+        _internal_metadata_.unknown_fields());
   }
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // bytes witness_signature = 2;
   if (this->witness_signature().size() > 0) {
     total_size += 1 +
@@ -2081,9 +2466,9 @@ void BlockHeader::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:protocol.BlockHeader)
   GOOGLE_DCHECK_NE(&from, this);
   const BlockHeader* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const BlockHeader>(
+      ::google::protobuf::DynamicCastToGenerated<BlockHeader>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:protocol.BlockHeader)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
@@ -2132,15 +2517,15 @@ void BlockHeader::Swap(BlockHeader* other) {
 }
 void BlockHeader::InternalSwap(BlockHeader* other) {
   using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
   witness_signature_.Swap(&other->witness_signature_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(raw_data_, other->raw_data_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
 ::google::protobuf::Metadata BlockHeader::GetMetadata() const {
-  protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages];
+  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_TronInternal_2eproto);
+  return ::file_level_metadata_TronInternal_2eproto[kIndexInFileMessages];
 }
 
 
@@ -2148,6 +2533,10 @@ void BlockHeader::InternalSwap(BlockHeader* other) {
 
 void TransferContract::InitAsDefaultInstance() {
 }
+class TransferContract::HasBitSetters {
+ public:
+};
+
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int TransferContract::kOwnerAddressFieldNumber;
 const int TransferContract::kToAddressFieldNumber;
@@ -2155,15 +2544,13 @@ const int TransferContract::kAmountFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 TransferContract::TransferContract()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_TronInternal_2eproto::scc_info_TransferContract.base);
+  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:protocol.TransferContract)
 }
 TransferContract::TransferContract(const TransferContract& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   owner_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.owner_address().size() > 0) {
@@ -2178,9 +2565,11 @@ TransferContract::TransferContract(const TransferContract& from)
 }
 
 void TransferContract::SharedCtor() {
+  ::google::protobuf::internal::InitSCC(
+      &scc_info_TransferContract_TronInternal_2eproto.base);
   owner_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   to_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  amount_ = GOOGLE_LONGLONG(0);
+  amount_ = PROTOBUF_LONGLONG(0);
 }
 
 TransferContract::~TransferContract() {
@@ -2196,13 +2585,8 @@ void TransferContract::SharedDtor() {
 void TransferContract::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* TransferContract::descriptor() {
-  ::protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const TransferContract& TransferContract::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_TronInternal_2eproto::scc_info_TransferContract.base);
+  ::google::protobuf::internal::InitSCC(&::scc_info_TransferContract_TronInternal_2eproto.base);
   return *internal_default_instance();
 }
 
@@ -2215,13 +2599,87 @@ void TransferContract::Clear() {
 
   owner_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   to_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  amount_ = GOOGLE_LONGLONG(0);
+  amount_ = PROTOBUF_LONGLONG(0);
   _internal_metadata_.Clear();
 }
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+const char* TransferContract::_InternalParse(const char* begin, const char* end, void* object,
+                  ::google::protobuf::internal::ParseContext* ctx) {
+  auto msg = static_cast<TransferContract*>(object);
+  ::google::protobuf::int32 size; (void)size;
+  int depth; (void)depth;
+  ::google::protobuf::uint32 tag;
+  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
+  auto ptr = begin;
+  while (ptr < end) {
+    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
+    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+    switch (tag >> 3) {
+      // bytes owner_address = 1;
+      case 1: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_owner_address();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // bytes to_address = 2;
+      case 2: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 18) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_to_address();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // int64 amount = 3;
+      case 3: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 24) goto handle_unusual;
+        msg->set_amount(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->EndGroup(tag);
+          return ptr;
+        }
+        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
+          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
+        ptr = res.first;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
+        if (res.second) return ptr;
+      }
+    }  // switch
+  }  // while
+  return ptr;
+string_till_end:
+  static_cast<::std::string*>(object)->clear();
+  static_cast<::std::string*>(object)->reserve(size);
+  goto len_delim_till_end;
+len_delim_till_end:
+  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
+                               {parser_till_end, object}, size);
+}
+#else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool TransferContract::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:protocol.TransferContract)
   for (;;) {
@@ -2231,8 +2689,7 @@ bool TransferContract::MergePartialFromCodedStream(
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // bytes owner_address = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_owner_address()));
         } else {
@@ -2243,8 +2700,7 @@ bool TransferContract::MergePartialFromCodedStream(
 
       // bytes to_address = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (18 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_to_address()));
         } else {
@@ -2255,8 +2711,7 @@ bool TransferContract::MergePartialFromCodedStream(
 
       // int64 amount = 3;
       case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (24 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -2286,6 +2741,7 @@ failure:
   return false;
 #undef DO_
 }
+#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void TransferContract::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
@@ -2310,16 +2766,15 @@ void TransferContract::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt64(3, this->amount(), output);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+        _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:protocol.TransferContract)
 }
 
 ::google::protobuf::uint8* TransferContract::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+    ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:protocol.TransferContract)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2343,9 +2798,9 @@ void TransferContract::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(3, this->amount(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+        _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:protocol.TransferContract)
   return target;
@@ -2355,11 +2810,15 @@ size_t TransferContract::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:protocol.TransferContract)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+        _internal_metadata_.unknown_fields());
   }
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // bytes owner_address = 1;
   if (this->owner_address().size() > 0) {
     total_size += 1 +
@@ -2390,9 +2849,9 @@ void TransferContract::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:protocol.TransferContract)
   GOOGLE_DCHECK_NE(&from, this);
   const TransferContract* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const TransferContract>(
+      ::google::protobuf::DynamicCastToGenerated<TransferContract>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:protocol.TransferContract)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
@@ -2445,17 +2904,17 @@ void TransferContract::Swap(TransferContract* other) {
 }
 void TransferContract::InternalSwap(TransferContract* other) {
   using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
   owner_address_.Swap(&other->owner_address_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   to_address_.Swap(&other->to_address_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(amount_, other->amount_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
 ::google::protobuf::Metadata TransferContract::GetMetadata() const {
-  protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages];
+  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_TronInternal_2eproto);
+  return ::file_level_metadata_TronInternal_2eproto[kIndexInFileMessages];
 }
 
 
@@ -2463,6 +2922,10 @@ void TransferContract::InternalSwap(TransferContract* other) {
 
 void TransferAssetContract::InitAsDefaultInstance() {
 }
+class TransferAssetContract::HasBitSetters {
+ public:
+};
+
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int TransferAssetContract::kAssetNameFieldNumber;
 const int TransferAssetContract::kOwnerAddressFieldNumber;
@@ -2471,15 +2934,13 @@ const int TransferAssetContract::kAmountFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 TransferAssetContract::TransferAssetContract()
-  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
-  ::google::protobuf::internal::InitSCC(
-      &protobuf_TronInternal_2eproto::scc_info_TransferAssetContract.base);
+  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:protocol.TransferAssetContract)
 }
 TransferAssetContract::TransferAssetContract(const TransferAssetContract& from)
   : ::google::protobuf::Message(),
-      _internal_metadata_(NULL) {
+      _internal_metadata_(nullptr) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   asset_name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.asset_name().size() > 0) {
@@ -2498,10 +2959,12 @@ TransferAssetContract::TransferAssetContract(const TransferAssetContract& from)
 }
 
 void TransferAssetContract::SharedCtor() {
+  ::google::protobuf::internal::InitSCC(
+      &scc_info_TransferAssetContract_TronInternal_2eproto.base);
   asset_name_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   owner_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   to_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  amount_ = GOOGLE_LONGLONG(0);
+  amount_ = PROTOBUF_LONGLONG(0);
 }
 
 TransferAssetContract::~TransferAssetContract() {
@@ -2518,13 +2981,8 @@ void TransferAssetContract::SharedDtor() {
 void TransferAssetContract::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* TransferAssetContract::descriptor() {
-  ::protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
-}
-
 const TransferAssetContract& TransferAssetContract::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_TronInternal_2eproto::scc_info_TransferAssetContract.base);
+  ::google::protobuf::internal::InitSCC(&::scc_info_TransferAssetContract_TronInternal_2eproto.base);
   return *internal_default_instance();
 }
 
@@ -2538,13 +2996,102 @@ void TransferAssetContract::Clear() {
   asset_name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   owner_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   to_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  amount_ = GOOGLE_LONGLONG(0);
+  amount_ = PROTOBUF_LONGLONG(0);
   _internal_metadata_.Clear();
 }
 
+#if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+const char* TransferAssetContract::_InternalParse(const char* begin, const char* end, void* object,
+                  ::google::protobuf::internal::ParseContext* ctx) {
+  auto msg = static_cast<TransferAssetContract*>(object);
+  ::google::protobuf::int32 size; (void)size;
+  int depth; (void)depth;
+  ::google::protobuf::uint32 tag;
+  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
+  auto ptr = begin;
+  while (ptr < end) {
+    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
+    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+    switch (tag >> 3) {
+      // bytes asset_name = 1;
+      case 1: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_asset_name();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // bytes owner_address = 2;
+      case 2: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 18) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_owner_address();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // bytes to_address = 3;
+      case 3: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 26) goto handle_unusual;
+        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        object = msg->mutable_to_address();
+        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
+          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
+          goto string_till_end;
+        }
+        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
+        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
+        ptr += size;
+        break;
+      }
+      // int64 amount = 4;
+      case 4: {
+        if (static_cast<::google::protobuf::uint8>(tag) != 32) goto handle_unusual;
+        msg->set_amount(::google::protobuf::internal::ReadVarint(&ptr));
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+        break;
+      }
+      default: {
+      handle_unusual:
+        if ((tag & 7) == 4 || tag == 0) {
+          ctx->EndGroup(tag);
+          return ptr;
+        }
+        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
+          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
+        ptr = res.first;
+        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
+        if (res.second) return ptr;
+      }
+    }  // switch
+  }  // while
+  return ptr;
+string_till_end:
+  static_cast<::std::string*>(object)->clear();
+  static_cast<::std::string*>(object)->reserve(size);
+  goto len_delim_till_end;
+len_delim_till_end:
+  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
+                               {parser_till_end, object}, size);
+}
+#else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool TransferAssetContract::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+#define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
   // @@protoc_insertion_point(parse_start:protocol.TransferAssetContract)
   for (;;) {
@@ -2554,8 +3101,7 @@ bool TransferAssetContract::MergePartialFromCodedStream(
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // bytes asset_name = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_asset_name()));
         } else {
@@ -2566,8 +3112,7 @@ bool TransferAssetContract::MergePartialFromCodedStream(
 
       // bytes owner_address = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (18 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_owner_address()));
         } else {
@@ -2578,8 +3123,7 @@ bool TransferAssetContract::MergePartialFromCodedStream(
 
       // bytes to_address = 3;
       case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (26 & 0xFF)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_to_address()));
         } else {
@@ -2590,8 +3134,7 @@ bool TransferAssetContract::MergePartialFromCodedStream(
 
       // int64 amount = 4;
       case 4: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
+        if (static_cast< ::google::protobuf::uint8>(tag) == (32 & 0xFF)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
@@ -2621,6 +3164,7 @@ failure:
   return false;
 #undef DO_
 }
+#endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void TransferAssetContract::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
@@ -2651,16 +3195,15 @@ void TransferAssetContract::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt64(4, this->amount(), output);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+        _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:protocol.TransferAssetContract)
 }
 
 ::google::protobuf::uint8* TransferAssetContract::InternalSerializeWithCachedSizesToArray(
-    bool deterministic, ::google::protobuf::uint8* target) const {
-  (void)deterministic; // Unused
+    ::google::protobuf::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:protocol.TransferAssetContract)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
@@ -2691,9 +3234,9 @@ void TransferAssetContract::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(4, this->amount(), target);
   }
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+        _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:protocol.TransferAssetContract)
   return target;
@@ -2703,11 +3246,15 @@ size_t TransferAssetContract::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:protocol.TransferAssetContract)
   size_t total_size = 0;
 
-  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+  if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+        _internal_metadata_.unknown_fields());
   }
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
   // bytes asset_name = 1;
   if (this->asset_name().size() > 0) {
     total_size += 1 +
@@ -2745,9 +3292,9 @@ void TransferAssetContract::MergeFrom(const ::google::protobuf::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:protocol.TransferAssetContract)
   GOOGLE_DCHECK_NE(&from, this);
   const TransferAssetContract* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const TransferAssetContract>(
+      ::google::protobuf::DynamicCastToGenerated<TransferAssetContract>(
           &from);
-  if (source == NULL) {
+  if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:protocol.TransferAssetContract)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
@@ -2804,6 +3351,7 @@ void TransferAssetContract::Swap(TransferAssetContract* other) {
 }
 void TransferAssetContract::InternalSwap(TransferAssetContract* other) {
   using std::swap;
+  _internal_metadata_.Swap(&other->_internal_metadata_);
   asset_name_.Swap(&other->asset_name_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   owner_address_.Swap(&other->owner_address_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
@@ -2811,12 +3359,11 @@ void TransferAssetContract::InternalSwap(TransferAssetContract* other) {
   to_address_.Swap(&other->to_address_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(amount_, other->amount_);
-  _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
 ::google::protobuf::Metadata TransferAssetContract::GetMetadata() const {
-  protobuf_TronInternal_2eproto::protobuf_AssignDescriptorsOnce();
-  return ::protobuf_TronInternal_2eproto::file_level_metadata[kIndexInFileMessages];
+  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_TronInternal_2eproto);
+  return ::file_level_metadata_TronInternal_2eproto[kIndexInFileMessages];
 }
 
 
@@ -2824,28 +3371,29 @@ void TransferAssetContract::InternalSwap(TransferAssetContract* other) {
 }  // namespace protocol
 namespace google {
 namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::protocol::Transaction_Contract* Arena::CreateMaybeMessage< ::protocol::Transaction_Contract >(Arena* arena) {
+template<> PROTOBUF_NOINLINE ::protocol::Transaction_Contract* Arena::CreateMaybeMessage< ::protocol::Transaction_Contract >(Arena* arena) {
   return Arena::CreateInternal< ::protocol::Transaction_Contract >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::protocol::Transaction_raw* Arena::CreateMaybeMessage< ::protocol::Transaction_raw >(Arena* arena) {
+template<> PROTOBUF_NOINLINE ::protocol::Transaction_raw* Arena::CreateMaybeMessage< ::protocol::Transaction_raw >(Arena* arena) {
   return Arena::CreateInternal< ::protocol::Transaction_raw >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::protocol::Transaction* Arena::CreateMaybeMessage< ::protocol::Transaction >(Arena* arena) {
+template<> PROTOBUF_NOINLINE ::protocol::Transaction* Arena::CreateMaybeMessage< ::protocol::Transaction >(Arena* arena) {
   return Arena::CreateInternal< ::protocol::Transaction >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::protocol::BlockHeader_raw* Arena::CreateMaybeMessage< ::protocol::BlockHeader_raw >(Arena* arena) {
+template<> PROTOBUF_NOINLINE ::protocol::BlockHeader_raw* Arena::CreateMaybeMessage< ::protocol::BlockHeader_raw >(Arena* arena) {
   return Arena::CreateInternal< ::protocol::BlockHeader_raw >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::protocol::BlockHeader* Arena::CreateMaybeMessage< ::protocol::BlockHeader >(Arena* arena) {
+template<> PROTOBUF_NOINLINE ::protocol::BlockHeader* Arena::CreateMaybeMessage< ::protocol::BlockHeader >(Arena* arena) {
   return Arena::CreateInternal< ::protocol::BlockHeader >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::protocol::TransferContract* Arena::CreateMaybeMessage< ::protocol::TransferContract >(Arena* arena) {
+template<> PROTOBUF_NOINLINE ::protocol::TransferContract* Arena::CreateMaybeMessage< ::protocol::TransferContract >(Arena* arena) {
   return Arena::CreateInternal< ::protocol::TransferContract >(arena);
 }
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::protocol::TransferAssetContract* Arena::CreateMaybeMessage< ::protocol::TransferAssetContract >(Arena* arena) {
+template<> PROTOBUF_NOINLINE ::protocol::TransferAssetContract* Arena::CreateMaybeMessage< ::protocol::TransferAssetContract >(Arena* arena) {
   return Arena::CreateInternal< ::protocol::TransferAssetContract >(arena);
 }
 }  // namespace protobuf
 }  // namespace google
 
 // @@protoc_insertion_point(global_scope)
+#include <google/protobuf/port_undef.inc>
