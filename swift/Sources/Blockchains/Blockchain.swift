@@ -30,7 +30,7 @@ open class Blockchain: Hashable {
     }
 
     /// Returns the address associated with a public key.
-    open func address(for publicKey: PublicKeySecp256k1) -> Address {
+    open func address(for publicKey: PublicKey) -> Address {
         fatalError("Use a specific Blockchain subclass")
     }
 
@@ -64,7 +64,7 @@ public extension Blockchain {
         return TrustWalletCore.HDWallet.getAddressFromExtended(extended: extendedPubkey, coinType: path.coinType, change: path.change, address: path.address)
     }
 
-    func derivePubkey(from extendedPubkey: String, at path: DerivationPath) -> PublicKeySecp256k1? {
+    func derivePubkey(from extendedPubkey: String, at path: DerivationPath) -> PublicKey? {
         guard let xpubVer = xpubVersion,
             let xprvVer = xprvVersion else {
             return nil

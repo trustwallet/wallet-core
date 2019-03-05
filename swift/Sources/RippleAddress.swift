@@ -59,7 +59,7 @@ public final class RippleAddress {
         self.rawValue = rawValue
     }
 
-    public init(publicKey: PublicKeySecp256k1) {
+    public init(publicKey: PublicKey) {
         rawValue = TWRippleAddressCreateWithPublicKey(publicKey.rawValue)
     }
 

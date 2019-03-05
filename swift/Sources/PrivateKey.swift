@@ -9,18 +9,18 @@
 
 import Foundation
 
-public final class PrivateKeySecp256k1 {
+public final class PrivateKey {
 
     public static func isValid(data: Data) -> Bool {
         let dataData = TWDataCreateWithNSData(data)
         defer {
             TWDataDelete(dataData)
         }
-        return TWPrivateKeySecp256k1IsValid(dataData)
+        return TWPrivateKeyIsValid(dataData)
     }
 
     public var data: Data {
-        return TWDataNSData(TWPrivateKeySecp256k1Data(rawValue))
+        return TWDataNSData(TWPrivateKeyData(rawValue))
     }
 
     let rawValue: OpaquePointer
@@ -30,7 +30,7 @@ public final class PrivateKeySecp256k1 {
     }
 
     public init() {
-        rawValue = TWPrivateKeySecp256k1Create()
+        rawValue = TWPrivateKeyCreate()
     }
 
     public init?(data: Data) {
@@ -38,25 +38,25 @@ public final class PrivateKeySecp256k1 {
         defer {
             TWDataDelete(dataData)
         }
-        guard let rawValue = TWPrivateKeySecp256k1CreateWithData(dataData) else {
+        guard let rawValue = TWPrivateKeyCreateWithData(dataData) else {
             return nil
         }
         self.rawValue = rawValue
     }
 
-    public init?(key: PrivateKeySecp256k1) {
-        guard let rawValue = TWPrivateKeySecp256k1CreateCopy(key.rawValue) else {
+    public init?(key: PrivateKey) {
+        guard let rawValue = TWPrivateKeyCreateCopy(key.rawValue) else {
             return nil
         }
         self.rawValue = rawValue
     }
 
     deinit {
-        TWPrivateKeySecp256k1Delete(rawValue)
+        TWPrivateKeyDelete(rawValue)
     }
 
-    public func getPublicKey(compressed: Bool) -> PublicKeySecp256k1 {
-        return PublicKeySecp256k1(rawValue: TWPrivateKeySecp256k1GetPublicKey(rawValue, compressed))
+    public func getPublicKey(compressed: Bool) -> PublicKey {
+        return PublicKey(rawValue: TWPrivateKeyGetPublicKey(rawValue, compressed))
     }
 
     public func sign(digest: Data) -> Data? {
@@ -64,7 +64,7 @@ public final class PrivateKeySecp256k1 {
         defer {
             TWDataDelete(digestData)
         }
-        guard let result = TWPrivateKeySecp256k1Sign(rawValue, digestData) else {
+        guard let result = TWPrivateKeySign(rawValue, digestData) else {
             return nil
         }
         return TWDataNSData(result)
@@ -75,7 +75,7 @@ public final class PrivateKeySecp256k1 {
         defer {
             TWDataDelete(digestData)
         }
-        guard let result = TWPrivateKeySecp256k1SignAsDER(rawValue, digestData) else {
+        guard let result = TWPrivateKeySignAsDER(rawValue, digestData) else {
             return nil
         }
         return TWDataNSData(result)

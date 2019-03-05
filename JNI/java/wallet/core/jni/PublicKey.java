@@ -11,14 +11,14 @@ package wallet.core.jni;
 
 import java.security.InvalidParameterException;
 
-public class PublicKeySecp256k1 {
+public class PublicKey {
     private byte[] bytes;
 
-    private PublicKeySecp256k1() {
+    private PublicKey() {
     }
 
-    static PublicKeySecp256k1 createFromNative(byte[] bytes) {
-        PublicKeySecp256k1 instance = new PublicKeySecp256k1();
+    static PublicKey createFromNative(byte[] bytes) {
+        PublicKey instance = new PublicKey();
         instance.bytes = bytes;
         return instance;
     }
@@ -26,14 +26,14 @@ public class PublicKeySecp256k1 {
     static native byte[] initWithData(byte[] data);
 
     public static native boolean isValid(byte[] data);
-    public static native PublicKeySecp256k1 recover(byte[] signature, byte[] message);
+    public static native PublicKey recover(byte[] signature, byte[] message);
     public native boolean isCompressed();
-    public native PublicKeySecp256k1 compressed();
+    public native PublicKey compressed();
     public native byte[] data();
     public native String description();
     public native boolean verify(byte[] signature, byte[] message);
 
-    public PublicKeySecp256k1(byte[] data) {
+    public PublicKey(byte[] data) {
         bytes = initWithData(data);
         if (bytes == null) {
             throw new InvalidParameterException();

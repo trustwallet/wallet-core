@@ -6,16 +6,16 @@
 
 import Foundation
 
-extension PublicKeySecp256k1: Hashable {
+extension PublicKey: Hashable {
     /// Compressed public key size.
-    public static let compressedSize = TWPublicKeySecp256k1CompressedSize
+    public static let compressedSize = TWPublicKeyCompressedSize
 
     /// Uncompressed public key size.
-    public static let uncompressedSize = TWPublicKeySecp256k1UncompressedSize
+    public static let uncompressedSize = TWPublicKeyUncompressedSize
 
     // MARK: Hashable
 
-    public static func == (lhs: PublicKeySecp256k1, rhs: PublicKeySecp256k1) -> Bool {
+    public static func == (lhs: PublicKey, rhs: PublicKey) -> Bool {
         return lhs.data == rhs.data
     }
 

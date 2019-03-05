@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include <TrustWalletCore/TWBech32Address.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include "TWJNI.h"
 #include "Bech32Address.h"
@@ -43,7 +43,7 @@ jlong JNICALL Java_wallet_core_jni_Bech32Address_nativeCreateWithPublicKey(JNIEn
     jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
     jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
     jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKeySecp256k1 *publicKeyInstance = (struct TWPublicKeySecp256k1 *) publicKeyBytesBuffer;
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
     struct TWBech32Address *instance = TWBech32AddressCreateWithPublicKey(hrpValue, *publicKeyInstance);
     (*env)->DeleteLocalRef(env, hrpClass);
     (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);

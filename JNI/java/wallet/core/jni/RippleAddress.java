@@ -28,7 +28,7 @@ public class RippleAddress {
 
     static native long nativeCreateWithString(String string);
     static native long nativeCreateWithData(byte[] data);
-    static native long nativeCreateWithPublicKey(PublicKeySecp256k1 publicKey);
+    static native long nativeCreateWithPublicKey(PublicKey publicKey);
     static native void nativeDelete(long handle);
 
     public static native boolean equals(RippleAddress lhs, RippleAddress rhs);
@@ -54,7 +54,7 @@ public class RippleAddress {
         RippleAddressPhantomReference.register(this, nativeHandle);
     }
 
-    public RippleAddress(PublicKeySecp256k1 publicKey) {
+    public RippleAddress(PublicKey publicKey) {
         nativeHandle = nativeCreateWithPublicKey(publicKey);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();

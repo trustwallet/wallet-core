@@ -43,10 +43,8 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWKeyDerivation.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
-#include <TrustWalletCore/TWPrivateKeyEd25519.h>
-#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
-#include <TrustWalletCore/TWPublicKeyEd25519.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPurpose.h>
 #include <TrustWalletCore/TWRippleAddress.h>
 #include <TrustWalletCore/TWRippleSigner.h>

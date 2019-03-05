@@ -14,7 +14,7 @@ public extension HDWallet {
         return getExtendedPublicKey(purpose: purpose, coin: coin, version: version)
     }
 
-    public func getKey(at path: DerivationPath) -> PrivateKeySecp256k1 {
+    public func getKey(at path: DerivationPath) -> PrivateKey {
         return getKey(purpose: path.purpose, coin: path.coinType, account: path.account, change: path.change, address: path.address)
     }
 }

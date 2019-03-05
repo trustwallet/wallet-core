@@ -63,7 +63,7 @@ public final class Bech32Address {
         self.rawValue = rawValue
     }
 
-    public init(hrp: HRP, publicKey: PublicKeySecp256k1) {
+    public init(hrp: HRP, publicKey: PublicKey) {
         rawValue = TWBech32AddressCreateWithPublicKey(TWHRP(rawValue: hrp.rawValue), publicKey.rawValue)
     }
 

@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import Foundation
+import TrustWalletCore
 
 public class Ripple: Blockchain {
 
@@ -20,7 +21,7 @@ public class Ripple: Blockchain {
         return RippleAddress(string: string)
     }
 
-    public override func address(for publicKey: PublicKeySecp256k1) -> Address {
+    public override func address(for publicKey: PublicKey) -> Address {
         return RippleAddress(publicKey: publicKey.compressed)
     }
 }

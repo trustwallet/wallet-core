@@ -9,27 +9,47 @@
 
 import Foundation
 
-public struct PublicKeyEd25519 {
+public struct PublicKey {
 
     public static func isValid(data: Data) -> Bool {
         let dataData = TWDataCreateWithNSData(data)
         defer {
             TWDataDelete(dataData)
         }
-        return TWPublicKeyEd25519IsValid(dataData)
+        return TWPublicKeyIsValid(dataData)
     }
 
-    var rawValue: TWPublicKeyEd25519
+    public static func recover(signature: Data, message: Data) -> PublicKey {
+        let signatureData = TWDataCreateWithNSData(signature)
+        defer {
+            TWDataDelete(signatureData)
+        }
+        let messageData = TWDataCreateWithNSData(message)
+        defer {
+            TWDataDelete(messageData)
+        }
+        return PublicKey(rawValue: TWPublicKeyRecover(signatureData, messageData))
+    }
+
+    var rawValue: TWPublicKey
+
+    public var isCompressed: Bool {
+        return TWPublicKeyIsCompressed(rawValue)
+    }
+
+    public var compressed: PublicKey {
+        return PublicKey(rawValue: TWPublicKeyCompressed(rawValue))
+    }
 
     public var data: Data {
-        return TWDataNSData(TWPublicKeyEd25519Data(rawValue))
+        return TWDataNSData(TWPublicKeyData(rawValue))
     }
 
     public var description: String {
-        return TWStringNSString(TWPublicKeyEd25519Description(rawValue))
+        return TWStringNSString(TWPublicKeyDescription(rawValue))
     }
 
-    init(rawValue: TWPublicKeyEd25519) {
+    init(rawValue: TWPublicKey) {
         self.rawValue = rawValue
     }
 
@@ -38,8 +58,8 @@ public struct PublicKeyEd25519 {
         defer {
             TWDataDelete(dataData)
         }
-        rawValue = TWPublicKeyEd25519()
-        guard TWPublicKeyEd25519InitWithData(&rawValue, dataData) else {
+        rawValue = TWPublicKey()
+        guard TWPublicKeyInitWithData(&rawValue, dataData) else {
             return nil
         }
     }
@@ -54,7 +74,7 @@ public struct PublicKeyEd25519 {
         defer {
             TWDataDelete(messageData)
         }
-        return TWPublicKeyEd25519Verify(rawValue, signatureData, messageData)
+        return TWPublicKeyVerify(rawValue, signatureData, messageData)
     }
 
 }

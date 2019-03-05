@@ -28,7 +28,7 @@ public class TendermintAddress {
 
     static native long nativeCreateWithString(String string);
     static native long nativeCreateWithKeyHash(HRP hrp, byte[] keyHash);
-    static native long nativeCreateWithPublicKey(HRP hrp, PublicKeySecp256k1 publicKey);
+    static native long nativeCreateWithPublicKey(HRP hrp, PublicKey publicKey);
     static native void nativeDelete(long handle);
 
     public static native boolean equals(TendermintAddress lhs, TendermintAddress rhs);
@@ -55,7 +55,7 @@ public class TendermintAddress {
         TendermintAddressPhantomReference.register(this, nativeHandle);
     }
 
-    public TendermintAddress(HRP hrp, PublicKeySecp256k1 publicKey) {
+    public TendermintAddress(HRP hrp, PublicKey publicKey) {
         nativeHandle = nativeCreateWithPublicKey(hrp, publicKey);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();

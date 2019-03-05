@@ -12,7 +12,7 @@ class ZcoinTests: XCTestCase {
 
     func testWIF() {
         let wif = "YAWpCGY26oVprEs8gqEAcBmJYZKU9PxbjE39CwumegK248fPn5To"
-        let privKey = PrivateKeySecp256k1(wif: wif)!
+        let privKey = PrivateKey(wif: wif)!
         let pubKey = privKey.getPublicKey(compressed: true)
 
         XCTAssertEqual(pubKey.data.hexString, "025bb27ffa8dde90ea269e591fcf93e01e58a31077d76c92924cb42c7c7ea39090")

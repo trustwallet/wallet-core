@@ -63,7 +63,7 @@ public final class TendermintAddress {
         self.rawValue = rawValue
     }
 
-    public init?(hrp: HRP, publicKey: PublicKeySecp256k1) {
+    public init?(hrp: HRP, publicKey: PublicKey) {
         guard let rawValue = TWTendermintAddressCreateWithPublicKey(TWHRP(rawValue: hrp.rawValue), publicKey.rawValue) else {
             return nil
         }

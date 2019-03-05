@@ -18,7 +18,7 @@ public final class Tron: Blockchain {
         return .tron
     }
 
-    override public func address(for publicKey: PublicKeySecp256k1) -> Address {
+    override public func address(for publicKey: PublicKey) -> Address {
         assert(publicKey.isCompressed == false)
         let keyhash = Hash.keccak256(data: publicKey.data.dropFirst()).suffix(20)
         let hash = Data([TronAddress.prefix]) + keyhash

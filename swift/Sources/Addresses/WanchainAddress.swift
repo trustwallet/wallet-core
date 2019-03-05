@@ -34,7 +34,7 @@ public struct WanchainAddress: Address, Hashable {
         self.init(data: data)
     }
 
-    public init(publicKey: PublicKeySecp256k1) {
+    public init(publicKey: PublicKey) {
         data = EthereumAddress(publicKey: publicKey).data
     }
 

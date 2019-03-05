@@ -32,11 +32,11 @@ public class HDWallet {
     static native void nativeDelete(long handle);
 
     public static native boolean isValid(String mnemonic);
-    public static native PublicKeySecp256k1 getPublicKeyFromExtended(String extended, HDVersion versionPublic, HDVersion versionPrivate, int change, int address);
+    public static native PublicKey getPublicKeyFromExtended(String extended, HDVersion versionPublic, HDVersion versionPrivate, int change, int address);
     public static native String getAddressFromExtended(String extended, CoinType coinType, int change, int address);
     public native byte[] seed();
     public native String mnemonic();
-    public native PrivateKeySecp256k1 getKey(Purpose purpose, CoinType coin, int account, int change, int address);
+    public native PrivateKey getKey(Purpose purpose, CoinType coin, int account, int change, int address);
     public native String getExtendedPrivateKey(Purpose purpose, CoinType coin, HDVersion version);
     public native String getExtendedPublicKey(Purpose purpose, CoinType coin, HDVersion version);
 

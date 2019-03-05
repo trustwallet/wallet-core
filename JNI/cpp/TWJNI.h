@@ -11,10 +11,8 @@
 #include <TrustWalletCore/TWString.h>
 
 #include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPrivateKeySecp256k1.h>
-#include <TrustWalletCore/TWPrivateKeyEd25519.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
-#include <TrustWalletCore/TWPublicKeyEd25519.h>
+#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <TrustWalletCore/TWBitcoinOpCodes.h>
 #include <TrustWalletCore/TWBitcoinScript.h>

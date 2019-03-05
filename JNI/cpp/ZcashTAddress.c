@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWZcashTAddress.h>
 
 #include "TWJNI.h"
@@ -59,7 +59,7 @@ jbyteArray JNICALL Java_wallet_core_jni_ZcashTAddress_initWithPublicKey(JNIEnv *
     jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
     jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
     jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKeySecp256k1 *publicKeyInstance = (struct TWPublicKeySecp256k1 *) publicKeyBytesBuffer;
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
     jboolean result = (jboolean) TWZcashTAddressInitWithPublicKey(instance, *publicKeyInstance, prefix);
     (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
     (*env)->DeleteLocalRef(env, publicKeyBytesArray);

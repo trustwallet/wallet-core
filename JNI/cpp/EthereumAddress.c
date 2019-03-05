@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include <TrustWalletCore/TWEthereumAddress.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include "TWJNI.h"
 #include "EthereumAddress.h"
@@ -36,7 +36,7 @@ jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithPublicKey(JNI
     jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
     jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
     jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKeySecp256k1 *publicKeyInstance = (struct TWPublicKeySecp256k1 *) publicKeyBytesBuffer;
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
     struct TWEthereumAddress *instance = TWEthereumAddressCreateWithPublicKey(*publicKeyInstance);
     (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
     (*env)->DeleteLocalRef(env, publicKeyBytesArray);

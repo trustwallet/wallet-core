@@ -28,7 +28,7 @@ public class IconAddress {
 
     static native long nativeCreateWithString(String string);
     static native long nativeCreateWithKeyHash(byte[] keyHash, IconAddressType type);
-    static native long nativeCreateWithPublicKey(PublicKeySecp256k1 publicKey, IconAddressType type);
+    static native long nativeCreateWithPublicKey(PublicKey publicKey, IconAddressType type);
     static native void nativeDelete(long handle);
 
     public static native boolean equals(IconAddress lhs, IconAddress rhs);
@@ -54,7 +54,7 @@ public class IconAddress {
         IconAddressPhantomReference.register(this, nativeHandle);
     }
 
-    public IconAddress(PublicKeySecp256k1 publicKey, IconAddressType type) {
+    public IconAddress(PublicKey publicKey, IconAddressType type) {
         nativeHandle = nativeCreateWithPublicKey(publicKey, type);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();

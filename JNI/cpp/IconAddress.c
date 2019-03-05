@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include <TrustWalletCore/TWIconAddress.h>
-#include <TrustWalletCore/TWPublicKeySecp256k1.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include "TWJNI.h"
 #include "IconAddress.h"
@@ -40,7 +40,7 @@ jlong JNICALL Java_wallet_core_jni_IconAddress_nativeCreateWithPublicKey(JNIEnv 
     jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
     jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
     jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKeySecp256k1 *publicKeyInstance = (struct TWPublicKeySecp256k1 *) publicKeyBytesBuffer;
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
     jclass typeClass = (*env)->GetObjectClass(env, type);
     jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
     jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);

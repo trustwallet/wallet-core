@@ -27,7 +27,7 @@ public struct TronAddress: Address, Hashable {
 
     public let data: Data
 
-    public init(publicKey: PublicKeySecp256k1) {
+    public init(publicKey: PublicKey) {
         assert(publicKey.isCompressed == false)
         let keyhash = Hash.keccak256(data: publicKey.data.dropFirst()).suffix(20)
         data = Data([TronAddress.prefix]) + keyhash

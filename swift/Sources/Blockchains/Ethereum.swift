@@ -20,7 +20,7 @@ open class Ethereum: Blockchain {
         return .ethereum
     }
 
-    open override func address(for publicKey: PublicKeySecp256k1) -> Address {
+    open override func address(for publicKey: PublicKey) -> Address {
         return EthereumAddress(publicKey: publicKey)
     }
 
