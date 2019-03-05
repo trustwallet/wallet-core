@@ -18,23 +18,6 @@
 using namespace TW;
 using namespace TW::Tezos;
 
-std::string Signer::signOperation(TW::Tezos::Proto::OperationList operationList) {
-  auto forgedBytesHex = forgeBranch(operationList.branch());
-  for (auto operation : operationList.operations()) {
-    forgedBytesHex += forgeOperation(operation);
-  }
-
-  auto watermark = "03";
-  auto watermarkedForgedBytesHex = watermark + forgedBytesHex;
-  auto twStringRep = TWStringCreateWithUTF8Bytes("TODO: Put watermarekdForgedBytesHexHere");
-  auto watermarkedBytes = TWDataCreateWithHexString(twStringRep);
-  auto hashedBytes = TWHashBlake2b(watermarkedBytes, 32);
-
-  // TODO: Figure out how PriveKey is injected, and sign.
-
-  return forgedBytesHex;
-}
-
 std::string Signer::signOperation(OperationList operationList) {
   auto forgedBytesHex = operationList.forge();
 

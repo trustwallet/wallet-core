@@ -21,9 +21,20 @@ void OperationList::add_operation(Transaction transaction) {
   operation_list.push_back(transaction);
 }
 
+// Forge the given branch to a hex encoded string.
+std::string OperationList::forgeBranch() const {
+  size_t capacity = 128;
+  uint8_t decoded[capacity];
+  size_t prefixLength = 2;
+  uint8_t prefix[] = {1, 52};
+
+  int decodedLength = checkDecodeAndDropPrefix(branch, prefixLength, prefix, decoded);
+  return TW::hex(decoded, decoded + decodedLength);
+}
+
 std::string OperationList::forge() const {
   // TODO: branch can be refactored to a general datatype with prefix and content
-  std::string result = forgeBranch(branch);
+  std::string result = forgeBranch();
 
   for (auto operation : operation_list) {
     result += operation.forge();

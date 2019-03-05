@@ -11,6 +11,22 @@
 #include <gtest/gtest.h>
 using namespace TW::Tezos;
 
+TEST(TezosAddress, ForgeBoolTrue) {
+  auto expected = "ff";
+
+  auto output = forgeBool(true);
+
+  ASSERT_EQ(output, expected);
+}
+
+TEST(TezosAddress, ForgeBoolFalse) {
+  auto expected = "00";
+
+  auto output = forgeBool(false);
+
+  ASSERT_EQ(output, expected);
+}
+
 TEST(TezosAddress, forge_tz1) {
   auto input = Address("tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don");
   auto expected = "0000cfa4aae60f5d9389752d41e320da224d43287fe2";
