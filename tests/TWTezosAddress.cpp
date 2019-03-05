@@ -28,22 +28,17 @@ TEST(TWTezosAddress, TestDescription) {
 }
 
 TEST(TWTezosAddress, TestValidAddresses) {
-  std::array<std::string, 1> validAddresses {
-    "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
-  };
+  std::string address = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don";
+  TWString *tezosAddressString = TWStringCreateWithUTF8Bytes(address.c_str());
+  TWTezosAddress *tezosAddress;
+  TWTezosAddressInitWithString(tezosAddress, tezosAddressString);
 
-  for (std::string address : validAddresses) {
-    TWString *tezosAddressString = TWStringCreateWithUTF8Bytes(address.c_str());
-    TWData *tezosAddressData = TWBase58DecodeNoCheck(tezosAddressString);
-    TWTezosAddress *tezosAddress;
-    ASSERT_TRUE(TWTezosAddressIsValidString(tezosAddressString));
-    ASSERT_TRUE(TWTezosAddressIsValid(tezosAddressData));
-    ASSERT_TRUE(TWTezosAddressInitWithString(tezosAddress, tezosAddressString));
-
-    TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
-    bool result = TWDataEqual(tezosAddressData, tezosAddressData);
-    ASSERT_TRUE(result);
-  }
+  TWData *tezosAddressData = TWBase58DecodeNoCheck(tezosAddressString);
+  TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
+  
+  ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));  
+  ASSERT_TRUE(TWTezosAddressIsValidString(tezosAddressString));
+  ASSERT_TRUE(TWTezosAddressIsValid(tezosAddressData));
 }
 
 TEST(TWTezosAddress, TestInvalidAddresses) {
