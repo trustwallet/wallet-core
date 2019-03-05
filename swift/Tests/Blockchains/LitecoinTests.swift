@@ -41,21 +41,21 @@ class LitecoinTests: XCTestCase {
         let wallet = testWallet
 
         // .bip44
-        let lptv = wallet.getExtendedPrivateKey(for: .bip44, coin: .litecoin, version: .ltpv)
-        let ltub = wallet.getExtendedPubKey(for: .bip44, coin: .litecoin, version: .ltub)
+        let lptv = wallet.getExtendedPrivateKey(curve: .secp256k1, purpose: .bip44, coin: .litecoin, version: .ltpv)
+        let ltub = wallet.getExtendedPubKey(curve: .secp256k1, purpose: .bip44, coin: .litecoin, version: .ltub)
 
         XCTAssertEqual(lptv, "Ltpv77Tkf73NsKY3NQWVr6sHXeDQHWV6EVBXStcyxfnwEVebFuz1URxi16SBzj4v7n3mSYh8PQXhSFM2aXNFdx8bvWBLZGXeik3UQXeXn5vudGj")
         XCTAssertEqual(ltub, "Ltub2Ye6FtTv7U4zzHDL6iMfcE3cj5BHJjkBXQj1deZEAgSBrHB5oM191hYTF8BC34r7vRDGng59yfP6FH4m3nttc3TLDg944G8QK7d5NnygCRu")
 
         // .bip49
-        let mtpv = wallet.getExtendedPrivateKey(for: .bip49, coin: .litecoin, version: .mtpv)
-        let mtub = wallet.getExtendedPubKey(for: .bip49, coin: .litecoin, version: .mtub)
+        let mtpv = wallet.getExtendedPrivateKey(curve: .secp256k1, purpose: .bip49, coin: .litecoin, version: .mtpv)
+        let mtub = wallet.getExtendedPubKey(curve: .secp256k1, purpose: .bip49, coin: .litecoin, version: .mtub)
         XCTAssertEqual(mtpv, "Mtpv7SPQ3PnRFU5yMidTBbXKxb6pgrE1Ny1yVssVvTz8VLDppPrhdydSaoMp6fm58VbtBTrVZVacMrSUim44RccBLu8NFAqj7ZaB5JBzb8cgQHp")
         XCTAssertEqual(mtub, "Mtub2sZjeBCxVccvybLHSD1i3Aw38QvCTDadaPyXbSkRRX1RQm3mxtfsbQU5M3PdCSP4xAFHCceEQ3FmQF69Du2wbcmebt3CaWAGALBSe8c4Gvw")
 
         // .bip84
-        let zprv = wallet.getExtendedPrivateKey(for: .bip84, coin: .litecoin, version: .zprv)
-        let zpub = wallet.getExtendedPubKey(for: .bip84, coin: .litecoin, version: .zpub)
+        let zprv = wallet.getExtendedPrivateKey(curve: .secp256k1, purpose: .bip84, coin: .litecoin, version: .zprv)
+        let zpub = wallet.getExtendedPubKey(curve: .secp256k1, purpose: .bip84, coin: .litecoin, version: .zpub)
         XCTAssertEqual(zprv, "zprvAeCuQd5okFvvK1oeAQEPtgtPd5feXtcmszyCDK8HUPob28R79tUgtpCga79KgtDkUBn72AMig5NNzUCFY1JeRsZcEitDVEYuB48uHt2YEDB")
         XCTAssertEqual(zpub, "zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs")
     }
