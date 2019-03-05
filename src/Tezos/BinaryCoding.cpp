@@ -5,13 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
-#include <string>
-#include <sstream>
-#include <stdexcept>
-#include <array>
-#include <TrezorCrypto/base58.h>
 
-#include "proto/Tezos.pb.h"
+#include <string>
+#include <TrezorCrypto/base58.h>
+#include <TrezorCrypto/ecdsa.h>
+
+using namespace TW;
 
 // Decode the given base 58 string and drop the given prefix from decoded data.
 // Returns output length which output data placed in the inparameter.
@@ -32,17 +31,6 @@ int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint
   std::copy(decodedInput + prefixLength, decodedInput + prefixLength + outputLength, output);
 
   return outputLength;
-}
-
-// Forge the given branch to a hex encoded string.
-std::string forgeBranch(const std::string branch) {
-  size_t capacity = 128;
-  uint8_t decoded[capacity];
-  size_t prefixLength = 2;
-  uint8_t prefix[] = {1, 52};
-
-  int decodedLength = checkDecodeAndDropPrefix(branch, prefixLength, prefix, decoded);
-  return TW::hex(decoded, decoded + decodedLength);
 }
 
 // Forge the given boolean into a hex encoded string.
@@ -103,31 +91,6 @@ std::string forgeAddress(const std::string address) {
   return result;
 }
 
-// Forge the given zarith hash into a hex encoded string.
-std::string forgeZarith(int input) {
-  std::string result = "";
-  while (true) {
-    if (input < 128) {
-      if (input < 16) {
-        result += "0";
-      }
-      std::stringstream ss;
-      ss << std::hex << input;
-      result += ss.str();
-      break;
-    } else {
-      int b = input % 128;
-      input -= b;
-      input /= 128;
-      b += 128;
-      std::stringstream ss;
-      ss << std::hex << b;
-      result += ss.str();
-    }
-  }
-  return result;
-}
-
 // Forge the given public key into a hex encoded string.
 std::string forgePublicKey(std::string publicKey) {
   size_t prefixLength = 4;
@@ -137,54 +100,4 @@ std::string forgePublicKey(std::string publicKey) {
   int decodedLength = checkDecodeAndDropPrefix(publicKey, prefixLength, prefix, decoded);
 
   return "00" + TW::hex(decoded, decoded + decodedLength);
-}
-
-// Forge an operation with TransactionOperationData.
-std::string forgeTransactionOperation(TW::Tezos::Proto::Operation operation) {
-  if (!operation.has_transaction_operation_data()) {
-    throw std::invalid_argument( "Operation does not have transaction operation data" );
-  };
-
-  auto forgedSource = forgeAddress(operation.source());
-  auto forgedFee = forgeZarith(operation.fee());
-  auto forgedCounter = forgeZarith(operation.counter());
-  auto forgedGasLimit = forgeZarith(operation.gas_limit());
-  auto forgedStorageLimit = forgeZarith(operation.storage_limit());
-  auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
-  auto forgedDestination = forgeAddress(operation.transaction_operation_data().destination());
-
-  return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
-      + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
-}
-
-// Forge an operation with RevealOperationData.
-std::string forgeRevealOperation(TW::Tezos::Proto::Operation operation) {
-  auto forgedSource = forgeAddress(operation.source());
-  auto forgedFee = forgeZarith(operation.fee());
-  auto forgedCounter = forgeZarith(operation.counter());
-  auto forgedGasLimit = forgeZarith(operation.gas_limit());
-  auto forgedStorageLimit = forgeZarith(operation.storage_limit());
-  auto forgedPublicKey = forgePublicKey(operation.reveal_operation_data().public_key());
-
-  return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit + forgedStorageLimit + forgedPublicKey;
-}
-
-std::string forgeOperation(TW::Tezos::Proto::Operation operation) {
-  switch (operation.kind()) {
-    case TW::Tezos::Proto::Operation_OperationKind_REVEAL:
-      return forgeRevealOperation(operation);
-    case TW::Tezos::Proto::Operation_OperationKind_TRANSACTION:
-      return forgeTransactionOperation(operation);
-    default:
-      throw std::invalid_argument( "Invalid Operation Kind" );
-  }
-}
-
-std::string forgeOperationList(TW::Tezos::Proto::OperationList operationList) {
-  std::string result = forgeBranch(operationList.branch());
-
-  for (auto operation : operationList.operations()) {
-    result += forgeOperation(operation);
-  }
-  return result;
 }

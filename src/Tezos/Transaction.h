@@ -14,9 +14,9 @@
 namespace TW {
 namespace Tezos {
 
-enum class TransactionType {
-    REVEAL      = 0,
-    PAYMENT     = 1
+enum OperationKind {
+  REVEAL,
+  TRANSACTION
 };
 
 class Transaction {
@@ -29,12 +29,12 @@ public:
     int64_t storage_limit;
     int64_t amount;
     std::variant<Address, PublicKey> destination_or_public_key;
-    TransactionType transaction_type;
+    OperationKind kind;
 
     Transaction() = default;
     Transaction(Address source, int64_t fee, int64_t counter, int64_t gas_limit,
         int64_t storage_limit, int64_t amount, std::variant<Address,
-        PublicKey> destination_or_public_key, TransactionType transaction_type)
+        PublicKey> destination_or_public_key, OperationKind kind)
     : source(source)
     , fee(fee)
     , counter(counter)
@@ -42,7 +42,7 @@ public:
     , storage_limit(storage_limit)
     , amount(amount)
     , destination_or_public_key(destination_or_public_key)
-    , transaction_type(transaction_type)
+    , kind(kind)
     {}
 
 public:

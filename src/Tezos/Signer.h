@@ -18,7 +18,6 @@ namespace Tezos {
 class Signer {
 public:
     /// Signs the given transaction.
-    std::string signOperation(Tezos::Proto::OperationList);
     std::string signOperation(OperationList);
 };
 

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../Data.h"
-#include "../PublicKey.h"
-
+#include "BinaryCoding.h"
 #include <string>
 
 namespace TW {

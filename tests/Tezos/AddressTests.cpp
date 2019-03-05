@@ -5,11 +5,28 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Tezos/Address.h"
+#include "Tezos/BinaryCoding.h"
 #include "Tezos/PublicKey.h"
 #include "Tezos/Transaction.h"
 
 #include <gtest/gtest.h>
 using namespace TW::Tezos;
+
+TEST(TezosAddress, ForgeBoolTrue) {
+  auto expected = "ff";
+
+  auto output = forgeBool(true);
+
+  ASSERT_EQ(output, expected);
+}
+
+TEST(TezosAddress, ForgeBoolFalse) {
+  auto expected = "00";
+
+  auto output = forgeBool(false);
+
+  ASSERT_EQ(output, expected);
+}
 
 TEST(TezosAddress, forge_tz1) {
   auto input = Address("tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don");
