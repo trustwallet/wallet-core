@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -96,8 +96,9 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
     }
 
     // 2. If not, find a combination of outputs that may produce dust change.
+    numOutputs = 1;
     for (auto numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
-        const auto fee = calculateFee(numInputs, numOutputs);
+        const auto fee = calculateFee(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
         auto slices = slice(sortedUtxos, numInputs);
         slices.erase(std::remove_if(slices.begin(), slices.end(), [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {

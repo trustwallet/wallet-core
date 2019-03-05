@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package TW.Icon.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Sender address.
+    string from_address = 1;
+
+    // Recipient address.
+    string to_address = 2;
+
+    // Transfer amount.
+    bytes value = 3;
+
+    // The amount of step to send with the transaction.
+    bytes step_limit = 4;
+
+    // UNIX epoch time (from 1970.1.1 00:00:00) in microseconds
+    int64 timestamp = 5;
+
+    // Integer value increased by request to avoid replay attacks.
+    bytes nonce = 6;
+
+    // Network identifier
+    bytes network_id = 7;
+
+    // Private key.
+    bytes private_key = 8;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // JSON-encoded transaction parameters.
+    string encoded = 1;
+
+    // Signature.
+    bytes signature = 2;
+}

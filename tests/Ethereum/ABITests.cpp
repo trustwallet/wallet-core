@@ -1,13 +1,13 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
+#include "Ethereum/ABI.h"
+#include "HexCoding.h"
 
-#include "../src/Ethereum/ABI.h"
-#include "../src/HexCoding.h"
+#include <gtest/gtest.h>
 
 namespace TW {
 namespace Ethereum {

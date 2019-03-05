@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(TrustWalletCore)
 
-set (CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 add_subdirectory(trezor-crypto)
 
 macro(find_host_package)
@@ -45,19 +47,20 @@ include(cmake/Protobuf.cmake)
 # Source files
 if(${ANDROID})
     message("Configuring for JNI")
-    file(GLOB_RECURSE sources src/*.c src/proto/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h)
+    file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h jni/cpp/*.c jni/cpp/*.cpp jni/cpp/*.h)
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     find_library(log-lib log)
     target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
 else()
     message("Configuring standalone")
-    file(GLOB_RECURSE sources src/*.c src/proto/*.cc src/*.cpp src/*.h)
+    file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 endif()
 add_dependencies(TrustWalletCore nlohmann_json)
+set_property(TARGET TrustWalletCore PROPERTY CXX_STANDARD 17)
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.

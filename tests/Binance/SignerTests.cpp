@@ -1,16 +1,16 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../../src/HDWallet.h"
-#include "../../src/HexCoding.h"
-#include "../../src/proto/Binance.pb.h"
-#include "../../src/Tendermint/Address.h"
-#include "../../src/Binance/Signer.h"
-#include "../../src/Tendermint/Address.h"
-#include "../../src/proto/Binance.pb.h"
+#include "HDWallet.h"
+#include "HexCoding.h"
+#include "proto/Binance.pb.h"
+#include "Tendermint/Address.h"
+#include "Binance/Signer.h"
+#include "Tendermint/Address.h"
+#include "proto/Binance.pb.h"
 
 #include "../TWTestUtilities.h"
 

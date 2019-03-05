@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -78,6 +78,19 @@ jstring JNICALL Java_wallet_core_jni_RippleAddress_description(JNIEnv *env, jobj
     struct TWRippleAddress *instance = (struct TWRippleAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     jstring result = TWStringJString(TWRippleAddressDescription(instance), env);
+
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    return result;
+}
+
+jbyteArray JNICALL Java_wallet_core_jni_RippleAddress_keyHash(JNIEnv *env, jobject thisObject) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWRippleAddress *instance = (struct TWRippleAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    jbyteArray result = TWDataJByteArray(TWRippleAddressKeyHash(instance), env);
 
 
     (*env)->DeleteLocalRef(env, thisClass);

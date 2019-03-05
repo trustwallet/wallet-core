@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -50,7 +50,7 @@ TWString *_Nonnull TWTendermintAddressDescription(struct TWTendermintAddress *_N
 TW_EXPORT_PROPERTY
 enum TWHRP TWTendermintAddressHRP(struct TWTendermintAddress *_Nonnull address);
 
-/// Returns the witness program
+/// Returns the key hash.
 TW_EXPORT_PROPERTY
 TWData *_Nonnull TWTendermintAddressKeyHash(struct TWTendermintAddress *_Nonnull address);
 

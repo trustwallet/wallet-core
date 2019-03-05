@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -63,11 +63,8 @@ public final class Bech32Address {
         self.rawValue = rawValue
     }
 
-    public init?(hrp: HRP, publicKey: PublicKey) {
-        guard let rawValue = TWBech32AddressCreateWithPublicKey(TWHRP(rawValue: hrp.rawValue), publicKey.rawValue) else {
-            return nil
-        }
-        self.rawValue = rawValue
+    public init(hrp: HRP, publicKey: PublicKey) {
+        rawValue = TWBech32AddressCreateWithPublicKey(TWHRP(rawValue: hrp.rawValue), publicKey.rawValue)
     }
 
     deinit {

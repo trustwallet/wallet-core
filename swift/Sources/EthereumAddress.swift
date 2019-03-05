@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -59,11 +59,8 @@ public final class EthereumAddress {
         self.rawValue = rawValue
     }
 
-    public init?(publicKey: PublicKey) {
-        guard let rawValue = TWEthereumAddressCreateWithPublicKey(publicKey.rawValue) else {
-            return nil
-        }
-        self.rawValue = rawValue
+    public init(publicKey: PublicKey) {
+        rawValue = TWEthereumAddressCreateWithPublicKey(publicKey.rawValue)
     }
 
     deinit {

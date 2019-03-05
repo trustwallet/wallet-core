@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package TW.Tron.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message TransferContract {
+    // Sender address.
+    string owner_address = 1;
+
+    // Recipient address.
+    string to_address = 2;
+
+    // Amount to send.
+    int64 amount = 3;
+}
+
+message TransferAssetContract {
+    // Asset name.
+    string asset_name = 1;
+
+    // Sender address.
+    string owner_address = 2;
+
+    // Recipient address.
+    string to_address = 3;
+
+    // Amount to send.
+    int64 amount = 4;
+}
+
+message BlockHeader {
+    int64 timestamp = 1;
+    bytes tx_trie_root = 2;
+    bytes parent_hash = 3;
+    int64 number = 7;
+    bytes witness_address = 9;
+    int32 version = 10;
+}
+
+message Transaction {
+    // Transaction timestamp in milliseconds.
+    int64 timestamp = 1;
+
+    // Transaction expiration time in milliseconds.
+    int64 expiration = 2;
+
+    // Transaction block header.
+    BlockHeader block_header = 3;
+
+    // Contract.
+    oneof contract_oneof {
+        TransferContract transfer = 10;
+        TransferAssetContract transfer_asset = 11;
+    }
+}
+
+message SigningInput {
+    // Transaction.
+    Transaction transaction = 1;
+
+    // Private key.
+    bytes private_key = 2;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Transaction identifier.
+    bytes id = 1;
+
+    // Signature.
+    bytes signature = 2;
+
+    bytes ref_block_bytes = 3;
+    bytes ref_block_hash = 4;
+}

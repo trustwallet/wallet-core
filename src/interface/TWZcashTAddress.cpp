@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,11 +9,13 @@
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
+
+#include <cstring>
 #include <string>
 #include <vector>
 
 bool TWZcashTAddressEqual(struct TWZcashTAddress lhs, struct TWZcashTAddress rhs) {
-    return memcmp(lhs.bytes, rhs.bytes, TWZcashTAddressSize) == 0;
+    return std::memcmp(lhs.bytes, rhs.bytes, TWZcashTAddressSize) == 0;
 }
 
 bool TWZcashTAddressIsValid(TWData *_Nonnull data) {

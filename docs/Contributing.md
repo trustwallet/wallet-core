@@ -1,7 +1,29 @@
 
 # Contributing
 
-To add functionality to wallet core follow these instructions.
+Wallet Core implements the cryptographic functionality of blockchains. This includes elliptic curve cryptography, hashing, address derivation and transaction signing. However it *does not* implement other aspects like networking and UI. Wallet core behaves like a black box for higher level users like Trust Wallet; it takes inputs from the blockchain and the user (for instance UTXOs, private keys, etc.) and produces an output (like a signed and encoded trasnaction).
+
+## Library Design Guidelines
+
+This library is designed so that it can be used from any other programming languages, and that every language has an idiomatic interface. Design goals also include minimizing the binary size and maximizing perfomance.
+
+With these goals in mind we chose C/C++ for the implementation and a strict subset of C for the interface. This C interface is used to generate the idiomatic interfaces for every supported language. To augment the expressivity of the interface we also use Protocol Buffer objects that get serialized across the interface.
+
+Keep this in mind when adding to the library:
+* Only expose C headers. Clients should not have access to the C++ interfaces.
+* C headers need to have annotations for the code generation tool, see below.
+* Use Protocol Buffers to represent models. C doesn't have good abstractions for variable-sized types.
+* Every time you modify the interface run the code generation tool and make sure the interface also makes sense in target languages.
+
+## Before you start
+
+* Install Xcode
+* Install Xcode command line tools: `xcode-select --install`
+* Install CMake, boost, protobuf: `brew install cmake ninja boost protobuf swift-protobuf autoconf automake libtool`
+* Install [Android Studio](https://developer.android.com/studio/index.html)
+* Install the [Android NDK](https://developer.android.com/ndk/guides/)
+
+If you are working on Linux please see the Dockerfile for steps to install dependencies.
 
 ## Project organization
 
@@ -17,26 +39,6 @@ This project has a number of different pieces. Each piece lives in its own subfo
 * The `tests` folder contains unit tests.
 * The `lib` folder contains third-party dependencies as git submodules.
 * THe `tools` folder contains scripts to automate common tasks.
-
-## Before you start
-
-* Install Xcode
-* Install Xcode command line tools: `xcode-select --install`
-* Install CMake, boost, protobuf: `brew install cmake ninja boost protobuf swift-protobuf autoconf automake libtool`
-* Install [Android Studio](https://developer.android.com/studio/index.html)
-* Install the [Android NDK](https://developer.android.com/ndk/guides/)
-
-## Library Design Guidelines
-
-This library is designed so that it can be used from any other programming languages, and that every language has an idiomatic interface. Design goals also include minimizing the binary size and maximizing perfomance.
-
-With these goals in mind we chose C/C++ for the implementation and a strict subset of C for the interface. This C interface is used to generate the idiomatic interfaces for every supported language. To augment the expressivity of the interface we also use Protocol Buffer objects that get serialized across the interface.
-
-Keep this in mind when adding to the library:
-* Only expose C headers. Clients should not have access to the C++ interfaces.
-* C headers need to have annotations for the code generation tool, see below.
-* Use Protocol Buffers to represent models. C doesn't have good abstractions for variable-sized types.
-* Every time you modify the interface run the code generation tool and make sure the interface also makes sense in target languages.
 
 ## Building
 

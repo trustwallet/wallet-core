@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -37,6 +37,9 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWIconAddress.h>
+#include <TrustWalletCore/TWIconAddressType.h>
+#include <TrustWalletCore/TWIconSigner.h>
 #include <TrustWalletCore/TWKeyDerivation.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
@@ -46,7 +49,7 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWRippleAddress.h>
 #include <TrustWalletCore/TWRippleSigner.h>
 #include <TrustWalletCore/TWTendermintAddress.h>
-#include <TrustWalletCore/TWUInt256.h>
+#include <TrustWalletCore/TWTronSigner.h>
 #include <TrustWalletCore/TWVeChainSigner.h>
 #include <TrustWalletCore/TWWanchainSigner.h>
 #include <TrustWalletCore/TWZcashTAddress.h>

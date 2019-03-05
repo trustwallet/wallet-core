@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -60,18 +60,13 @@ jbyteArray JNICALL Java_wallet_core_jni_BitcoinAddress_initWithPublicKey(JNIEnv 
     jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
     jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
     struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
-    jboolean result = (jboolean) TWBitcoinAddressInitWithPublicKey(instance, *publicKeyInstance, prefix);
+    TWBitcoinAddressInitWithPublicKey(instance, *publicKeyInstance, prefix);
     (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
     (*env)->DeleteLocalRef(env, publicKeyBytesArray);
     (*env)->DeleteLocalRef(env, publicKeyClass);
     (*env)->ReleaseByteArrayElements(env, array, bytesBuffer, 0);
 
-    if (result) {
-        return array;
-    } else {
-        (*env)->DeleteLocalRef(env, array);
-        return NULL;
-    }
+    return array;
 }
 
 jboolean JNICALL Java_wallet_core_jni_BitcoinAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,10 +12,12 @@
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
+#include <cstring>
+
 using namespace TW::Bitcoin;
 
 bool TWBitcoinAddressEqual(struct TWBitcoinAddress lhs, struct TWBitcoinAddress rhs) {
-    return memcmp(lhs.bytes, rhs.bytes, Address::size) == 0;
+    return std::memcmp(lhs.bytes, rhs.bytes, Address::size) == 0;
 }
 
 bool TWBitcoinAddressIsValid(TWData *_Nonnull data) {
@@ -59,13 +61,11 @@ bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWD
     return true;
 }
 
-bool TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
+void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
     address->bytes[0] = prefix;
 
     auto compressed = TWPublicKeyCompressed(publicKey);
     ecdsa_get_pubkeyhash(compressed.bytes, HASHER_SHA2_RIPEMD,  address->bytes + 1);
-
-    return true;
 }
 
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) {

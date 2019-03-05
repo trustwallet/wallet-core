@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include "../Data.h"
 #include "../PublicKey.h"
 
-#include <stdint.h>
 #include <string>
 
 namespace TW {
@@ -20,7 +20,7 @@ public:
     static const size_t size = 21;
 
     /// Address data consisting of a prefix byte followed by the public key hash.
-    uint8_t bytes[size];
+    std::array<byte, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid Ripple address.
     template<typename T>
@@ -45,7 +45,7 @@ public:
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {
-    return memcmp(lhs.bytes, rhs.bytes, Address::size) == 0;
+    return lhs.bytes == rhs.bytes;
 }
 
 }} // namespace

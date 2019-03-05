@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,14 +10,15 @@
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
 
-#include <string.h>
+#include <cassert>
+#include <cstring>
 #include <vector>
 
 static const size_t dataSize = 34;
 static const char* const hrp = "bitcoincash";
 
 bool TWBitcoinCashAddressEqual(struct TWBitcoinCashAddress lhs, struct TWBitcoinCashAddress rhs) {
-    return memcmp(lhs.bytes, rhs.bytes, dataSize) == 0;
+    return std::memcmp(lhs.bytes, rhs.bytes, dataSize) == 0;
 }
 
 bool TWBitcoinCashAddressIsValid(TWData *_Nonnull data) {
@@ -62,17 +63,13 @@ bool TWBitcoinCashAddressInitWithData(struct TWBitcoinCashAddress *_Nonnull addr
     return true;
 }
 
-bool TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull address, struct TWPublicKey publicKey) {
+void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull address, struct TWPublicKey publicKey) {
     uint8_t payload[21];
     payload[0] = 0;
     ecdsa_get_pubkeyhash(publicKey.bytes, HASHER_SHA2_RIPEMD, payload + 1);
 
     size_t outlen = 0;
-    if (cash_addr_to_data(address->bytes, &outlen, payload, 21) == 0 || outlen != dataSize) {
-        return false;
-    }
-
-    return true;
+    cash_addr_to_data(address->bytes, &outlen, payload, 21);
 }
 
 TWString *_Nonnull TWBitcoinCashAddressDescription(struct TWBitcoinCashAddress address) {

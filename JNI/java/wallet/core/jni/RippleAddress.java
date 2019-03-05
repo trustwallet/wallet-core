@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -34,6 +34,7 @@ public class RippleAddress {
     public static native boolean equals(RippleAddress lhs, RippleAddress rhs);
     public static native boolean isValidString(String string);
     public native String description();
+    public native byte[] keyHash();
 
     public RippleAddress(String string) {
         nativeHandle = nativeCreateWithString(string);

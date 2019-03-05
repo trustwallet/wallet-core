@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -25,6 +25,10 @@ public final class RippleAddress {
 
     public var description: String {
         return TWStringNSString(TWRippleAddressDescription(rawValue))
+    }
+
+    public var keyHash: Data {
+        return TWDataNSData(TWRippleAddressKeyHash(rawValue))
     }
 
     let rawValue: OpaquePointer
@@ -55,11 +59,8 @@ public final class RippleAddress {
         self.rawValue = rawValue
     }
 
-    public init?(publicKey: PublicKey) {
-        guard let rawValue = TWRippleAddressCreateWithPublicKey(publicKey.rawValue) else {
-            return nil
-        }
-        self.rawValue = rawValue
+    public init(publicKey: PublicKey) {
+        rawValue = TWRippleAddressCreateWithPublicKey(publicKey.rawValue)
     }
 
     deinit {

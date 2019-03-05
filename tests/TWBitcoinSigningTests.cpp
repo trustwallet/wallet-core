@@ -1,10 +1,18 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "gtest/gtest.h"
+#include "Bitcoin/OutPoint.h"
+#include "Bitcoin/Script.h"
+#include "Bitcoin/Transaction.h"
+#include "Bitcoin/TransactionBuilder.h"
+#include "Bitcoin/TransactionSigner.h"
+#include "Hash.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
+#include "proto/Bitcoin.pb.h"
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWBech32Address.h>
@@ -13,15 +21,7 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
-#include "../src/Hash.h"
-#include "../src/HexCoding.h"
-#include "../src/PrivateKey.h"
-#include "../src/Bitcoin/OutPoint.h"
-#include "../src/Bitcoin/Script.h"
-#include "../src/Bitcoin/Transaction.h"
-#include "../src/Bitcoin/TransactionBuilder.h"
-#include "../src/Bitcoin/TransactionSigner.h"
-#include "../src/proto/Bitcoin.pb.h"
+#include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Bitcoin;
@@ -354,7 +354,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
 
     auto utxo0Script = Script(parse_hex("a9149993a429037b5d912407a71c252019287b8d27a587"));
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_hash(outpoint0.hash, 32);
+    utxo->mutable_out_point()->set_hash(outpoint0.hash.data(), outpoint0.hash.size());
     utxo->mutable_out_point()->set_index(outpoint0.index);
     utxo->mutable_out_point()->set_sequence(UINT32_MAX);
     utxo->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
