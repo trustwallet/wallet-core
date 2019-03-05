@@ -45,19 +45,6 @@ RUN cd /usr/local/src \
     && rm -rf cmake*
 RUN cmake --version
 
-# Install Protobuf
-ENV PROTOBUF_VERSION=$PROTOBUF_VERSION
-RUN curl -fSsOL https://github.com/protocolbuffers/protobuf/releases/download/v$PROTOBUF_VERSION/protobuf-java-$PROTOBUF_VERSION.tar.gz \
-    && tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz \
-    && cd protobuf-$PROTOBUF_VERSION \
-    && ./configure \
-    && make \
-    && make install \
-    && ldconfig \
-    && cd .. \
-    && rm -rf protobuf*
-RUN protoc --version
-
 # Clean Up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -66,7 +53,6 @@ ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 RUN git clone https://github.com/TrustWallet/wallet-core.git \
     && cd wallet-core \
-    && git submodule update --init \
-    && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DGIT_SUBMODULE=OFF
+    && tools/install-dependencies
 
 CMD ["/bin/bash"]
