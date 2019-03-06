@@ -19,8 +19,8 @@ TEST(Ripple, ExtendedKeys) {
         STRING("TREZOR").get()
     ));
 
-    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWCurveSECP256k1, TWPurposeBIP44, TWCoinTypeRipple, TWHDVersionXPUB));
-    auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWCurveSECP256k1, TWPurposeBIP44, TWCoinTypeRipple, TWHDVersionXPRV));
+    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeRipple, TWHDVersionXPUB));
+    auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeRipple, TWHDVersionXPRV));
 
     assertStringsEqual(xpub, "xpub6D9oDY4gqFBtsFEonh5GTDiUm6nmij373YWzmYdshcnM4AFzdhUf55iZD33vNU2ZqfQJU5wiCJUgisMt2RHKDzhi1PbZfh5Y2NiiYJAQqUn");
     assertStringsEqual(xprv, "xprv9zASp2XnzsdbemALgfYG65mkD4xHKGKFgKbPyAEG9HFNBMvr6AAQXHQ5MmqM66EnbJfe9TvYMy1bucz7hSQjG43NVizRZwJJYfLmeKo4nVB");
