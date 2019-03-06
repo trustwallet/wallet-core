@@ -23,7 +23,7 @@ class BitcoinAddressTests: XCTestCase {
 
     func testFromPrivateKey() {
         let privateKey = PrivateKey(wif: "L5XECLxq1MDvBeYXjZwz5tTYsFZRWmaYziY3Wvc2bqSRAuRcBqhg")!
-        let publicKey = privateKey.getPublicKey(compressed: true)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = Bitcoin().compatibleAddress(for: publicKey)
 
         XCTAssertEqual(address.description, "3Hv6oV8BYCoocW4eqZaEXsaR5tHhCxiMSk")
@@ -31,7 +31,7 @@ class BitcoinAddressTests: XCTestCase {
 
     func testFromPrivateKeyUncompressed() {
         let privateKey = PrivateKey(wif: "L5XECLxq1MDvBeYXjZwz5tTYsFZRWmaYziY3Wvc2bqSRAuRcBqhg")!
-        let publicKey = privateKey.getPublicKey(compressed: false)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let address = Bitcoin().compatibleAddress(for: publicKey)
 
         XCTAssertEqual(address.description, "3Hv6oV8BYCoocW4eqZaEXsaR5tHhCxiMSk")
@@ -39,7 +39,7 @@ class BitcoinAddressTests: XCTestCase {
 
     func testFromPrivateKeySegwitAddress() {
         let privateKey = PrivateKey(wif: "KxZX6Jv3to6RWnhsffTcLLryRnNyyc8Ng2G8P9LFkbCdzGDEhNy1")!
-        let publicKey = privateKey.getPublicKey(compressed: true)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = Bitcoin().legacyAddress(for: publicKey)
 
         XCTAssertEqual(address.description, Bitcoin().address(string: "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")!.description)
@@ -47,7 +47,7 @@ class BitcoinAddressTests: XCTestCase {
 
     func testFromSewgitPrivateKey() {
         let privateKey = PrivateKey(wif: "L5XECLxq1MDvBeYXjZwz5tTYsFZRWmaYziY3Wvc2bqSRAuRcBqhg")!
-        let publicKey = privateKey.getPublicKey(compressed: true)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = Bitcoin().compatibleAddress(for: publicKey)
 
         XCTAssertEqual(address.description, Bitcoin().address(string: "3Hv6oV8BYCoocW4eqZaEXsaR5tHhCxiMSk")!.description)
