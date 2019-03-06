@@ -24,6 +24,7 @@ Reason:
 - [ ] Coin configuration
 - - [ ] coin type / decimals
 - - [ ] recommended tx block explorer
+- - [ ] Added to switch statements in `src/interface/TWCoinType.cpp`
 - [ ] Address
 - - [ ] derived from bip39 phrases
 - - [ ] from public key / string
