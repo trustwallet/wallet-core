@@ -1,4 +1,5 @@
 // Copyright © 2017-2019 Trust Wallet.
+
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +8,6 @@
  #include "Address.h"
 #include "BinaryCoding.h"
 #include "HexCoding.h"
-
  #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 

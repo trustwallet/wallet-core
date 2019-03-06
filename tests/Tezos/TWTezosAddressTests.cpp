@@ -54,18 +54,19 @@ TEST(TWTezosAddress, TestInvalidAddresses) {
   }
 }
 
-// TEST(TWTezosAddress, TestAddressFromPrivateKey) {
-//   std::string expectedAddress = "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM";
-//   TWString *expectedAddressString = TWStringCreateWithUTF8Bytes(expectedAddress.c_str());
-//
-//   std::string privateKeyHex= "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
-//   TWString *privateKeyString = TWStringCreateWithUTF8Bytes(privateKeyHex.c_str());
-//   TWData *privateKeyData = TWDataCreateWithHexString(privateKeyString);
-//   TWPrivateKey *privateKey = TWPrivateKeyCreateWithData(privateKeyData);
-//   TWPublicKey publicKey = TWPrivateKeyGetPublicKey(privateKey, false);
-//
-//   TWTezosAddress *tezosAddress = TWTezosAddressInitWithPublicKey(tezosAddress, publicKey));
-//   TWData *tezosAddressData = TWBase58DecodeNoCheck(expectedAddressString);
-//   TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
-//   ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));
-// }
+TEST(TWTezosAddress, TestAddressFromPrivateKey) {
+  std::string expectedAddress = "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM";
+  TWString *expectedAddressString = TWStringCreateWithUTF8Bytes(expectedAddress.c_str());
+
+  std::string privateKeyHex = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+  TWString *privateKeyString = TWStringCreateWithUTF8Bytes(privateKeyHex.c_str());
+  TWData *privateKeyData = TWDataCreateWithHexString(privateKeyString);
+  TWPrivateKey *privateKey = TWPrivateKeyCreateWithData(privateKeyData);
+  TWPublicKey publicKey = TWPrivateKeyGetPublicKey(privateKey, false);
+
+  TWTezosAddress *tezosAddress;
+  ASSERT_TRUE(TWTezosAddressInitWithPublicKey(tezosAddress, publicKey));
+  TWData *tezosAddressData = TWBase58DecodeNoCheck(expectedAddressString);
+  TWData *descriptionData = TWBase58DecodeNoCheck(TWTezosAddressDescription(tezosAddress));
+  ASSERT_TRUE(TWDataEqual(descriptionData, tezosAddressData));
+}
