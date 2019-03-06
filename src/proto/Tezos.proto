@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package TW.Tezos.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// A list of operations and a branch.
+// Next field: 3
+message OperationList {
+  string branch = 1;
+  repeated Operation operations = 2;
+}
+
+// An operation that can be applied to the Tezos blockchain.
+// Next field: 10
+message Operation {
+  int64 counter = 1;
+  string source = 2;
+  int64 fee = 3;
+  int64 gas_limit = 4;
+  int64 storage_limit = 5;
+  
+  enum OperationKind {
+    // Note: Proto3 semantics require a zero value.
+    ENDORSEMENT = 0;
+    
+    REVEAL = 7;
+    TRANSACTION = 8;
+  }
+  OperationKind kind = 7;
+    
+  // Operation specific data depending on the type of the operation.
+  oneof operation_data {
+    RevealOperationData reveal_operation_data = 8;
+    TransactionOperationData transaction_operation_data = 9;
+  }
+}
+
+// Transaction operation specific data.
+// Next field: 3
+message TransactionOperationData {
+  string destination = 1;
+  int64 amount = 2;
+}
+
+// Reveal operation specific data.
+// Next field: 2
+message RevealOperationData {
+  string public_key = 1;
+}
