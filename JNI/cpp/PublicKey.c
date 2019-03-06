@@ -16,21 +16,15 @@
 #include "TWJNI.h"
 #include "PublicKey.h"
 
-jbyteArray JNICALL Java_wallet_core_jni_PublicKey_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data) {
-    jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TWPublicKey));
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
-    struct TWPublicKey *instance = (struct TWPublicKey *) bytesBuffer;
+jlong JNICALL Java_wallet_core_jni_PublicKey_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data) {
     TWData *dataData = TWDataCreateWithJByteArray(env, data);
-    jboolean result = (jboolean) TWPublicKeyInitWithData(instance, dataData);
+    struct TWPublicKey *instance = TWPublicKeyCreateWithData(dataData);
     TWDataDelete(dataData);
-    (*env)->ReleaseByteArrayElements(env, array, bytesBuffer, 0);
+    return (jlong) instance;
+}
 
-    if (result) {
-        return array;
-    } else {
-        (*env)->DeleteLocalRef(env, array);
-        return NULL;
-    }
+void JNICALL Java_wallet_core_jni_PublicKey_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
+    TWPublicKeyDelete((struct TWPublicKey *) handle);
 }
 
 jboolean JNICALL Java_wallet_core_jni_PublicKey_isValid(JNIEnv *env, jclass thisClass, jbyteArray data) {
@@ -45,30 +39,27 @@ jboolean JNICALL Java_wallet_core_jni_PublicKey_isValid(JNIEnv *env, jclass this
 jobject JNICALL Java_wallet_core_jni_PublicKey_recover(JNIEnv *env, jclass thisClass, jbyteArray signature, jbyteArray message) {
     TWData *signatureData = TWDataCreateWithJByteArray(env, signature);
     TWData *messageData = TWDataCreateWithJByteArray(env, message);
-    struct TWPublicKey result = TWPublicKeyRecover(signatureData, messageData);
+    struct TWPublicKey *result = TWPublicKeyRecover(signatureData, messageData);
 
     TWDataDelete(signatureData);
     TWDataDelete(messageData);
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/PublicKey");
-    jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TWPublicKey));
-    (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TWPublicKey), (jbyte *) &result);
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/PublicKey;");
-    return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/PublicKey;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
 jboolean JNICALL Java_wallet_core_jni_PublicKey_isCompressed(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
-    jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
-    jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, bytesArray, NULL);
-    struct TWPublicKey *instance = (struct TWPublicKey *) bytesBuffer;
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWPublicKey *instance = (struct TWPublicKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    jboolean resultValue = (jboolean) TWPublicKeyIsCompressed(*instance);
+    jboolean resultValue = (jboolean) TWPublicKeyIsCompressed(instance);
 
 
-    (*env)->ReleaseByteArrayElements(env, bytesArray, bytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
     return resultValue;
@@ -76,37 +67,30 @@ jboolean JNICALL Java_wallet_core_jni_PublicKey_isCompressed(JNIEnv *env, jobjec
 
 jobject JNICALL Java_wallet_core_jni_PublicKey_compressed(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
-    jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
-    jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, bytesArray, NULL);
-    struct TWPublicKey *instance = (struct TWPublicKey *) bytesBuffer;
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWPublicKey *instance = (struct TWPublicKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    struct TWPublicKey result = TWPublicKeyCompressed(*instance);
+    struct TWPublicKey *result = TWPublicKeyCompressed(instance);
 
 
-    (*env)->ReleaseByteArrayElements(env, bytesArray, bytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/PublicKey");
-    jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TWPublicKey));
-    (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TWPublicKey), (jbyte *) &result);
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/PublicKey;");
-    return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/PublicKey;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
 jbyteArray JNICALL Java_wallet_core_jni_PublicKey_data(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
-    jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
-    jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, bytesArray, NULL);
-    struct TWPublicKey *instance = (struct TWPublicKey *) bytesBuffer;
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWPublicKey *instance = (struct TWPublicKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    jbyteArray result = TWDataJByteArray(TWPublicKeyData(*instance), env);
+    jbyteArray result = TWDataJByteArray(TWPublicKeyData(instance), env);
 
 
-    (*env)->ReleaseByteArrayElements(env, bytesArray, bytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
     return result;
@@ -114,16 +98,12 @@ jbyteArray JNICALL Java_wallet_core_jni_PublicKey_data(JNIEnv *env, jobject this
 
 jstring JNICALL Java_wallet_core_jni_PublicKey_description(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
-    jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
-    jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, bytesArray, NULL);
-    struct TWPublicKey *instance = (struct TWPublicKey *) bytesBuffer;
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWPublicKey *instance = (struct TWPublicKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    jstring result = TWStringJString(TWPublicKeyDescription(*instance), env);
+    jstring result = TWStringJString(TWPublicKeyDescription(instance), env);
 
 
-    (*env)->ReleaseByteArrayElements(env, bytesArray, bytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
     return result;
@@ -131,20 +111,16 @@ jstring JNICALL Java_wallet_core_jni_PublicKey_description(JNIEnv *env, jobject 
 
 jboolean JNICALL Java_wallet_core_jni_PublicKey_verify(JNIEnv *env, jobject thisObject, jbyteArray signature, jbyteArray message) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
-    jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
-    jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, bytesArray, NULL);
-    struct TWPublicKey *instance = (struct TWPublicKey *) bytesBuffer;
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWPublicKey *instance = (struct TWPublicKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     TWData *signatureData = TWDataCreateWithJByteArray(env, signature);
     TWData *messageData = TWDataCreateWithJByteArray(env, message);
-    jboolean resultValue = (jboolean) TWPublicKeyVerify(*instance, signatureData, messageData);
+    jboolean resultValue = (jboolean) TWPublicKeyVerify(instance, signatureData, messageData);
 
     TWDataDelete(signatureData);
     TWDataDelete(messageData);
 
-    (*env)->ReleaseByteArrayElements(env, bytesArray, bytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
     return resultValue;
