@@ -7,6 +7,7 @@
 #pragma once
 
 #include "TWBase.h"
+#include "TWCurve.h"
 #include "TWData.h"
 #include "TWPublicKey.h"
 
@@ -37,14 +38,18 @@ TWData *_Nonnull TWPrivateKeyData(struct TWPrivateKey *_Nonnull pk);
 
 /// Returns the public key associated with this pirvate key.
 TW_EXPORT_METHOD
-struct TWPublicKey TWPrivateKeyGetPublicKey(struct TWPrivateKey *_Nonnull pk, bool compressed);
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateKey *_Nonnull pk, bool compressed);
+
+/// Returns the public key associated with this pirvate key.
+TW_EXPORT_METHOD
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519(struct TWPrivateKey *_Nonnull pk);
 
 /// Signs a digest using ECDSA secp256k1.
 TW_EXPORT_METHOD
-TWData *_Nullable TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest);
+TWData *_Nullable TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve);
 
 /// Signs a digest using ECDSA secp256k1. The result is encoded with DER.
 TW_EXPORT_METHOD
-TWData *_Nullable TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest);
+TWData *_Nullable TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve);
 
 TW_EXTERN_C_END

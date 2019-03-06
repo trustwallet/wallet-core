@@ -63,47 +63,74 @@ jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_data(JNIEnv *env, jobject thi
     return result;
 }
 
-jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKey(JNIEnv *env, jobject thisObject, jboolean compressed) {
+jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKeySecp256k1(JNIEnv *env, jobject thisObject, jboolean compressed) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWPrivateKey *instance = (struct TWPrivateKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    struct TWPublicKey result = TWPrivateKeyGetPublicKey(instance, compressed);
+    struct TWPublicKey *result = TWPrivateKeyGetPublicKeySecp256k1(instance, compressed);
 
 
     (*env)->DeleteLocalRef(env, thisClass);
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/PublicKey");
-    jbyteArray resultArray = (*env)->NewByteArray(env, sizeof(struct TWPublicKey));
-    (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TWPublicKey), (jbyte *) &result);
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/PublicKey;");
-    return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/PublicKey;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
-jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_sign(JNIEnv *env, jobject thisObject, jbyteArray digest) {
+jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKeyEd25519(JNIEnv *env, jobject thisObject) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWPrivateKey *instance = (struct TWPrivateKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    struct TWPublicKey *result = TWPrivateKeyGetPublicKeyEd25519(instance);
+
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/PublicKey");
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/PublicKey;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+}
+
+jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_sign(JNIEnv *env, jobject thisObject, jbyteArray digest, jobject curve) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWPrivateKey *instance = (struct TWPrivateKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     TWData *digestData = TWDataCreateWithJByteArray(env, digest);
-    jbyteArray result = TWDataJByteArray(TWPrivateKeySign(instance, digestData), env);
+    jclass curveClass = (*env)->GetObjectClass(env, curve);
+    jmethodID curveValueMethodID = (*env)->GetMethodID(env, curveClass, "value", "()I");
+    jint curveValue = (*env)->CallIntMethod(env, curve, curveValueMethodID);
+    jbyteArray result = TWDataJByteArray(TWPrivateKeySign(instance, digestData, curveValue), env);
 
     TWDataDelete(digestData);
+    (*env)->DeleteLocalRef(env, curveClass);
 
     (*env)->DeleteLocalRef(env, thisClass);
 
     return result;
 }
 
-jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_signAsDER(JNIEnv *env, jobject thisObject, jbyteArray digest) {
+jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_signAsDER(JNIEnv *env, jobject thisObject, jbyteArray digest, jobject curve) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWPrivateKey *instance = (struct TWPrivateKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     TWData *digestData = TWDataCreateWithJByteArray(env, digest);
-    jbyteArray result = TWDataJByteArray(TWPrivateKeySignAsDER(instance, digestData), env);
+    jclass curveClass = (*env)->GetObjectClass(env, curve);
+    jmethodID curveValueMethodID = (*env)->GetMethodID(env, curveClass, "value", "()I");
+    jint curveValue = (*env)->CallIntMethod(env, curve, curveValueMethodID);
+    jbyteArray result = TWDataJByteArray(TWPrivateKeySignAsDER(instance, digestData, curveValue), env);
 
     TWDataDelete(digestData);
+    (*env)->DeleteLocalRef(env, curveClass);
 
     (*env)->DeleteLocalRef(env, thisClass);
 

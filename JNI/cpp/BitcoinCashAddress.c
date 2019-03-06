@@ -56,13 +56,9 @@ jbyteArray JNICALL Java_wallet_core_jni_BitcoinCashAddress_initWithPublicKey(JNI
     jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
     struct TWBitcoinCashAddress *instance = (struct TWBitcoinCashAddress *) bytesBuffer;
     jclass publicKeyClass = (*env)->GetObjectClass(env, publicKey);
-    jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
-    jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
-    jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
-    TWBitcoinCashAddressInitWithPublicKey(instance, *publicKeyInstance);
-    (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, publicKeyBytesArray);
+    jfieldID publicKeyHandleFieldID = (*env)->GetFieldID(env, publicKeyClass, "nativeHandle", "J");
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) (*env)->GetLongField(env, publicKey, publicKeyHandleFieldID);
+    TWBitcoinCashAddressInitWithPublicKey(instance, publicKeyInstance);
     (*env)->DeleteLocalRef(env, publicKeyClass);
     (*env)->ReleaseByteArrayElements(env, array, bytesBuffer, 0);
 
