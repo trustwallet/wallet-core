@@ -21,6 +21,10 @@ struct TWBitcoinTransactionSigner;
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreate(TW_Bitcoin_Proto_SigningInput input);
 
+/// Creates a transaction signer with input data (serialized from Proto::SigningInput) and plan
+TW_EXPORT_STATIC_METHOD
+struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput input, TW_Bitcoin_Proto_TransactionPlan plan);
+
 TW_EXPORT_METHOD
 void TWBitcoinTransactionSignerDelete(struct TWBitcoinTransactionSigner *_Nonnull signer);
 
