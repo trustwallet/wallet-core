@@ -52,16 +52,16 @@ public:
     virtual ~HDWallet();
 
     /// Returns the private key at the given derivation path.
-    PrivateKey getKey(TWCurve curve, TWPurpose purpose, TWCoinType coin) const;
+    PrivateKey getKey(TWCoinType coin) const;
 
     /// Returns the private key at the given derivation path.
-    PrivateKey getKey(TWCurve curve, TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const;
+    PrivateKey getKey(TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const;
 
     /// Returns the extended private key.
-    std::string getExtendedPrivateKey(TWCurve curve, TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
+    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
     /// Returns the exteded public key.
-    std::string getExtendedPublicKey(TWCurve curve, TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
+    std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
     /// Computes the public key from an exteded public key representation.
     static PublicKey getPublicKeyFromExtended(const std::string& extended, TWCurve curve, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);

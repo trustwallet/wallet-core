@@ -62,6 +62,7 @@
 		616F8797222F2CA10007ECA3 /* Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F8795222F2CA00007ECA3 /* Base64.h */; };
 		616F8798222F2CA10007ECA3 /* BinaryCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F8796222F2CA00007ECA3 /* BinaryCoding.h */; };
 		616F879A222F2CB90007ECA3 /* Curve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616F8799222F2CB90007ECA3 /* Curve.swift */; };
+		616F879C222F3EFE0007ECA3 /* TWCoinType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 616F879B222F3EFC0007ECA3 /* TWCoinType.cpp */; };
 		61722BD7220E455500D7BA9A /* TWZcashTransactionSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 61722BD3220E455400D7BA9A /* TWZcashTransactionSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61722BD8220E455500D7BA9A /* TWBitcoinProto.h in Headers */ = {isa = PBXBuildFile; fileRef = 61722BD4220E455400D7BA9A /* TWBitcoinProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61722BD9220E455500D7BA9A /* TWBinanceProto.h in Headers */ = {isa = PBXBuildFile; fileRef = 61722BD5220E455400D7BA9A /* TWBinanceProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -522,6 +523,7 @@
 		616F8795222F2CA00007ECA3 /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		616F8796222F2CA00007ECA3 /* BinaryCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryCoding.h; sourceTree = "<group>"; };
 		616F8799222F2CB90007ECA3 /* Curve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Curve.swift; sourceTree = "<group>"; };
+		616F879B222F3EFC0007ECA3 /* TWCoinType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWCoinType.cpp; sourceTree = "<group>"; };
 		61722BD3220E455400D7BA9A /* TWZcashTransactionSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWZcashTransactionSigner.h; sourceTree = "<group>"; };
 		61722BD4220E455400D7BA9A /* TWBitcoinProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBitcoinProto.h; sourceTree = "<group>"; };
 		61722BD5220E455400D7BA9A /* TWBinanceProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBinanceProto.h; sourceTree = "<group>"; };
@@ -1518,8 +1520,6 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
-				61E813CB2227212600D4D2C9 /* TWIconAddress.cpp */,
-				61E813CC2227212600D4D2C9 /* TWIconSigner.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				61AAD3A221DEF70800B69A34 /* TWBase58.cpp */,
 				61722C01220E461A00D7BA9A /* TWBech32Address.cpp */,
@@ -1528,6 +1528,7 @@
 				61722BF9220E461900D7BA9A /* TWBitcoinCashAddress.cpp */,
 				61722C02220E461A00D7BA9A /* TWBitcoinScript.cpp */,
 				61722BFE220E461A00D7BA9A /* TWBitcoinTransactionSigner.cpp */,
+				616F879B222F3EFC0007ECA3 /* TWCoinType.cpp */,
 				61722BFC220E461A00D7BA9A /* TWCoinTypeConfiguration.cpp */,
 				61B159B421CC5DBB00CFE93B /* TWData.cpp */,
 				61B159B821CC5DBB00CFE93B /* TWData+Hex.cpp */,
@@ -1536,6 +1537,8 @@
 				61B159B921CC5DBB00CFE93B /* TWHash.cpp */,
 				61B159BC21CC5DBB00CFE93B /* TWHDWallet.cpp */,
 				61722BFA220E461900D7BA9A /* TWHRP.cpp */,
+				61E813CB2227212600D4D2C9 /* TWIconAddress.cpp */,
+				61E813CC2227212600D4D2C9 /* TWIconSigner.cpp */,
 				61CABABC21ED41F20086D9A0 /* TWKeyDerivation.cpp */,
 				61B159BA21CC5DBB00CFE93B /* TWPrivateKey.cpp */,
 				61B159B721CC5DBB00CFE93B /* TWPublicKey.cpp */,
@@ -2399,6 +2402,7 @@
 				61E813BE2227210600D4D2C9 /* IconSigner.swift in Sources */,
 				61722C0E220E461A00D7BA9A /* TWZcashTransactionSigner.cpp in Sources */,
 				616E122C21A78094009798FC /* Hash.swift in Sources */,
+				616F879C222F3EFE0007ECA3 /* TWCoinType.cpp in Sources */,
 				61735C0E219DF044007BF637 /* ed25519-donna-32bit-tables.c in Sources */,
 				61735C15219DF044007BF637 /* ed25519-sha3.c in Sources */,
 				61B159D221CC5DBB00CFE93B /* TransactionOutput.cpp in Sources */,

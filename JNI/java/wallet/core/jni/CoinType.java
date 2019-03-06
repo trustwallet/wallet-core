@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+g// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,16 +23,15 @@ public enum CoinType {
     ICON (74),
     LITECOIN (2),
     POA (178),
+    RIPPLE (144),
     TEZOS (1729),
     THUNDERTOKEN (1001),
     TOMOCHAIN (889),
     TRON (195),
     VECHAIN (818),
     WANCHAIN (5718350),
-    ZCOIN (136),
     ZCASH (133),
-    RIPPLE (144),
-    TEZOS (1729);
+    ZCOIN (136);
 
     private final int value;
     CoinType(int value) {

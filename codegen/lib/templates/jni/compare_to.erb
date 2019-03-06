@@ -4,7 +4,7 @@
 <%= render('jni/method_prototype.erb', { method: compareMethod }) %> {
 <%= render('jni/instance_access.erb', { entity: entity }) %>
 <%= render('jni/parameter_access.erb', { method: compareMethod }) -%>
-<%  if entity.is_struct -%>
+<%  if entity.struct? -%>
     jboolean equal = (jboolean) TW<%= entity.name %>Equal(*instance, *otherInstance);
 <%  else -%>
     jboolean equal = (jboolean) TW<%= entity.name %>Equal(instance, otherInstance);
@@ -12,7 +12,7 @@
     if (equal) {
         return 0;
     }
-<%  if entity.is_struct -%>
+<%  if entity.struct? -%>
     jboolean less = (jboolean) TW<%= entity.name %>Less(*instance, *otherInstance);
 <%  else -%>
     jboolean less = (jboolean) TW<%= entity.name %>Less(instance, otherInstance);

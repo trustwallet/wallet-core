@@ -68,19 +68,24 @@ HDWallet::~HDWallet() {
     std::fill(passphrase.begin(), passphrase.end(), 0);
 }
 
-PrivateKey HDWallet::getKey(TWCurve curve, TWPurpose purpose, TWCoinType coin) const {
+PrivateKey HDWallet::getKey(TWCoinType coin) const {
+    const auto curve = TWCoinTypeCurve(coin);
+    const auto purpose = TWCoinTypePurpose(coin);
     auto node = getNode(*this, curve, purpose, coin);
     auto data = Data(node.private_key, node.private_key + PrivateKey::size);
     return PrivateKey(data);
 }
 
-PrivateKey HDWallet::getKey(TWCurve curve, TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const {
+PrivateKey HDWallet::getKey(TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const {
+    const auto curve = TWCoinTypeCurve(coin);
+    const auto purpose = TWCoinTypePurpose(coin);
     auto node = getNode(*this, curve, purpose, coin, account, change, address);
     auto data = Data(node.private_key, node.private_key + PrivateKey::size);
     return PrivateKey(data);
 }
 
-std::string HDWallet::getExtendedPrivateKey(TWCurve curve, TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
+std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
+    const auto curve = TWCoinTypeCurve(coin);
     auto node = getNode(*this, curve, purpose, coin);
     char buffer[HDWallet::maxExtendedKeySize] = {0};
     auto fingerprint = hdnode_fingerprint(&node);
@@ -89,7 +94,8 @@ std::string HDWallet::getExtendedPrivateKey(TWCurve curve, TWPurpose purpose, TW
     return buffer;
 }
 
-std::string HDWallet::getExtendedPublicKey(TWCurve curve, TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
+std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
+    const auto curve = TWCoinTypeCurve(coin);
     auto node = getNode(*this, curve, purpose, coin);
     char buffer[HDWallet::maxExtendedKeySize] = {0};
     auto fingerprint = hdnode_fingerprint(&node);
