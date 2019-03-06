@@ -1,0 +1,19 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'macOS-10.13'
+
+steps:
+- script: 'brew install cmake ninja boost'
+  displayName: 'Install system dependencies'
+- task: NodeTool@0
+  displayName: 'Use Node 10.x'
+  inputs:
+    versionSpec: 10.x
+- script: 'tools/install-dependencies'
+  displayName: 'Install internal dependencies'
+- script: 'tools/generate-files'
+  displayName: 'Generate files'
+- script: 'tools/android-test'
+  displayName: 'Run tests'
