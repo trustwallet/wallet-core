@@ -61,19 +61,7 @@ Address::Address(const PublicKey& publicKey) {
     append(data, hash);
     assert(data.size() == Address::size);
 
-    size_t s = 0;
-    b58enc(nullptr, &s, data.data(), data.size());
-    s += 16;
-
-    auto string = std::string();
-    string.resize(size);
-    base58_encode_check(data.data(), (int)data.size(), HASHER_SHA2D, &string[0], s);
-
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    assert(size == Address::size);
-    std::vector<uint8_t> vec(&buffer[0], &buffer[128]);
-    auto str = TW::hex(vec);
-    std::copy(buffer, buffer + Address::size, bytes.begin());
+    std::copy(data.data(), data.data() + Address::size, bytes.begin());
 }
 
 std::string Address::string() const {
