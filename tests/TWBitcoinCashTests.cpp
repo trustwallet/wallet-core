@@ -25,7 +25,7 @@ using namespace TW;
 
 TEST(BitcoinCash, LegacyToCashAddr) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4").get()));
-    auto publicKey = TWPrivateKeyGetPublicKey(privateKey.get(), true);
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
     auto address = TWBitcoinAddress();
     TWBitcoinAddressInitWithPublicKey(&address, publicKey, 0);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));

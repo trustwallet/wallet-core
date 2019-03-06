@@ -7,79 +7,65 @@
 #include <TrustWalletCore/TWPublicKey.h>
 
 #include "../HexCoding.h"
+#include "../PublicKey.h"
+
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/secp256k1.h>
 
 #include <string.h>
 
-bool TWPublicKeyInitWithData(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull data) {
-    if (!TWPublicKeyIsValid(data)) {
-        return false;
+using TW::PublicKey;
+
+struct TWPublicKey *_Nullable TWPublicKeyCreateWithData(TWData *_Nonnull data) {
+    auto& d = *reinterpret_cast<const TW::Data *>(data);
+    if (!PublicKey::isValid(d)) {
+        return nullptr;
     }
 
-    TWDataCopyBytes(data, 0, TWDataSize(data), pk->bytes);
-    return true;
+    return new TWPublicKey{ PublicKey(d) };
+}
+
+void TWPublicKeyDelete(struct TWPublicKey *_Nonnull pk) {
+    delete pk;
 }
 
 bool TWPublicKeyIsValid(TWData *_Nonnull data) {
-    switch (TWDataGet(data, 0)) {
-    case 2:
-    case 3:
-        return TWDataSize(data) == TWPublicKeyCompressedSize;
-    case 4:
-    case 6:
-    case 7:
-        return TWDataSize(data) == TWPublicKeyUncompressedSize;
-    default:
-        return false;
-    }
+    auto& d = *reinterpret_cast<const TW::Data *>(data);
+    return PublicKey::isValid(d);
 }
 
-bool TWPublicKeyIsCompressed(struct TWPublicKey pk) {
-    return pk.bytes[0] == 2 || pk.bytes[0] == 3;
+bool TWPublicKeyIsCompressed(struct TWPublicKey *_Nonnull pk) {
+    return pk->impl.isCompressed();
 }
 
-TWData *TWPublicKeyData(struct TWPublicKey pk) {
-    if (TWPublicKeyIsCompressed(pk)) {
-        return TWDataCreateWithBytes(pk.bytes, TWPublicKeyCompressedSize);
-    } else {
-        return TWDataCreateWithBytes(pk.bytes, TWPublicKeyUncompressedSize);
-    }
+TWData *TWPublicKeyData(struct TWPublicKey *_Nonnull pk) {
+    return TWDataCreateWithBytes(pk->impl.bytes.data(), pk->impl.bytes.size());
 }
 
-struct TWPublicKey TWPublicKeyCompressed(struct TWPublicKey pk) {
-    if (TWPublicKeyIsCompressed(pk)) {
-        return pk;
-    }
-
-    struct TWPublicKey result;
-    result.bytes[0] = 0x02 | (pk.bytes[64] & 0x01);
-    memcpy(result.bytes + 1, pk.bytes + 1, TWPublicKeyCompressedSize - 1);
-    return result;
+struct TWPublicKey *_Nonnull TWPublicKeyCompressed(struct TWPublicKey *_Nonnull pk) {
+    return new TWPublicKey{ pk->impl.compressed() };
 }
 
-bool TWPublicKeyVerify(struct TWPublicKey pk, TWData *signature, TWData *message) {
-    uint8_t *signatureBytes = TWDataBytes(signature);
-    uint8_t *messageBytes = TWDataBytes(message);
-    bool success = ecdsa_verify_digest(&secp256k1, pk.bytes, signatureBytes, messageBytes) == 0;
-    return success;
+bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *signature, TWData *message) {
+    auto& s = *reinterpret_cast<const TW::Data *>(signature);
+    auto& m = *reinterpret_cast<const TW::Data *>(message);
+    return pk->impl.verify(s, m);
 }
 
-TWString *_Nonnull TWPublicKeyDescription(struct TWPublicKey publicKey) {
-    const auto size = TWPublicKeyIsCompressed(publicKey) ? TWPublicKeyCompressedSize : TWPublicKeyUncompressedSize;
-    const auto string = TW::hex(publicKey.bytes, publicKey.bytes +  size);
+TWString *_Nonnull TWPublicKeyDescription(struct TWPublicKey *_Nonnull publicKey) {
+    const auto string = TW::hex(publicKey->impl.bytes);
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
-struct TWPublicKey TWPublicKeyRecover(TWData *_Nonnull signature, TWData *_Nonnull message) {
-    TWPublicKey pubkey;
+struct TWPublicKey *_Nullable TWPublicKeyRecover(TWData *_Nonnull signature, TWData *_Nonnull message) {
     auto signatureBytes = TWDataBytes(signature);
     auto v = signatureBytes[64];
     if (v >= 27) {
         v -= 27;
     }
-    if (ecdsa_recover_pub_from_sig(&secp256k1, pubkey.bytes, signatureBytes, TWDataBytes(message), v) != 0) {
-        return {0};
+    std::array<uint8_t, 65> result;
+    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureBytes, TWDataBytes(message), v) != 0) {
+        return nullptr;
     }
-    return pubkey;
+    return new TWPublicKey{ PublicKey(result) };
 }
