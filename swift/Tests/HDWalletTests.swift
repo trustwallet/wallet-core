@@ -154,20 +154,20 @@ class HDWalletTests: XCTestCase {
     func testExtendedKeys() {
         let wallet = HDWallet(mnemonic: "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about", passphrase: "")
 
-        let xprv = wallet.getExtendedPrivateKey(curve: .secp256k1, purpose: .bip44, coin: .bitcoin, version: .xprv)
-        let xpub = wallet.getExtendedPubKey(curve: .secp256k1, purpose: .bip44, coin: .bitcoin, version: .xpub)
+        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .bitcoin, version: .xprv)
+        let xpub = wallet.getExtendedPubKey(purpose: .bip44, coin: .bitcoin, version: .xpub)
 
         XCTAssertEqual(xprv, "xprv9xpXFhFpqdQK3TmytPBqXtGSwS3DLjojFhTGht8gwAAii8py5X6pxeBnQ6ehJiyJ6nDjWGJfZ95WxByFXVkDxHXrqu53WCRGypk2ttuqncb")
         XCTAssertEqual(xpub, "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj")
 
-        let yprv = wallet.getExtendedPrivateKey(curve: .secp256k1, purpose: .bip49, coin: .bitcoin, version: .yprv)
-        let ypub = wallet.getExtendedPubKey(curve: .secp256k1, purpose: .bip49, coin: .bitcoin, version: .ypub)
+        let yprv = wallet.getExtendedPrivateKey(purpose: .bip49, coin: .bitcoin, version: .yprv)
+        let ypub = wallet.getExtendedPubKey(purpose: .bip49, coin: .bitcoin, version: .ypub)
 
         XCTAssertEqual(yprv, "yprvAHwhK6RbpuS3dgCYHM5jc2ZvEKd7Bi61u9FVhYMpgMSuZS613T1xxQeKTffhrHY79hZ5PsskBjcc6C2V7DrnsMsNaGDaWev3GLRQRgV7hxF")
         XCTAssertEqual(ypub, "ypub6Ww3ibxVfGzLrAH1PNcjyAWenMTbbAosGNB6VvmSEgytSER9azLDWCxoJwW7Ke7icmizBMXrzBx9979FfaHxHcrArf3zbeJJJUZPf663zsP")
 
-        let zprv = wallet.getExtendedPrivateKey(curve: .secp256k1, purpose: .bip84, coin: .bitcoin, version: .zprv)
-        let zpub = wallet.getExtendedPubKey(curve: .secp256k1, purpose: .bip84, coin: .bitcoin, version: .zpub)
+        let zprv = wallet.getExtendedPrivateKey(purpose: .bip84, coin: .bitcoin, version: .zprv)
+        let zpub = wallet.getExtendedPubKey(purpose: .bip84, coin: .bitcoin, version: .zpub)
 
         XCTAssertEqual(zprv, "zprvAdG4iTXWBoARxkkzNpNh8r6Qag3irQB8PzEMkAFeTRXxHpbF9z4QgEvBRmfvqWvGp42t42nvgGpNgYSJA9iefm1yYNZKEm7z6qUWCroSQnE")
         XCTAssertEqual(zpub, "zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs")
