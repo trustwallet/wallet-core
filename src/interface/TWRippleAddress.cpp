@@ -39,15 +39,8 @@ struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull
     return new TWRippleAddress{ Address(*d) };
 }
 
-struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
-    std::vector<uint8_t> data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::secp256k1Size);
-    } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::secp256k1ExtendedSize);
-    }
-    const auto address = Address(PublicKey(data));
-    return new TWRippleAddress{ std::move(address) };
+struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
+    return new TWRippleAddress{ Address(publicKey->impl) };
 }
 
 void TWRippleAddressDelete(struct TWRippleAddress *_Nonnull address) {

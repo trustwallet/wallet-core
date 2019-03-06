@@ -10,7 +10,7 @@ import XCTest
 class DashAddressTests: XCTestCase {
     func testAddress() {
         let privateKey = PrivateKey(wif: "XDoxFwfxsEZDd15uNyj8vt64c3GLxcFjTefnUz7gckvAJeYSFaRz")!
-        let publicKey = privateKey.getPublicKey(compressed: true)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = Dash().address(for: publicKey)
 
         XCTAssertEqual(address.description, "Xw7HTXGY3TFeA3ZsVuMRrYh96GtwWb4hQb")

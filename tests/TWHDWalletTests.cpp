@@ -69,10 +69,10 @@ TEST(HDWallet, Derive) {
     auto key0 = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeEthereum, 0, 0, 0));
     auto key1 = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeEthereum, 0, 0, 1));
 
-    auto publicKey0 = TWPrivateKeyGetPublicKey(key0.get(), false);
+    auto publicKey0 = TWPrivateKeyGetPublicKeySecp256k1(key0.get(), false);
     auto publicKey0Data = WRAPD(TWPublicKeyData(publicKey0));
 
-    auto publicKey1 = TWPrivateKeyGetPublicKey(key1.get(), false);
+    auto publicKey1 = TWPrivateKeyGetPublicKeySecp256k1(key1.get(), false);
     auto publicKey1Data = WRAPD(TWPublicKeyData(publicKey1));
 
     assertHexEqual(publicKey0Data, "0414acbe5a06c68210fcbb77763f9612e45a526990aeb69d692d705f276f558a5ae68268e9389bb099ed5ac84d8d6861110f63644f6e5b447e3f86b4bab5dee011");
@@ -82,7 +82,7 @@ TEST(HDWallet, Derive) {
 TEST(HDWallet, DeriveBitcoin) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeBitcoin, 0, 0, 0));
-    auto publicKey = TWPrivateKeyGetPublicKey(key.get(), false);
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
     assertHexEqual(publicKeyData, "047ea5dff03f677502c4a1d73c5ac897200e56b155e876774c8fba0cc22f80b9414ec07cda7b1c9a84c2e04ea2746c21afacc5e91b47427c453c3f1a4a3e983ce5");

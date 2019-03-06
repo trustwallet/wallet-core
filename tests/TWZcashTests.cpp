@@ -19,7 +19,7 @@
 
 TEST(Zcash, TransparentAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
-    auto publicKey = TWPrivateKeyGetPublicKey(privateKey.get(), true);
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
     auto address = TWZcashTAddress();
     TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
     auto addressString = WRAPS(TWZcashTAddressDescription(address));
@@ -32,7 +32,7 @@ TEST(Zcash, DeriveTransparentAddress) {
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeZcash, 0, 0, 5));
-    auto publicKey = TWPrivateKeyGetPublicKey(key.get(), false);
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
 
     TWZcashTAddress address;
     TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);

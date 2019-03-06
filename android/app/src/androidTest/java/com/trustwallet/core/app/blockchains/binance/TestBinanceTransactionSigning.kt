@@ -20,7 +20,7 @@ class TestBinanceTransactionSigning {
     @Test
     fun testSignBinanceTransaction() {
         val privateKey = PrivateKey("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832".toHexBytes())
-        val publicKey = privateKey.getPublicKey(true)
+        val publicKey = privateKey.getPublicKeySecp256k1(true)
 
         val signingInput = Binance.SigningInput.newBuilder()
         signingInput.chainId = "Binance-Chain-Nile"

@@ -29,9 +29,10 @@ public class PrivateKey {
 
     public static native boolean isValid(byte[] data);
     public native byte[] data();
-    public native PublicKey getPublicKey(boolean compressed);
-    public native byte[] sign(byte[] digest);
-    public native byte[] signAsDER(byte[] digest);
+    public native PublicKey getPublicKeySecp256k1(boolean compressed);
+    public native PublicKey getPublicKeyEd25519();
+    public native byte[] sign(byte[] digest, Curve curve);
+    public native byte[] signAsDER(byte[] digest, Curve curve);
 
     public PrivateKey() {
         nativeHandle = nativeCreate();

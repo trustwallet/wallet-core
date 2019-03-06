@@ -29,7 +29,7 @@ class BinanceChainTests: XCTestCase {
         let blockchain = BinanceChainTestnet()
         let wallet = HDWallet(mnemonic: "rabbit tilt arm protect banner ill produce vendor april bike much identify pond upset front easily glass gallery address hair priority focus forest angle", passphrase: "")
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
-        let address = blockchain.address(for: key.getPublicKey(compressed: true))
+        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
 
         XCTAssertEqual(key.data.hexString, "727f677b390c151caf9c206fd77f77918f56904b5504243db9b21e51182c4c06")
         XCTAssertEqual("tbnb1devga6q804tx9fqrnx0vtu5r36kxgp9t4ruzk2", address.description)
