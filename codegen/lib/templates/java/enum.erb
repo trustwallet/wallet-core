@@ -14,14 +14,6 @@ public enum <%= entity.name %> {
     }
     public <%= type %> value() { return value; }
 <%  end -%>
-<%# Property declarations -%>
-<%- entity.properties.each do |property| -%>
-<%-   if should_return_data(property) -%>
-    public native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
-<%-   else -%>
-    public native <%= JavaHelper.type(property.return_type) %> <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
-<%-   end -%>
-<%- end -%>
 <%# toString -%>
 <%  if has_string -%>
 
