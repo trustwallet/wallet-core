@@ -2,7 +2,7 @@
 
 Trust Wallet Core is a cross-platform library that implements low-level cryptographic wallet functionality for all supported blockchains. Most of the code is C++ with a set of strict exported C interfaces. The library provides idiomatic interfaces for all supported languages (currently Swift for iOS and Java for Android).
 
-[![Build Status](https://app.bitrise.io/app/0b0d24fe402f301d/status.svg?token=1r_APU4X5cilvnk5hUg_Ow)](https://app.bitrise.io/app/0b0d24fe402f301d)
+[![Build Status](https://dev.azure.com/TrustWallet/TrustWallet/_apis/build/status/TrustWallet.wallet-core?branchName=master)](https://dev.azure.com/TrustWallet/TrustWallet/_build/latest?definitionId=5&branchName=master)
 ![GitHub](https://img.shields.io/github/license/TrustWallet/wallet-core.svg)
 ![Maven Central](https://img.shields.io/maven-central/v/com.trustwallet.walletcore/walletcore.svg)
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
