@@ -9,10 +9,7 @@
 #include "HexCoding.h"
 
 #include <TrezorCrypto/base58.h>
-#include <TrezorCrypto/ripple/base58.h>
 #include <TrezorCrypto/ecdsa.h>
-
-#include <iostream>
 
 using namespace TW;
 using namespace TW::Tezos;
@@ -51,7 +48,16 @@ Address::Address(const std::string& pkey_hash) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data());
+    size_t capacity = 128;
+    uint8_t buffer[capacity];
+    buffer[0] = 6;
+    buffer[1] = 161;
+    buffer[2] = 159;
+    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, buffer + 3);
+    assert(size == Address::size);
+    std::vector<uint8_t> vec(&buffer[0], &buffer[128]);
+    auto str = TW::hex(vec);
+    std::copy(buffer, buffer + Address::size, bytes.begin());
 }
 
 std::string Address::string() const {

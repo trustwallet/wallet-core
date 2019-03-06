@@ -6,15 +6,29 @@
 
 #include "Tezos/Address.h"
 #include "Tezos/BinaryCoding.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
 
 #include <gtest/gtest.h>
 #include <string>
+#include <iostream>
+
+using namespace TW;
 using namespace TW::Tezos;
 
 TEST(TezosAddress, isValid) {
     auto address = "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM";
     ASSERT_TRUE(Address::isValid(address));
 }
+
+TEST(TezosAddress, PublicKeyInit) {
+    uint8_t bytes[] = {3, 238, 251, 227, 37, 51, 63, 63, 225, 109, 107, 177, 167, 188, 174, 126, 108, 253, 240, 129, 242, 0, 152, 20, 207, 247, 203, 31, 107, 161, 154, 135, 24};
+    const auto publicKey = PublicKey(bytes);
+    auto address = Address(publicKey);
+
+    auto expected = "0000cfa4aae60f5d9389752d41e320da224d43287fe2";
+    ASSERT_EQ(address.string(), expected);
+  }
 
 TEST(TezosAddress, isInvalid) {
     std::array<std::string, 3> invalidAddresses {
