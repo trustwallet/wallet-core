@@ -45,7 +45,9 @@ public:
     /// Initializes a private key with a collection of bytes.
     template<typename T>
     explicit PrivateKey(const T& data) {
-        assert(data.size() == size);
+        if (data.size() != size) {
+            throw std::invalid_argument("Invalid private key data");
+        }
         std::copy(std::begin(data), std::end(data), std::begin(bytes));
     }
 
