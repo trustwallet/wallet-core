@@ -32,7 +32,7 @@ TEST(Zcash, DeriveTransparentAddress) {
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeZcash, 0, 0, 5));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), true);
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
 
     TWZcashTAddress address;
     TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);

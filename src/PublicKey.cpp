@@ -18,7 +18,7 @@ PublicKey PublicKey::compressed() const {
 
     std::array<uint8_t, secp256k1Size> newBytes;
     newBytes[0] = 0x02 | (bytes[64] & 0x01);
-    std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size - 1, newBytes.begin() + 1);
+    std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
     return PublicKey(newBytes);
 }
 
