@@ -101,7 +101,7 @@ class HDWalletTests: XCTestCase {
         let blockchain = Dash()
         let wallet = testWallet
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
-        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
+        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
         XCTAssertEqual("XsJg3pJaoyKEf5jMYTb5wGf3TKp9W3KX5a", address.description)
     }
@@ -110,7 +110,7 @@ class HDWalletTests: XCTestCase {
         let blockchain = Zcoin()
         let wallet = testWallet
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
-        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
+        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
         XCTAssertEqual("a5jgmKczLE7fbgBmVkDTvvAQx8pYZKL7LP", address.description)
     }
@@ -119,7 +119,7 @@ class HDWalletTests: XCTestCase {
         let blockchain = BinanceChain()
         let wallet = testWallet
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
-        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
+        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
         XCTAssertEqual("bnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8pja0td", address.description)
     }
@@ -128,7 +128,7 @@ class HDWalletTests: XCTestCase {
         let blockchain = Zcash()
         let wallet = testWallet
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
-        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
+        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
         XCTAssertEqual("t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy", address.description)
     }
 
@@ -136,7 +136,7 @@ class HDWalletTests: XCTestCase {
         let blockchain = Ripple()
         let wallet = testWallet
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
-        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
+        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
         XCTAssertEqual("r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav", address.description)
     }
