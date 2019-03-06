@@ -8,6 +8,7 @@
 #include "Tezos/BinaryCoding.h"
 
 #include <gtest/gtest.h>
+#include <string>
 using namespace TW::Tezos;
 
 TEST(TezosAddress, isValid) {

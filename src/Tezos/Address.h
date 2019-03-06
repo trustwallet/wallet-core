@@ -10,6 +10,7 @@
 #include "../PublicKey.h"
 
 #include <string>
+#include <vector>
 
 namespace TW {
 namespace Tezos {
@@ -25,6 +26,7 @@ public:
 
     /// Initializes a Tezos address with a public_key hash.
     Address(const std::string& string);
+    Address(const std::vector<uint8_t>& data);
     Address(const PublicKey& publicKey);
     static bool isValid(const std::string& string);
     /// Returns a string representation of the address.
@@ -32,8 +34,3 @@ public:
 };
 
 }} // namespace
-
-// /// Wrapper for C interface.
-// struct TWTezosAddress {
-//     TW::Tezos::Address impl;
-// };

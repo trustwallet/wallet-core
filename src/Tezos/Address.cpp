@@ -30,8 +30,12 @@ bool Address::isValid(const std::string& string) {
             return false;
         }
     }
-
     return size == Address::size;
+}
+
+Address::Address(const std::vector<uint8_t>& data) {
+  assert(data.size() == size);
+  std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const std::string& pkey_hash) {
@@ -47,8 +51,7 @@ Address::Address(const std::string& pkey_hash) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    bytes[0] = 0x00;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
+    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data());
 }
 
 std::string Address::string() const {
