@@ -23,6 +23,14 @@ struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreate(TW_
     return new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input)) };
 }
 
+struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    Proto::TransactionPlan plan;
+    plan.ParseFromArray(TWDataBytes(planData), TWDataSize(planData));
+    return new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input), std::move(plan)) };
+}
+
 void TWBitcoinTransactionSignerDelete(struct TWBitcoinTransactionSigner *_Nonnull signer) {
     delete signer;
 }
