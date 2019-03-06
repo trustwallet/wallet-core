@@ -9,11 +9,7 @@
 
 import Foundation
 
-public struct TezosAddress {
-
-    public static func description(address: TezosAddress) -> String {
-        return TWStringNSString(TWTezosAddressDescription(address.rawValue))
-    }
+public final class TezosAddress {
 
     public static func isValid(data: Data) -> Bool {
         let dataData = TWDataCreateWithNSData(data)
@@ -31,13 +27,17 @@ public struct TezosAddress {
         return TWTezosAddressIsValidString(stringString)
     }
 
-    public static func data(address: TezosAddress) -> Data {
-        return TWDataNSData(TWTezosAddressData(address.rawValue))
+    public var description: String {
+        return TWStringNSString(TWTezosAddressDescription(rawValue))
     }
 
-    var rawValue: TWTezosAddress
+    public var keyHash: Data {
+        return TWDataNSData(TWTezosAddressKeyHash(rawValue))
+    }
 
-    init(rawValue: TWTezosAddress) {
+    let rawValue: OpaquePointer
+
+    init(rawValue: OpaquePointer) {
         self.rawValue = rawValue
     }
 
@@ -46,17 +46,14 @@ public struct TezosAddress {
         defer {
             TWStringDelete(stringString)
         }
-        rawValue = TWTezosAddress()
-        guard TWTezosAddressInitWithString(&rawValue, stringString) else {
+        guard let rawValue = TWTezosAddressCreateWithString(stringString) else {
             return nil
         }
+        self.rawValue = rawValue
     }
 
-    public init?(publicKey: PublicKey) {
-        rawValue = TWTezosAddress()
-        guard TWTezosAddressInitWithPublicKey(&rawValue, publicKey.rawValue) else {
-            return nil
-        }
+    public init(publicKey: PublicKey) {
+        rawValue = TWTezosAddressCreateWithPublicKey(publicKey.rawValue)
     }
 
 

@@ -88,6 +88,18 @@ TEST(HDWallet, DeriveBitcoin) {
     assertHexEqual(publicKeyData, "047ea5dff03f677502c4a1d73c5ac897200e56b155e876774c8fba0cc22f80b9414ec07cda7b1c9a84c2e04ea2746c21afacc5e91b47427c453c3f1a4a3e983ce5");
 }
 
+TEST(HDWallet, DeriveTezos) {
+  auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+  auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWPurposeBIP44, TWCoinTypeTezos, 0, 0, 0));
+  auto publicKey = TWPrivateKeyGetPublicKey(key.get(), false);
+  auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
+  
+  TWString *s = TWPublicKeyDescription(publicKey);
+  printf("S: %s", s);
+  ASSERT_EQ(s, "0");
+  assertHexEqual(publicKeyData, "0488b21e05bc9a173f000000002f16ba960277ea7a5430ba5c62a7451fc21ebe06debbb0115842dd9cfcc777930240ebf906b948281289405317a5eb9a98045af8a8ab5311b2e3060cfb66c507a1b46c1863");                                   
+}
+
 TEST(HDWallet, ExtendedKeys) {
     auto words = STRING("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));

@@ -10,39 +10,46 @@
 package wallet.core.jni;
 
 import java.security.InvalidParameterException;
+import java.util.HashSet;
 
 public class TezosAddress {
-    private byte[] bytes;
+    private long nativeHandle;
 
     private TezosAddress() {
+        nativeHandle = 0;
     }
 
-    static TezosAddress createFromNative(byte[] bytes) {
+    static TezosAddress createFromNative(long nativeHandle) {
         TezosAddress instance = new TezosAddress();
-        instance.bytes = bytes;
+        instance.nativeHandle = nativeHandle;
         return instance;
     }
 
-    static native byte[] initWithString(String string);
-    static native byte[] initWithPublicKey(PublicKey publicKey);
+    static native long nativeCreateWithString(String string);
+    static native long nativeCreateWithPublicKey(PublicKey publicKey);
 
-    public static native String description(TezosAddress address);
     public static native boolean isValid(byte[] data);
     public static native boolean isValidString(String string);
-    public static native byte[] data(TezosAddress address);
+    public native String description();
+    public native byte[] keyHash();
 
     public TezosAddress(String string) {
-        bytes = initWithString(string);
-        if (bytes == null) {
+        nativeHandle = nativeCreateWithString(string);
+        if (nativeHandle == 0) {
             throw new InvalidParameterException();
         }
+
+        TezosAddressPhantomReference.register(this, nativeHandle);
     }
 
     public TezosAddress(PublicKey publicKey) {
-        bytes = initWithPublicKey(publicKey);
-        if (bytes == null) {
+        nativeHandle = nativeCreateWithPublicKey(publicKey);
+        if (nativeHandle == 0) {
             throw new InvalidParameterException();
         }
+
+        TezosAddressPhantomReference.register(this, nativeHandle);
     }
 
 }
+

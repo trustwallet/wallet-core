@@ -12,14 +12,23 @@ public class Tezos: Blockchain {
   }
 
   public override func address(for publicKey: PublicKey) -> Address {
-    fatalError("Not implemented.")
+    return TezosAddress(publicKey: publicKey)
   }
 
   public override func address(string: String) -> Address? {
-    fatalError("Not implemented.")
+    return TezosAddress(string: string)
   }
 
   public override func address(data: Data) -> Address? {
-    fatalError("Not implemented.")
+    guard let stringRepresentation = String(data: data, encoding: .utf8) else {
+      return nil
+    }
+    return TezosAddress(string: stringRepresentation)
+  }
+}
+
+extension TezosAddress: Address {
+  public var data: Data {
+    return keyHash
   }
 }
