@@ -22,11 +22,11 @@ TEST(TezosAddress, isValid) {
 }
 
 TEST(TezosAddress, PublicKeyInit) {
-    uint8_t bytes[] = {3, 238, 251, 227, 37, 51, 63, 63, 225, 109, 107, 177, 167, 188, 174, 126, 108, 253, 240, 129, 242, 0, 152, 20, 207, 247, 203, 31, 107, 161, 154, 135, 24};
+    uint8_t bytes[] = {3, 249, 155, 77, 241, 23, 253, 247, 67, 73, 230, 138, 75, 159, 164, 53, 139, 19, 144, 243, 254, 68, 145, 220, 146, 163, 138, 154, 23, 67, 129, 243, 228};
     const auto publicKey = PublicKey(bytes);
     auto address = Address(publicKey);
 
-    auto expected = "0000cfa4aae60f5d9389752d41e320da224d43287fe2";
+    auto expected = "00002b57963f8b7dd930af143d056522c480328752ec";
     ASSERT_EQ(address.string(), expected);
   }
 
