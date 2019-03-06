@@ -19,6 +19,9 @@ JNIEXPORT
 jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input);
 
 JNIEXPORT
+jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreateWithPlan(JNIEnv *env, jclass thisClass, jobject input, jobject plan);
+
+JNIEXPORT
 void JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT
