@@ -63,6 +63,23 @@
 		616F8798222F2CA10007ECA3 /* BinaryCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F8796222F2CA00007ECA3 /* BinaryCoding.h */; };
 		616F879A222F2CB90007ECA3 /* Curve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616F8799222F2CB90007ECA3 /* Curve.swift */; };
 		616F879C222F3EFE0007ECA3 /* TWCoinType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 616F879B222F3EFC0007ECA3 /* TWCoinType.cpp */; };
+		616F87A0223041710007ECA3 /* TWNimiqProto.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F879D223041710007ECA3 /* TWNimiqProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		616F87A1223041710007ECA3 /* TWNimiqAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F879E223041710007ECA3 /* TWNimiqAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		616F87A2223041710007ECA3 /* TWNimiqSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F879F223041710007ECA3 /* TWNimiqSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		616F87AC223041970007ECA3 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F87A6223041970007ECA3 /* Address.h */; };
+		616F87AD223041970007ECA3 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 616F87A7223041970007ECA3 /* Address.cpp */; };
+		616F87AE223041970007ECA3 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 616F87A8223041970007ECA3 /* Transaction.cpp */; };
+		616F87AF223041970007ECA3 /* Signer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 616F87A9223041970007ECA3 /* Signer.cpp */; };
+		616F87B0223041970007ECA3 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F87AA223041970007ECA3 /* Transaction.h */; };
+		616F87B1223041970007ECA3 /* Signer.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F87AB223041970007ECA3 /* Signer.h */; };
+		616F87B4223041B00007ECA3 /* Nimiq.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 616F87B2223041B00007ECA3 /* Nimiq.pb.h */; };
+		616F87B5223041B00007ECA3 /* Nimiq.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 616F87B3223041B00007ECA3 /* Nimiq.pb.cc */; };
+		616F87B9223041C10007ECA3 /* NimiqAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616F87B6223041C10007ECA3 /* NimiqAddress.swift */; };
+		616F87BA223041C10007ECA3 /* Nimiq.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616F87B7223041C10007ECA3 /* Nimiq.pb.swift */; };
+		616F87BB223041C10007ECA3 /* NimiqSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616F87B8223041C10007ECA3 /* NimiqSigner.swift */; };
+		616F87BD223041F30007ECA3 /* Nimq.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616F87BC223041F30007ECA3 /* Nimq.swift */; };
+		616F87C0223044860007ECA3 /* TWNimiqAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 616F87BE223044830007ECA3 /* TWNimiqAddress.cpp */; };
+		616F87C1223044860007ECA3 /* TWNimiqSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 616F87BF223044860007ECA3 /* TWNimiqSigner.cpp */; };
 		61722BD7220E455500D7BA9A /* TWZcashTransactionSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 61722BD3220E455400D7BA9A /* TWZcashTransactionSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61722BD8220E455500D7BA9A /* TWBitcoinProto.h in Headers */ = {isa = PBXBuildFile; fileRef = 61722BD4220E455400D7BA9A /* TWBitcoinProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61722BD9220E455500D7BA9A /* TWBinanceProto.h in Headers */ = {isa = PBXBuildFile; fileRef = 61722BD5220E455400D7BA9A /* TWBinanceProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -524,6 +541,23 @@
 		616F8796222F2CA00007ECA3 /* BinaryCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryCoding.h; sourceTree = "<group>"; };
 		616F8799222F2CB90007ECA3 /* Curve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Curve.swift; sourceTree = "<group>"; };
 		616F879B222F3EFC0007ECA3 /* TWCoinType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWCoinType.cpp; sourceTree = "<group>"; };
+		616F879D223041710007ECA3 /* TWNimiqProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWNimiqProto.h; sourceTree = "<group>"; };
+		616F879E223041710007ECA3 /* TWNimiqAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWNimiqAddress.h; sourceTree = "<group>"; };
+		616F879F223041710007ECA3 /* TWNimiqSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWNimiqSigner.h; sourceTree = "<group>"; };
+		616F87A6223041970007ECA3 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
+		616F87A7223041970007ECA3 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
+		616F87A8223041970007ECA3 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transaction.cpp; sourceTree = "<group>"; };
+		616F87A9223041970007ECA3 /* Signer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signer.cpp; sourceTree = "<group>"; };
+		616F87AA223041970007ECA3 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transaction.h; sourceTree = "<group>"; };
+		616F87AB223041970007ECA3 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
+		616F87B2223041B00007ECA3 /* Nimiq.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Nimiq.pb.h; sourceTree = "<group>"; };
+		616F87B3223041B00007ECA3 /* Nimiq.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Nimiq.pb.cc; sourceTree = "<group>"; };
+		616F87B6223041C10007ECA3 /* NimiqAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NimiqAddress.swift; sourceTree = "<group>"; };
+		616F87B7223041C10007ECA3 /* Nimiq.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Nimiq.pb.swift; sourceTree = "<group>"; };
+		616F87B8223041C10007ECA3 /* NimiqSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NimiqSigner.swift; sourceTree = "<group>"; };
+		616F87BC223041F30007ECA3 /* Nimq.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nimq.swift; sourceTree = "<group>"; };
+		616F87BE223044830007ECA3 /* TWNimiqAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWNimiqAddress.cpp; sourceTree = "<group>"; };
+		616F87BF223044860007ECA3 /* TWNimiqSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWNimiqSigner.cpp; sourceTree = "<group>"; };
 		61722BD3220E455400D7BA9A /* TWZcashTransactionSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWZcashTransactionSigner.h; sourceTree = "<group>"; };
 		61722BD4220E455400D7BA9A /* TWBitcoinProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBitcoinProto.h; sourceTree = "<group>"; };
 		61722BD5220E455400D7BA9A /* TWBinanceProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBinanceProto.h; sourceTree = "<group>"; };
@@ -1053,6 +1087,8 @@
 				61E4446C221CD8C0006A4FF1 /* Ethereum.pb.h */,
 				61E813D02227213500D4D2C9 /* Icon.pb.cc */,
 				61E813CF2227213500D4D2C9 /* Icon.pb.h */,
+				616F87B3223041B00007ECA3 /* Nimiq.pb.cc */,
+				616F87B2223041B00007ECA3 /* Nimiq.pb.h */,
 				BB2422D522217B4D000663D0 /* Ripple.pb.cc */,
 				BB2422D622217B4D000663D0 /* Ripple.pb.h */,
 				61C4E8C62225C43D0020A917 /* Tron.pb.cc */,
@@ -1061,6 +1097,19 @@
 				61FE4B4322208E5000C65017 /* VeChain.pb.h */,
 			);
 			path = proto;
+			sourceTree = "<group>";
+		};
+		616F87A5223041970007ECA3 /* Nimiq */ = {
+			isa = PBXGroup;
+			children = (
+				616F87A6223041970007ECA3 /* Address.h */,
+				616F87A7223041970007ECA3 /* Address.cpp */,
+				616F87A8223041970007ECA3 /* Transaction.cpp */,
+				616F87A9223041970007ECA3 /* Signer.cpp */,
+				616F87AA223041970007ECA3 /* Transaction.h */,
+				616F87AB223041970007ECA3 /* Signer.h */,
+			);
+			path = Nimiq;
 			sourceTree = "<group>";
 		};
 		617358DC219DF042007BF637 /* src */ = {
@@ -1082,6 +1131,7 @@
 				61AAD39D21DEF6EB00B69A34 /* HexCoding.h */,
 				61E813C22227211A00D4D2C9 /* Icon */,
 				61B159B321CC5DBB00CFE93B /* interface */,
+				616F87A5223041970007ECA3 /* Nimiq */,
 				61B159B021CC5DBB00CFE93B /* PrivateKey.cpp */,
 				61B159B221CC5DBB00CFE93B /* PrivateKey.h */,
 				61376FDB220CE38900573D0F /* proto */,
@@ -1143,6 +1193,9 @@
 				61E813B4222720EB00D4D2C9 /* TWIconProto.h */,
 				61E813B3222720EB00D4D2C9 /* TWIconSigner.h */,
 				61CABABA21ED41E50086D9A0 /* TWKeyDerivation.h */,
+				616F879E223041710007ECA3 /* TWNimiqAddress.h */,
+				616F879D223041710007ECA3 /* TWNimiqProto.h */,
+				616F879F223041710007ECA3 /* TWNimiqSigner.h */,
 				61CABAC721ED781A0086D9A0 /* TWP2PKHPrefix.h */,
 				61CABACB21ED781B0086D9A0 /* TWP2SHPrefix.h */,
 				617358E1219DF043007BF637 /* TWPrivateKey.h */,
@@ -1432,6 +1485,9 @@
 				61E813BD2227210500D4D2C9 /* IconAddressType.swift */,
 				61E813BA2227210500D4D2C9 /* IconSigner.swift */,
 				61CABABE21ED41FB0086D9A0 /* KeyDerivation.swift */,
+				616F87B7223041C10007ECA3 /* Nimiq.pb.swift */,
+				616F87B6223041C10007ECA3 /* NimiqAddress.swift */,
+				616F87B8223041C10007ECA3 /* NimiqSigner.swift */,
 				61CABAD421ED782D0086D9A0 /* P2PKHPrefix.swift */,
 				61CABAD221ED782D0086D9A0 /* P2SHPrefix.swift */,
 				61735AD1219DF044007BF637 /* PrivateKey.swift */,
@@ -1520,6 +1576,7 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
+				616F87BF223044860007ECA3 /* TWNimiqSigner.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				61AAD3A221DEF70800B69A34 /* TWBase58.cpp */,
 				61722C01220E461A00D7BA9A /* TWBech32Address.cpp */,
@@ -1540,6 +1597,7 @@
 				61E813CB2227212600D4D2C9 /* TWIconAddress.cpp */,
 				61E813CC2227212600D4D2C9 /* TWIconSigner.cpp */,
 				61CABABC21ED41F20086D9A0 /* TWKeyDerivation.cpp */,
+				616F87BE223044830007ECA3 /* TWNimiqAddress.cpp */,
 				61B159BA21CC5DBB00CFE93B /* TWPrivateKey.cpp */,
 				61B159B721CC5DBB00CFE93B /* TWPublicKey.cpp */,
 				BB211056221C035F00571DF7 /* TWRippleAddress.cpp */,
@@ -1606,6 +1664,7 @@
 				61C4E8D022260B140020A917 /* Wanchain.swift */,
 				61C4E8CE22260B140020A917 /* Zcash.swift */,
 				61C4E8D622260B140020A917 /* Zcoin.swift */,
+				616F87BC223041F30007ECA3 /* Nimq.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -1924,7 +1983,9 @@
 				61977CC721C9B9D000C385D5 /* TWBitcoinCashAddress.h in Headers */,
 				61735AED219DF044007BF637 /* memzero.h in Headers */,
 				61C4E8B52225C3A20020A917 /* TWTronSigner.h in Headers */,
+				616F87A1223041710007ECA3 /* TWNimiqAddress.h in Headers */,
 				61735AEF219DF044007BF637 /* blake2s.h in Headers */,
+				616F87B1223041970007ECA3 /* Signer.h in Headers */,
 				61CABAB521ED36F50086D9A0 /* TWAES.h in Headers */,
 				61735AF2219DF044007BF637 /* ed25519-donna-basepoint-table.h in Headers */,
 				61C4E8C72225C43E0020A917 /* Tron.pb.h in Headers */,
@@ -1992,6 +2053,7 @@
 				61735B0D219DF044007BF637 /* poly1305-donna.h in Headers */,
 				61CABAEB21F010160086D9A0 /* Amount.h in Headers */,
 				61722BF6220E45BA00D7BA9A /* Common.pb.h in Headers */,
+				616F87B4223041B00007ECA3 /* Nimiq.pb.h in Headers */,
 				61735C41219DF044007BF637 /* xmr.h in Headers */,
 				61E44469221CD4CA006A4FF1 /* TWEthereumSigner.h in Headers */,
 				61E813B8222720EB00D4D2C9 /* TWIconProto.h in Headers */,
@@ -2006,6 +2068,7 @@
 				61735BFE219DF044007BF637 /* script.h in Headers */,
 				BB2422E222217B58000663D0 /* Transaction.h in Headers */,
 				61735C32219DF044007BF637 /* options.h in Headers */,
+				616F87B0223041970007ECA3 /* Transaction.h in Headers */,
 				61735C1E219DF044007BF637 /* ed25519-keccak.h in Headers */,
 				61722BD7220E455500D7BA9A /* TWZcashTransactionSigner.h in Headers */,
 				61E44468221CD4CA006A4FF1 /* TWEthereumProto.h in Headers */,
@@ -2014,6 +2077,7 @@
 				61B159C121CC5DBB00CFE93B /* TransactionInput.h in Headers */,
 				61735C76219DF044007BF637 /* rfc7539.h in Headers */,
 				61735AFE219DF044007BF637 /* base32.h in Headers */,
+				616F87AC223041970007ECA3 /* Address.h in Headers */,
 				61735B0F219DF044007BF637 /* ecrypt-sync.h in Headers */,
 				BB2422DE22217B58000663D0 /* Signer.h in Headers */,
 				61722BD8220E455500D7BA9A /* TWBitcoinProto.h in Headers */,
@@ -2027,6 +2091,7 @@
 				61722C11220E463500D7BA9A /* HDWallet.h in Headers */,
 				61BA0A6B21F6C929005680E6 /* TWBinanceSigner.h in Headers */,
 				61735AEA219DF044007BF637 /* ripemd160.h in Headers */,
+				616F87A0223041710007ECA3 /* TWNimiqProto.h in Headers */,
 				61735AEE219DF044007BF637 /* base58.h in Headers */,
 				61B159DF21CC5DBB00CFE93B /* PrivateKey.h in Headers */,
 				61CABACC21ED781B0086D9A0 /* TWHDVersion.h in Headers */,
@@ -2062,6 +2127,7 @@
 				61CABAD021ED781B0086D9A0 /* TWHRP.h in Headers */,
 				61CABACD21ED781B0086D9A0 /* TWP2PKHPrefix.h in Headers */,
 				BB158447220AADF800657CDA /* TransactionBuilder.h in Headers */,
+				616F87A2223041710007ECA3 /* TWNimiqSigner.h in Headers */,
 				61735AD5219DF044007BF637 /* TWPrivateKey.h in Headers */,
 				61735AEB219DF044007BF637 /* ed25519-donna.h in Headers */,
 				61735C4F219DF044007BF637 /* rc4.h in Headers */,
@@ -2313,6 +2379,7 @@
 				61BA0A7221F6C9D9005680E6 /* Signer.cpp in Sources */,
 				61E4446B221CD674006A4FF1 /* TWEthereumSigner.cpp in Sources */,
 				61C4E8C82225C43E0020A917 /* Tron.pb.cc in Sources */,
+				616F87AE223041970007ECA3 /* Transaction.cpp in Sources */,
 				BB211057221C035F00571DF7 /* TWRippleAddress.cpp in Sources */,
 				61E4446F221CD8C0006A4FF1 /* Ethereum.pb.cc in Sources */,
 				61CABADB21ED782E0086D9A0 /* Purpose.swift in Sources */,
@@ -2345,6 +2412,7 @@
 				61C4E8F222260B150020A917 /* WanchainAddress.swift in Sources */,
 				61735BFF219DF044007BF637 /* rand.c in Sources */,
 				61722BF5220E45BA00D7BA9A /* Bitcoin.pb.cc in Sources */,
+				616F87C1223044860007ECA3 /* TWNimiqSigner.cpp in Sources */,
 				61B159E421CC5DBB00CFE93B /* TWHash.cpp in Sources */,
 				61E814382227594F00D4D2C9 /* PrivateKeyExtension.swift in Sources */,
 				61735BFC219DF044007BF637 /* hasher.c in Sources */,
@@ -2375,7 +2443,9 @@
 				61C4E8E622260B150020A917 /* BitcoinCash.swift in Sources */,
 				61735C11219DF044007BF637 /* curve25519-donna-helpers.c in Sources */,
 				61C4E92E22261A1A0020A917 /* Icon.swift in Sources */,
+				616F87AD223041970007ECA3 /* Address.cpp in Sources */,
 				61B159DD21CC5DBB00CFE93B /* PrivateKey.cpp in Sources */,
+				616F87B5223041B00007ECA3 /* Nimiq.pb.cc in Sources */,
 				61E44465221CD4B3006A4FF1 /* EthereumSigner.swift in Sources */,
 				61735C12219DF044007BF637 /* ed25519-keccak.c in Sources */,
 				61735C57219DF044007BF637 /* blake2b.c in Sources */,
@@ -2387,6 +2457,7 @@
 				61735C75219DF044007BF637 /* chacha_merged.c in Sources */,
 				61735C47219DF044007BF637 /* xmr.c in Sources */,
 				61E813EA2227562D00D4D2C9 /* PublicKey+Bitcoin.swift in Sources */,
+				616F87BA223041C10007ECA3 /* Nimiq.pb.swift in Sources */,
 				61735C58219DF044007BF637 /* script.c in Sources */,
 				61C4E8F922260B150020A917 /* BitcoinCashAddressExtension.swift in Sources */,
 				61C4E8E422260B150020A917 /* Bitcoin.swift in Sources */,
@@ -2442,6 +2513,7 @@
 				61735C39219DF044007BF637 /* ripemd160.c in Sources */,
 				61977CCF21C9B9EF00C385D5 /* BitcoinAddress.swift in Sources */,
 				61CABAD721ED782E0086D9A0 /* P2SHPrefix.swift in Sources */,
+				616F87AF223041970007ECA3 /* Signer.cpp in Sources */,
 				61735C1F219DF044007BF637 /* modm-donna-32bit.c in Sources */,
 				61A9B2FD21FB855E00E601B3 /* AddressChecksum.cpp in Sources */,
 				61722BF3220E45BA00D7BA9A /* Common.pb.cc in Sources */,
@@ -2474,13 +2546,16 @@
 				61722C0A220E461A00D7BA9A /* TWBinanceSigner.cpp in Sources */,
 				61735C63219DF044007BF637 /* sha3.c in Sources */,
 				61AAD3A321DEF70800B69A34 /* TWBase58.cpp in Sources */,
+				616F87BD223041F30007ECA3 /* Nimq.swift in Sources */,
 				61FE4B19221F64B200C65017 /* EthereumAddress.swift in Sources */,
 				BB211062221C045000571DF7 /* RippleAddress.swift in Sources */,
+				616F87C0223044860007ECA3 /* TWNimiqAddress.cpp in Sources */,
 				BB3F05B2220BD93E008C6971 /* TAddress.cpp in Sources */,
 				61B159E521CC5DBB00CFE93B /* TWPrivateKey.cpp in Sources */,
 				61CABABD21ED41F20086D9A0 /* TWKeyDerivation.cpp in Sources */,
 				6198EA6521B59575008CB60A /* String.swift in Sources */,
 				61735BF3219DF044007BF637 /* hmac.c in Sources */,
+				616F87BB223041C10007ECA3 /* NimiqSigner.swift in Sources */,
 				6198EA8C21B811CD008CB60A /* Bech32Address.swift in Sources */,
 				61735BFA219DF044007BF637 /* base32.c in Sources */,
 				61735C09219DF044007BF637 /* curves.c in Sources */,
@@ -2496,6 +2571,7 @@
 				61735C7E219DF044007BF637 /* poly1305-donna.c in Sources */,
 				61E813CD2227212600D4D2C9 /* TWIconAddress.cpp in Sources */,
 				61E813C92227211B00D4D2C9 /* Signer.cpp in Sources */,
+				616F87B9223041C10007ECA3 /* NimiqAddress.swift in Sources */,
 				616F879A222F2CB90007ECA3 /* Curve.swift in Sources */,
 				61C4E8EB22260B150020A917 /* Tron.swift in Sources */,
 				61A9B3632200D85A00E601B3 /* Address.cpp in Sources */,
