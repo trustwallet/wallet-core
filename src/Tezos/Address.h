@@ -40,3 +40,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 }} // namespace
+
+/// Wrapper for C interface.
+struct TWTezosAddress {
+    TW::Tezos::Address impl;
+};

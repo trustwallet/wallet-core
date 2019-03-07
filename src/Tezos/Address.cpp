@@ -5,13 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+
 #include "../HexCoding.h"
 #include "../Hash.h"
 
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
-using namespace TW;
 using namespace TW::Tezos;
 
 bool Address::isValid(const std::string& string) {
