@@ -33,7 +33,7 @@ struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnu
     return new TWTezosAddress{ std::move(address) };
 }
 
-struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
+struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
     std::vector<uint8_t> data;
     if (TWPublicKeyIsCompressed(publicKey)) {
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
