@@ -23,7 +23,7 @@ class IconAddressTests: XCTestCase {
 
     func testFromPrivateKey() {
         let privateKey = PrivateKey(data: Data(hexString: "94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f")!)!
-        let address = IconAddress(publicKey: privateKey.getPublicKey(compressed: false), type: .address)
+        let address = IconAddress(publicKey: privateKey.getPublicKeySecp256k1(compressed: false), type: .address)
         XCTAssertEqual(address.description, "hx98c0832ca5bd8e8bf355ca9491888aa9725c2c48")
     }
 

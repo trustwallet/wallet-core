@@ -27,6 +27,23 @@ jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreate(JNIEnv 
     return (jlong) instance;
 }
 
+jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreateWithPlan(JNIEnv *env, jclass thisClass, jobject input, jobject plan) {
+    jclass inputClass = (*env)->GetObjectClass(env, input);
+    jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
+    jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
+    TWData *inputData = TWDataCreateWithJByteArray(env, inputByteArray);
+    jclass planClass = (*env)->GetObjectClass(env, plan);
+    jmethodID planToByteArrayMethodID = (*env)->GetMethodID(env, planClass, "toByteArray", "()[B");
+    jbyteArray planByteArray = (*env)->CallObjectMethod(env, plan, planToByteArrayMethodID);
+    TWData *planData = TWDataCreateWithJByteArray(env, planByteArray);
+    struct TWBitcoinTransactionSigner *instance = TWBitcoinTransactionSignerCreateWithPlan(inputData, planData);
+    (*env)->DeleteLocalRef(env, inputByteArray);
+    (*env)->DeleteLocalRef(env, inputClass);
+    (*env)->DeleteLocalRef(env, planByteArray);
+    (*env)->DeleteLocalRef(env, planClass);
+    return (jlong) instance;
+}
+
 void JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
     TWBitcoinTransactionSignerDelete((struct TWBitcoinTransactionSigner *) handle);
 }

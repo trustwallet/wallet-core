@@ -6,6 +6,8 @@
 
 #include <TrustWalletCore/TWBitcoinCashAddress.h>
 
+#include "../PublicKey.h"
+
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
@@ -63,10 +65,10 @@ bool TWBitcoinCashAddressInitWithData(struct TWBitcoinCashAddress *_Nonnull addr
     return true;
 }
 
-void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull address, struct TWPublicKey publicKey) {
+void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey) {
     uint8_t payload[21];
     payload[0] = 0;
-    ecdsa_get_pubkeyhash(publicKey.bytes, HASHER_SHA2_RIPEMD, payload + 1);
+    ecdsa_get_pubkeyhash(publicKey->impl.bytes.data(), HASHER_SHA2_RIPEMD, payload + 1);
 
     size_t outlen = 0;
     cash_addr_to_data(address->bytes, &outlen, payload, 21);

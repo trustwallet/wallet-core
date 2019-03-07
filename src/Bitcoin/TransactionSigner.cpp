@@ -182,13 +182,13 @@ Result<std::vector<Data>> TransactionSigner<Transaction>::signStep(Script script
             return Result<std::vector<Data>>::failure("Missing private key.");
         }
 
-        auto pubkey = PrivateKey(key).getPublicKey(true);
+        auto pubkey = PrivateKey(key).getPublicKey(PublicKeyType::secp256k1);
         auto signature = createSignature(transactionToSign, script, key, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>>::failure("Failed to sign.");
         }
-        return Result<std::vector<Data>>::success({signature, pubkey});
+        return Result<std::vector<Data>>::success({signature, pubkey.bytes});
     } else {
         // Error: Invalid output script
         return Result<std::vector<Data>>::failure("Invalid output script.");
@@ -199,7 +199,7 @@ template<typename Transaction>
 Data TransactionSigner<Transaction>::createSignature(const Transaction& transaction, const Script& script, const Data& key, size_t index, Amount amount, uint32_t version) {
     auto sighash = transaction.getSignatureHash(script, index, input.hash_type(), amount, static_cast<TWBitcoinSignatureVersion>(version));
     auto pk = PrivateKey(key);
-    auto sig = pk.signAsDER(Data(begin(sighash), end(sighash)));
+    auto sig = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
     if (sig.empty()) {
         return {};
     }
@@ -235,8 +235,8 @@ Data TransactionSigner<Transaction>::pushAll(const std::vector<Data>& results) {
 template<typename Transaction>
 Data TransactionSigner<Transaction>::keyForPublicKeyHash(const Data& hash) const {
     for (auto& key : input.private_key()) {
-        auto publicKey = PrivateKey(key).getPublicKey(true);
-        auto keyHash = TW::Hash::ripemd(TW::Hash::sha256(publicKey));
+        auto publicKey = PrivateKey(key).getPublicKey(PublicKeyType::secp256k1);
+        auto keyHash = TW::Hash::ripemd(TW::Hash::sha256(publicKey.bytes));
         if (std::equal(std::begin(keyHash), std::end(keyHash), std::begin(hash), std::end(hash))) {
             return Data(key.begin(), key.end());
         }

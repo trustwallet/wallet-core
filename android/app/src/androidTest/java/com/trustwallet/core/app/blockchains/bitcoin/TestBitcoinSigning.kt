@@ -7,6 +7,9 @@ import wallet.core.jni.BitcoinTransactionSigner
 import wallet.core.jni.proto.Bitcoin
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import wallet.core.jni.CoinType
+import wallet.core.jni.Curve
+import wallet.core.jni.Purpose
 
 class TestBitcoinSigning {
 

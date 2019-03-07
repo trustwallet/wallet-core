@@ -25,6 +25,18 @@ public final class BitcoinTransactionSigner {
         rawValue = TWBitcoinTransactionSignerCreate(inputData)
     }
 
+    public init(input: TW_Bitcoin_Proto_SigningInput, plan: TW_Bitcoin_Proto_TransactionPlan) {
+        let inputData = TWDataCreateWithNSData(try! input.serializedData())
+        defer {
+            TWDataDelete(inputData)
+        }
+        let planData = TWDataCreateWithNSData(try! plan.serializedData())
+        defer {
+            TWDataDelete(planData)
+        }
+        rawValue = TWBitcoinTransactionSignerCreateWithPlan(inputData, planData)
+    }
+
     deinit {
         TWBitcoinTransactionSignerDelete(rawValue)
     }

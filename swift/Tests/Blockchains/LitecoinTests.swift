@@ -11,18 +11,18 @@ class LitecoinTests: XCTestCase {
     func testAddress() {
         let litcoin = Litecoin()
         let privateKey1 = PrivateKey(wif: "T8VERgAiBcUnRXmWxgVzp6AaH1hKwPQQQeghi3n9ZY6nF59GuTJf")!
-        let publicKey1 = privateKey1.getPublicKey(compressed: true)
+        let publicKey1 = privateKey1.getPublicKeySecp256k1(compressed: true)
 
         let legacyAddress = litcoin.legacyAddress(for: publicKey1)
         XCTAssertEqual(LitecoinAddress(string: "LV7LV7Z4bWDEjYkfx9dQo6k6RjGbXsg6hS")!.description, legacyAddress.description)
 
         let privateKey2 = PrivateKey(wif: "TBKynom8diHvD7TzpURLY2EHP6MbR7iYiaD6fGPiTB5pHbxSNXgH")!
-        let publicKey2 = privateKey2.getPublicKey(compressed: true)
+        let publicKey2 = privateKey2.getPublicKeySecp256k1(compressed: true)
         let compatibleAddress = litcoin.compatibleAddress(for: publicKey2)
         XCTAssertEqual(LitecoinAddress(string: "M8eTgzhoFTErAjkGa6cyBomcHfxAprbDgD")!.description, compatibleAddress.description)
 
         let privateKey3 = PrivateKey(wif: "T5w6v6RpidKc8JMMcRDi6f6xTaEVV52LG2W73mCVesA4ZGWef2xA")!
-        let publicKey3 = privateKey3.getPublicKey(compressed: true)
+        let publicKey3 = privateKey3.getPublicKeySecp256k1(compressed: true)
         let bech32Address = litcoin.address(for: publicKey3)
         XCTAssertEqual(LitecoinBech32Address(string: "ltc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asjnaxwu")!.description, bech32Address.description)
     }
@@ -41,21 +41,21 @@ class LitecoinTests: XCTestCase {
         let wallet = testWallet
 
         // .bip44
-        let lptv = wallet.getExtendedPrivateKey(for: .bip44, coin: .litecoin, version: .ltpv)
-        let ltub = wallet.getExtendedPubKey(for: .bip44, coin: .litecoin, version: .ltub)
+        let lptv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .litecoin, version: .ltpv)
+        let ltub = wallet.getExtendedPubKey(purpose: .bip44, coin: .litecoin, version: .ltub)
 
         XCTAssertEqual(lptv, "Ltpv77Tkf73NsKY3NQWVr6sHXeDQHWV6EVBXStcyxfnwEVebFuz1URxi16SBzj4v7n3mSYh8PQXhSFM2aXNFdx8bvWBLZGXeik3UQXeXn5vudGj")
         XCTAssertEqual(ltub, "Ltub2Ye6FtTv7U4zzHDL6iMfcE3cj5BHJjkBXQj1deZEAgSBrHB5oM191hYTF8BC34r7vRDGng59yfP6FH4m3nttc3TLDg944G8QK7d5NnygCRu")
 
         // .bip49
-        let mtpv = wallet.getExtendedPrivateKey(for: .bip49, coin: .litecoin, version: .mtpv)
-        let mtub = wallet.getExtendedPubKey(for: .bip49, coin: .litecoin, version: .mtub)
+        let mtpv = wallet.getExtendedPrivateKey(purpose: .bip49, coin: .litecoin, version: .mtpv)
+        let mtub = wallet.getExtendedPubKey(purpose: .bip49, coin: .litecoin, version: .mtub)
         XCTAssertEqual(mtpv, "Mtpv7SPQ3PnRFU5yMidTBbXKxb6pgrE1Ny1yVssVvTz8VLDppPrhdydSaoMp6fm58VbtBTrVZVacMrSUim44RccBLu8NFAqj7ZaB5JBzb8cgQHp")
         XCTAssertEqual(mtub, "Mtub2sZjeBCxVccvybLHSD1i3Aw38QvCTDadaPyXbSkRRX1RQm3mxtfsbQU5M3PdCSP4xAFHCceEQ3FmQF69Du2wbcmebt3CaWAGALBSe8c4Gvw")
 
         // .bip84
-        let zprv = wallet.getExtendedPrivateKey(for: .bip84, coin: .litecoin, version: .zprv)
-        let zpub = wallet.getExtendedPubKey(for: .bip84, coin: .litecoin, version: .zpub)
+        let zprv = wallet.getExtendedPrivateKey(purpose: .bip84, coin: .litecoin, version: .zprv)
+        let zpub = wallet.getExtendedPubKey(purpose: .bip84, coin: .litecoin, version: .zpub)
         XCTAssertEqual(zprv, "zprvAeCuQd5okFvvK1oeAQEPtgtPd5feXtcmszyCDK8HUPob28R79tUgtpCga79KgtDkUBn72AMig5NNzUCFY1JeRsZcEitDVEYuB48uHt2YEDB")
         XCTAssertEqual(zpub, "zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs")
     }
