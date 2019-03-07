@@ -43,7 +43,7 @@ TEST(TezosAddress, isInvalid) {
       "1tzeZwq8b5cvE2bPKokatLkVMzkxz24zAAAAA"  // Invalid prefix, invalid checksum
     };
 
-    for (auto& address : invalidAddresses) {
+    for (std::string address : invalidAddresses) {
         ASSERT_FALSE(Address::isValid(address));
     }
 }

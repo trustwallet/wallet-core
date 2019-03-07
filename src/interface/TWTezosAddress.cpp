@@ -19,7 +19,7 @@ using namespace TW;
 using namespace TW::Tezos;
 
 bool TWTezosAddressEqual(struct TWTezosAddress *_Nonnull lhs, struct TWTezosAddress *_Nonnull rhs) {
-   return lhs->impl == rhs->impl;
+    return lhs->impl == rhs->impl;
 }
 
 bool TWTezosAddressIsValidString(TWString *_Nonnull string) {
