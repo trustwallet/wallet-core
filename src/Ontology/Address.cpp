@@ -16,16 +16,6 @@
 
 using namespace TW::Ontology;
 
-std::vector<uint8_t> Address::ripemd160(std::vector<uint8_t> &data) {
-    uint8_t digest[RIPEMD160_DIGEST_LENGTH];
-    RIPEMD160_CTX ctx;
-    ripemd160_Init(&ctx);
-    ripemd160_Update(&ctx, &data[0], (uint32_t) data.size());
-    ripemd160_Final(&ctx, digest);
-    std::vector<uint8_t> uc_vec(&digest[0], &digest[RIPEMD160_DIGEST_LENGTH]);
-    return uc_vec;
-}
-
 Address::Address(const PublicKey &publicKey) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
     std::vector<uint8_t> builder(publicKey.bytes);
@@ -67,8 +57,7 @@ Address::Address(const std::vector<uint8_t> &data) {
 }
 
 std::vector<uint8_t> Address::toScriptHash(std::vector<uint8_t> &data) {
-    auto hash256 = Hash::sha256(data);
-    return ripemd160(hash256);
+    return Hash::ripemd(Hash::sha256(data));
 }
 
 bool Address::isValid(const std::string &string) {
