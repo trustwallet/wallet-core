@@ -12,15 +12,15 @@ using namespace TW;
 using namespace TW::Tezos;
 
 PublicKey::PublicKey(const std::string& pkey) {
-  public_key = pkey;
+    public_key = pkey;
 }
 
 std::string PublicKey::forge() const {
-  size_t prefixLength = 4;
-  uint8_t prefix[] = {13, 15, 37, 217};
-  size_t capacity = 128;
-  uint8_t decoded[capacity];
-  int decodedLength = checkDecodeAndDropPrefix(public_key, prefixLength, prefix, decoded);
+    size_t prefixLength = 4;
+    uint8_t prefix[] = {13, 15, 37, 217};
+    size_t capacity = 128;
+    uint8_t decoded[capacity];
+    int decodedLength = checkDecodeAndDropPrefix(public_key, prefixLength, prefix, decoded);
 
-  return "00" + hex(decoded, decoded + decodedLength);
+    return "00" + hex(decoded, decoded + decodedLength);
 }

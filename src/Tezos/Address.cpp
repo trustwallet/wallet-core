@@ -15,25 +15,24 @@
 
 using namespace TW::Tezos;
 
-
 std::string Address::forge() const {
-  std::string result = "";
-  if (public_key_hash[0] == 'K') {
-    size_t prefixLength = 3;
-    uint8_t prefix[3] = {2, 90, 121};
-    size_t capacity = 128;
-    uint8_t decoded[capacity];
+    std::string result = "";
+    if (public_key_hash[0] == 'K') {
+        size_t prefixLength = 3;
+        uint8_t prefix[3] = {2, 90, 121};
+        size_t capacity = 128;
+        uint8_t decoded[capacity];
 
-    int decodedLength = checkDecodeAndDropPrefix(public_key_hash, prefixLength, prefix, decoded);
-    result += "01";
-    result += TW::hex(decoded, decoded + decodedLength);
-    result += "00";
-  } else {
-    // tz1 address
-    result += "00";
-    result += forgePublicKeyHash(public_key_hash);
-  }
-  return result;
+        int decodedLength = checkDecodeAndDropPrefix(public_key_hash, prefixLength, prefix, decoded);
+        result += "01";
+        result += TW::hex(decoded, decoded + decodedLength);
+        result += "00";
+    } else {
+        // tz1 address
+        result += "00";
+        result += forgePublicKeyHash(public_key_hash);
+    }
+    return result;
 }
 
 bool Address::isValid(const std::string& string) {

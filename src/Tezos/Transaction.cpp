@@ -16,45 +16,45 @@ using namespace TW::Tezos;
 
 // Forge the given zarith hash into a hex encoded string.
 std::string forgeZarith(int input) {
-  std::string result = "";
-  while (true) {
-    if (input < 128) {
-      if (input < 16) {
-        result += "0";
-      }
-      std::stringstream ss;
-      ss << std::hex << input;
-      result += ss.str();
-      break;
-    } else {
-      int b = input % 128;
-      input -= b;
-      input /= 128;
-      b += 128;
-      std::stringstream ss;
-      ss << std::hex << b;
-      result += ss.str();
+    std::string result = "";
+    while (true) {
+        if (input < 128) {
+            if (input < 16) {
+                result += "0";
+            }
+            std::stringstream ss;
+            ss << std::hex << input;
+            result += ss.str();
+            break;
+        } else {
+            int b = input % 128;
+            input -= b;
+            input /= 128;
+            b += 128;
+            std::stringstream ss;
+            ss << std::hex << b;
+            result += ss.str();
+        }
     }
-  }
-  return result;
+    return result;
 }
 
 string Transaction::forge() {
-  auto forgedSource = source.forge();
-  auto forgedFee = forgeZarith(fee);
-  auto forgedCounter = forgeZarith(counter);
-  auto forgedGasLimit = forgeZarith(gas_limit);
-  auto forgedStorageLimit = forgeZarith(storage_limit);
+    auto forgedSource = source.forge();
+    auto forgedFee = forgeZarith(fee);
+    auto forgedCounter = forgeZarith(counter);
+    auto forgedGasLimit = forgeZarith(gas_limit);
+    auto forgedStorageLimit = forgeZarith(storage_limit);
 
-  if (kind == OperationKind::REVEAL) {
-    auto forgedPublicKey = std::get<PublicKey>(destination_or_public_key).forge();
+    if (kind == OperationKind::REVEAL) {
+        auto forgedPublicKey = std::get<PublicKey>(destination_or_public_key).forge();
 
-    return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
-        + forgedStorageLimit + forgedPublicKey;
-  }
-  auto forgedAmount = forgeZarith(amount);
-  auto forgedDestination = std::get<Address>(destination_or_public_key).forge();
+        return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+            + forgedStorageLimit + forgedPublicKey;
+    }
+    auto forgedAmount = forgeZarith(amount);
+    auto forgedDestination = std::get<Address>(destination_or_public_key).forge();
 
-  return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
-      + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
+    return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+        + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
 }
