@@ -9,8 +9,6 @@
 #include "PublicKey.h"
 #include "Tendermint/Address.h"
 
-#include "../TWTestUtilities.h"
-
 #include <gtest/gtest.h>
 #include <TrustWalletCore/TWHDWallet.h>
 

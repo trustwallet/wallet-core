@@ -21,13 +21,13 @@ Reason:
 <!-- Sample Checklist -->
 
 - [ ] Coin configuration
-- - [ ] coin type / decimals
-- - [ ] recommended tx block explorer
-- - [ ] Added to switch statements in `src/interface/TWCoinType.cpp`
+- - [ ] Add coin type / decimals
+- - [ ] Recommended tx block explorer
+- - [ ] Return correct curve and purpose in `src/interface/TWCoinType.cpp`.
 - [ ] Address
-- - [ ] derived from bip39 phrases
-- - [ ] from public key / string
-- - [ ] validation
+- - [ ] Derivation from bip39 phrases
+- - [ ] Derivation from public key / string
+- - [ ] Implement address validation and conversion in `src/Addres.cpp`.
 - [ ] Transaction
 - - [ ] serialization / encoding
 - [ ] Signer

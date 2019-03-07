@@ -19,4 +19,7 @@ namespace TW {
 /// should always be stored and transfered in their encoded string format.
 std::string loadAddress(const Data& data, TWCoinType coin);
 
+/// Validates an address for a particular coin.
+bool validate(const std::string& address, TWCoinType coin);
+
 } // namespace

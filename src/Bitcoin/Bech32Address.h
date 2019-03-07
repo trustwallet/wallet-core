@@ -30,6 +30,9 @@ public:
     /// Determines whether a string makes a valid Bech32 address.
     static bool isValid(const std::string& string);
 
+    /// Determines whether a string makes a valid Bech32 address, and the HRP matches.
+    static bool isValid(const std::string& string, const std::string& hrp);
+
     /// Initializes a Bech32 address with a human-readable part, a witness version, and a witness program.
     Bech32Address(const std::string& hrp, int witver, const std::vector<uint8_t>& witprog) : hrp(hrp), witnessVersion(witver), witnessProgram(witprog) {}
 
