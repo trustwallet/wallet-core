@@ -29,8 +29,11 @@ public:
         return data.size() == size;
     }
 
-    /// Determines whether a string makes a valid  address.
+    /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
+
+    /// Determines whether a string makes a valid address, and the prefix matches.
+    static bool isValid(const std::string& string, const std::string& prefix);
 
     /// Initializes a  address with a string representation.
     Address(const std::string& string);
