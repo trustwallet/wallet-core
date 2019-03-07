@@ -31,8 +31,13 @@ std::string TW::loadAddress(const Data& data, TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(data).string();
 
+    case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypePoa:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
         return Ethereum::Address(data).string();
@@ -49,21 +54,16 @@ std::string TW::loadAddress(const Data& data, TWCoinType coin) {
     case TWCoinTypeRipple:
         return Ripple::Address(data).string();
 
+    case TWCoinTypeDash:
+    case TWCoinTypeTezos:
     case TWCoinTypeTron:
+    case TWCoinTypeZcoin:
         return Bitcoin::Address(data).string();
 
     case TWCoinTypeZcash:
         return Zcash::TAddress(data).string();
 
-    case TWCoinTypeCallisto:
-    case TWCoinTypeDash:
     case TWCoinTypeEOS:
-    case TWCoinTypeGo:
-    case TWCoinTypePoa:
-    case TWCoinTypeTezos:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeZcoin:
         return "";
     }
 }
