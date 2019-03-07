@@ -37,7 +37,7 @@ Address::Address(const std::string& string) {
     uint8_t buffer[capacity];
     int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
     if (size != Address::size) {
-      throw std::invalid_argument("Invalid address key data");
+        throw std::invalid_argument("Invalid address key data");
     }
     std::vector<uint8_t> vec(&buffer[0], &buffer[128]);
     auto str = TW::hex(vec);
@@ -45,24 +45,24 @@ Address::Address(const std::string& string) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-  auto publicKeySize = publicKey.isCompressed() ? publicKey.compressedSize : publicKey.uncompressedSize;
-  auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.begin() + publicKeySize);
-  auto hash = Hash::blake2b(encoded, 20);
-  auto addressData = Data({6, 161, 159});
-  append(addressData, hash);
-  if (addressData.size() != Address::size) {
-    throw std::invalid_argument("Invalid address key data");
-  }
-  std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
+    auto publicKeySize = publicKey.isCompressed() ? publicKey.compressedSize : publicKey.uncompressedSize;
+    auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.begin() + publicKeySize);
+    auto hash = Hash::blake2b(encoded, 20);
+    auto addressData = Data({6, 161, 159});
+    append(addressData, hash);
+    if (addressData.size() != Address::size) {
+        throw std::invalid_argument("Invalid address key data");
+    }
+    std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
 }
 
 std::string Address::string() const {
-  size_t size = 0;
-  b58enc(nullptr, &size, bytes.data(), Address::size);
-  size += 16;
+    size_t size = 0;
+    b58enc(nullptr, &size, bytes.data(), Address::size);
+    size += 16;
 
-  std::string str(size, ' ');
-  base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
+    std::string str(size, ' ');
+    base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
 
-  return std::string(str.c_str());
+    return std::string(str.c_str());
 }
