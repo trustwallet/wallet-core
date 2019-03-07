@@ -29,7 +29,10 @@ public class Tezos: Blockchain {
 
 extension TezosAddress: Address {
   public static func isValid(data: Data) -> Bool {
-    return true;
+    guard let stringRepresentation = String(data: data, encoding: .utf8) else {
+      return false
+    }
+    return TWTezosAddressIsValidString(stringRepresentation)
   }
 
   public var data: Data {
