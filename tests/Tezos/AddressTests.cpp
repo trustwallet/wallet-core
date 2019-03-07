@@ -22,9 +22,9 @@ TEST(TezosAddress, isValid) {
 }
 
 TEST(TezosAddress, string) {
-  auto addressString = "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM";
-  auto address = Address(addressString);
-  ASSERT_EQ(address.string(), addressString);
+    auto addressString = "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM";
+    auto address = Address(addressString);
+    ASSERT_EQ(address.string(), addressString);
 }
 
 TEST(TezosAddress, PublicKeyInit) {
@@ -34,7 +34,7 @@ TEST(TezosAddress, PublicKeyInit) {
 
     auto expected = "tz1STrmVM4Uk7HYAjCe8H3b7HE7rnBY2L4xk";
     ASSERT_EQ(address.string(), expected);
-  }
+}
 
 TEST(TezosAddress, isInvalid) {
     std::array<std::string, 3> invalidAddresses {
