@@ -11,7 +11,6 @@
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>
-#include <iostream>
 
 using namespace TW;
 using namespace TW::Tezos;

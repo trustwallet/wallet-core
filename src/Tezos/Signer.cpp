@@ -16,8 +16,6 @@
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/ed25519.h>
 
-#include <iostream>
-
 using namespace TW;
 using namespace TW::Tezos;
 
