@@ -8,15 +8,33 @@
 #include "Address.h"
 
 #include "../Bech32.h"
+
 #include <TrustWalletCore/TWHRP.h>
 #include <TrezorCrypto/ecdsa.h>
 
 using namespace TW::Tendermint;
-typedef std::vector<uint8_t> Data;
 
 bool Address::isValid(const std::string& addr) {
     auto dec = Bech32::decode(addr);
     if (dec.second.empty()) {
+        return false;
+    }
+
+    Data conv;
+    auto success = Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
+    if (!success || conv.size() < 2 || conv.size() > 40) {
+        return false;
+    }
+
+    return true;
+}
+
+bool Address::isValid(const std::string& addr, const std::string& hrp) {
+    auto dec = Bech32::decode(addr);
+    if (dec.second.empty()) {
+        return false;
+    }
+    if (dec.first != hrp) {
         return false;
     }
 

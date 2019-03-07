@@ -28,9 +28,6 @@ public:
     /// Initializes a Tezos address with a string representation.
     Address(const std::string& string);
 
-    /// Initializes a Tezos address with a collection of bytes.
-    Address(const std::vector<uint8_t>& data);
-
     /// Initializes a Tezos address with a public key.
     Address(const PublicKey& publicKey);
 
