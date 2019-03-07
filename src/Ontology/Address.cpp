@@ -16,21 +16,6 @@
 
 using namespace TW::Ontology;
 
-std::vector<uint8_t> Address::sha256(std::vector<uint8_t> &data) {
-    uint8_t digest[SHA256_DIGEST_LENGTH];
-    SHA256_CTX sha256_ctx;
-    sha256_Init(&sha256_ctx);
-    sha256_Update(&sha256_ctx, &data[0], data.size());
-    sha256_Final(&sha256_ctx, digest);
-    std::vector<uint8_t> uc_vec(&digest[0], &digest[SHA256_DIGEST_LENGTH]);
-    return uc_vec;
-}
-
-std::vector<uint8_t> Address::hash256(std::vector<uint8_t> &data) {
-    auto digest = Address::sha256(data);
-    return Address::sha256(digest);
-}
-
 std::vector<uint8_t> Address::ripemd160(std::vector<uint8_t> &data) {
     uint8_t digest[RIPEMD160_DIGEST_LENGTH];
     RIPEMD160_CTX ctx;
@@ -60,7 +45,7 @@ Address::Address(const std::string &b58Address) {
     }
     std::vector<uint8_t> addressWithVer(size + 1);
     std::copy(data.begin(), data.begin() + size + 2, addressWithVer.begin());
-    auto checksum = Address::hash256(addressWithVer);
+    auto checksum = Hash::sha256(Hash::sha256(addressWithVer));
     auto count = 1;
     for (auto v:checksum) {
         if (count == 5) {
@@ -82,7 +67,7 @@ Address::Address(const std::vector<uint8_t> &data) {
 }
 
 std::vector<uint8_t> Address::toScriptHash(std::vector<uint8_t> &data) {
-    auto hash256 = sha256(data);
+    auto hash256 = Hash::sha256(data);
     return ripemd160(hash256);
 }
 
@@ -101,7 +86,8 @@ std::string Address::b58String() const {
     std::vector<uint8_t> data(size + 1);
     data[0] = version;
     std::copy(zero.begin(), zero.end(), data.begin() + 1);
-    auto checksum = Address::hash256(data);
+    auto checksum = Hash::sha256(Hash::sha256(data));
+
     for (auto it = checksum.begin(); it != checksum.begin() + 4; it++) {
         data.push_back(*it);
     }
