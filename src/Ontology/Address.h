@@ -6,44 +6,39 @@
 
 #pragma once
 
-#include "../PublicKey.h"
+#include "PublicKey.h"
 
 #include <array>
 #include <vector>
 
 namespace TW {
-    namespace Ontology {
-        class Address {
-        private:
-            static std::vector<uint8_t> sha256(std::vector<uint8_t> &data);
+namespace Ontology {
 
-            static std::vector<uint8_t> hash256(std::vector<uint8_t> &data);
+class Address {
+public:
 
-            static std::vector<uint8_t> ripemd160(std::vector<uint8_t> &data);
+    static const size_t size = 20;
+    static const uint8_t version = 0x17;
 
-        public:
-            static const size_t size = 20;
-            static const uint8_t version = 0x17;
+    std::array<uint8_t, size> zero;
 
-            std::array<uint8_t, size> zero;
+    explicit Address(const PublicKey &publicKey);
 
-            explicit Address(const PublicKey &publicKey);
+    explicit Address(const std::string &b58Address);
 
-            explicit Address(const std::string &b58Address);
+    explicit Address(const std::vector<uint8_t> &data);
 
-            explicit Address(const std::vector<uint8_t> &data);
+    std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);
 
-            std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);
-
-            static bool isValid(const std::vector<uint8_t> &data) {
-                return data.size() == size;
-            }
-
-            static bool isValid(const std::string &string);
-
-            std::string hexString() const;
-
-            std::string b58String() const;
-        };
+    static bool isValid(const std::vector<uint8_t> &data) {
+        return data.size() == size;
     }
+
+    static bool isValid(const std::string &string);
+
+    std::string hexString() const;
+
+    std::string b58String() const;
+};
+}
 }
