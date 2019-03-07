@@ -44,6 +44,7 @@ else()
     target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 endif()
 set_property(TARGET TrustWalletCore PROPERTY CXX_STANDARD 17)
+target_compile_options(TrustWalletCore PRIVATE "-Wall")
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.

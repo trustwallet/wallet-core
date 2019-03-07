@@ -69,10 +69,10 @@ struct ScryptParameters {
     /// @throws ScryptValidationError if the parameters are invalid.
     ScryptParameters(Data salt, uint32_t n, uint32_t r, uint32_t p, std::size_t desiredKeyLength)
         : salt(salt)
-        , n(n)
-        , r(r)
-        , p(p)
         , desiredKeyLength(desiredKeyLength)
+        , n(n)
+        , p(p)
+        , r(r)
     {
         auto error = validate();
         if (error) {
@@ -84,7 +84,7 @@ struct ScryptParameters {
     ///
     /// - Returns: a `ValidationError` or `nil` if the parameters are valid.
     std::optional<ScryptValidationError> validate() const;
-    
+
     /// Initializes `ScryptParameters` with a JSON object.
     ScryptParameters(const nlohmann::json& json);
 
