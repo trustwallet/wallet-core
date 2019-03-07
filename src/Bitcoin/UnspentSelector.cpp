@@ -20,10 +20,10 @@ struct Selection {
 };
 
 // Filters utxos that are dust
-std::vector<Proto::UnspentTransaction> filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee) {
+std::vector<Proto::UnspentTransaction> UnspentSelector::filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee) {
     std::vector<Proto::UnspentTransaction> filteredUtxos;
     for(auto utxo: selectedUtxos) {
-        if (utxo.amount() > UnspentSelector::calculateSingleInputFee(byteFee)) {
+        if (utxo.amount() > singleInputFeeCalculator(byteFee)) {
             filteredUtxos.push_back(utxo);
         }
     }
@@ -81,7 +81,7 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
     //    (2) closer to 2x the amount,
     //    (3) and does not produce dust change.
     for (auto numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
-        const auto fee = calculateFee(numInputs, numOutputs, byteFee);
+        const auto fee = feeCalculator(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
         auto slices = slice(sortedUtxos, numInputs);
         slices.erase(std::remove_if(slices.begin(), slices.end(), [targetWithFeeAndDust](const std::vector<Proto::UnspentTransaction>& slice) {
