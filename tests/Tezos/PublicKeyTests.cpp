@@ -11,8 +11,8 @@
 using namespace TW::Tezos;
 
 TEST(TezosPublicKey, forge) {
-  auto input = PublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
-  auto expected = "00429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
+    auto input = PublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
+    auto expected = "00429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
 
-  ASSERT_EQ(input.forge(), expected);
+    ASSERT_EQ(input.forge(), expected);
 }

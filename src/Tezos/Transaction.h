@@ -15,8 +15,8 @@ namespace TW {
 namespace Tezos {
 
 enum OperationKind {
-  REVEAL,
-  TRANSACTION
+    REVEAL,
+    TRANSACTION
 };
 
 class Transaction {
