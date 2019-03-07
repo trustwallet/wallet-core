@@ -82,8 +82,11 @@ message SigningInput {
     // Available unspent transaction outputs.
     repeated UnspentTransaction utxo = 12;
 
-    // If sending max amount
+    // If sending max amount.
     bool use_max_amount = 13;
+
+    // Coin type (forks).
+    uint32 coin_type = 14;
 }
 
 /// Describes a preliminary transaction plan.
