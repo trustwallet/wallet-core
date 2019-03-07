@@ -88,13 +88,21 @@ struct DerivationPath {
     DerivationPath(std::vector<DerivationPathIndex> indices) : indices(indices) {}
 
     /// Creates a `DerivationPath` by components.
-    DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account = 0, uint32_t change = 0, uint32_t address = 0) {
+    DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
         indices = std::vector<DerivationPathIndex>(5);
         setPurpose(purpose);
         setCoin(coin);
         setAccount(account);
         setChange(change);
         setAddress(address);
+    }
+
+    /// Creates a `DerivationPath` by components.
+    DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account) {
+        indices = std::vector<DerivationPathIndex>(3);
+        setPurpose(purpose);
+        setCoin(coin);
+        setAccount(account);
     }
 
     /// Creates a derivation path with a string description like `m/10/0/2'/3`

@@ -87,7 +87,7 @@ StoredKey::StoredKey(const nlohmann::json& json) {
             coin = json[CodingKeys::coin].get<TWCoinType>();
         }
         auto address = json[CodingKeys::address].get<std::string>();
-        accounts.emplace_back(address, DerivationPath(TWPurposeBIP44, coin));
+        accounts.emplace_back(address, DerivationPath(TWPurposeBIP44, coin, 0, 0, 0));
     }
 }
 
