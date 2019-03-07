@@ -22,7 +22,8 @@ namespace Keystore {
 /// An stored key can be either a private key or a mnemonic phrase for a HD wallet.
 enum class StoredKeyType {
     privateKey,
-    mnemonicPhrase
+    mnemonicPhrase,
+    watchOnly
 };
 
 /// Represents a key stored as an encrypted file.
