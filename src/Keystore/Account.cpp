@@ -17,6 +17,7 @@ namespace CodingKeys {
     static const auto address = "address";
     static const auto addressData = "addressData";
     static const auto derivationPath = "derivationPath";
+    static const auto extendedPublicKey = "extendedPublicKey";
     static const auto indices = "indices";
     static const auto value = "value";
     static const auto hardened = "hardened";
@@ -38,11 +39,18 @@ Account::Account(const nlohmann::json& json) {
         const auto addressData = Base64::decode(json[CodingKeys::addressData].get<std::string>());
         address = loadAddress(addressData, derivationPath.coin());
     }
+
+    if (json.count(CodingKeys::extendedPublicKey) > 0 && json[CodingKeys::extendedPublicKey].is_string()) {
+        extendedPublicKey = json[CodingKeys::extendedPublicKey].get<std::string>();
+    }
 }
 
 nlohmann::json Account::json() const {
     nlohmann::json j;
     j[CodingKeys::address] = address;
     j[CodingKeys::derivationPath] = derivationPath.string();
+    if (!extendedPublicKey.empty()) {
+        j[CodingKeys::extendedPublicKey] = extendedPublicKey;
+    }
     return j;
 }

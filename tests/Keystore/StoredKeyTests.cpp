@@ -35,6 +35,7 @@ TEST(StoredKey, LoadLegacyMnemonic) {
     EXPECT_EQ(key.accounts[1].coin(), TWCoinTypeBitcoin);
     EXPECT_EQ(key.accounts[1].derivationPath.string(), "m/84'/0'/0'/0/0");
     EXPECT_EQ(key.accounts[1].address, "bc1q2ddhp55sq2l4xnqhpdv0xazg02v9dr7uu8c2p2");
+    EXPECT_EQ(key.accounts[1].extendedPublicKey, "zpub6r97AegwVxVbJeuDAWP5KQgX5y4Q6KyFUrsFQRn8yzSXrnmpwg1ZKHSWwECR1Kiqgr4h93WN5kdS48KC6hVFniuZHqVFXjULZZkCwurqyPn");
 }
 
 TEST(StoredKey, ReadWallet) {

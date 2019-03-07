@@ -23,6 +23,9 @@ public:
     /// Account derivation path, only relevant for HD wallets.
     DerivationPath derivationPath;
 
+    /// Extended public key.
+    std::string extendedPublicKey;
+
     /// Coin this account is for.
     TWCoinType coin() const {
         return derivationPath.coin();
