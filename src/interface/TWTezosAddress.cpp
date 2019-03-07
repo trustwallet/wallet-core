@@ -12,7 +12,6 @@
 #include <TrustWalletCore/TWPublicKey.h>
 
 #include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/ripple/base58.h>
 #include <string.h>
 #include <memory>
 
