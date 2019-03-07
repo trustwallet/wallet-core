@@ -39,7 +39,6 @@ Address::Address(const std::string& string) {
     if (size != Address::size) {
         throw std::invalid_argument("Invalid address key data");
     }
-    std::vector<uint8_t> vec(&buffer[0], &buffer[128]);
     std::copy(buffer, buffer + Address::size, bytes.begin());
 }
 
