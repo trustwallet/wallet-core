@@ -54,14 +54,14 @@ bool Script::isWitnessProgram() const {
 }
 
 bool Script::matchPayToPubkey(std::vector<uint8_t>& result) const {
-    if (bytes.size() == PublicKey::uncompressedSize + 2 && bytes[0] == PublicKey::uncompressedSize && bytes.back() == OP_CHECKSIG) {
+    if (bytes.size() == PublicKey::secp256k1ExtendedSize + 2 && bytes[0] == PublicKey::secp256k1ExtendedSize && bytes.back() == OP_CHECKSIG) {
         result.clear();
-        std::copy(std::begin(bytes) + 1, std::begin(bytes) + 1 + PublicKey::uncompressedSize, std::back_inserter(result));
+        std::copy(std::begin(bytes) + 1, std::begin(bytes) + 1 + PublicKey::secp256k1Size, std::back_inserter(result));
         return true;
     }
-    if (bytes.size() == PublicKey::compressedSize + 2 && bytes[0] == PublicKey::compressedSize && bytes.back() == OP_CHECKSIG) {
+    if (bytes.size() == PublicKey::secp256k1Size + 2 && bytes[0] == PublicKey::secp256k1Size && bytes.back() == OP_CHECKSIG) {
         result.clear();
-        std::copy(std::begin(bytes) + 1, std::begin(bytes) + 1 + PublicKey::compressedSize, std::back_inserter(result));
+        std::copy(std::begin(bytes) + 1, std::begin(bytes) + 1 + PublicKey::secp256k1Size, std::back_inserter(result));
         return true;
     }
     return false;

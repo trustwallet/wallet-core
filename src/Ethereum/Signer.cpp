@@ -9,7 +9,7 @@
 using namespace TW;
 using namespace TW::Ethereum;
 
-std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chainID, const std::array<byte, 65>& signature) noexcept {
+std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chainID, const Data& signature) noexcept {
     boost::multiprecision::uint256_t r, s, v;
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
@@ -27,7 +27,7 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chai
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t> Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
-    auto signature = privateKey.sign(hash);
+    auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }
 

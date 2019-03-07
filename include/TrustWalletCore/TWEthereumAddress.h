@@ -36,7 +36,7 @@ struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey publicKey);
+struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
 void TWEthereumAddressDelete(struct TWEthereumAddress *_Nonnull address);

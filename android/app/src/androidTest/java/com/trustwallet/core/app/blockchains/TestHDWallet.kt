@@ -2,6 +2,7 @@ package com.trustwallet.core.app.blockchains
 
 import com.trustwallet.core.app.utils.Numeric
 import wallet.core.jni.CoinType
+import wallet.core.jni.Curve
 import wallet.core.jni.HDVersion
 import wallet.core.jni.HDWallet
 import wallet.core.jni.Purpose
@@ -35,13 +36,13 @@ class TestHDWallet {
     @Test
     fun testDerive() {
         val wallet = HDWallet(words, password)
-        val key0 = wallet.getKey(Purpose.BIP44, CoinType.ETHEREUM, 0, 0, 0)
-        val key1 = wallet.getKey(Purpose.BIP44, CoinType.ETHEREUM, 0, 0, 1)
+        val key0 = wallet.getKey(CoinType.ETHEREUM, 0, 0, 0)
+        val key1 = wallet.getKey(CoinType.ETHEREUM, 0, 0, 1)
 
-        val publicKey0 = key0.getPublicKey(false)
+        val publicKey0 = key0.getPublicKeySecp256k1(false)
         val publicKey0Data = Numeric.toHexString(publicKey0.data())
 
-        val publicKey1 = key1.getPublicKey(false)
+        val publicKey1 = key1.getPublicKeySecp256k1(false)
         val publicKey1Data = Numeric.toHexString(publicKey1.data())
 
         assertEquals(
@@ -53,8 +54,8 @@ class TestHDWallet {
     @Test
     fun testDeriveBitcoin() {
         val wallet = HDWallet(words, password)
-        val key = wallet.getKey(Purpose.BIP84, CoinType.BITCOIN, 0, 0, 0)
-        val publicKey = key.getPublicKey(false)
+        val key = wallet.getKey(CoinType.BITCOIN, 0, 0, 0)
+        val publicKey = key.getPublicKeySecp256k1(false)
         val publicKeyData = publicKey.data()
 
         assertEquals(
@@ -87,8 +88,8 @@ class TestHDWallet {
     @Test
     fun testPublicKeyFromX() {
         val xpub = "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj"
-        val xpubAddr2 = HDWallet.getPublicKeyFromExtended(xpub, HDVersion.XPUB, HDVersion.XPRV, 0, 2)
-        val xpubAddr9 = HDWallet.getPublicKeyFromExtended(xpub, HDVersion.XPUB, HDVersion.XPRV, 0, 9)
+        val xpubAddr2 = HDWallet.getPublicKeyFromExtended(xpub, Curve.SECP256K1, HDVersion.XPUB, HDVersion.XPRV, 0, 2)
+        val xpubAddr9 = HDWallet.getPublicKeyFromExtended(xpub, Curve.SECP256K1, HDVersion.XPUB, HDVersion.XPRV, 0, 9)
 
         assertEquals(
             Numeric.toHexString(xpubAddr2.data()),

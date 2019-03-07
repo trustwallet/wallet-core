@@ -16,10 +16,9 @@ const char *address2 = "bc1qr583w2swedy2acd7rung055k8t3n7udp7vyzyg";
 
 TEST(TWBech32Address, PublicKeyToAddress) {
     auto pkData = DATA("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798");
-    auto publicKey = TWPublicKey();
-    TWPublicKeyInitWithData(&publicKey, pkData.get());
-    
-    auto address = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPBitcoin, publicKey));
+    auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pkData.get()));
+
+    auto address = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPBitcoin, publicKey.get()));
     auto string = WRAPS(TWBech32AddressDescription(address.get()));
 
     ASSERT_STREQ(address1, TWStringUTF8Bytes(string.get()));

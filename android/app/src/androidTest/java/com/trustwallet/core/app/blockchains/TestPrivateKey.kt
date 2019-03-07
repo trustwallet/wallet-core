@@ -5,6 +5,7 @@ import wallet.core.jni.Hash
 import wallet.core.jni.PrivateKey
 import org.junit.Assert.*
 import org.junit.Test
+import wallet.core.jni.Curve
 
 
 class TestPrivateKey {
@@ -69,7 +70,7 @@ class TestPrivateKey {
         } catch (ex: Exception) {
 
         }
-        val publicKey = privateKey?.getPublicKey(true)
+        val publicKey = privateKey?.getPublicKeySecp256k1(true)
         val valid = arrayOf(0x03, 0x99, 0xc6, 0xf5, 0x1a, 0xd6, 0xf9, 0x8c, 0x9c, 0x58, 0x3f, 0x8e, 0x92, 0xbb, 0x77, 0x58, 0xab, 0x2c, 0xa9, 0xa0, 0x41, 0x10, 0xc0, 0xa1, 0x12, 0x6e, 0xc4, 0x3e, 0x54, 0x53, 0xd1, 0x96, 0xc1)
                 .map { it.toByte() }
                 .toByteArray()
@@ -82,7 +83,7 @@ class TestPrivateKey {
                 .map { it.toByte() }
                 .toByteArray()
         val data = Hash.keccak256("hello".toByteArray())
-        val sign = PrivateKey(validPrivateKeyData).sign(data)
+        val sign = PrivateKey(validPrivateKeyData).sign(data, Curve.SECP256K1)
         assertEquals(Numeric.toHexString(sign), Numeric.toHexString(validSign))
     }
 }
