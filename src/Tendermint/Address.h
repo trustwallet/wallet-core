@@ -44,7 +44,7 @@ public:
     /// Encodes the address.
     ///
     /// \returns encoded address string, or empty string on failure.
-    std::string encode() const;
+    std::string string() const;
 
     bool operator==(const Address& rhs) const {
         return hrp == rhs.hrp && keyHash == rhs.keyHash;

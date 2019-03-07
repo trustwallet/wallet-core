@@ -51,7 +51,7 @@ std::pair<Bech32Address, bool> Bech32Address::decode(const std::string& addr) {
     return std::make_pair(Bech32Address(dec.first, dec.second[0], conv), true);
 }
 
-std::string Bech32Address::encode() const {
+std::string Bech32Address::string() const {
     Data enc;
     enc.push_back(witnessVersion);
     Bech32::convertBits<8, 5, true>(enc, witnessProgram);

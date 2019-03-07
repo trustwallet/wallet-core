@@ -38,7 +38,7 @@ public:
 
     /// Initializes a Bech32 address with a public key and a HRP prefix.
     Bech32Address(const PublicKey& publicKey, int witver, const std::string& hrp);
-    
+
     /// Decodes a SegWit address.
     ///
     /// \returns a pair with the address and a success flag.
@@ -47,7 +47,7 @@ public:
     /// Encodes the SegWit address.
     ///
     /// \returns encoded address string, or empty string on failure.
-    std::string encode() const;
+    std::string string() const;
 
     /// Initializes a Bech32 address with raw data.
     static std::pair<Bech32Address, bool> fromRaw(const std::string& hrp, const std::vector<uint8_t>& data);

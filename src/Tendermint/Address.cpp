@@ -49,7 +49,7 @@ std::pair<Address, bool> Address::decode(const std::string& addr) {
     return std::make_pair(Address(dec.first, std::move(conv)), true);
 }
 
-std::string Address::encode() const {
+std::string Address::string() const {
     Data enc;
     Bech32::convertBits<8, 5, true>(enc, keyHash);
     std::string result = Bech32::encode(hrp, enc);

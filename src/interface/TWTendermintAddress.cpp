@@ -53,7 +53,7 @@ void TWTendermintAddressDelete(struct TWTendermintAddress *_Nonnull address) {
 }
 
 TWString *_Nonnull TWTendermintAddressDescription(struct TWTendermintAddress *_Nonnull address) {
-    const auto string = address->impl.encode();
+    const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 

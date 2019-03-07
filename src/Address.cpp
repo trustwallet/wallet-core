@@ -23,10 +23,10 @@ using namespace TW;
 std::string TW::loadAddress(const Data& data, TWCoinType coin) {
     switch (coin) {
     case TWCoinTypeBinance:
-        return Tendermint::Address(HRP_BINANCE, data).encode();
+        return Tendermint::Address(HRP_BINANCE, data).string();
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address(HRP_BITCOIN, 0, data).encode();
+        return Bitcoin::Bech32Address(HRP_BITCOIN, 0, data).string();
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(data).string();
@@ -41,7 +41,7 @@ std::string TW::loadAddress(const Data& data, TWCoinType coin) {
         return Icon::Address(data, TWIconAddressTypeAddress).string();
 
     case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address(HRP_LITECOIN, 0, data).encode();
+        return Bitcoin::Bech32Address(HRP_LITECOIN, 0, data).string();
 
     case TWCoinTypeNimiq:
         return Nimiq::Address(data).string();
