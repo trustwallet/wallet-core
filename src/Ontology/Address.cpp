@@ -4,15 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Address.h"
-
 #include "Hash.h"
+#include "Address.h"
 #include "HexCoding.h"
+
+#include <stdexcept>
+
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ripemd160.h>
-#include <iostream>
-#include <stdexcept>
 
 using namespace TW::Ontology;
 
