@@ -45,7 +45,7 @@ Address::Address(const std::string& string) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto publicKeySize = publicKey.isCompressed() ? publicKey.compressedSize : publicKey.uncompressedSize;
+    auto publicKeySize = publicKey.isCompressed() ? publicKey.secp256k1Size : publicKey.secp256k1ExtendedSize;
     auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.begin() + publicKeySize);
     auto hash = Hash::blake2b(encoded, 20);
     auto addressData = Data({6, 161, 159});

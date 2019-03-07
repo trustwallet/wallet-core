@@ -26,13 +26,9 @@ jlong JNICALL Java_wallet_core_jni_TezosAddress_nativeCreateWithString(JNIEnv *e
 
 jlong JNICALL Java_wallet_core_jni_TezosAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey) {
     jclass publicKeyClass = (*env)->GetObjectClass(env, publicKey);
-    jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
-    jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
-    jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
-    struct TWTezosAddress *instance = TWTezosAddressCreateWithPublicKey(*publicKeyInstance);
-    (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, publicKeyBytesArray);
+    jfieldID publicKeyHandleFieldID = (*env)->GetFieldID(env, publicKeyClass, "nativeHandle", "J");
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) (*env)->GetLongField(env, publicKey, publicKeyHandleFieldID);
+    struct TWTezosAddress *instance = TWTezosAddressCreateWithPublicKey(publicKeyInstance);
     (*env)->DeleteLocalRef(env, publicKeyClass);
     return (jlong) instance;
 }

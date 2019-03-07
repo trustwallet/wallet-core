@@ -11,6 +11,7 @@
 #include <gtest/gtest.h>
 #include <string>
 #include <iostream>
+#include <array>
 
 using namespace TW;
 using namespace TW::Tezos;
@@ -27,7 +28,7 @@ TEST(TezosAddress, string) {
 }
 
 TEST(TezosAddress, PublicKeyInit) {
-    uint8_t bytes[] = {3, 249, 155, 77, 241, 23, 253, 247, 67, 73, 230, 138, 75, 159, 164, 53, 139, 19, 144, 243, 254, 68, 145, 220, 146, 163, 138, 154, 23, 67, 129, 243, 228};
+    std::array<uint8_t, 33> bytes {3, 249, 155, 77, 241, 23, 253, 247, 67, 73, 230, 138, 75, 159, 164, 53, 139, 19, 144, 243, 254, 68, 145, 220, 146, 163, 138, 154, 23, 67, 129, 243, 228};
     const auto publicKey = PublicKey(bytes);
     auto address = Address(publicKey);
 

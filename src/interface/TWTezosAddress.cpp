@@ -34,14 +34,7 @@ struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnu
 }
 
 struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
-    std::vector<uint8_t> data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
-    } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
-    }
-    const auto address = Address(PublicKey(data));
-    return new TWTezosAddress{ Addres(publicKey->impl) };
+    return new TWTezosAddress{ Address(publicKey->impl) };
 }
 
 void TWTezosAddressDelete(struct TWTezosAddress *_Nonnull address) {
