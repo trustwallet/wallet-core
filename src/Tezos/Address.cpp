@@ -12,8 +12,6 @@
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
-#include <cassert>
-
 using namespace TW::Tezos;
 
 bool Address::isValid(const std::string& string) {
