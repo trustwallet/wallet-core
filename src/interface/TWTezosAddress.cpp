@@ -41,7 +41,7 @@ struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPubli
         data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
     }
     const auto address = Address(PublicKey(data));
-    return new TWTezosAddress{ std::move(address) };
+    return new TWTezosAddress{ Addres(publicKey->impl) };
 }
 
 void TWTezosAddressDelete(struct TWTezosAddress *_Nonnull address) {
