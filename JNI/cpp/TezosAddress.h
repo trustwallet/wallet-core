@@ -33,7 +33,6 @@ jstring JNICALL Java_wallet_core_jni_TezosAddress_description(JNIEnv *env, jobje
 JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_jni_TezosAddress_data(JNIEnv *env, jobject thisObject);
 
-
 TW_EXTERN_C_END
 
 #endif // JNI_TW_TEZOSADDRESS_H

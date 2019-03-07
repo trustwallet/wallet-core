@@ -5,7 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+
 #include "TWBase.h"
+#include "TWCurve.h"
+#include "TWPurpose.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -32,9 +35,18 @@ enum TWCoinType {
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeWanChain = 5718350,
-    TWCoinTypeZcoin = 136,
     TWCoinTypeZcash = 133,
     TWCoinTypeRipple = 144,
+    TWCoinTypeZcoin = 136,
+    TWCoinTypeNimiq = 242,
 };
+
+/// Returns the purpose for a coin type.
+TW_EXPORT_PROPERTY
+enum TWPurpose TWCoinTypePurpose(enum TWCoinType type);
+
+/// Returns the curve that should be used for a coin type.
+TW_EXPORT_PROPERTY
+enum TWCurve TWCoinTypeCurve(enum TWCoinType type);
 
 TW_EXTERN_C_END

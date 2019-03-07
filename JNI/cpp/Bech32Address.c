@@ -40,14 +40,10 @@ jlong JNICALL Java_wallet_core_jni_Bech32Address_nativeCreateWithPublicKey(JNIEn
     jmethodID hrpValueMethodID = (*env)->GetMethodID(env, hrpClass, "value", "()I");
     jint hrpValue = (*env)->CallIntMethod(env, hrp, hrpValueMethodID);
     jclass publicKeyClass = (*env)->GetObjectClass(env, publicKey);
-    jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
-    jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
-    jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
-    struct TWBech32Address *instance = TWBech32AddressCreateWithPublicKey(hrpValue, *publicKeyInstance);
+    jfieldID publicKeyHandleFieldID = (*env)->GetFieldID(env, publicKeyClass, "nativeHandle", "J");
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) (*env)->GetLongField(env, publicKey, publicKeyHandleFieldID);
+    struct TWBech32Address *instance = TWBech32AddressCreateWithPublicKey(hrpValue, publicKeyInstance);
     (*env)->DeleteLocalRef(env, hrpClass);
-    (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, publicKeyBytesArray);
     (*env)->DeleteLocalRef(env, publicKeyClass);
     return (jlong) instance;
 }

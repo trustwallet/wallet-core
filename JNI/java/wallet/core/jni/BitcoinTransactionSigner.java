@@ -27,6 +27,7 @@ public class BitcoinTransactionSigner {
     }
 
     static native long nativeCreate(wallet.core.jni.proto.Bitcoin.SigningInput input);
+    static native long nativeCreateWithPlan(wallet.core.jni.proto.Bitcoin.SigningInput input, wallet.core.jni.proto.Bitcoin.TransactionPlan plan);
     static native void nativeDelete(long handle);
 
     public native wallet.core.jni.proto.Bitcoin.TransactionPlan plan();
@@ -34,6 +35,15 @@ public class BitcoinTransactionSigner {
 
     public BitcoinTransactionSigner(wallet.core.jni.proto.Bitcoin.SigningInput input) {
         nativeHandle = nativeCreate(input);
+        if (nativeHandle == 0) {
+            throw new InvalidParameterException();
+        }
+
+        BitcoinTransactionSignerPhantomReference.register(this, nativeHandle);
+    }
+
+    public BitcoinTransactionSigner(wallet.core.jni.proto.Bitcoin.SigningInput input, wallet.core.jni.proto.Bitcoin.TransactionPlan plan) {
+        nativeHandle = nativeCreateWithPlan(input, plan);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();
         }

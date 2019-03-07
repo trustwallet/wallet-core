@@ -9,7 +9,7 @@
 
 import Foundation
 
-public struct PublicKey {
+public final class PublicKey {
 
     public static func isValid(data: Data) -> Bool {
         let dataData = TWDataCreateWithNSData(data)
@@ -19,7 +19,7 @@ public struct PublicKey {
         return TWPublicKeyIsValid(dataData)
     }
 
-    public static func recover(signature: Data, message: Data) -> PublicKey {
+    public static func recover(signature: Data, message: Data) -> PublicKey? {
         let signatureData = TWDataCreateWithNSData(signature)
         defer {
             TWDataDelete(signatureData)
@@ -28,10 +28,11 @@ public struct PublicKey {
         defer {
             TWDataDelete(messageData)
         }
-        return PublicKey(rawValue: TWPublicKeyRecover(signatureData, messageData))
+        guard let value = TWPublicKeyRecover(signatureData, messageData) else {
+            return nil
+        }
+        return PublicKey(rawValue: value)
     }
-
-    var rawValue: TWPublicKey
 
     public var isCompressed: Bool {
         return TWPublicKeyIsCompressed(rawValue)
@@ -49,7 +50,9 @@ public struct PublicKey {
         return TWStringNSString(TWPublicKeyDescription(rawValue))
     }
 
-    init(rawValue: TWPublicKey) {
+    let rawValue: OpaquePointer
+
+    init(rawValue: OpaquePointer) {
         self.rawValue = rawValue
     }
 
@@ -58,12 +61,15 @@ public struct PublicKey {
         defer {
             TWDataDelete(dataData)
         }
-        rawValue = TWPublicKey()
-        guard TWPublicKeyInitWithData(&rawValue, dataData) else {
+        guard let rawValue = TWPublicKeyCreateWithData(dataData) else {
             return nil
         }
+        self.rawValue = rawValue
     }
 
+    deinit {
+        TWPublicKeyDelete(rawValue)
+    }
 
     public func verify(signature: Data, message: Data) -> Bool {
         let signatureData = TWDataCreateWithNSData(signature)

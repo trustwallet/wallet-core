@@ -10,7 +10,7 @@ import XCTest
 class BinanceSignerTests: XCTestCase {
     func testExample() {
         let privateKey = PrivateKey(data: Data(hexString: "95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832")!)!
-        let publicKey = privateKey.getPublicKey(compressed: true)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
         var signingInput = TW_Binance_Proto_SigningInput()
         signingInput.chainID = "Binance-Chain-Nile"

@@ -4,7 +4,7 @@
     arguments = locals[:arguments] || JNIHelper.arguments(method.parameters)
     call = render('jni/method_call.erb', { method: method, arguments: arguments })
   else
-    instance = (method.entity.is_struct ? '*' : '') + 'instance'
+    instance = (method.entity.struct? ? '*' : '') + 'instance'
     arguments = locals[:arguments] || [instance] + JNIHelper.arguments(method.parameters.drop(1))
     call = render('jni/method_call.erb', { method: method, arguments: arguments })
   end
@@ -45,7 +45,7 @@
 <%  end -%>
 
     return result;
-<%   
+<%
   # Method returns an object
   elsif should_return_object(method)
     if method.return_type.is_struct -%>

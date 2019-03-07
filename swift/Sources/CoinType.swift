@@ -26,8 +26,15 @@ public enum CoinType: UInt32 {
     case tron = 195
     case veChain = 818
     case wanChain = 5718350
-    case zcoin = 136
     case zcash = 133
-    case ripple = 144
-    case tezos = 1729
+    case zcoin = 136
+    case nimiq = 242
+
+    public var purpose: Purpose {
+        return Purpose(rawValue: TWCoinTypePurpose(TWCoinType(rawValue: rawValue)).rawValue)!
+    }
+
+    public var curve: Curve {
+        return Curve(rawValue: TWCoinTypeCurve(TWCoinType(rawValue: rawValue)).rawValue)!
+    }
 }

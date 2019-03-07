@@ -55,27 +55,31 @@ public final class PrivateKey {
         TWPrivateKeyDelete(rawValue)
     }
 
-    public func getPublicKey(compressed: Bool) -> PublicKey {
-        return PublicKey(rawValue: TWPrivateKeyGetPublicKey(rawValue, compressed))
+    public func getPublicKeySecp256k1(compressed: Bool) -> PublicKey {
+        return PublicKey(rawValue: TWPrivateKeyGetPublicKeySecp256k1(rawValue, compressed))
     }
 
-    public func sign(digest: Data) -> Data? {
+    public func getPublicKeyEd25519() -> PublicKey {
+        return PublicKey(rawValue: TWPrivateKeyGetPublicKeyEd25519(rawValue))
+    }
+
+    public func sign(digest: Data, curve: Curve) -> Data? {
         let digestData = TWDataCreateWithNSData(digest)
         defer {
             TWDataDelete(digestData)
         }
-        guard let result = TWPrivateKeySign(rawValue, digestData) else {
+        guard let result = TWPrivateKeySign(rawValue, digestData, TWCurve(rawValue: curve.rawValue)) else {
             return nil
         }
         return TWDataNSData(result)
     }
 
-    public func signAsDER(digest: Data) -> Data? {
+    public func signAsDER(digest: Data, curve: Curve) -> Data? {
         let digestData = TWDataCreateWithNSData(digest)
         defer {
             TWDataDelete(digestData)
         }
-        guard let result = TWPrivateKeySignAsDER(rawValue, digestData) else {
+        guard let result = TWPrivateKeySignAsDER(rawValue, digestData, TWCurve(rawValue: curve.rawValue)) else {
             return nil
         }
         return TWDataNSData(result)

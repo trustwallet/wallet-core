@@ -63,6 +63,7 @@ jboolean JNICALL Java_wallet_core_jni_TezosAddress_isValid(JNIEnv *env, jclass t
 
     TWDataDelete(dataData);
 
+
     return resultValue;
 }
 
@@ -86,7 +87,7 @@ jstring JNICALL Java_wallet_core_jni_TezosAddress_description(JNIEnv *env, jobje
 
 
     (*env)->ReleaseByteArrayElements(env, bytesArray, bytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, bytesArray);
+    (*env)->DeleteLocalRef(env, bytesArray);`
     (*env)->DeleteLocalRef(env, thisClass);
 
     return result;

@@ -9,14 +9,10 @@
 
 import Foundation
 
-public struct TezosAddress {
+public final class TezosAddress {
 
-    public static func isValid(data: Data) -> Bool {
-        let dataData = TWDataCreateWithNSData(data)
-        defer {
-            TWDataDelete(dataData)
-        }
-        return TWTezosAddressIsValid(dataData)
+    public static func == (lhs: TezosAddress, rhs: TezosAddress) -> Bool {
+        return TWTezosAddressEqual(lhs.rawValue, rhs.rawValue)
     }
 
     public static func isValidString(string: String) -> Bool {
@@ -33,11 +29,14 @@ public struct TezosAddress {
         return TWStringNSString(TWTezosAddressDescription(rawValue))
     }
 
-    public var data: Data {
-        return TWDataNSData(TWTezosAddressData(rawValue))
+
+    public var keyHash: Data {
+        return TWDataNSData(TWTezosAddressKeyHash(rawValue))
     }
 
-    init(rawValue: TWTezosAddress) {
+    let rawValue: OpaquePointer
+
+    init(rawValue: OpaquePointer) {
         self.rawValue = rawValue
     }
 
@@ -46,18 +45,19 @@ public struct TezosAddress {
         defer {
             TWStringDelete(stringString)
         }
-        rawValue = TWTezosAddress()
-        guard TWTezosAddressInitWithString(&rawValue, stringString) else {
+
+        guard let rawValue = TWTezosAddressCreateWithString(stringString) else {
             return nil
         }
+        self.rawValue = rawValue
     }
 
-    public init?(publicKey: PublicKey, prefix: UInt8) {
-        rawValue = TWTezosAddress()
-        guard TWTezosAddressInitWithPublicKey(&rawValue, publicKey.rawValue, prefix) else {
-            return nil
-        }
+    public init(publicKey: PublicKey) {
+        rawValue = TWTezosAddressCreateWithPublicKey(publicKey.rawValue)
     }
 
+    deinit {
+        TWTezosAddressDelete(rawValue)
+    }
 
 }
