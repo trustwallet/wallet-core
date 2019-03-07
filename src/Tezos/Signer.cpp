@@ -21,10 +21,10 @@ using namespace TW::Tezos;
 
 Data Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
   auto forgedBytes = operationList.forge();
-  return signString(privateKey, forgedBytes);
+  return signHexString(privateKey, forgedBytes);
 }
 
-Data Signer::signString(const PrivateKey& privateKey, std::string forgedBytes) {
+Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes) {
   auto watermark = "03";
   auto watermarkedForgedBytesHex = parse_hex(watermark + forgedBytes);
   auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);

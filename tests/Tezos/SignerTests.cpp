@@ -18,7 +18,7 @@ using namespace TW::Tezos;
 TEST(TezosSigner, SignString) {
     auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
 
-    auto signature = Signer().signString(key, "ffaa");
+    auto signature = Signer().signHexString(key, "ffaa");
     auto expected = Data({234, 171, 127, 64, 102, 33, 123, 7, 43, 121, 96, 154, 159, 118, 205, 250, 221, 147, 248, 221, 228, 23, 99, 136, 126, 19, 28, 2, 50, 79, 24, 200, 228, 27, 16, 9, 227, 52, 186, 248, 127, 157, 46, 145, 123, 244, 192, 231, 49, 101, 98, 46, 85, 34, 64, 154, 12, 88, 23, 35, 74, 72, 204, 2});
     ASSERT_EQ(signature, expected);
 }
