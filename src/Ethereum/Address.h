@@ -47,7 +47,7 @@ public:
 static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
-    
+
 }} // namespace
 
 /// Wrapper for C interface.
