@@ -20,13 +20,13 @@ class TezosTests: XCTestCase {
     XCTAssertNotNil(address)
     XCTAssertEqual(address?.description, validAddressString)
   }
-
-  public func testAddressFromString_invalidAddress() {
-    let invalidAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAA" // Invalid checksum
-    let address = tezos.address(string: invalidAddressString)
-
-    XCTAssertNil(address)
-  }
+//
+//  public func testAddressFromString_invalidAddress() {
+//    let invalidAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAA" // Invalid checksum
+//    let address = tezos.address(string: invalidAddressString)
+//
+//    XCTAssertNil(address)
+//  }
 
   public func testAddressFromData_validAddress() {
     let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
@@ -41,17 +41,17 @@ class TezosTests: XCTestCase {
     XCTAssertEqual(address?.data, Base58.decode(string: validAddressString))
   }
 
-  public func testAddressFromData_invalidAddress() {
-    let invalidAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAA" // Invalid checksum
-    guard let invalidAddressData = invalidAddressString.data(using: .utf8) else {
-      XCTFail("Couldn't decode address to data")
-      return
-    }
-
-    let address = tezos.address(data: invalidAddressData)
-
-    XCTAssertNil(address)
-  }
+//  public func testAddressFromData_invalidAddress() {
+//    let invalidAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAA" // Invalid checksum
+//    guard let invalidAddressData = invalidAddressString.data(using: .utf8) else {
+//      XCTFail("Couldn't decode address to data")
+//      return
+//    }
+//
+//    let address = tezos.address(data: invalidAddressData)
+//
+//    XCTAssertNil(address)
+//  }
 
   public func testAddressFromPublicKey() {
     let privateKey = PrivateKey(data: Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!)!

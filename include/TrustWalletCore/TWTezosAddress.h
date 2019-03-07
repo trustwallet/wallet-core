@@ -31,10 +31,6 @@ bool TWTezosAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnull string);
 
-/// Creates an address from a raw data representaion.
-TW_EXPORT_STATIC_METHOD
-struct TWTezosAddress *_Nullable TWTezosAddressCreateWithData(TWData *_Nonnull data);
-
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey publicKey);

@@ -37,11 +37,21 @@ jlong JNICALL Java_wallet_core_jni_TezosAddress_nativeCreateWithPublicKey(JNIEnv
     return (jlong) instance;
 }
 
-jboolean JNICALL Java_wallet_core_jni_TezosAddress_isValid(JNIEnv *env, jclass thisClass, jbyteArray data) {
-    TWData *dataData = TWDataCreateWithJByteArray(env, data);
-    jboolean resultValue = (jboolean) TWTezosAddressIsValid(dataData);
+void JNICALL Java_wallet_core_jni_TezosAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
+    TWTezosAddressDelete((struct TWTezosAddress *) handle);
+}
 
-    TWDataDelete(dataData);
+jboolean JNICALL Java_wallet_core_jni_TezosAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {
+    jclass lhsClass = (*env)->GetObjectClass(env, lhs);
+    jfieldID lhsHandleFieldID = (*env)->GetFieldID(env, lhsClass, "nativeHandle", "J");
+    struct TWTezosAddress *lhsInstance = (struct TWTezosAddress *) (*env)->GetLongField(env, lhs, lhsHandleFieldID);
+    jclass rhsClass = (*env)->GetObjectClass(env, rhs);
+    jfieldID rhsHandleFieldID = (*env)->GetFieldID(env, rhsClass, "nativeHandle", "J");
+    struct TWTezosAddress *rhsInstance = (struct TWTezosAddress *) (*env)->GetLongField(env, rhs, rhsHandleFieldID);
+    jboolean resultValue = (jboolean) TWTezosAddressEqual(lhsInstance, rhsInstance);
+
+    (*env)->DeleteLocalRef(env, lhsClass);
+    (*env)->DeleteLocalRef(env, rhsClass);
 
     return resultValue;
 }

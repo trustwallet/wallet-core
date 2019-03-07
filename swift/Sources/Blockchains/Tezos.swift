@@ -28,6 +28,10 @@ public class Tezos: Blockchain {
 }
 
 extension TezosAddress: Address {
+  public static func isValid(data: Data) -> Bool {
+    return true;
+  }
+
   public var data: Data {
     return keyHash
   }

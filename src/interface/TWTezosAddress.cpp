@@ -34,11 +34,6 @@ struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnu
     return new TWTezosAddress{ std::move(address) };
 }
 
-struct TWTezosAddress *_Nullable TWTezosAddressCreateWithData(TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWTezosAddress{ Address(*d) };
-}
-
 struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
     std::vector<uint8_t> data;
     if (TWPublicKeyIsCompressed(publicKey)) {

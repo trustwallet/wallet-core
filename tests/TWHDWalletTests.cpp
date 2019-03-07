@@ -94,10 +94,7 @@ TEST(HDWallet, DeriveTezos) {
   auto publicKey = TWPrivateKeyGetPublicKey(key.get(), false);
   auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
   
-  TWString *s = TWPublicKeyDescription(publicKey);
-  printf("S: %s", s);
-  ASSERT_EQ(s, "0");
-  assertHexEqual(publicKeyData, "0488b21e05bc9a173f000000002f16ba960277ea7a5430ba5c62a7451fc21ebe06debbb0115842dd9cfcc777930240ebf906b948281289405317a5eb9a98045af8a8ab5311b2e3060cfb66c507a1b46c1863");                                   
+  assertHexEqual(publicKeyData, "0484257d8f66e29faa40364f6beb68844fbb5d5af919206d067e6585d91248b68e410be035bacacb4d4e05098aa4df52c7e5f2439becc0de2dcab61abec5e81990");                                   
 }
 
 TEST(HDWallet, ExtendedKeys) {

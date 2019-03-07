@@ -22,7 +22,10 @@ JNIEXPORT
 jlong JNICALL Java_wallet_core_jni_TezosAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey);
 
 JNIEXPORT
-jboolean JNICALL Java_wallet_core_jni_TezosAddress_isValid(JNIEnv *env, jclass thisClass, jbyteArray data);
+void JNICALL Java_wallet_core_jni_TezosAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
+
+JNIEXPORT
+jboolean JNICALL Java_wallet_core_jni_TezosAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
 
 JNIEXPORT
 jboolean JNICALL Java_wallet_core_jni_TezosAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);

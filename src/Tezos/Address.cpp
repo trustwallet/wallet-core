@@ -7,7 +7,7 @@
 #include "Address.h"
 
 #include "../HexCoding.h"
-#include "Hash.h"
+#include "../Hash.h"
 
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/Ripple/base58.h>
@@ -37,7 +37,9 @@ Address::Address(const std::string& string) {
     size_t capacity = 128;
     uint8_t buffer[capacity];
     int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    assert(size == Address::size);
+    if (size != Address::size) {
+      throw std::invalid_argument("Invalid address key data");
+    }
     std::vector<uint8_t> vec(&buffer[0], &buffer[128]);
     auto str = TW::hex(vec);
     std::copy(buffer, buffer + Address::size, bytes.begin());
@@ -47,10 +49,12 @@ Address::Address(const PublicKey& publicKey) {
   auto publicKeySize = publicKey.isCompressed() ? publicKey.compressedSize : publicKey.uncompressedSize;
   auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.begin() + publicKeySize);
   auto hash = Hash::blake2b(encoded, 20);
-  auto prefix = Data({6, 161, 159}); 
-  append(prefix, hash);
-  assert(prefix.size() == Address::size);
-  std::copy(prefix.data(), prefix.data() + Address::size, bytes.begin());
+  auto addressData = Data({6, 161, 159});
+  append(addressData, hash);
+  if (addressData.size() != Address::size) {
+    throw std::invalid_argument("Invalid address key data");
+  }
+  std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
 }
 
 std::string Address::string() const {

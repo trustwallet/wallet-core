@@ -22,13 +22,15 @@ public class TezosAddress {
     static TezosAddress createFromNative(long nativeHandle) {
         TezosAddress instance = new TezosAddress();
         instance.nativeHandle = nativeHandle;
+        TezosAddressPhantomReference.register(instance, nativeHandle);
         return instance;
     }
 
     static native long nativeCreateWithString(String string);
     static native long nativeCreateWithPublicKey(PublicKey publicKey);
+    static native void nativeDelete(long handle);
 
-    public static native boolean isValid(byte[] data);
+    public static native boolean equals(TezosAddress lhs, TezosAddress rhs);
     public static native boolean isValidString(String string);
     public native String description();
     public native byte[] keyHash();
@@ -53,3 +55,25 @@ public class TezosAddress {
 
 }
 
+class TezosAddressPhantomReference extends java.lang.ref.PhantomReference<TezosAddress> {
+    private static java.util.Set<TezosAddressPhantomReference> references = new HashSet<TezosAddressPhantomReference>();
+    private static java.lang.ref.ReferenceQueue<TezosAddress> queue = new java.lang.ref.ReferenceQueue<TezosAddress>();
+    private long nativeHandle;
+
+    private TezosAddressPhantomReference(TezosAddress referent, long nativeHandle) {
+        super(referent, queue);
+        this.nativeHandle = nativeHandle;
+    }
+
+    static void register(TezosAddress referent, long nativeHandle) {
+        references.add(new TezosAddressPhantomReference(referent, nativeHandle));
+    }
+
+    public static void doDeletes() {
+        TezosAddressPhantomReference ref = (TezosAddressPhantomReference) queue.poll();
+        for (; ref != null; ref = (TezosAddressPhantomReference) queue.poll()) {
+            TezosAddress.nativeDelete(ref.nativeHandle);
+            references.remove(ref);
+        }
+    }
+}

@@ -11,12 +11,8 @@ import Foundation
 
 public final class TezosAddress {
 
-    public static func isValid(data: Data) -> Bool {
-        let dataData = TWDataCreateWithNSData(data)
-        defer {
-            TWDataDelete(dataData)
-        }
-        return TWTezosAddressIsValid(dataData)
+    public static func == (lhs: TezosAddress, rhs: TezosAddress) -> Bool {
+        return TWTezosAddressEqual(lhs.rawValue, rhs.rawValue)
     }
 
     public static func isValidString(string: String) -> Bool {
@@ -56,5 +52,8 @@ public final class TezosAddress {
         rawValue = TWTezosAddressCreateWithPublicKey(publicKey.rawValue)
     }
 
+    deinit {
+        TWTezosAddressDelete(rawValue)
+    }
 
 }
