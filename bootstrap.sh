@@ -14,4 +14,6 @@ cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
 make -Cbuild tests
 
 echo "#### Testing... ####"
-build/tests/tests tests
+ROOT="`dirname \"$0\"`"
+TESTS_ROOT="`(cd \"$ROOT/tests\" && pwd)`"
+build/tests/tests "$TESTS_ROOT"

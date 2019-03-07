@@ -1,0 +1,81 @@
+{
+    "id": "629aad29-0b22-488e-a0e7-b4219d4f311c",
+    "crypto": {
+        "ciphertext": "64b5b416bb2bef882eb7cc63ed92c064e53c818ec46351e07ac140e5ba871596f1595fe6cad8333147fe68c031ba001b79b64dd1edd513043134217b7ffe1903ca23b1fbe823671827e3b2dff69bbd448d9cb79a3321ec8801f2a995",
+        "cipherparams": {
+            "iv": "7aaf7eb6f4b0e7d995e8eac67e4d52eb"
+        },
+        "kdf": "scrypt",
+        "kdfparams": {
+            "r": 8,
+            "p": 6,
+            "n": 4096,
+            "dklen": 32,
+            "salt": "80132842c6cde8f9d04582932ef92c3cad3ba6b41e1296ef681692372886db86"
+        },
+        "mac": "01816d0a5c31cd03b644f2d756ac8167c2498808040cbace8c35c46dcf06b7a1",
+        "cipher": "aes-128-ctr"
+    },
+    "type": "mnemonic",
+    "activeAccounts": [
+        {
+            "extendedPublicKey": null,
+            "addressData": "7ej1ja2iLDpJ22DU+CutQoq2X4k=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 44,
+                        "hardened": true
+                    },
+                    {
+                        "value": 60,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        },
+        {
+            "extendedPublicKey": "zpub6r97AegwVxVbJeuDAWP5KQgX5y4Q6KyFUrsFQRn8yzSXrnmpwg1ZKHSWwECR1Kiqgr4h93WN5kdS48KC6hVFniuZHqVFXjULZZkCwurqyPn",
+            "addressData": "U1tw0pACv1NMFwtY83RIephWj9w=",
+            "derivationPath": {
+                "indices": [
+                    {
+                        "value": 84,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": true
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    },
+                    {
+                        "value": 0,
+                        "hardened": false
+                    }
+                ],
+                "indexCount": 5
+            }
+        }
+    ],
+    "version": 3
+}

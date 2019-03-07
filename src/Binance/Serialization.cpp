@@ -16,7 +16,7 @@ using json = nlohmann::json;
 static inline std::string addressString(const std::string& bytes, bool testNet) {
     auto data = std::vector<uint8_t>(bytes.begin(), bytes.end());
     auto address = Tendermint::Address(testNet ? HRP_BINANCE_TEST : HRP_BINANCE, data);
-    return address.encode();
+    return address.string();
 }
 
 json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
