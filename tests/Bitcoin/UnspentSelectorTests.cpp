@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWCoinType.h>
+
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/UnspentSelector.h"
@@ -136,4 +138,46 @@ TEST(UnspentSelector, SelectMaxCase) {
 
     ASSERT_EQ(sum(selected), 10189534);
     ASSERT_TRUE(selected.size() > 0);
+}
+
+TEST(UnspentSelector, SelectZcashUnpsents) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 100000));
+    utxos.push_back(buildUTXO(transactionOutPoint, 2592));
+    utxos.push_back(buildUTXO(transactionOutPoint, 73774));
+
+    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
+    auto selector = UnspentSelector(calculator);
+    auto selected = selector.select(utxos, 10000, 1);
+
+    ASSERT_EQ(sum(selected), 73774);
+    ASSERT_TRUE(selected.size() > 0);
+}
+
+TEST(UnspentSelector, SelectZcashMaxUnpsents) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 100000));
+    utxos.push_back(buildUTXO(transactionOutPoint, 2592));
+    utxos.push_back(buildUTXO(transactionOutPoint, 73774));
+
+    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
+    auto selector = UnspentSelector(calculator);
+    auto selected = selector.select(utxos, 166366, 1);
+
+    ASSERT_EQ(sum(selected), 176366);
+    ASSERT_TRUE(selected.size() > 0);
+}
+
+TEST(UnspentSelector, SelectZcashMaxUnpsents2) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 100000));
+    utxos.push_back(buildUTXO(transactionOutPoint, 2592));
+    utxos.push_back(buildUTXO(transactionOutPoint, 73774));
+
+    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
+    auto selector = UnspentSelector(calculator);
+    auto selected = selector.select(utxos, 176360, 1);
+
+    ASSERT_EQ(sum(selected), 0);
+    ASSERT_TRUE(selected.size() == 0);
 }
