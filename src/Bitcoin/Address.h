@@ -32,8 +32,8 @@ public:
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    /// Determines whether a string makes a valid address, and the prefix matches.
-    static bool isValid(const std::string& string, const std::string& prefix);
+    /// Determines whether a string makes a valid address, and the prefix is within the valid set.
+    static bool isValid(const std::string& string, const std::vector<byte>& validPrefixes);
 
     /// Initializes a  address with a string representation.
     Address(const std::string& string);
