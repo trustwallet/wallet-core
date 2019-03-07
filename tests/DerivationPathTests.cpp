@@ -30,7 +30,7 @@ TEST(DerivationPath, InitWithString) {
     ASSERT_EQ(path.indices[4], DerivationPathIndex(0, /* hardened: */false));
 
     ASSERT_EQ(path.purpose(), 44);
-    ASSERT_EQ(path.coinType(), 60);
+    ASSERT_EQ(path.coin(), 60);
     ASSERT_EQ(path.account(), 0);
     ASSERT_EQ(path.change(), 0);
     ASSERT_EQ(path.address(), 0);

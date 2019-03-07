@@ -25,7 +25,7 @@ public:
 
     /// Coin this account is for.
     TWCoinType coin() const {
-        return derivationPath.coinType();
+        return derivationPath.coin();
     }
 
     Account() = default;

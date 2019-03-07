@@ -14,7 +14,7 @@
             "dklen": 32,
             "salt": "ab0c7876052600dd703518d6fc3fe8984592145b591fc8fb5c6d43190334ba19"
         },
-        "mac": "ed2bd65fedbc91bf1222a7049d7663856256fec5e3e7a858ca671c572b339ab3",
+        "mac": "2103ac29920d71da29f15d75b4a16dbe95cfd7ff8faea1056c33131d846e3097",
         "cipher": "aes-128-ctr"
     },
     "type": "private-key",

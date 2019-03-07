@@ -52,11 +52,11 @@ struct DerivationPath {
         indices[0] = DerivationPathIndex(v, /* hardened: */true);
     }
 
-    TWCoinType coinType() const {
+    TWCoinType coin() const {
         return static_cast<TWCoinType>(indices[1].value);
     }
 
-    void setCoinType(TWCoinType v) {
+    void setCoin(TWCoinType v) {
         indices[1] = DerivationPathIndex(v, /* hardened: */true);
     }
 
@@ -88,10 +88,10 @@ struct DerivationPath {
     DerivationPath(std::vector<DerivationPathIndex> indices) : indices(indices) {}
 
     /// Creates a `DerivationPath` by components.
-    DerivationPath(TWPurpose purpose, TWCoinType coinType, uint32_t account = 0, uint32_t change = 0, uint32_t address = 0) {
+    DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account = 0, uint32_t change = 0, uint32_t address = 0) {
         indices = std::vector<DerivationPathIndex>(5);
         setPurpose(purpose);
-        setCoinType(coinType);
+        setCoin(coin);
         setAccount(account);
         setChange(change);
         setAddress(address);

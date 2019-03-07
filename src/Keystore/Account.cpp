@@ -6,6 +6,8 @@
 
 #include "Account.h"
 
+#include "../Address.h"
+#include "../Base64.h"
 #include "../HexCoding.h"
 
 using namespace TW;
@@ -33,8 +35,8 @@ Account::Account(const nlohmann::json& json) {
     if (json.count(CodingKeys::address) != 0 && json[CodingKeys::address].is_string()) {
         address = json[CodingKeys::address].get<std::string>();
     } else if (json.count(CodingKeys::addressData) != 0 && json[CodingKeys::addressData].is_string()) {
-        address = json[CodingKeys::addressData].get<std::string>();
-        // TODO: get properly encoded address string
+        const auto addressData = Base64::decode(json[CodingKeys::addressData].get<std::string>());
+        address = loadAddress(addressData, derivationPath.coin());
     }
 }
 
