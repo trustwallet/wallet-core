@@ -33,7 +33,7 @@ struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnu
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey publicKey);
+struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
 void TWTezosAddressDelete(struct TWTezosAddress *_Nonnull address);
