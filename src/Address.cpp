@@ -67,3 +67,51 @@ std::string TW::loadAddress(const Data& data, TWCoinType coin) {
         return "";
     }
 }
+
+bool TW::validate(const std::string& string, TWCoinType coin) {
+    switch (coin) {
+    case TWCoinTypeBinance:
+        return Tendermint::Address::isValid(string);
+
+    case TWCoinTypeBitcoin:
+        return Bitcoin::Bech32Address::isValid(string);
+
+    case TWCoinTypeBitcoinCash:
+        return Bitcoin::CashAddress::isValid(string);
+
+    case TWCoinTypeCallisto:
+    case TWCoinTypeEthereum:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypePoa:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeVeChain:
+    case TWCoinTypeWanChain:
+        return Ethereum::Address::isValid(string);
+
+    case TWCoinTypeICON:
+        return Icon::Address::isValid(string);
+
+    case TWCoinTypeLitecoin:
+        return Bitcoin::Bech32Address::isValid(string);
+
+    case TWCoinTypeNimiq:
+        return Nimiq::Address::isValid(string);
+
+    case TWCoinTypeRipple:
+        return Ripple::Address::isValid(string);
+
+    case TWCoinTypeDash:
+    case TWCoinTypeTezos:
+    case TWCoinTypeTron:
+    case TWCoinTypeZcoin:
+        return Bitcoin::Address::isValid(string);
+
+    case TWCoinTypeZcash:
+        return Zcash::TAddress::isValid(string);
+
+    case TWCoinTypeEOS:
+        return false;
+    }
+}
