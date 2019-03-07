@@ -978,8 +978,8 @@
 		7782DF2E222F217D00599404 /* TWTezosAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTezosAddress.h; sourceTree = "<group>"; };
 		7782DF30222F218E00599404 /* TWTezosAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWTezosAddress.cpp; sourceTree = "<group>"; };
 		7782DF32222F228C00599404 /* TezosAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TezosAddress.swift; sourceTree = "<group>"; };
-		778DB8B92230A55700CE8DB6 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Address.h; path = Tezos/Address.h; sourceTree = "<group>"; };
-		778DB8BA2230A55700CE8DB6 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Address.cpp; path = Tezos/Address.cpp; sourceTree = "<group>"; };
+		778DB8B92230A55700CE8DB6 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
+		778DB8BA2230A55700CE8DB6 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
 		7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore_TrustWalletCoreTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FA8B7BB1E3133C07DD22764 /* Pods-TrustWalletCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore.debug.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore/Pods-TrustWalletCore.debug.xcconfig"; sourceTree = "<group>"; };
 		A0EF7E3AF04D56209F55EDF7 /* Pods-TrustWalletCore-TrustWalletCoreTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore-TrustWalletCoreTests.debug.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore-TrustWalletCoreTests/Pods-TrustWalletCore-TrustWalletCoreTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -1088,8 +1088,7 @@
 				61B159BF21CC5DBB00CFE93B /* PublicKey.cpp */,
 				61B159AF21CC5DBB00CFE93B /* PublicKey.h */,
 				616D040F220A544400A776E8 /* Result.h */,
-				778DB8BA2230A55700CE8DB6 /* Address.cpp */,
-				778DB8B92230A55700CE8DB6 /* Address.h */,
+				778DB8C02230ABD000CE8DB6 /* Tezos */,
 				BB21105A221C039A00571DF7 /* Ripple */,
 				61A9B35C2200D85A00E601B3 /* Tendermint */,
 				61C4E8B92225C3C50020A917 /* Tron */,
@@ -1834,6 +1833,15 @@
 				61FE4B3522208E0200C65017 /* Signer.h */,
 			);
 			path = VeChain;
+			sourceTree = "<group>";
+		};
+		778DB8C02230ABD000CE8DB6 /* Tezos */ = {
+			isa = PBXGroup;
+			children = (
+				778DB8BA2230A55700CE8DB6 /* Address.cpp */,
+				778DB8B92230A55700CE8DB6 /* Address.h */,
+			);
+			path = Tezos;
 			sourceTree = "<group>";
 		};
 		BA222DA2893E8FA7B4F3A6DB /* Frameworks */ = {
