@@ -11,17 +11,17 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <TrustWalletCore/TWWallet.h>
+#include <TrustWalletCore/TWCoinUtility.h>
 
 #include "TWJNI.h"
-#include "Wallet.h"
+#include "CoinUtility.h"
 
-jboolean JNICALL Java_wallet_core_jni_Wallet_validate(JNIEnv *env, jclass thisClass, jstring string, jobject coin) {
+jboolean JNICALL Java_wallet_core_jni_CoinUtility_validate(JNIEnv *env, jclass thisClass, jstring string, jobject coin) {
     TWString *stringString = TWStringCreateWithJString(env, string);
     jclass coinClass = (*env)->GetObjectClass(env, coin);
     jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
     jint coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
-    jboolean resultValue = (jboolean) TWWalletValidate(stringString, coinValue);
+    jboolean resultValue = (jboolean) TWCoinUtilityValidate(stringString, coinValue);
 
     TWStringDelete(stringString);
     (*env)->DeleteLocalRef(env, coinClass);

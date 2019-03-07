@@ -4,11 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWWallet.h>
+#include <TrustWalletCore/TWCoinUtility.h>
 
 #include "../Address.h"
 
-bool TWWalletValidate(TWString *_Nonnull string, enum TWCoinType coin) {
+bool TWCoinUtilityValidate(TWString *_Nonnull string, enum TWCoinType coin) {
     auto& s = *reinterpret_cast<const std::string*>(string);
     return TW::validate(s, coin);
 }
