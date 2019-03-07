@@ -36,7 +36,7 @@ class TezosTests: XCTestCase {
 
   public func testAddressFromPublicKey() {
     let privateKey = PrivateKey(data: Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!)!
-    let publicKey = privateKey.getPublicKey(compressed: false)
+    let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
 
     let address = tezos.address(for: publicKey)
 

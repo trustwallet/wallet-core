@@ -40,7 +40,6 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address key data");
     }
     std::vector<uint8_t> vec(&buffer[0], &buffer[128]);
-    auto str = TW::hex(vec);
     std::copy(buffer, buffer + Address::size, bytes.begin());
 }
 
