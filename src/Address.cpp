@@ -71,10 +71,10 @@ std::string TW::loadAddress(const Data& data, TWCoinType coin) {
 bool TW::validate(const std::string& string, TWCoinType coin) {
     switch (coin) {
     case TWCoinTypeBinance:
-        return Tendermint::Address::isValid(string);
+        return Tendermint::Address::isValid(string, HRP_BINANCE);
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address::isValid(string);
+        return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) || Bitcoin::Address::isValid(string);
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress::isValid(string);
@@ -94,7 +94,7 @@ bool TW::validate(const std::string& string, TWCoinType coin) {
         return Icon::Address::isValid(string);
 
     case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address::isValid(string);
+        return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) || Bitcoin::Address::isValid(string);
 
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);

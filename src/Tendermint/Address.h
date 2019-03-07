@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../Data.h"
 #include "../PublicKey.h"
 
 #include <stdint.h>
@@ -22,16 +23,19 @@ public:
     std::string hrp;
 
     /// Public key hash.
-    std::vector<uint8_t> keyHash;
+    Data keyHash;
 
     /// Determines whether a string makes a valid Tendermint address.
     static bool isValid(const std::string& string);
 
-    /// Initializes an address with a key hash.
-    Address(const std::string& hrp, const std::vector<uint8_t>& keyHash) : hrp(hrp), keyHash(keyHash) {}
+    /// Determines whether a string makes a valid Tendermint address, and the HRP matches.
+    static bool isValid(const std::string& string, const std::string& hrp);
 
     /// Initializes an address with a key hash.
-    Address(const std::string& hrp, std::vector<uint8_t>&& keyHash) : hrp(hrp), keyHash(keyHash) {}
+    Address(const std::string& hrp, const Data& keyHash) : hrp(hrp), keyHash(keyHash) {}
+
+    /// Initializes an address with a key hash.
+    Address(const std::string& hrp, Data&& keyHash) : hrp(hrp), keyHash(keyHash) {}
 
     /// Initializes an address with a public key.
     Address(const std::string& hrp, const PublicKey& publicKey);

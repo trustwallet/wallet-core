@@ -14,9 +14,28 @@
 using namespace TW::Bitcoin;
 typedef std::vector<uint8_t> Data;
 
-bool Bech32Address::isValid(const std::string& addr) {
-    auto dec = Bech32::decode(addr);
+bool Bech32Address::isValid(const std::string& string) {
+    auto dec = Bech32::decode(string);
     if (dec.second.empty()) {
+        return false;
+    }
+
+    Data conv;
+    if (!Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin() + 1, dec.second.end())) ||
+        conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 || (dec.second[0] == 0 &&
+        conv.size() != 20 && conv.size() != 32)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool Bech32Address::isValid(const std::string& string, const std::string& hrp) {
+    auto dec = Bech32::decode(string);
+    if (dec.second.empty()) {
+        return false;
+    }
+    if (dec.first != hrp) {
         return false;
     }
 
