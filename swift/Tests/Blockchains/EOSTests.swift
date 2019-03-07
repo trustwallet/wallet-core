@@ -10,7 +10,7 @@ import XCTest
 class EOSTests: XCTestCase {
     func testAddress() {
         let privateKey = PrivateKey(wif: "5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3")!
-        let publicKey = privateKey.getPublicKey(compressed: false)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
 
         let address = EOS().address(for: publicKey)
         let string = "EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV"

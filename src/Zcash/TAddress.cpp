@@ -17,8 +17,24 @@ bool TAddress::isValid(const std::string& string) {
     size_t capacity = 128;
     uint8_t buffer[capacity];
 
+    auto size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
+    if (size != TAddress::size) {
+        return false;
+    }
+
+    return true;
+}
+
+bool TAddress::isValid(const std::string& string, const std::vector<byte>& validPrefixes) {
+    size_t capacity = 128;
+    uint8_t buffer[capacity];
+
     int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
     if (size != TAddress::size) {
+        return false;
+    }
+
+    if (std::find(validPrefixes.begin(), validPrefixes.end(), buffer[0]) == validPrefixes.end()) {
         return false;
     }
 
@@ -29,8 +45,10 @@ TAddress::TAddress(const std::string& string) {
     size_t capacity = 128;
     uint8_t buffer[capacity];
 
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    assert(size == TAddress::size);
+    auto size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
+    if (size != TAddress::size) {
+        throw std::invalid_argument("Invalid address data");
+    }
 
     memcpy(bytes, buffer, TAddress::size);
 }

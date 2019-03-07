@@ -91,3 +91,4 @@ TEST(TezosAddress, isInvalid) {
         ASSERT_FALSE(Address::isValid(address));
     }
 }
+

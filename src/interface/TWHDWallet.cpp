@@ -39,8 +39,8 @@ TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
     return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
-    return new TWPrivateKey{ wallet->impl.getKey(purpose, coin, account, change, address) };
+struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *wallet, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
+    return new TWPrivateKey{ wallet->impl.getKey(coin, account, change, address) };
 }
 
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {
@@ -51,15 +51,13 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *wallet, TWP
     return new std::string(wallet->impl.getExtendedPublicKey(purpose, coin, version));
 }
 
-TWPublicKey TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address) {
-    auto publicKey = HDWallet::getPublicKeyFromExtended(*reinterpret_cast<const std::string*>(extended), versionPublic, versionPrivate, change, address);
-    auto result = TWPublicKey();
-    std::copy(publicKey.bytes.begin(), publicKey.bytes.end(), result.bytes);
-    return result;
+TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, TWCurve curve, TWHDVersion versionPublic, TWHDVersion versionPrivate, uint32_t change, uint32_t address) {
+    auto publicKey = HDWallet::getPublicKeyFromExtended(*reinterpret_cast<const std::string*>(extended), curve, versionPublic, versionPrivate, change, address);
+    return new TWPublicKey{ PublicKey(publicKey) };
 }
 
-TWString* TWHDWalletGetAddressFromExtended(TWString *_Nonnull extended, TWCoinType coinType, uint32_t change, uint32_t address) {
-    auto result = HDWallet::getAddressFromExtended(*reinterpret_cast<const std::string*>(extended), coinType, change, address);
+TWString* TWHDWalletGetAddressFromExtended(TWString *_Nonnull extended, TWCurve curve, TWCoinType coinType, uint32_t change, uint32_t address) {
+    auto result = HDWallet::getAddressFromExtended(*reinterpret_cast<const std::string*>(extended), curve, coinType, change, address);
     if (!result) {
         return nullptr;
     }

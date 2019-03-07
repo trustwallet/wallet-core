@@ -1,0 +1,11 @@
+{
+    "id": "3051ca7d-3d36-4a4a-acc2-09e9083732b0",
+    "type": "watch",
+    "activeAccounts": [
+        {
+            "address": "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b",
+            "derivationPath": "m/44'/60'/0'/0/0"
+        }
+    ],
+    "version": 3
+}

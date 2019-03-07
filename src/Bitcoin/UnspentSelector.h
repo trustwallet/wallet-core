@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "../proto/Bitcoin.pb.h"
+#include "UnspentCalculator.h"
 
 namespace TW {
 namespace Bitcoin {
@@ -23,12 +24,14 @@ public:
     ///
     /// \returns the list of selected utxos or an empty list if there are insufficient funds.
     template<typename T>
-    static std::vector<Proto::UnspentTransaction> select(const T& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
+    std::vector<Proto::UnspentTransaction> select(const T& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs = 2);
 
-    static int64_t calculateFee(size_t inputs, size_t outputs = 2, int64_t byteFee = 1);
+    UnspentCalculator calculator;
 
-    static int64_t calculateSingleInputFee(int64_t byteFee);
+    UnspentSelector(): calculator(UnspentCalculator()) {}
+    UnspentSelector(UnspentCalculator calculator): calculator(calculator) {}
 
+public:
     template<typename T>
     static inline int64_t sum(const T& utxos) {
         int64_t sum = 0;
@@ -36,6 +39,8 @@ public:
             sum += utxo.amount();
         return sum;
     }
+private:
+    std::vector<Proto::UnspentTransaction> filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee);
 };
 
 }} // namespace

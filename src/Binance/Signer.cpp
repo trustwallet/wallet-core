@@ -35,7 +35,7 @@ std::vector<uint8_t> Signer::build() const {
 std::vector<uint8_t> Signer::sign() const {
     auto key = PrivateKey(input.private_key());
     auto hash = Hash::sha256(signaturePreimage());
-    auto signature = key.sign(hash);
+    auto signature = key.sign(hash, TWCurveSECP256k1);
     return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
 }
 
@@ -51,7 +51,7 @@ std::vector<uint8_t> Signer::encodeTransaction(const std::vector<uint8_t>& signa
     transaction.add_signatures(signature.data(), signature.size());
     transaction.set_memo(input.memo());
     transaction.set_source(input.source());
-    
+
     auto data = transaction.SerializeAsString();
     return aminoWrap(data, transactionPrefix, true);
 }
@@ -82,11 +82,11 @@ std::vector<uint8_t> Signer::encodeOrder() const {
 
 std::vector<uint8_t> Signer::encodeSignature(const std::vector<uint8_t>& signature) const {
     auto key = PrivateKey(input.private_key());
-    auto publicKey = key.getPublicKey(true);
+    auto publicKey = key.getPublicKey(PublicKeyType::secp256k1);
 
     auto encodedPublicKey = pubKeyPrefix;
-    encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.size()));
-    encodedPublicKey.insert(encodedPublicKey.end(), publicKey.begin(), publicKey.end());
+    encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.bytes.size()));
+    encodedPublicKey.insert(encodedPublicKey.end(), publicKey.bytes.begin(), publicKey.bytes.end());
 
     auto object = Binance::Proto::Signature();
     object.set_pub_key(encodedPublicKey.data(), encodedPublicKey.size());

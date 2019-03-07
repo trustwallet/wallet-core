@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWCoinType.h>
+
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/UnspentSelector.h"
@@ -41,8 +43,9 @@ TEST(UnspentSelector, SelectUnpsents1) {
     utxos.push_back(buildUTXO(transactionOutPoint, 11000));
     utxos.push_back(buildUTXO(transactionOutPoint, 12000));
 
-    auto selected = UnspentSelector::select(utxos, 5000, 1);
-    
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 5000, 1);
+
     ASSERT_EQ(sum(selected), 11000);
 }
 
@@ -55,7 +58,8 @@ TEST(UnspentSelector, SelectUnpsents2) {
     utxos.push_back(buildUTXO(transactionOutPoint, 50000));
     utxos.push_back(buildUTXO(transactionOutPoint, 120000));
 
-    auto selected = UnspentSelector::select(utxos, 10000, 1);
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 10000, 1);
 
     ASSERT_EQ(sum(selected), 50000);
 }
@@ -66,7 +70,8 @@ TEST(UnspentSelector, SelectUnpsents3) {
     utxos.push_back(buildUTXO(transactionOutPoint, 2000));
     utxos.push_back(buildUTXO(transactionOutPoint, 5000));
 
-    auto selected = UnspentSelector::select(utxos, 6000, 1);
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 6000, 1);
 
     ASSERT_EQ(sum(selected), 9000);
 }
@@ -77,7 +82,8 @@ TEST(UnspentSelector, SelectUnpsents4) {
     utxos.push_back(buildUTXO(transactionOutPoint, 30000));
     utxos.push_back(buildUTXO(transactionOutPoint, 30000));
 
-    auto selected = UnspentSelector::select(utxos, 50000, 1);
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 50000, 1);
 
     ASSERT_EQ(sum(selected), 70000);
 }
@@ -94,7 +100,8 @@ TEST(UnspentSelector, SelectUnpsents5) {
     utxos.push_back(buildUTXO(transactionOutPoint, 8000));
     utxos.push_back(buildUTXO(transactionOutPoint, 9000));
 
-    auto selected = UnspentSelector::select(utxos, 28000, 1);
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 28000, 1);
 
     ASSERT_EQ(sum(selected), 30000);
 }
@@ -105,7 +112,8 @@ TEST(UnspentSelector, SelectUnpsentsInsufficient) {
     utxos.push_back(buildUTXO(transactionOutPoint, 4000));
     utxos.push_back(buildUTXO(transactionOutPoint, 4000));
 
-    auto selected = UnspentSelector::select(utxos, 15000, 1);
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 15000, 1);
 
     ASSERT_TRUE(selected.empty());
 }
@@ -115,7 +123,8 @@ TEST(UnspentSelector, SelectCustomCase) {
     utxos.push_back(buildUTXO(transactionOutPoint, 794121));
     utxos.push_back(buildUTXO(transactionOutPoint, 2289357));
 
-    auto selected = UnspentSelector::select(utxos, 2287189, 61);
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 2287189, 61);
 
     ASSERT_EQ(sum(selected), 3083478);
 }
@@ -123,8 +132,52 @@ TEST(UnspentSelector, SelectCustomCase) {
 TEST(UnspentSelector, SelectMaxCase) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     utxos.push_back(buildUTXO(transactionOutPoint, 10189534));
-    auto selected = UnspentSelector::select(utxos, 10189342, 1);
+
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 10189342, 1);
 
     ASSERT_EQ(sum(selected), 10189534);
     ASSERT_TRUE(selected.size() > 0);
+}
+
+TEST(UnspentSelector, SelectZcashUnpsents) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 100000));
+    utxos.push_back(buildUTXO(transactionOutPoint, 2592));
+    utxos.push_back(buildUTXO(transactionOutPoint, 73774));
+
+    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
+    auto selector = UnspentSelector(calculator);
+    auto selected = selector.select(utxos, 10000, 1);
+
+    ASSERT_EQ(sum(selected), 73774);
+    ASSERT_TRUE(selected.size() > 0);
+}
+
+TEST(UnspentSelector, SelectZcashMaxUnpsents) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 100000));
+    utxos.push_back(buildUTXO(transactionOutPoint, 2592));
+    utxos.push_back(buildUTXO(transactionOutPoint, 73774));
+
+    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
+    auto selector = UnspentSelector(calculator);
+    auto selected = selector.select(utxos, 166366, 1);
+
+    ASSERT_EQ(sum(selected), 176366);
+    ASSERT_TRUE(selected.size() > 0);
+}
+
+TEST(UnspentSelector, SelectZcashMaxUnpsents2) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 100000));
+    utxos.push_back(buildUTXO(transactionOutPoint, 2592));
+    utxos.push_back(buildUTXO(transactionOutPoint, 73774));
+
+    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
+    auto selector = UnspentSelector(calculator);
+    auto selected = selector.select(utxos, 176360, 1);
+
+    ASSERT_EQ(sum(selected), 0);
+    ASSERT_TRUE(selected.size() == 0);
 }

@@ -19,7 +19,7 @@
 
 TEST(Zcash, TransparentAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
-    auto publicKey = TWPrivateKeyGetPublicKey(privateKey.get(), true);
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
     auto address = TWZcashTAddress();
     TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
     auto addressString = WRAPS(TWZcashTAddressDescription(address));
@@ -31,8 +31,8 @@ TEST(Zcash, DeriveTransparentAddress) {
     auto passphrase = STRING("TREZOR");
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWPurposeBIP44, TWCoinTypeZcash, 0, 0, 5));
-    auto publicKey = TWPrivateKeyGetPublicKey(key.get(), false);
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeZcash, 0, 0, 5));
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
 
     TWZcashTAddress address;
     TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
@@ -56,8 +56,8 @@ TEST(Zcash, ExtendedKeys) {
 
 TEST(Zcash, DerivePubkeyFromXpub) {
     auto xpub = STRING("xpub6CksSgKBhD9KaLgxLE9LXpSj74b2EB9d1yKvhWxrstk4Md8gmiJb5GwkMeBhpLxVjACMdNbRsAm2GG5ehVuyq42QBYYPAjXjcBxMVmpaaNL");
-    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
-    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
+    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
+    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
 
     TWZcashTAddress address3;
     TWZcashTAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixZcashT);
@@ -73,7 +73,7 @@ TEST(Zcash, DerivePubkeyFromXpub) {
 
 TEST(Zcash, DeriveAddressFromXpub) {
     auto xpub = STRING("xpub6C7HhMqpir3KBA6ammv5B58RT3XFTJqoZFoj3J56dz9XwehZ2puSH38ERtnz7HaXGxaZP8AHT4M2bSRHpBXUZrbsJ2xg3xs53DGKYCqj8mr");
-    auto address = WRAPS(TWHDWalletGetAddressFromExtended(xpub.get(), TWCoinTypeZcash, 0, 0));
+    auto address = WRAPS(TWHDWalletGetAddressFromExtended(xpub.get(), TWCurveSECP256k1, TWCoinTypeZcash, 0, 0));
 
     assertStringsEqual(address, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt");
 }

@@ -46,12 +46,15 @@ Address::Address(const std::string& string) {
 
 Address::Address(const std::vector<uint8_t>& data, TWIconAddressType type) : type(type) {
     assert(Address::isValid(data));
+    if (data.size() != size) {
+        throw std::invalid_argument("Invalid address data");
+    }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey, TWIconAddressType type) : type(type) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
-    sha3_256(publicKey.bytes.data() + 1, PublicKey::uncompressedSize - 1, hash.data());
+    sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 

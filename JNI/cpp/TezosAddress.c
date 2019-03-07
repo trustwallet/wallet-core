@@ -17,51 +17,38 @@
 #include "TWJNI.h"
 #include "TezosAddress.h"
 
-jbyteArray JNICALL Java_wallet_core_jni_TezosAddress_initWithString(JNIEnv *env, jclass thisClass, jstring string) {
-    jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TWTezosAddress));
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
-    struct TWTezosAddress *instance = (struct TWTezosAddress *) bytesBuffer;
+
+jlong JNICALL Java_wallet_core_jni_TezosAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string) {
     TWString *stringString = TWStringCreateWithJString(env, string);
-    jboolean result = (jboolean) TWTezosAddressInitWithString(instance, stringString);
+    struct TWTezosAddress *instance = TWTezosAddressCreateWithString(stringString);
     TWStringDelete(stringString);
-    (*env)->ReleaseByteArrayElements(env, array, bytesBuffer, 0);
-
-    if (result) {
-        return array;
-    } else {
-        (*env)->DeleteLocalRef(env, array);
-        return NULL;
-    }
+    return (jlong) instance;
 }
 
-jbyteArray JNICALL Java_wallet_core_jni_TezosAddress_initWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey, jchar prefix) {
-    jbyteArray array = (*env)->NewByteArray(env, sizeof(struct TWTezosAddress));
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, array, NULL);
-    struct TWTezosAddress *instance = (struct TWTezosAddress *) bytesBuffer;
+jlong JNICALL Java_wallet_core_jni_TezosAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey) {
     jclass publicKeyClass = (*env)->GetObjectClass(env, publicKey);
-    jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
-    jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
-    jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
-    jboolean result = (jboolean) TWTezosAddressInitWithPublicKey(instance, *publicKeyInstance, prefix);
-    (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, publicKeyBytesArray);
+    jfieldID publicKeyHandleFieldID = (*env)->GetFieldID(env, publicKeyClass, "nativeHandle", "J");
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) (*env)->GetLongField(env, publicKey, publicKeyHandleFieldID);
+    struct TWTezosAddress *instance = TWTezosAddressCreateWithPublicKey(publicKeyInstance);
     (*env)->DeleteLocalRef(env, publicKeyClass);
-    (*env)->ReleaseByteArrayElements(env, array, bytesBuffer, 0);
-
-    if (result) {
-        return array;
-    } else {
-        (*env)->DeleteLocalRef(env, array);
-        return NULL;
-    }
+    return (jlong) instance;
 }
 
-jboolean JNICALL Java_wallet_core_jni_TezosAddress_isValid(JNIEnv *env, jclass thisClass, jbyteArray data) {
-    TWData *dataData = TWDataCreateWithJByteArray(env, data);
-    jboolean resultValue = (jboolean) TWTezosAddressIsValid(dataData);
+void JNICALL Java_wallet_core_jni_TezosAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
+    TWTezosAddressDelete((struct TWTezosAddress *) handle);
+}
 
-    TWDataDelete(dataData);
+jboolean JNICALL Java_wallet_core_jni_TezosAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs) {
+    jclass lhsClass = (*env)->GetObjectClass(env, lhs);
+    jfieldID lhsHandleFieldID = (*env)->GetFieldID(env, lhsClass, "nativeHandle", "J");
+    struct TWTezosAddress *lhsInstance = (struct TWTezosAddress *) (*env)->GetLongField(env, lhs, lhsHandleFieldID);
+    jclass rhsClass = (*env)->GetObjectClass(env, rhs);
+    jfieldID rhsHandleFieldID = (*env)->GetFieldID(env, rhsClass, "nativeHandle", "J");
+    struct TWTezosAddress *rhsInstance = (struct TWTezosAddress *) (*env)->GetLongField(env, rhs, rhsHandleFieldID);
+    jboolean resultValue = (jboolean) TWTezosAddressEqual(lhsInstance, rhsInstance);
+
+    (*env)->DeleteLocalRef(env, lhsClass);
+    (*env)->DeleteLocalRef(env, rhsClass);
 
     return resultValue;
 }
@@ -77,33 +64,24 @@ jboolean JNICALL Java_wallet_core_jni_TezosAddress_isValidString(JNIEnv *env, jc
 
 jstring JNICALL Java_wallet_core_jni_TezosAddress_description(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
-    jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
-    jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, bytesArray, NULL);
-    struct TWTezosAddress *instance = (struct TWTezosAddress *) bytesBuffer;
 
-    jstring result = TWStringJString(TWTezosAddressDescription(*instance), env);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWTezosAddress *instance = (struct TWTezosAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
+    jstring result = TWStringJString(TWTezosAddressDescription(instance), env);
 
-    (*env)->ReleaseByteArrayElements(env, bytesArray, bytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
     return result;
 }
 
-jbyteArray JNICALL Java_wallet_core_jni_TezosAddress_data(JNIEnv *env, jobject thisObject) {
+jbyteArray JNICALL Java_wallet_core_jni_TezosAddress_keyHash(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
-    jfieldID bytesFieldID = (*env)->GetFieldID(env, thisClass, "bytes", "[B");
-    jbyteArray bytesArray = (*env)->GetObjectField(env, thisObject, bytesFieldID);
-    jbyte* bytesBuffer = (*env)->GetByteArrayElements(env, bytesArray, NULL);
-    struct TWTezosAddress *instance = (struct TWTezosAddress *) bytesBuffer;
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWTezosAddress *instance = (struct TWTezosAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    jbyteArray result = TWDataJByteArray(TWTezosAddressData(*instance), env);
+    jbyteArray result = TWDataJByteArray(TWTezosAddressKeyHash(instance), env);
 
-
-    (*env)->ReleaseByteArrayElements(env, bytesArray, bytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, bytesArray);
     (*env)->DeleteLocalRef(env, thisClass);
 
     return result;
