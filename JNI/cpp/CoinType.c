@@ -27,7 +27,7 @@ jobject JNICALL Java_wallet_core_jni_CoinType_purpose(JNIEnv *env, jobject thisO
     (*env)->DeleteLocalRef(env, thisClass);
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/Purpose");
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(J)Lwallet/core/jni/Purpose;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/Purpose;");
     return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 }
 
@@ -42,7 +42,7 @@ jobject JNICALL Java_wallet_core_jni_CoinType_curve(JNIEnv *env, jobject thisObj
     (*env)->DeleteLocalRef(env, thisClass);
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/Curve");
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(J)Lwallet/core/jni/Curve;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/Curve;");
     return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 }
 

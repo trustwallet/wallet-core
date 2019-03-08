@@ -100,7 +100,7 @@ jobject JNICALL Java_wallet_core_jni_TendermintAddress_hrp(JNIEnv *env, jobject 
     (*env)->DeleteLocalRef(env, thisClass);
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/HRP");
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(J)Lwallet/core/jni/HRP;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/HRP;");
     return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 }
 

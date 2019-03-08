@@ -70,7 +70,7 @@
     jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/<%= method.return_type.name %>;");
     return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
 <%  elsif method.return_type.is_enum -%>
-    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(J)Lwallet/core/jni/<%= method.return_type.name %>;");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/<%= method.return_type.name %>;");
     return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 <%  else -%>
     if (result == NULL) {
