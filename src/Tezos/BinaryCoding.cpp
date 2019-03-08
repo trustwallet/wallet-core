@@ -108,22 +108,22 @@ PublicKey parsePublicKey(std::string publicKey) {
 
 // Forge the given public key into a hex encoded string.
 std::string forgePublicKey(PublicKey publicKey) {
-    size_t prefixLength = 4;
     uint8_t prefix[] = {13, 15, 37, 217};
-    auto data = Data({13, 15, 37, 217});
-    auto pk = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
-    append(data, pk);
+    auto data = Data(prefix, prefix + 4);
+    auto bytes = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
+    append(data, bytes);
 
     size_t size = 0;
     b58enc(nullptr, &size, data.data(), 36);
     size += 16;
 
-    std::string publicKey(size, ' ');
-    base58_encode_check(data.data(), 36, HASHER_SHA2D, &str[0], size);
+    std::string pk(size, ' ');
+    base58_encode_check(data.data(), 36, HASHER_SHA2D, &pk[0], size);
 
     size_t capacity = 128;
     uint8_t decoded[capacity];
-    int decodedLength = base58CheckDecodePrefix(publicKey, prefixLength, prefix, decoded);
+    size_t prefixLength = 4;
+    int decodedLength = base58CheckDecodePrefix(pk, prefixLength, prefix, decoded);
 
     return "00" + TW::hex(decoded, decoded + decodedLength);
 }
