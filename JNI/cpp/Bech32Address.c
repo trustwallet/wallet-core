@@ -94,12 +94,14 @@ jobject JNICALL Java_wallet_core_jni_Bech32Address_hrp(JNIEnv *env, jobject this
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWBech32Address *instance = (struct TWBech32Address *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    jobject resultValue = (jobject) TWBech32AddressHRP(instance);
+    enum TWHRP result = TWBech32AddressHRP(instance);
 
 
     (*env)->DeleteLocalRef(env, thisClass);
 
-    return resultValue;
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/HRP");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/HRP;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 }
 
 jbyteArray JNICALL Java_wallet_core_jni_Bech32Address_witnessProgram(JNIEnv *env, jobject thisObject) {

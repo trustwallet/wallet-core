@@ -47,11 +47,13 @@
     return result;
 <%
   # Method returns an object
-  elsif should_return_object(method)
+  elsif method.return_type.is_struct || method.return_type.is_class || method.return_type.is_enum
     if method.return_type.is_struct -%>
     struct TW<%= method.return_type.name %> result = <%= call %>;
 <%  elsif method.return_type.is_class -%>
     struct TW<%= method.return_type.name %> *result = <%= call %>;
+<%  elsif method.return_type.is_enum -%>
+    enum TW<%= method.return_type.name %> result = <%= call %>;
 <%  else -%>
     TW<%= method.return_type.name %> *result = <%= call %>;
 <%  end -%>
@@ -67,6 +69,9 @@
     (*env)->SetByteArrayRegion(env, resultArray, 0, sizeof(struct TW<%= method.return_type.name %>), (jbyte *) &result);
     jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "([B)Lwallet/core/jni/<%= method.return_type.name %>;");
     return (*env)->CallStaticObjectMethod(env, class, method, resultArray);
+<%  elsif method.return_type.is_enum -%>
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/<%= method.return_type.name %>;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 <%  else -%>
     if (result == NULL) {
         return NULL;

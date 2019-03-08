@@ -6,8 +6,10 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 
-enum TWPurpose TWCoinTypePurpose(enum TWCoinType type) {
-    switch(type) {
+#include "../Address.h"
+
+enum TWPurpose TWCoinTypePurpose(enum TWCoinType coin) {
+    switch(coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
@@ -35,8 +37,8 @@ enum TWPurpose TWCoinTypePurpose(enum TWCoinType type) {
     }
 }
 
-enum TWCurve TWCoinTypeCurve(enum TWCoinType type) {
-    switch(type) {
+enum TWCurve TWCoinTypeCurve(enum TWCoinType coin) {
+    switch(coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
@@ -62,4 +64,8 @@ enum TWCurve TWCoinTypeCurve(enum TWCoinType type) {
     case TWCoinTypeNimiq:
         return TWCurveEd25519;
     }
+}
+
+bool TWCoinTypeValidate(enum TWCoinType coin, TWString *_Nonnull address) {
+    return TW::validate(*reinterpret_cast<const std::string*>(address), coin);
 }

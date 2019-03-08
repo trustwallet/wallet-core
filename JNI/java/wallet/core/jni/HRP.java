@@ -24,6 +24,19 @@ public enum HRP {
     }
     public int value() { return value; }
 
+    public static HRP createFromValue(int value) {
+        switch (value) {
+            case 0: return HRP.UNKNOWN;
+            case 1: return HRP.BITCOIN;
+            case 2: return HRP.LITECOIN;
+            case 3: return HRP.BITCOINCASH;
+            case 4: return HRP.BINANCE;
+            case 5: return HRP.BINANCETEST;
+            default: return null;
+        }
+    }
+
+
     public String toString() {
         switch (this) {
         case UNKNOWN: return "";

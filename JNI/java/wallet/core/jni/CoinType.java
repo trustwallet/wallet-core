@@ -39,4 +39,36 @@ public enum CoinType {
         this.value = value;
     }
     public int value() { return value; }
+
+    public static CoinType createFromValue(int value) {
+        switch (value) {
+            case 714: return CoinType.BINANCE;
+            case 0: return CoinType.BITCOIN;
+            case 145: return CoinType.BITCOINCASH;
+            case 820: return CoinType.CALLISTO;
+            case 5: return CoinType.DASH;
+            case 194: return CoinType.EOS;
+            case 60: return CoinType.ETHEREUM;
+            case 61: return CoinType.ETHEREUMCLASSIC;
+            case 6060: return CoinType.GO;
+            case 74: return CoinType.ICON;
+            case 2: return CoinType.LITECOIN;
+            case 178: return CoinType.POA;
+            case 144: return CoinType.RIPPLE;
+            case 1729: return CoinType.TEZOS;
+            case 1001: return CoinType.THUNDERTOKEN;
+            case 889: return CoinType.TOMOCHAIN;
+            case 195: return CoinType.TRON;
+            case 818: return CoinType.VECHAIN;
+            case 5718350: return CoinType.WANCHAIN;
+            case 133: return CoinType.ZCASH;
+            case 136: return CoinType.ZCOIN;
+            case 242: return CoinType.NIMIQ;
+            default: return null;
+        }
+    }
+
+    public native Purpose purpose();
+    public native Curve curve();
+    public native boolean validate(String address);
 }

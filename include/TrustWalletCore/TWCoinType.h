@@ -9,6 +9,7 @@
 #include "TWBase.h"
 #include "TWCurve.h"
 #include "TWPurpose.h"
+#include "TWString.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -43,10 +44,14 @@ enum TWCoinType {
 
 /// Returns the purpose for a coin type.
 TW_EXPORT_PROPERTY
-enum TWPurpose TWCoinTypePurpose(enum TWCoinType type);
+enum TWPurpose TWCoinTypePurpose(enum TWCoinType coin);
 
 /// Returns the curve that should be used for a coin type.
 TW_EXPORT_PROPERTY
-enum TWCurve TWCoinTypeCurve(enum TWCoinType type);
+enum TWCurve TWCoinTypeCurve(enum TWCoinType coin);
+
+/// Validates an address string.
+TW_EXPORT_METHOD
+bool TWCoinTypeValidate(enum TWCoinType coin, TWString *_Nonnull address);
 
 TW_EXTERN_C_END

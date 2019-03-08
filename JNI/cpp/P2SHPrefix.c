@@ -3,12 +3,16 @@
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
 
-#include <TrustWalletCore/TWCoinUtility.h>
+#include <jni.h>
+#include <stdio.h>
+#include <string.h>
 
-#include "../Address.h"
+#include <TrustWalletCore/TWP2SHPrefix.h>
 
-bool TWCoinUtilityValidate(TWString *_Nonnull string, enum TWCoinType coin) {
-    auto& s = *reinterpret_cast<const std::string*>(string);
-    return TW::validate(s, coin);
-}
+#include "TWJNI.h"
+#include "P2SHPrefix.h"
+
