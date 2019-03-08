@@ -13,7 +13,34 @@ public enum <%= entity.name %> {
         this.value = value;
     }
     public <%= type %> value() { return value; }
+
+    public static <%= entity.name %> createFromValue(<%= type %> value) {
+        switch (value) {
+<%  entity.cases.each_with_index do |c, i| -%>
+            case <% if type != 'int' %>(<%= type %>) <% end %><%= c.value %>: return <%= entity.name %>.<%= JavaHelper.format_constant(c.name) %>;
 <%  end -%>
+            default: return null;
+        }
+    }
+
+<%  end -%>
+<%# Property declarations -%>
+<%- entity.properties.each do |property| -%>
+<%-   if should_return_data(property) -%>
+    public native byte[] <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
+<%-   else -%>
+    public native <%= JavaHelper.type(property.return_type) %> <%= JavaHelper.format_name(property.name) %>(<%= JavaHelper.parameters(property.parameters.drop(1)) %>);
+<%-   end -%>
+<%- end -%>
+<%# Method declarations -%>
+<%- entity.methods.each do |method| -%>
+<%-   next if method.name.start_with?('Delete') -%>
+<%-   if should_return_data(method) -%>
+    public native byte[] <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
+<%-   else -%>
+    public native <%= JavaHelper.type(method.return_type) %> <%= JavaHelper.format_name(method.name) %>(<%= JavaHelper.parameters(method.parameters.drop(1)) %>);
+<%-   end -%>
+<%- end -%>
 <%# toString -%>
 <%  if has_string -%>
 
