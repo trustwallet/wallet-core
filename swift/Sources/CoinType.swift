@@ -38,4 +38,13 @@ public enum CoinType: UInt32 {
     public var curve: Curve {
         return Curve(rawValue: TWCoinTypeCurve(TWCoinType(rawValue: rawValue)).rawValue)!
     }
+
+    public func validate(address: String) -> Bool {
+        let addressString = TWStringCreateWithNSString(address)
+        defer {
+            TWStringDelete(addressString)
+        }
+        return TWCoinTypeValidate(TWCoinType(rawValue: rawValue), addressString)
+    }
+
 }
