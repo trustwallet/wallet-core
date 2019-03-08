@@ -15,7 +15,6 @@ TW_EXTERN_C_BEGIN
 
 struct TWPublicKey;
 
-
 /// Represents a Tezos address.
 TW_EXPORT_CLASS
 struct TWTezosAddress;

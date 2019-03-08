@@ -5,8 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-#include "BinaryCoding.h"
-#include "HexCoding.h"
 #include "../HexCoding.h"
 #include "../Hash.h"
 
@@ -14,6 +12,7 @@
 #include <TrezorCrypto/ecdsa.h>
 
 using namespace TW::Tezos;
+
 
 std::string Address::forge() const {
     std::string result = "";
