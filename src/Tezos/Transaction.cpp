@@ -48,14 +48,14 @@ string Transaction::forge() {
     auto forgedStorageLimit = forgeZarith(storage_limit);
 
     if (kind == operationtype::REVEAL) {
-        auto forgedPublicKey = forgePublicKey(std::get<PublicKey>(destination_or_public_key));
-
-        return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
-            + forgedStorageLimit + forgedPublicKey;
+        if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key))
+            return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+                + forgedStorageLimit + forgePublicKey(*publicKey);
+        else throw std::invalid_argument( "Invalid publicKey" );
     }
     auto forgedAmount = forgeZarith(amount);
-    auto forgedDestination = std::get<Address>(destination_or_public_key).forge();
-
-    return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
-        + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
+    if(auto destination = std::get_if<Address>(&destination_or_public_key))
+        return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+            + forgedStorageLimit + forgedAmount + destination->forge() + forgeBool(false);
+    else throw std::invalid_argument( "Invalid destination" );
 }
