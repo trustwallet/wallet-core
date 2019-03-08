@@ -28,7 +28,7 @@ std::string OperationList::forgeBranch() const {
     uint8_t prefix[] = {1, 52};
 
     int decodedLength = base58CheckDecodePrefix(branch, prefixLength, prefix, decoded);
-    return TW::hex(decoded, decoded + decodedLength);
+    return hex(decoded, decoded + decodedLength);
 }
 
 std::string OperationList::forge() const {
