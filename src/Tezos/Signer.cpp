@@ -11,10 +11,6 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWString.h>
-#include <TrezorCrypto/blake2b.h>
-// #include <TrezorCrypto/ed25519.h>
 #include <TrustWalletCore/TWCurve.h>
 
 using namespace TW;
