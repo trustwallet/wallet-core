@@ -15,6 +15,11 @@ namespace TW {
 namespace Ontology {
 
 class Address {
+
+private:
+
+    std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);
+
 public:
 
     static const size_t size = 20;
@@ -27,8 +32,6 @@ public:
     explicit Address(const std::string &b58Address);
 
     explicit Address(const std::vector<uint8_t> &data);
-
-    std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);
 
     static bool isValid(const std::vector<uint8_t> &data) {
         return data.size() == size;
