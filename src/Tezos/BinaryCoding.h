@@ -6,10 +6,16 @@
 
 #pragma once
 
+#include "../Data.h"
+#include "../PublicKey.h"
+
 #include <string>
 
-int checkDecodeAndDropPrefix(const std::string& input, size_t prefixLength, uint8_t *prefix, uint8_t *output);
+using namespace TW;
+
+int base58CheckDecodePrefix(const std::string& input, size_t prefixLength, uint8_t *prefix, uint8_t *output);
+PublicKey parsePublicKey(std::string publicKey);
 std::string forgeBool(bool input);
 std::string forgePublicKeyHash(const std::string &publicKeyHash);
 std::string forgeAddress(const std::string address);
-std::string forgePublicKey(std::string publicKey);
+std::string forgePublicKey(PublicKey publicKey);

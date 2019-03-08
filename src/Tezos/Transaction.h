@@ -7,7 +7,8 @@
 #pragma once
 
 #include "Address.h"
-#include "PublicKey.h"
+#include "../PublicKey.h"
+
 #include <string>
 #include <variant>
 

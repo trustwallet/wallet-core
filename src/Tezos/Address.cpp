@@ -5,9 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "BinaryCoding.h"
+
 #include "../HexCoding.h"
 #include "../Hash.h"
-#include "BinaryCoding.h"
 
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
@@ -24,7 +25,8 @@ std::string Address::forge() const {
         size_t capacity = 128;
         uint8_t decoded[capacity];
 
-        int decodedLength = checkDecodeAndDropPrefix(s, prefixLength, prefix, decoded);
+        // TODO: validate decodedLength
+        int decodedLength = base58CheckDecodePrefix(s, prefixLength, prefix, decoded);
         result += "01";
         result += TW::hex(decoded, decoded + decodedLength);
         result += "00";

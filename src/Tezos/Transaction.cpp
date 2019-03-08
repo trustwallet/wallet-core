@@ -6,8 +6,9 @@
 
 #include "Address.h"
 #include "BinaryCoding.h"
-#include "PublicKey.h"
 #include "Transaction.h"
+
+#include "../PublicKey.h"
 #include <variant>
 #include <sstream>
 
@@ -47,7 +48,7 @@ string Transaction::forge() {
     auto forgedStorageLimit = forgeZarith(storage_limit);
 
     if (kind == operationtype::REVEAL) {
-        auto forgedPublicKey = std::get<PublicKey>(destination_or_public_key).forge();
+        auto forgedPublicKey = forgePublicKey(std::get<PublicKey>(destination_or_public_key));
 
         return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
             + forgedStorageLimit + forgedPublicKey;

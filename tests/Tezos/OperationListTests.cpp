@@ -5,8 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Tezos/Address.h"
+#include "Tezos/BinaryCoding.h"
 #include "Tezos/OperationList.h"
-#include "Tezos/PublicKey.h"
 #include "Tezos/Transaction.h"
 
 #include <gtest/gtest.h>
@@ -52,7 +52,7 @@ TEST(TezosOperationList, ForgeOperationList_RevealOnly) {
         10100,
         257,
         1,
-        PublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
+        parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
         operationtype::REVEAL
       );
 
@@ -71,7 +71,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
         10100,
         257,
         1,
-        PublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
+        parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
         operationtype::REVEAL
     );
     op_list.add_operation(tx1);
