@@ -80,7 +80,7 @@ bool TW::validate(const std::string& string, TWCoinType coin) {
         return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
 
     case TWCoinTypeBitcoinCash:
-        return Bitcoin::CashAddress::isValid(string);
+        return Bitcoin::CashAddress::isValid(string) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:

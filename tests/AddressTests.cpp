@@ -33,7 +33,7 @@ TEST(Address, ValidateLitecoin) {
 
 TEST(Address, ValidateBitcoinCash) {
     EXPECT_TRUE(validate("bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh", TWCoinTypeBitcoinCash));
-    EXPECT_FALSE(validate("1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2", TWCoinTypeBitcoinCash));
+    EXPECT_TRUE(validate("1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2", TWCoinTypeBitcoinCash));
 }
 
 } // namespace
