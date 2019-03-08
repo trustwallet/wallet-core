@@ -9,14 +9,14 @@
 
 import Foundation
 
-public final class Wallet {
+public final class CoinUtility {
 
     public static func validate(string: String, coin: CoinType) -> Bool {
         let stringString = TWStringCreateWithNSString(string)
         defer {
             TWStringDelete(stringString)
         }
-        return TWWalletValidate(stringString, TWCoinType(rawValue: coin.rawValue))
+        return TWCoinUtilityValidate(stringString, TWCoinType(rawValue: coin.rawValue))
     }
 
     let rawValue: OpaquePointer
