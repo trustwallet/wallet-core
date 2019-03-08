@@ -33,6 +33,9 @@ public:
 
     /// Returns a string representation of the address.
     std::string string() const;
+    
+    /// Forge an address to hex bytes.
+    std::string forge() const;
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {

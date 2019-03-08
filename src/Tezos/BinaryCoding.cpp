@@ -48,7 +48,7 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
     uint8_t decoded[capacity];
 
     // Adjust prefix based on tz1, tz2 or tz3.
-    switch (publicKeyHash[2]) {
+    switch ((char) publicKeyHash[2]) {
         case '1':
             result += "0";
             prefix[2] = 159;
@@ -73,7 +73,7 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
 // Note: This function only supports tz1 and KT1 addresses.
 std::string forgeAddress(const std::string address) {
     std::string result = "";
-    if (address[0] == 'K') {
+    if ((char) address[0] == 'K') {
         size_t prefixLength = 3;
         uint8_t prefix[3] = {2, 90, 121};
         size_t capacity = 128;

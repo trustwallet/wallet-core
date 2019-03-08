@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Tezos/PublicKey.h"
 #include "Tezos/OperationList.h"
 #include "Tezos/Signer.h"
 #include "Tezos/Transaction.h"
@@ -33,8 +34,8 @@ TEST(TezosSigner, SignOperationList) {
         10100,
         257,
         1,
-        PublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
-        OperationKind::REVEAL
+        TW::Tezos::PublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
+        operationtype::REVEAL
     );
     op_list.add_operation(tx1);
     auto tx2 = Transaction(
@@ -45,7 +46,7 @@ TEST(TezosSigner, SignOperationList) {
         257,
         1,
         Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
-        OperationKind::TRANSACTION
+        operationtype::TRANSACTION
     );
     op_list.add_operation(tx2);
 
