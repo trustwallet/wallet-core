@@ -105,7 +105,7 @@ public final class Tezos {
               break;
             }
             case 18: {
-              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+              if (!((mutable_bitField0_ & 0x00000002) != 0)) {
                 operations_ = new java.util.ArrayList<wallet.core.jni.proto.Tezos.Operation>();
                 mutable_bitField0_ |= 0x00000002;
               }
@@ -114,7 +114,7 @@ public final class Tezos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -128,7 +128,7 @@ public final class Tezos {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+        if (((mutable_bitField0_ & 0x00000002) != 0)) {
           operations_ = java.util.Collections.unmodifiableList(operations_);
         }
         this.unknownFields = unknownFields.build();
@@ -269,13 +269,12 @@ public final class Tezos {
       }
       wallet.core.jni.proto.Tezos.OperationList other = (wallet.core.jni.proto.Tezos.OperationList) obj;
 
-      boolean result = true;
-      result = result && getBranch()
-          .equals(other.getBranch());
-      result = result && getOperationsList()
-          .equals(other.getOperationsList());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getBranch()
+          .equals(other.getBranch())) return false;
+      if (!getOperationsList()
+          .equals(other.getOperationsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -468,7 +467,7 @@ public final class Tezos {
         int to_bitField0_ = 0;
         result.branch_ = branch_;
         if (operationsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             operations_ = java.util.Collections.unmodifiableList(operations_);
             bitField0_ = (bitField0_ & ~0x00000002);
           }
@@ -483,35 +482,35 @@ public final class Tezos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -657,7 +656,7 @@ public final class Tezos {
       private java.util.List<wallet.core.jni.proto.Tezos.Operation> operations_ =
         java.util.Collections.emptyList();
       private void ensureOperationsIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           operations_ = new java.util.ArrayList<wallet.core.jni.proto.Tezos.Operation>(operations_);
           bitField0_ |= 0x00000002;
          }
@@ -886,7 +885,7 @@ public final class Tezos {
           operationsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               wallet.core.jni.proto.Tezos.Operation, wallet.core.jni.proto.Tezos.Operation.Builder, wallet.core.jni.proto.Tezos.OperationOrBuilder>(
                   operations_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           operations_ = null;
@@ -896,7 +895,7 @@ public final class Tezos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1035,11 +1034,7 @@ public final class Tezos {
       super(builder);
     }
     private Operation() {
-      counter_ = 0L;
       source_ = "";
-      fee_ = 0L;
-      gasLimit_ = 0L;
-      storageLimit_ = 0L;
       kind_ = 0;
     }
 
@@ -1128,7 +1123,7 @@ public final class Tezos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1544,35 +1539,32 @@ public final class Tezos {
       }
       wallet.core.jni.proto.Tezos.Operation other = (wallet.core.jni.proto.Tezos.Operation) obj;
 
-      boolean result = true;
-      result = result && (getCounter()
-          == other.getCounter());
-      result = result && getSource()
-          .equals(other.getSource());
-      result = result && (getFee()
-          == other.getFee());
-      result = result && (getGasLimit()
-          == other.getGasLimit());
-      result = result && (getStorageLimit()
-          == other.getStorageLimit());
-      result = result && kind_ == other.kind_;
-      result = result && getOperationDataCase().equals(
-          other.getOperationDataCase());
-      if (!result) return false;
+      if (getCounter()
+          != other.getCounter()) return false;
+      if (!getSource()
+          .equals(other.getSource())) return false;
+      if (getFee()
+          != other.getFee()) return false;
+      if (getGasLimit()
+          != other.getGasLimit()) return false;
+      if (getStorageLimit()
+          != other.getStorageLimit()) return false;
+      if (kind_ != other.kind_) return false;
+      if (!getOperationDataCase().equals(other.getOperationDataCase())) return false;
       switch (operationDataCase_) {
         case 8:
-          result = result && getRevealOperationData()
-              .equals(other.getRevealOperationData());
+          if (!getRevealOperationData()
+              .equals(other.getRevealOperationData())) return false;
           break;
         case 9:
-          result = result && getTransactionOperationData()
-              .equals(other.getTransactionOperationData());
+          if (!getTransactionOperationData()
+              .equals(other.getTransactionOperationData())) return false;
           break;
         case 0:
         default:
       }
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1815,35 +1807,35 @@ public final class Tezos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -2425,7 +2417,7 @@ public final class Tezos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -2513,7 +2505,6 @@ public final class Tezos {
     }
     private TransactionOperationData() {
       destination_ = "";
-      amount_ = 0L;
     }
 
     @java.lang.Override
@@ -2552,7 +2543,7 @@ public final class Tezos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -2677,13 +2668,12 @@ public final class Tezos {
       }
       wallet.core.jni.proto.Tezos.TransactionOperationData other = (wallet.core.jni.proto.Tezos.TransactionOperationData) obj;
 
-      boolean result = true;
-      result = result && getDestination()
-          .equals(other.getDestination());
-      result = result && (getAmount()
-          == other.getAmount());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getDestination()
+          .equals(other.getDestination())) return false;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -2874,35 +2864,35 @@ public final class Tezos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3049,7 +3039,7 @@ public final class Tezos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -3165,7 +3155,7 @@ public final class Tezos {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -3274,11 +3264,10 @@ public final class Tezos {
       }
       wallet.core.jni.proto.Tezos.RevealOperationData other = (wallet.core.jni.proto.Tezos.RevealOperationData) obj;
 
-      boolean result = true;
-      result = result && getPublicKey()
-          .equals(other.getPublicKey());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getPublicKey()
+          .equals(other.getPublicKey())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -3463,35 +3452,35 @@ public final class Tezos {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -3609,7 +3598,7 @@ public final class Tezos {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override

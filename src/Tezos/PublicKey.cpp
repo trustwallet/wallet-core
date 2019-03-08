@@ -11,7 +11,7 @@
 using namespace TW;
 using namespace TW::Tezos;
 
-PublicKey::PublicKey(const std::string& pkey) {
+TW::Tezos::PublicKey(const std::string& pkey) {
     public_key = pkey;
 }
 
