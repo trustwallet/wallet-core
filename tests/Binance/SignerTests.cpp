@@ -12,8 +12,6 @@
 #include "Tendermint/Address.h"
 #include "proto/Binance.pb.h"
 
-#include "../TWTestUtilities.h"
-
 #include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
 
