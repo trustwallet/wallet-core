@@ -15,29 +15,6 @@
 
 using namespace TW::Tezos;
 
-std::string Address::forge() const {
-    std::string s = string();
-    std::string result = "";
-
-    if (s[0] == 'K') {
-        size_t prefixLength = 3;
-        uint8_t prefix[3] = {2, 90, 121};
-        size_t capacity = 128;
-        uint8_t decoded[capacity];
-
-        // TODO: validate decodedLength
-        int decodedLength = base58CheckDecodePrefix(s, prefixLength, prefix, decoded);
-        result += "01";
-        result += TW::hex(decoded, decoded + decodedLength);
-        result += "00";
-    } else {
-        // tz1 address
-        result += "00";
-        result += forgePublicKeyHash(s);
-    }
-    return result;
-}
-
 bool Address::isValid(const std::string& string) {
     size_t capacity = 128;
     uint8_t buffer[capacity];
@@ -45,23 +22,18 @@ bool Address::isValid(const std::string& string) {
 
     // verify prefix
     std::array<std::uint8_t, 3> prefix {6, 161, 159};
-    for (size_t i = 0; i< prefix.size(); i++) {
-        uint8_t byte = buffer[i];
-        if (prefix[i] != byte) {
+    for (size_t i = 0; i< prefix.size(); i++)
+        if (prefix[i] != (uint8_t) buffer[i])
             return false;
-        }
-    }
     return size == Address::size;
 }
 
 Address::Address(const std::string& string) {
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size) {
+    uint8_t decoded[128];
+    auto size = base58CheckDecodePrefix(string, 0, nullptr, decoded);
+    if (size != Address::size)
         throw std::invalid_argument("Invalid address key data");
-    }
-    std::copy(buffer, buffer + Address::size, bytes.begin());
+    std::copy(decoded, decoded + Address::size, bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
@@ -70,19 +42,27 @@ Address::Address(const PublicKey& publicKey) {
     auto hash = Hash::blake2b(encoded, 20);
     auto addressData = Data({6, 161, 159});
     append(addressData, hash);
-    if (addressData.size() != Address::size) {
+    if (addressData.size() != Address::size)
         throw std::invalid_argument("Invalid address key data");
-    }
     std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
 }
 
 std::string Address::string() const {
-    size_t size = 0;
-    b58enc(nullptr, &size, bytes.data(), Address::size);
-    size += 16;
+    return bytesToBase58(bytes.data(), Address::size);
+}
 
-    std::string str(size, ' ');
-    base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
+std::string Address::forge() const {
+    std::string s = string();
 
-    return std::string(str.c_str());
+    if (s[0] == 'K') {
+        size_t prefixLength = 3;
+        uint8_t prefix[3] = {2, 90, 121};
+        uint8_t decoded[128];
+
+        int decodedLength = base58CheckDecodePrefix(s, prefixLength, prefix, decoded);
+        if (decodedLength != 20)
+            throw std::invalid_argument("Invalid Address For forge");
+        return "01" + TW::hex(decoded, decoded + decodedLength) + "00";
+    }
+    return "00" + forgePublicKeyHash(s);
 }

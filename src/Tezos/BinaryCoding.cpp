@@ -11,7 +11,6 @@
 #include <string>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
-#include <iostream>
 
 using namespace TW;
 
@@ -19,19 +18,16 @@ using namespace TW;
 // Returns output length which output data placed in the inparameter.
 int base58CheckDecodePrefix(const std::string& input, size_t prefixLength, uint8_t *prefix, uint8_t *output) {
     size_t capacity = 128;
-    uint8_t decodedInput[capacity];
-    int decodedLength = base58_decode_check(input.data(), HASHER_SHA2D, decodedInput, (int)capacity);
+    uint8_t decoded[capacity];
+    int decodedLength = base58_decode_check(input.data(), HASHER_SHA2D, decoded, (int)capacity);
 
     // Verify that the prefix was correct.
     for (int i = 0; i < prefixLength; i++)
-        if (decodedInput[i] != prefix[i])
+        if (decoded[i] != prefix[i])
             throw std::invalid_argument( "Invalid Prefix" );
 
-    // Drop the prefix from branch.
-    int outputLength = decodedLength - prefixLength;
-    std::copy(decodedInput + prefixLength, decodedInput + prefixLength + outputLength, output);
-
-    return outputLength;
+    std::copy(decoded + prefixLength, decoded + decodedLength, output);
+    return decodedLength - prefixLength;
 }
 
 // Forge the given boolean into a hex encoded string.
@@ -70,40 +66,34 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
     return result;
 }
 
-// Forge the given public key hash into a hex encoded string.
-// Note: This function only supports tz1 and KT1 addresses.
-std::string forgeAddress(const std::string address) {
-    std::string result = "";
-    if ((char) address[0] == 'K') {
-        size_t prefixLength = 3;
-        uint8_t prefix[3] = {2, 90, 121};
-        size_t capacity = 128;
-        uint8_t decoded[capacity];
+std::string bytesToBase58(const uint8_t *data, size_t dataSize) {
+    size_t size = 0;
+    b58enc(nullptr, &size, data, dataSize);
+    size += 16;
 
-        int decodedLength = base58CheckDecodePrefix(address, prefixLength, prefix, decoded);
-        result += "01";
-        result += TW::hex(decoded, decoded + decodedLength);
-        result += "00";
-    } else {
-        // implicit address
-        result += "00";
-        result += forgePublicKeyHash(address);
-    }
-    return result;
+    std::string encoded(size, ' ');
+    base58_encode_check(data, dataSize, HASHER_SHA2D, &encoded[0], size);
+    return std::string(encoded.c_str());
+}
+
+std::string base58ToHex(const std::string data, size_t prefixLength, uint8_t *prefix) {
+    uint8_t decoded[128];
+    int decodedLength = base58CheckDecodePrefix(data, prefixLength, prefix, decoded);
+    return "00" + TW::hex(decoded, decoded + decodedLength);
 }
 
 PublicKey parsePublicKey(std::string publicKey) {
     size_t prefixLength = 4;
     uint8_t prefix[] = {13, 15, 37, 217};
-    size_t capacity = 33;
-    uint8_t decoded[capacity];
-    decoded[0] = 1;
-    int decodedLength = base58CheckDecodePrefix(publicKey, prefixLength, prefix, decoded + 1);
+    auto pk = Data({1});
+    uint8_t decoded[32];
+    int decodedLength = base58CheckDecodePrefix(publicKey, prefixLength, prefix, decoded);
 
     if (decodedLength != 32)
         throw std::invalid_argument( "Invalid Public Key" );
+    append(pk, Data(decoded, decoded + 32));
 
-    return PublicKey(Data(decoded, decoded + 33));
+    return PublicKey(pk);
 }
 
 // Forge the given public key into a hex encoded string.
@@ -113,17 +103,7 @@ std::string forgePublicKey(PublicKey publicKey) {
     auto bytes = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
     append(data, bytes);
 
-    size_t size = 0;
-    b58enc(nullptr, &size, data.data(), 36);
-    size += 16;
-
-    std::string pk(size, ' ');
-    base58_encode_check(data.data(), 36, HASHER_SHA2D, &pk[0], size);
-
-    size_t capacity = 128;
-    uint8_t decoded[capacity];
-    size_t prefixLength = 4;
-    int decodedLength = base58CheckDecodePrefix(pk, prefixLength, prefix, decoded);
-
-    return "00" + TW::hex(decoded, decoded + decodedLength);
+    auto pk = bytesToBase58(data.data(), data.size());
+    auto decoded = base58ToHex(pk, 4, prefix);
+    return decoded;
 }

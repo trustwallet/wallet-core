@@ -11,19 +11,12 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
-
 using namespace TW::Tezos;
 
 TEST(TezosPublicKey, forge) {
     auto input = parsePublicKey("edpkuAfEJCEatRgFpRGg3gn3FdWniLXBoubARreRwuVZPWufkgDBvR");
-    auto expected = "00429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
-    std::cout << forgePublicKey(input) << std::endl;
-    for (auto key : input.bytes) {
-      std::cout << (int) key << " ";
-    }
-
-    // ASSERT_EQ(input.forge(), expected);
+    auto expected = "00451bde832454ba73e6e0de313fcf5d1565ec51080edc73bb19287b8e0ab2122b";
+    ASSERT_EQ(forgePublicKey(input), expected);
 }
 
 TEST(TezosPublicKey, parse) {
