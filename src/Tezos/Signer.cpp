@@ -14,7 +14,8 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWString.h>
 #include <TrezorCrypto/blake2b.h>
-#include <TrezorCrypto/ed25519.h>
+// #include <TrezorCrypto/ed25519.h>
+#include <TrustWalletCore/TWCurve.h>
 
 using namespace TW;
 using namespace TW::Tezos;
@@ -28,15 +29,11 @@ Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes
   auto watermark = "03";
   auto watermarkedForgedBytesHex = parse_hex(watermark + forgedBytes);
   auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
-
-  ed25519_public_key pk;
-  ed25519_publickey(privateKey.bytes.data(), pk);
-
-  ed25519_signature signature;
-  ed25519_sign(hash.data(), hash.size(), privateKey.bytes.data(), pk, signature);
-
+  TW::PublicKey pk = privateKey.getPublicKey(PublicKeyType::ed25519);
+  Data signature = privateKey.sign(hash, TWCurve::TWCurveEd25519);
   Data result = Data(hash.begin(), hash.end());
-  Data signature_data = Data(signature, signature + 64);
-  append(result, signature_data);
-  return signature_data;
+
+  append(result, signature);
+  // TODO: return result and update test
+  return signature;
 }
