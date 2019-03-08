@@ -463,6 +463,7 @@
 		61FE4B4122208E1C00C65017 /* VeChain.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FE4B3F22208E1C00C65017 /* VeChain.pb.swift */; };
 		61FE4B4422208E5000C65017 /* VeChain.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61FE4B4222208E5000C65017 /* VeChain.pb.cc */; };
 		61FE4B4522208E5000C65017 /* VeChain.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 61FE4B4322208E5000C65017 /* VeChain.pb.h */; };
+		7706F5BF2231F5D300F124F3 /* Tezos.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7706F5BE2231F5D200F124F3 /* Tezos.pb.swift */; };
 		7782DF29222F0D9100599404 /* Tezos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7782DF28222F0D9100599404 /* Tezos.swift */; };
 		7782DF2D222F211700599404 /* TezosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7782DF2C222F211700599404 /* TezosTests.swift */; };
 		7782DF2F222F217D00599404 /* TWTezosAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 7782DF2E222F217D00599404 /* TWTezosAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1032,6 +1033,7 @@
 		61FE4B4222208E5000C65017 /* VeChain.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VeChain.pb.cc; sourceTree = "<group>"; };
 		61FE4B4322208E5000C65017 /* VeChain.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VeChain.pb.h; sourceTree = "<group>"; };
 		667A8CF3B4C135CBB4CAC72E /* Pods-TrustWalletCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore/Pods-TrustWalletCore.release.xcconfig"; sourceTree = "<group>"; };
+		7706F5BE2231F5D200F124F3 /* Tezos.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tezos.pb.swift; sourceTree = "<group>"; };
 		7782DF28222F0D9100599404 /* Tezos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tezos.swift; sourceTree = "<group>"; };
 		7782DF2C222F211700599404 /* TezosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TezosTests.swift; sourceTree = "<group>"; };
 		7782DF2E222F217D00599404 /* TWTezosAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTezosAddress.h; sourceTree = "<group>"; };
@@ -1541,6 +1543,7 @@
 				61A9B3642200D86D00E601B3 /* TendermintAddress.swift */,
 				7782DF32222F228C00599404 /* TezosAddress.swift */,
 				61C4E8B02225C3940020A917 /* Tron.pb.swift */,
+				7706F5BE2231F5D200F124F3 /* Tezos.pb.swift */,
 				61C4E8AF2225C3930020A917 /* TronSigner.swift */,
 				61FE4B3F22208E1C00C65017 /* VeChain.pb.swift */,
 				61FE4B3E22208E1C00C65017 /* VeChainSigner.swift */,
@@ -2626,6 +2629,7 @@
 				61735BFA219DF044007BF637 /* base32.c in Sources */,
 				61735C09219DF044007BF637 /* curves.c in Sources */,
 				61CABAD921ED782E0086D9A0 /* P2PKHPrefix.swift in Sources */,
+				7706F5BF2231F5D300F124F3 /* Tezos.pb.swift in Sources */,
 				61735C10219DF044007BF637 /* ed25519.c in Sources */,
 				61346D17220B6F7C00F0141B /* Data+Hex.swift in Sources */,
 				61B159E921CC5DBB00CFE93B /* Hash.cpp in Sources */,

@@ -7,6 +7,7 @@
 #include "Tezos/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "Tezos/BinaryCoding.h"
 
 #include <gtest/gtest.h>
 #include <string>

@@ -45,16 +45,17 @@ string Transaction::forge() {
     auto forgedCounter = forgeZarith(counter);
     auto forgedGasLimit = forgeZarith(gas_limit);
     auto forgedStorageLimit = forgeZarith(storage_limit);
-
-    if (kind == operationkind::REVEAL) {
-        auto forgedPublicKey = std::get<PublicKey>(destination_or_public_key).forge();
-
-        return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
-            + forgedStorageLimit + forgedPublicKey;
-    }
-    auto forgedAmount = forgeZarith(amount);
-    auto forgedDestination = std::get<Address>(destination_or_public_key).forge();
-
-    return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
-        + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
+    //
+    // if (kind == operationkind::REVEAL) {
+    //     auto forgedPublicKey = std::get<PublicKey>(destination_or_public_key).forge();
+    //
+    //     return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+    //         + forgedStorageLimit + forgedPublicKey;
+    // }
+    // auto forgedAmount = forgeZarith(amount);
+    // auto forgedDestination = std::get<Address>(destination_or_public_key).forge();
+    //
+    // return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+    //     + forgedStorageLimit + forgedAmount + forgedDestination + forgeBool(false);
+    return "";
 }

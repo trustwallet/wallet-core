@@ -13,20 +13,24 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWString.h>
 #include <TrezorCrypto/blake2b.h>
+#include <TrustWalletCore/TWCurve.h>
 
 using namespace TW;
 using namespace TW::Tezos;
 
-Data Signer::signOperation(const PrivateKey& privateKey, OperationList operationList) {
+Data Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
     auto forgedBytesHex = operationList.forge();
+    return signHexString(privateKey, forgedBytesHex);
+}
 
-    auto watermark = "03";
-    auto watermarkedForgedBytesHex = watermark + forgedBytesHex;
-    auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
-    auto signature = privateKey.sign(hash);
+Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytesHex) {
+  auto watermark = "03";
+  auto watermarkedForgedBytesHex = watermark + forgedBytesHex;
+  auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
+  auto signature = privateKey.sign(hash, TWCurveEd25519);
 
-    Data result = Data(watermarkedForgedBytesHex.begin(), watermarkedForgedBytesHex.end());
-    Data signature_data = Data(signature.begin(), signature.end());
-    append(result, signature_data);
-    return result;
+  Data result = Data(watermarkedForgedBytesHex.begin(), watermarkedForgedBytesHex.end());
+  Data signature_data = Data(signature.begin(), signature.end());
+  append(result, signature_data);
+  return result;
 }
