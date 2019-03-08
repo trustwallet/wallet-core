@@ -12,15 +12,15 @@ package wallet.core.jni;
 import java.security.InvalidParameterException;
 import java.util.HashSet;
 
-public class Wallet {
+public class CoinUtility {
     private long nativeHandle;
 
-    private Wallet() {
+    private CoinUtility() {
         nativeHandle = 0;
     }
 
-    static Wallet createFromNative(long nativeHandle) {
-        Wallet instance = new Wallet();
+    static CoinUtility createFromNative(long nativeHandle) {
+        CoinUtility instance = new CoinUtility();
         instance.nativeHandle = nativeHandle;
         return instance;
     }

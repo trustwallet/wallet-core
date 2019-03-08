@@ -30,6 +30,7 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWBitcoinTransactionSigner.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
+#include <TrustWalletCore/TWCoinUtility.h>
 #include <TrustWalletCore/TWCurve.h>
 #include <TrustWalletCore/TWEthereumAddress.h>
 #include <TrustWalletCore/TWEthereumChainID.h>
@@ -55,7 +56,6 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWTezosAddress.h>
 #include <TrustWalletCore/TWTronSigner.h>
 #include <TrustWalletCore/TWVeChainSigner.h>
-#include <TrustWalletCore/TWWallet.h>
 #include <TrustWalletCore/TWWanchainSigner.h>
 #include <TrustWalletCore/TWZcashTAddress.h>
 #include <TrustWalletCore/TWZcashTransactionSigner.h>

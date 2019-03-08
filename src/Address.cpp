@@ -18,6 +18,8 @@
 #include "Zcash/TAddress.h"
 
 #include <TrustWalletCore/TWHRP.h>
+#include <TrustWalletCore/TWP2PKHPrefix.h>
+#include <TrustWalletCore/TWP2SHPrefix.h>
 
 using namespace TW;
 
@@ -72,13 +74,13 @@ std::string TW::loadAddress(const Data& data, TWCoinType coin) {
 bool TW::validate(const std::string& string, TWCoinType coin) {
     switch (coin) {
     case TWCoinTypeBinance:
-        return Tendermint::Address::isValid(string, HRP_BINANCE);
+        return Tendermint::Address::isValid(string, HRP_BINANCE) || Tendermint::Address::isValid(string, HRP_BINANCE_TEST);
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) || Bitcoin::Address::isValid(string, {0x00, 0x05});
+        return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
 
     case TWCoinTypeBitcoinCash:
-        return Bitcoin::CashAddress::isValid(string);
+        return Bitcoin::CashAddress::isValid(string) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -95,7 +97,7 @@ bool TW::validate(const std::string& string, TWCoinType coin) {
         return Icon::Address::isValid(string);
 
     case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) || Bitcoin::Address::isValid(string, {0x30, 0x32});
+        return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixLitecoin, TWP2SHPrefixLitecoin});
 
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);
@@ -104,7 +106,7 @@ bool TW::validate(const std::string& string, TWCoinType coin) {
         return Ripple::Address::isValid(string);
 
     case TWCoinTypeDash:
-        return Bitcoin::Address::isValid(string, {0x4c, 0x10});
+        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixDash, TWP2SHPrefixDash});
 
     case TWCoinTypeTezos:
         return Tezos::Address::isValid(string);
@@ -113,10 +115,10 @@ bool TW::validate(const std::string& string, TWCoinType coin) {
         return Bitcoin::Address::isValid(string, {0x41});
 
     case TWCoinTypeZcoin:
-        return Bitcoin::Address::isValid(string, {0x52, 0x07});
+        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixZcoin, TWP2SHPrefixZcoin});
 
     case TWCoinTypeZcash:
-        return Zcash::TAddress::isValid(string, {0xb8, 0xbd});
+        return Zcash::TAddress::isValid(string, {TWP2PKHPrefixZcashT, TWP2SHPrefixZcashT});
 
     case TWCoinTypeEOS:
         return false;

@@ -13,10 +13,10 @@
 TW_EXTERN_C_BEGIN
 
 TW_EXPORT_CLASS
-struct TWWallet;
+struct TWCoinUtility;
 
 /// Validates an address string for a specific coin.
 TW_EXPORT_STATIC_METHOD
-bool TWWalletValidate(TWString *_Nonnull string, enum TWCoinType coin);
+bool TWCoinUtilityValidate(TWString *_Nonnull string, enum TWCoinType coin);
 
 TW_EXTERN_C_END

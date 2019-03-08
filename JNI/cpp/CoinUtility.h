@@ -7,8 +7,8 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-#ifndef JNI_TW_WALLET_H
-#define JNI_TW_WALLET_H
+#ifndef JNI_TW_COINUTILITY_H
+#define JNI_TW_COINUTILITY_H
 
 #include <jni.h>
 #include <TrustWalletCore/TWBase.h>
@@ -16,9 +16,9 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jboolean JNICALL Java_wallet_core_jni_Wallet_validate(JNIEnv *env, jclass thisClass, jstring string, jobject coin);
+jboolean JNICALL Java_wallet_core_jni_CoinUtility_validate(JNIEnv *env, jclass thisClass, jstring string, jobject coin);
 
 
 TW_EXTERN_C_END
 
-#endif // JNI_TW_WALLET_H
+#endif // JNI_TW_COINUTILITY_H
