@@ -9,28 +9,34 @@
 #include "OperationList.h"
 #include "Signer.h"
 #include "../Hash.h"
+#include "../HexCoding.h"
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWString.h>
 #include <TrezorCrypto/blake2b.h>
-#include <TrustWalletCore/TWCurve.h>
+#include <TrezorCrypto/ed25519.h>
 
 using namespace TW;
 using namespace TW::Tezos;
 
 Data Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
-    auto forgedBytesHex = operationList.forge();
-    return signHexString(privateKey, forgedBytesHex);
+  auto forgedBytes = operationList.forge();
+  return signHexString(privateKey, forgedBytes);
 }
 
-Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytesHex) {
+Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes) {
   auto watermark = "03";
-  auto watermarkedForgedBytesHex = watermark + forgedBytesHex;
+  auto watermarkedForgedBytesHex = parse_hex(watermark + forgedBytes);
   auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
-  auto signature = privateKey.sign(hash, TWCurveEd25519);
 
-  Data result = Data(watermarkedForgedBytesHex.begin(), watermarkedForgedBytesHex.end());
-  Data signature_data = Data(signature.begin(), signature.end());
+  ed25519_public_key pk;
+  ed25519_publickey(privateKey.bytes.data(), pk);
+
+  ed25519_signature signature;
+  ed25519_sign(hash.data(), hash.size(), privateKey.bytes.data(), pk, signature);
+
+  Data result = Data(hash.begin(), hash.end());
+  Data signature_data = Data(signature, signature + 64);
   append(result, signature_data);
-  return result;
+  return signature_data;
 }
