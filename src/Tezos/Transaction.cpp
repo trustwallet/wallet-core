@@ -48,7 +48,7 @@ string Transaction::forge() {
     auto forgedStorageLimit = forgeZarith(storage_limit);
 
     if (kind == operationtype::REVEAL) {
-        auto forgedPublicKey = forgePublicKey(std::get_if<PublicKey>(destination_or_public_key));
+        auto forgedPublicKey = forgePublicKey(std::get<PublicKey>(destination_or_public_key));
 
         return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
             + forgedStorageLimit + forgedPublicKey;
