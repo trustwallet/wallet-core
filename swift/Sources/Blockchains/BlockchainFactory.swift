@@ -37,8 +37,6 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Dash()
     case .icon:
         return Icon()
-    case .eos:
-        return EOS()
     case .bitcoinCash:
         return BitcoinCash()
     case .tomoChain:
@@ -55,5 +53,7 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Tezos()
     case .nimiq:
         return Nimq()
+    case .stellar:
+        return Stellar()
     }
 }

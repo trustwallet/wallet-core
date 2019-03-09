@@ -55,6 +55,9 @@ public:
     PrivateKey getKey(TWCoinType coin) const;
 
     /// Returns the private key at the given derivation path.
+    PrivateKey getKey(TWCoinType coin, uint32_t account) const;
+
+    /// Returns the private key at the given derivation path.
     PrivateKey getKey(TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const;
 
     /// Returns the extended private key.
