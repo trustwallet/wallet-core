@@ -6,6 +6,7 @@
 
 #include <TrustWalletCore/TWTezosSigner.h>
 
+#include "../Tezos/BinaryCoding.h"
 #include "../Tezos/Signer.h"
 #include "../proto/Tezos.pb.h"
 
@@ -17,27 +18,41 @@ TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data)
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
     auto operationList = OperationList(input.operation_list().branch());
-//    for (TW::Tezos::Proto::Operation operationProto : input.operation_list().operations()) {
-//        std::variant<Address, PublicKey> operationData;
-//        if (operationProto.has_reveal_operation_data()) {
-//            operationData = PublicKey(operationProto.reveal_operation_data().public_key())
-//        }
-//
-//        auto transaction = Transaction(
-//            operationProto.source(),
-//            operationProto.fee(),
-//            operationProto.counter(),
-//            operationProto.counter(),
-//            operationProto.gas_limit(),
-//            operationProto.storage_limit(),
-//            operationProto
-//            operationProto.kind(),
-//        )
-//    }
+    for (TW::Tezos::Proto::Operation operationProto : input.operation_list().operations()) {
+        if (operationProto.has_reveal_operation_data()) {
+            auto source = Address(operationProto.source());
+            auto publicKey = parsePublicKey(operationProto.reveal_operation_data().public_key());
+            auto operation = Transaction(source,
+                                         operationProto.fee(),
+                                         operationProto.counter(),
+                                         operationProto.gas_limit(),
+                                         operationProto.storage_limit(),
+                                         0,
+                                         publicKey,
+                                         operationtype::REVEAL);
+            operationList.add_operation(operation);
+        } else {
+            auto source = Address(operationProto.source());
+            auto destination = Address(operationProto.transaction_operation_data().destination());
+            auto operation = Transaction(source,
+                                         operationProto.fee(),
+                                         operationProto.counter(),
+                                         operationProto.gas_limit(),
+                                         operationProto.storage_limit(),
+                                         operationProto.transaction_operation_data().amount(),
+                                         destination,
+                                         operationtype::TRANSACTION);
+            operationList.add_operation(operation);
+        }
+    }
 
     auto signer = Signer();
     PrivateKey key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto signedBytesHex = signer.signOperationList(key, operationList);
 
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(signedBytesHex.data()), signedBytesHex.size());
+    auto protoOutput = Proto::SigningOutput();
+    protoOutput.set_signed_bytes(signedBytesHex);
+    auto serialized = protoOutput.SerializeAsString();
+
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
