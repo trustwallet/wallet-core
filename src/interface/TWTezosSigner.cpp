@@ -18,7 +18,7 @@ TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data)
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
     auto operationList = OperationList(input.operation_list().branch());
-    for (TW::Tezos::Proto::Operation operationProto : input.operation_list().operations()) {
+    for (auto& operationProto : input.operation_list().operations()) {
         if (operationProto.has_reveal_operation_data()) {
             auto source = Address(operationProto.source());
             auto publicKey = parsePublicKey(operationProto.reveal_operation_data().public_key());
