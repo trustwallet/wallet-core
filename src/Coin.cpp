@@ -44,6 +44,7 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
         return Ethereum::Address(data).string();
 
     case TWCoinTypeICON:
@@ -93,6 +94,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
         return Ethereum::Address::isValid(string);
 
     case TWCoinTypeICON:
@@ -143,6 +145,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeTron:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWPurposeBIP44;
@@ -172,6 +175,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeTron:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWCurveSECP256k1;
@@ -201,6 +205,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeTron:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
@@ -230,6 +235,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
         return Ethereum::Address(privateKey.getPublicKey(PublicKeyType::secp256k1Extended)).string();
 
     case TWCoinTypeICON:
