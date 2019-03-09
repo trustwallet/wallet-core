@@ -102,13 +102,17 @@ The proto file will be used to generate C++ classes and also classes in each sup
 
 When implementing a new blockchain make sure you go through this checklist:
 - [ ] Implement functionality in C++. Put it in a subfolder of `src/`.
+    - [ ] Address (if necessary)
+    - [ ] Transaction (if necessary)
+    - [ ] Signer
 - [ ] Write unit tests. Put them in a subfolder of `tests/`.
 - [ ] Add relevant constants in `TWCoinType`, `TWP2SHPrefix`, `TWEthereymChainID`, `TWHRP`, etc., as necessary.
+- [ ] Return correct curve and purpose in `src/Coin.cpp`.
 - [ ] Implement address validation and derivation in `src/Coin.cpp`.
-- [ ] Return correct curve and purpose in `src/interface/TWCoinType.cpp`.
+- [ ] Implement coin configuration `src/include/TWCoinTypeConfiguration.cpp`.
 - [ ] Write interface header in `include/TrustWalletCore` and implement the interface in `src/interface`.
-    - [ ] Write custom address type if necessary.
-    - [ ] Write interface for signing transactions.
+    - [ ] Address interface (if necessary).
+    - [ ] Signing interface.
 - [ ] Validate generated code in Android an iOS projects. Write integration tests for each.
 
 Also check out the [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain) document.
