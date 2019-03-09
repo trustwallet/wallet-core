@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,4 +21,15 @@ public enum StellarVersionByte {
         this.value = value;
     }
     public short value() { return value; }
+
+    public static StellarVersionByte createFromValue(short value) {
+        switch (value) {
+            case (short) 0x30: return StellarVersionByte.ACCOUNTID;
+            case (short) 0xc0: return StellarVersionByte.SEED;
+            case (short) 0xc8: return StellarVersionByte.PREAUTHTX;
+            case (short) 0x118: return StellarVersionByte.SHA256HASH;
+            default: return null;
+        }
+    }
+
 }

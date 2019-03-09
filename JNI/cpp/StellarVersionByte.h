@@ -7,9 +7,15 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum StellarVersionByte: UInt16 {
-    case accountID = 0x30
-    case seed = 0xc0
-    case preAuthTX = 0xc8
-    case sha256Hash = 0x118
-}
+#ifndef JNI_TW_STELLARVERSIONBYTE_H
+#define JNI_TW_STELLARVERSIONBYTE_H
+
+#include <jni.h>
+#include <TrustWalletCore/TWBase.h>
+
+TW_EXTERN_C_BEGIN
+
+
+TW_EXTERN_C_END
+
+#endif // JNI_TW_STELLARVERSIONBYTE_H
