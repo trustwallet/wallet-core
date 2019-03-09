@@ -1,9 +1,3 @@
-// Copyright © 2017-2019 Trust Wallet.
-//
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
-
 #include <TrustWalletCore/TWStellarAddress.h>
 
 #include "../Stellar/Address.h"
@@ -17,7 +11,7 @@ using namespace TW;
 using namespace TW::Stellar;
 
 bool TWStellarAddressEqual(struct TWStellarAddress *_Nonnull lhs, struct TWStellarAddress *_Nonnull rhs) {
-   return lhs->impl == rhs->impl;
+    return lhs->impl == rhs->impl;
 }
 
 bool TWStellarAddressIsValidString(TWString *_Nonnull string) {
@@ -37,14 +31,7 @@ struct TWStellarAddress *_Nullable TWStellarAddressCreateWithData(TWData *_Nonnu
 }
 
 struct TWStellarAddress *_Nonnull TWStellarAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
-    std::vector<uint8_t> data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey->impl.bytes, publicKey->impl.bytes + TWPublicKeyCompressedSize);
-    } else {
-        data.insert(data.end(), publicKey->impl.bytes, publicKey->impl.bytes + TWPublicKeyUncompressedSize);
-    }
-    const auto address = Address(PublicKey(data));
-    return new TWStellarAddress{ std::move(address) };
+    return new TWStellarAddress{ Address(publicKey->impl) };
 }
 
 void TWStellarAddressDelete(struct TWStellarAddress *_Nonnull address) {
