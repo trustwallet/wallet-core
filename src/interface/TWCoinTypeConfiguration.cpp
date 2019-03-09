@@ -91,6 +91,8 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeGo:
     case TWCoinTypeWanChain:
     case TWCoinTypeZcoin:
+        url += "/tx/" + txId;
+        break;
     case TWCoinTypePoa:
         url += "/txid/search/" + txId;
         break;
