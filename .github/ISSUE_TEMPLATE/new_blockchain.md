@@ -18,27 +18,16 @@ Reason:
 
 ## Checklist
 
-<!-- Sample Checklist -->
-
-- [ ] Address
-- - [ ] Return correct curve and purpose in `src/Coin.cpp`.
-- - [ ] Derivation from private key in `src/Coin.cpp`.
-- - [ ] Validation in `src/Coin.cpp`.
-- - [ ] TW[Blockchain]Address
-- - [ ] Unit test
-- [ ] Transaction
-- - [ ] serialization / encoding
-- - [ ] Unit test
-- [ ] Signer
-- - [ ] signing input / output protobuf messages
-- - [ ] signature
-- - [ ] TW[Blockchain]Signer
-- - [ ] Unit test
-- - [ ] C Interface test ( Java / Swift)
-- [ ] RPC documentation
-- - [ ] query balance
-- - [ ] query fee
-- - [ ] query transaction list
-- - [ ] query transaction detail
-- - [ ] submit rawtx
-- - [ ] blockchain info (block height)
+- [ ] Implement functionality in C++. Put it in a subfolder of `src/`.
+    - [ ] Address (if necessary)
+    - [ ] Transaction (if necessary)
+    - [ ] Signer
+- [ ] Write unit tests. Put them in a subfolder of `tests/`.
+- [ ] Add relevant constants in `TWCoinType`, `TWP2SHPrefix`, `TWEthereymChainID`, `TWHRP`, etc., as necessary.
+- [ ] Return correct curve and purpose in `src/Coin.cpp`.
+- [ ] Implement address validation and derivation in `src/Coin.cpp`.
+- [ ] Implement coin configuration `src/include/TWCoinTypeConfiguration.cpp`.
+- [ ] Write interface header in `include/TrustWalletCore` and implement the interface in `src/interface`.
+    - [ ] Address interface (if necessary).
+    - [ ] Signing interface.
+- [ ] Validate generated code in Android an iOS projects. Write integration tests for each.
