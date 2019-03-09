@@ -199,8 +199,19 @@ namespace {
         hdnode_private_ckd(&node, purpose | 0x80000000);
         hdnode_private_ckd(&node, coin | 0x80000000);
         hdnode_private_ckd(&node, account | 0x80000000);
-        hdnode_private_ckd(&node, change);
-        hdnode_private_ckd(&node, address);
+        
+        auto correctedChange = change;
+        auto correctedAddress = address;
+        switch (curve) {
+            case TWCurveEd25519:
+                correctedChange = change | 0x80000000;
+                correctedAddress = address | 0x80000000;
+                break;
+            default: break;
+        }
+        
+        hdnode_private_ckd(&node, correctedChange);
+        hdnode_private_ckd(&node, correctedAddress);
         return node;
     }
 
