@@ -16,5 +16,5 @@ public enum EthereumChainID: UInt32 {
     case veChain = 74
     case thunderToken = 18
     case tomoChain = 88
-    case dai = 100
+    case xdai = 100
 }

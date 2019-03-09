@@ -16,7 +16,6 @@ public enum CoinType {
     BITCOINCASH (145),
     CALLISTO (820),
     DASH (5),
-    EOS (194),
     ETHEREUM (60),
     ETHEREUMCLASSIC (61),
     GO (6060),
@@ -30,10 +29,10 @@ public enum CoinType {
     TRON (195),
     VECHAIN (818),
     WANCHAIN (5718350),
+    XDAI (700),
     ZCASH (133),
     ZCOIN (136),
-    NIMIQ (242),
-    DAI (100);
+    NIMIQ (242);
 
     private final int value;
     CoinType(int value) {
@@ -48,7 +47,6 @@ public enum CoinType {
             case 145: return CoinType.BITCOINCASH;
             case 820: return CoinType.CALLISTO;
             case 5: return CoinType.DASH;
-            case 194: return CoinType.EOS;
             case 60: return CoinType.ETHEREUM;
             case 61: return CoinType.ETHEREUMCLASSIC;
             case 6060: return CoinType.GO;
@@ -62,6 +60,7 @@ public enum CoinType {
             case 195: return CoinType.TRON;
             case 818: return CoinType.VECHAIN;
             case 5718350: return CoinType.WANCHAIN;
+            case 700: return CoinType.XDAI;
             case 133: return CoinType.ZCASH;
             case 136: return CoinType.ZCOIN;
             case 242: return CoinType.NIMIQ;
@@ -72,4 +71,6 @@ public enum CoinType {
     public native Purpose purpose();
     public native Curve curve();
     public native boolean validate(String address);
+    public native String derivationPath();
+    public native String deriveAddress(PrivateKey privateKey);
 }

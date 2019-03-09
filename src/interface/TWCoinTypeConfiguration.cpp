@@ -31,11 +31,10 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeTron: string = "TRX"; break;
     case TWCoinTypeVeChain: string = "VET"; break;
     case TWCoinTypeWanChain: string = "WAN"; break;
-    case TWCoinTypeDai: string = "DAI"; break;
+    case TWCoinTypeXDai: string = "xDAI"; break;
     case TWCoinTypeZcoin: string = "XZC"; break;
     case TWCoinTypeZcash: string = "ZEC"; break;
     case TWCoinTypeBinance: string = "BNB"; break;
-    case TWCoinTypeEOS: string = "EOS"; break;
     case TWCoinTypeRipple: string = "XRP"; break;
     case TWCoinTypeTezos: string = "XTZ"; break;
     case TWCoinTypeNimiq: string = "NIM"; break;
@@ -56,7 +55,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
-    case TWCoinTypeDai:
+    case TWCoinTypeXDai:
         return 18;
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeBitcoin:
@@ -72,7 +71,6 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
         return 6;
     case TWCoinTypeNimiq:
         return 5;
-    case TWCoinTypeEOS: //TODO
     default:
         return 0;
     }
@@ -94,9 +92,8 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
     case TWCoinTypeWanChain:
-    case TWCoinTypeDai:
+    case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
-    case TWCoinTypeEOS:
         url += "/tx/" + txId;
         break;
     case TWCoinTypePoa:
@@ -147,11 +144,10 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeTron: return "https://tronscan.org";
     case TWCoinTypeVeChain: return "https://explore.veforge.com";
     case TWCoinTypeWanChain: return "https://explorer.wanchain.org";
-    case TWCoinTypeDai: return "https://blockscout.com/poa/dai";
+    case TWCoinTypeXDai: return "https://blockscout.com/poa/dai";
     case TWCoinTypeZcoin: return "https://explorer.zcoin.io";
     case TWCoinTypeZcash: return "https://chain.so";
     case TWCoinTypeBinance: return "https://binance.com";
-    case TWCoinTypeEOS: return "https://eospark.com";
     case TWCoinTypeRipple: return "https://bithomp.com";
     case TWCoinTypeTezos: return "https://tzscan.io";    
     case TWCoinTypeNimiq: return "https://nimiq.watch";
@@ -177,11 +173,10 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeTron: string = "tron"; break;
     case TWCoinTypeVeChain: string = "vechain"; break;
     case TWCoinTypeWanChain: string = "wanchain"; break;
-    case TWCoinTypeDai: string = "dai"; break;
+    case TWCoinTypeXDai: string = "xdai"; break;
     case TWCoinTypeZcoin: string = "zcoin"; break;
     case TWCoinTypeZcash: string = "zcash"; break;
     case TWCoinTypeBinance: string = "binance"; break;
-    case TWCoinTypeEOS: string = "eos"; break;
     case TWCoinTypeRipple: string = "ripple"; break;
     case TWCoinTypeTezos: string = "tezos"; break;    
     case TWCoinTypeNimiq: string = "nimiq"; break;
@@ -208,11 +203,10 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeTron: string = "Tron"; break;
     case TWCoinTypeVeChain: string = "VeChain"; break;
     case TWCoinTypeWanChain: string = "Wanchain"; break;
-    case TWCoinTypeDai: string = "Dai"; break;
+    case TWCoinTypeXDai: string = "xDai"; break;
     case TWCoinTypeZcoin: string = "Zcoin"; break;
     case TWCoinTypeZcash: string = "Zcash"; break;
     case TWCoinTypeBinance: string = "Binance"; break;
-    case TWCoinTypeEOS: string = "EOS"; break;
     case TWCoinTypeRipple: string = "Ripple"; break;
     case TWCoinTypeTezos: string = "Tezos"; break;
     case TWCoinTypeNimiq: string = "Nimiq"; break;

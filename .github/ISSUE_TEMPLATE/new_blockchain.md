@@ -20,23 +20,19 @@ Reason:
 
 <!-- Sample Checklist -->
 
-- [ ] Coin configuration
-- - [ ] Add coin type / decimals
-- - [ ] Recommended tx block explorer
-- - [ ] Return correct curve and purpose in `src/interface/TWCoinType.cpp`.
 - [ ] Address
-- - [ ] Derivation from bip39 phrases
-- - [ ] Derivation from public key / string
-- - [ ] Implement address validation and conversion in `src/Addres.cpp`.
+- - [ ] Return correct curve and purpose in `src/Coin.cpp`.
+- - [ ] Derivation from private key in `src/Coin.cpp`.
+- - [ ] Validation in `src/Coin.cpp`.
+- - [ ] TW[Blockchain]Address
+- - [ ] Unit test
 - [ ] Transaction
 - - [ ] serialization / encoding
+- - [ ] Unit test
 - [ ] Signer
 - - [ ] signing input / output protobuf messages
 - - [ ] signature
-- [ ] C interfaces
-- - [ ] TW[Blockchain]Address
-- - [ ] TW[Blockchain]Transaction / TW[Blockchain]Signer
-- [ ] Tests
+- - [ ] TW[Blockchain]Signer
 - - [ ] Unit test
 - - [ ] C Interface test ( Java / Swift)
 - [ ] RPC documentation

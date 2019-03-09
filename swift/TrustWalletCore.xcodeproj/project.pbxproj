@@ -14,6 +14,8 @@
 		610AEF4D21C1A5C5008ABB74 /* TWBitcoin.h in Headers */ = {isa = PBXBuildFile; fileRef = 610AEF4B21C1A5C5008ABB74 /* TWBitcoin.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		610AEF7421C8A934008ABB74 /* TWBitcoinTransactionSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 610AEF7221C8A934008ABB74 /* TWBitcoinTransactionSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		610AEF7621C8A95A008ABB74 /* BitcoinTransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610AEF7521C8A959008ABB74 /* BitcoinTransactionSigner.swift */; };
+		611B46D322335A020043EBA6 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611B46D122335A020043EBA6 /* Address.cpp */; };
+		611B46D422335A020043EBA6 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = 611B46D222335A020043EBA6 /* Address.h */; };
 		6131E03A2219C53200CF699D /* any.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31D21FF978900E601B3 /* any.cc */; };
 		6131E0412219C54200CF699D /* any.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31921FF978800E601B3 /* any.pb.cc */; };
 		6131E0422219C54200CF699D /* api.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30B21FF978700E601B3 /* api.pb.cc */; };
@@ -234,8 +236,6 @@
 		617744442220977E00C210D9 /* uint256.h in Headers */ = {isa = PBXBuildFile; fileRef = 617744432220977400C210D9 /* uint256.h */; };
 		617FAC602231985B007E08F0 /* DerivationPath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 617FAC5C2231985A007E08F0 /* DerivationPath.cpp */; };
 		617FAC612231985B007E08F0 /* DerivationPath.h in Headers */ = {isa = PBXBuildFile; fileRef = 617FAC5D2231985A007E08F0 /* DerivationPath.h */; };
-		617FAC622231985B007E08F0 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 617FAC5E2231985B007E08F0 /* Address.cpp */; };
-		617FAC632231985B007E08F0 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = 617FAC5F2231985B007E08F0 /* Address.h */; };
 		617FAC6A223199F5007E08F0 /* TWTezosProto.h in Headers */ = {isa = PBXBuildFile; fileRef = 617FAC68223199F4007E08F0 /* TWTezosProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61977CC621C9B9D000C385D5 /* TWBitcoinAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 61977CC421C9B9D000C385D5 /* TWBitcoinAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61977CC721C9B9D000C385D5 /* TWBitcoinCashAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = 61977CC521C9B9D000C385D5 /* TWBitcoinCashAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -300,6 +300,8 @@
 		61B159E821CC5DBB00CFE93B /* TWString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61B159BD21CC5DBB00CFE93B /* TWString.cpp */; };
 		61B159E921CC5DBB00CFE93B /* Hash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61B159BE21CC5DBB00CFE93B /* Hash.cpp */; };
 		61B159EA21CC5DBB00CFE93B /* PublicKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61B159BF21CC5DBB00CFE93B /* PublicKey.cpp */; };
+		61B28E3222333CF400E97D67 /* Coin.h in Headers */ = {isa = PBXBuildFile; fileRef = 61B28E3022333CF300E97D67 /* Coin.h */; };
+		61B28E3322333CF400E97D67 /* Coin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61B28E3122333CF400E97D67 /* Coin.cpp */; };
 		61BA0A6B21F6C929005680E6 /* TWBinanceSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 61BA0A6A21F6C929005680E6 /* TWBinanceSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61BA0A7221F6C9D9005680E6 /* Signer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A6F21F6C9D9005680E6 /* Signer.cpp */; };
 		61BA0A7321F6C9D9005680E6 /* Signer.h in Headers */ = {isa = PBXBuildFile; fileRef = 61BA0A7021F6C9D9005680E6 /* Signer.h */; };
@@ -535,6 +537,8 @@
 		610AEF4B21C1A5C5008ABB74 /* TWBitcoin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBitcoin.h; sourceTree = "<group>"; };
 		610AEF7221C8A934008ABB74 /* TWBitcoinTransactionSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBitcoinTransactionSigner.h; sourceTree = "<group>"; };
 		610AEF7521C8A959008ABB74 /* BitcoinTransactionSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinTransactionSigner.swift; sourceTree = "<group>"; };
+		611B46D122335A020043EBA6 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
+		611B46D222335A020043EBA6 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
 		61346D16220B6F7C00F0141B /* Data+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Hex.swift"; sourceTree = "<group>"; };
 		61376FFE220D48E800573D0F /* BinanceSignerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceSignerTests.swift; sourceTree = "<group>"; };
 		615D9B9721CED9C700878D22 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
@@ -731,8 +735,6 @@
 		617744432220977400C210D9 /* uint256.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = uint256.h; sourceTree = "<group>"; };
 		617FAC5C2231985A007E08F0 /* DerivationPath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DerivationPath.cpp; sourceTree = "<group>"; };
 		617FAC5D2231985A007E08F0 /* DerivationPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DerivationPath.h; sourceTree = "<group>"; };
-		617FAC5E2231985B007E08F0 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
-		617FAC5F2231985B007E08F0 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
 		617FAC68223199F4007E08F0 /* TWTezosProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTezosProto.h; sourceTree = "<group>"; };
 		61977CC421C9B9D000C385D5 /* TWBitcoinAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBitcoinAddress.h; sourceTree = "<group>"; };
 		61977CC521C9B9D000C385D5 /* TWBitcoinCashAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBitcoinCashAddress.h; sourceTree = "<group>"; };
@@ -830,6 +832,8 @@
 		61B159BD21CC5DBB00CFE93B /* TWString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWString.cpp; sourceTree = "<group>"; };
 		61B159BE21CC5DBB00CFE93B /* Hash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hash.cpp; sourceTree = "<group>"; };
 		61B159BF21CC5DBB00CFE93B /* PublicKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PublicKey.cpp; sourceTree = "<group>"; };
+		61B28E3022333CF300E97D67 /* Coin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Coin.h; sourceTree = "<group>"; };
+		61B28E3122333CF400E97D67 /* Coin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Coin.cpp; sourceTree = "<group>"; };
 		61BA0A6A21F6C929005680E6 /* TWBinanceSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBinanceSigner.h; sourceTree = "<group>"; };
 		61BA0A6F21F6C9D9005680E6 /* Signer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signer.cpp; sourceTree = "<group>"; };
 		61BA0A7021F6C9D9005680E6 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
@@ -1138,14 +1142,14 @@
 		617358DC219DF042007BF637 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				617FAC5E2231985B007E08F0 /* Address.cpp */,
-				617FAC5F2231985B007E08F0 /* Address.h */,
 				616F8795222F2CA00007ECA3 /* Base64.h */,
 				61A9B2E621F916FA00E601B3 /* Bech32.cpp */,
 				61A9B2E521F916FA00E601B3 /* Bech32.h */,
 				61BA0A6C21F6C9D9005680E6 /* Binance */,
 				616F8796222F2CA00007ECA3 /* BinaryCoding.h */,
 				61B1599121CC5DBB00CFE93B /* Bitcoin */,
+				61B28E3122333CF400E97D67 /* Coin.cpp */,
+				61B28E3022333CF300E97D67 /* Coin.h */,
 				616D040E220A544400A776E8 /* Data.h */,
 				617FAC5C2231985A007E08F0 /* DerivationPath.cpp */,
 				617FAC5D2231985A007E08F0 /* DerivationPath.h */,
@@ -1661,6 +1665,8 @@
 		61C4E8B92225C3C50020A917 /* Tron */ = {
 			isa = PBXGroup;
 			children = (
+				611B46D122335A020043EBA6 /* Address.cpp */,
+				611B46D222335A020043EBA6 /* Address.h */,
 				61C4E8BA2225C3C50020A917 /* Signer.cpp */,
 				61C4E8BB2225C3C50020A917 /* Protobuf */,
 				61C4E8BF2225C3C50020A917 /* Signer.h */,
@@ -2007,7 +2013,6 @@
 				610AEF4D21C1A5C5008ABB74 /* TWBitcoin.h in Headers */,
 				61A8C5F92208C10A004DA312 /* TWCoinTypeConfiguration.h in Headers */,
 				61B159D421CC5DBB00CFE93B /* Bech32Address.h in Headers */,
-				617FAC632231985B007E08F0 /* Address.h in Headers */,
 				61735AF9219DF044007BF637 /* bip32.h in Headers */,
 				61735B04219DF044007BF637 /* rand.h in Headers */,
 				BB2422CF22217AE7000663D0 /* TWRippleSigner.h in Headers */,
@@ -2030,6 +2035,7 @@
 				616F87A1223041710007ECA3 /* TWNimiqAddress.h in Headers */,
 				61735AEF219DF044007BF637 /* blake2s.h in Headers */,
 				616F87B1223041970007ECA3 /* Signer.h in Headers */,
+				61B28E3222333CF400E97D67 /* Coin.h in Headers */,
 				61CABAB521ED36F50086D9A0 /* TWAES.h in Headers */,
 				61735AF2219DF044007BF637 /* ed25519-donna-basepoint-table.h in Headers */,
 				61C4E8C72225C43E0020A917 /* Tron.pb.h in Headers */,
@@ -2145,6 +2151,7 @@
 				61CABACC21ED781B0086D9A0 /* TWHDVersion.h in Headers */,
 				61CABAC121ED42520086D9A0 /* scrypt.h in Headers */,
 				BB2422D022217AE7000663D0 /* TWRippleProto.h in Headers */,
+				611B46D422335A020043EBA6 /* Address.h in Headers */,
 				61EE6B2221DEB46A001FBB79 /* UnspentSelector.h in Headers */,
 				61A9B3622200D85A00E601B3 /* Address.h in Headers */,
 				616F8794222F2C850007ECA3 /* TWCurve.h in Headers */,
@@ -2418,7 +2425,7 @@
 			files = (
 				61735C24219DF044007BF637 /* ed25519-donna-impl-base.c in Sources */,
 				61722BF7220E45BA00D7BA9A /* Binance.pb.cc in Sources */,
-				617FAC622231985B007E08F0 /* Address.cpp in Sources */,
+				611B46D322335A020043EBA6 /* Address.cpp in Sources */,
 				BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */,
 				61B159D121CC5DBB00CFE93B /* Script.cpp in Sources */,
 				61722BE3220E457D00D7BA9A /* ChainID.swift in Sources */,
@@ -2487,6 +2494,7 @@
 				61A9B3652200D86D00E601B3 /* TendermintAddress.swift in Sources */,
 				61E813BF2227210600D4D2C9 /* Icon.pb.swift in Sources */,
 				61C4E8FF22260CA30020A917 /* DerivationPath.swift in Sources */,
+				61B28E3322333CF400E97D67 /* Coin.cpp in Sources */,
 				61C4E90122260CA30020A917 /* HDWalletExtension.swift in Sources */,
 				61735C68219DF044007BF637 /* pbkdf2.c in Sources */,
 				61B159D621CC5DBB00CFE93B /* Bech32Address.cpp in Sources */,

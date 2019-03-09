@@ -59,14 +59,11 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value17 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinance));
     assertStringsEqual(value17, "BNB");
 
-    auto value18 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
-    assertStringsEqual(value18, "EOS");
-
     auto value19 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
     assertStringsEqual(value19, "XTZ");
 
-    auto value20 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDai));
-    assertStringsEqual(value20, "DAI");
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xDAI");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -88,9 +85,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVeChain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 0);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDai), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -149,9 +145,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto value18 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
     assertStringsEqual(value18, "https://binance.com");
 
-    auto value19 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
-    assertStringsEqual(value19, "https://eospark.com/tx/123");
-
     auto zecTxId = TWStringCreateWithUTF8Bytes("d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
     auto value20 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, zecTxId));
     assertStringsEqual(value20, "https://chain.so/tx/ZEC/d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
@@ -159,7 +152,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto value21 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
     assertStringsEqual(value21, "https://tzscan.io/123");
 
-    auto value22 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDai, txId));
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId));
     assertStringsEqual(value22, "https://blockscout.com/poa/dai/tx/123");
 }
 
@@ -212,14 +205,11 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto value17 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinance));
     assertStringsEqual(value17, "binance");
 
-    auto value18 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
-    assertStringsEqual(value18, "eos");
-    
     auto value19 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
     assertStringsEqual(value19, "tezos");
 
-    auto value20 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDai));
-    assertStringsEqual(value20, "dai");
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xdai");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -271,12 +261,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value17 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
     assertStringsEqual(value17, "Binance");
 
-    auto value18 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
-    assertStringsEqual(value18, "EOS");
-    
     auto value19 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
     assertStringsEqual(value19, "Tezos");
 
-    auto value20 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDai));
-    assertStringsEqual(value20, "Dai");
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xDai");
 }
