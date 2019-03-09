@@ -18,5 +18,4 @@ PublicKey parsePublicKey(std::string publicKey);
 std::string bytesToBase58(const uint8_t *data, size_t dataSize);
 std::string base58ToHex(const std::string data, size_t prefixLength, uint8_t *prefix);
 std::string forgeBool(bool input);
-std::string forgePublicKeyHash(const std::string &publicKeyHash);
 std::string forgePublicKey(PublicKey publicKey);

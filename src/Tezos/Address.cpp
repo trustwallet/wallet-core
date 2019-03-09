@@ -6,6 +6,7 @@
 
 #include "Address.h"
 #include "BinaryCoding.h"
+#include "Forging.h"
 
 #include "../HexCoding.h"
 #include "../Hash.h"
