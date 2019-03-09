@@ -35,12 +35,9 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeZcash: string = "ZEC"; break;
     case TWCoinTypeBinance: string = "BNB"; break;
     case TWCoinTypeRipple: string = "XRP"; break;
-<<<<<<< master
     case TWCoinTypeTezos: string = "XTZ"; break;
     case TWCoinTypeNimiq: string = "NIM"; break;
-=======
     case TWCoinTypeStellar: string = "XLM"; break;
->>>>>>> HEAD~10
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -152,12 +149,9 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeZcash: return "https://chain.so";
     case TWCoinTypeBinance: return "https://binance.com";
     case TWCoinTypeRipple: return "https://bithomp.com";
-<<<<<<< master
     case TWCoinTypeTezos: return "https://tzscan.io";
     case TWCoinTypeNimiq: return "https://nimiq.watch";
-=======
-    case  TWCoinTypeStellar: return "https://stellarscan.io";
->>>>>>> HEAD~10
+    case TWCoinTypeStellar: return "https://stellarscan.io";
     default: return "";
     }
 }
