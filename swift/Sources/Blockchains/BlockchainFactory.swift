@@ -32,7 +32,7 @@ public func blockchain(coin: CoinType) -> Blockchain {
     case .wanChain:
         return Wanchain()
     case .xdai:
-        return xDai();
+        return XDai();
     case .dash:
         return Dash()
     case .icon:
