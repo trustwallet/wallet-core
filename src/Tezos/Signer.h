@@ -19,8 +19,8 @@ namespace Tezos {
 class Signer {
 public:
     /// Signs the given transaction.
-    Data signOperationList(const PrivateKey& privateKey, OperationList operationList);
-    Data signHexString(const PrivateKey& privateKey, std::string forgedBytesHex);
+    std::string signOperationList(const PrivateKey& privateKey, OperationList operationList);
+    std::string signHexString(const PrivateKey& privateKey, std::string forgedBytesHex);
 };
 
 }} // namespace
