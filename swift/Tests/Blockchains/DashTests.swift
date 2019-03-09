@@ -10,7 +10,7 @@ import XCTest
 class DashAddressTests: XCTestCase {
     func testAddress() {
         let privateKey = PrivateKey(wif: "XDoxFwfxsEZDd15uNyj8vt64c3GLxcFjTefnUz7gckvAJeYSFaRz")!
-        let publicKey = privateKey.getPublicKey(compressed: true)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = Dash().address(for: publicKey)
 
         XCTAssertEqual(address.description, "Xw7HTXGY3TFeA3ZsVuMRrYh96GtwWb4hQb")
@@ -19,8 +19,8 @@ class DashAddressTests: XCTestCase {
     func testExtendedKeys() {
         let wallet = testWallet
 
-        let xprv = wallet.getExtendedPrivateKey(curve: .secp256k1, purpose: .bip44, coin: .dash, version: .xprv)
-        let xpub = wallet.getExtendedPubKey(curve: .secp256k1, purpose: .bip44, coin: .dash, version: .xpub)
+        let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .dash, version: .xprv)
+        let xpub = wallet.getExtendedPubKey(purpose: .bip44, coin: .dash, version: .xpub)
 
         XCTAssertEqual(xprv, "xprv9zSMAfz7nQUZDQXMifsT5Cbss1Kh8XgnsKsrFfx83bvbuubs6ra84k95XMpAJmt51jymfNrXid81bu9tUTW2W2g7CBU5e6F297XBuXfSmjJ")
         XCTAssertEqual(xpub, "xpub6DRhaBX1cn2rRtbpphQTSLYcR3ABXzQeEYoT44MjbwTanhw1ePtNcYTZNeHyrJMsMGTbig4iFMSvht7RviohzFxkpjURgHDThygLqbZ1tib")

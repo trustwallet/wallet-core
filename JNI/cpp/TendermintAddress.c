@@ -40,14 +40,10 @@ jlong JNICALL Java_wallet_core_jni_TendermintAddress_nativeCreateWithPublicKey(J
     jmethodID hrpValueMethodID = (*env)->GetMethodID(env, hrpClass, "value", "()I");
     jint hrpValue = (*env)->CallIntMethod(env, hrp, hrpValueMethodID);
     jclass publicKeyClass = (*env)->GetObjectClass(env, publicKey);
-    jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
-    jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
-    jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
-    struct TWTendermintAddress *instance = TWTendermintAddressCreateWithPublicKey(hrpValue, *publicKeyInstance);
+    jfieldID publicKeyHandleFieldID = (*env)->GetFieldID(env, publicKeyClass, "nativeHandle", "J");
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) (*env)->GetLongField(env, publicKey, publicKeyHandleFieldID);
+    struct TWTendermintAddress *instance = TWTendermintAddressCreateWithPublicKey(hrpValue, publicKeyInstance);
     (*env)->DeleteLocalRef(env, hrpClass);
-    (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, publicKeyBytesArray);
     (*env)->DeleteLocalRef(env, publicKeyClass);
     return (jlong) instance;
 }
@@ -98,12 +94,14 @@ jobject JNICALL Java_wallet_core_jni_TendermintAddress_hrp(JNIEnv *env, jobject 
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWTendermintAddress *instance = (struct TWTendermintAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    jobject resultValue = (jobject) TWTendermintAddressHRP(instance);
+    enum TWHRP result = TWTendermintAddressHRP(instance);
 
 
     (*env)->DeleteLocalRef(env, thisClass);
 
-    return resultValue;
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/HRP");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/HRP;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 }
 
 jbyteArray JNICALL Java_wallet_core_jni_TendermintAddress_keyHash(JNIEnv *env, jobject thisObject) {

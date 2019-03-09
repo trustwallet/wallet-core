@@ -1,7 +1,7 @@
 {
   "name": "trust-wallet-core",
   "version": "1.0.0",
-  "description": "",
+  "description": "Trust Wallet Core Javascript Bindings",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -14,5 +14,9 @@
   "dependencies": {
     "long": "^4.0.0",
     "protobufjs": "^6.8.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TrustWallet/wallet-core.git"
   }
 }

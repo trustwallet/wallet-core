@@ -36,9 +36,9 @@ public class HDWallet {
     public static native String getAddressFromExtended(String extended, Curve curve, CoinType coinType, int change, int address);
     public native byte[] seed();
     public native String mnemonic();
-    public native PrivateKey getKey(Curve curve, Purpose purpose, CoinType coin, int account, int change, int address);
-    public native String getExtendedPrivateKey(Curve curve, Purpose purpose, CoinType coin, HDVersion version);
-    public native String getExtendedPublicKey(Curve curve, Purpose purpose, CoinType coin, HDVersion version);
+    public native PrivateKey getKey(CoinType coin, int account, int change, int address);
+    public native String getExtendedPrivateKey(Purpose purpose, CoinType coin, HDVersion version);
+    public native String getExtendedPublicKey(Purpose purpose, CoinType coin, HDVersion version);
 
     public HDWallet(int strength, String passphrase) {
         nativeHandle = nativeCreate(strength, passphrase);

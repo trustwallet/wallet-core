@@ -61,11 +61,10 @@ bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWD
     return true;
 }
 
-void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
+void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
     address->bytes[0] = prefix;
 
-    auto compressed = TWPublicKeyCompressed(publicKey);
-    ecdsa_get_pubkeyhash(compressed.bytes, HASHER_SHA2_RIPEMD,  address->bytes + 1);
+    ecdsa_get_pubkeyhash(publicKey->impl.compressed().bytes.data(), HASHER_SHA2_RIPEMD,  address->bytes + 1);
 }
 
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) {
@@ -73,8 +72,9 @@ TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) 
     b58enc(nullptr, &size, address.bytes, Address::size);
     size += 16;
 
-    std::vector<char> str(size);
-    base58_encode_check(address.bytes, Address::size, HASHER_SHA2D, str.data(), size);
+    std::string str(size, '\0');
+    const auto actualSize = base58_encode_check(address.bytes, Address::size, HASHER_SHA2D, &str[0], size);
+    str.erase(str.begin() + actualSize - 1, str.end());
 
     return TWStringCreateWithUTF8Bytes(str.data());
 }

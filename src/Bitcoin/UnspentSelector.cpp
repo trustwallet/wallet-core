@@ -20,10 +20,10 @@ struct Selection {
 };
 
 // Filters utxos that are dust
-std::vector<Proto::UnspentTransaction> filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee) {
+std::vector<Proto::UnspentTransaction> UnspentSelector::filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee) {
     std::vector<Proto::UnspentTransaction> filteredUtxos;
     for(auto utxo: selectedUtxos) {
-        if (utxo.amount() > UnspentSelector::calculateSingleInputFee(byteFee)) {
+        if (utxo.amount() > calculator.calculateSingleInput(byteFee)) {
             filteredUtxos.push_back(utxo);
         }
     }
@@ -81,7 +81,7 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
     //    (2) closer to 2x the amount,
     //    (3) and does not produce dust change.
     for (auto numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
-        const auto fee = calculateFee(numInputs, numOutputs, byteFee);
+        const auto fee = calculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
         auto slices = slice(sortedUtxos, numInputs);
         slices.erase(std::remove_if(slices.begin(), slices.end(), [targetWithFeeAndDust](const std::vector<Proto::UnspentTransaction>& slice) {
@@ -98,7 +98,7 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
     // 2. If not, find a combination of outputs that may produce dust change.
     numOutputs = 1;
     for (auto numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
-        const auto fee = calculateFee(numInputs, numOutputs, byteFee);
+        const auto fee = calculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
         auto slices = slice(sortedUtxos, numInputs);
         slices.erase(std::remove_if(slices.begin(), slices.end(), [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {
@@ -110,15 +110,6 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
     }
 
     return {};
-}
-
-int64_t UnspentSelector::calculateFee(size_t inputs, size_t outputs, int64_t byteFee) {
-    const auto txsize = ((148 * inputs) + (34 * outputs) + 10);
-    return int64_t(txsize) * byteFee;
-}
-
-int64_t UnspentSelector::calculateSingleInputFee(int64_t byteFee) {
-    return int64_t(148) * byteFee;
 }
 
 template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);

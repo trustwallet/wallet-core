@@ -15,33 +15,34 @@ TW_EXTERN_C_BEGIN
 static const size_t TWPublicKeyCompressedSize = 33;
 static const size_t TWPublicKeyUncompressedSize = 65;
 
-TW_EXPORT_STRUCT
-struct TWPublicKey {
-    uint8_t bytes[TWPublicKeyUncompressedSize];
-};
+TW_EXPORT_CLASS
+struct TWPublicKey;
 
 TW_EXPORT_STATIC_METHOD
-bool TWPublicKeyInitWithData(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull data);
+struct TWPublicKey *_Nullable TWPublicKeyCreateWithData(TWData *_Nonnull data);
+
+TW_EXPORT_METHOD
+void TWPublicKeyDelete(struct TWPublicKey *_Nonnull pk);
 
 TW_EXPORT_STATIC_METHOD
 bool TWPublicKeyIsValid(TWData *_Nonnull data);
 
 TW_EXPORT_PROPERTY
-bool TWPublicKeyIsCompressed(struct TWPublicKey pk);
+bool TWPublicKeyIsCompressed(struct TWPublicKey *_Nonnull pk);
 
 TW_EXPORT_PROPERTY
-struct TWPublicKey TWPublicKeyCompressed(struct TWPublicKey from);
+struct TWPublicKey *_Nonnull TWPublicKeyCompressed(struct TWPublicKey *_Nonnull from);
 
 TW_EXPORT_PROPERTY
-TWData *_Nonnull TWPublicKeyData(struct TWPublicKey pk);
+TWData *_Nonnull TWPublicKeyData(struct TWPublicKey *_Nonnull pk);
 
 TW_EXPORT_METHOD
-bool TWPublicKeyVerify(struct TWPublicKey pk, TWData *_Nonnull signature, TWData *_Nonnull message);
+bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
 
 TW_EXPORT_PROPERTY
-TWString *_Nonnull TWPublicKeyDescription(struct TWPublicKey publicKey);
+TWString *_Nonnull TWPublicKeyDescription(struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_STATIC_METHOD
-struct TWPublicKey TWPublicKeyRecover(TWData *_Nonnull signature, TWData *_Nonnull message);
+struct TWPublicKey *_Nullable TWPublicKeyRecover(TWData *_Nonnull signature, TWData *_Nonnull message);
 
 TW_EXTERN_C_END

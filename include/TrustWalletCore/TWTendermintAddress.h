@@ -37,7 +37,7 @@ struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithKeyHash(enum 
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey);
+struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
 void TWTendermintAddressDelete(struct TWTendermintAddress *_Nonnull address);

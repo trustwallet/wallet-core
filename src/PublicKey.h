@@ -97,3 +97,8 @@ inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) { return lhs.
 inline bool operator!=(const PublicKey& lhs, const PublicKey& rhs) { return lhs.bytes != rhs.bytes; }
 
 } // namespace
+
+/// Wrapper for C interface.
+struct TWPublicKey {
+    TW::PublicKey impl;
+};
