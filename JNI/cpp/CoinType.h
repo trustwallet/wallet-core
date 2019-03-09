@@ -24,6 +24,12 @@ jobject JNICALL Java_wallet_core_jni_CoinType_curve(JNIEnv *env, jobject thisObj
 JNIEXPORT
 jboolean JNICALL Java_wallet_core_jni_CoinType_validate(JNIEnv *env, jobject thisObject, jstring address);
 
+JNIEXPORT
+jstring JNICALL Java_wallet_core_jni_CoinType_derivationPath(JNIEnv *env, jobject thisObject);
+
+JNIEXPORT
+jstring JNICALL Java_wallet_core_jni_CoinType_deriveAddress(JNIEnv *env, jobject thisObject, jobject privateKey);
+
 
 TW_EXTERN_C_END
 

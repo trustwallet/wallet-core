@@ -61,3 +61,33 @@ jboolean JNICALL Java_wallet_core_jni_CoinType_validate(JNIEnv *env, jobject thi
     return resultValue;
 }
 
+jstring JNICALL Java_wallet_core_jni_CoinType_derivationPath(JNIEnv *env, jobject thisObject) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "value", "I");
+    enum TWCoinType instance = (enum TWCoinType) (*env)->GetIntField(env, thisObject, handleFieldID);
+
+    jstring result = TWStringJString(TWCoinTypeDerivationPath(instance), env);
+
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    return result;
+}
+
+jstring JNICALL Java_wallet_core_jni_CoinType_deriveAddress(JNIEnv *env, jobject thisObject, jobject privateKey) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "value", "I");
+    enum TWCoinType instance = (enum TWCoinType) (*env)->GetIntField(env, thisObject, handleFieldID);
+
+    jclass privateKeyClass = (*env)->GetObjectClass(env, privateKey);
+    jfieldID privateKeyHandleFieldID = (*env)->GetFieldID(env, privateKeyClass, "nativeHandle", "J");
+    struct TWPrivateKey *privateKeyInstance = (struct TWPrivateKey *) (*env)->GetLongField(env, privateKey, privateKeyHandleFieldID);
+    jstring result = TWStringJString(TWCoinTypeDeriveAddress(instance, privateKeyInstance), env);
+
+    (*env)->DeleteLocalRef(env, privateKeyClass);
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    return result;
+}
+

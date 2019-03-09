@@ -71,4 +71,6 @@ public enum CoinType {
     public native Purpose purpose();
     public native Curve curve();
     public native boolean validate(String address);
+    public native String derivationPath();
+    public native String deriveAddress(PrivateKey privateKey);
 }
