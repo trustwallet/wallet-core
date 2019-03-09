@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		140352E622336B3400DF0815 /* StellarVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352E422336B3400DF0815 /* StellarVersionByte.swift */; };
+		140352E722336B3400DF0815 /* StellarAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352E522336B3400DF0815 /* StellarAddress.swift */; };
+		140352F52233740C00DF0815 /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352F42233740C00DF0815 /* Stellar.swift */; };
 		34339D36023473D76FAF18EE /* Pods_TrustWalletCore_TrustWalletCoreTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */; };
 		467181FB9EFC0E4C01DDB460 /* Pods_TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */; };
 		610AEF4521C04DF6008ABB74 /* TWHDWallet.h in Headers */ = {isa = PBXBuildFile; fileRef = 610AEF4421C04DF6008ABB74 /* TWHDWallet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -327,7 +330,6 @@
 		61C4E8E922260B150020A917 /* Wanchain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8D022260B140020A917 /* Wanchain.swift */; };
 		61C4E8EA22260B150020A917 /* Dash.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8D122260B140020A917 /* Dash.swift */; };
 		61C4E8EB22260B150020A917 /* Tron.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8D222260B140020A917 /* Tron.swift */; };
-		61C4E8EC22260B150020A917 /* EOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8D322260B140020A917 /* EOS.swift */; };
 		61C4E8ED22260B150020A917 /* Ethereum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8D422260B140020A917 /* Ethereum.swift */; };
 		61C4E8EE22260B150020A917 /* Blockchain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8D522260B140020A917 /* Blockchain.swift */; };
 		61C4E8EF22260B150020A917 /* Zcoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8D622260B140020A917 /* Zcoin.swift */; };
@@ -346,7 +348,6 @@
 		61C4E90122260CA30020A917 /* HDWalletExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8FE22260CA30020A917 /* HDWalletExtension.swift */; };
 		61C4E9192226150F0020A917 /* RippleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB21105F221C03D500571DF7 /* RippleTests.swift */; };
 		61C4E91A2226150F0020A917 /* BitconCashTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E9122226144E0020A917 /* BitconCashTests.swift */; };
-		61C4E91B2226150F0020A917 /* EOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E90A222614200020A917 /* EOSTests.swift */; };
 		61C4E91C2226150F0020A917 /* LitecoinTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E914222614590020A917 /* LitecoinTests.swift */; };
 		61C4E91D2226150F0020A917 /* TronTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E90E222614310020A917 /* TronTests.swift */; };
 		61C4E91E2226150F0020A917 /* WanchainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E908222614120020A917 /* WanchainTests.swift */; };
@@ -496,6 +497,15 @@
 		BB3F05B2220BD93E008C6971 /* TAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB3F05B0220BD93E008C6971 /* TAddress.cpp */; };
 		BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BB3F05B1220BD93E008C6971 /* TAddress.h */; };
 		BB4C2C28222CF8EA00BF42BB /* EthereumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */; };
+		BB6AE99522336FFE00F9EF85 /* TWStellarVersionByte.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BB6AE99622336FFE00F9EF85 /* TWStellarProto.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BB6AE99722336FFE00F9EF85 /* TWStellarAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BB6AE999223370E300F9EF85 /* TWStellarAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */; };
+		BB6AE99D2233710E00F9EF85 /* Crc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB6AE99A2233710D00F9EF85 /* Crc.cpp */; };
+		BB6AE99E2233710E00F9EF85 /* Crc.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE99B2233710D00F9EF85 /* Crc.h */; };
+		BB6AE9A32233711B00F9EF85 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE9A12233711B00F9EF85 /* Address.h */; };
+		BB6AE9A42233711B00F9EF85 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB6AE9A22233711B00F9EF85 /* Address.cpp */; };
+		BB6AE9AB2233799C00F9EF85 /* StellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB6AE9AA2233799C00F9EF85 /* StellarTests.swift */; };
 		BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */; };
 		BBA9012121FDAE4200D2CEF7 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */; };
 /* End PBXBuildFile section */
@@ -530,6 +540,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		140352E422336B3400DF0815 /* StellarVersionByte.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarVersionByte.swift; sourceTree = "<group>"; };
+		140352E522336B3400DF0815 /* StellarAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarAddress.swift; sourceTree = "<group>"; };
+		140352F42233740C00DF0815 /* Stellar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stellar.swift; sourceTree = "<group>"; };
 		36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5407F36D3F0E141D422B55FB /* Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore-TrustWalletCoreTests/Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig"; sourceTree = "<group>"; };
 		610AEF4421C04DF6008ABB74 /* TWHDWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWHDWallet.h; sourceTree = "<group>"; };
@@ -860,7 +873,6 @@
 		61C4E8D022260B140020A917 /* Wanchain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wanchain.swift; sourceTree = "<group>"; };
 		61C4E8D122260B140020A917 /* Dash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dash.swift; sourceTree = "<group>"; };
 		61C4E8D222260B140020A917 /* Tron.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.swift; sourceTree = "<group>"; };
-		61C4E8D322260B140020A917 /* EOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EOS.swift; sourceTree = "<group>"; };
 		61C4E8D422260B140020A917 /* Ethereum.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ethereum.swift; sourceTree = "<group>"; };
 		61C4E8D522260B140020A917 /* Blockchain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Blockchain.swift; sourceTree = "<group>"; };
 		61C4E8D622260B140020A917 /* Zcoin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Zcoin.swift; sourceTree = "<group>"; };
@@ -879,7 +891,6 @@
 		61C4E8FE22260CA30020A917 /* HDWalletExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HDWalletExtension.swift; sourceTree = "<group>"; };
 		61C4E906222614010020A917 /* WanchainAddressTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WanchainAddressTests.swift; sourceTree = "<group>"; };
 		61C4E908222614120020A917 /* WanchainTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WanchainTests.swift; sourceTree = "<group>"; };
-		61C4E90A222614200020A917 /* EOSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EOSTests.swift; sourceTree = "<group>"; };
 		61C4E90C2226142A0020A917 /* TronAddressTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronAddressTests.swift; sourceTree = "<group>"; };
 		61C4E90E222614310020A917 /* TronTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronTests.swift; sourceTree = "<group>"; };
 		61C4E910222614410020A917 /* BitcoinAddressTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinAddressTests.swift; sourceTree = "<group>"; };
@@ -1068,6 +1079,15 @@
 		BB3F05B0220BD93E008C6971 /* TAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TAddress.cpp; sourceTree = "<group>"; };
 		BB3F05B1220BD93E008C6971 /* TAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAddress.h; sourceTree = "<group>"; };
 		BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTests.swift; sourceTree = "<group>"; };
+		BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarVersionByte.h; sourceTree = "<group>"; };
+		BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarProto.h; sourceTree = "<group>"; };
+		BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarAddress.h; sourceTree = "<group>"; };
+		BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWStellarAddress.cpp; sourceTree = "<group>"; };
+		BB6AE99A2233710D00F9EF85 /* Crc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Crc.cpp; sourceTree = "<group>"; };
+		BB6AE99B2233710D00F9EF85 /* Crc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crc.h; sourceTree = "<group>"; };
+		BB6AE9A12233711B00F9EF85 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
+		BB6AE9A22233711B00F9EF85 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
+		BB6AE9AA2233799C00F9EF85 /* StellarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTests.swift; sourceTree = "<group>"; };
 		BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZcashTAddress.swift; sourceTree = "<group>"; };
 		BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transaction.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1142,6 +1162,9 @@
 		617358DC219DF042007BF637 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BB6AE9A02233711B00F9EF85 /* Stellar */,
+				BB6AE99A2233710D00F9EF85 /* Crc.cpp */,
+				BB6AE99B2233710D00F9EF85 /* Crc.h */,
 				616F8795222F2CA00007ECA3 /* Base64.h */,
 				61A9B2E621F916FA00E601B3 /* Bech32.cpp */,
 				61A9B2E521F916FA00E601B3 /* Bech32.h */,
@@ -1194,6 +1217,9 @@
 		617358DF219DF043007BF637 /* TrustWalletCore */ = {
 			isa = PBXGroup;
 			children = (
+				BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */,
+				BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */,
+				BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */,
 				61CABAB421ED36F40086D9A0 /* TWAES.h */,
 				617358E2219DF043007BF637 /* TWBase.h */,
 				61AAD39A21DEF6D300B69A34 /* TWBase58.h */,
@@ -1483,6 +1509,8 @@
 		61735CB7219F88C2007BF637 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				140352E522336B3400DF0815 /* StellarAddress.swift */,
+				140352E422336B3400DF0815 /* StellarVersionByte.swift */,
 				61735ACD219DF044007BF637 /* TrustWalletCore.h */,
 				6198EA5E21B2021A008CB60A /* TWFoundationData.h */,
 				6198EA6221B21714008CB60A /* TWFoundationString.h */,
@@ -1612,6 +1640,7 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
+				BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				61AAD3A221DEF70800B69A34 /* TWBase58.cpp */,
 				61722C01220E461A00D7BA9A /* TWBech32Address.cpp */,
@@ -1693,7 +1722,6 @@
 				61C4E8D522260B140020A917 /* Blockchain.swift */,
 				61C4E8D722260B140020A917 /* BlockchainFactory.swift */,
 				61C4E8D122260B140020A917 /* Dash.swift */,
-				61C4E8D322260B140020A917 /* EOS.swift */,
 				61C4E8D422260B140020A917 /* Ethereum.swift */,
 				61C4E92D22261A1A0020A917 /* Icon.swift */,
 				61C4E8CA22260B140020A917 /* Litecoin.swift */,
@@ -1704,6 +1732,7 @@
 				61C4E8CE22260B140020A917 /* Zcash.swift */,
 				61C4E8D622260B140020A917 /* Zcoin.swift */,
 				616F87BC223041F30007ECA3 /* Nimq.swift */,
+				140352F42233740C00DF0815 /* Stellar.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -1752,7 +1781,6 @@
 				61E813D72227521E00D4D2C9 /* BinanceChainTests.swift */,
 				61C4E9122226144E0020A917 /* BitconCashTests.swift */,
 				61E813DB2227526600D4D2C9 /* DashTests.swift */,
-				61C4E90A222614200020A917 /* EOSTests.swift */,
 				BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */,
 				61C4E914222614590020A917 /* LitecoinTests.swift */,
 				BB21105F221C03D500571DF7 /* RippleTests.swift */,
@@ -1761,6 +1789,7 @@
 				61C4E908222614120020A917 /* WanchainTests.swift */,
 				61E813D92227522F00D4D2C9 /* ZcashTests.swift */,
 				61C4E916222614640020A917 /* ZcoinTests.swift */,
+				BB6AE9AA2233799C00F9EF85 /* StellarTests.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -1992,6 +2021,15 @@
 			path = Zcash;
 			sourceTree = "<group>";
 		};
+		BB6AE9A02233711B00F9EF85 /* Stellar */ = {
+			isa = PBXGroup;
+			children = (
+				BB6AE9A12233711B00F9EF85 /* Address.h */,
+				BB6AE9A22233711B00F9EF85 /* Address.cpp */,
+			);
+			path = Stellar;
+			sourceTree = "<group>";
+		};
 		D79DFA430E7311B0E62847BA /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -2020,6 +2058,7 @@
 				61735C13219DF044007BF637 /* ed25519-hash-custom.h in Headers */,
 				61735AFA219DF044007BF637 /* ecdsa.h in Headers */,
 				615D9B9D21CED9C700878D22 /* Address.h in Headers */,
+				BB6AE99E2233710E00F9EF85 /* Crc.h in Headers */,
 				61A9B36D2202582700E601B3 /* TWEthereumChainID.h in Headers */,
 				616F8797222F2CA10007ECA3 /* Base64.h in Headers */,
 				61735C23219DF044007BF637 /* ed25519-hash-custom-sha3.h in Headers */,
@@ -2042,6 +2081,7 @@
 				BB211059221C036A00571DF7 /* TWRippleAddress.h in Headers */,
 				61735B09219DF044007BF637 /* blake256.h in Headers */,
 				61722BDA220E455500D7BA9A /* TWCommonProto.h in Headers */,
+				BB6AE99722336FFE00F9EF85 /* TWStellarAddress.h in Headers */,
 				BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */,
 				61735C29219DF044007BF637 /* check_mem.h in Headers */,
 				61A9B3512200103000E601B3 /* Transaction.h in Headers */,
@@ -2050,6 +2090,7 @@
 				61735C80219DF044007BF637 /* poly1305-donna-32.h in Headers */,
 				61A9B3672200D87F00E601B3 /* TWTendermintAddress.h in Headers */,
 				61735C61219DF044007BF637 /* blake2_common.h in Headers */,
+				BB6AE99522336FFE00F9EF85 /* TWStellarVersionByte.h in Headers */,
 				616D0411220A544400A776E8 /* Result.h in Headers */,
 				61C4E8B62225C3A20020A917 /* TWTronProto.h in Headers */,
 				61735AD6219DF044007BF637 /* TWBase.h in Headers */,
@@ -2189,10 +2230,12 @@
 				61E813B7222720EB00D4D2C9 /* TWIconSigner.h in Headers */,
 				61735AF0219DF044007BF637 /* sha3.h in Headers */,
 				61FE4B3B22208E0300C65017 /* Signer.h in Headers */,
+				BB6AE9A32233711B00F9EF85 /* Address.h in Headers */,
 				61E813D12227213500D4D2C9 /* Icon.pb.h in Headers */,
 				61735C1C219DF044007BF637 /* ed25519-hash-custom-keccak.h in Headers */,
 				61735B06219DF044007BF637 /* nem.h in Headers */,
 				61CABACE21ED781B0086D9A0 /* TWPurpose.h in Headers */,
+				BB6AE99622336FFE00F9EF85 /* TWStellarProto.h in Headers */,
 				61722BF8220E45BA00D7BA9A /* Bitcoin.pb.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2403,7 +2446,6 @@
 				61C4E92C22261A100020A917 /* IconAddressTests.swift in Sources */,
 				61C4E921222615120020A917 /* TronAddressTests.swift in Sources */,
 				61C4E922222615120020A917 /* WanchainAddressTests.swift in Sources */,
-				61C4E91B2226150F0020A917 /* EOSTests.swift in Sources */,
 				61C4E91C2226150F0020A917 /* LitecoinTests.swift in Sources */,
 				61C4E91D2226150F0020A917 /* TronTests.swift in Sources */,
 				6198EA8021B6BFC9008CB60A /* DataTests.swift in Sources */,
@@ -2416,6 +2458,7 @@
 				61C4E91F2226150F0020A917 /* ZcoinTests.swift in Sources */,
 				616D0413220A6C5B00A776E8 /* BitcoinTransactionSignerTests.swift in Sources */,
 				61E813E82227535A00D4D2C9 /* ZcashTests.swift in Sources */,
+				BB6AE9AB2233799C00F9EF85 /* StellarTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2542,8 +2585,8 @@
 				61735C69219DF044007BF637 /* aeskey.c in Sources */,
 				61C4E8F022260B150020A917 /* BlockchainFactory.swift in Sources */,
 				61735C03219DF044007BF637 /* blake256.c in Sources */,
-				61C4E8EC22260B150020A917 /* EOS.swift in Sources */,
 				61C4E8ED22260B150020A917 /* Ethereum.swift in Sources */,
+				140352F52233740C00DF0815 /* Stellar.swift in Sources */,
 				61C4E8EA22260B150020A917 /* Dash.swift in Sources */,
 				61CABABF21ED41FC0086D9A0 /* KeyDerivation.swift in Sources */,
 				610AEF7621C8A95A008ABB74 /* BitcoinTransactionSigner.swift in Sources */,
@@ -2581,6 +2624,7 @@
 				615D9B9C21CED9C700878D22 /* CashAddress.cpp in Sources */,
 				61BA0A7821F7DB29005680E6 /* Serialization.cpp in Sources */,
 				61CABAB721ED37070086D9A0 /* TWAES.cpp in Sources */,
+				140352E722336B3400DF0815 /* StellarAddress.swift in Sources */,
 				61FE4B4022208E1C00C65017 /* VeChainSigner.swift in Sources */,
 				61722C05220E461A00D7BA9A /* TWHRP.cpp in Sources */,
 				61735C4E219DF044007BF637 /* memzero.c in Sources */,
@@ -2588,6 +2632,7 @@
 				61B159D721CC5DBB00CFE93B /* Transaction.cpp in Sources */,
 				61735C28219DF044007BF637 /* nem.c in Sources */,
 				61735C2B219DF044007BF637 /* secp256k1.c in Sources */,
+				140352E622336B3400DF0815 /* StellarVersionByte.swift in Sources */,
 				61E44464221CD4B3006A4FF1 /* Ethereum.pb.swift in Sources */,
 				61735C88219DF64D007BF637 /* SecRandom.m in Sources */,
 				6198EA5321AF61F0008CB60A /* BitcoinScript.swift in Sources */,
@@ -2634,6 +2679,7 @@
 				61E813CD2227212600D4D2C9 /* TWIconAddress.cpp in Sources */,
 				61E813C92227211B00D4D2C9 /* Signer.cpp in Sources */,
 				616F87B9223041C10007ECA3 /* NimiqAddress.swift in Sources */,
+				BB6AE99D2233710E00F9EF85 /* Crc.cpp in Sources */,
 				616F879A222F2CB90007ECA3 /* Curve.swift in Sources */,
 				61C4E8EB22260B150020A917 /* Tron.swift in Sources */,
 				61A9B3632200D85A00E601B3 /* Address.cpp in Sources */,
@@ -2645,7 +2691,9 @@
 				61735C65219DF044007BF637 /* base58.c in Sources */,
 				61722C0B220E461A00D7BA9A /* TWBitcoinAddress.cpp in Sources */,
 				61C4E90022260CA30020A917 /* DerivationPath.Index.swift in Sources */,
+				BB6AE999223370E300F9EF85 /* TWStellarAddress.cpp in Sources */,
 				61FE4B3722208E0300C65017 /* Transaction.cpp in Sources */,
+				BB6AE9A42233711B00F9EF85 /* Address.cpp in Sources */,
 				61735C84219DF044007BF637 /* PrivateKey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

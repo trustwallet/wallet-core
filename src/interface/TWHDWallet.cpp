@@ -39,6 +39,10 @@ TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
     return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
 }
 
+struct TWPrivateKey *_Nonnull TWHDWalletGetAccountKey(struct TWHDWallet *wallet, TWCoinType coin, uint32_t account) {
+    return new TWPrivateKey{ wallet->impl.getKey(coin, account) };
+}
+
 struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *wallet, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
     return new TWPrivateKey{ wallet->impl.getKey(coin, account, change, address) };
 }

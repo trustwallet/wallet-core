@@ -16,7 +16,6 @@ public enum CoinType {
     BITCOINCASH (145),
     CALLISTO (820),
     DASH (5),
-    EOS (194),
     ETHEREUM (60),
     ETHEREUMCLASSIC (61),
     GO (6060),
@@ -32,7 +31,8 @@ public enum CoinType {
     WANCHAIN (5718350),
     ZCASH (133),
     ZCOIN (136),
-    NIMIQ (242);
+    NIMIQ (242),
+    STELLAR (148);
 
     private final int value;
     CoinType(int value) {
@@ -47,7 +47,6 @@ public enum CoinType {
             case 145: return CoinType.BITCOINCASH;
             case 820: return CoinType.CALLISTO;
             case 5: return CoinType.DASH;
-            case 194: return CoinType.EOS;
             case 60: return CoinType.ETHEREUM;
             case 61: return CoinType.ETHEREUMCLASSIC;
             case 6060: return CoinType.GO;
@@ -64,6 +63,7 @@ public enum CoinType {
             case 133: return CoinType.ZCASH;
             case 136: return CoinType.ZCOIN;
             case 242: return CoinType.NIMIQ;
+            case 148: return CoinType.STELLAR;
             default: return null;
         }
     }
