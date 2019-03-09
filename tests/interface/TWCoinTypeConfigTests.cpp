@@ -64,6 +64,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value19 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
     assertStringsEqual(value19, "XLM");
+  
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xDAI");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -86,6 +89,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
 }
 
@@ -154,6 +158,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
     assertStringsEqual(value22, "https://stellarscan.io/transaction/123");
+  
+    auto value23 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId));
+    assertStringsEqual(value23, "https://blockscout.com/poa/dai/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -210,6 +217,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value19 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
     assertStringsEqual(value19, "stellar");
+
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xdai");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -266,4 +276,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value19 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
     assertStringsEqual(value19, "Stellar");
+
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xDai");
 }

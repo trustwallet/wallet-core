@@ -29,6 +29,7 @@ public enum CoinType {
     TRON (195),
     VECHAIN (818),
     WANCHAIN (5718350),
+    XDAI (700),
     ZCASH (133),
     ZCOIN (136),
     NIMIQ (242),
@@ -60,6 +61,7 @@ public enum CoinType {
             case 195: return CoinType.TRON;
             case 818: return CoinType.VECHAIN;
             case 5718350: return CoinType.WANCHAIN;
+            case 700: return CoinType.XDAI;
             case 133: return CoinType.ZCASH;
             case 136: return CoinType.ZCOIN;
             case 242: return CoinType.NIMIQ;

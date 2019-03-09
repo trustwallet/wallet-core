@@ -31,6 +31,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeTron: string = "TRX"; break;
     case TWCoinTypeVeChain: string = "VET"; break;
     case TWCoinTypeWanChain: string = "WAN"; break;
+    case TWCoinTypeXDai: string = "xDAI"; break;
     case TWCoinTypeZcoin: string = "XZC"; break;
     case TWCoinTypeZcash: string = "ZEC"; break;
     case TWCoinTypeBinance: string = "BNB"; break;
@@ -55,6 +56,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
         return 18;
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeBitcoin:
@@ -94,6 +96,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
         url += "/tx/" + txId;
         break;
@@ -145,6 +148,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeTron: return "https://tronscan.org";
     case TWCoinTypeVeChain: return "https://explore.veforge.com";
     case TWCoinTypeWanChain: return "https://explorer.wanchain.org";
+    case TWCoinTypeXDai: return "https://blockscout.com/poa/dai";
     case TWCoinTypeZcoin: return "https://explorer.zcoin.io";
     case TWCoinTypeZcash: return "https://chain.so";
     case TWCoinTypeBinance: return "https://binance.com";
@@ -174,6 +178,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeTron: string = "tron"; break;
     case TWCoinTypeVeChain: string = "vechain"; break;
     case TWCoinTypeWanChain: string = "wanchain"; break;
+    case TWCoinTypeXDai: string = "xdai"; break;
     case TWCoinTypeZcoin: string = "zcoin"; break;
     case TWCoinTypeZcash: string = "zcash"; break;
     case TWCoinTypeBinance: string = "binance"; break;
@@ -204,6 +209,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeTron: string = "Tron"; break;
     case TWCoinTypeVeChain: string = "VeChain"; break;
     case TWCoinTypeWanChain: string = "Wanchain"; break;
+    case TWCoinTypeXDai: string = "xDai"; break;
     case TWCoinTypeZcoin: string = "Zcoin"; break;
     case TWCoinTypeZcash: string = "Zcash"; break;
     case TWCoinTypeBinance: string = "Binance"; break;

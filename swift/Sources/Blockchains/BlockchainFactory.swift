@@ -31,6 +31,8 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Callisto()
     case .wanChain:
         return Wanchain()
+    case .xdai:
+        return XDai();
     case .dash:
         return Dash()
     case .icon:
