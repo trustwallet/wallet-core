@@ -24,7 +24,6 @@ enum TWCoinType {
     TWCoinTypeBitcoinCash = 145,
     TWCoinTypeCallisto = 820,
     TWCoinTypeDash = 5,
-    TWCoinTypeEOS = 194,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
     TWCoinTypeGo = 6060,

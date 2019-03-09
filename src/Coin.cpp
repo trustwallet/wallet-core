@@ -66,7 +66,6 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
         return Zcash::TAddress(data).string();
 
     case TWCoinTypeTezos:
-    case TWCoinTypeEOS:
         return "";
     }
 }
@@ -119,9 +118,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {TWP2PKHPrefixZcashT, TWP2SHPrefixZcashT});
-
-    case TWCoinTypeEOS:
-        return false;
     }
 }
 
@@ -131,7 +127,6 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
     case TWCoinTypeDash:
-    case TWCoinTypeEOS:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -161,7 +156,6 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
     case TWCoinTypeDash:
-    case TWCoinTypeEOS:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -190,7 +184,6 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
     case TWCoinTypeDash:
-    case TWCoinTypeEOS:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -226,7 +219,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return Bitcoin::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2PKHPrefixDash).string();
 
     case TWCoinTypeCallisto:
-    case TWCoinTypeEOS:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
