@@ -37,7 +37,7 @@ enum TWCoinType {
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeWanChain = 5718350,
-    TWCoinTypeXDai = 100,
+    TWCoinTypeDai = 100,
     TWCoinTypeZcash = 133,
     TWCoinTypeZcoin = 136,
     TWCoinTypeNimiq = 242,
