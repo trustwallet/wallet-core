@@ -35,7 +35,7 @@ std::string bytesToBase58(const uint8_t *data, size_t dataSize) {
     b58enc(nullptr, &size, data, dataSize);
     size += 16;
 
-    std::string encoded(size, ' ');
+    std::string encoded(size, '\0');
     base58_encode_check(data, dataSize, HASHER_SHA2D, &encoded[0], size);
     return std::string(encoded.c_str());
 }

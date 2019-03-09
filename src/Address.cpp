@@ -66,6 +66,8 @@ std::string TW::loadAddress(const Data& data, TWCoinType coin) {
         return Zcash::TAddress(data).string();
 
     case TWCoinTypeTezos:
+        return Tezos::Address(data).string();
+
     case TWCoinTypeEOS:
         return "";
     }

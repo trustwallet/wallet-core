@@ -36,6 +36,14 @@ Address::Address(const std::string& string) {
     std::copy(decoded, decoded + Address::size, bytes.begin());
 }
 
+Address::Address(const std::vector<uint8_t>& data) {
+    // TODO: isValid(bytes) 
+    if (data.size() != size) {
+        throw std::invalid_argument("Invalid address data");
+    }
+    std::copy(data.begin(), data.end(), bytes.begin());
+}
+
 Address::Address(const PublicKey& publicKey) {
     auto publicKeySize = publicKey.isCompressed() ? publicKey.secp256k1Size : publicKey.secp256k1ExtendedSize;
     auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.begin() + publicKeySize);

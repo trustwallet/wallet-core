@@ -5,13 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Tezos/Address.h"
+#include "HDWallet.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "Tezos/BinaryCoding.h"
 
+#include <TrustWalletCore/TWCoinType.h>
+
 #include <gtest/gtest.h>
 #include <string>
-#include <iostream>
 #include <array>
 
 using namespace TW;

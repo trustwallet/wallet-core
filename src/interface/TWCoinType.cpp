@@ -50,7 +50,6 @@ enum TWCurve TWCoinTypeCurve(enum TWCoinType type) {
     case TWCoinTypeLitecoin:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
-    case TWCoinTypeTezos:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeTron:
@@ -60,6 +59,7 @@ enum TWCurve TWCoinTypeCurve(enum TWCoinType type) {
     case TWCoinTypeZcoin:
         return TWCurveSECP256k1;
     case TWCoinTypeNimiq:
+    case TWCoinTypeTezos:
         return TWCurveEd25519;
     }
 }
