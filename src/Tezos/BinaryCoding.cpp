@@ -37,7 +37,7 @@ std::string bytesToBase58(const uint8_t *data, size_t dataSize) {
 
     std::string encoded(size, '\0');
     const auto actualSize = base58_encode_check(data, dataSize, HASHER_SHA2D, &encoded[0], size);
-    str.erase(str.begin() + actualSize - 1, str.end());
+    encoded.erase(encoded.begin() + actualSize - 1, encoded.end());
     return std::string(encoded.c_str());
 }
 

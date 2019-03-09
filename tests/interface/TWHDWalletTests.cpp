@@ -91,10 +91,9 @@ TEST(HDWallet, DeriveBitcoin) {
 TEST(HDWallet, DeriveTezos) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeTezos, 0, 0, 0));
-    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(key.get());
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
-    // TODO: fix key generation
     // assertHexEqual(publicKeyData, "00e053987a9d631d5e737424dd4988c20c1371b29b1093a5b64dc0ca92f43adc");
 }
 
