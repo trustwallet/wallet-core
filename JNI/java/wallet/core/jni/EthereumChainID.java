@@ -18,7 +18,8 @@ public enum EthereumChainID {
     ETHEREUMCLASSIC (61),
     VECHAIN (74),
     THUNDERTOKEN (18),
-    TOMOCHAIN (88);
+    TOMOCHAIN (88),
+    DAI (100);
 
     private final int value;
     EthereumChainID(int value) {
