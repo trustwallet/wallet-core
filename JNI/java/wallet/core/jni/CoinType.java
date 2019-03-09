@@ -33,7 +33,8 @@ public enum CoinType {
     ZCASH (133),
     ZCOIN (136),
     NIMIQ (242),
-    STELLAR (148);
+    STELLAR (148),
+    AION (425);
 
     private final int value;
     CoinType(int value) {
