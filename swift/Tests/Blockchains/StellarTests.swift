@@ -10,11 +10,12 @@ import TrustWalletCore
 class StellarTests: XCTestCase {
 
     func testAddressFromPrivateKey() {
-        let key = PrivateKey(data: Data(hexString: "50ac56cb8d869d44fd39c8996e286b16ca878955eb6c40c82d8977221357bb54")!)!
+        let key = PrivateKey(data: Data(hexString: "59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722")!)!
         let pubkey = key.getPublicKeyEd25519()
+        let address = StellarAddress(publicKey: pubkey)
 
-        //FIXME PrivateKey should support Ed25519
-        //XCTAssertEqual(pubkey.data.hexString, "09A966BCAACC103E38896BAAE3F8C2F06C21FD47DD4F864FF0D33F9819DF5CA2".lowercased())
+        XCTAssertEqual(pubkey.data.hexString, "0109A966BCAACC103E38896BAAE3F8C2F06C21FD47DD4F864FF0D33F9819DF5CA2".lowercased())
+        XCTAssertEqual(address.description, "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI")
     }
 
     func testAddressFromPublicKey() {
