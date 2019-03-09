@@ -27,7 +27,6 @@ std::string Signer::signHexString(const PrivateKey& privateKey, std::string forg
   auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
   TW::PublicKey pk = privateKey.getPublicKey(PublicKeyType::ed25519);
   Data signature = privateKey.sign(hash, TWCurve::TWCurveEd25519);
-  Data result = Data(hash.begin(), hash.end());
 
   return forgedBytes + hex(signature);
 }
