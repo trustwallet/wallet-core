@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		140352E622336B3400DF0815 /* StellarVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352E422336B3400DF0815 /* StellarVersionByte.swift */; };
 		140352E722336B3400DF0815 /* StellarAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352E522336B3400DF0815 /* StellarAddress.swift */; };
+		140352F52233740C00DF0815 /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352F42233740C00DF0815 /* Stellar.swift */; };
+		140352F72233759300DF0815 /* StellarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352F62233759300DF0815 /* StellarTests.swift */; };
 		34339D36023473D76FAF18EE /* Pods_TrustWalletCore_TrustWalletCoreTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */; };
 		467181FB9EFC0E4C01DDB460 /* Pods_TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */; };
 		610AEF4521C04DF6008ABB74 /* TWHDWallet.h in Headers */ = {isa = PBXBuildFile; fileRef = 610AEF4421C04DF6008ABB74 /* TWHDWallet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -542,6 +544,8 @@
 /* Begin PBXFileReference section */
 		140352E422336B3400DF0815 /* StellarVersionByte.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarVersionByte.swift; sourceTree = "<group>"; };
 		140352E522336B3400DF0815 /* StellarAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarAddress.swift; sourceTree = "<group>"; };
+		140352F42233740C00DF0815 /* Stellar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stellar.swift; sourceTree = "<group>"; };
+		140352F62233759300DF0815 /* StellarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StellarTests.swift; sourceTree = "<group>"; };
 		36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5407F36D3F0E141D422B55FB /* Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore-TrustWalletCoreTests/Pods-TrustWalletCore-TrustWalletCoreTests.release.xcconfig"; sourceTree = "<group>"; };
 		610AEF4421C04DF6008ABB74 /* TWHDWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWHDWallet.h; sourceTree = "<group>"; };
@@ -1733,6 +1737,7 @@
 				61C4E8CE22260B140020A917 /* Zcash.swift */,
 				61C4E8D622260B140020A917 /* Zcoin.swift */,
 				616F87BC223041F30007ECA3 /* Nimq.swift */,
+				140352F42233740C00DF0815 /* Stellar.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -1790,6 +1795,7 @@
 				61C4E908222614120020A917 /* WanchainTests.swift */,
 				61E813D92227522F00D4D2C9 /* ZcashTests.swift */,
 				61C4E916222614640020A917 /* ZcoinTests.swift */,
+				140352F62233759300DF0815 /* StellarTests.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -2564,6 +2570,7 @@
 				61C4E8F922260B150020A917 /* BitcoinCashAddressExtension.swift in Sources */,
 				61C4E8E422260B150020A917 /* Bitcoin.swift in Sources */,
 				61E813D4222751D900D4D2C9 /* Ripple.swift in Sources */,
+				140352F72233759300DF0815 /* StellarTests.swift in Sources */,
 				61C4E93022261A230020A917 /* IconAddressExtension.swift in Sources */,
 				61722C0C220E461A00D7BA9A /* TWBech32Address.cpp in Sources */,
 				61735C7F219DF044007BF637 /* chacha20poly1305.c in Sources */,
@@ -2587,6 +2594,7 @@
 				61735C03219DF044007BF637 /* blake256.c in Sources */,
 				61C4E8EC22260B150020A917 /* EOS.swift in Sources */,
 				61C4E8ED22260B150020A917 /* Ethereum.swift in Sources */,
+				140352F52233740C00DF0815 /* Stellar.swift in Sources */,
 				61C4E8EA22260B150020A917 /* Dash.swift in Sources */,
 				61CABABF21ED41FC0086D9A0 /* KeyDerivation.swift in Sources */,
 				610AEF7621C8A95A008ABB74 /* BitcoinTransactionSigner.swift in Sources */,

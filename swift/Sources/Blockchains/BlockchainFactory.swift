@@ -54,6 +54,6 @@ public func blockchain(coin: CoinType) -> Blockchain {
     case .nimiq:
         return Nimq()
     case .stellar:
-        fatalError("not implemented")
+        return Stellar()
     }
 }
