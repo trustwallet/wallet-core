@@ -14,6 +14,1176 @@ public final class Tezos {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
+  public interface SigningInputOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:TW.Tezos.Proto.SigningInput)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+     */
+    boolean hasOperationList();
+    /**
+     * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+     */
+    wallet.core.jni.proto.Tezos.OperationList getOperationList();
+    /**
+     * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+     */
+    wallet.core.jni.proto.Tezos.OperationListOrBuilder getOperationListOrBuilder();
+
+    /**
+     * <code>bytes private_key = 2;</code>
+     */
+    com.google.protobuf.ByteString getPrivateKey();
+  }
+  /**
+   * <pre>
+   * Input data necessary to create a signed Tezos transaction.
+   * Next field: 3
+   * </pre>
+   *
+   * Protobuf type {@code TW.Tezos.Proto.SigningInput}
+   */
+  public  static final class SigningInput extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:TW.Tezos.Proto.SigningInput)
+      SigningInputOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SigningInput.newBuilder() to construct.
+    private SigningInput(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SigningInput() {
+      privateKey_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SigningInput(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              wallet.core.jni.proto.Tezos.OperationList.Builder subBuilder = null;
+              if (operationList_ != null) {
+                subBuilder = operationList_.toBuilder();
+              }
+              operationList_ = input.readMessage(wallet.core.jni.proto.Tezos.OperationList.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(operationList_);
+                operationList_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 18: {
+
+              privateKey_ = input.readBytes();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningInput_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningInput_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              wallet.core.jni.proto.Tezos.SigningInput.class, wallet.core.jni.proto.Tezos.SigningInput.Builder.class);
+    }
+
+    public static final int OPERATION_LIST_FIELD_NUMBER = 1;
+    private wallet.core.jni.proto.Tezos.OperationList operationList_;
+    /**
+     * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+     */
+    public boolean hasOperationList() {
+      return operationList_ != null;
+    }
+    /**
+     * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+     */
+    public wallet.core.jni.proto.Tezos.OperationList getOperationList() {
+      return operationList_ == null ? wallet.core.jni.proto.Tezos.OperationList.getDefaultInstance() : operationList_;
+    }
+    /**
+     * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+     */
+    public wallet.core.jni.proto.Tezos.OperationListOrBuilder getOperationListOrBuilder() {
+      return getOperationList();
+    }
+
+    public static final int PRIVATE_KEY_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString privateKey_;
+    /**
+     * <code>bytes private_key = 2;</code>
+     */
+    public com.google.protobuf.ByteString getPrivateKey() {
+      return privateKey_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (operationList_ != null) {
+        output.writeMessage(1, getOperationList());
+      }
+      if (!privateKey_.isEmpty()) {
+        output.writeBytes(2, privateKey_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (operationList_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, getOperationList());
+      }
+      if (!privateKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, privateKey_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof wallet.core.jni.proto.Tezos.SigningInput)) {
+        return super.equals(obj);
+      }
+      wallet.core.jni.proto.Tezos.SigningInput other = (wallet.core.jni.proto.Tezos.SigningInput) obj;
+
+      if (hasOperationList() != other.hasOperationList()) return false;
+      if (hasOperationList()) {
+        if (!getOperationList()
+            .equals(other.getOperationList())) return false;
+      }
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (hasOperationList()) {
+        hash = (37 * hash) + OPERATION_LIST_FIELD_NUMBER;
+        hash = (53 * hash) + getOperationList().hashCode();
+      }
+      hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getPrivateKey().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningInput parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(wallet.core.jni.proto.Tezos.SigningInput prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     * Input data necessary to create a signed Tezos transaction.
+     * Next field: 3
+     * </pre>
+     *
+     * Protobuf type {@code TW.Tezos.Proto.SigningInput}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:TW.Tezos.Proto.SigningInput)
+        wallet.core.jni.proto.Tezos.SigningInputOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningInput_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningInput_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                wallet.core.jni.proto.Tezos.SigningInput.class, wallet.core.jni.proto.Tezos.SigningInput.Builder.class);
+      }
+
+      // Construct using wallet.core.jni.proto.Tezos.SigningInput.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (operationListBuilder_ == null) {
+          operationList_ = null;
+        } else {
+          operationList_ = null;
+          operationListBuilder_ = null;
+        }
+        privateKey_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningInput_descriptor;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Tezos.SigningInput getDefaultInstanceForType() {
+        return wallet.core.jni.proto.Tezos.SigningInput.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Tezos.SigningInput build() {
+        wallet.core.jni.proto.Tezos.SigningInput result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Tezos.SigningInput buildPartial() {
+        wallet.core.jni.proto.Tezos.SigningInput result = new wallet.core.jni.proto.Tezos.SigningInput(this);
+        if (operationListBuilder_ == null) {
+          result.operationList_ = operationList_;
+        } else {
+          result.operationList_ = operationListBuilder_.build();
+        }
+        result.privateKey_ = privateKey_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof wallet.core.jni.proto.Tezos.SigningInput) {
+          return mergeFrom((wallet.core.jni.proto.Tezos.SigningInput)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(wallet.core.jni.proto.Tezos.SigningInput other) {
+        if (other == wallet.core.jni.proto.Tezos.SigningInput.getDefaultInstance()) return this;
+        if (other.hasOperationList()) {
+          mergeOperationList(other.getOperationList());
+        }
+        if (other.getPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
+          setPrivateKey(other.getPrivateKey());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        wallet.core.jni.proto.Tezos.SigningInput parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (wallet.core.jni.proto.Tezos.SigningInput) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private wallet.core.jni.proto.Tezos.OperationList operationList_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          wallet.core.jni.proto.Tezos.OperationList, wallet.core.jni.proto.Tezos.OperationList.Builder, wallet.core.jni.proto.Tezos.OperationListOrBuilder> operationListBuilder_;
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      public boolean hasOperationList() {
+        return operationListBuilder_ != null || operationList_ != null;
+      }
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      public wallet.core.jni.proto.Tezos.OperationList getOperationList() {
+        if (operationListBuilder_ == null) {
+          return operationList_ == null ? wallet.core.jni.proto.Tezos.OperationList.getDefaultInstance() : operationList_;
+        } else {
+          return operationListBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      public Builder setOperationList(wallet.core.jni.proto.Tezos.OperationList value) {
+        if (operationListBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          operationList_ = value;
+          onChanged();
+        } else {
+          operationListBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      public Builder setOperationList(
+          wallet.core.jni.proto.Tezos.OperationList.Builder builderForValue) {
+        if (operationListBuilder_ == null) {
+          operationList_ = builderForValue.build();
+          onChanged();
+        } else {
+          operationListBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      public Builder mergeOperationList(wallet.core.jni.proto.Tezos.OperationList value) {
+        if (operationListBuilder_ == null) {
+          if (operationList_ != null) {
+            operationList_ =
+              wallet.core.jni.proto.Tezos.OperationList.newBuilder(operationList_).mergeFrom(value).buildPartial();
+          } else {
+            operationList_ = value;
+          }
+          onChanged();
+        } else {
+          operationListBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      public Builder clearOperationList() {
+        if (operationListBuilder_ == null) {
+          operationList_ = null;
+          onChanged();
+        } else {
+          operationList_ = null;
+          operationListBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      public wallet.core.jni.proto.Tezos.OperationList.Builder getOperationListBuilder() {
+        
+        onChanged();
+        return getOperationListFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      public wallet.core.jni.proto.Tezos.OperationListOrBuilder getOperationListOrBuilder() {
+        if (operationListBuilder_ != null) {
+          return operationListBuilder_.getMessageOrBuilder();
+        } else {
+          return operationList_ == null ?
+              wallet.core.jni.proto.Tezos.OperationList.getDefaultInstance() : operationList_;
+        }
+      }
+      /**
+       * <code>.TW.Tezos.Proto.OperationList operation_list = 1;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          wallet.core.jni.proto.Tezos.OperationList, wallet.core.jni.proto.Tezos.OperationList.Builder, wallet.core.jni.proto.Tezos.OperationListOrBuilder> 
+          getOperationListFieldBuilder() {
+        if (operationListBuilder_ == null) {
+          operationListBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              wallet.core.jni.proto.Tezos.OperationList, wallet.core.jni.proto.Tezos.OperationList.Builder, wallet.core.jni.proto.Tezos.OperationListOrBuilder>(
+                  getOperationList(),
+                  getParentForChildren(),
+                  isClean());
+          operationList_ = null;
+        }
+        return operationListBuilder_;
+      }
+
+      private com.google.protobuf.ByteString privateKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes private_key = 2;</code>
+       */
+      public com.google.protobuf.ByteString getPrivateKey() {
+        return privateKey_;
+      }
+      /**
+       * <code>bytes private_key = 2;</code>
+       */
+      public Builder setPrivateKey(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        privateKey_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes private_key = 2;</code>
+       */
+      public Builder clearPrivateKey() {
+        
+        privateKey_ = getDefaultInstance().getPrivateKey();
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:TW.Tezos.Proto.SigningInput)
+    }
+
+    // @@protoc_insertion_point(class_scope:TW.Tezos.Proto.SigningInput)
+    private static final wallet.core.jni.proto.Tezos.SigningInput DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.Tezos.SigningInput();
+    }
+
+    public static wallet.core.jni.proto.Tezos.SigningInput getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SigningInput>
+        PARSER = new com.google.protobuf.AbstractParser<SigningInput>() {
+      @java.lang.Override
+      public SigningInput parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SigningInput(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SigningInput> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SigningInput> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public wallet.core.jni.proto.Tezos.SigningInput getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SigningOutputOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:TW.Tezos.Proto.SigningOutput)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes signed_bytes = 1;</code>
+     */
+    com.google.protobuf.ByteString getSignedBytes();
+  }
+  /**
+   * <pre>
+   * Transaction signing output.
+   * Next field: 2
+   * </pre>
+   *
+   * Protobuf type {@code TW.Tezos.Proto.SigningOutput}
+   */
+  public  static final class SigningOutput extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:TW.Tezos.Proto.SigningOutput)
+      SigningOutputOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SigningOutput.newBuilder() to construct.
+    private SigningOutput(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SigningOutput() {
+      signedBytes_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SigningOutput(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              signedBytes_ = input.readBytes();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningOutput_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningOutput_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              wallet.core.jni.proto.Tezos.SigningOutput.class, wallet.core.jni.proto.Tezos.SigningOutput.Builder.class);
+    }
+
+    public static final int SIGNED_BYTES_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString signedBytes_;
+    /**
+     * <code>bytes signed_bytes = 1;</code>
+     */
+    public com.google.protobuf.ByteString getSignedBytes() {
+      return signedBytes_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!signedBytes_.isEmpty()) {
+        output.writeBytes(1, signedBytes_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!signedBytes_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, signedBytes_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof wallet.core.jni.proto.Tezos.SigningOutput)) {
+        return super.equals(obj);
+      }
+      wallet.core.jni.proto.Tezos.SigningOutput other = (wallet.core.jni.proto.Tezos.SigningOutput) obj;
+
+      if (!getSignedBytes()
+          .equals(other.getSignedBytes())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + SIGNED_BYTES_FIELD_NUMBER;
+      hash = (53 * hash) + getSignedBytes().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Tezos.SigningOutput parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(wallet.core.jni.proto.Tezos.SigningOutput prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     * Transaction signing output.
+     * Next field: 2
+     * </pre>
+     *
+     * Protobuf type {@code TW.Tezos.Proto.SigningOutput}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:TW.Tezos.Proto.SigningOutput)
+        wallet.core.jni.proto.Tezos.SigningOutputOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningOutput_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningOutput_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                wallet.core.jni.proto.Tezos.SigningOutput.class, wallet.core.jni.proto.Tezos.SigningOutput.Builder.class);
+      }
+
+      // Construct using wallet.core.jni.proto.Tezos.SigningOutput.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        signedBytes_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return wallet.core.jni.proto.Tezos.internal_static_TW_Tezos_Proto_SigningOutput_descriptor;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Tezos.SigningOutput getDefaultInstanceForType() {
+        return wallet.core.jni.proto.Tezos.SigningOutput.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Tezos.SigningOutput build() {
+        wallet.core.jni.proto.Tezos.SigningOutput result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Tezos.SigningOutput buildPartial() {
+        wallet.core.jni.proto.Tezos.SigningOutput result = new wallet.core.jni.proto.Tezos.SigningOutput(this);
+        result.signedBytes_ = signedBytes_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof wallet.core.jni.proto.Tezos.SigningOutput) {
+          return mergeFrom((wallet.core.jni.proto.Tezos.SigningOutput)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(wallet.core.jni.proto.Tezos.SigningOutput other) {
+        if (other == wallet.core.jni.proto.Tezos.SigningOutput.getDefaultInstance()) return this;
+        if (other.getSignedBytes() != com.google.protobuf.ByteString.EMPTY) {
+          setSignedBytes(other.getSignedBytes());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        wallet.core.jni.proto.Tezos.SigningOutput parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (wallet.core.jni.proto.Tezos.SigningOutput) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString signedBytes_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes signed_bytes = 1;</code>
+       */
+      public com.google.protobuf.ByteString getSignedBytes() {
+        return signedBytes_;
+      }
+      /**
+       * <code>bytes signed_bytes = 1;</code>
+       */
+      public Builder setSignedBytes(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        signedBytes_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes signed_bytes = 1;</code>
+       */
+      public Builder clearSignedBytes() {
+        
+        signedBytes_ = getDefaultInstance().getSignedBytes();
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:TW.Tezos.Proto.SigningOutput)
+    }
+
+    // @@protoc_insertion_point(class_scope:TW.Tezos.Proto.SigningOutput)
+    private static final wallet.core.jni.proto.Tezos.SigningOutput DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.Tezos.SigningOutput();
+    }
+
+    public static wallet.core.jni.proto.Tezos.SigningOutput getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SigningOutput>
+        PARSER = new com.google.protobuf.AbstractParser<SigningOutput>() {
+      @java.lang.Override
+      public SigningOutput parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SigningOutput(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SigningOutput> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SigningOutput> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public wallet.core.jni.proto.Tezos.SigningOutput getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface OperationListOrBuilder extends
       // @@protoc_insertion_point(interface_extends:TW.Tezos.Proto.OperationList)
       com.google.protobuf.MessageOrBuilder {
@@ -3649,6 +4819,16 @@ public final class Tezos {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_TW_Tezos_Proto_SigningInput_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_TW_Tezos_Proto_SigningInput_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_TW_Tezos_Proto_SigningOutput_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_TW_Tezos_Proto_SigningOutput_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_TW_Tezos_Proto_OperationList_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -3677,22 +4857,26 @@ public final class Tezos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013Tezos.proto\022\016TW.Tezos.Proto\"N\n\rOperati" +
-      "onList\022\016\n\006branch\030\001 \001(\t\022-\n\noperations\030\002 \003" +
-      "(\0132\031.TW.Tezos.Proto.Operation\"\201\003\n\tOperat" +
-      "ion\022\017\n\007counter\030\001 \001(\003\022\016\n\006source\030\002 \001(\t\022\013\n\003" +
-      "fee\030\003 \001(\003\022\021\n\tgas_limit\030\004 \001(\003\022\025\n\rstorage_" +
-      "limit\030\005 \001(\003\0225\n\004kind\030\007 \001(\0162\'.TW.Tezos.Pro" +
-      "to.Operation.OperationKind\022D\n\025reveal_ope" +
-      "ration_data\030\010 \001(\0132#.TW.Tezos.Proto.Revea" +
-      "lOperationDataH\000\022N\n\032transaction_operatio" +
-      "n_data\030\t \001(\0132(.TW.Tezos.Proto.Transactio" +
-      "nOperationDataH\000\"=\n\rOperationKind\022\017\n\013END" +
-      "ORSEMENT\020\000\022\n\n\006REVEAL\020\007\022\017\n\013TRANSACTION\020\010B" +
-      "\020\n\016operation_data\"?\n\030TransactionOperatio" +
-      "nData\022\023\n\013destination\030\001 \001(\t\022\016\n\006amount\030\002 \001" +
-      "(\003\")\n\023RevealOperationData\022\022\n\npublic_key\030" +
-      "\001 \001(\tB\027\n\025wallet.core.jni.protob\006proto3"
+      "\n\013Tezos.proto\022\016TW.Tezos.Proto\"Z\n\014Signing" +
+      "Input\0225\n\016operation_list\030\001 \001(\0132\035.TW.Tezos" +
+      ".Proto.OperationList\022\023\n\013private_key\030\002 \001(" +
+      "\014\"%\n\rSigningOutput\022\024\n\014signed_bytes\030\001 \001(\014" +
+      "\"N\n\rOperationList\022\016\n\006branch\030\001 \001(\t\022-\n\nope" +
+      "rations\030\002 \003(\0132\031.TW.Tezos.Proto.Operation" +
+      "\"\201\003\n\tOperation\022\017\n\007counter\030\001 \001(\003\022\016\n\006sourc" +
+      "e\030\002 \001(\t\022\013\n\003fee\030\003 \001(\003\022\021\n\tgas_limit\030\004 \001(\003\022" +
+      "\025\n\rstorage_limit\030\005 \001(\003\0225\n\004kind\030\007 \001(\0162\'.T" +
+      "W.Tezos.Proto.Operation.OperationKind\022D\n" +
+      "\025reveal_operation_data\030\010 \001(\0132#.TW.Tezos." +
+      "Proto.RevealOperationDataH\000\022N\n\032transacti" +
+      "on_operation_data\030\t \001(\0132(.TW.Tezos.Proto" +
+      ".TransactionOperationDataH\000\"=\n\rOperation" +
+      "Kind\022\017\n\013ENDORSEMENT\020\000\022\n\n\006REVEAL\020\007\022\017\n\013TRA" +
+      "NSACTION\020\010B\020\n\016operation_data\"?\n\030Transact" +
+      "ionOperationData\022\023\n\013destination\030\001 \001(\t\022\016\n" +
+      "\006amount\030\002 \001(\003\")\n\023RevealOperationData\022\022\n\n" +
+      "public_key\030\001 \001(\tB\027\n\025wallet.core.jni.prot" +
+      "ob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -3706,26 +4890,38 @@ public final class Tezos {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_TW_Tezos_Proto_OperationList_descriptor =
+    internal_static_TW_Tezos_Proto_SigningInput_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_TW_Tezos_Proto_SigningInput_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_TW_Tezos_Proto_SigningInput_descriptor,
+        new java.lang.String[] { "OperationList", "PrivateKey", });
+    internal_static_TW_Tezos_Proto_SigningOutput_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_TW_Tezos_Proto_SigningOutput_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_TW_Tezos_Proto_SigningOutput_descriptor,
+        new java.lang.String[] { "SignedBytes", });
+    internal_static_TW_Tezos_Proto_OperationList_descriptor =
+      getDescriptor().getMessageTypes().get(2);
     internal_static_TW_Tezos_Proto_OperationList_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Tezos_Proto_OperationList_descriptor,
         new java.lang.String[] { "Branch", "Operations", });
     internal_static_TW_Tezos_Proto_Operation_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_TW_Tezos_Proto_Operation_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Tezos_Proto_Operation_descriptor,
         new java.lang.String[] { "Counter", "Source", "Fee", "GasLimit", "StorageLimit", "Kind", "RevealOperationData", "TransactionOperationData", "OperationData", });
     internal_static_TW_Tezos_Proto_TransactionOperationData_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_TW_Tezos_Proto_TransactionOperationData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Tezos_Proto_TransactionOperationData_descriptor,
         new java.lang.String[] { "Destination", "Amount", });
     internal_static_TW_Tezos_Proto_RevealOperationData_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_TW_Tezos_Proto_RevealOperationData_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Tezos_Proto_RevealOperationData_descriptor,

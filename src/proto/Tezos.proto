@@ -3,6 +3,19 @@ syntax = "proto3";
 package TW.Tezos.Proto;
 option java_package = "wallet.core.jni.proto";
 
+// Input data necessary to create a signed Tezos transaction.
+// Next field: 3
+message SigningInput {
+  OperationList operation_list = 1;
+  bytes private_key = 2;
+}
+
+// Transaction signing output.
+// Next field: 2
+message SigningOutput {
+  bytes signed_bytes = 1;
+}
+
 // A list of operations and a branch.
 // Next field: 3
 message OperationList {

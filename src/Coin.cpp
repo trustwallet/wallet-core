@@ -73,7 +73,7 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     case TWCoinTypeStellar:
         return Stellar::Address(data).string();
     case TWCoinTypeTezos:
-        return "";
+        return Tezos::Address(data).string();
     }
 }
 
