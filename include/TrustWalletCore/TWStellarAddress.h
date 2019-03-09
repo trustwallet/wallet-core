@@ -37,7 +37,7 @@ struct TWStellarAddress *_Nullable TWStellarAddressCreateWithData(TWData *_Nonnu
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWStellarAddress *_Nonnull TWStellarAddressCreateWithPublicKey(struct TWPublicKey publicKey);
+struct TWStellarAddress *_Nonnull TWStellarAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
 void TWStellarAddressDelete(struct TWStellarAddress *_Nonnull address);
