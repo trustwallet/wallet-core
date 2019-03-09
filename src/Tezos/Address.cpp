@@ -57,8 +57,9 @@ std::string Address::string() const {
     b58enc(nullptr, &size, bytes.data(), Address::size);
     size += 16;
 
-    std::string str(size, ' ');
-    base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
+    std::string str(size, '\0');
+    const auto actualSize = base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
+    str.erase(str.begin() + actualSize - 1, str.end());
 
     return std::string(str.c_str());
 }

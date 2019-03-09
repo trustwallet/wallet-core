@@ -6,66 +6,27 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 
-#include "../Address.h"
+#include "../Coin.h"
 
 enum TWPurpose TWCoinTypePurpose(enum TWCoinType coin) {
-    switch(coin) {
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeDash:
-    case TWCoinTypeEOS:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeGo:
-    case TWCoinTypeICON:
-    case TWCoinTypeNimiq:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeTezos:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-        return TWPurposeBIP44;
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeLitecoin:
-        return TWPurposeBIP84;
-    }
+    return TW::purpose(coin);
 }
 
 enum TWCurve TWCoinTypeCurve(enum TWCoinType coin) {
-    switch(coin) {
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeDash:
-    case TWCoinTypeEOS:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeGo:
-    case TWCoinTypeICON:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeTezos:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-        return TWCurveSECP256k1;
-    case TWCoinTypeNimiq:
-        return TWCurveEd25519;
-    }
+    return TW::curve(coin);
 }
 
 bool TWCoinTypeValidate(enum TWCoinType coin, TWString *_Nonnull address) {
-    return TW::validate(*reinterpret_cast<const std::string*>(address), coin);
+    return TW::validateAddress(coin, *reinterpret_cast<const std::string*>(address));
+}
+
+TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin) {
+    const auto path = TW::derivationPath(coin);
+    const auto string = path.string();
+    return TWStringCreateWithUTF8Bytes(string.c_str());
+}
+
+TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivateKey *_Nonnull privateKey) {
+    const auto string = TW::deriveAddress(coin, privateKey->impl);
+    return TWStringCreateWithUTF8Bytes(string.c_str());
 }

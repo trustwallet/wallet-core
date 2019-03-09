@@ -6,12 +6,14 @@
 
 #include "Address.h"
 
+#include "../Hash.h"
+
 #include <TrezorCrypto/base58.h>
-#include <TrezorCrypto/ecdsa.h>
 
 #include <cassert>
+#include <stdexcept>
 
-using namespace TW::Bitcoin;
+using namespace TW::Tron;
 
 bool Address::isValid(const std::string& string) {
     size_t capacity = 128;
@@ -22,19 +24,7 @@ bool Address::isValid(const std::string& string) {
         return false;
     }
 
-    return true;
-}
-
-bool Address::isValid(const std::string& string, const std::vector<byte>& validPrefixes) {
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size) {
-        return false;
-    }
-
-    if (std::find(validPrefixes.begin(), validPrefixes.end(), buffer[0]) == validPrefixes.end()) {
+    if (buffer[0] != prefix) {
         return false;
     }
 
@@ -46,19 +36,28 @@ Address::Address(const std::string& string) {
     uint8_t buffer[capacity];
 
     int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    assert(size == Address::size);
+    if (size != Address::size || buffer[0] != prefix) {
+        throw std::invalid_argument("Invalid address string");
+    }
 
     std::copy(buffer, buffer + Address::size, bytes.begin());
 }
 
-Address::Address(const std::vector<uint8_t>& data) {
-    assert(isValid(data));
+Address::Address(const Data& data) {
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address data");
+    }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey& publicKey, uint8_t prefix) {
+Address::Address(const PublicKey& publicKey) {
+    if (publicKey.type() != PublicKeyType::secp256k1Extended) {
+        throw std::invalid_argument("Invalid public key type");
+    }
+    const auto pkdata = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
+    const auto keyhash = Hash::keccak256(pkdata);
     bytes[0] = prefix;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
+    std::copy(keyhash.end() - size + 1, keyhash.end(), bytes.begin() + 1);
 }
 
 std::string Address::string() const {

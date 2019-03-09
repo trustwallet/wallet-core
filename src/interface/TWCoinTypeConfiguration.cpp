@@ -34,7 +34,6 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeZcoin: string = "XZC"; break;
     case TWCoinTypeZcash: string = "ZEC"; break;
     case TWCoinTypeBinance: string = "BNB"; break;
-    case TWCoinTypeEOS: string = "EOS"; break;
     case TWCoinTypeRipple: string = "XRP"; break;
     case TWCoinTypeTezos: string = "XTZ"; break;
     case TWCoinTypeNimiq: string = "NIM"; break;
@@ -70,7 +69,6 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
         return 6;
     case TWCoinTypeNimiq:
         return 5;
-    case TWCoinTypeEOS: //TODO
     default:
         return 0;
     }
@@ -93,7 +91,6 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeGo:
     case TWCoinTypeWanChain:
     case TWCoinTypeZcoin:
-    case TWCoinTypeEOS:
         url += "/tx/" + txId;
         break;
     case TWCoinTypePoa:
@@ -147,7 +144,6 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeZcoin: return "https://explorer.zcoin.io";
     case TWCoinTypeZcash: return "https://chain.so";
     case TWCoinTypeBinance: return "https://binance.com";
-    case TWCoinTypeEOS: return "https://eospark.com";
     case TWCoinTypeRipple: return "https://bithomp.com";
     case TWCoinTypeTezos: return "https://tzscan.io";    
     case TWCoinTypeNimiq: return "https://nimiq.watch";
@@ -176,7 +172,6 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeZcoin: string = "zcoin"; break;
     case TWCoinTypeZcash: string = "zcash"; break;
     case TWCoinTypeBinance: string = "binance"; break;
-    case TWCoinTypeEOS: string = "eos"; break;
     case TWCoinTypeRipple: string = "ripple"; break;
     case TWCoinTypeTezos: string = "tezos"; break;    
     case TWCoinTypeNimiq: string = "nimiq"; break;
@@ -206,7 +201,6 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeZcoin: string = "Zcoin"; break;
     case TWCoinTypeZcash: string = "Zcash"; break;
     case TWCoinTypeBinance: string = "Binance"; break;
-    case TWCoinTypeEOS: string = "EOS"; break;
     case TWCoinTypeRipple: string = "Ripple"; break;
     case TWCoinTypeTezos: string = "Tezos"; break;
     case TWCoinTypeNimiq: string = "Nimiq"; break;
