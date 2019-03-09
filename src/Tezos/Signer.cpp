@@ -29,6 +29,5 @@ std::string Signer::signHexString(const PrivateKey& privateKey, std::string forg
   Data signature = privateKey.sign(hash, TWCurve::TWCurveEd25519);
   Data result = Data(hash.begin(), hash.end());
 
-  append(result, signature);
-  return hex(signature);
+  return forgedBytes + hex(signature);
 }
