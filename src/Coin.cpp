@@ -17,6 +17,7 @@
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
 #include "Zcash/TAddress.h"
+#include "Stellar/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -68,6 +69,8 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     case TWCoinTypeZcash:
         return Zcash::TAddress(data).string();
 
+    case TWCoinTypeStellar:
+        return Stellar::Address(data).string();
     case TWCoinTypeTezos:
         return "";
     }
@@ -121,6 +124,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {TWP2PKHPrefixZcashT, TWP2SHPrefixZcashT});
+    case TWCoinTypeStellar:
+        return Stellar::Address::isValid(string);
     }
 }
 
@@ -145,6 +150,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeWanChain:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeStellar:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -176,6 +182,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcoin:
         return TWCurveSECP256k1;
     case TWCoinTypeNimiq:
+    case TWCoinTypeStellar:
         return TWCurveEd25519;
     }
 }
@@ -204,6 +211,8 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
+    case TWCoinTypeStellar:
+        return DerivationPath(purpose(coin), coin, 0);
     }
 }
 
@@ -255,5 +264,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 
     case TWCoinTypeZcoin:
         return Bitcoin::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2PKHPrefixZcoin).string();
+    case TWCoinTypeStellar:
+        return Stellar::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
     }
 }

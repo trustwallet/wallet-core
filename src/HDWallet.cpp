@@ -22,6 +22,7 @@ using namespace TW;
 
 namespace {
     HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin);
+    HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin, uint32_t account);
     HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin, uint32_t account, uint32_t change, uint32_t address);
     HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 
@@ -72,6 +73,14 @@ PrivateKey HDWallet::getKey(TWCoinType coin) const {
     const auto curve = TWCoinTypeCurve(coin);
     const auto purpose = TWCoinTypePurpose(coin);
     auto node = getNode(*this, curve, purpose, coin);
+    auto data = Data(node.private_key, node.private_key + PrivateKey::size);
+    return PrivateKey(data);
+}
+
+PrivateKey HDWallet::getKey(TWCoinType coin, uint32_t account) const {
+    const auto curve = TWCoinTypeCurve(coin);
+    const auto purpose = TWCoinTypePurpose(coin);
+    auto node = getNode(*this, curve, purpose, coin, account);
     auto data = Data(node.private_key, node.private_key + PrivateKey::size);
     return PrivateKey(data);
 }
@@ -174,6 +183,14 @@ namespace {
         auto node = getMasterNode(wallet, curve);
         hdnode_private_ckd(&node, purpose | 0x80000000);
         hdnode_private_ckd(&node, coin | 0x80000000);
+        return node;
+    }
+
+    HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin, uint32_t account) {
+        auto node = getMasterNode(wallet, curve);
+        hdnode_private_ckd(&node, purpose | 0x80000000);
+        hdnode_private_ckd(&node, coin | 0x80000000);
+        hdnode_private_ckd(&node, account | 0x80000000);
         return node;
     }
 
