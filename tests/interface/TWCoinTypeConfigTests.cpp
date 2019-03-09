@@ -90,7 +90,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 0);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 6);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
