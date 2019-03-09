@@ -51,7 +51,7 @@ Address::Address(const Data& data) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    if (publicKey.type() != PublicKeyType::secp256k1) {
+    if (publicKey.type() != PublicKeyType::secp256k1Extended) {
         throw std::invalid_argument("Invalid public key type");
     }
     const auto pkdata = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
@@ -65,8 +65,9 @@ std::string Address::string() const {
     b58enc(nullptr, &size, bytes.data(), Address::size);
     size += 16;
 
-    std::string str(size, ' ');
-    base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
+    std::string str(size, '\0');
+    const auto actualSize = base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
+    str.erase(str.begin() + actualSize - 1, str.end());
 
     return str;
 }

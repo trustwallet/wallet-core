@@ -69,8 +69,9 @@ std::string TAddress::string() const {
     b58enc(nullptr, &size, bytes, TAddress::size);
     size += 16;
 
-    std::string str(size, ' ');
-    base58_encode_check(bytes, TAddress::size, HASHER_SHA2D, &str[0], size);
+    std::string str(size, '\0');
+    const auto actualSize = base58_encode_check(bytes, TAddress::size, HASHER_SHA2D, &str[0], size);
+    str.erase(str.begin() + actualSize - 1, str.end());
 
     return str;
 }
