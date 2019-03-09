@@ -70,6 +70,7 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
         return Zcash::TAddress(data).string();
 
     case TWCoinTypeStellar:
+        return Stellar::Address(data).string();
     case TWCoinTypeTezos:
         return "";
     }
@@ -209,8 +210,9 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeWanChain:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
-    case TWCoinTypeStellar: //FIXME
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
+    case TWCoinTypeStellar:
+        return DerivationPath(purpose(coin), coin, 0);
     }
 }
 
