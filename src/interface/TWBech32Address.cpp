@@ -54,7 +54,7 @@ void TWBech32AddressDelete(struct TWBech32Address *_Nonnull address) {
 }
 
 TWString *_Nonnull TWBech32AddressDescription(struct TWBech32Address *_Nonnull address) {
-    const auto string = address->impl.encode();
+    const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 

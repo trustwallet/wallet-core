@@ -24,7 +24,6 @@ TEST(IconSigner, Sign) {
     input.set_value(valueData.data(), valueData.size());
 
     auto stepLimitData = store(uint256_t("74565"));
-    std::cout << hex(stepLimitData) << std::endl;
     input.set_step_limit(stepLimitData.data(), stepLimitData.size());
 
     input.set_timestamp(1516942975500598);

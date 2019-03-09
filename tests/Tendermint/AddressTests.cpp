@@ -9,8 +9,6 @@
 #include "PublicKey.h"
 #include "Tendermint/Address.h"
 
-#include "../TWTestUtilities.h"
-
 #include <gtest/gtest.h>
 #include <TrustWalletCore/TWHDWallet.h>
 
@@ -32,7 +30,7 @@ TEST(Address, FromKeyHash) {
 
     auto publicKey = PublicKey(publicKeyData);
     auto address = Address("bnb", publicKey);
-    ASSERT_EQ(address.encode(), "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2");
+    ASSERT_EQ(address.string(), "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2");
 }
 
 }} // namespace

@@ -12,6 +12,12 @@ public enum <%= entity.name %>: <%= type %><% if has_string %>, CustomStringConv
 <%=   render('swift/method_forward.erb', { method: property, arguments: ['TWCoinType(rawValue: rawValue)'] }) -%>
     }
 <%- end -%>
+<%# Methods -%>
+<% entity.methods.each do |method| -%>
+
+<%   arguments = ['TWCoinType(rawValue: rawValue)'] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
+<%=  render('swift/method.erb', { method: method, arguments: arguments }) %>
+<% end -%>
 <%# Description -%>
 <%  if has_string -%>
 

@@ -135,11 +135,11 @@ std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& e
     switch (coinType) {
     case TWCoinTypeBitcoin: {
         auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_BITCOIN);
-        string = address.encode();
+        string = address.string();
     } break;
     case TWCoinTypeLitecoin: {
         auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_LITECOIN);
-        string = address.encode();
+        string = address.string();
     } break;
     case TWCoinTypeBitcoinCash: {
         auto address = Bitcoin::CashAddress(reinterpret_cast<PublicKey&>(publicKey));

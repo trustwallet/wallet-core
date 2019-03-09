@@ -15,8 +15,8 @@
 
 namespace TW {
 namespace Base64 {
-    
-Data decode(const std::string& val) {
+
+inline Data decode(const std::string& val) {
     using namespace boost::archive::iterators;
     using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
     return boost::algorithm::trim_right_copy_if(Data(It(std::begin(val)), It(std::end(val))), [](char c) {
@@ -24,7 +24,7 @@ Data decode(const std::string& val) {
     });
 }
 
-std::string encode(const Data& val) {
+inline std::string encode(const Data& val) {
     using namespace boost::archive::iterators;
     using It = base64_from_binary<transform_width<Data::const_iterator, 6, 8>>;
     auto encoded = std::string(It(std::begin(val)), It(std::end(val)));
