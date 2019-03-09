@@ -20,6 +20,15 @@ public enum Curve {
     }
     public int value() { return value; }
 
+    public static Curve createFromValue(int value) {
+        switch (value) {
+            case 0: return Curve.SECP256K1;
+            case 1: return Curve.ED25519;
+            default: return null;
+        }
+    }
+
+
     public String toString() {
         switch (this) {
         case SECP256K1: return "secp256k1";

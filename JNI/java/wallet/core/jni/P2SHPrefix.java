@@ -22,4 +22,16 @@ public enum P2SHPrefix {
         this.value = value;
     }
     public byte value() { return value; }
+
+    public static P2SHPrefix createFromValue(byte value) {
+        switch (value) {
+            case (byte) 0x05: return P2SHPrefix.BITCOIN;
+            case (byte) 0x32: return P2SHPrefix.LITECOIN;
+            case (byte) 0x10: return P2SHPrefix.DASH;
+            case (byte) 0x07: return P2SHPrefix.ZCOIN;
+            case (byte) 0xBD: return P2SHPrefix.ZCASHT;
+            default: return null;
+        }
+    }
+
 }

@@ -20,4 +20,14 @@ public enum Purpose {
         this.value = value;
     }
     public int value() { return value; }
+
+    public static Purpose createFromValue(int value) {
+        switch (value) {
+            case 44: return Purpose.BIP44;
+            case 49: return Purpose.BIP49;
+            case 84: return Purpose.BIP84;
+            default: return null;
+        }
+    }
+
 }

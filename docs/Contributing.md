@@ -104,7 +104,7 @@ When implementing a new blockchain make sure you go through this checklist:
 - [ ] Implement functionality in C++. Put it in a subfolder of `src/`.
 - [ ] Write unit tests. Put them in a subfolder of `tests/`.
 - [ ] Add relevant constants in `TWCoinType`, `TWP2SHPrefix`, `TWEthereymChainID`, `TWHRP`, etc., as necessary.
-- [ ] Implement address validation and conversion in `src/Addres.cpp`.
+- [ ] Implement address validation and derivation in `src/Coin.cpp`.
 - [ ] Return correct curve and purpose in `src/interface/TWCoinType.cpp`.
 - [ ] Write interface header in `include/TrustWalletCore` and implement the interface in `src/interface`.
     - [ ] Write custom address type if necessary.

@@ -37,7 +37,7 @@ Address::Address(const std::string& string) {
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    // TODO: isValid(bytes) 
+    // TODO: isValid(bytes)
     if (data.size() != size) {
         throw std::invalid_argument("Invalid address data");
     }
