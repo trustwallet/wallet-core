@@ -5,12 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import Foundation
-import TrustWalletCore
 
 public class Stellar: Blockchain {
     
     public override var coinType: CoinType {
-        return .Stellar
+        return .stellar
     }
     
     public override func address(data: Data) -> Address? {
