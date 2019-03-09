@@ -15,6 +15,7 @@
 #include "Ripple/Address.h"
 #include "Tendermint/Address.h"
 #include "Tezos/Address.h"
+#include "Tron/Address.h"
 #include "Zcash/TAddress.h"
 
 #include <TrustWalletCore/TWHRP.h>
@@ -57,8 +58,10 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     case TWCoinTypeRipple:
         return Ripple::Address(data).string();
 
-    case TWCoinTypeDash:
     case TWCoinTypeTron:
+        return Tron::Address(data).string();
+
+    case TWCoinTypeDash:
     case TWCoinTypeZcoin:
         return Bitcoin::Address(data).string();
 
@@ -111,7 +114,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Tezos::Address::isValid(string);
 
     case TWCoinTypeTron:
-        return Bitcoin::Address::isValid(string, {0x41});
+        return Tron::Address::isValid(string);
 
     case TWCoinTypeZcoin:
         return Bitcoin::Address::isValid(string, {TWP2PKHPrefixZcoin, TWP2SHPrefixZcoin});
@@ -245,7 +248,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return Tezos::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
 
     case TWCoinTypeTron:
-        return Bitcoin::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0x41).string();
+        return Tron::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
 
     case TWCoinTypeZcash:
         return Zcash::TAddress(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2SHPrefixZcashT).string();
