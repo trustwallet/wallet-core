@@ -18,7 +18,7 @@
 #include <gtest/gtest.h>
 #include <HDWallet.h>
 
-TEST(Stellar, DeriveTransparentAddress) {
+TEST(Stellar, DeriveAddress) {
     auto words = STRING("indicate rival expand cave giant same grocery burden ugly rose tuna blood");
     auto passphrase = STRING("");
 

@@ -47,11 +47,6 @@ public:
 
     /// Returns a string representation of the address.
     std::string string() const;
-
-    /// CRC16 implementation compatible with the Stellar version
-    /// Ported from this implementation: http://introcs.cs.princeton.edu/java/61data/CRC16CCITT.java.html
-    /// Initial value changed to 0x0000 to match Stellar
-    static uint16_t crc16(uint8_t *bytes, uint32_t length);
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {
