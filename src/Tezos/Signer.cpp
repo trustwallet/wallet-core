@@ -16,12 +16,12 @@
 using namespace TW;
 using namespace TW::Tezos;
 
-Data Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
+std::string Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
   auto forgedBytes = operationList.forge();
   return signHexString(privateKey, forgedBytes);
 }
 
-Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes) {
+std::string Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes) {
   auto watermark = "03";
   auto watermarkedForgedBytesHex = parse_hex(watermark + forgedBytes);
   auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
@@ -30,6 +30,5 @@ Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes
   Data result = Data(hash.begin(), hash.end());
 
   append(result, signature);
-  // TODO: return result and update test
-  return signature;
+  return hex(signature);
 }
