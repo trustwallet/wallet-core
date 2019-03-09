@@ -244,7 +244,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return Bitcoin::Bech32Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0, HRP_LITECOIN).string();
 
     case TWCoinTypeNimiq:
-        return Nimiq::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+        return Nimiq::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
 
     case TWCoinTypeRipple:
         return Ripple::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
