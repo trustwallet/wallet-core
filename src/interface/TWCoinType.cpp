@@ -26,6 +26,7 @@ enum TWPurpose TWCoinTypePurpose(enum TWCoinType type) {
     case TWCoinTypeTron:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWPurposeBIP44;
@@ -56,6 +57,7 @@ enum TWCurve TWCoinTypeCurve(enum TWCoinType type) {
     case TWCoinTypeTron:
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWCurveSECP256k1;
