@@ -16,6 +16,7 @@ public enum CoinType {
     BITCOINCASH (145),
     CALLISTO (820),
     DASH (5),
+    EOS (194),
     ETHEREUM (60),
     ETHEREUMCLASSIC (61),
     GO (6060),
@@ -47,6 +48,7 @@ public enum CoinType {
             case 145: return CoinType.BITCOINCASH;
             case 820: return CoinType.CALLISTO;
             case 5: return CoinType.DASH;
+            case 194: return CoinType.EOS;
             case 60: return CoinType.ETHEREUM;
             case 61: return CoinType.ETHEREUMCLASSIC;
             case 6060: return CoinType.GO;

@@ -13,6 +13,7 @@ public enum CoinType: UInt32 {
     case bitcoinCash = 145
     case callisto = 820
     case dash = 5
+    case eos = 194
     case ethereum = 60
     case ethereumClassic = 61
     case go = 6060
