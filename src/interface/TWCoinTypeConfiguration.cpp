@@ -39,6 +39,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeTezos: string = "XTZ"; break;
     case TWCoinTypeNimiq: string = "NIM"; break;
     case TWCoinTypeStellar: string = "XLM"; break;
+    case TWCoinTypeAion: string = "AION"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -57,6 +58,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
+    case TWCoinTypeAion:
         return 18;
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeBitcoin:
@@ -107,6 +109,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         url += "/txs/" + txId;
         break;
     case TWCoinTypeTron:
+    case TWCoinTypeAion:
         url += "/#/transaction/" + txId;
         break;
     case TWCoinTypeVeChain:
@@ -156,6 +159,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeTezos: return "https://tzscan.io";
     case TWCoinTypeNimiq: return "https://nimiq.watch";
     case TWCoinTypeStellar: return "https://stellarscan.io";
+    case TWCoinTypeAion: return "https://mainnet.aion.network";
     default: return "";
     }
 }
@@ -186,6 +190,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeTezos: string = "tezos"; break;
     case TWCoinTypeNimiq: string = "nimiq"; break;
     case TWCoinTypeStellar: string = "stellar"; break;
+    case TWCoinTypeAion: string = "aion"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -217,6 +222,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeTezos: string = "Tezos"; break;
     case TWCoinTypeNimiq: string = "Nimiq"; break;
     case TWCoinTypeStellar: string = "Stellar"; break;
+    case TWCoinTypeAion: string = "Aion"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

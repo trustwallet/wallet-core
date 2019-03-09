@@ -67,6 +67,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
   
     auto value20 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
     assertStringsEqual(value20, "xDAI");
+
+    auto value21 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
+    assertStringsEqual(value21, "AION");
+
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -91,6 +95,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -161,6 +166,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
   
     auto value23 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId));
     assertStringsEqual(value23, "https://blockscout.com/poa/dai/tx/123");
+
+    auto value24 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
+    assertStringsEqual(value24, "https://mainnet.aion.network/#/transaction/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -220,6 +228,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value20 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXDai));
     assertStringsEqual(value20, "xdai");
+
+    auto value21 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
+    assertStringsEqual(value21, "aion");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -279,4 +290,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value20 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
     assertStringsEqual(value20, "xDai");
+    
+    auto value21 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
+    assertStringsEqual(value21, "Aion");
 }

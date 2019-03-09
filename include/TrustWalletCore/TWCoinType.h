@@ -42,6 +42,7 @@ enum TWCoinType {
     TWCoinTypeZcoin = 136,
     TWCoinTypeNimiq = 242,
     TWCoinTypeStellar = 148,
+    TWCoinTypeAion = 425,
 };
 
 /// Returns the purpose for a coin type.
