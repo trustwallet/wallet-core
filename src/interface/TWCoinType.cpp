@@ -26,37 +26,7 @@ TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin) {
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
-<<<<<<< HEAD
-enum TWCurve TWCoinTypeCurve(enum TWCoinType type) {
-    switch(type) {
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeDash:
-    case TWCoinTypeEOS:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeGo:
-    case TWCoinTypeICON:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-        return TWCurveSECP256k1;
-    case TWCoinTypeNimiq:
-    case TWCoinTypeTezos:
-        return TWCurveEd25519;
-    }
-=======
 TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivateKey *_Nonnull privateKey) {
     const auto string = TW::deriveAddress(coin, privateKey->impl);
     return TWStringCreateWithUTF8Bytes(string.c_str());
->>>>>>> origin/master
 }
