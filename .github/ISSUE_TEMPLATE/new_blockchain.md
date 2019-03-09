@@ -27,7 +27,7 @@ Reason:
 - [ ] Address
 - - [ ] Derivation from bip39 phrases
 - - [ ] Derivation from public key / string
-- - [ ] Implement address validation and conversion in `src/Addres.cpp`.
+- - [ ] Implement address validation and derivation in `src/Coin.cpp`.
 - [ ] Transaction
 - - [ ] serialization / encoding
 - [ ] Signer
