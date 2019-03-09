@@ -498,6 +498,14 @@
 		BB3F05B2220BD93E008C6971 /* TAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB3F05B0220BD93E008C6971 /* TAddress.cpp */; };
 		BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BB3F05B1220BD93E008C6971 /* TAddress.h */; };
 		BB4C2C28222CF8EA00BF42BB /* EthereumTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */; };
+		BB6AE99522336FFE00F9EF85 /* TWStellarVersionByte.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BB6AE99622336FFE00F9EF85 /* TWStellarProto.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BB6AE99722336FFE00F9EF85 /* TWStellarAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BB6AE999223370E300F9EF85 /* TWStellarAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */; };
+		BB6AE99D2233710E00F9EF85 /* Crc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB6AE99A2233710D00F9EF85 /* Crc.cpp */; };
+		BB6AE99E2233710E00F9EF85 /* Crc.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE99B2233710D00F9EF85 /* Crc.h */; };
+		BB6AE9A32233711B00F9EF85 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = BB6AE9A12233711B00F9EF85 /* Address.h */; };
+		BB6AE9A42233711B00F9EF85 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB6AE9A22233711B00F9EF85 /* Address.cpp */; };
 		BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */; };
 		BBA9012121FDAE4200D2CEF7 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */; };
 /* End PBXBuildFile section */
@@ -1072,6 +1080,14 @@
 		BB3F05B0220BD93E008C6971 /* TAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TAddress.cpp; sourceTree = "<group>"; };
 		BB3F05B1220BD93E008C6971 /* TAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TAddress.h; sourceTree = "<group>"; };
 		BB4C2C27222CF8EA00BF42BB /* EthereumTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumTests.swift; sourceTree = "<group>"; };
+		BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarVersionByte.h; sourceTree = "<group>"; };
+		BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarProto.h; sourceTree = "<group>"; };
+		BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarAddress.h; sourceTree = "<group>"; };
+		BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWStellarAddress.cpp; sourceTree = "<group>"; };
+		BB6AE99A2233710D00F9EF85 /* Crc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Crc.cpp; sourceTree = "<group>"; };
+		BB6AE99B2233710D00F9EF85 /* Crc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Crc.h; sourceTree = "<group>"; };
+		BB6AE9A12233711B00F9EF85 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
+		BB6AE9A22233711B00F9EF85 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
 		BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZcashTAddress.swift; sourceTree = "<group>"; };
 		BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transaction.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1146,6 +1162,9 @@
 		617358DC219DF042007BF637 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BB6AE9A02233711B00F9EF85 /* Stellar */,
+				BB6AE99A2233710D00F9EF85 /* Crc.cpp */,
+				BB6AE99B2233710D00F9EF85 /* Crc.h */,
 				616F8795222F2CA00007ECA3 /* Base64.h */,
 				61A9B2E621F916FA00E601B3 /* Bech32.cpp */,
 				61A9B2E521F916FA00E601B3 /* Bech32.h */,
@@ -1198,6 +1217,9 @@
 		617358DF219DF043007BF637 /* TrustWalletCore */ = {
 			isa = PBXGroup;
 			children = (
+				BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */,
+				BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */,
+				BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */,
 				61CABAB421ED36F40086D9A0 /* TWAES.h */,
 				617358E2219DF043007BF637 /* TWBase.h */,
 				61AAD39A21DEF6D300B69A34 /* TWBase58.h */,
@@ -1618,6 +1640,7 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
+				BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				61AAD3A221DEF70800B69A34 /* TWBase58.cpp */,
 				61722C01220E461A00D7BA9A /* TWBech32Address.cpp */,
@@ -1998,6 +2021,15 @@
 			path = Zcash;
 			sourceTree = "<group>";
 		};
+		BB6AE9A02233711B00F9EF85 /* Stellar */ = {
+			isa = PBXGroup;
+			children = (
+				BB6AE9A12233711B00F9EF85 /* Address.h */,
+				BB6AE9A22233711B00F9EF85 /* Address.cpp */,
+			);
+			path = Stellar;
+			sourceTree = "<group>";
+		};
 		D79DFA430E7311B0E62847BA /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -2026,6 +2058,7 @@
 				61735C13219DF044007BF637 /* ed25519-hash-custom.h in Headers */,
 				61735AFA219DF044007BF637 /* ecdsa.h in Headers */,
 				615D9B9D21CED9C700878D22 /* Address.h in Headers */,
+				BB6AE99E2233710E00F9EF85 /* Crc.h in Headers */,
 				61A9B36D2202582700E601B3 /* TWEthereumChainID.h in Headers */,
 				616F8797222F2CA10007ECA3 /* Base64.h in Headers */,
 				61735C23219DF044007BF637 /* ed25519-hash-custom-sha3.h in Headers */,
@@ -2048,6 +2081,7 @@
 				BB211059221C036A00571DF7 /* TWRippleAddress.h in Headers */,
 				61735B09219DF044007BF637 /* blake256.h in Headers */,
 				61722BDA220E455500D7BA9A /* TWCommonProto.h in Headers */,
+				BB6AE99722336FFE00F9EF85 /* TWStellarAddress.h in Headers */,
 				BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */,
 				61735C29219DF044007BF637 /* check_mem.h in Headers */,
 				61A9B3512200103000E601B3 /* Transaction.h in Headers */,
@@ -2056,6 +2090,7 @@
 				61735C80219DF044007BF637 /* poly1305-donna-32.h in Headers */,
 				61A9B3672200D87F00E601B3 /* TWTendermintAddress.h in Headers */,
 				61735C61219DF044007BF637 /* blake2_common.h in Headers */,
+				BB6AE99522336FFE00F9EF85 /* TWStellarVersionByte.h in Headers */,
 				616D0411220A544400A776E8 /* Result.h in Headers */,
 				61C4E8B62225C3A20020A917 /* TWTronProto.h in Headers */,
 				61735AD6219DF044007BF637 /* TWBase.h in Headers */,
@@ -2195,10 +2230,12 @@
 				61E813B7222720EB00D4D2C9 /* TWIconSigner.h in Headers */,
 				61735AF0219DF044007BF637 /* sha3.h in Headers */,
 				61FE4B3B22208E0300C65017 /* Signer.h in Headers */,
+				BB6AE9A32233711B00F9EF85 /* Address.h in Headers */,
 				61E813D12227213500D4D2C9 /* Icon.pb.h in Headers */,
 				61735C1C219DF044007BF637 /* ed25519-hash-custom-keccak.h in Headers */,
 				61735B06219DF044007BF637 /* nem.h in Headers */,
 				61CABACE21ED781B0086D9A0 /* TWPurpose.h in Headers */,
+				BB6AE99622336FFE00F9EF85 /* TWStellarProto.h in Headers */,
 				61722BF8220E45BA00D7BA9A /* Bitcoin.pb.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2642,6 +2679,7 @@
 				61E813CD2227212600D4D2C9 /* TWIconAddress.cpp in Sources */,
 				61E813C92227211B00D4D2C9 /* Signer.cpp in Sources */,
 				616F87B9223041C10007ECA3 /* NimiqAddress.swift in Sources */,
+				BB6AE99D2233710E00F9EF85 /* Crc.cpp in Sources */,
 				616F879A222F2CB90007ECA3 /* Curve.swift in Sources */,
 				61C4E8EB22260B150020A917 /* Tron.swift in Sources */,
 				61A9B3632200D85A00E601B3 /* Address.cpp in Sources */,
@@ -2653,7 +2691,9 @@
 				61735C65219DF044007BF637 /* base58.c in Sources */,
 				61722C0B220E461A00D7BA9A /* TWBitcoinAddress.cpp in Sources */,
 				61C4E90022260CA30020A917 /* DerivationPath.Index.swift in Sources */,
+				BB6AE999223370E300F9EF85 /* TWStellarAddress.cpp in Sources */,
 				61FE4B3722208E0300C65017 /* Transaction.cpp in Sources */,
+				BB6AE9A42233711B00F9EF85 /* Address.cpp in Sources */,
 				61735C84219DF044007BF637 /* PrivateKey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

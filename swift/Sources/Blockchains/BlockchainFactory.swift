@@ -53,5 +53,7 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Tezos()
     case .nimiq:
         return Nimq()
+    case .stellar:
+        fatalError("not implemented")
     }
 }
