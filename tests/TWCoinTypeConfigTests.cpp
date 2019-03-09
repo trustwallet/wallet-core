@@ -64,6 +64,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value19 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
     assertStringsEqual(value19, "XTZ");
+
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
+    assertStringEqual(value20, "DAI");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -87,6 +90,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 0);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 6);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -154,6 +158,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     
     auto value21 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
     assertStringsEqual(value21, "https://tzscan.io/123");
+
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId));
+    assertStringsEqual(value22, "https://blockscout.com/poa/dai/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -210,6 +217,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     
     auto value19 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
     assertStringsEqual(value19, "tezos");
+
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXDai));
+    assertStringsEqual(value20, "dai");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -266,4 +276,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     
     auto value19 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
     assertStringsEqual(value19, "Tezos");
+
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
+    assertStringsEqual(value20, "Dai");
 }
