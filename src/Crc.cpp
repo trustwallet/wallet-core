@@ -13,18 +13,13 @@ using namespace TW;
 uint16_t Crc::crc16(uint8_t *bytes, uint32_t length) {
     // Calculate checksum for existing bytes
     uint16_t crc = 0x0000;
-    uint16_t polynomial = 0x1021;
-    uint32_t i;
-    uint8_t bit;
-    uint8_t byte;
-    uint8_t bitidx;
-    uint8_t c15;
+    const uint16_t polynomial = 0x1021;
 
     for (auto i = 0; i < length; i++) {
-        auto byte = bytes[i];
+        const auto byte = bytes[i];
         for (auto bitidx = 0; bitidx < 8; bitidx++) {
-            auto bit = ((byte >> (7 - bitidx) & 1) == 1);
-            c15 = ((crc >> 15 & 1) == 1);
+            const auto bit = ((byte >> (7 - bitidx) & 1) == 1);
+            const auto c15 = ((crc >> 15 & 1) == 1);
             crc <<= 1;
             if (c15 ^ bit) {
                 crc ^= polynomial;

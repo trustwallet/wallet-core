@@ -6,12 +6,29 @@
 
 #include "StoredKey.h"
 
+#define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 using namespace TW;
 using namespace TW::Keystore;
+
+StoredKey::StoredKey(StoredKeyType type, EncryptionParameters payload) : type(type), payload(payload), id(), accounts() {
+    boost::uuids::random_generator gen;
+    id = boost::lexical_cast<std::string>(gen());
+}
+
+StoredKey::StoredKey(StoredKeyType type, const std::string& password, Data data) : type(type), payload(password, data), id(), accounts() {
+    boost::uuids::random_generator gen;
+    id = boost::lexical_cast<std::string>(gen());
+}
 
 StoredKey StoredKey::load(const std::string& path, const std::string& password) {
     std::ifstream stream(path);

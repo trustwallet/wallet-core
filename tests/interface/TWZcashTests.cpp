@@ -31,7 +31,8 @@ TEST(Zcash, DeriveTransparentAddress) {
     auto passphrase = STRING("TREZOR");
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeZcash, 0, 0, 5));
+    auto derivationPath = STRING("m/44'/133'/0'/0/5");
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), derivationPath.get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
 
     TWZcashTAddress address;

@@ -41,12 +41,12 @@ struct StoredKey {
     std::vector<Account> accounts;
 
     /// Initializes a `StoredKey` with a type and an encrypted payload.
-    StoredKey(StoredKeyType type, EncryptionParameters payload) : type(type), payload(payload), id(), accounts() {}
+    StoredKey(StoredKeyType type, EncryptionParameters payload);
 
     /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
     ///
     /// This contstructor will encrypt the provided data with default encryption parameters.
-    StoredKey(StoredKeyType type, const std::string& password, Data data) : type(type), payload(password, data), id(), accounts() {}
+    StoredKey(StoredKeyType type, const std::string& password, Data data);
 
     /// Loads and decrypts a stored key from a file.
     ///
@@ -70,3 +70,8 @@ struct StoredKey {
 };
 
 }} // namespace
+
+/// Wrapper for C interface.
+struct TWStoredKey {
+    TW::Keystore::StoredKey impl;
+};

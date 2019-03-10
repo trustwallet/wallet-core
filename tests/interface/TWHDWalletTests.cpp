@@ -6,6 +6,8 @@
 
 #include "TWTestUtilities.h"
 
+#include "Coin.h"
+
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWPrivateKey.h>
@@ -65,23 +67,20 @@ TEST(HDWallet, SeedNoPassword) {
 }
 
 TEST(HDWallet, Derive) {
+    const auto derivationPath = TW::derivationPath(TWCoinTypeEthereum);
+
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key0 = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeEthereum, 0, 0, 0));
-    auto key1 = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeEthereum, 0, 0, 1));
+    auto key0 = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeEthereum));
 
     auto publicKey0 = TWPrivateKeyGetPublicKeySecp256k1(key0.get(), false);
     auto publicKey0Data = WRAPD(TWPublicKeyData(publicKey0));
 
-    auto publicKey1 = TWPrivateKeyGetPublicKeySecp256k1(key1.get(), false);
-    auto publicKey1Data = WRAPD(TWPublicKeyData(publicKey1));
-
     assertHexEqual(publicKey0Data, "0414acbe5a06c68210fcbb77763f9612e45a526990aeb69d692d705f276f558a5ae68268e9389bb099ed5ac84d8d6861110f63644f6e5b447e3f86b4bab5dee011");
-    assertHexEqual(publicKey1Data, "046ef32307b329cd4fb8934b36211aa71b2e2d20e693737f04ee0189c450fb6578222b6da98ddddfddbc299b981bebeed0c975514334c80a0144df5d8ed91cb549");
 }
 
 TEST(HDWallet, DeriveBitcoin) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeBitcoin, 0, 0, 0));
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeBitcoin));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
@@ -90,7 +89,7 @@ TEST(HDWallet, DeriveBitcoin) {
 
 TEST(HDWallet, DeriveTezos) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeTezos, 0, 0, 0));
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeTezos));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
@@ -100,7 +99,7 @@ TEST(HDWallet, DeriveTezos) {
 TEST(HDWallet, DeriveAionPrivateKey) {
     auto words = STRING("zero behind diesel afraid edge salad drop episode high pear twin resource");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
-    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeAion, 0, 0, 0));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAion));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     assertHexEqual(privateKeyData, "db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9");
 }

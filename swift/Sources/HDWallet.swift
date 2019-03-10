@@ -88,12 +88,16 @@ public final class HDWallet {
         TWHDWalletDelete(rawValue)
     }
 
-    public func getAccountKey(coin: CoinType, account: UInt32) -> PrivateKey {
-        return PrivateKey(rawValue: TWHDWalletGetAccountKey(rawValue, TWCoinType(rawValue: coin.rawValue), account))
+    public func getKeyForCoin(coin: CoinType) -> PrivateKey {
+        return PrivateKey(rawValue: TWHDWalletGetKeyForCoin(rawValue, TWCoinType(rawValue: coin.rawValue)))
     }
 
-    public func getKey(coin: CoinType, account: UInt32, change: UInt32, address: UInt32) -> PrivateKey {
-        return PrivateKey(rawValue: TWHDWalletGetKey(rawValue, TWCoinType(rawValue: coin.rawValue), account, change, address))
+    public func getKey(derivationPath: String) -> PrivateKey {
+        let derivationPathString = TWStringCreateWithNSString(derivationPath)
+        defer {
+            TWStringDelete(derivationPathString)
+        }
+        return PrivateKey(rawValue: TWHDWalletGetKey(rawValue, derivationPathString))
     }
 
     public func getExtendedPrivateKey(purpose: Purpose, coin: CoinType, version: HDVersion) -> String {
