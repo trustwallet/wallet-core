@@ -269,7 +269,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 
     case TWCoinTypeNimiq:
         return Nimiq::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
-            
+
     case TWCoinTypeAion:
         return Aion::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
 
@@ -287,6 +287,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 
     case TWCoinTypeZcoin:
         return Bitcoin::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2PKHPrefixZcoin).string();
+
     case TWCoinTypeStellar:
         return Stellar::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
     }
