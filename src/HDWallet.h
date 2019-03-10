@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+#include "DerivationPath.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 
@@ -52,13 +53,7 @@ public:
     virtual ~HDWallet();
 
     /// Returns the private key at the given derivation path.
-    PrivateKey getKey(TWCoinType coin) const;
-
-    /// Returns the private key at the given derivation path.
-    PrivateKey getKey(TWCoinType coin, uint32_t account) const;
-
-    /// Returns the private key at the given derivation path.
-    PrivateKey getKey(TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const;
+    PrivateKey getKey(const DerivationPath& derivationPath) const;
 
     /// Returns the extended private key.
     std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;

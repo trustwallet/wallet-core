@@ -57,7 +57,7 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
 
     case TWCoinTypeNimiq:
         return Nimiq::Address(data).string();
-            
+
     case TWCoinTypeAion:
         return Aion::Address(data).string();
 
@@ -112,7 +112,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);
-            
+
     case TWCoinTypeAion:
         return Aion::Address::isValid(string);
 
@@ -193,9 +193,10 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWCurveSECP256k1;
+
+    case TWCoinTypeAion:
     case TWCoinTypeNimiq:
     case TWCoinTypeStellar:
-    case TWCoinTypeAion:
         return TWCurveEd25519;
     }
 }
@@ -224,8 +225,11 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
-    case TWCoinTypeAion:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
+
+    case TWCoinTypeAion:
+        return DerivationPath(purpose(coin), coin, 0, 0x80000000, 0x80000000);
+
     case TWCoinTypeStellar:
         return DerivationPath(purpose(coin), coin, 0);
     }

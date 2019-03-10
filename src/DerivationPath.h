@@ -10,6 +10,7 @@
 #include <TrustWalletCore/TWPurpose.h>
 
 #include <cstdint>
+#include <initializer_list>
 #include <string>
 #include <vector>
 
@@ -85,6 +86,7 @@ struct DerivationPath {
     }
 
     DerivationPath() = default;
+    DerivationPath(std::initializer_list<DerivationPathIndex> l) : indices(l) {}
     DerivationPath(std::vector<DerivationPathIndex> indices) : indices(indices) {}
 
     /// Creates a `DerivationPath` by components.

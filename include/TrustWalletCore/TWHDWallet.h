@@ -49,13 +49,13 @@ TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet);
 
-/// Generates the private key at the specified derivation path.
+/// Generates the default private key for the specified coin.
 TW_EXPORT_METHOD
-struct TWPrivateKey *_Nonnull TWHDWalletGetAccountKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account);
+struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin);
 
-/// Generates the private key at the specified derivation path.
+/// Generates the private key for the specified derivation path.
 TW_EXPORT_METHOD
-struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
+struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, TWString *_Nonnull derivationPath);
 
 /// Returns the extended private key.
 TW_EXPORT_METHOD
