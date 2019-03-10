@@ -97,6 +97,14 @@ TEST(HDWallet, DeriveTezos) {
     assertHexEqual(publicKeyData, "0484257d8f66e29faa40364f6beb68844fbb5d5af919206d067e6585d91248b68e410be035bacacb4d4e05098aa4df52c7e5f2439becc0de2dcab61abec5e81990");                                         
 }
 
+TEST(HDWallet, DeriveAionPrivateKey) {
+    auto words = STRING("zero behind diesel afraid edge salad drop episode high pear twin resource");
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), TWCoinTypeAion, 0, 0, 0));
+    auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
+    assertHexEqual(privateKeyData, "db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9");
+}
+
 TEST(HDWallet, ExtendedKeys) {
     auto words = STRING("abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));

@@ -12,6 +12,7 @@
 #include "Ethereum/Address.h"
 #include "Icon/Address.h"
 #include "Nimiq/Address.h"
+#include "Aion/Address.h"
 #include "Ripple/Address.h"
 #include "Tendermint/Address.h"
 #include "Tezos/Address.h"
@@ -56,6 +57,9 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
 
     case TWCoinTypeNimiq:
         return Nimiq::Address(data).string();
+            
+    case TWCoinTypeAion:
+        return Aion::Address(data).string();
 
     case TWCoinTypeRipple:
         return Ripple::Address(data).string();
@@ -108,6 +112,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);
+            
+    case TWCoinTypeAion:
+        return Aion::Address::isValid(string);
 
     case TWCoinTypeRipple:
         return Ripple::Address::isValid(string);
@@ -154,6 +161,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeStellar:
+    case TWCoinTypeAion:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -187,6 +195,7 @@ TWCurve TW::curve(TWCoinType coin) {
         return TWCurveSECP256k1;
     case TWCoinTypeNimiq:
     case TWCoinTypeStellar:
+    case TWCoinTypeAion:
         return TWCurveEd25519;
     }
 }
@@ -215,6 +224,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeAion:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeStellar:
         return DerivationPath(purpose(coin), coin, 0);
@@ -255,6 +265,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 
     case TWCoinTypeNimiq:
         return Nimiq::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
+            
+    case TWCoinTypeAion:
+        return Aion::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
 
     case TWCoinTypeRipple:
         return Ripple::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();

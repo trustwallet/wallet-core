@@ -55,5 +55,7 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Nimq()
     case .stellar:
         return Stellar()
+    case .aion:
+        return Aion()
     }
 }
