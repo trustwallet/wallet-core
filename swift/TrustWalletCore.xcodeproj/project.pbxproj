@@ -38,6 +38,22 @@
 		610AEF7621C8A95A008ABB74 /* BitcoinTransactionSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610AEF7521C8A959008ABB74 /* BitcoinTransactionSigner.swift */; };
 		611B46D322335A020043EBA6 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611B46D122335A020043EBA6 /* Address.cpp */; };
 		611B46D422335A020043EBA6 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = 611B46D222335A020043EBA6 /* Address.h */; };
+		611BBE1F2235952A0043FB94 /* TWAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = 611BBE1D2235952A0043FB94 /* TWAccount.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		611BBE202235952A0043FB94 /* TWStoredKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 611BBE1E2235952A0043FB94 /* TWStoredKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		611BBE23223595420043FB94 /* TWStoredKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE21223595420043FB94 /* TWStoredKey.cpp */; };
+		611BBE24223595420043FB94 /* TWAccount.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE22223595420043FB94 /* TWAccount.cpp */; };
+		611BBE30223595550043FB94 /* EncryptionParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 611BBE26223595550043FB94 /* EncryptionParameters.h */; };
+		611BBE31223595550043FB94 /* AESParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 611BBE27223595550043FB94 /* AESParameters.h */; };
+		611BBE32223595550043FB94 /* EncryptionParameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE28223595550043FB94 /* EncryptionParameters.cpp */; };
+		611BBE33223595550043FB94 /* Account.h in Headers */ = {isa = PBXBuildFile; fileRef = 611BBE29223595550043FB94 /* Account.h */; };
+		611BBE34223595550043FB94 /* StoredKey.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE2A223595550043FB94 /* StoredKey.cpp */; };
+		611BBE35223595550043FB94 /* AESParameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE2B223595550043FB94 /* AESParameters.cpp */; };
+		611BBE36223595550043FB94 /* ScryptParameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE2C223595550043FB94 /* ScryptParameters.cpp */; };
+		611BBE37223595550043FB94 /* ScryptParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 611BBE2D223595550043FB94 /* ScryptParameters.h */; };
+		611BBE38223595550043FB94 /* Account.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE2E223595550043FB94 /* Account.cpp */; };
+		611BBE39223595550043FB94 /* StoredKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 611BBE2F223595550043FB94 /* StoredKey.h */; };
+		611BBE3C223595690043FB94 /* StoredKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE3A223595680043FB94 /* StoredKey.swift */; };
+		611BBE3D223595690043FB94 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 611BBE3B223595690043FB94 /* Account.swift */; };
 		6131E03A2219C53200CF699D /* any.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31D21FF978900E601B3 /* any.cc */; };
 		6131E0412219C54200CF699D /* any.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B31921FF978800E601B3 /* any.pb.cc */; };
 		6131E0422219C54200CF699D /* api.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B30B21FF978700E601B3 /* api.pb.cc */; };
@@ -606,6 +622,22 @@
 		610AEF7521C8A959008ABB74 /* BitcoinTransactionSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BitcoinTransactionSigner.swift; sourceTree = "<group>"; };
 		611B46D122335A020043EBA6 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
 		611B46D222335A020043EBA6 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
+		611BBE1D2235952A0043FB94 /* TWAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWAccount.h; sourceTree = "<group>"; };
+		611BBE1E2235952A0043FB94 /* TWStoredKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStoredKey.h; sourceTree = "<group>"; };
+		611BBE21223595420043FB94 /* TWStoredKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWStoredKey.cpp; sourceTree = "<group>"; };
+		611BBE22223595420043FB94 /* TWAccount.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWAccount.cpp; sourceTree = "<group>"; };
+		611BBE26223595550043FB94 /* EncryptionParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EncryptionParameters.h; sourceTree = "<group>"; };
+		611BBE27223595550043FB94 /* AESParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AESParameters.h; sourceTree = "<group>"; };
+		611BBE28223595550043FB94 /* EncryptionParameters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EncryptionParameters.cpp; sourceTree = "<group>"; };
+		611BBE29223595550043FB94 /* Account.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Account.h; sourceTree = "<group>"; };
+		611BBE2A223595550043FB94 /* StoredKey.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StoredKey.cpp; sourceTree = "<group>"; };
+		611BBE2B223595550043FB94 /* AESParameters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AESParameters.cpp; sourceTree = "<group>"; };
+		611BBE2C223595550043FB94 /* ScryptParameters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScryptParameters.cpp; sourceTree = "<group>"; };
+		611BBE2D223595550043FB94 /* ScryptParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScryptParameters.h; sourceTree = "<group>"; };
+		611BBE2E223595550043FB94 /* Account.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Account.cpp; sourceTree = "<group>"; };
+		611BBE2F223595550043FB94 /* StoredKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoredKey.h; sourceTree = "<group>"; };
+		611BBE3A223595680043FB94 /* StoredKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoredKey.swift; sourceTree = "<group>"; };
+		611BBE3B223595690043FB94 /* Account.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
 		61346D16220B6F7C00F0141B /* Data+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Hex.swift"; sourceTree = "<group>"; };
 		61376FFE220D48E800573D0F /* BinanceSignerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinanceSignerTests.swift; sourceTree = "<group>"; };
 		615D9B9721CED9C700878D22 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
@@ -1205,6 +1237,23 @@
 			name = Aion;
 			sourceTree = "<group>";
 		};
+		611BBE25223595550043FB94 /* Keystore */ = {
+			isa = PBXGroup;
+			children = (
+				611BBE26223595550043FB94 /* EncryptionParameters.h */,
+				611BBE27223595550043FB94 /* AESParameters.h */,
+				611BBE28223595550043FB94 /* EncryptionParameters.cpp */,
+				611BBE29223595550043FB94 /* Account.h */,
+				611BBE2A223595550043FB94 /* StoredKey.cpp */,
+				611BBE2B223595550043FB94 /* AESParameters.cpp */,
+				611BBE2C223595550043FB94 /* ScryptParameters.cpp */,
+				611BBE2D223595550043FB94 /* ScryptParameters.h */,
+				611BBE2E223595550043FB94 /* Account.cpp */,
+				611BBE2F223595550043FB94 /* StoredKey.h */,
+			);
+			path = Keystore;
+			sourceTree = "<group>";
+		};
 		61376FDB220CE38900573D0F /* proto */ = {
 			isa = PBXGroup;
 			children = (
@@ -1250,11 +1299,6 @@
 		617358DC219DF042007BF637 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				BB6AE9A02233711B00F9EF85 /* Stellar */,
-				BB6AE99A2233710D00F9EF85 /* Crc.cpp */,
-				BB6AE99B2233710D00F9EF85 /* Crc.h */,
-				617FAC5E2231985B007E08F0 /* Address.cpp */,
-				617FAC5F2231985B007E08F0 /* Address.h */,
 				4E8BBE842230996700F98E04 /* Aion */,
 				616F8795222F2CA00007ECA3 /* Base64.h */,
 				61A9B2E621F916FA00E601B3 /* Bech32.cpp */,
@@ -1264,6 +1308,8 @@
 				61B1599121CC5DBB00CFE93B /* Bitcoin */,
 				61B28E3122333CF400E97D67 /* Coin.cpp */,
 				61B28E3022333CF300E97D67 /* Coin.h */,
+				BB6AE99A2233710D00F9EF85 /* Crc.cpp */,
+				BB6AE99B2233710D00F9EF85 /* Crc.h */,
 				616D040E220A544400A776E8 /* Data.h */,
 				617FAC5C2231985A007E08F0 /* DerivationPath.cpp */,
 				617FAC5D2231985A007E08F0 /* DerivationPath.h */,
@@ -1276,6 +1322,7 @@
 				61AAD39D21DEF6EB00B69A34 /* HexCoding.h */,
 				61E813C22227211A00D4D2C9 /* Icon */,
 				61B159B321CC5DBB00CFE93B /* interface */,
+				611BBE25223595550043FB94 /* Keystore */,
 				616F87A5223041970007ECA3 /* Nimiq */,
 				61B159B021CC5DBB00CFE93B /* PrivateKey.cpp */,
 				61B159B221CC5DBB00CFE93B /* PrivateKey.h */,
@@ -1284,6 +1331,7 @@
 				61B159AF21CC5DBB00CFE93B /* PublicKey.h */,
 				616D040F220A544400A776E8 /* Result.h */,
 				BB21105A221C039A00571DF7 /* Ripple */,
+				BB6AE9A02233711B00F9EF85 /* Stellar */,
 				61A9B35C2200D85A00E601B3 /* Tendermint */,
 				778DB8C02230ABD000CE8DB6 /* Tezos */,
 				61C4E8B92225C3C50020A917 /* Tron */,
@@ -1308,9 +1356,7 @@
 		617358DF219DF043007BF637 /* TrustWalletCore */ = {
 			isa = PBXGroup;
 			children = (
-				BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */,
-				BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */,
-				BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */,
+				611BBE1D2235952A0043FB94 /* TWAccount.h */,
 				61CABAB421ED36F40086D9A0 /* TWAES.h */,
 				4E8BBE9D223099C500F98E04 /* TWAionAddress.h */,
 				4E8BBE9B223099C400F98E04 /* TWAionProto.h */,
@@ -1356,6 +1402,10 @@
 				BB211058221C036900571DF7 /* TWRippleAddress.h */,
 				BB2422CE22217AE7000663D0 /* TWRippleProto.h */,
 				BB2422CD22217AE7000663D0 /* TWRippleSigner.h */,
+				BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */,
+				BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */,
+				BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */,
+				611BBE1E2235952A0043FB94 /* TWStoredKey.h */,
 				616E125D21AE14E8009798FC /* TWString.h */,
 				61A9B3662200D87F00E601B3 /* TWTendermintAddress.h */,
 				7782DF2E222F217D00599404 /* TWTezosAddress.h */,
@@ -1604,14 +1654,13 @@
 		61735CB7219F88C2007BF637 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				140352E522336B3400DF0815 /* StellarAddress.swift */,
-				140352E422336B3400DF0815 /* StellarVersionByte.swift */,
 				61735ACD219DF044007BF637 /* TrustWalletCore.h */,
 				6198EA5E21B2021A008CB60A /* TWFoundationData.h */,
 				6198EA6221B21714008CB60A /* TWFoundationString.h */,
 				61735C87219DF64D007BF637 /* SecRandom.m */,
 				6198EA5821B1CC5B008CB60A /* TWFoundationData.m */,
 				6198EA6021B21702008CB60A /* TWFoundationString.m */,
+				611BBE3B223595690043FB94 /* Account.swift */,
 				61CABAB821ED37160086D9A0 /* AES.swift */,
 				4E8BBEA222309A6D00F98E04 /* Aion.pb.swift */,
 				4E8BBEA322309A6E00F98E04 /* AionAddress.swift */,
@@ -1660,6 +1709,9 @@
 				BB2422D222217B08000663D0 /* Ripple.pb.swift */,
 				BB211061221C045000571DF7 /* RippleAddress.swift */,
 				BB2422D122217B08000663D0 /* RippleSigner.swift */,
+				140352E522336B3400DF0815 /* StellarAddress.swift */,
+				140352E422336B3400DF0815 /* StellarVersionByte.swift */,
+				611BBE3A223595680043FB94 /* StoredKey.swift */,
 				6198EA6421B59575008CB60A /* String.swift */,
 				61A9B3642200D86D00E601B3 /* TendermintAddress.swift */,
 				7706F5BE2231F5D200F124F3 /* Tezos.pb.swift */,
@@ -1740,7 +1792,7 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
-				BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */,
+				611BBE22223595420043FB94 /* TWAccount.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				4E8BBE942230999400F98E04 /* TWAionAddress.cpp */,
 				4E8BBE932230999400F98E04 /* TWAionSigner.cpp */,
@@ -1769,6 +1821,8 @@
 				61B159B721CC5DBB00CFE93B /* TWPublicKey.cpp */,
 				BB211056221C035F00571DF7 /* TWRippleAddress.cpp */,
 				BB2422E322217B90000663D0 /* TWRippleSigner.cpp */,
+				BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */,
+				611BBE21223595420043FB94 /* TWStoredKey.cpp */,
 				61B159BD21CC5DBB00CFE93B /* TWString.cpp */,
 				61B159B521CC5DBB00CFE93B /* TWString+Hex.cpp */,
 				61722BFB220E461A00D7BA9A /* TWTendermintAddress.cpp */,
@@ -2180,6 +2234,7 @@
 				61735AFF219DF044007BF637 /* hasher.h in Headers */,
 				61735B0C219DF044007BF637 /* ecrypt-types.h in Headers */,
 				61FE4B1B221F64BD00C65017 /* TWEthereumAddress.h in Headers */,
+				611BBE37223595550043FB94 /* ScryptParameters.h in Headers */,
 				6198EA8421B811A2008CB60A /* TWBitcoinOpCodes.h in Headers */,
 				61E4446E221CD8C0006A4FF1 /* Ethereum.pb.h in Headers */,
 				7706F5E62233E31D00F124F3 /* Transaction.h in Headers */,
@@ -2245,12 +2300,14 @@
 				BB2422E122217B58000663D0 /* BinaryCoding.h in Headers */,
 				61CABABB21ED41E50086D9A0 /* TWKeyDerivation.h in Headers */,
 				7706F5EE2233E31D00F124F3 /* BinaryCoding.h in Headers */,
+				611BBE30223595550043FB94 /* EncryptionParameters.h in Headers */,
 				61B159CE21CC5DBB00CFE93B /* TransactionSigner.h in Headers */,
 				61C4E8C42225C3C50020A917 /* Signer.h in Headers */,
 				61735C83219DF044007BF637 /* TrustWalletCore.h in Headers */,
 				61977CC621C9B9D000C385D5 /* TWBitcoinAddress.h in Headers */,
 				61AAD39B21DEF6D300B69A34 /* TWBase58.h in Headers */,
 				6198EA6321B21714008CB60A /* TWFoundationString.h in Headers */,
+				611BBE1F2235952A0043FB94 /* TWAccount.h in Headers */,
 				61735B0A219DF044007BF637 /* bignum.h in Headers */,
 				61FE4B2D22208DED00C65017 /* TWVeChainProto.h in Headers */,
 				61735B01219DF044007BF637 /* hmac.h in Headers */,
@@ -2278,6 +2335,7 @@
 				61722BF4220E45BA00D7BA9A /* Binance.pb.h in Headers */,
 				616D0410220A544400A776E8 /* Data.h in Headers */,
 				616E125F21AE14E8009798FC /* TWString.h in Headers */,
+				611BBE33223595550043FB94 /* Account.h in Headers */,
 				61B159DC21CC5DBB00CFE93B /* PublicKey.h in Headers */,
 				7706F5EF2233E31D00F124F3 /* Signer.h in Headers */,
 				61735BFE219DF044007BF637 /* script.h in Headers */,
@@ -2293,7 +2351,6 @@
 				61735AF4219DF044007BF637 /* curve25519-donna-32bit.h in Headers */,
 				61B159C121CC5DBB00CFE93B /* TransactionInput.h in Headers */,
 				61735C76219DF044007BF637 /* rfc7539.h in Headers */,
-				617FAC6A223199F5007E08F0 /* TWTezosProto.h in Headers */,
 				4E8BBE9A223099A400F98E04 /* Aion.pb.h in Headers */,
 				61735AFE219DF044007BF637 /* base32.h in Headers */,
 				616F87AC223041970007ECA3 /* Address.h in Headers */,
@@ -2308,12 +2365,14 @@
 				4E8BBE922230998600F98E04 /* Address.h in Headers */,
 				61735AF6219DF044007BF637 /* ed25519-donna-portable.h in Headers */,
 				61735C26219DF044007BF637 /* ed25519-sha3.h in Headers */,
+				611BBE31223595550043FB94 /* AESParameters.h in Headers */,
 				61722C11220E463500D7BA9A /* HDWallet.h in Headers */,
 				7706F5E92233E31D00F124F3 /* Forging.h in Headers */,
 				61BA0A6B21F6C929005680E6 /* TWBinanceSigner.h in Headers */,
 				778DB8BB2230A55800CE8DB6 /* Address.h in Headers */,
 				61735AEA219DF044007BF637 /* ripemd160.h in Headers */,
 				616F87A0223041710007ECA3 /* TWNimiqProto.h in Headers */,
+				611BBE39223595550043FB94 /* StoredKey.h in Headers */,
 				61735AEE219DF044007BF637 /* base58.h in Headers */,
 				61B159DF21CC5DBB00CFE93B /* PrivateKey.h in Headers */,
 				77A15CFB2234383900E77417 /* Tezos.pb.h in Headers */,
@@ -2351,6 +2410,7 @@
 				61E813B6222720EB00D4D2C9 /* TWIconAddressType.h in Headers */,
 				61735AF8219DF044007BF637 /* curve25519-donna-helpers.h in Headers */,
 				61CABAD021ED781B0086D9A0 /* TWHRP.h in Headers */,
+				611BBE202235952A0043FB94 /* TWStoredKey.h in Headers */,
 				61CABACD21ED781B0086D9A0 /* TWP2PKHPrefix.h in Headers */,
 				BB158447220AADF800657CDA /* TransactionBuilder.h in Headers */,
 				616F87A2223041710007ECA3 /* TWNimiqSigner.h in Headers */,
@@ -2602,6 +2662,7 @@
 				61722BF7220E45BA00D7BA9A /* Binance.pb.cc in Sources */,
 				77A15CF8223437B900E77417 /* TWTezosSigner.cpp in Sources */,
 				611B46D322335A020043EBA6 /* Address.cpp in Sources */,
+				611BBE3C223595690043FB94 /* StoredKey.swift in Sources */,
 				BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */,
 				61B159D121CC5DBB00CFE93B /* Script.cpp in Sources */,
 				61722BE3220E457D00D7BA9A /* ChainID.swift in Sources */,
@@ -2614,10 +2675,12 @@
 				61E4446B221CD674006A4FF1 /* TWEthereumSigner.cpp in Sources */,
 				61C4E8C82225C43E0020A917 /* Tron.pb.cc in Sources */,
 				616F87AE223041970007ECA3 /* Transaction.cpp in Sources */,
+				611BBE38223595550043FB94 /* Account.cpp in Sources */,
 				BB211057221C035F00571DF7 /* TWRippleAddress.cpp in Sources */,
 				61E4446F221CD8C0006A4FF1 /* Ethereum.pb.cc in Sources */,
 				61CABADB21ED782E0086D9A0 /* Purpose.swift in Sources */,
 				61722BE2220E457D00D7BA9A /* Binance.pb.swift in Sources */,
+				611BBE34223595550043FB94 /* StoredKey.cpp in Sources */,
 				61735C01219DF044007BF637 /* rc4.c in Sources */,
 				61CABAE821F0100E0086D9A0 /* HexCoding.cpp in Sources */,
 				61735BF6219DF044007BF637 /* sha2.c in Sources */,
@@ -2653,6 +2716,7 @@
 				61E814382227594F00D4D2C9 /* PrivateKeyExtension.swift in Sources */,
 				61735BFC219DF044007BF637 /* hasher.c in Sources */,
 				6198EA7E21B6B9C2008CB60A /* Data.swift in Sources */,
+				611BBE23223595420043FB94 /* TWStoredKey.cpp in Sources */,
 				61B159D021CC5DBB00CFE93B /* OutPoint.cpp in Sources */,
 				BB2422D422217B08000663D0 /* Ripple.pb.swift in Sources */,
 				61E813CE2227212600D4D2C9 /* TWIconSigner.cpp in Sources */,
@@ -2696,6 +2760,8 @@
 				61735C43219DF044007BF637 /* serialize.c in Sources */,
 				61C4E8EE22260B150020A917 /* Blockchain.swift in Sources */,
 				61735C75219DF044007BF637 /* chacha_merged.c in Sources */,
+				611BBE36223595550043FB94 /* ScryptParameters.cpp in Sources */,
+				611BBE3D223595690043FB94 /* Account.swift in Sources */,
 				61735C47219DF044007BF637 /* xmr.c in Sources */,
 				61E813EA2227562D00D4D2C9 /* PublicKey+Bitcoin.swift in Sources */,
 				616F87BA223041C10007ECA3 /* Nimiq.pb.swift in Sources */,
@@ -2704,7 +2770,6 @@
 				61C4E8E422260B150020A917 /* Bitcoin.swift in Sources */,
 				61E813D4222751D900D4D2C9 /* Ripple.swift in Sources */,
 				61C4E93022261A230020A917 /* IconAddressExtension.swift in Sources */,
-				617FACA72231E20B007E08F0 /* CoinUtility.swift in Sources */,
 				4E8BBEA722309A6F00F98E04 /* AionAddress.swift in Sources */,
 				61722C0C220E461A00D7BA9A /* TWBech32Address.cpp in Sources */,
 				61735C7F219DF044007BF637 /* chacha20poly1305.c in Sources */,
@@ -2721,6 +2786,7 @@
 				61735C15219DF044007BF637 /* ed25519-sha3.c in Sources */,
 				61B159D221CC5DBB00CFE93B /* TransactionOutput.cpp in Sources */,
 				61C4E924222615300020A917 /* PrivateKey+Bitcoin.swift in Sources */,
+				611BBE32223595550043FB94 /* EncryptionParameters.cpp in Sources */,
 				61C4E8EF22260B150020A917 /* Zcoin.swift in Sources */,
 				7782DF29222F0D9100599404 /* Tezos.swift in Sources */,
 				61735C69219DF044007BF637 /* aeskey.c in Sources */,
@@ -2753,6 +2819,7 @@
 				61C4E8E922260B150020A917 /* Wanchain.swift in Sources */,
 				61C4E8E322260B150020A917 /* Litecoin.swift in Sources */,
 				61A9B3522200103000E601B3 /* Transaction.cpp in Sources */,
+				611BBE35223595550043FB94 /* AESParameters.cpp in Sources */,
 				61E44461221CD49E006A4FF1 /* Signer.cpp in Sources */,
 				61B159E221CC5DBB00CFE93B /* TWPublicKey.cpp in Sources */,
 				BB2422E022217B58000663D0 /* Transaction.cpp in Sources */,
@@ -2802,6 +2869,7 @@
 				77A15D002234444100E77417 /* TezosSigner.swift in Sources */,
 				61AAD3A321DEF70800B69A34 /* TWBase58.cpp in Sources */,
 				616F87BD223041F30007ECA3 /* Nimq.swift in Sources */,
+				611BBE24223595420043FB94 /* TWAccount.cpp in Sources */,
 				61FE4B19221F64B200C65017 /* EthereumAddress.swift in Sources */,
 				BB211062221C045000571DF7 /* RippleAddress.swift in Sources */,
 				616F87C0223044860007ECA3 /* TWNimiqAddress.cpp in Sources */,

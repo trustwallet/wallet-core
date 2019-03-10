@@ -135,16 +135,15 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveAion() {
-        let chain = Aion()
-        let key = HDWallet.test.getKey(at: chain.derivationPath(at: 0))
-        let address = chain.address(for: key.getPublicKeyEd25519())
+        let key = HDWallet.test.getKeyForCoin(coin: .aion)
+        let address = CoinType.aion.deriveAddress(privateKey: key)
 
         XCTAssertEqual("0xa0dcc9e5e3bbd6a5a092f6b4975f6c5856e8eb750f37b7079bf7888e8cc1deb8", address.description)
     }
 
     func testDevieStellar() {
         let chain = Stellar()
-        let key = HDWallet.test.getAccountKey(coin: .stellar, account: 0)
+        let key = HDWallet.test.getKeyForCoin(coin: .stellar)
         let address = chain.address(for: key.getPublicKeyEd25519())
         let address2 = CoinType.stellar.deriveAddress(privateKey: key)
 

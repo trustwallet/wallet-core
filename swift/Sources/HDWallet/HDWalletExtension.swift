@@ -11,6 +11,6 @@ public extension HDWallet {
     }
 
     public func getKey(at path: DerivationPath) -> PrivateKey {
-        return getKey(coin: path.coinType, account: path.account, change: path.change, address: path.address)
+        return getKey(derivationPath: path.description)
     }
 }

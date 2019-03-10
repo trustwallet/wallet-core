@@ -67,6 +67,7 @@ public enum CoinType {
             case 136: return CoinType.ZCOIN;
             case 242: return CoinType.NIMIQ;
             case 148: return CoinType.STELLAR;
+            case 425: return CoinType.AION;
             default: return null;
         }
     }

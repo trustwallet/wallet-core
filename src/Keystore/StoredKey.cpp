@@ -6,6 +6,8 @@
 
 #include "StoredKey.h"
 
+#define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
+
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
