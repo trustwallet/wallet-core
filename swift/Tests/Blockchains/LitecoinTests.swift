@@ -38,7 +38,7 @@ class LitecoinTests: XCTestCase {
     }
 
     func testExtendedKeys() {
-        let wallet = testWallet
+        let wallet = HDWallet.test
 
         // .bip44
         let lptv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .litecoin, version: .ltpv)

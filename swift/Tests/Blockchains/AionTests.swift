@@ -13,7 +13,7 @@ class AionTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9")!)!
         let publicKey = privateKey.getPublicKeyEd25519()
         let address = AionAddress(publicKey: publicKey)
-        XCTAssertEqual(address.description, "a0d2312facea71b740679c926d040c9056a65a4bfa2ddd18ec160064f82909e7")
+        XCTAssertEqual(address.description, "0xa0d2312facea71b740679c926d040c9056a65a4bfa2ddd18ec160064f82909e7")
     }
     
     func testSigner() {
