@@ -6,6 +6,7 @@
 
 #include "HDWallet.h"
 
+#include "Coin.h"
 #include "Bitcoin/Bech32Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Zcash/TAddress.h"
@@ -21,9 +22,7 @@
 using namespace TW;
 
 namespace {
-    HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin);
-    HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin, uint32_t account);
-    HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin, uint32_t account, uint32_t change, uint32_t address);
+    HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath);
     HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 
     const char* curveName(TWCurve curve);
@@ -69,33 +68,17 @@ HDWallet::~HDWallet() {
     std::fill(passphrase.begin(), passphrase.end(), 0);
 }
 
-PrivateKey HDWallet::getKey(TWCoinType coin) const {
-    const auto curve = TWCoinTypeCurve(coin);
-    const auto purpose = TWCoinTypePurpose(coin);
-    auto node = getNode(*this, curve, purpose, coin);
-    auto data = Data(node.private_key, node.private_key + PrivateKey::size);
-    return PrivateKey(data);
-}
-
-PrivateKey HDWallet::getKey(TWCoinType coin, uint32_t account) const {
-    const auto curve = TWCoinTypeCurve(coin);
-    const auto purpose = TWCoinTypePurpose(coin);
-    auto node = getNode(*this, curve, purpose, coin, account);
-    auto data = Data(node.private_key, node.private_key + PrivateKey::size);
-    return PrivateKey(data);
-}
-
-PrivateKey HDWallet::getKey(TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const {
-    const auto curve = TWCoinTypeCurve(coin);
-    const auto purpose = TWCoinTypePurpose(coin);
-    auto node = getNode(*this, curve, purpose, coin, account, change, address);
+PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
+    const auto curve = TWCoinTypeCurve(derivationPath.coin());
+    auto node = getNode(*this, curve, derivationPath);
     auto data = Data(node.private_key, node.private_key + PrivateKey::size);
     return PrivateKey(data);
 }
 
 std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
     const auto curve = TWCoinTypeCurve(coin);
-    auto node = getNode(*this, curve, purpose, coin);
+    auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
+    auto node = getNode(*this, curve, derivationPath);
     char buffer[HDWallet::maxExtendedKeySize] = {0};
     auto fingerprint = hdnode_fingerprint(&node);
     hdnode_private_ckd(&node, 0x80000000);
@@ -105,7 +88,8 @@ std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, 
 
 std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
     const auto curve = TWCoinTypeCurve(coin);
-    auto node = getNode(*this, curve, purpose, coin);
+    auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
+    auto node = getNode(*this, curve, derivationPath);
     char buffer[HDWallet::maxExtendedKeySize] = {0};
     auto fingerprint = hdnode_fingerprint(&node);
     hdnode_private_ckd(&node, 0x80000000);
@@ -179,39 +163,11 @@ std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& e
 }
 
 namespace {
-    HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin) {
+    HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath) {
         auto node = getMasterNode(wallet, curve);
-        hdnode_private_ckd(&node, purpose | 0x80000000);
-        hdnode_private_ckd(&node, coin | 0x80000000);
-        return node;
-    }
-
-    HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin, uint32_t account) {
-        auto node = getMasterNode(wallet, curve);
-        hdnode_private_ckd(&node, purpose | 0x80000000);
-        hdnode_private_ckd(&node, coin | 0x80000000);
-        hdnode_private_ckd(&node, account | 0x80000000);
-        return node;
-    }
-
-    HDNode getNode(const HDWallet& wallet, TWCurve curve, uint32_t purpose, uint32_t coin, uint32_t account, uint32_t change, uint32_t address) {
-        auto node = getMasterNode(wallet, curve);
-        hdnode_private_ckd(&node, purpose | 0x80000000);
-        hdnode_private_ckd(&node, coin | 0x80000000);
-        hdnode_private_ckd(&node, account | 0x80000000);
-        
-        auto correctedChange = change;
-        auto correctedAddress = address;
-        switch (curve) {
-            case TWCurveEd25519:
-                correctedChange = change | 0x80000000;
-                correctedAddress = address | 0x80000000;
-                break;
-            default: break;
+        for (auto& index : derivationPath.indices) {
+            hdnode_private_ckd(&node, index.derivationIndex());
         }
-        
-        hdnode_private_ckd(&node, correctedChange);
-        hdnode_private_ckd(&node, correctedAddress);
         return node;
     }
 

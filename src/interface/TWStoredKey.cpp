@@ -6,6 +6,7 @@
 
 #include <TrustWalletCore/TWStoredKey.h>
 
+#include "../Coin.h"
 #include "../Data.h"
 #include "../HDWallet.h"
 #include "../Keystore/StoredKey.h"
@@ -36,8 +37,8 @@ struct TWStoredKey *_Nullable TWStoredKeyImportPrivateKey(TWData *_Nonnull priva
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
     auto result = new TWStoredKey{ StoredKey(StoredKeyType::privateKey, passwordString, privateKeyData) };
 
-    auto derivationPath = ....;
-    auto address = ...;
+    auto derivationPath = TW::derivationPath(coin);
+    auto address = TW::deriveAddress(coin, TW::PrivateKey(privateKeyData));
     result->impl.accounts.emplace_back(address, derivationPath);
 
     return result;
@@ -51,9 +52,10 @@ struct TWStoredKey *_Nullable TWStoredKeyImportHDWallet(TWString *_Nonnull mnemo
     auto data = TW::Data(mnemonicString.c_str(), mnemonicString.c_str() + mnemonicString.size());
     auto result = new TWStoredKey{ StoredKey(StoredKeyType::mnemonicPhrase, passwordString, data) };
 
-    auto derivationPath = TW::DerivationPath(derivationPathString);
-    auto address = ...;
-    result->impl.accounts.emplace_back(address, derivationPath);
+    auto wallet = TW::HDWallet(mnemonicString, "");
+    auto dp = TW::DerivationPath(derivationPathString);
+    auto address = TW::deriveAddress(dp.coin(), wallet.getKey(dp));
+    result->impl.accounts.emplace_back(address, dp);
 
     return result;
 }

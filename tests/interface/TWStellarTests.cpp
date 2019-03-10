@@ -23,7 +23,7 @@ TEST(Stellar, DeriveAddress) {
     auto passphrase = STRING("");
 
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
-    auto key = WRAP(TWPrivateKey, TWHDWalletGetAccountKey(wallet.get(), TWCoinTypeStellar, 0));
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeStellar));
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(key.get());
 
     auto address = TWStellarAddressCreateWithPublicKey(publicKey);

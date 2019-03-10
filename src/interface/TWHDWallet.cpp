@@ -6,6 +6,7 @@
 
 #include <TrustWalletCore/TWHDWallet.h>
 
+#include "../Coin.h"
 #include "../HDWallet.h"
 
 using namespace TW;
@@ -39,12 +40,14 @@ TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
     return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetAccountKey(struct TWHDWallet *wallet, TWCoinType coin, uint32_t account) {
-    return new TWPrivateKey{ wallet->impl.getKey(coin, account) };
+struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
+    auto derivationPath = TW::derivationPath(coin);
+    return new TWPrivateKey{ wallet->impl.getKey(derivationPath) };
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *wallet, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
-    return new TWPrivateKey{ wallet->impl.getKey(coin, account, change, address) };
+struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, TWString *_Nonnull derivationPath) {
+    auto& s = *reinterpret_cast<const std::string*>(derivationPath);
+    return new TWPrivateKey{ wallet->impl.getKey( TW::DerivationPath(s)) };
 }
 
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {
