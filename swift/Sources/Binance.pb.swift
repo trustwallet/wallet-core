@@ -341,6 +341,20 @@ public struct TW_Binance_Proto_SigningInput {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
+/// Transaction signing output.
+public struct TW_Binance_Proto_SigningOutput {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Signed and encoded transaction bytes.
+  public var encoded: Data = SwiftProtobuf.Internal.emptyData
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "TW.Binance.Proto"
@@ -963,6 +977,35 @@ extension TW_Binance_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
       }
       if !storagesAreEqual {return false}
     }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension TW_Binance_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SigningOutput"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "encoded"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self.encoded)
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.encoded.isEmpty {
+      try visitor.visitSingularBytesField(value: self.encoded, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: TW_Binance_Proto_SigningOutput, rhs: TW_Binance_Proto_SigningOutput) -> Bool {
+    if lhs.encoded != rhs.encoded {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
