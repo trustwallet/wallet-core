@@ -201,6 +201,42 @@ TWCurve TW::curve(TWCoinType coin) {
     }
 }
 
+TWHDVersion TW::hdVersion(TWCoinType coin) {
+    switch(coin) {
+    case TWCoinTypeBitcoin:
+        return TWHDVersionZPUB;
+
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeRipple:
+    case TWCoinTypeZcash:
+    case TWCoinTypeZcoin:
+        return TWHDVersionXPUB;
+
+    case TWCoinTypeLitecoin:
+        return TWHDVersionMTUB;
+
+    case TWCoinTypeBinance:
+    case TWCoinTypeCallisto:
+    case TWCoinTypeDash:
+    case TWCoinTypeEthereum:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypeICON:
+    case TWCoinTypePoa:
+    case TWCoinTypeTezos:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeTron:
+    case TWCoinTypeVeChain:
+    case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
+    case TWCoinTypeAion:
+    case TWCoinTypeNimiq:
+    case TWCoinTypeStellar:
+        return TWHDVersionNone;
+    }
+}
+
 DerivationPath TW::derivationPath(TWCoinType coin) {
     switch (coin) {
     case TWCoinTypeBinance:

@@ -7,6 +7,7 @@
 #include "Keystore/StoredKey.h"
 #include "PrivateKey.h"
 
+#include <stdexcept>
 #include <gtest/gtest.h>
 
 extern std::string TESTS_ROOT;
@@ -14,15 +15,19 @@ extern std::string TESTS_ROOT;
 namespace TW {
 namespace Keystore {
 
+TEST(StoredKey, LoadNonexistent) {
+    ASSERT_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/nonexistent.json"), std::invalid_argument);
+}
+
 TEST(StoredKey, LoadLegacyPrivateKey) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-private-key.json", "");
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-private-key.json");
     EXPECT_EQ(key.id, "3051ca7d-3d36-4a4a-acc2-09e9083732b0");
     EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeEthereum);
     EXPECT_EQ(hex(key.payload.decrypt("testpassword")), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 }
 
 TEST(StoredKey, LoadLegacyMnemonic) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-mnemonic.json", "");
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-mnemonic.json");
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
 
     const auto data = key.payload.decrypt("password");
@@ -39,7 +44,7 @@ TEST(StoredKey, LoadLegacyMnemonic) {
 }
 
 TEST(StoredKey, ReadWallet) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json", "");
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
     EXPECT_EQ(key.id, "e13b209c-3b2f-4327-bab0-3bef2e51630d");
 
@@ -58,17 +63,17 @@ TEST(StoredKey, ReadWallet) {
 }
 
 TEST(StoredKey, ReadMyEtherWallet) {
-    ASSERT_NO_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/myetherwallet.uu", ""));
+    ASSERT_NO_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/myetherwallet.uu"));
 }
 
 TEST(StoredKey, InvalidPassword) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json", "");
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
     ASSERT_THROW(key.payload.decrypt("password"), DecryptionError);
 }
 
 TEST(StoredKey, Decrypt) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json", "");
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
     const auto privateKey = key.payload.decrypt("testpassword");
 
     EXPECT_EQ(hex(privateKey), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
@@ -83,19 +88,19 @@ TEST(StoredKey, CreateWallet) {
 }
 
 TEST(StoredKey, DecodingEthereumAddress) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json", "");
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
     EXPECT_EQ(key.accounts[0].address, "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b");
 }
 
 TEST(StoredKey, DecodingBitcoinAddress) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key_bitcoin.json", "");
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key_bitcoin.json");
 
     EXPECT_EQ(key.accounts[0].address, "3PWazDi9n1Hfyq9gXFxDxzADNL8RNYyK2y");
 }
 
 TEST(StoredKey, WatchAddress) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/watch.json", "");
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/watch.json");
 
     EXPECT_EQ(key.accounts[0].address, "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b");
     EXPECT_EQ(key.accounts[0].derivationPath.string(), "m/44'/60'/0'/0/0");

@@ -9,6 +9,7 @@
 #include "Account.h"
 #include "EncryptionParameters.h"
 #include "../Data.h"
+#include "../HDWallet.h"
 
 #include <nlohmann/json.hpp>
 #include <TrustWalletCore/TWCoinType.h>
@@ -48,19 +49,28 @@ struct StoredKey {
     /// This contstructor will encrypt the provided data with default encryption parameters.
     StoredKey(StoredKeyType type, const std::string& password, Data data);
 
+    /// Returns the HDWallet for this key.
+    ///
+    /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase`.
+    HDWallet wallet(const std::string& password);
+
+    /// Returns the account for a specific coin, creating it if necessary.
+    ///
+    /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase` and an account
+    /// other than the default is requested.
+    const Account& account(TWCoinType coin, const std::string& password);
+
     /// Loads and decrypts a stored key from a file.
     ///
     /// @param path file path to load from.
-    /// @param password encryption password.
     /// @returns descrypted key.
     /// @throws DecryptionError
-    static StoredKey load(const std::string& path, const std::string& password);
+    static StoredKey load(const std::string& path);
 
     /// Stores the key into an encrypted file.
     ///
     /// @param path file path to store in.
-    /// @param password encryption password.
-    void store(const std::string& path, const std::string& password);
+    void store(const std::string& path);
 
     /// Initializes `StoredKey` with a JSON object.
     StoredKey(const nlohmann::json& json);

@@ -11,8 +11,10 @@
 #include "PrivateKey.h"
 
 #include <TrustWalletCore/TWCoinType.h>
-#include <TrustWalletCore/TWPurpose.h>
 #include <TrustWalletCore/TWCurve.h>
+#include <TrustWalletCore/TWHDVersion.h>
+#include <TrustWalletCore/TWPurpose.h>
+
 #include <string>
 
 namespace TW {
@@ -31,6 +33,9 @@ TWPurpose purpose(TWCoinType coin);
 
 /// Returns the curve that should be used for a coin type.
 TWCurve curve(TWCoinType coin);
+
+/// Returns the HD version that should be used for a coin type.
+TWHDVersion hdVersion(TWCoinType coin);
 
 /// Returns the default derivation path for a particular coin.
 DerivationPath derivationPath(TWCoinType coin);
