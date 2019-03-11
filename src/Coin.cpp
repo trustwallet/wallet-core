@@ -264,10 +264,20 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
 
     case TWCoinTypeAion:
-        return DerivationPath(purpose(coin), coin, 0, 0x80000000, 0x80000000);
+        return DerivationPath{
+            DerivationPathIndex(purpose(coin), true),
+            DerivationPathIndex(coin, true),
+            DerivationPathIndex(0, true),
+            DerivationPathIndex(0, true),
+            DerivationPathIndex(0, true),
+        };
 
     case TWCoinTypeStellar:
-        return DerivationPath(purpose(coin), coin, 0);
+        return DerivationPath{
+            DerivationPathIndex(purpose(coin), true),
+            DerivationPathIndex(coin, true),
+            DerivationPathIndex(0, true)
+        };
     }
 }
 
