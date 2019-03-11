@@ -8,6 +8,8 @@
 
 #include "TWData.h"
 
+typedef TWData *_Nonnull TW_Tezos_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Tezos_Proto_SigningOutput;
 typedef TWData *_Nonnull TW_Tezos_Proto_OperationList;
 typedef TWData *_Nonnull TW_Tezos_Proto_Operation;
 typedef TWData *_Nonnull TW_Tezos_Proto_TransactionOperationData;

@@ -11,29 +11,22 @@ import Foundation
 
 public final class BinanceSigner {
 
+    public static func sign(input: TW_Binance_Proto_SigningInput) -> TW_Binance_Proto_SigningOutput {
+        let inputData = TWDataCreateWithNSData(try! input.serializedData())
+        defer {
+            TWDataDelete(inputData)
+        }
+        let resultData = TWDataNSData(TWBinanceSignerSign(inputData))
+        return try! TW_Binance_Proto_SigningOutput(serializedData: resultData)
+    }
+
     let rawValue: OpaquePointer
 
     init(rawValue: OpaquePointer) {
         self.rawValue = rawValue
     }
 
-    public init(input: TW_Binance_Proto_SigningInput) {
-        let inputData = TWDataCreateWithNSData(try! input.serializedData())
-        defer {
-            TWDataDelete(inputData)
-        }
-        rawValue = TWBinanceSignerCreate(inputData)
-    }
-
-    deinit {
-        TWBinanceSignerDelete(rawValue)
-    }
-
-    public func build() -> Data? {
-        guard let result = TWBinanceSignerBuild(rawValue) else {
-            return nil
-        }
-        return TWDataNSData(result)
-    }
 
 }
+
+

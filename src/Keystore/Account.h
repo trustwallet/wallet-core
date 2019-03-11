@@ -32,7 +32,8 @@ public:
     }
 
     Account() = default;
-    Account(std::string address, DerivationPath derivationPath) : address(address), derivationPath(derivationPath) {}
+    Account(std::string address, DerivationPath derivationPath, const std::string& extendedPublicKey = "")
+        : address(address), derivationPath(derivationPath), extendedPublicKey(extendedPublicKey) {}
 
     /// Initializes `Account` with a JSON object.
     Account(const nlohmann::json& json);
@@ -42,3 +43,8 @@ public:
 };
 
 }} // namespace
+
+/// Wrapper for C interface.
+struct TWAccount {
+    TW::Keystore::Account impl;
+};

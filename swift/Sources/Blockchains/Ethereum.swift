@@ -102,3 +102,13 @@ public final class TomoChain: Ethereum {
         return .tomoChain
     }
 }
+
+public final class XDai: Ethereum {
+    public override var chainID: Int {
+        return 100
+    }
+
+    public override var coinType: CoinType {
+        return .xdai
+    }
+}

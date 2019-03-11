@@ -59,11 +59,18 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value17 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinance));
     assertStringsEqual(value17, "BNB");
 
-    auto value18 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
-    assertStringsEqual(value18, "EOS");
+    auto value18 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
+    assertStringsEqual(value18, "XTZ");
 
-    auto value19 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
-    assertStringsEqual(value19, "XTZ");
+    auto value19 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
+    assertStringsEqual(value19, "XLM");
+  
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xDAI");
+
+    auto value21 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
+    assertStringsEqual(value21, "AION");
+
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -85,8 +92,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVeChain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 0);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -145,15 +154,21 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto value18 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
     assertStringsEqual(value18, "https://binance.com");
 
-    auto value19 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
-    assertStringsEqual(value19, "https://eospark.com/tx/123");
-
     auto zecTxId = TWStringCreateWithUTF8Bytes("d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
     auto value20 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, zecTxId));
     assertStringsEqual(value20, "https://chain.so/tx/ZEC/d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
-    
+
     auto value21 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
     assertStringsEqual(value21, "https://tzscan.io/123");
+
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
+    assertStringsEqual(value22, "https://stellarscan.io/transaction/123");
+  
+    auto value23 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId));
+    assertStringsEqual(value23, "https://blockscout.com/poa/dai/tx/123");
+
+    auto value24 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
+    assertStringsEqual(value24, "https://mainnet.aion.network/#/transaction/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -205,11 +220,17 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto value17 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinance));
     assertStringsEqual(value17, "binance");
 
-    auto value18 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
-    assertStringsEqual(value18, "eos");
-    
-    auto value19 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
-    assertStringsEqual(value19, "tezos");
+    auto value18 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
+    assertStringsEqual(value18, "tezos");
+
+    auto value19 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
+    assertStringsEqual(value19, "stellar");
+
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xdai");
+
+    auto value21 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
+    assertStringsEqual(value21, "aion");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -261,9 +282,15 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value17 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
     assertStringsEqual(value17, "Binance");
 
-    auto value18 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
-    assertStringsEqual(value18, "EOS");
+    auto value18 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
+    assertStringsEqual(value18, "Tezos");
+
+    auto value19 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
+    assertStringsEqual(value19, "Stellar");
+
+    auto value20 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
+    assertStringsEqual(value20, "xDai");
     
-    auto value19 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
-    assertStringsEqual(value19, "Tezos");
+    auto value21 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
+    assertStringsEqual(value21, "Aion");
 }

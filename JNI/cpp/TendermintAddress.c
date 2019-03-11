@@ -94,12 +94,14 @@ jobject JNICALL Java_wallet_core_jni_TendermintAddress_hrp(JNIEnv *env, jobject 
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWTendermintAddress *instance = (struct TWTendermintAddress *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    jobject resultValue = (jobject) TWTendermintAddressHRP(instance);
+    enum TWHRP result = TWTendermintAddressHRP(instance);
 
 
     (*env)->DeleteLocalRef(env, thisClass);
 
-    return resultValue;
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/HRP");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/HRP;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 }
 
 jbyteArray JNICALL Java_wallet_core_jni_TendermintAddress_keyHash(JNIEnv *env, jobject thisObject) {

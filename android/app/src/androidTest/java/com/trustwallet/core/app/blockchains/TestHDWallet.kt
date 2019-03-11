@@ -36,25 +36,19 @@ class TestHDWallet {
     @Test
     fun testDerive() {
         val wallet = HDWallet(words, password)
-        val key0 = wallet.getKey(CoinType.ETHEREUM, 0, 0, 0)
-        val key1 = wallet.getKey(CoinType.ETHEREUM, 0, 0, 1)
+        val key0 = wallet.getKeyForCoin(CoinType.ETHEREUM)
 
         val publicKey0 = key0.getPublicKeySecp256k1(false)
         val publicKey0Data = Numeric.toHexString(publicKey0.data())
 
-        val publicKey1 = key1.getPublicKeySecp256k1(false)
-        val publicKey1Data = Numeric.toHexString(publicKey1.data())
-
         assertEquals(
             publicKey0Data, "0x0414acbe5a06c68210fcbb77763f9612e45a526990aeb69d692d705f276f558a5ae68268e9389bb099ed5ac84d8d6861110f63644f6e5b447e3f86b4bab5dee011")
-        assertEquals(
-            publicKey1Data, "0x046ef32307b329cd4fb8934b36211aa71b2e2d20e693737f04ee0189c450fb6578222b6da98ddddfddbc299b981bebeed0c975514334c80a0144df5d8ed91cb549")
     }
 
     @Test
     fun testDeriveBitcoin() {
         val wallet = HDWallet(words, password)
-        val key = wallet.getKey(CoinType.BITCOIN, 0, 0, 0)
+        val key = wallet.getKeyForCoin(CoinType.BITCOIN)
         val publicKey = key.getPublicKeySecp256k1(false)
         val publicKeyData = publicKey.data()
 

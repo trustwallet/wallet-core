@@ -13,12 +13,12 @@ TWString *_Nonnull TWBase58Encode(TWData *_Nonnull data) {
     size_t size = 0;
     b58enc(nullptr, &size, TWDataBytes(data), TWDataSize(data));
     size += 16;
-    
-    auto string = std::string();
-    string.resize(size);
-    base58_encode_check(TWDataBytes(data), (int)TWDataSize(data), HASHER_SHA2D, &string[0], (int)size);
 
-    return TWStringCreateWithUTF8Bytes(string.c_str());
+    std::string str(size, '\0');
+    const auto actualSize = base58_encode_check(TWDataBytes(data), (int)TWDataSize(data), HASHER_SHA2D, &str[0], (int)size);
+    str.erase(str.begin() + actualSize - 1, str.end());
+
+    return TWStringCreateWithUTF8Bytes(str.c_str());
 }
 
 TWString *_Nonnull TWBase58EncodeNoCheck(TWData *_Nonnull data) {

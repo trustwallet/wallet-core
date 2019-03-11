@@ -28,11 +28,17 @@ public:
     /// Initializes a Tezos address with a string representation.
     Address(const std::string& string);
 
+    /// Initializes an address with a collection of bytes.
+    Address(const std::vector<uint8_t>& data);
+
     /// Initializes a Tezos address with a public key.
     Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
+
+    /// Forge an address to hex bytes.
+    std::string forge() const;
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {

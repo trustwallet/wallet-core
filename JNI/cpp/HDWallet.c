@@ -124,7 +124,7 @@ jstring JNICALL Java_wallet_core_jni_HDWallet_mnemonic(JNIEnv *env, jobject this
     return result;
 }
 
-jobject JNICALL Java_wallet_core_jni_HDWallet_getKey(JNIEnv *env, jobject thisObject, jobject coin, jint account, jint change, jint address) {
+jobject JNICALL Java_wallet_core_jni_HDWallet_getKeyForCoin(JNIEnv *env, jobject thisObject, jobject coin) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWHDWallet *instance = (struct TWHDWallet *) (*env)->GetLongField(env, thisObject, handleFieldID);
@@ -132,9 +132,29 @@ jobject JNICALL Java_wallet_core_jni_HDWallet_getKey(JNIEnv *env, jobject thisOb
     jclass coinClass = (*env)->GetObjectClass(env, coin);
     jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
     jint coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
-    struct TWPrivateKey *result = TWHDWalletGetKey(instance, coinValue, account, change, address);
+    struct TWPrivateKey *result = TWHDWalletGetKeyForCoin(instance, coinValue);
 
     (*env)->DeleteLocalRef(env, coinClass);
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/PrivateKey");
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/PrivateKey;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+}
+
+jobject JNICALL Java_wallet_core_jni_HDWallet_getKey(JNIEnv *env, jobject thisObject, jstring derivationPath) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWHDWallet *instance = (struct TWHDWallet *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    TWString *derivationPathString = TWStringCreateWithJString(env, derivationPath);
+    struct TWPrivateKey *result = TWHDWalletGetKey(instance, derivationPathString);
+
+    TWStringDelete(derivationPathString);
 
     (*env)->DeleteLocalRef(env, thisClass);
 

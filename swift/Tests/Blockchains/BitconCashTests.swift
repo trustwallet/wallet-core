@@ -10,7 +10,7 @@ import XCTest
 class BitcoinCashTests: XCTestCase {
 
     func testExtendedKeys() {
-        let wallet = testWallet
+        let wallet = HDWallet.test
 
         let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .bitcoinCash, version: .xprv)
         let xpub = wallet.getExtendedPubKey(purpose: .bip44, coin: .bitcoinCash, version: .xpub)

@@ -20,6 +20,15 @@ public enum IconAddressType {
     }
     public int value() { return value; }
 
+    public static IconAddressType createFromValue(int value) {
+        switch (value) {
+            case 0: return IconAddressType.ADDRESS;
+            case 1: return IconAddressType.CONTRACT;
+            default: return null;
+        }
+    }
+
+
     public String toString() {
         switch (this) {
         case ADDRESS: return "hx";

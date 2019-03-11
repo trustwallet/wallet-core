@@ -13,7 +13,6 @@ public enum CoinType: UInt32 {
     case bitcoinCash = 145
     case callisto = 820
     case dash = 5
-    case eos = 194
     case ethereum = 60
     case ethereumClassic = 61
     case go = 6060
@@ -27,9 +26,12 @@ public enum CoinType: UInt32 {
     case tron = 195
     case veChain = 818
     case wanChain = 5718350
+    case xdai = 700
     case zcash = 133
     case zcoin = 136
     case nimiq = 242
+    case stellar = 148
+    case aion = 425
 
     public var purpose: Purpose {
         return Purpose(rawValue: TWCoinTypePurpose(TWCoinType(rawValue: rawValue)).rawValue)!
@@ -38,4 +40,23 @@ public enum CoinType: UInt32 {
     public var curve: Curve {
         return Curve(rawValue: TWCoinTypeCurve(TWCoinType(rawValue: rawValue)).rawValue)!
     }
+
+    public func validate(address: String) -> Bool {
+        let addressString = TWStringCreateWithNSString(address)
+        defer {
+            TWStringDelete(addressString)
+        }
+        return TWCoinTypeValidate(TWCoinType(rawValue: rawValue), addressString)
+    }
+
+
+    public func derivationPath() -> String {
+        return TWStringNSString(TWCoinTypeDerivationPath(TWCoinType(rawValue: rawValue)))
+    }
+
+
+    public func deriveAddress(privateKey: PrivateKey) -> String {
+        return TWStringNSString(TWCoinTypeDeriveAddress(TWCoinType(rawValue: rawValue), privateKey.rawValue))
+    }
+
 }
