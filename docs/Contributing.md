@@ -141,12 +141,12 @@ Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload
 4. Create `~/.gradle/gradle.properties` and add your information from the previous steps:
 
 - Generate GPG Key
-- Send GPG Key to the server using the installed tool GPG Keychain
-- Generate the signing.keyId : 
+- Send Key to the server using the installed tool GPG Keychain
+- Generate the signing.keyId value: 
  ```
 $ gpg --list-keys --keyid-format short
 ```
-- Get the `.gpg` secret key that will be assigned signing.secretKeyRingFile : 
+- Get the `.gpg` secret key that will be assigned to signing.secretKeyRingFile parameter: 
 ```
 $ gpg --export-secret-keys -o secring.gpg
 ```
