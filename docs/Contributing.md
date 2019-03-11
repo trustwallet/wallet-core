@@ -142,9 +142,14 @@ Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload
 
 - Generate GPG Key
 - Send GPG Key to the server using the installed tool GPG Keychain
-- Generate the `signing.keyId` : `gpg --list-keys --keyid-format short`
-- Get the `.gpg` secret key that will be assigned `signing.secretKeyRingFile` : `gpg --export-secret-keys -o secring.gpg`
-
+- Generate the signing.keyId : 
+ ```
+$ gpg --list-keys --keyid-format short
+```
+- Get the `.gpg` secret key that will be assigned signing.secretKeyRingFile : 
+```
+$ gpg --export-secret-keys -o secring.gpg
+```
 
 ```
 NEXUS_USERNAME=user
