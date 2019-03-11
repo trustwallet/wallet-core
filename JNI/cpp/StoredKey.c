@@ -27,13 +27,11 @@ void JNICALL Java_wallet_core_jni_StoredKey_nativeDelete(JNIEnv *env, jclass thi
     TWStoredKeyDelete((struct TWStoredKey *) handle);
 }
 
-jobject JNICALL Java_wallet_core_jni_StoredKey_load(JNIEnv *env, jclass thisClass, jstring path, jstring password) {
+jobject JNICALL Java_wallet_core_jni_StoredKey_load(JNIEnv *env, jclass thisClass, jstring path) {
     TWString *pathString = TWStringCreateWithJString(env, path);
-    TWString *passwordString = TWStringCreateWithJString(env, password);
-    struct TWStoredKey *result = TWStoredKeyLoad(pathString, passwordString);
+    struct TWStoredKey *result = TWStoredKeyLoad(pathString);
 
     TWStringDelete(pathString);
-    TWStringDelete(passwordString);
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/StoredKey");
     if (result == NULL) {
@@ -63,15 +61,31 @@ jobject JNICALL Java_wallet_core_jni_StoredKey_importPrivateKey(JNIEnv *env, jcl
     return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
-jobject JNICALL Java_wallet_core_jni_StoredKey_importHDWallet(JNIEnv *env, jclass thisClass, jstring mnemonic, jstring password, jstring derivationPath) {
+jobject JNICALL Java_wallet_core_jni_StoredKey_importHDWallet(JNIEnv *env, jclass thisClass, jstring mnemonic, jstring password, jobject coin) {
     TWString *mnemonicString = TWStringCreateWithJString(env, mnemonic);
     TWString *passwordString = TWStringCreateWithJString(env, password);
-    TWString *derivationPathString = TWStringCreateWithJString(env, derivationPath);
-    struct TWStoredKey *result = TWStoredKeyImportHDWallet(mnemonicString, passwordString, derivationPathString);
+    jclass coinClass = (*env)->GetObjectClass(env, coin);
+    jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
+    jint coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
+    struct TWStoredKey *result = TWStoredKeyImportHDWallet(mnemonicString, passwordString, coinValue);
 
     TWStringDelete(mnemonicString);
     TWStringDelete(passwordString);
-    TWStringDelete(derivationPathString);
+    (*env)->DeleteLocalRef(env, coinClass);
+
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/StoredKey");
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/StoredKey;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+}
+
+jobject JNICALL Java_wallet_core_jni_StoredKey_importJSON(JNIEnv *env, jclass thisClass, jbyteArray json) {
+    TWData *jsonData = TWDataCreateWithJByteArray(env, json);
+    struct TWStoredKey *result = TWStoredKeyImportJSON(jsonData);
+
+    TWDataDelete(jsonData);
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/StoredKey");
     if (result == NULL) {
@@ -92,6 +106,19 @@ jstring JNICALL Java_wallet_core_jni_StoredKey_identifier(JNIEnv *env, jobject t
     (*env)->DeleteLocalRef(env, thisClass);
 
     return result;
+}
+
+jboolean JNICALL Java_wallet_core_jni_StoredKey_isMnemonic(JNIEnv *env, jobject thisObject) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    jboolean resultValue = (jboolean) TWStoredKeyIsMnemonic(instance);
+
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    return resultValue;
 }
 
 jsize JNICALL Java_wallet_core_jni_StoredKey_accountCount(JNIEnv *env, jobject thisObject) {
@@ -125,6 +152,30 @@ jobject JNICALL Java_wallet_core_jni_StoredKey_account(JNIEnv *env, jobject this
     return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
+jobject JNICALL Java_wallet_core_jni_StoredKey_accountForCoin(JNIEnv *env, jobject thisObject, jobject coin, jstring password) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    jclass coinClass = (*env)->GetObjectClass(env, coin);
+    jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
+    jint coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
+    TWString *passwordString = TWStringCreateWithJString(env, password);
+    struct TWAccount *result = TWStoredKeyAccountForCoin(instance, coinValue, passwordString);
+
+    (*env)->DeleteLocalRef(env, coinClass);
+    TWStringDelete(passwordString);
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/Account");
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/Account;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+}
+
 void JNICALL Java_wallet_core_jni_StoredKey_addAccount(JNIEnv *env, jobject thisObject, jstring address, jstring derivationPath, jstring extetndedPublicKey) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
@@ -142,30 +193,28 @@ void JNICALL Java_wallet_core_jni_StoredKey_addAccount(JNIEnv *env, jobject this
     (*env)->DeleteLocalRef(env, thisClass);
 }
 
-jboolean JNICALL Java_wallet_core_jni_StoredKey_store(JNIEnv *env, jobject thisObject, jstring path, jstring password) {
+jboolean JNICALL Java_wallet_core_jni_StoredKey_store(JNIEnv *env, jobject thisObject, jstring path) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     TWString *pathString = TWStringCreateWithJString(env, path);
-    TWString *passwordString = TWStringCreateWithJString(env, password);
-    jboolean resultValue = (jboolean) TWStoredKeyStore(instance, pathString, passwordString);
+    jboolean resultValue = (jboolean) TWStoredKeyStore(instance, pathString);
 
     TWStringDelete(pathString);
-    TWStringDelete(passwordString);
 
     (*env)->DeleteLocalRef(env, thisClass);
 
     return resultValue;
 }
 
-jbyteArray JNICALL Java_wallet_core_jni_StoredKey_exportPrivateKey(JNIEnv *env, jobject thisObject, jstring password) {
+jbyteArray JNICALL Java_wallet_core_jni_StoredKey_decryptPrivateKey(JNIEnv *env, jobject thisObject, jstring password) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     TWString *passwordString = TWStringCreateWithJString(env, password);
-    jbyteArray result = TWDataJByteArray(TWStoredKeyExportPrivateKey(instance, passwordString), env);
+    jbyteArray result = TWDataJByteArray(TWStoredKeyDecryptPrivateKey(instance, passwordString), env);
 
     TWStringDelete(passwordString);
 
@@ -174,15 +223,48 @@ jbyteArray JNICALL Java_wallet_core_jni_StoredKey_exportPrivateKey(JNIEnv *env, 
     return result;
 }
 
-jstring JNICALL Java_wallet_core_jni_StoredKey_exportMnemonic(JNIEnv *env, jobject thisObject, jstring password) {
+jstring JNICALL Java_wallet_core_jni_StoredKey_decryptMnemonic(JNIEnv *env, jobject thisObject, jstring password) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     TWString *passwordString = TWStringCreateWithJString(env, password);
-    jstring result = TWStringJString(TWStoredKeyExportMnemonic(instance, passwordString), env);
+    jstring result = TWStringJString(TWStoredKeyDecryptMnemonic(instance, passwordString), env);
 
     TWStringDelete(passwordString);
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    return result;
+}
+
+jobject JNICALL Java_wallet_core_jni_StoredKey_wallet(JNIEnv *env, jobject thisObject, jstring password) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    TWString *passwordString = TWStringCreateWithJString(env, password);
+    struct TWHDWallet *result = TWStoredKeyWallet(instance, passwordString);
+
+    TWStringDelete(passwordString);
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/HDWallet");
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/HDWallet;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+}
+
+jbyteArray JNICALL Java_wallet_core_jni_StoredKey_exportJSON(JNIEnv *env, jobject thisObject) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    jbyteArray result = TWDataJByteArray(TWStoredKeyExportJSON(instance), env);
+
 
     (*env)->DeleteLocalRef(env, thisClass);
 

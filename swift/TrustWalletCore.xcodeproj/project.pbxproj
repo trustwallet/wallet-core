@@ -297,6 +297,17 @@
 		6198EA8621B811A2008CB60A /* TWBech32Address.h in Headers */ = {isa = PBXBuildFile; fileRef = 6198EA8321B811A2008CB60A /* TWBech32Address.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6198EA8C21B811CD008CB60A /* Bech32Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198EA8B21B811CD008CB60A /* Bech32Address.swift */; };
 		61A624FB2236D330009C450C /* TWStellarSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A624FA2236D330009C450C /* TWStellarSigner.cpp */; };
+		61A625052236DA0C009C450C /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A624FD2236DA0C009C450C /* KeyStore.swift */; };
+		61A625072236DA0C009C450C /* KeyStore.Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A624FF2236DA0C009C450C /* KeyStore.Error.swift */; };
+		61A6250B2236DA0C009C450C /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A625032236DA0C009C450C /* Wallet.swift */; };
+		61A625172236DA1A009C450C /* KeystoreKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A6250E2236DA1A009C450C /* KeystoreKeyTests.swift */; };
+		61A625182236DA1A009C450C /* AccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A6250F2236DA1A009C450C /* AccountTests.swift */; };
+		61A625192236DA1A009C450C /* WalletTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A625102236DA1A009C450C /* WalletTests.swift */; };
+		61A6251A2236DA1A009C450C /* key_bitcoin.json in Resources */ = {isa = PBXBuildFile; fileRef = 61A625122236DA1A009C450C /* key_bitcoin.json */; };
+		61A6251B2236DA1A009C450C /* key.json in Resources */ = {isa = PBXBuildFile; fileRef = 61A625132236DA1A009C450C /* key.json */; };
+		61A6251C2236DA1A009C450C /* wallet.json in Resources */ = {isa = PBXBuildFile; fileRef = 61A625142236DA1A009C450C /* wallet.json */; };
+		61A6251D2236DA1A009C450C /* myetherwallet.uu in Resources */ = {isa = PBXBuildFile; fileRef = 61A625152236DA1A009C450C /* myetherwallet.uu */; };
+		61A6251E2236DA1A009C450C /* KeyStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A625162236DA1A009C450C /* KeyStoreTests.swift */; };
 		61A8C5F92208C10A004DA312 /* TWCoinTypeConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A8C5F82208C10A004DA312 /* TWCoinTypeConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61A9B2E721F916FA00E601B3 /* Bech32.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A9B2E521F916FA00E601B3 /* Bech32.h */; };
 		61A9B2E821F916FA00E601B3 /* Bech32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B2E621F916FA00E601B3 /* Bech32.cpp */; };
@@ -865,6 +876,17 @@
 		6198EA8321B811A2008CB60A /* TWBech32Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBech32Address.h; sourceTree = "<group>"; };
 		6198EA8B21B811CD008CB60A /* Bech32Address.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bech32Address.swift; sourceTree = "<group>"; };
 		61A624FA2236D330009C450C /* TWStellarSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWStellarSigner.cpp; sourceTree = "<group>"; };
+		61A624FD2236DA0C009C450C /* KeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
+		61A624FF2236DA0C009C450C /* KeyStore.Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStore.Error.swift; sourceTree = "<group>"; };
+		61A625032236DA0C009C450C /* Wallet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
+		61A6250E2236DA1A009C450C /* KeystoreKeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeystoreKeyTests.swift; sourceTree = "<group>"; };
+		61A6250F2236DA1A009C450C /* AccountTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountTests.swift; sourceTree = "<group>"; };
+		61A625102236DA1A009C450C /* WalletTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalletTests.swift; sourceTree = "<group>"; };
+		61A625122236DA1A009C450C /* key_bitcoin.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = key_bitcoin.json; sourceTree = "<group>"; };
+		61A625132236DA1A009C450C /* key.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = key.json; sourceTree = "<group>"; };
+		61A625142236DA1A009C450C /* wallet.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = wallet.json; sourceTree = "<group>"; };
+		61A625152236DA1A009C450C /* myetherwallet.uu */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = myetherwallet.uu; sourceTree = "<group>"; };
+		61A625162236DA1A009C450C /* KeyStoreTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStoreTests.swift; sourceTree = "<group>"; };
 		61A8C5F82208C10A004DA312 /* TWCoinTypeConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWCoinTypeConfiguration.h; sourceTree = "<group>"; };
 		61A9B2E521F916FA00E601B3 /* Bech32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bech32.h; sourceTree = "<group>"; };
 		61A9B2E621F916FA00E601B3 /* Bech32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bech32.cpp; sourceTree = "<group>"; };
@@ -1666,6 +1688,7 @@
 				61E813F32227587600D4D2C9 /* SlipTests.swift */,
 				61C4E904222613DC0020A917 /* Addresses */,
 				61C4E905222613E70020A917 /* Blockchains */,
+				61A6250D2236DA1A009C450C /* Keystore */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -1748,8 +1771,42 @@
 				61C4E8D822260B150020A917 /* Addresses */,
 				61C4E8C922260B140020A917 /* Blockchains */,
 				61C4E8FB22260CA30020A917 /* HDWallet */,
+				61A624FC2236DA0C009C450C /* Keystore */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		61A624FC2236DA0C009C450C /* Keystore */ = {
+			isa = PBXGroup;
+			children = (
+				61A624FD2236DA0C009C450C /* KeyStore.swift */,
+				61A624FF2236DA0C009C450C /* KeyStore.Error.swift */,
+				61A625032236DA0C009C450C /* Wallet.swift */,
+			);
+			path = Keystore;
+			sourceTree = "<group>";
+		};
+		61A6250D2236DA1A009C450C /* Keystore */ = {
+			isa = PBXGroup;
+			children = (
+				61A6250F2236DA1A009C450C /* AccountTests.swift */,
+				61A6250E2236DA1A009C450C /* KeystoreKeyTests.swift */,
+				61A625162236DA1A009C450C /* KeyStoreTests.swift */,
+				61A625102236DA1A009C450C /* WalletTests.swift */,
+				61A625112236DA1A009C450C /* Data */,
+			);
+			path = Keystore;
+			sourceTree = "<group>";
+		};
+		61A625112236DA1A009C450C /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				61A625122236DA1A009C450C /* key_bitcoin.json */,
+				61A625132236DA1A009C450C /* key.json */,
+				61A625142236DA1A009C450C /* wallet.json */,
+				61A625152236DA1A009C450C /* myetherwallet.uu */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 		61A9B2F121FB855E00E601B3 /* Ethereum */ = {
@@ -2565,6 +2622,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				61A6251A2236DA1A009C450C /* key_bitcoin.json in Resources */,
+				61A6251C2236DA1A009C450C /* wallet.json in Resources */,
+				61A6251B2236DA1A009C450C /* key.json in Resources */,
+				61A6251D2236DA1A009C450C /* myetherwallet.uu in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2653,6 +2714,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7782DF2D222F211700599404 /* TezosTests.swift in Sources */,
+				61A6251E2236DA1A009C450C /* KeyStoreTests.swift in Sources */,
 				61E813E72227535A00D4D2C9 /* DashTests.swift in Sources */,
 				61E81431222758E100D4D2C9 /* SlipTests.swift in Sources */,
 				61C4E91A2226150F0020A917 /* BitconCashTests.swift in Sources */,
@@ -2662,8 +2724,10 @@
 				61E81433222758E100D4D2C9 /* PurposeTests.swift in Sources */,
 				61C4E9192226150F0020A917 /* RippleTests.swift in Sources */,
 				61C4E92C22261A100020A917 /* IconAddressTests.swift in Sources */,
+				61A625192236DA1A009C450C /* WalletTests.swift in Sources */,
 				61C4E921222615120020A917 /* TronAddressTests.swift in Sources */,
 				61C4E922222615120020A917 /* WanchainAddressTests.swift in Sources */,
+				61A625172236DA1A009C450C /* KeystoreKeyTests.swift in Sources */,
 				61C4E91C2226150F0020A917 /* LitecoinTests.swift in Sources */,
 				61C4E91D2226150F0020A917 /* TronTests.swift in Sources */,
 				6198EA8021B6BFC9008CB60A /* DataTests.swift in Sources */,
@@ -2676,6 +2740,7 @@
 				61C4E91F2226150F0020A917 /* ZcoinTests.swift in Sources */,
 				616D0413220A6C5B00A776E8 /* BitcoinTransactionSignerTests.swift in Sources */,
 				4E8BBEAA22309B7D00F98E04 /* AionTests.swift in Sources */,
+				61A625182236DA1A009C450C /* AccountTests.swift in Sources */,
 				61E813E82227535A00D4D2C9 /* ZcashTests.swift in Sources */,
 				BB6AE9AB2233799C00F9EF85 /* StellarTests.swift in Sources */,
 			);
@@ -2779,6 +2844,7 @@
 				61735C11219DF044007BF637 /* curve25519-donna-helpers.c in Sources */,
 				778DB8BC2230A55800CE8DB6 /* Address.cpp in Sources */,
 				61C4E92E22261A1A0020A917 /* Icon.swift in Sources */,
+				61A625052236DA0C009C450C /* KeyStore.swift in Sources */,
 				616F87AD223041970007ECA3 /* Address.cpp in Sources */,
 				61B159DD21CC5DBB00CFE93B /* PrivateKey.cpp in Sources */,
 				616F87B5223041B00007ECA3 /* Nimiq.pb.cc in Sources */,
@@ -2823,6 +2889,7 @@
 				61C4E8F022260B150020A917 /* BlockchainFactory.swift in Sources */,
 				61735C03219DF044007BF637 /* blake256.c in Sources */,
 				61C4E8ED22260B150020A917 /* Ethereum.swift in Sources */,
+				61A625072236DA0C009C450C /* KeyStore.Error.swift in Sources */,
 				140352F52233740C00DF0815 /* Stellar.swift in Sources */,
 				61C4E8EA22260B150020A917 /* Dash.swift in Sources */,
 				4E8BBEA822309A6F00F98E04 /* Aion.swift in Sources */,
@@ -2850,6 +2917,7 @@
 				61C4E8E322260B150020A917 /* Litecoin.swift in Sources */,
 				61A9B3522200103000E601B3 /* Transaction.cpp in Sources */,
 				611BBE35223595550043FB94 /* AESParameters.cpp in Sources */,
+				61A6250B2236DA0C009C450C /* Wallet.swift in Sources */,
 				61E44461221CD49E006A4FF1 /* Signer.cpp in Sources */,
 				61B159E221CC5DBB00CFE93B /* TWPublicKey.cpp in Sources */,
 				BB2422E022217B58000663D0 /* Transaction.cpp in Sources */,

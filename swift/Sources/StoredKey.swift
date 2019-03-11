@@ -11,22 +11,18 @@ import Foundation
 
 public final class StoredKey {
 
-    public static func load(path: String, password: String) -> StoredKey? {
+    public static func load(path: String) -> StoredKey? {
         let pathString = TWStringCreateWithNSString(path)
         defer {
             TWStringDelete(pathString)
         }
-        let passwordString = TWStringCreateWithNSString(password)
-        defer {
-            TWStringDelete(passwordString)
-        }
-        guard let value = TWStoredKeyLoad(pathString, passwordString) else {
+        guard let value = TWStoredKeyLoad(pathString) else {
             return nil
         }
         return StoredKey(rawValue: value)
     }
 
-    public static func importPrivateKey(privateKey: Data, password: String, coin: CoinType) -> StoredKey? {
+    public static func importPrivateKey(privateKey: Data, password: String, coin: CoinType) -> StoredKey {
         let privateKeyData = TWDataCreateWithNSData(privateKey)
         defer {
             TWDataDelete(privateKeyData)
@@ -35,13 +31,10 @@ public final class StoredKey {
         defer {
             TWStringDelete(passwordString)
         }
-        guard let value = TWStoredKeyImportPrivateKey(privateKeyData, passwordString, TWCoinType(rawValue: coin.rawValue)) else {
-            return nil
-        }
-        return StoredKey(rawValue: value)
+        return StoredKey(rawValue: TWStoredKeyImportPrivateKey(privateKeyData, passwordString, TWCoinType(rawValue: coin.rawValue)))
     }
 
-    public static func importHDWallet(mnemonic: String, password: String, derivationPath: String) -> StoredKey? {
+    public static func importHDWallet(mnemonic: String, password: String, coin: CoinType) -> StoredKey {
         let mnemonicString = TWStringCreateWithNSString(mnemonic)
         defer {
             TWStringDelete(mnemonicString)
@@ -50,11 +43,15 @@ public final class StoredKey {
         defer {
             TWStringDelete(passwordString)
         }
-        let derivationPathString = TWStringCreateWithNSString(derivationPath)
+        return StoredKey(rawValue: TWStoredKeyImportHDWallet(mnemonicString, passwordString, TWCoinType(rawValue: coin.rawValue)))
+    }
+
+    public static func importJSON(json: Data) -> StoredKey? {
+        let jsonData = TWDataCreateWithNSData(json)
         defer {
-            TWStringDelete(derivationPathString)
+            TWDataDelete(jsonData)
         }
-        guard let value = TWStoredKeyImportHDWallet(mnemonicString, passwordString, derivationPathString) else {
+        guard let value = TWStoredKeyImportJSON(jsonData) else {
             return nil
         }
         return StoredKey(rawValue: value)
@@ -65,6 +62,10 @@ public final class StoredKey {
             return nil
         }
         return TWStringNSString(result)
+    }
+
+    public var isMnemonic: Bool {
+        return TWStoredKeyIsMnemonic(rawValue)
     }
 
     public var accountCount: Int {
@@ -96,6 +97,17 @@ public final class StoredKey {
         return Account(rawValue: value)
     }
 
+    public func accountForCoin(coin: CoinType, password: String) -> Account? {
+        let passwordString = TWStringCreateWithNSString(password)
+        defer {
+            TWStringDelete(passwordString)
+        }
+        guard let value = TWStoredKeyAccountForCoin(rawValue, TWCoinType(rawValue: coin.rawValue), passwordString) else {
+            return nil
+        }
+        return Account(rawValue: value)
+    }
+
     public func addAccount(address: String, derivationPath: String, extetndedPublicKey: String) -> Void {
         let addressString = TWStringCreateWithNSString(address)
         defer {
@@ -112,32 +124,52 @@ public final class StoredKey {
         return TWStoredKeyAddAccount(rawValue, addressString, derivationPathString, extetndedPublicKeyString)
     }
 
-    public func store(path: String, password: String) -> Bool {
+    public func store(path: String) -> Bool {
         let pathString = TWStringCreateWithNSString(path)
         defer {
             TWStringDelete(pathString)
         }
-        let passwordString = TWStringCreateWithNSString(password)
-        defer {
-            TWStringDelete(passwordString)
-        }
-        return TWStoredKeyStore(rawValue, pathString, passwordString)
+        return TWStoredKeyStore(rawValue, pathString)
     }
 
-    public func exportPrivateKey(password: String) -> Data {
+    public func decryptPrivateKey(password: String) -> Data? {
         let passwordString = TWStringCreateWithNSString(password)
         defer {
             TWStringDelete(passwordString)
         }
-        return TWDataNSData(TWStoredKeyExportPrivateKey(rawValue, passwordString))
+        guard let result = TWStoredKeyDecryptPrivateKey(rawValue, passwordString) else {
+            return nil
+        }
+        return TWDataNSData(result)
     }
 
-    public func exportMnemonic(password: String) -> String {
+    public func decryptMnemonic(password: String) -> String? {
         let passwordString = TWStringCreateWithNSString(password)
         defer {
             TWStringDelete(passwordString)
         }
-        return TWStringNSString(TWStoredKeyExportMnemonic(rawValue, passwordString))
+        guard let result = TWStoredKeyDecryptMnemonic(rawValue, passwordString) else {
+            return nil
+        }
+        return TWStringNSString(result)
+    }
+
+    public func wallet(password: String) -> HDWallet? {
+        let passwordString = TWStringCreateWithNSString(password)
+        defer {
+            TWStringDelete(passwordString)
+        }
+        guard let value = TWStoredKeyWallet(rawValue, passwordString) else {
+            return nil
+        }
+        return HDWallet(rawValue: value)
+    }
+
+    public func exportJSON() -> Data? {
+        guard let result = TWStoredKeyExportJSON(rawValue) else {
+            return nil
+        }
+        return TWDataNSData(result)
     }
 
 }
