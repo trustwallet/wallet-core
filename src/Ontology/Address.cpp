@@ -17,7 +17,6 @@
 using namespace TW::Ontology;
 
 Address::Address(const PublicKey &publicKey) {
-    auto hash = std::array<uint8_t, Hash::sha256Size>();
     std::vector<uint8_t> builder(publicKey.bytes);
     builder.insert(builder.begin(), 0x21);
     builder.push_back(0xAC);
