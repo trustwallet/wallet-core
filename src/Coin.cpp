@@ -209,18 +209,21 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
-    case TWCoinTypeRipple:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWHDVersionXPUB;
 
+    case TWCoinTypeAion:
     case TWCoinTypeBinance:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
     case TWCoinTypeICON:
+    case TWCoinTypeNimiq:
     case TWCoinTypePoa:
+    case TWCoinTypeRipple:
+    case TWCoinTypeStellar:
     case TWCoinTypeTezos:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
@@ -228,9 +231,6 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
-    case TWCoinTypeAion:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeStellar:
         return TWHDVersionNone;
     }
 }
