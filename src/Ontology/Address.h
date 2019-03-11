@@ -43,5 +43,14 @@ public:
 
     std::string b58String() const;
 };
+
+static inline bool operator==(const Address& lhs, const Address& rhs) {
+    return lhs.zero == rhs.zero;
 }
-}
+
+}} // namespace
+
+/// Wrapper for C interface.
+struct TWOntologyAddress {
+    TW::Ontology::Address impl;
+};

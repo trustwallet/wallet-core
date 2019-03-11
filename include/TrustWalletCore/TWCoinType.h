@@ -9,7 +9,6 @@
 #include "TWBase.h"
 #include "TWCurve.h"
 #include "TWPurpose.h"
-
 TW_EXTERN_C_BEGIN
 
 /// Coin type for Level 2 of BIP44.
@@ -17,12 +16,12 @@ TW_EXTERN_C_BEGIN
 /// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 TW_EXPORT_ENUM(uint32_t)
 enum TWCoinType {
+    TWCoinTypeOntology = 1024,
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
     TWCoinTypeCallisto = 820,
     TWCoinTypeDash = 5,
-    TWCoinTypeEOS = 194,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
     TWCoinTypeGo = 6060,
