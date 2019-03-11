@@ -8,7 +8,10 @@
 
 #include "TWBase.h"
 #include "TWCurve.h"
+#include "TWPrivateKey.h"
 #include "TWPurpose.h"
+#include "TWString.h"
+
 TW_EXTERN_C_BEGIN
 
 /// Coin type for Level 2 of BIP44.
@@ -35,17 +38,32 @@ enum TWCoinType {
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeWanChain = 5718350,
+    TWCoinTypeXDai = 700,
     TWCoinTypeZcash = 133,
     TWCoinTypeZcoin = 136,
     TWCoinTypeNimiq = 242,
+    TWCoinTypeStellar = 148,
+    TWCoinTypeAion = 425,
 };
 
 /// Returns the purpose for a coin type.
 TW_EXPORT_PROPERTY
-enum TWPurpose TWCoinTypePurpose(enum TWCoinType type);
+enum TWPurpose TWCoinTypePurpose(enum TWCoinType coin);
 
 /// Returns the curve that should be used for a coin type.
 TW_EXPORT_PROPERTY
-enum TWCurve TWCoinTypeCurve(enum TWCoinType type);
+enum TWCurve TWCoinTypeCurve(enum TWCoinType coin);
+
+/// Validates an address string.
+TW_EXPORT_METHOD
+bool TWCoinTypeValidate(enum TWCoinType coin, TWString *_Nonnull address);
+
+/// Returns the default derivation path for a particular coin.
+TW_EXPORT_METHOD
+TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
+
+/// Derives the address for a particular coin from the private key.
+TW_EXPORT_METHOD
+TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivateKey *_Nonnull privateKey);
 
 TW_EXTERN_C_END
