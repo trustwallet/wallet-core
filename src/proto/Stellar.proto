@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package TW.Stellar.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    int64 amount = 1;
+
+    int32 fee = 2;
+
+    int32 sequence = 3;
+
+    string account = 4;
+
+    string destination = 5;
+
+    // Private key.
+    bytes private_key = 8;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signature.
+    string signature = 1;
+}

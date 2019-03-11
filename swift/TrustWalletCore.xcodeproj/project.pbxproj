@@ -10,6 +10,13 @@
 		140352E622336B3400DF0815 /* StellarVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352E422336B3400DF0815 /* StellarVersionByte.swift */; };
 		140352E722336B3400DF0815 /* StellarAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352E522336B3400DF0815 /* StellarAddress.swift */; };
 		140352F52233740C00DF0815 /* Stellar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 140352F42233740C00DF0815 /* Stellar.swift */; };
+		14FDB4AD2236B894002FC058 /* StellarSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FDB4AB2236B894002FC058 /* StellarSigner.swift */; };
+		14FDB4AE2236B894002FC058 /* Stellar.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14FDB4AC2236B894002FC058 /* Stellar.pb.swift */; };
+		14FDB4B02236B8AE002FC058 /* TWStellarSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4AF2236B8AE002FC058 /* TWStellarSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		14FDB4B72236BC9B002FC058 /* Signer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14FDB4B52236BC9B002FC058 /* Signer.cpp */; };
+		14FDB4B82236BC9B002FC058 /* Signer.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4B62236BC9B002FC058 /* Signer.h */; };
+		14FDB4BB2236BDBD002FC058 /* Stellar.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */; };
+		14FDB4BC2236BDBD002FC058 /* Stellar.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */; };
 		34339D36023473D76FAF18EE /* Pods_TrustWalletCore_TrustWalletCoreTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */; };
 		467181FB9EFC0E4C01DDB460 /* Pods_TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */; };
 		4E8BBE8C2230998600F98E04 /* RLP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E8BBE852230998500F98E04 /* RLP.h */; };
@@ -289,6 +296,7 @@
 		6198EA8421B811A2008CB60A /* TWBitcoinOpCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 6198EA8121B811A1008CB60A /* TWBitcoinOpCodes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6198EA8621B811A2008CB60A /* TWBech32Address.h in Headers */ = {isa = PBXBuildFile; fileRef = 6198EA8321B811A2008CB60A /* TWBech32Address.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6198EA8C21B811CD008CB60A /* Bech32Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198EA8B21B811CD008CB60A /* Bech32Address.swift */; };
+		61A624FB2236D330009C450C /* TWStellarSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A624FA2236D330009C450C /* TWStellarSigner.cpp */; };
 		61A8C5F92208C10A004DA312 /* TWCoinTypeConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A8C5F82208C10A004DA312 /* TWCoinTypeConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		61A9B2E721F916FA00E601B3 /* Bech32.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A9B2E521F916FA00E601B3 /* Bech32.h */; };
 		61A9B2E821F916FA00E601B3 /* Bech32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A9B2E621F916FA00E601B3 /* Bech32.cpp */; };
@@ -594,6 +602,13 @@
 		140352E422336B3400DF0815 /* StellarVersionByte.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarVersionByte.swift; sourceTree = "<group>"; };
 		140352E522336B3400DF0815 /* StellarAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarAddress.swift; sourceTree = "<group>"; };
 		140352F42233740C00DF0815 /* Stellar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stellar.swift; sourceTree = "<group>"; };
+		14FDB4AB2236B894002FC058 /* StellarSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarSigner.swift; sourceTree = "<group>"; };
+		14FDB4AC2236B894002FC058 /* Stellar.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stellar.pb.swift; sourceTree = "<group>"; };
+		14FDB4AF2236B8AE002FC058 /* TWStellarSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarSigner.h; sourceTree = "<group>"; };
+		14FDB4B52236BC9B002FC058 /* Signer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signer.cpp; sourceTree = "<group>"; };
+		14FDB4B62236BC9B002FC058 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
+		14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stellar.pb.cc; sourceTree = "<group>"; };
+		14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stellar.pb.h; sourceTree = "<group>"; };
 		36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E8BBE852230998500F98E04 /* RLP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RLP.h; path = Aion/RLP.h; sourceTree = "<group>"; };
 		4E8BBE862230998500F98E04 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = Aion/Transaction.cpp; sourceTree = "<group>"; };
@@ -849,6 +864,7 @@
 		6198EA8121B811A1008CB60A /* TWBitcoinOpCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBitcoinOpCodes.h; sourceTree = "<group>"; };
 		6198EA8321B811A2008CB60A /* TWBech32Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBech32Address.h; sourceTree = "<group>"; };
 		6198EA8B21B811CD008CB60A /* Bech32Address.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bech32Address.swift; sourceTree = "<group>"; };
+		61A624FA2236D330009C450C /* TWStellarSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWStellarSigner.cpp; sourceTree = "<group>"; };
 		61A8C5F82208C10A004DA312 /* TWCoinTypeConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWCoinTypeConfiguration.h; sourceTree = "<group>"; };
 		61A9B2E521F916FA00E601B3 /* Bech32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bech32.h; sourceTree = "<group>"; };
 		61A9B2E621F916FA00E601B3 /* Bech32.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bech32.cpp; sourceTree = "<group>"; };
@@ -1273,6 +1289,8 @@
 				616F87B2223041B00007ECA3 /* Nimiq.pb.h */,
 				BB2422D522217B4D000663D0 /* Ripple.pb.cc */,
 				BB2422D622217B4D000663D0 /* Ripple.pb.h */,
+				14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */,
+				14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */,
 				77A15CFA2234383900E77417 /* Tezos.pb.cc */,
 				77A15CF92234383900E77417 /* Tezos.pb.h */,
 				61C4E8C62225C43D0020A917 /* Tron.pb.cc */,
@@ -1404,6 +1422,7 @@
 				BB2422CD22217AE7000663D0 /* TWRippleSigner.h */,
 				BB6AE99422336FFE00F9EF85 /* TWStellarAddress.h */,
 				BB6AE99322336FFE00F9EF85 /* TWStellarProto.h */,
+				14FDB4AF2236B8AE002FC058 /* TWStellarSigner.h */,
 				BB6AE99222336FFE00F9EF85 /* TWStellarVersionByte.h */,
 				611BBE1E2235952A0043FB94 /* TWStoredKey.h */,
 				616E125D21AE14E8009798FC /* TWString.h */,
@@ -1709,7 +1728,9 @@
 				BB2422D222217B08000663D0 /* Ripple.pb.swift */,
 				BB211061221C045000571DF7 /* RippleAddress.swift */,
 				BB2422D122217B08000663D0 /* RippleSigner.swift */,
+				14FDB4AC2236B894002FC058 /* Stellar.pb.swift */,
 				140352E522336B3400DF0815 /* StellarAddress.swift */,
+				14FDB4AB2236B894002FC058 /* StellarSigner.swift */,
 				140352E422336B3400DF0815 /* StellarVersionByte.swift */,
 				611BBE3A223595680043FB94 /* StoredKey.swift */,
 				6198EA6421B59575008CB60A /* String.swift */,
@@ -1822,6 +1843,7 @@
 				BB211056221C035F00571DF7 /* TWRippleAddress.cpp */,
 				BB2422E322217B90000663D0 /* TWRippleSigner.cpp */,
 				BB6AE998223370E300F9EF85 /* TWStellarAddress.cpp */,
+				61A624FA2236D330009C450C /* TWStellarSigner.cpp */,
 				611BBE21223595420043FB94 /* TWStoredKey.cpp */,
 				61B159BD21CC5DBB00CFE93B /* TWString.cpp */,
 				61B159B521CC5DBB00CFE93B /* TWString+Hex.cpp */,
@@ -2193,6 +2215,8 @@
 		BB6AE9A02233711B00F9EF85 /* Stellar */ = {
 			isa = PBXGroup;
 			children = (
+				14FDB4B52236BC9B002FC058 /* Signer.cpp */,
+				14FDB4B62236BC9B002FC058 /* Signer.h */,
 				BB6AE9A12233711B00F9EF85 /* Address.h */,
 				BB6AE9A22233711B00F9EF85 /* Address.cpp */,
 			);
@@ -2242,6 +2266,7 @@
 				61977CC721C9B9D000C385D5 /* TWBitcoinCashAddress.h in Headers */,
 				61735AED219DF044007BF637 /* memzero.h in Headers */,
 				61C4E8B52225C3A20020A917 /* TWTronSigner.h in Headers */,
+				14FDB4B02236B8AE002FC058 /* TWStellarSigner.h in Headers */,
 				616F87A1223041710007ECA3 /* TWNimiqAddress.h in Headers */,
 				61735AEF219DF044007BF637 /* blake2s.h in Headers */,
 				616F87B1223041970007ECA3 /* Signer.h in Headers */,
@@ -2273,6 +2298,7 @@
 				61FE4B2E22208DED00C65017 /* TWVeChainSigner.h in Headers */,
 				61722BEC220E45A300D7BA9A /* TransactionPlan.h in Headers */,
 				61B159DA21CC5DBB00CFE93B /* OutPoint.h in Headers */,
+				14FDB4BC2236BDBD002FC058 /* Stellar.pb.h in Headers */,
 				61735AEC219DF044007BF637 /* blake2b.h in Headers */,
 				61735C4D219DF044007BF637 /* int-util.h in Headers */,
 				BB21105D221C039B00571DF7 /* Address.h in Headers */,
@@ -2417,6 +2443,7 @@
 				61735AD5219DF044007BF637 /* TWPrivateKey.h in Headers */,
 				61735AEB219DF044007BF637 /* ed25519-donna.h in Headers */,
 				61735C4F219DF044007BF637 /* rc4.h in Headers */,
+				14FDB4B82236BC9B002FC058 /* Signer.h in Headers */,
 				61E813B7222720EB00D4D2C9 /* TWIconSigner.h in Headers */,
 				61735AF0219DF044007BF637 /* sha3.h in Headers */,
 				61FE4B3B22208E0300C65017 /* Signer.h in Headers */,
@@ -2667,8 +2694,10 @@
 				61B159D121CC5DBB00CFE93B /* Script.cpp in Sources */,
 				61722BE3220E457D00D7BA9A /* ChainID.swift in Sources */,
 				7782DF31222F218F00599404 /* TWTezosAddress.cpp in Sources */,
+				14FDB4AE2236B894002FC058 /* Stellar.pb.swift in Sources */,
 				61C4E8B22225C3960020A917 /* Tron.pb.swift in Sources */,
 				61722BE4220E457D00D7BA9A /* Common.pb.swift in Sources */,
+				14FDB4BB2236BDBD002FC058 /* Stellar.pb.cc in Sources */,
 				61735C22219DF044007BF637 /* curve25519-donna-32bit.c in Sources */,
 				61A9B2E821F916FA00E601B3 /* Bech32.cpp in Sources */,
 				61BA0A7221F6C9D9005680E6 /* Signer.cpp in Sources */,
@@ -2712,6 +2741,7 @@
 				61735BFF219DF044007BF637 /* rand.c in Sources */,
 				61722BF5220E45BA00D7BA9A /* Bitcoin.pb.cc in Sources */,
 				616F87C1223044860007ECA3 /* TWNimiqSigner.cpp in Sources */,
+				61A624FB2236D330009C450C /* TWStellarSigner.cpp in Sources */,
 				61B159E421CC5DBB00CFE93B /* TWHash.cpp in Sources */,
 				61E814382227594F00D4D2C9 /* PrivateKeyExtension.swift in Sources */,
 				61735BFC219DF044007BF637 /* hasher.c in Sources */,
@@ -2844,6 +2874,7 @@
 				61C4E8F122260B150020A917 /* Address.swift in Sources */,
 				61B159D721CC5DBB00CFE93B /* Transaction.cpp in Sources */,
 				4E8BBE912230998600F98E04 /* Address.cpp in Sources */,
+				14FDB4B72236BC9B002FC058 /* Signer.cpp in Sources */,
 				61735C28219DF044007BF637 /* nem.c in Sources */,
 				61735C2B219DF044007BF637 /* secp256k1.c in Sources */,
 				140352E622336B3400DF0815 /* StellarVersionByte.swift in Sources */,
@@ -2901,6 +2932,7 @@
 				616F87B9223041C10007ECA3 /* NimiqAddress.swift in Sources */,
 				BB6AE99D2233710E00F9EF85 /* Crc.cpp in Sources */,
 				616F879A222F2CB90007ECA3 /* Curve.swift in Sources */,
+				14FDB4AD2236B894002FC058 /* StellarSigner.swift in Sources */,
 				61C4E8EB22260B150020A917 /* Tron.swift in Sources */,
 				61A9B3632200D85A00E601B3 /* Address.cpp in Sources */,
 				61735C5B219DF044007BF637 /* bip32.c in Sources */,
