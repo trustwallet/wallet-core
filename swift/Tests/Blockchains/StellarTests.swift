@@ -26,7 +26,7 @@ class StellarTests: XCTestCase {
     }
     
     func testSigner() {
-        let input = StellarSigningInput.with {
+        let input = TWStellarSigningInput.with {
             $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
