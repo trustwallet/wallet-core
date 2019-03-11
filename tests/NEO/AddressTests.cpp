@@ -13,23 +13,23 @@ using namespace std;
 using namespace TW;
 using namespace TW::NEO;
 
-TEST(NEOAddress, FromPublicKey) {
-    const auto publicKey = PublicKey(parse_hex("0222b2277d039d67f4197a638dd5a1d99c290b17aa8c4a16ccee5165fe612de66a"));
-    const auto address = Address(publicKey);
-    auto str = hex(address.bytes);
-    ASSERT_EQ(string("AKmrAHRD9ZDUnu4m3vWWonpsojo4vgSuqp"), address.string());
-}
+ TEST(NEOAddress, FromPublicKey) {
+     const auto publicKey = PublicKey(parse_hex("0222b2277d039d67f4197a638dd5a1d99c290b17aa8c4a16ccee5165fe612de66a"));
+     const auto address = Address(publicKey);
+     auto str = hex(address.bytes);
+     ASSERT_EQ(string("AKmrAHRD9ZDUnu4m3vWWonpsojo4vgSuqp"), address.string());
+ }
 
-TEST(NEOAddress, FromString) {
-    string neoAddress = "AXkgwcMJTy9wTAXHsbyhauxh7t2Tt31MmC";
-    const auto address = Address(neoAddress);
-    ASSERT_EQ(address.string(), neoAddress);
-}
+ TEST(NEOAddress, FromString) {
+     string neoAddress = "AXkgwcMJTy9wTAXHsbyhauxh7t2Tt31MmC";
+     const auto address = Address(neoAddress);
+     ASSERT_EQ(address.string(), neoAddress);
+ }
 
 TEST(NEOAddress, isValid) {
     string neoAddress = "AQAsqiyHS4SSVWZ4CmMmnCxWg7vJ84GEj4";
-    string iconAddress = "hx66085c7828cabe925c210225ee34fd924f358095";
+    string bitcoinAddress = "1Ma2DrB78K7jmAwaomqZNRMCvgQrNjE2QC";
 
     ASSERT_TRUE(Address::isValid(neoAddress));
-    ASSERT_FALSE(Address::isValid(iconAddress));
+    ASSERT_FALSE(Address::isValid(bitcoinAddress));
 }
