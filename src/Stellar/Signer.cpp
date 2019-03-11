@@ -23,7 +23,7 @@ std::string Signer::sign() const noexcept {
     auto publicNetwork = std::string("Public Global Stellar Network ; September 2015");  // Header
     auto passphrase = Hash::sha256(publicNetwork);
     encodedWithHeaders.insert(encodedWithHeaders.end(), passphrase.begin(), passphrase.end());
-    auto transactionType = {0, 0, 0, 2}; // Header
+    auto transactionType = Data{0, 0, 0, 2}; // Header
     encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(), transactionType.end());
     encodedWithHeaders.insert(encodedWithHeaders.end(), encoded.begin(), encoded.end());
 
