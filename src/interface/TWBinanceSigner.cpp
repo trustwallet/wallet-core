@@ -12,7 +12,7 @@
 using namespace TW;
 using namespace TW::Binance;
 
-TW_Binance_Proto_SigningInput TWBinanceSignerSign(TW_Binance_Proto_SigningInput data) {
+TWData *_Nonnull TWBinanceSignerSign(TW_Binance_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
