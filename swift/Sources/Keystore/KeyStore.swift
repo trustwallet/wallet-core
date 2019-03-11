@@ -91,14 +91,9 @@ public final class KeyStore {
     }
 
     private func checkMnemonic(_ data: Data) -> String? {
-        guard let mnemonic = String(data: data, encoding: .ascii) else {
+        guard let mnemonic = String(data: data, encoding: .ascii), HDWallet.isValid(mnemonic: mnemonic) else {
             return nil
         }
-
-       if !HDWallet.isValid(mnemonic: mnemonic) {
-            return nil
-        }
-
         return mnemonic
     }
 
