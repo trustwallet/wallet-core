@@ -204,20 +204,18 @@ TWCurve TW::curve(TWCoinType coin) {
 TWHDVersion TW::hdVersion(TWCoinType coin) {
     switch(coin) {
     case TWCoinTypeBitcoin:
+    case TWCoinTypeLitecoin:
         return TWHDVersionZPUB;
 
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeDash:
     case TWCoinTypeRipple:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWHDVersionXPUB;
 
-    case TWCoinTypeLitecoin:
-        return TWHDVersionMTUB;
-
     case TWCoinTypeBinance:
     case TWCoinTypeCallisto:
-    case TWCoinTypeDash:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
