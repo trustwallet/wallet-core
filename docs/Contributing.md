@@ -137,7 +137,15 @@ Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload
 
 1. See https://docs.gradle.org/current/userguide/signing_plugin.html to set up GPG signing.
 2. Get a OSSRH username and password, get added to the group ID.
-3. Create `~/.gradle/gradle.properties` and add your information from the previous steps:
+3. Install PGP Tools : `brew install gnupg`  -  https://gpgtools.org/
+4. Create `~/.gradle/gradle.properties` and add your information from the previous steps:
+
+- Generate GPG Key
+- Send GPG Key to the server using the installed tool GPG Keychain
+- Generate the `signing.keyId` : `gpg --list-keys --keyid-format short`
+- Get the `.gpg` secret key that will be assigned `signing.secretKeyRingFile` : `gpg --export-secret-keys -o secring.gpg`
+
+
 ```
 NEXUS_USERNAME=user
 NEXUS_PASSWORD=pass
