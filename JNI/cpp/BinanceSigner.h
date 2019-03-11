@@ -16,7 +16,7 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jbyteArray JNICALL Java_wallet_core_jni_BinanceSigner_sign(JNIEnv *env, jclass thisClass, jobject input);
+jobject JNICALL Java_wallet_core_jni_BinanceSigner_sign(JNIEnv *env, jclass thisClass, jobject input);
 
 
 TW_EXTERN_C_END

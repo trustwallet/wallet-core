@@ -11615,6 +11615,512 @@ public final class Binance {
 
   }
 
+  public interface SigningOutputOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:TW.Binance.Proto.SigningOutput)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <pre>
+     * Signed and encoded transaction bytes.
+     * </pre>
+     *
+     * <code>bytes encoded = 1;</code>
+     */
+    com.google.protobuf.ByteString getEncoded();
+  }
+  /**
+   * <pre>
+   * Transaction signing output.
+   * </pre>
+   *
+   * Protobuf type {@code TW.Binance.Proto.SigningOutput}
+   */
+  public  static final class SigningOutput extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:TW.Binance.Proto.SigningOutput)
+      SigningOutputOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use SigningOutput.newBuilder() to construct.
+    private SigningOutput(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private SigningOutput() {
+      encoded_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private SigningOutput(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              encoded_ = input.readBytes();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return wallet.core.jni.proto.Binance.internal_static_TW_Binance_Proto_SigningOutput_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return wallet.core.jni.proto.Binance.internal_static_TW_Binance_Proto_SigningOutput_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              wallet.core.jni.proto.Binance.SigningOutput.class, wallet.core.jni.proto.Binance.SigningOutput.Builder.class);
+    }
+
+    public static final int ENCODED_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString encoded_;
+    /**
+     * <pre>
+     * Signed and encoded transaction bytes.
+     * </pre>
+     *
+     * <code>bytes encoded = 1;</code>
+     */
+    public com.google.protobuf.ByteString getEncoded() {
+      return encoded_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!encoded_.isEmpty()) {
+        output.writeBytes(1, encoded_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!encoded_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, encoded_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof wallet.core.jni.proto.Binance.SigningOutput)) {
+        return super.equals(obj);
+      }
+      wallet.core.jni.proto.Binance.SigningOutput other = (wallet.core.jni.proto.Binance.SigningOutput) obj;
+
+      if (!getEncoded()
+          .equals(other.getEncoded())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + ENCODED_FIELD_NUMBER;
+      hash = (53 * hash) + getEncoded().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Binance.SigningOutput parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(wallet.core.jni.proto.Binance.SigningOutput prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     * Transaction signing output.
+     * </pre>
+     *
+     * Protobuf type {@code TW.Binance.Proto.SigningOutput}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:TW.Binance.Proto.SigningOutput)
+        wallet.core.jni.proto.Binance.SigningOutputOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return wallet.core.jni.proto.Binance.internal_static_TW_Binance_Proto_SigningOutput_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return wallet.core.jni.proto.Binance.internal_static_TW_Binance_Proto_SigningOutput_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                wallet.core.jni.proto.Binance.SigningOutput.class, wallet.core.jni.proto.Binance.SigningOutput.Builder.class);
+      }
+
+      // Construct using wallet.core.jni.proto.Binance.SigningOutput.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        encoded_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return wallet.core.jni.proto.Binance.internal_static_TW_Binance_Proto_SigningOutput_descriptor;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Binance.SigningOutput getDefaultInstanceForType() {
+        return wallet.core.jni.proto.Binance.SigningOutput.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Binance.SigningOutput build() {
+        wallet.core.jni.proto.Binance.SigningOutput result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Binance.SigningOutput buildPartial() {
+        wallet.core.jni.proto.Binance.SigningOutput result = new wallet.core.jni.proto.Binance.SigningOutput(this);
+        result.encoded_ = encoded_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof wallet.core.jni.proto.Binance.SigningOutput) {
+          return mergeFrom((wallet.core.jni.proto.Binance.SigningOutput)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(wallet.core.jni.proto.Binance.SigningOutput other) {
+        if (other == wallet.core.jni.proto.Binance.SigningOutput.getDefaultInstance()) return this;
+        if (other.getEncoded() != com.google.protobuf.ByteString.EMPTY) {
+          setEncoded(other.getEncoded());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        wallet.core.jni.proto.Binance.SigningOutput parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (wallet.core.jni.proto.Binance.SigningOutput) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString encoded_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <pre>
+       * Signed and encoded transaction bytes.
+       * </pre>
+       *
+       * <code>bytes encoded = 1;</code>
+       */
+      public com.google.protobuf.ByteString getEncoded() {
+        return encoded_;
+      }
+      /**
+       * <pre>
+       * Signed and encoded transaction bytes.
+       * </pre>
+       *
+       * <code>bytes encoded = 1;</code>
+       */
+      public Builder setEncoded(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        encoded_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Signed and encoded transaction bytes.
+       * </pre>
+       *
+       * <code>bytes encoded = 1;</code>
+       */
+      public Builder clearEncoded() {
+        
+        encoded_ = getDefaultInstance().getEncoded();
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:TW.Binance.Proto.SigningOutput)
+    }
+
+    // @@protoc_insertion_point(class_scope:TW.Binance.Proto.SigningOutput)
+    private static final wallet.core.jni.proto.Binance.SigningOutput DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.Binance.SigningOutput();
+    }
+
+    public static wallet.core.jni.proto.Binance.SigningOutput getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<SigningOutput>
+        PARSER = new com.google.protobuf.AbstractParser<SigningOutput>() {
+      @java.lang.Override
+      public SigningOutput parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new SigningOutput(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<SigningOutput> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<SigningOutput> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public wallet.core.jni.proto.Binance.SigningOutput getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_TW_Binance_Proto_Transaction_descriptor;
   private static final 
@@ -11675,6 +12181,11 @@ public final class Binance {
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_TW_Binance_Proto_SigningInput_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_TW_Binance_Proto_SigningOutput_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_TW_Binance_Proto_SigningOutput_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -11717,8 +12228,9 @@ public final class Binance {
       "\000\022:\n\014freeze_order\030\013 \001(\0132\".TW.Binance.Pro" +
       "to.TokenFreezeOrderH\000\022>\n\016unfreeze_order\030" +
       "\014 \001(\0132$.TW.Binance.Proto.TokenUnfreezeOr" +
-      "derH\000B\r\n\013order_oneofB\027\n\025wallet.core.jni." +
-      "protob\006proto3"
+      "derH\000B\r\n\013order_oneof\" \n\rSigningOutput\022\017\n" +
+      "\007encoded\030\001 \001(\014B\027\n\025wallet.core.jni.protob" +
+      "\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -11804,6 +12316,12 @@ public final class Binance {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Binance_Proto_SigningInput_descriptor,
         new java.lang.String[] { "ChainId", "AccountNumber", "Sequence", "Source", "Memo", "PrivateKey", "TestNet", "TradeOrder", "CancelTradeOrder", "SendOrder", "FreezeOrder", "UnfreezeOrder", "OrderOneof", });
+    internal_static_TW_Binance_Proto_SigningOutput_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_TW_Binance_Proto_SigningOutput_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_TW_Binance_Proto_SigningOutput_descriptor,
+        new java.lang.String[] { "Encoded", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

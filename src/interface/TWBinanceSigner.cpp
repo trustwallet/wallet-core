@@ -12,11 +12,16 @@
 using namespace TW;
 using namespace TW::Binance;
 
-TWData *_Nonnull TWBinanceSignerSign(TW_Binance_Proto_SigningInput data) {
+TW_Binance_Proto_SigningOutput TWBinanceSignerSign(TW_Binance_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
     auto signer = new TWBinanceSigner{ Signer(std::move(input)) };
-    auto signedData = signer->impl.build();
-    return TWDataCreateWithBytes(signedData.data(), signedData.size());
+    auto encoded = signer->impl.build();
+
+    auto protoOutput = Proto::SigningOutput();
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+
+    auto serialized = protoOutput.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

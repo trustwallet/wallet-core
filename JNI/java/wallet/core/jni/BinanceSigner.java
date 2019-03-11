@@ -26,7 +26,7 @@ public class BinanceSigner {
     }
 
 
-    public static native byte[] sign(wallet.core.jni.proto.Binance.SigningInput input);
+    public static native wallet.core.jni.proto.Binance.SigningOutput sign(wallet.core.jni.proto.Binance.SigningInput input);
 
 }
 

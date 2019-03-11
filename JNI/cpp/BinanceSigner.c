@@ -16,13 +16,17 @@
 #include "TWJNI.h"
 #include "BinanceSigner.h"
 
-jbyteArray JNICALL Java_wallet_core_jni_BinanceSigner_sign(JNIEnv *env, jclass thisClass, jobject input) {
+jobject JNICALL Java_wallet_core_jni_BinanceSigner_sign(JNIEnv *env, jclass thisClass, jobject input) {
     jclass inputClass = (*env)->GetObjectClass(env, input);
     jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
     jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
     TWData *inputData = TWDataCreateWithJByteArray(env, inputByteArray);
-    jbyteArray result = TWDataJByteArray(TWBinanceSignerSign(inputData), env);
+    jbyteArray resultData = TWDataJByteArray(TWBinanceSignerSign(inputData), env);
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Binance$SigningOutput");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Binance$SigningOutput;");
+    jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
+    (*env)->DeleteLocalRef(env, resultClass);
     (*env)->DeleteLocalRef(env, inputByteArray);
     (*env)->DeleteLocalRef(env, inputClass);
 
