@@ -9,22 +9,14 @@
 #include "../Binance/Signer.h"
 #include "../proto/Binance.pb.h"
 
+using namespace TW;
 using namespace TW::Binance;
 
-struct TWBinanceSigner *_Nonnull TWBinanceSignerCreate(TW_Binance_Proto_SigningInput data) {
+TW_Binance_Proto_SigningInput TWBinanceSignerSign(TW_Binance_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
-    return new TWBinanceSigner{ Signer(std::move(input)) };
-}
 
-void TWBinanceSignerDelete(struct TWBinanceSigner *_Nonnull signer) {
-    delete signer;
-}
-
-TWData *_Nullable TWBinanceSignerBuild(struct TWBinanceSigner *_Nonnull signer) {
-    auto data = signer->impl.build();
-    if (data.empty()) {
-        return nullptr;
-    }
-    return TWDataCreateWithBytes(data.data(), data.size());
+    auto signer = new TWBinanceSigner{ Signer(std::move(input)) };
+    auto signedData = signer->impl.build();
+    return TWDataCreateWithBytes(signedData.data(), signedData.size());
 }
