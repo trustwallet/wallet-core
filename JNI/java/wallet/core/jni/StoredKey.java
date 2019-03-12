@@ -42,6 +42,7 @@ public class StoredKey {
     public native boolean store(String path);
     public native byte[] decryptPrivateKey(String password);
     public native String decryptMnemonic(String password);
+    public native PrivateKey privateKey(CoinType coin, String password);
     public native HDWallet wallet(String password);
     public native byte[] exportJSON();
 

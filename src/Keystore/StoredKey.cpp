@@ -81,6 +81,20 @@ const Account& StoredKey::account(TWCoinType coin, const std::string& password) 
     return accounts.back();
 }
 
+const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& password) {
+    const auto& account = this->account(coin, password);
+    switch (type) {
+    case StoredKeyType::mnemonicPhrase:
+        return wallet(password).getKey(account.derivationPath);
+
+    case StoredKeyType::privateKey:
+        return PrivateKey(payload.decrypt(password));
+
+    case StoredKeyType::watchOnly:
+        throw std::invalid_argument("This is a watch-only key");
+    }
+}
+
 // -----------------
 // Encoding/Decoding
 // -----------------

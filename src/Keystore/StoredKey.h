@@ -60,6 +60,12 @@ struct StoredKey {
     /// other than the default is requested.
     const Account& account(TWCoinType coin, const std::string& password);
 
+    /// Returns the private key for a specific coin, creating an account if necessary.
+    ///
+    /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase` and a coin
+    /// other than the default is requested.
+    const PrivateKey privateKey(TWCoinType coin, const std::string& password);
+
     /// Loads and decrypts a stored key from a file.
     ///
     /// @param path file path to load from.
