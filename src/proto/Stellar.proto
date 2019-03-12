@@ -9,7 +9,7 @@ message SigningInput {
 
     int32 fee = 2;
 
-    int32 sequence = 3;
+    int64 sequence = 3;
 
     string account = 4;
 

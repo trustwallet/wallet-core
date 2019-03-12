@@ -100,6 +100,10 @@ public final class HDWallet {
         return PrivateKey(rawValue: TWHDWalletGetKey(rawValue, derivationPathString))
     }
 
+    public func getKeyBIP44(coin: CoinType, account: UInt32, change: UInt32, address: UInt32) -> PrivateKey {
+        return PrivateKey(rawValue: TWHDWalletGetKeyBIP44(rawValue, TWCoinType(rawValue: coin.rawValue), account, change, address))
+    }
+
     public func getExtendedPrivateKey(purpose: Purpose, coin: CoinType, version: HDVersion) -> String {
         return TWStringNSString(TWHDWalletGetExtendedPrivateKey(rawValue, TWPurpose(rawValue: purpose.rawValue), TWCoinType(rawValue: coin.rawValue), TWHDVersion(rawValue: version.rawValue)))
     }
