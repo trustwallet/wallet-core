@@ -19,7 +19,6 @@ TW_EXTERN_C_BEGIN
 /// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 TW_EXPORT_ENUM(uint32_t)
 enum TWCoinType {
-    TWCoinTypeOntology = 1024,
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
@@ -30,6 +29,7 @@ enum TWCoinType {
     TWCoinTypeGo = 6060,
     TWCoinTypeICON = 74,
     TWCoinTypeLitecoin = 2,
+    TWCoinTypeOntology = 1024,
     TWCoinTypePoa = 178,
     TWCoinTypeRipple = 144,
     TWCoinTypeTezos = 1729,
