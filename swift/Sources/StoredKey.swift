@@ -154,6 +154,17 @@ public final class StoredKey {
         return TWStringNSString(result)
     }
 
+    public func privateKey(coin: CoinType, password: String) -> PrivateKey? {
+        let passwordString = TWStringCreateWithNSString(password)
+        defer {
+            TWStringDelete(passwordString)
+        }
+        guard let value = TWStoredKeyPrivateKey(rawValue, TWCoinType(rawValue: coin.rawValue), passwordString) else {
+            return nil
+        }
+        return PrivateKey(rawValue: value)
+    }
+
     public func wallet(password: String) -> HDWallet? {
         let passwordString = TWStringCreateWithNSString(password)
         defer {
