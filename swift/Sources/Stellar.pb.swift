@@ -29,7 +29,7 @@ public struct TW_Stellar_Proto_SigningInput {
 
   public var fee: Int32 = 0
 
-  public var sequence: Int32 = 0
+  public var sequence: Int64 = 0
 
   public var account: String = String()
 
@@ -77,7 +77,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
       switch fieldNumber {
       case 1: try decoder.decodeSingularInt64Field(value: &self.amount)
       case 2: try decoder.decodeSingularInt32Field(value: &self.fee)
-      case 3: try decoder.decodeSingularInt32Field(value: &self.sequence)
+      case 3: try decoder.decodeSingularInt64Field(value: &self.sequence)
       case 4: try decoder.decodeSingularStringField(value: &self.account)
       case 5: try decoder.decodeSingularStringField(value: &self.destination)
       case 8: try decoder.decodeSingularBytesField(value: &self.privateKey)
@@ -94,7 +94,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
       try visitor.visitSingularInt32Field(value: self.fee, fieldNumber: 2)
     }
     if self.sequence != 0 {
-      try visitor.visitSingularInt32Field(value: self.sequence, fieldNumber: 3)
+      try visitor.visitSingularInt64Field(value: self.sequence, fieldNumber: 3)
     }
     if !self.account.isEmpty {
       try visitor.visitSingularStringField(value: self.account, fieldNumber: 4)
