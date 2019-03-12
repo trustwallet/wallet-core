@@ -89,7 +89,7 @@ struct DerivationPath {
     DerivationPath(std::initializer_list<DerivationPathIndex> l) : indices(l) {}
     DerivationPath(std::vector<DerivationPathIndex> indices) : indices(indices) {}
 
-    /// Creates a `DerivationPath` by components.
+    /// Creates a `DerivationPath` by BIP44 components.
     DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
         indices = std::vector<DerivationPathIndex>(5);
         setPurpose(purpose);
@@ -97,14 +97,6 @@ struct DerivationPath {
         setAccount(account);
         setChange(change);
         setAddress(address);
-    }
-
-    /// Creates a `DerivationPath` by components.
-    DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account) {
-        indices = std::vector<DerivationPathIndex>(3);
-        setPurpose(purpose);
-        setCoin(coin);
-        setAccount(account);
     }
 
     /// Creates a derivation path with a string description like `m/10/0/2'/3`

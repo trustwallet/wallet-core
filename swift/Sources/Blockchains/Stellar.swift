@@ -6,6 +6,9 @@
 
 import Foundation
 
+public typealias TWStellarSigningInput = TW_Stellar_Proto_SigningInput
+public typealias TWStellarSigningOutput = TW_Stellar_Proto_SigningOutput
+
 public class Stellar: Blockchain {
     
     public override var coinType: CoinType {
