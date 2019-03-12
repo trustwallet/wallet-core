@@ -30,10 +30,6 @@ bool TWOntologyAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWOntologyAddress *_Nullable TWOntologyAddressCreateWithString(TWString *_Nonnull string);
 
-/// Creates an address from a key hash.
-TW_EXPORT_STATIC_METHOD
-struct TWOntologyAddress *_Nullable TWOntologyAddressCreateWithKeyHash(TWData *_Nonnull keyHash);
-
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWOntologyAddress *_Nonnull TWOntologyAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
@@ -43,10 +39,10 @@ void TWOntologyAddressDelete(struct TWOntologyAddress *_Nonnull address);
 
 /// Returns the address string representation.
 TW_EXPORT_PROPERTY
-        TWString *_Nonnull TWOntologyAddressDescription(struct TWOntologyAddress *_Nonnull address);
+TWString *_Nonnull TWOntologyAddressDescription(struct TWOntologyAddress *_Nonnull address);
 
 /// Returns the key hash.
 TW_EXPORT_PROPERTY
-        TWData *_Nonnull TWOntologyAddressKeyHash(struct TWOntologyAddress *_Nonnull address);
+TWData *_Nonnull TWOntologyAddressKeyHash(struct TWOntologyAddress *_Nonnull address);
 
 TW_EXTERN_C_END
