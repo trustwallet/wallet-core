@@ -29,16 +29,21 @@ public class StoredKey {
     static native long nativeCreate(String password);
     static native void nativeDelete(long handle);
 
-    public static native StoredKey load(String path, String password);
+    public static native StoredKey load(String path);
     public static native StoredKey importPrivateKey(byte[] privateKey, String password, CoinType coin);
-    public static native StoredKey importHDWallet(String mnemonic, String password, String derivationPath);
+    public static native StoredKey importHDWallet(String mnemonic, String password, CoinType coin);
+    public static native StoredKey importJSON(byte[] json);
     public native String identifier();
+    public native boolean isMnemonic();
     public native int accountCount();
     public native Account account(int index);
+    public native Account accountForCoin(CoinType coin, String password);
     public native void addAccount(String address, String derivationPath, String extetndedPublicKey);
-    public native boolean store(String path, String password);
-    public native byte[] exportPrivateKey(String password);
-    public native String exportMnemonic(String password);
+    public native boolean store(String path);
+    public native byte[] decryptPrivateKey(String password);
+    public native String decryptMnemonic(String password);
+    public native HDWallet wallet(String password);
+    public native byte[] exportJSON();
 
     public StoredKey(String password) {
         nativeHandle = nativeCreate(password);

@@ -50,6 +50,11 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull walle
     return new TWPrivateKey{ wallet->impl.getKey( TW::DerivationPath(s)) };
 }
 
+struct TWPrivateKey *_Nonnull TWHDWalletGetKeyBIP44(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
+    const auto derivationPath = DerivationPath(TW::purpose(coin), coin, account, change, address);
+    return new TWPrivateKey{ wallet->impl.getKey(derivationPath) };
+}
+
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {
     return new std::string(wallet->impl.getExtendedPrivateKey(purpose, coin, version));
 }

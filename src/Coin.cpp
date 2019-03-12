@@ -201,6 +201,40 @@ TWCurve TW::curve(TWCoinType coin) {
     }
 }
 
+TWHDVersion TW::hdVersion(TWCoinType coin) {
+    switch(coin) {
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeLitecoin:
+        return TWHDVersionZPUB;
+
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeDash:
+    case TWCoinTypeZcash:
+    case TWCoinTypeZcoin:
+        return TWHDVersionXPUB;
+
+    case TWCoinTypeAion:
+    case TWCoinTypeBinance:
+    case TWCoinTypeCallisto:
+    case TWCoinTypeEthereum:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypeICON:
+    case TWCoinTypeNimiq:
+    case TWCoinTypePoa:
+    case TWCoinTypeRipple:
+    case TWCoinTypeStellar:
+    case TWCoinTypeTezos:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeTron:
+    case TWCoinTypeVeChain:
+    case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
+        return TWHDVersionNone;
+    }
+}
+
 DerivationPath TW::derivationPath(TWCoinType coin) {
     switch (coin) {
     case TWCoinTypeBinance:
@@ -228,10 +262,20 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
 
     case TWCoinTypeAion:
-        return DerivationPath(purpose(coin), coin, 0, 0x80000000, 0x80000000);
+        return DerivationPath{
+            DerivationPathIndex(purpose(coin), true),
+            DerivationPathIndex(coin, true),
+            DerivationPathIndex(0, true),
+            DerivationPathIndex(0, true),
+            DerivationPathIndex(0, true),
+        };
 
     case TWCoinTypeStellar:
-        return DerivationPath(purpose(coin), coin, 0);
+        return DerivationPath{
+            DerivationPathIndex(purpose(coin), true),
+            DerivationPathIndex(coin, true),
+            DerivationPathIndex(0, true)
+        };
     }
 }
 
