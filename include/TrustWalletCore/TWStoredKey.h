@@ -10,6 +10,7 @@
 #include "TWCoinType.h"
 #include "TWData.h"
 #include "TWHDWallet.h"
+#include "TWPrivateKey.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN
@@ -76,6 +77,10 @@ TWData *_Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey *_Nonnull key,
 /// Decrypts the mnemonic phrase.
 TW_EXPORT_METHOD
 TWString *_Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password);
+
+/// Returns the private key for a specific coin.
+TW_EXPORT_METHOD
+struct TWPrivateKey *_Nullable TWStoredKeyPrivateKey(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, TWString *_Nonnull password);
 
 /// Dercrypts and returns the HD Wallet for mnemonic phrase keys.
 TW_EXPORT_METHOD

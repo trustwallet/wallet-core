@@ -138,6 +138,15 @@ TWString *_Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey *_Nonnull key,
     }
 }
 
+struct TWPrivateKey *_Nullable TWStoredKeyPrivateKey(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, TWString *_Nonnull password) {
+    auto& passwordString = *reinterpret_cast<const std::string*>(password);
+    try {
+        return new TWPrivateKey{ key->impl.privateKey(coin, passwordString) };
+    } catch (std::exception) {
+        return nullptr;
+    }
+}
+
 struct TWHDWallet *_Nullable TWStoredKeyWallet(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password) {
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
     if (key->impl.type != StoredKeyType::mnemonicPhrase) {
