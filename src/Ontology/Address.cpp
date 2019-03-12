@@ -33,6 +33,14 @@ Address::Address(const std::string &b58Address) {
     std::copy(addressWithVersion.begin() + 1, addressWithVersion.end(), data.begin());
 }
 
+Address::Address(const std::vector<uint8_t> &bytes) {
+    if (bytes.size() != size) {
+        throw std::runtime_error("Invalid bytes data.");
+    }
+    std::copy(bytes.begin(), bytes.end(), data.begin());
+}
+
+
 std::vector<uint8_t> Address::toScriptHash(std::vector<uint8_t> &data) {
     return Hash::ripemd(Hash::sha256(data));
 }
