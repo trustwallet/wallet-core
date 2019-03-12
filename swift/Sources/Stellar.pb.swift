@@ -35,6 +35,10 @@ public struct TW_Stellar_Proto_SigningInput {
 
   public var destination: String = String()
 
+  public var memoType: Int32 = 0
+
+  public var memoData: String = String()
+
   /// Private key.
   public var privateKey: Data = SwiftProtobuf.Internal.emptyData
 
@@ -69,6 +73,8 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     3: .same(proto: "sequence"),
     4: .same(proto: "account"),
     5: .same(proto: "destination"),
+    6: .standard(proto: "memo_type"),
+    7: .standard(proto: "memo_data"),
     8: .standard(proto: "private_key"),
   ]
 
@@ -80,6 +86,8 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
       case 3: try decoder.decodeSingularInt64Field(value: &self.sequence)
       case 4: try decoder.decodeSingularStringField(value: &self.account)
       case 5: try decoder.decodeSingularStringField(value: &self.destination)
+      case 6: try decoder.decodeSingularInt32Field(value: &self.memoType)
+      case 7: try decoder.decodeSingularStringField(value: &self.memoData)
       case 8: try decoder.decodeSingularBytesField(value: &self.privateKey)
       default: break
       }
@@ -102,6 +110,12 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     if !self.destination.isEmpty {
       try visitor.visitSingularStringField(value: self.destination, fieldNumber: 5)
     }
+    if self.memoType != 0 {
+      try visitor.visitSingularInt32Field(value: self.memoType, fieldNumber: 6)
+    }
+    if !self.memoData.isEmpty {
+      try visitor.visitSingularStringField(value: self.memoData, fieldNumber: 7)
+    }
     if !self.privateKey.isEmpty {
       try visitor.visitSingularBytesField(value: self.privateKey, fieldNumber: 8)
     }
@@ -114,6 +128,8 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     if lhs.sequence != rhs.sequence {return false}
     if lhs.account != rhs.account {return false}
     if lhs.destination != rhs.destination {return false}
+    if lhs.memoType != rhs.memoType {return false}
+    if lhs.memoData != rhs.memoData {return false}
     if lhs.privateKey != rhs.privateKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

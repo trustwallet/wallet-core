@@ -15,6 +15,10 @@ message SigningInput {
 
     string destination = 5;
 
+    int32 memo_type = 6;
+
+    string memo_data = 7;
+
     // Private key.
     bytes private_key = 8;
 }

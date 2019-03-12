@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <Base64.h>
+#include <TrustWalletCore/TWStellarMemoType.h>
 #include "Signer.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
@@ -17,7 +18,7 @@ std::string Signer::sign() const noexcept {
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     Address account = input.account();
-    auto encoded = encode(account, input.fee(), input.sequence(), Address(input.destination()), input.amount());
+    auto encoded = encode(account, input.fee(), input.sequence(), input.memo_type(), parse_hex(input.memo_data()), Address(input.destination()), input.amount());
 
     auto encodedWithHeaders = Data();
     auto publicNetwork = std::string("Public Global Stellar Network ; September 2015");  // Header
@@ -41,13 +42,13 @@ std::string Signer::sign() const noexcept {
     return Base64::encode(signature);
 }
 
-Data Signer::encode(Address account, uint32_t fee, uint64_t sequence, Address destination, uint64_t amount) const {
+Data Signer::encode(Address account, uint32_t fee, uint64_t sequence, uint32_t memoType, Data memoData, Address destination, uint64_t amount) const {
     auto data = Data();
     encodeAddress(account, data);
     encode32BE(fee, data);
     encode64BE(sequence, data);
     encode32BE(0, data); // Time bounds
-    encode32BE(0, data); // Memo
+    encodeMemo(memoType, memoData, data);
     // Operations
     encode32BE(1, data); // Operation list size. Only 1 operation.
     encode32BE(0, data); // Source equals account
@@ -62,4 +63,36 @@ Data Signer::encode(Address account, uint32_t fee, uint64_t sequence, Address de
 void Signer::encodeAddress(Address address, Data& data) const {
     encode32BE(0, data);
     data.insert(data.end(), address.bytes.begin(), address.bytes.end());
+}
+
+void Signer::encodeMemo(uint32_t type, Data& memoData, Data& data) const {
+    encode32BE(type, data);
+    switch (type) {
+        case TWStellarMemoTypeNone:
+            break;
+        case TWStellarMemoTypeText: {
+            encode32BE(static_cast<uint32_t>(memoData.size()) - 1, data);
+            data.insert(data.end(), memoData.begin(), memoData.end() - 1);
+        } break;
+        case TWStellarMemoTypeHash:
+        case TWStellarMemoTypeReturn:
+            data.insert(data.end(), memoData.begin(), memoData.end());
+            break;
+        case TWStellarMemoTypeId:
+            data.insert(data.end(), memoData.begin(), memoData.end());
+            break;
+
+    }
+    pad(data);
+}
+
+void Signer::pad(Data& data) const {
+    int pad = 0;
+    int mod = static_cast<int>(data.size() % 4);
+    if (mod > 0) {
+        pad = 4 - mod;
+    }
+    while (pad-- > 0) {
+        data.insert(data.end(), 0);
+    }
 }
