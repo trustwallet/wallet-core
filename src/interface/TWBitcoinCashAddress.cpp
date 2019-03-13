@@ -7,6 +7,7 @@
 #include <TrustWalletCore/TWBitcoinCashAddress.h>
 
 #include "../PublicKey.h"
+#include "../Bitcoin/CashAddress.h"
 
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/cash_addr.h>
@@ -28,33 +29,19 @@ bool TWBitcoinCashAddressIsValid(TWData *_Nonnull data) {
 }
 
 bool TWBitcoinCashAddressIsValidString(TWString *_Nonnull string) {
-    uint8_t data[104];
-    char hrpBuf[29];
-    size_t dataLen;
-    if (cash_decode(hrpBuf, data, &dataLen, TWStringUTF8Bytes(string)) == 0) {
-        return false;
-    }
-    if (strcmp(hrpBuf, hrp) != 0 || dataLen != dataSize) {
-        return false;
-    }
-    return true;
+    auto& stdString = *reinterpret_cast<const std::string*>(string);
+    return TW::Bitcoin::CashAddress::isValid(stdString);
 }
 
 bool TWBitcoinCashAddressInitWithString(struct TWBitcoinCashAddress *_Nonnull address, TWString *_Nonnull string) {
-    uint8_t data[104];
-    char hrpBuf[29];
-    size_t dataLen;
-    if (cash_decode(hrpBuf, data, &dataLen, TWStringUTF8Bytes(string)) == 0) {
+    auto& stdString = *reinterpret_cast<const std::string*>(string);
+    try {
+        const auto addr = TW::Bitcoin::CashAddress(stdString);
+        std::copy(addr.bytes.begin(), addr.bytes.end(), address->bytes);
+        return true;
+    } catch (std::exception) {
         return false;
     }
-    if (strcmp(hrpBuf, hrp) != 0) {
-        return false;
-    }
-    if (dataLen != dataSize) {
-        return false;
-    }
-    memcpy(address->bytes, data, dataSize);
-    return true;
 }
 
 bool TWBitcoinCashAddressInitWithData(struct TWBitcoinCashAddress *_Nonnull address, TWData *_Nonnull data) {
