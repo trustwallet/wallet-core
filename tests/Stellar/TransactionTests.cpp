@@ -29,8 +29,9 @@ TEST(StellarTransaction, signWithMemoText) {
     input.set_amount(10000000);
     input.set_fee(1000);
     input.set_sequence(2);
-    input.set_memo_type(TWStellarMemoTypeText);
-    input.set_memo_data(hex("Hello, world!"));
+    auto memoText = Proto::MemoText();
+    memoText.set_text("Hello, world!");
+    *input.mutable_memo_text() = memoText;
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
@@ -47,8 +48,10 @@ TEST(StellarTransaction, signWithMemoHash) {
     input.set_amount(10000000);
     input.set_fee(1000);
     input.set_sequence(2);
-    input.set_memo_type(TWStellarMemoTypeHash);
-    input.set_memo_data("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3");
+    auto memoHash = Proto::MemoHash();
+    auto fromHex = parse_hex("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3");
+    memoHash.set_hash(fromHex.data(), fromHex.size());
+    *input.mutable_memo_hash() = memoHash;
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
@@ -65,8 +68,10 @@ TEST(StellarTransaction, signWithMemoReturn) {
     input.set_amount(10000000);
     input.set_fee(1000);
     input.set_sequence(2);
-    input.set_memo_type(TWStellarMemoTypeReturn);
-    input.set_memo_data("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3");
+    auto memoHash = Proto::MemoHash();
+    auto fromHex = parse_hex("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3");
+    memoHash.set_hash(fromHex.data(), fromHex.size());
+    *input.mutable_memo_return_hash() = memoHash;
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
@@ -77,16 +82,15 @@ TEST(StellarTransaction, signWithMemoReturn) {
 }
 
 TEST(StellarTransaction, signWithMemoID) {
-    auto id = Data();
-    TW::encode64BE(1234567890, id);
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto input = Proto::SigningInput();
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_amount(10000000);
     input.set_fee(1000);
     input.set_sequence(2);
-    input.set_memo_type(TWStellarMemoTypeId);
-    input.set_memo_data(hex(id));
+    auto memoId = Proto::MemoId();
+    memoId.set_id(1234567890);
+    *input.mutable_memo_id() = memoId;
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 

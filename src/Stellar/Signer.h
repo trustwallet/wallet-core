@@ -23,12 +23,10 @@ public:
     /// Signs the given transaction.
     std::string sign() const noexcept;
 
-    Data encode(Address address, uint32_t fee, uint64_t sequence, uint32_t memoType, Data memoData, Address destination, uint64_t amount) const;
+    Data encode(const Proto::SigningInput& input) const;
 
 private:
     void encodeAddress(Address address, Data& data) const;
-
-    void encodeMemo(uint32_t type, Data& memoData, Data& data) const;
 
     void pad(Data& data) const;
 };
