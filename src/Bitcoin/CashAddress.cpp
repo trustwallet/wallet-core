@@ -55,8 +55,7 @@ CashAddress::CashAddress(const std::string& string) {
 }
 
 CashAddress::CashAddress(const std::vector<uint8_t>& data) {
-    assert(isValid(data));
-    if (data.size() != size) {
+    if (!isValid(data)) {
         throw std::invalid_argument("Invalid address key data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
