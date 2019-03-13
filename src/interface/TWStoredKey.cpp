@@ -97,7 +97,11 @@ struct TWAccount *_Nullable TWStoredKeyAccount(struct TWStoredKey *_Nonnull key,
 
 struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, TWString *_Nonnull password) {
     auto& s = *reinterpret_cast<const std::string*>(password);
-   return new TWAccount{ key->impl.account(coin, s) };
+    try {
+       return new TWAccount{ key->impl.account(coin, s) };
+    } catch (std::exception) {
+        return nullptr;
+    }
 }
 
 void TWStoredKeyAddAccount(struct TWStoredKey *_Nonnull key, TWString *_Nonnull address, TWString *_Nonnull derivationPath, TWString *_Nonnull extetndedPublicKey) {
