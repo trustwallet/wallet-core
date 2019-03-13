@@ -135,6 +135,7 @@ class HDWalletTests: XCTestCase {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     func testDeriveAion() {
         let key = HDWallet.test.getKeyForCoin(coin: .aion)
         let address = CoinType.aion.deriveAddress(privateKey: key)
@@ -155,6 +156,14 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveTezos() {
         let blockchain = Tezos()
+        let wallet = testWallet
+        let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
+        let address = blockchain.address(for: key.getPublicKeyEd25519())
+
+        XCTAssertEqual("tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT", address.description)
+    }
+
+    func testSignHash() {
         let wallet = testWallet
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeyEd25519())
