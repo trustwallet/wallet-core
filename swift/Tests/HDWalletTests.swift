@@ -134,8 +134,6 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav", address.description)
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     func testDeriveAion() {
         let key = HDWallet.test.getKeyForCoin(coin: .aion)
         let address = CoinType.aion.deriveAddress(privateKey: key)
