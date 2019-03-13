@@ -36,8 +36,12 @@ Account::Account(const nlohmann::json& json) {
     if (json.count(CodingKeys::address) != 0 && json[CodingKeys::address].is_string()) {
         address = json[CodingKeys::address].get<std::string>();
     } else if (json.count(CodingKeys::addressData) != 0 && json[CodingKeys::addressData].is_string()) {
-        const auto addressData = Base64::decode(json[CodingKeys::addressData].get<std::string>());
-        address = loadAddress(derivationPath.coin(), addressData);
+        try {
+            const auto addressData = Base64::decode(json[CodingKeys::addressData].get<std::string>());
+            address = loadAddress(derivationPath.coin(), addressData);
+        } catch (std::exception) {
+            address = "";
+        }
     }
 
     if (json.count(CodingKeys::extendedPublicKey) > 0 && json[CodingKeys::extendedPublicKey].is_string()) {

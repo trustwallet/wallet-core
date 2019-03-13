@@ -54,7 +54,9 @@ TAddress::TAddress(const std::string& string) {
 }
 
 TAddress::TAddress(const std::vector<uint8_t>& data) {
-    assert(isValid(data));
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address key data");
+    }
     std::copy(data.begin(), data.end(), bytes);
 }
 
