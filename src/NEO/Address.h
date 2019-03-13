@@ -26,12 +26,6 @@ public:
     /// Address data consisting of a prefix byte followed by the public key hash.
     std::array<byte, size> bytes;
 
-    // /// Determines whether a collection of bytes makes a valid NEO address.
-    template<typename T>
-    static bool isValid(const T& data) {
-        return data.size() == size;
-    }
-
     /// Determines whether a string makes a valid NEO address.
     static bool isValid(const std::string& string);
 
