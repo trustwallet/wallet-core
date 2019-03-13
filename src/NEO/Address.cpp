@@ -7,6 +7,7 @@
 #include "Address.h"
 
 #include "../Hash.h"
+#include "Tezos/BinaryCoding.h"
 
 #include <TrezorCrypto/base58.h>
 
@@ -29,15 +30,16 @@ Address::Address(const std::string& string) {
     uint8_t buffer[capacity];
 
     int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    assert(size == Address::size);
+    if (size != Address::size)
+        throw std::invalid_argument("Invalid address data");
 
     std::copy(buffer, buffer + Address::size, bytes.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    if (data.size() != size) {
+    if (data.size() != size)
         throw std::invalid_argument("Invalid address data");
-    }
+
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
@@ -58,13 +60,5 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    size_t size = 0;
-    b58enc(nullptr, &size, bytes.data(), Address::size);
-    size += 16;
-
-    std::string str(size, '\0');
-    const auto actualSize = base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
-    str.erase(str.begin() + actualSize - 1, str.end());
-
-    return str;
+    return bytesToBase58(bytes.data(), Address::size);
 }
