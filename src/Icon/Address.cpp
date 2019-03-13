@@ -38,7 +38,7 @@ Address::Address(const std::string& string) {
     } else if (std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
         type = TWIconAddressTypeContract;
     } else {
-        assert(false && "Invalid address prefix");
+        throw std::invalid_argument("Invalid address prefix");
         type = TWIconAddressTypeAddress;
     }
 

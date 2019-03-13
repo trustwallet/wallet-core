@@ -48,9 +48,9 @@ CashAddress::CashAddress(const std::string& string) {
     char hrp[maxHRPSize + 1];
     size_t dataLen;
     auto success = cash_decode(hrp, data, &dataLen, withPrefix.c_str()) != 0;
-    assert(success && "Invalid cash address string");
-    assert(std::strcmp(hrp, cashHRP.c_str()) == 0);
-    assert(dataLen == CashAddress::size);
+    if (!success || std::strcmp(hrp, cashHRP.c_str()) != 0 || dataLen != CashAddress::size) {
+        throw std::invalid_argument("Invalid address string");
+    }
     std::copy(data, data + CashAddress::size, bytes.begin());
 }
 
