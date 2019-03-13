@@ -28,6 +28,9 @@ using namespace TW;
 
 std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     switch (coin) {
+    case TWCoinTypeAion:
+        return Aion::Address(data).string();
+
     case TWCoinTypeBinance:
         return Tendermint::Address(HRP_BINANCE, data).string();
 
@@ -58,9 +61,6 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     case TWCoinTypeNimiq:
         return Nimiq::Address(data).string();
 
-    case TWCoinTypeAion:
-        return Aion::Address(data).string();
-
     case TWCoinTypeRipple:
         return Ripple::Address(data).string();
 
@@ -76,6 +76,7 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
 
     case TWCoinTypeStellar:
         return Stellar::Address(data).string();
+
     case TWCoinTypeTezos:
         return Tezos::Address(data).string();
     }
@@ -83,6 +84,9 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     switch (coin) {
+    case TWCoinTypeAion:
+        return Aion::Address::isValid(string);
+
     case TWCoinTypeBinance:
         return Tendermint::Address::isValid(string, HRP_BINANCE) || Tendermint::Address::isValid(string, HRP_BINANCE_TEST);
 
@@ -91,6 +95,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress::isValid(string) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
+
+    case TWCoinTypeDash:
+        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixDash, TWP2SHPrefixDash});
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -113,14 +120,11 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);
 
-    case TWCoinTypeAion:
-        return Aion::Address::isValid(string);
-
     case TWCoinTypeRipple:
         return Ripple::Address::isValid(string);
 
-    case TWCoinTypeDash:
-        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixDash, TWP2SHPrefixDash});
+    case TWCoinTypeStellar:
+        return Stellar::Address::isValid(string);
 
     case TWCoinTypeTezos:
         return Tezos::Address::isValid(string);
@@ -133,13 +137,12 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {TWP2PKHPrefixZcashT, TWP2SHPrefixZcashT});
-    case TWCoinTypeStellar:
-        return Stellar::Address::isValid(string);
     }
 }
 
 TWPurpose TW::purpose(TWCoinType coin) {
     switch(coin) {
+    case TWCoinTypeAion:
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
@@ -151,6 +154,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeNimiq:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
+    case TWCoinTypeStellar:
     case TWCoinTypeTezos:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
@@ -160,8 +164,6 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
-    case TWCoinTypeStellar:
-    case TWCoinTypeAion:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -324,7 +326,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return Tezos::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
 
     case TWCoinTypeTron:
-        return Tron::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+        return Tron::Address(privateKey.getPublicKey(PublicKeyType::secp256k1Extended)).string();
 
     case TWCoinTypeZcash:
         return Zcash::TAddress(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2SHPrefixZcashT).string();
