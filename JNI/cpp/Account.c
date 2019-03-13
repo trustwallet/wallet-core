@@ -16,6 +16,17 @@
 #include "TWJNI.h"
 #include "Account.h"
 
+jlong JNICALL Java_wallet_core_jni_Account_nativeCreate(JNIEnv *env, jclass thisClass, jstring address, jstring derivationPath, jstring extendedPublicKey) {
+    TWString *addressString = TWStringCreateWithJString(env, address);
+    TWString *derivationPathString = TWStringCreateWithJString(env, derivationPath);
+    TWString *extendedPublicKeyString = TWStringCreateWithJString(env, extendedPublicKey);
+    struct TWAccount *instance = TWAccountCreate(addressString, derivationPathString, extendedPublicKeyString);
+    TWStringDelete(addressString);
+    TWStringDelete(derivationPathString);
+    TWStringDelete(extendedPublicKeyString);
+    return (jlong) instance;
+}
+
 void JNICALL Java_wallet_core_jni_Account_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
     TWAccountDelete((struct TWAccount *) handle);
 }

@@ -33,6 +33,22 @@ public final class Account {
         self.rawValue = rawValue
     }
 
+    public init(address: String, derivationPath: String, extendedPublicKey: String) {
+        let addressString = TWStringCreateWithNSString(address)
+        defer {
+            TWStringDelete(addressString)
+        }
+        let derivationPathString = TWStringCreateWithNSString(derivationPath)
+        defer {
+            TWStringDelete(derivationPathString)
+        }
+        let extendedPublicKeyString = TWStringCreateWithNSString(extendedPublicKey)
+        defer {
+            TWStringDelete(extendedPublicKeyString)
+        }
+        rawValue = TWAccountCreate(addressString, derivationPathString, extendedPublicKeyString)
+    }
+
     deinit {
         TWAccountDelete(rawValue)
     }
