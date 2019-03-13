@@ -154,7 +154,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveTezos() {
         let blockchain = Tezos()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeyEd25519())
 
