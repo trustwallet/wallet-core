@@ -28,11 +28,11 @@ public final class Wallet: Hashable {
         self.key = key
     }
 
-    /// Returns the only account for non HD-wallets.
+    /// Returns the account for a specific coin.
     ///
     /// - Parameters:
     ///   - password: wallet encryption password
-    ///   - type: blockchain type
+    ///   - coin: coin type
     /// - Returns: the account
     /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
     public func getAccount(password: String, coin: CoinType) throws -> Account {
@@ -40,6 +40,20 @@ public final class Wallet: Hashable {
             throw KeyStore.Error.invalidPassword
         }
         return account
+    }
+
+    /// Returns the private key for a specific coin.
+    ///
+    /// - Parameters:
+    ///   - password: wallet encryption password
+    ///   - coin: coin type
+    /// - Returns: the private key
+    /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
+    public func privateKey(password: String, coin: CoinType) throws -> PrivateKey {
+        guard let pk = key.privateKey(coin: coin, password: password) else {
+            throw KeyStore.Error.invalidPassword
+        }
+        return pk
     }
 
     public func hash(into hasher: inout Hasher) {

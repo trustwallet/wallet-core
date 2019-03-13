@@ -26,12 +26,22 @@ public class Account {
         return instance;
     }
 
+    static native long nativeCreate(String address, String derivationPath, String extendedPublicKey);
     static native void nativeDelete(long handle);
 
     public native String address();
     public native String derivationPath();
     public native String extendedPublicKey();
     public native CoinType coin();
+
+    public Account(String address, String derivationPath, String extendedPublicKey) {
+        nativeHandle = nativeCreate(address, derivationPath, extendedPublicKey);
+        if (nativeHandle == 0) {
+            throw new InvalidParameterException();
+        }
+
+        AccountPhantomReference.register(this, nativeHandle);
+    }
 
 }
 

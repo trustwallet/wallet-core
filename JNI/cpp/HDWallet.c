@@ -166,6 +166,28 @@ jobject JNICALL Java_wallet_core_jni_HDWallet_getKey(JNIEnv *env, jobject thisOb
     return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
+jobject JNICALL Java_wallet_core_jni_HDWallet_getKeyBIP44(JNIEnv *env, jobject thisObject, jobject coin, jint account, jint change, jint address) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWHDWallet *instance = (struct TWHDWallet *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    jclass coinClass = (*env)->GetObjectClass(env, coin);
+    jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
+    jint coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
+    struct TWPrivateKey *result = TWHDWalletGetKeyBIP44(instance, coinValue, account, change, address);
+
+    (*env)->DeleteLocalRef(env, coinClass);
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/PrivateKey");
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/PrivateKey;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+}
+
 jstring JNICALL Java_wallet_core_jni_HDWallet_getExtendedPrivateKey(JNIEnv *env, jobject thisObject, jobject purpose, jobject coin, jobject version) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");

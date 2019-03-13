@@ -61,6 +61,9 @@ JNIEXPORT
 jstring JNICALL Java_wallet_core_jni_StoredKey_decryptMnemonic(JNIEnv *env, jobject thisObject, jstring password);
 
 JNIEXPORT
+jobject JNICALL Java_wallet_core_jni_StoredKey_privateKey(JNIEnv *env, jobject thisObject, jobject coin, jstring password);
+
+JNIEXPORT
 jobject JNICALL Java_wallet_core_jni_StoredKey_wallet(JNIEnv *env, jobject thisObject, jstring password);
 
 JNIEXPORT

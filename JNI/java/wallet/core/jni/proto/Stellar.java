@@ -29,9 +29,9 @@ public final class Stellar {
     int getFee();
 
     /**
-     * <code>int32 sequence = 3;</code>
+     * <code>int64 sequence = 3;</code>
      */
-    int getSequence();
+    long getSequence();
 
     /**
      * <code>string account = 4;</code>
@@ -120,7 +120,7 @@ public final class Stellar {
             }
             case 24: {
 
-              sequence_ = input.readInt32();
+              sequence_ = input.readInt64();
               break;
             }
             case 34: {
@@ -191,11 +191,11 @@ public final class Stellar {
     }
 
     public static final int SEQUENCE_FIELD_NUMBER = 3;
-    private int sequence_;
+    private long sequence_;
     /**
-     * <code>int32 sequence = 3;</code>
+     * <code>int64 sequence = 3;</code>
      */
-    public int getSequence() {
+    public long getSequence() {
       return sequence_;
     }
 
@@ -300,8 +300,8 @@ public final class Stellar {
       if (fee_ != 0) {
         output.writeInt32(2, fee_);
       }
-      if (sequence_ != 0) {
-        output.writeInt32(3, sequence_);
+      if (sequence_ != 0L) {
+        output.writeInt64(3, sequence_);
       }
       if (!getAccountBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, account_);
@@ -329,9 +329,9 @@ public final class Stellar {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, fee_);
       }
-      if (sequence_ != 0) {
+      if (sequence_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, sequence_);
+          .computeInt64Size(3, sequence_);
       }
       if (!getAccountBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, account_);
@@ -387,7 +387,8 @@ public final class Stellar {
       hash = (37 * hash) + FEE_FIELD_NUMBER;
       hash = (53 * hash) + getFee();
       hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
-      hash = (53 * hash) + getSequence();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getSequence());
       hash = (37 * hash) + ACCOUNT_FIELD_NUMBER;
       hash = (53 * hash) + getAccount().hashCode();
       hash = (37 * hash) + DESTINATION_FIELD_NUMBER;
@@ -535,7 +536,7 @@ public final class Stellar {
 
         fee_ = 0;
 
-        sequence_ = 0;
+        sequence_ = 0L;
 
         account_ = "";
 
@@ -629,7 +630,7 @@ public final class Stellar {
         if (other.getFee() != 0) {
           setFee(other.getFee());
         }
-        if (other.getSequence() != 0) {
+        if (other.getSequence() != 0L) {
           setSequence(other.getSequence());
         }
         if (!other.getAccount().isEmpty()) {
@@ -724,28 +725,28 @@ public final class Stellar {
         return this;
       }
 
-      private int sequence_ ;
+      private long sequence_ ;
       /**
-       * <code>int32 sequence = 3;</code>
+       * <code>int64 sequence = 3;</code>
        */
-      public int getSequence() {
+      public long getSequence() {
         return sequence_;
       }
       /**
-       * <code>int32 sequence = 3;</code>
+       * <code>int64 sequence = 3;</code>
        */
-      public Builder setSequence(int value) {
+      public Builder setSequence(long value) {
         
         sequence_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 sequence = 3;</code>
+       * <code>int64 sequence = 3;</code>
        */
       public Builder clearSequence() {
         
-        sequence_ = 0;
+        sequence_ = 0L;
         onChanged();
         return this;
       }
@@ -1595,7 +1596,7 @@ public final class Stellar {
     java.lang.String[] descriptorData = {
       "\n\rStellar.proto\022\020TW.Stellar.Proto\"x\n\014Sig" +
       "ningInput\022\016\n\006amount\030\001 \001(\003\022\013\n\003fee\030\002 \001(\005\022\020" +
-      "\n\010sequence\030\003 \001(\005\022\017\n\007account\030\004 \001(\t\022\023\n\013des" +
+      "\n\010sequence\030\003 \001(\003\022\017\n\007account\030\004 \001(\t\022\023\n\013des" +
       "tination\030\005 \001(\t\022\023\n\013private_key\030\010 \001(\014\"\"\n\rS" +
       "igningOutput\022\021\n\tsignature\030\001 \001(\tB\027\n\025walle" +
       "t.core.jni.protob\006proto3"

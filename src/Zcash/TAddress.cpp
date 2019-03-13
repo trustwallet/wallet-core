@@ -34,7 +34,7 @@ bool TAddress::isValid(const std::string& string, const std::vector<byte>& valid
         return false;
     }
 
-    if (std::find(validPrefixes.begin(), validPrefixes.end(), buffer[0]) == validPrefixes.end()) {
+    if (std::find(validPrefixes.begin(), validPrefixes.end(), buffer[1]) == validPrefixes.end()) {
         return false;
     }
 
