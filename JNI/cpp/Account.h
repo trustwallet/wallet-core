@@ -16,6 +16,9 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
+jlong JNICALL Java_wallet_core_jni_Account_nativeCreate(JNIEnv *env, jclass thisClass, jstring address, jstring derivationPath, jstring extendedPublicKey);
+
+JNIEXPORT
 void JNICALL Java_wallet_core_jni_Account_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT

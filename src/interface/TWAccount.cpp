@@ -10,6 +10,14 @@
 
 using namespace TW;
 
+struct TWAccount *_Nonnull TWAccountCreate(TWString *_Nonnull address, TWString *_Nonnull derivationPath, TWString *_Nonnull extendedPublicKey) {
+    auto& addressString = *reinterpret_cast<const std::string*>(address);
+    auto& derivationPathString = *reinterpret_cast<const std::string*>(derivationPath);
+    auto& extendedPublicKeyString = *reinterpret_cast<const std::string*>(extendedPublicKey);
+    const auto dp = DerivationPath(derivationPathString);
+    return new TWAccount{ Keystore::Account(addressString, dp, extendedPublicKeyString) };
+}
+
 void TWAccountDelete(struct TWAccount *_Nonnull account) {
     delete account;
 }
