@@ -29,7 +29,9 @@ bool Address::isValid(const std::string& string) {
 }
 
 Address::Address(const std::string& string) {
-    assert(Address::isValid(string));
+    if (!isValid(string)) {
+        throw std::invalid_argument("Invalid address data");
+    }
 
     if (std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin())) {
         type = TWIconAddressTypeAddress;
@@ -45,8 +47,7 @@ Address::Address(const std::string& string) {
 }
 
 Address::Address(const std::vector<uint8_t>& data, TWIconAddressType type) : type(type) {
-    assert(Address::isValid(data));
-    if (data.size() != size) {
+    if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
