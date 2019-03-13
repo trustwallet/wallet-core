@@ -45,6 +45,7 @@ public class StoredKey {
     public native PrivateKey privateKey(CoinType coin, String password);
     public native HDWallet wallet(String password);
     public native byte[] exportJSON();
+    public native void fixAddresses(String password);
 
     public StoredKey(String password) {
         nativeHandle = nativeCreate(password);

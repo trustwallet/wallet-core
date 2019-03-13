@@ -183,4 +183,12 @@ public final class StoredKey {
         return TWDataNSData(result)
     }
 
+    public func fixAddresses(password: String) -> Void {
+        let passwordString = TWStringCreateWithNSString(password)
+        defer {
+            TWStringDelete(passwordString)
+        }
+        return TWStoredKeyFixAddresses(rawValue, passwordString)
+    }
+
 }
