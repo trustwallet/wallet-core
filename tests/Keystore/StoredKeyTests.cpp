@@ -106,4 +106,12 @@ TEST(StoredKey, WatchAddress) {
     EXPECT_EQ(key.accounts[0].derivationPath.string(), "m/44'/60'/0'/0/0");
 }
 
+TEST(StoredKey, MissingAddress) {
+    auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
+    key.fixAddresses("password");
+
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, "").address, "0x04De84ec355BAe81b51cD53Fdc8AA30A61872C95");
+    EXPECT_EQ(key.account(TWCoinTypeBitcoin, "").address, "bc1qe938ncm8fhdqg27xmxd7lq02jz9xh0x48r22lc");
+}
+
 }} // namespace
