@@ -23,6 +23,10 @@
 
 using namespace TW;
 
+TEST(BitcoinCash, Address) {
+    EXPECT_TRUE(TWBitcoinCashAddressIsValidString(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get()));
+}
+
 TEST(BitcoinCash, LegacyToCashAddr) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
