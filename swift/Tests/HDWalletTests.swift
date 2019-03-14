@@ -161,12 +161,13 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveTezos() {
-        let blockchain = Tezos()
         let wallet = HDWallet.test
-        let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
-        let address = blockchain.address(for: key.getPublicKeyEd25519())
+        let key = wallet.getKeyForCoin(coin: .tezos)
+        let pubkey = key.getPublicKeyEd25519()
+        let address = TezosAddress(publicKey: pubkey)
 
-        XCTAssertEqual("tz1TG1XhWwfRyJZZFgaUgL6t5U4piijbKvaS", address.description)
+        XCTAssertEqual(pubkey.data.hexString, "01c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371")
+        XCTAssertEqual("tz1RsC3AREfrMwh6Hdu7qGKxBwb1VgwJv1qw", address.description)
     }
 
     func testDeriveTezos2() {
@@ -176,6 +177,15 @@ class HDWalletTests: XCTestCase {
         let address = CoinType.tezos.deriveAddress(privateKey: key)
 
         XCTAssertEqual("tz1M9ZMG1kthqQFK5dFi8rDCahqw6gHr1zoZ", address.description)
+    }
+
+    func testDeriveNimiq() {
+        let wallet = HDWallet(mnemonic: "first blind call piano steel release glimpse maple rude correct solve color fee elite rubber burden shop stumble salute color tone cruise two myth", passphrase: "safe.nimiq.com")
+        let coin = CoinType.nimiq
+        let key = wallet.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("NQ23 DKUQ YYLM VP6H Q4SS A70T 600N HDYY BM4Q", address.description)
     }
 
     func testSignHash() {
