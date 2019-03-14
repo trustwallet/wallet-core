@@ -23,13 +23,13 @@ TEST(OntologyAddress, validation) {
 
 TEST(OntologyAddress, fromPubKey) {
     auto address = Address(PublicKey(parse_hex("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486")));
-    EXPECT_EQ("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5", address.b58String());
+    EXPECT_EQ("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5", address.string());
 }
 
-TEST(OntologyAddress, fromB58Str) {
+TEST(OntologyAddress, fromString) {
     auto b58Str = "AYTxeseHT5khTWhtWX1pFFP1mbQrd4q1zz";
     auto address = Address(b58Str);
-    EXPECT_EQ(b58Str, address.b58String());
+    EXPECT_EQ(b58Str, address.string());
     auto errB58Str = "AATxeseHT5khTWhtWX1pFFP1mbQrd4q1zz";
     ASSERT_THROW(new Address(errB58Str), std::runtime_error);
 }

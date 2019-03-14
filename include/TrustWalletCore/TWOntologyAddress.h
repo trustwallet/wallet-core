@@ -14,7 +14,7 @@ TW_EXTERN_C_BEGIN
 
 struct TWPublicKey;
 
-/// Represents an Ethereum address.
+/// Represents an Ontology address.
 TW_EXPORT_CLASS
 struct TWOntologyAddress;
 
