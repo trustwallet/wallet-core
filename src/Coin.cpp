@@ -193,7 +193,6 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeLitecoin:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
-    case TWCoinTypeTezos:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeTron:
@@ -207,6 +206,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeAion:
     case TWCoinTypeNimiq:
     case TWCoinTypeStellar:
+    case TWCoinTypeTezos:
         return TWCurveEd25519;
 
     case TWCoinTypeOntology:
@@ -265,7 +265,6 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
-    case TWCoinTypeTezos:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeTron:
@@ -281,6 +280,14 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
             DerivationPathIndex(purpose(coin), true),
             DerivationPathIndex(coin, true),
             DerivationPathIndex(0, true),
+            DerivationPathIndex(0, true),
+            DerivationPathIndex(0, true),
+        };
+
+    case TWCoinTypeTezos:
+        return DerivationPath{
+            DerivationPathIndex(purpose(coin), true),
+            DerivationPathIndex(coin, true),
             DerivationPathIndex(0, true),
             DerivationPathIndex(0, true),
         };
@@ -337,7 +344,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return Ripple::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
 
     case TWCoinTypeTezos:
-        return Tezos::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+        return Tezos::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
 
     case TWCoinTypeTron:
         return Tron::Address(privateKey.getPublicKey(PublicKeyType::secp256k1Extended)).string();
