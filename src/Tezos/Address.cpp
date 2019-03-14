@@ -46,8 +46,10 @@ Address::Address(const std::vector<uint8_t>& data) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto publicKeySize = publicKey.isCompressed() ? publicKey.secp256k1Size : publicKey.secp256k1ExtendedSize;
-    auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.begin() + publicKeySize);
+    auto publicKeySize = publicKey.ed25519Size;
+
+    // Drop first byte of the public key which is a tag.
+    auto encoded = Data(publicKey.bytes.begin() + 1, publicKey.bytes.begin()  + publicKeySize);
     auto hash = Hash::blake2b(encoded, 20);
     auto addressData = Data({6, 161, 159});
     append(addressData, hash);
