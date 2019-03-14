@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Hash.h"
+#include "../Hash.h"
 #include "Address.h"
 
 #include <string>
@@ -12,6 +12,7 @@
 
 #include <TrezorCrypto/base58.h>
 
+using namespace TW;
 using namespace TW::Ontology;
 
 Address::Address(const PublicKey &publicKey) {
@@ -54,7 +55,7 @@ bool Address::isValid(const std::string &b58Address) noexcept {
     return len == size + 1;
 }
 
-std::string Address::b58String() const {
+std::string Address::string() const {
     std::vector<uint8_t> encodeData(size + 1);
     encodeData[0] = version;
     std::copy(data.begin(), data.end(), encodeData.begin() + 1);

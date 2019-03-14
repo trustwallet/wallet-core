@@ -45,7 +45,7 @@ void TWOntologyAddressDelete(struct TWOntologyAddress *_Nonnull address) {
 }
 
 TWString *_Nonnull TWOntologyAddressDescription(struct TWOntologyAddress *_Nonnull address) {
-    const auto string = address->impl.b58String();
+    const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 

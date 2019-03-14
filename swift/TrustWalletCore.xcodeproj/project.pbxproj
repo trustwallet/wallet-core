@@ -584,6 +584,10 @@
 		BB79409922397A4E00E268D4 /* StellarMemoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB79409822397A4E00E268D4 /* StellarMemoType.swift */; };
 		BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */; };
 		BBA9012121FDAE4200D2CEF7 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */; };
+		BBF0B6DD223A19C500D25372 /* TWOntologyAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF0B6DC223A19C500D25372 /* TWOntologyAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BBF0B6E1223A19DC00D25372 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF0B6DF223A19DC00D25372 /* Address.h */; };
+		BBF0B6E2223A19DC00D25372 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBF0B6E0223A19DC00D25372 /* Address.cpp */; };
+		BBF0B6E4223A1A1C00D25372 /* TWOntologyAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBF0B6E3223A1A1C00D25372 /* TWOntologyAddress.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1242,6 +1246,10 @@
 		BB79409822397A4E00E268D4 /* StellarMemoType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarMemoType.swift; sourceTree = "<group>"; };
 		BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZcashTAddress.swift; sourceTree = "<group>"; };
 		BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transaction.cpp; sourceTree = "<group>"; };
+		BBF0B6DC223A19C500D25372 /* TWOntologyAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWOntologyAddress.h; sourceTree = "<group>"; };
+		BBF0B6DF223A19DC00D25372 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
+		BBF0B6E0223A19DC00D25372 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
+		BBF0B6E3223A1A1C00D25372 /* TWOntologyAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWOntologyAddress.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1351,6 +1359,7 @@
 		617358DC219DF042007BF637 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BBF0B6DE223A19DC00D25372 /* Ontology */,
 				4E8BBE842230996700F98E04 /* Aion */,
 				616F8795222F2CA00007ECA3 /* Base64.h */,
 				61A9B2E621F916FA00E601B3 /* Bech32.cpp */,
@@ -1408,6 +1417,7 @@
 		617358DF219DF043007BF637 /* TrustWalletCore */ = {
 			isa = PBXGroup;
 			children = (
+				BBF0B6DC223A19C500D25372 /* TWOntologyAddress.h */,
 				BB79409622397A0B00E268D4 /* TWStellarMemoType.h */,
 				611BBE1D2235952A0043FB94 /* TWAccount.h */,
 				61CABAB421ED36F40086D9A0 /* TWAES.h */,
@@ -1888,6 +1898,7 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
+				BBF0B6E3223A1A1C00D25372 /* TWOntologyAddress.cpp */,
 				611BBE22223595420043FB94 /* TWAccount.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				4E8BBE942230999400F98E04 /* TWAionAddress.cpp */,
@@ -2298,6 +2309,15 @@
 			path = Stellar;
 			sourceTree = "<group>";
 		};
+		BBF0B6DE223A19DC00D25372 /* Ontology */ = {
+			isa = PBXGroup;
+			children = (
+				BBF0B6DF223A19DC00D25372 /* Address.h */,
+				BBF0B6E0223A19DC00D25372 /* Address.cpp */,
+			);
+			path = Ontology;
+			sourceTree = "<group>";
+		};
 		D79DFA430E7311B0E62847BA /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -2358,6 +2378,7 @@
 				61722BDA220E455500D7BA9A /* TWCommonProto.h in Headers */,
 				BB6AE99722336FFE00F9EF85 /* TWStellarAddress.h in Headers */,
 				61A0E96D2239E81400D37C0D /* groestl.h in Headers */,
+				BBF0B6E1223A19DC00D25372 /* Address.h in Headers */,
 				BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */,
 				61735C29219DF044007BF637 /* check_mem.h in Headers */,
 				61A9B3512200103000E601B3 /* Transaction.h in Headers */,
@@ -2503,6 +2524,7 @@
 				61735AF3219DF044007BF637 /* modm-donna-32bit.h in Headers */,
 				610AEF7421C8A934008ABB74 /* TWBitcoinTransactionSigner.h in Headers */,
 				61FE4B3922208E0300C65017 /* Transaction.h in Headers */,
+				BBF0B6DD223A19C500D25372 /* TWOntologyAddress.h in Headers */,
 				61E813B9222720EB00D4D2C9 /* TWIconAddress.h in Headers */,
 				BB2E390B21F6EF17002A5139 /* TWZcashTAddress.h in Headers */,
 				61FE4B3A22208E0300C65017 /* Clause.h in Headers */,
@@ -2913,6 +2935,7 @@
 				61C4E8F022260B150020A917 /* BlockchainFactory.swift in Sources */,
 				61735C03219DF044007BF637 /* blake256.c in Sources */,
 				61C4E8ED22260B150020A917 /* Ethereum.swift in Sources */,
+				BBF0B6E4223A1A1C00D25372 /* TWOntologyAddress.cpp in Sources */,
 				61A625072236DA0C009C450C /* KeyStore.Error.swift in Sources */,
 				140352F52233740C00DF0815 /* Stellar.swift in Sources */,
 				61C4E8EA22260B150020A917 /* Dash.swift in Sources */,
@@ -2978,6 +3001,7 @@
 				61FE4B3D22208E0F00C65017 /* TWVeChainSigner.cpp in Sources */,
 				61AAD3A521DEF72500B69A34 /* Base58.swift in Sources */,
 				61FE4B23221F734C00C65017 /* TWWanchainSigner.cpp in Sources */,
+				BBF0B6E2223A19DC00D25372 /* Address.cpp in Sources */,
 				61B159E021CC5DBB00CFE93B /* TWData.cpp in Sources */,
 				61722BE7220E457D00D7BA9A /* ZcashTransactionSigner.swift in Sources */,
 				61E813D22227213500D4D2C9 /* Icon.pb.cc in Sources */,
