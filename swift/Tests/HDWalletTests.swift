@@ -179,6 +179,17 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("tz1M9ZMG1kthqQFK5dFi8rDCahqw6gHr1zoZ", address.description)
     }
 
+    func testDeriveNimiq() {
+        // mnemonic is from https://github.com/Eligioo/nimiq-hd-wallet, compatible with ledger
+        // but it's not compatible with safe.nimiq.com (can't import)
+        let wallet = HDWallet(mnemonic: "insane mixed health squeeze physical trust pipe possible garage hero flock stand profit power tooth review note camera express vicious clock machine entire heavy", passphrase: "")
+        let coin = CoinType.nimiq
+        let key = wallet.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("NQ77 XYYH YUNC V52U 5ADV 5JAY QXMD 2F9C Q440", address.description)
+    }
+
     func testSignHash() {
         let wallet = HDWallet.test
         let key = wallet.getKey(at: Ethereum().derivationPath(at: 0))
