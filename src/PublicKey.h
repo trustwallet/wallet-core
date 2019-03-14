@@ -16,7 +16,8 @@ namespace TW {
 enum class PublicKeyType {
     secp256k1,
     secp256k1Extended,
-    ed25519
+    ed25519,
+    nist256p1
 };
 
 class PublicKey {
@@ -29,6 +30,9 @@ public:
 
     /// The number of bytes in a secp256k1 extended public key.
     static const size_t secp256k1ExtendedSize = 65;
+
+    /// The number of bytes in a nist256p1 public key.
+    static const size_t nist256p1Size = 33;
 
     /// The public key bytes.
     Data bytes;

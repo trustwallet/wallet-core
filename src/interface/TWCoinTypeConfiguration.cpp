@@ -40,6 +40,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "NIM"; break;
     case TWCoinTypeStellar: string = "XLM"; break;
     case TWCoinTypeAion: string = "AION"; break;
+    case TWCoinTypeNEO: string = "NEO"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -67,6 +68,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeBinance:
     case TWCoinTypeZcoin:
     case TWCoinTypeZcash:
+    case TWCoinTypeNEO:
      return 8;
     case TWCoinTypeStellar:
         return 7;
@@ -90,6 +92,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
     case TWCoinTypeStellar:
+    case TWCoinTypeNEO:
         url += "/transaction/" + txId;
         break;
     case TWCoinTypeEthereum:
@@ -160,6 +163,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNimiq: return "https://nimiq.watch";
     case TWCoinTypeStellar: return "https://stellarscan.io";
     case TWCoinTypeAion: return "https://mainnet.aion.network";
+    case TWCoinTypeNEO: return "https://neoscan.io";
     default: return "";
     }
 }
@@ -191,6 +195,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "nimiq"; break;
     case TWCoinTypeStellar: string = "stellar"; break;
     case TWCoinTypeAion: string = "aion"; break;
+    case TWCoinTypeNEO: string = "neo"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -223,6 +228,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "Nimiq"; break;
     case TWCoinTypeStellar: string = "Stellar"; break;
     case TWCoinTypeAion: string = "Aion"; break;
+    case TWCoinTypeNEO: string = "NEO"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

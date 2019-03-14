@@ -9,6 +9,10 @@
 
 #include <gtest/gtest.h>
 
+#include "NEO/Address.h"
+
+using namespace TW::NEO;
+
 namespace TW {
 
 TEST(Coin, ValidateAddressEthereum) {
@@ -79,6 +83,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeXDai, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeZcash, privateKey), "t3bqyaiEVJU8TVukHqsszFkMvVGayrLT33b");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeZcoin, privateKey), "aHzpPjmY132KseS4nkiQTbDahTEXqesY89");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEO, privateKey), "AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
 }
 
 } // namespace
