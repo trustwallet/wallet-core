@@ -22,7 +22,7 @@ enum class PublicKeyType {
 
 class PublicKey {
 public:
-    /// The number of bytes in a secp256k1 public key.
+    /// The number of bytes in a secp256k1 and nist256p1 public key.
     static const size_t secp256k1Size = 33;
 
     /// The number of bytes in a ed25519 public key.
@@ -30,9 +30,6 @@ public:
 
     /// The number of bytes in a secp256k1 extended public key.
     static const size_t secp256k1ExtendedSize = 65;
-
-    /// The number of bytes in a nist256p1 public key.
-    static const size_t nist256p1Size = 33;
 
     /// The public key bytes.
     Data bytes;

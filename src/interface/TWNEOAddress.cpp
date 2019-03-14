@@ -27,13 +27,22 @@ bool TWNEOAddressIsValidString(TWString *_Nonnull string) {
 
 struct TWNEOAddress *_Nullable TWNEOAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWNEOAddress{ std::move(address) };
+
+    try {
+        const auto address = Address(*s);
+        return new TWNEOAddress{ std::move(address) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWNEOAddress *_Nullable TWNEOAddressCreateWithData(TWData *_Nonnull data) {
     auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWNEOAddress{ Address(*d) };
+    try {
+        return new TWNEOAddress{ Address(*d) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWNEOAddress *_Nonnull TWNEOAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
