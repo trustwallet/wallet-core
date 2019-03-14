@@ -58,7 +58,6 @@ public func blockchain(coin: CoinType) -> Blockchain {
     case .aion:
         return Aion()
     case .neo:
-        fatalError()
-//        return NEO()
+        return NEO()
     }
 }
