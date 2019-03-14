@@ -51,6 +51,14 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(key.getPublicKeySecp256k1(compressed: true).description, key.getPublicKeySecp256k1(compressed: true).description)
     }
 
+    func testDeriveEthereum() {
+        let coin = CoinType.ethereum
+        let key = HDWallet.test.getKeyForCoin(coin: .ethereum)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("0x27Ef5cDBe01777D62438AfFeb695e33fC2335979", address.description)
+    }
+
     func testDeriveLitecoin() {
         let blockchain = Litecoin()
         let wallet = HDWallet.test
@@ -158,7 +166,16 @@ class HDWalletTests: XCTestCase {
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeyEd25519())
 
-        XCTAssertEqual("tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT", address.description)
+        XCTAssertEqual("tz1TG1XhWwfRyJZZFgaUgL6t5U4piijbKvaS", address.description)
+    }
+
+    func testDeriveTezos2() {
+        let wallet = HDWallet(mnemonic: "kidney setup media hat relief plastic ghost census mouse science expect movie", passphrase: "")
+
+        let key = wallet.getKeyForCoin(coin: .tezos)
+        let address = CoinType.tezos.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("tz1M9ZMG1kthqQFK5dFi8rDCahqw6gHr1zoZ", address.description)
     }
 
     func testSignHash() {
