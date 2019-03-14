@@ -106,6 +106,11 @@ typedef int64_t sph_s64;
 #define SPH_DETECT_LITTLE_ENDIAN     1
 #define SPH_DETECT_BIG_ENDIAN        0
 
+#elif defined __ANDROID__
+
+#define SPH_DETECT_LITTLE_ENDIAN     1
+#define SPH_DETECT_BIG_ENDIAN        0
+
 #endif
 
 
