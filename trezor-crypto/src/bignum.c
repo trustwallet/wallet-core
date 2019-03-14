@@ -710,6 +710,12 @@ void bn_divmod1000(bignum256 *a, uint32_t *r)
 
 size_t bn_format(const bignum256 *amnt, const char *prefix, const char *suffix, unsigned int decimals, int exponent, bool trailing, char *out, size_t outlen)
 {
+	// sanity check, 2**256 ~ 10**77; we should never need decimals/exponent bigger than that
+	if (decimals > 80 || exponent < -20 || exponent > 80) {
+		memzero(out, outlen);
+		return 0;
+	}
+
 	size_t prefixlen = prefix ? strlen(prefix) : 0;
 	size_t suffixlen = suffix ? strlen(suffix) : 0;
 

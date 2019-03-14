@@ -209,7 +209,6 @@
 		61735C01219DF044007BF637 /* rc4.c in Sources */ = {isa = PBXBuildFile; fileRef = 61735A3D219DF043007BF637 /* rc4.c */; };
 		61735C03219DF044007BF637 /* blake256.c in Sources */ = {isa = PBXBuildFile; fileRef = 61735A3F219DF043007BF637 /* blake256.c */; };
 		61735C06219DF044007BF637 /* cash_addr.c in Sources */ = {isa = PBXBuildFile; fileRef = 61735A42219DF043007BF637 /* cash_addr.c */; };
-		61735C07219DF044007BF637 /* nem_serialize.h in Headers */ = {isa = PBXBuildFile; fileRef = 61735A43219DF043007BF637 /* nem_serialize.h */; };
 		61735C09219DF044007BF637 /* curves.c in Sources */ = {isa = PBXBuildFile; fileRef = 61735A45219DF043007BF637 /* curves.c */; };
 		61735C0C219DF044007BF637 /* curve25519-donna-scalarmult-base.c in Sources */ = {isa = PBXBuildFile; fileRef = 61735A49219DF043007BF637 /* curve25519-donna-scalarmult-base.c */; };
 		61735C0E219DF044007BF637 /* ed25519-donna-32bit-tables.c in Sources */ = {isa = PBXBuildFile; fileRef = 61735A4B219DF043007BF637 /* ed25519-donna-32bit-tables.c */; };
@@ -296,6 +295,11 @@
 		6198EA8421B811A2008CB60A /* TWBitcoinOpCodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 6198EA8121B811A1008CB60A /* TWBitcoinOpCodes.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6198EA8621B811A2008CB60A /* TWBech32Address.h in Headers */ = {isa = PBXBuildFile; fileRef = 6198EA8321B811A2008CB60A /* TWBech32Address.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6198EA8C21B811CD008CB60A /* Bech32Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6198EA8B21B811CD008CB60A /* Bech32Address.swift */; };
+		61A0E96C2239E81400D37C0D /* endian.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A0E9692239E81400D37C0D /* endian.h */; };
+		61A0E96D2239E81400D37C0D /* groestl.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A0E96A2239E81400D37C0D /* groestl.h */; };
+		61A0E96E2239E81400D37C0D /* nist256p1.h in Headers */ = {isa = PBXBuildFile; fileRef = 61A0E96B2239E81400D37C0D /* nist256p1.h */; };
+		61A0E9712239E83100D37C0D /* nist256p1.c in Sources */ = {isa = PBXBuildFile; fileRef = 61A0E96F2239E83100D37C0D /* nist256p1.c */; };
+		61A0E9722239E83100D37C0D /* groestl.c in Sources */ = {isa = PBXBuildFile; fileRef = 61A0E9702239E83100D37C0D /* groestl.c */; };
 		61A624FB2236D330009C450C /* TWStellarSigner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61A624FA2236D330009C450C /* TWStellarSigner.cpp */; };
 		61A625052236DA0C009C450C /* KeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A624FD2236DA0C009C450C /* KeyStore.swift */; };
 		61A625072236DA0C009C450C /* KeyStore.Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A624FF2236DA0C009C450C /* KeyStore.Error.swift */; };
@@ -783,7 +787,6 @@
 		61735A3D219DF043007BF637 /* rc4.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rc4.c; sourceTree = "<group>"; };
 		61735A3F219DF043007BF637 /* blake256.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blake256.c; sourceTree = "<group>"; };
 		61735A42219DF043007BF637 /* cash_addr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cash_addr.c; sourceTree = "<group>"; };
-		61735A43219DF043007BF637 /* nem_serialize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nem_serialize.h; sourceTree = "<group>"; };
 		61735A45219DF043007BF637 /* curves.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = curves.c; sourceTree = "<group>"; };
 		61735A49219DF043007BF637 /* curve25519-donna-scalarmult-base.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "curve25519-donna-scalarmult-base.c"; sourceTree = "<group>"; };
 		61735A4B219DF043007BF637 /* ed25519-donna-32bit-tables.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "ed25519-donna-32bit-tables.c"; sourceTree = "<group>"; };
@@ -875,6 +878,11 @@
 		6198EA8121B811A1008CB60A /* TWBitcoinOpCodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBitcoinOpCodes.h; sourceTree = "<group>"; };
 		6198EA8321B811A2008CB60A /* TWBech32Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWBech32Address.h; sourceTree = "<group>"; };
 		6198EA8B21B811CD008CB60A /* Bech32Address.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bech32Address.swift; sourceTree = "<group>"; };
+		61A0E9692239E81400D37C0D /* endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = endian.h; sourceTree = "<group>"; };
+		61A0E96A2239E81400D37C0D /* groestl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = groestl.h; sourceTree = "<group>"; };
+		61A0E96B2239E81400D37C0D /* nist256p1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nist256p1.h; sourceTree = "<group>"; };
+		61A0E96F2239E83100D37C0D /* nist256p1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = nist256p1.c; sourceTree = "<group>"; };
+		61A0E9702239E83100D37C0D /* groestl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = groestl.c; sourceTree = "<group>"; };
 		61A624FA2236D330009C450C /* TWStellarSigner.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWStellarSigner.cpp; sourceTree = "<group>"; };
 		61A624FD2236DA0C009C450C /* KeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStore.swift; sourceTree = "<group>"; };
 		61A624FF2236DA0C009C450C /* KeyStore.Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyStore.Error.swift; sourceTree = "<group>"; };
@@ -1505,11 +1513,14 @@
 				6173590B219DF043007BF637 /* ecdsa.h */,
 				617358FB219DF043007BF637 /* ed25519-donna.h */,
 				61735916219DF043007BF637 /* ed25519.h */,
+				61A0E9692239E81400D37C0D /* endian.h */,
+				61A0E96A2239E81400D37C0D /* groestl.h */,
 				61735910219DF043007BF637 /* hasher.h */,
 				61735912219DF043007BF637 /* hmac.h */,
 				617358FD219DF043007BF637 /* memzero.h */,
 				6173590D219DF043007BF637 /* monero.h */,
 				61735917219DF043007BF637 /* nem.h */,
+				61A0E96B2239E81400D37C0D /* nist256p1.h */,
 				6173590C219DF043007BF637 /* pbkdf2.h */,
 				61735915219DF043007BF637 /* rand.h */,
 				617358FA219DF043007BF637 /* ripemd160.h */,
@@ -1518,8 +1529,8 @@
 				61735911219DF043007BF637 /* sha2.h */,
 				61735900219DF043007BF637 /* sha3.h */,
 				6173591D219DF043007BF637 /* chacha20poly1305 */,
-				BB211050221C032800571DF7 /* ripple */,
 				61735902219DF043007BF637 /* ed25519-donna */,
+				BB211050221C032800571DF7 /* ripple */,
 			);
 			path = TrezorCrypto;
 			sourceTree = "<group>";
@@ -1564,10 +1575,12 @@
 				61735A42219DF043007BF637 /* cash_addr.c */,
 				61735A45219DF043007BF637 /* curves.c */,
 				61735AA7219DF043007BF637 /* ecdsa.c */,
+				61A0E9702239E83100D37C0D /* groestl.c */,
 				61735A38219DF043007BF637 /* hasher.c */,
 				61735A2F219DF043007BF637 /* hmac.c */,
 				61735A8D219DF043007BF637 /* memzero.c */,
 				61735A65219DF043007BF637 /* nem.c */,
+				61A0E96F2239E83100D37C0D /* nist256p1.c */,
 				61735AA8219DF044007BF637 /* pbkdf2.c */,
 				61735A3B219DF043007BF637 /* rand.c */,
 				61735A3D219DF043007BF637 /* rc4.c */,
@@ -1580,7 +1593,6 @@
 				61735A76219DF043007BF637 /* bip39_english.h */,
 				61735AA1219DF043007BF637 /* blake2_common.h */,
 				61735A66219DF043007BF637 /* check_mem.h */,
-				61735A43219DF043007BF637 /* nem_serialize.h */,
 				61735A70219DF043007BF637 /* options.h */,
 				61735A8E219DF043007BF637 /* rc4.h */,
 				61735A9D219DF043007BF637 /* rfc6979.h */,
@@ -2305,6 +2317,7 @@
 				61735B04219DF044007BF637 /* rand.h in Headers */,
 				BB2422CF22217AE7000663D0 /* TWRippleSigner.h in Headers */,
 				61735B0B219DF044007BF637 /* secp256k1.h in Headers */,
+				61A0E96E2239E81400D37C0D /* nist256p1.h in Headers */,
 				61735C13219DF044007BF637 /* ed25519-hash-custom.h in Headers */,
 				61735AFA219DF044007BF637 /* ecdsa.h in Headers */,
 				615D9B9D21CED9C700878D22 /* Address.h in Headers */,
@@ -2337,6 +2350,7 @@
 				4E8BBEA0223099C500F98E04 /* TWAionAddress.h in Headers */,
 				61722BDA220E455500D7BA9A /* TWCommonProto.h in Headers */,
 				BB6AE99722336FFE00F9EF85 /* TWStellarAddress.h in Headers */,
+				61A0E96D2239E81400D37C0D /* groestl.h in Headers */,
 				BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */,
 				61735C29219DF044007BF637 /* check_mem.h in Headers */,
 				61A9B3512200103000E601B3 /* Transaction.h in Headers */,
@@ -2489,7 +2503,7 @@
 				616E126121AE15C4009798FC /* TWBitcoinScript.h in Headers */,
 				61A9B2FC21FB855E00E601B3 /* Address.h in Headers */,
 				61E813CA2227211B00D4D2C9 /* Signer.h in Headers */,
-				61735C07219DF044007BF637 /* nem_serialize.h in Headers */,
+				61A0E96C2239E81400D37C0D /* endian.h in Headers */,
 				61E813B6222720EB00D4D2C9 /* TWIconAddressType.h in Headers */,
 				61735AF8219DF044007BF637 /* curve25519-donna-helpers.h in Headers */,
 				61CABAD021ED781B0086D9A0 /* TWHRP.h in Headers */,
@@ -2802,6 +2816,7 @@
 				61C4E8B82225C3B70020A917 /* TWTronSigner.cpp in Sources */,
 				61735C06219DF044007BF637 /* cash_addr.c in Sources */,
 				61735C7B219DF044007BF637 /* rfc7539.c in Sources */,
+				61A0E9712239E83100D37C0D /* nist256p1.c in Sources */,
 				61C4E8F222260B150020A917 /* WanchainAddress.swift in Sources */,
 				61735BFF219DF044007BF637 /* rand.c in Sources */,
 				61722BF5220E45BA00D7BA9A /* Bitcoin.pb.cc in Sources */,
@@ -2842,6 +2857,7 @@
 				61C4E8E622260B150020A917 /* BitcoinCash.swift in Sources */,
 				4E8BBE962230999400F98E04 /* TWAionAddress.cpp in Sources */,
 				61735C11219DF044007BF637 /* curve25519-donna-helpers.c in Sources */,
+				61A0E9722239E83100D37C0D /* groestl.c in Sources */,
 				778DB8BC2230A55800CE8DB6 /* Address.cpp in Sources */,
 				61C4E92E22261A1A0020A917 /* Icon.swift in Sources */,
 				61A625052236DA0C009C450C /* KeyStore.swift in Sources */,
