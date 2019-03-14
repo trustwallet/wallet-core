@@ -93,7 +93,7 @@ TEST(HDWallet, DeriveTezos) {
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(key.get());
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
-    assertHexEqual(publicKeyData, "01fe157cc8011727936c592f856c9071d39cf4acdadfa6d76435e4619c9dc56f63");                                         
+    assertHexEqual(publicKeyData, "01c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371");
 }
 
 TEST(HDWallet, DeriveAionPrivateKey) {
