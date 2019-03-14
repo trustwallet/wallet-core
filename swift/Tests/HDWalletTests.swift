@@ -179,15 +179,6 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("tz1M9ZMG1kthqQFK5dFi8rDCahqw6gHr1zoZ", address.description)
     }
 
-    func testDeriveNimiq() {
-        let wallet = HDWallet(mnemonic: "first blind call piano steel release glimpse maple rude correct solve color fee elite rubber burden shop stumble salute color tone cruise two myth", passphrase: "safe.nimiq.com")
-        let coin = CoinType.nimiq
-        let key = wallet.getKeyForCoin(coin: coin)
-        let address = coin.deriveAddress(privateKey: key)
-
-        XCTAssertEqual("NQ23 DKUQ YYLM VP6H Q4SS A70T 600N HDYY BM4Q", address.description)
-    }
-
     func testSignHash() {
         let wallet = HDWallet.test
         let key = wallet.getKey(at: Ethereum().derivationPath(at: 0))
