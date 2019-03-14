@@ -22,13 +22,24 @@
 
 #include <TrezorCrypto/nem.h>
 
-#include <string.h>
+#include "ed25519-donna/ed25519-keccak.h"
 
 #include <TrezorCrypto/base32.h>
-#include "ed25519-donna/ed25519-keccak.h"
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha3.h>
 #include <TrezorCrypto/memzero.h>
+
+#include <string.h>
+
+#define CAN_WRITE(NEEDED) ((ctx->offset + (NEEDED)) <= ctx->size)
+
+#define SERIALIZE_U32(DATA) \
+	do { if (!nem_write_u32(ctx, (DATA))) return false; } while (0)
+#define SERIALIZE_U64(DATA) \
+	do { if (!nem_write_u64(ctx, (DATA))) return false; } while (0)
+#define SERIALIZE_TAGGED(DATA, LENGTH) \
+	do { if (!nem_write_tagged(ctx, (DATA), (LENGTH))) return false; } while (0)
+
 
 const char *nem_network_name(uint8_t network) {
 	switch (network) {
@@ -43,39 +54,49 @@ const char *nem_network_name(uint8_t network) {
 	}
 }
 
-static inline void nem_write_u32(nem_transaction_ctx *ctx, uint32_t data) {
+static inline bool nem_write_checked(nem_transaction_ctx *ctx, const uint8_t *data, uint32_t length) {
+	if (!CAN_WRITE(length)) {
+		return false;
+	}
+
+	memcpy(&ctx->buffer[ctx->offset], data, length);
+	ctx->offset += length;
+	return true;
+}
+
+static inline bool nem_write_u32(nem_transaction_ctx *ctx, uint32_t data) {
+	if (!CAN_WRITE(4)) {
+		return false;
+	}
+
 	ctx->buffer[ctx->offset++] = (data >>  0) & 0xff;
 	ctx->buffer[ctx->offset++] = (data >>  8) & 0xff;
 	ctx->buffer[ctx->offset++] = (data >> 16) & 0xff;
 	ctx->buffer[ctx->offset++] = (data >> 24) & 0xff;
+
+	return true;
 }
 
-static inline void nem_write_u64(nem_transaction_ctx *ctx, uint64_t data) {
-	nem_write_u32(ctx, (data >>  0) & 0xffffffff);
-	nem_write_u32(ctx, (data >> 32) & 0xffffffff);
+static inline bool nem_write_u64(nem_transaction_ctx *ctx, uint64_t data) {
+	SERIALIZE_U32((data >>  0) & 0xffffffff);
+	SERIALIZE_U32((data >> 32) & 0xffffffff);
+
+	return true;
 }
 
-static inline void nem_write(nem_transaction_ctx *ctx, const uint8_t *data, uint32_t length) {
-	nem_write_u32(ctx, length);
+static inline bool nem_write_tagged(nem_transaction_ctx *ctx, const uint8_t *data, uint32_t length) {
+	SERIALIZE_U32(length);
 
-	memcpy(&ctx->buffer[ctx->offset], data, length);
-	ctx->offset += length;
-}
-
-static inline bool nem_can_write(nem_transaction_ctx *ctx, size_t needed) {
-	return (ctx->offset + needed) <= ctx->size;
+	return nem_write_checked(ctx, data, length);
 }
 
 static inline bool nem_write_mosaic_str(nem_transaction_ctx *ctx, const char *name, const char *value) {
 	uint32_t name_length = strlen(name);
 	uint32_t value_length = strlen(value);
 
-#define NEM_SERIALIZE \
-	serialize_u32(sizeof(uint32_t) + name_length + sizeof(uint32_t) + value_length) \
-	serialize_write((uint8_t *) name, name_length) \
-	serialize_write((uint8_t *) value, value_length)
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(sizeof(uint32_t) + name_length + sizeof(uint32_t) + value_length);
+	SERIALIZE_TAGGED((const uint8_t *) name, name_length);
+	SERIALIZE_TAGGED((const uint8_t *) value, value_length);
 
 	return true;
 }
@@ -178,15 +199,12 @@ bool nem_transaction_write_common(nem_transaction_ctx *ctx,
 	uint64_t fee,
 	uint32_t deadline) {
 
-#define NEM_SERIALIZE \
-	serialize_u32(type) \
-	serialize_u32(version) \
-	serialize_u32(timestamp) \
-	serialize_write(signer, sizeof(ed25519_public_key)) \
-	serialize_u64(fee) \
-	serialize_u32(deadline)
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(type);
+	SERIALIZE_U32(version);
+	SERIALIZE_U32(timestamp);
+	SERIALIZE_TAGGED(signer, sizeof(ed25519_public_key));
+	SERIALIZE_U64(fee);
+	SERIALIZE_U32(deadline);
 
 	return true;
 }
@@ -221,36 +239,20 @@ bool nem_transaction_create_transfer(nem_transaction_ctx *ctx,
 		deadline);
 	if (!ret) return false;
 
-#define NEM_SERIALIZE \
-	serialize_write((uint8_t *) recipient, NEM_ADDRESS_SIZE) \
-	serialize_u64(amount)
-
-#include "nem_serialize.h"
+	SERIALIZE_TAGGED((const uint8_t *) recipient, NEM_ADDRESS_SIZE);
+	SERIALIZE_U64(amount);
 
 	if (length) {
-
-#define NEM_SERIALIZE \
-	serialize_u32(sizeof(uint32_t) + sizeof(uint32_t) + length) \
-	serialize_u32(encrypted ? 0x02 : 0x01) \
-	serialize_write(payload, length)
-
-#include "nem_serialize.h"
-
+		SERIALIZE_U32(sizeof(uint32_t) + sizeof(uint32_t) + length);
+		SERIALIZE_U32(encrypted ? 0x02 : 0x01);
+		SERIALIZE_TAGGED(payload, length);
 	} else {
-
-#define NEM_SERIALIZE \
-	serialize_u32(0)
-
-#include "nem_serialize.h"
-
+		SERIALIZE_U32(0);
 	}
 
 	if (mosaics) {
 
-#define NEM_SERIALIZE \
-	serialize_u32(mosaics)
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(mosaics);
 
 	}
 
@@ -266,14 +268,11 @@ bool nem_transaction_write_mosaic(nem_transaction_ctx *ctx,
 	size_t mosaic_length = strlen(mosaic);
 	size_t identifier_length = sizeof(uint32_t) + namespace_length + sizeof(uint32_t) + mosaic_length;
 
-#define NEM_SERIALIZE \
-	serialize_u32(sizeof(uint32_t) + sizeof(uint64_t) + identifier_length) \
-	serialize_u32(identifier_length) \
-	serialize_write((uint8_t *) namespace, namespace_length) \
-	serialize_write((uint8_t *) mosaic, mosaic_length) \
-	serialize_u64(quantity)
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(sizeof(uint32_t) + sizeof(uint64_t) + identifier_length);
+	SERIALIZE_U32(identifier_length);
+	SERIALIZE_TAGGED((const uint8_t *) namespace, namespace_length);
+	SERIALIZE_TAGGED((const uint8_t *) mosaic, mosaic_length);
+	SERIALIZE_U64(quantity);
 
 	return true;
 }
@@ -299,10 +298,7 @@ bool nem_transaction_create_multisig(nem_transaction_ctx *ctx,
 		deadline);
 	if (!ret) return false;
 
-#define NEM_SERIALIZE \
-	serialize_write(inner->buffer, inner->offset)
-
-#include "nem_serialize.h"
+	SERIALIZE_TAGGED(inner->buffer, inner->offset);
 
 	return true;
 }
@@ -334,12 +330,9 @@ bool nem_transaction_create_multisig_signature(nem_transaction_ctx *ctx,
 	uint8_t hash[SHA3_256_DIGEST_LENGTH];
 	keccak_256(inner->buffer, inner->offset, hash);
 
-#define NEM_SERIALIZE \
-	serialize_u32(sizeof(uint32_t) + SHA3_256_DIGEST_LENGTH) \
-	serialize_write(hash, SHA3_256_DIGEST_LENGTH) \
-	serialize_write((uint8_t *) address, NEM_ADDRESS_SIZE)
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(sizeof(uint32_t) + SHA3_256_DIGEST_LENGTH);
+	SERIALIZE_TAGGED(hash, SHA3_256_DIGEST_LENGTH);
+	SERIALIZE_TAGGED((const uint8_t *) address, NEM_ADDRESS_SIZE);
 
 	return true;
 }
@@ -369,25 +362,15 @@ bool nem_transaction_create_provision_namespace(nem_transaction_ctx *ctx,
 	if (!ret) return false;
 
 	if (parent) {
-
-#define NEM_SERIALIZE \
-	serialize_write((uint8_t *) rental_sink, NEM_ADDRESS_SIZE) \
-	serialize_u64(rental_fee) \
-	serialize_write((uint8_t *) namespace, strlen(namespace)) \
-	serialize_write((uint8_t *) parent, strlen(parent))
-
-#include "nem_serialize.h"
-
+		SERIALIZE_TAGGED((const uint8_t *) rental_sink, NEM_ADDRESS_SIZE);
+		SERIALIZE_U64(rental_fee);
+		SERIALIZE_TAGGED((const uint8_t *) namespace, strlen(namespace));
+		SERIALIZE_TAGGED((const uint8_t *) parent, strlen(parent));
 	} else {
-
-#define NEM_SERIALIZE \
-	serialize_write((uint8_t *) rental_sink, NEM_ADDRESS_SIZE) \
-	serialize_u64(rental_fee) \
-	serialize_write((uint8_t *) namespace, strlen(namespace)) \
-	serialize_u32(0xffffffff)
-
-#include "nem_serialize.h"
-
+		SERIALIZE_TAGGED((const uint8_t *) rental_sink, NEM_ADDRESS_SIZE);
+		SERIALIZE_U64(rental_fee);
+		SERIALIZE_TAGGED((const uint8_t *) namespace, strlen(namespace));
+		SERIALIZE_U32(0xffffffff);
 	}
 
 	return true;
@@ -435,16 +418,13 @@ bool nem_transaction_create_mosaic_creation(nem_transaction_ctx *ctx,
 	nem_transaction_ctx state;
 	memcpy(&state, ctx, sizeof(state));
 
-#define NEM_SERIALIZE \
-	serialize_u32(0) \
-	serialize_write(signer, sizeof(ed25519_public_key)) \
-	serialize_u32(identifier_length) \
-	serialize_write((uint8_t *) namespace, namespace_length) \
-	serialize_write((uint8_t *) mosaic, mosaic_length) \
-	serialize_write((uint8_t *) description, strlen(description)) \
-	serialize_u32(4) // Number of properties
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(0);
+	SERIALIZE_TAGGED(signer, sizeof(ed25519_public_key));
+	SERIALIZE_U32(identifier_length);
+	SERIALIZE_TAGGED((const uint8_t *) namespace, namespace_length);
+	SERIALIZE_TAGGED((const uint8_t *) mosaic, mosaic_length);
+	SERIALIZE_TAGGED((const uint8_t *) description, strlen(description));
+	SERIALIZE_U32(4); // Number of properties
 
 	if (!nem_write_mosaic_u64(ctx, "divisibility", divisibility)) return false;
 	if (!nem_write_mosaic_u64(ctx, "initialSupply", supply)) return false;
@@ -456,34 +436,22 @@ bool nem_transaction_create_mosaic_creation(nem_transaction_ctx *ctx,
 		size_t levy_mosaic_length = strlen(levy_mosaic);
 		size_t levy_identifier_length = sizeof(uint32_t) + levy_namespace_length + sizeof(uint32_t) + levy_mosaic_length;
 
-#define NEM_SERIALIZE \
-	serialize_u32(sizeof(uint32_t) + sizeof(uint32_t) + NEM_ADDRESS_SIZE + sizeof(uint32_t) + levy_identifier_length + sizeof(uint64_t)) \
-	serialize_u32(levy_type) \
-	serialize_write((uint8_t *) levy_address, NEM_ADDRESS_SIZE) \
-	serialize_u32(levy_identifier_length) \
-	serialize_write((uint8_t *) levy_namespace, levy_namespace_length) \
-	serialize_write((uint8_t *) levy_mosaic, levy_mosaic_length) \
-	serialize_u64(levy_fee)
-
-#include "nem_serialize.h"
-
+		SERIALIZE_U32(sizeof(uint32_t) + sizeof(uint32_t) + NEM_ADDRESS_SIZE + sizeof(uint32_t) + levy_identifier_length + sizeof(uint64_t));
+		SERIALIZE_U32(levy_type);
+		SERIALIZE_TAGGED((const uint8_t *) levy_address, NEM_ADDRESS_SIZE);
+		SERIALIZE_U32(levy_identifier_length);
+		SERIALIZE_TAGGED((const uint8_t *) levy_namespace, levy_namespace_length);
+		SERIALIZE_TAGGED((const uint8_t *) levy_mosaic, levy_mosaic_length);
+		SERIALIZE_U64(levy_fee);
 	} else {
-
-#define NEM_SERIALIZE \
-	serialize_u32(0)
-
-#include "nem_serialize.h"
-
+		SERIALIZE_U32(0);
 	}
 
 	// Rewrite length
 	nem_write_u32(&state, ctx->offset - state.offset - sizeof(uint32_t));
 
-#define NEM_SERIALIZE \
-	serialize_write((uint8_t *) creation_sink, NEM_ADDRESS_SIZE) \
-	serialize_u64(creation_fee)
-
-#include "nem_serialize.h"
+	SERIALIZE_TAGGED((const uint8_t *) creation_sink, NEM_ADDRESS_SIZE);
+	SERIALIZE_U64(creation_fee);
 
 	return true;
 
@@ -517,14 +485,11 @@ bool nem_transaction_create_mosaic_supply_change(nem_transaction_ctx *ctx,
 	size_t mosaic_length = strlen(mosaic);
 	size_t identifier_length = sizeof(uint32_t) + namespace_length + sizeof(uint32_t) + mosaic_length;
 
-#define NEM_SERIALIZE \
-	serialize_u32(identifier_length) \
-	serialize_write((uint8_t *) namespace, namespace_length) \
-	serialize_write((uint8_t *) mosaic, mosaic_length) \
-	serialize_u32(type) \
-	serialize_u64(delta)
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(identifier_length);
+	SERIALIZE_TAGGED((const uint8_t *) namespace, namespace_length);
+	SERIALIZE_TAGGED((const uint8_t *) mosaic, mosaic_length);
+	SERIALIZE_U32(type);
+	SERIALIZE_U64(delta);
 
 	return true;
 }
@@ -551,10 +516,7 @@ bool nem_transaction_create_aggregate_modification(nem_transaction_ctx *ctx,
 		deadline);
 	if (!ret) return false;
 
-#define NEM_SERIALIZE \
-	serialize_u32(modifications)
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(modifications);
 
 	return true;
 }
@@ -563,12 +525,9 @@ bool nem_transaction_write_cosignatory_modification(nem_transaction_ctx *ctx,
 	uint32_t type,
 	const ed25519_public_key cosignatory) {
 
-#define NEM_SERIALIZE \
-	serialize_u32(sizeof(uint32_t) + sizeof(uint32_t) + sizeof(ed25519_public_key)) \
-	serialize_u32(type) \
-	serialize_write(cosignatory, sizeof(ed25519_public_key))
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(sizeof(uint32_t) + sizeof(uint32_t) + sizeof(ed25519_public_key));
+	SERIALIZE_U32(type);
+	SERIALIZE_TAGGED(cosignatory, sizeof(ed25519_public_key));
 
 	return true;
 }
@@ -576,11 +535,8 @@ bool nem_transaction_write_cosignatory_modification(nem_transaction_ctx *ctx,
 bool nem_transaction_write_minimum_cosignatories(nem_transaction_ctx *ctx,
 	int32_t relative_change) {
 
-#define NEM_SERIALIZE \
-	serialize_u32(sizeof(uint32_t)) \
-	serialize_u32((uint32_t) relative_change)
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(sizeof(uint32_t));
+	SERIALIZE_U32((uint32_t) relative_change);
 
 	return true;
 }
@@ -607,11 +563,8 @@ bool nem_transaction_create_importance_transfer(nem_transaction_ctx *ctx,
 		deadline);
 	if (!ret) return false;
 
-#define NEM_SERIALIZE \
-	serialize_u32(mode) \
-	serialize_write(remote, sizeof(ed25519_public_key))
-
-#include "nem_serialize.h"
+	SERIALIZE_U32(mode);
+	SERIALIZE_TAGGED(remote, sizeof(ed25519_public_key));
 
 	return true;
 }
