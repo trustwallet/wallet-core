@@ -38,6 +38,7 @@
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/secp256k1.h>
+#include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/ed25519.h>
 #include "ed25519-donna/ed25519-sha3.h"
 #include "ed25519-donna/ed25519-keccak.h"
@@ -802,6 +803,9 @@ const curve_info *get_curve_by_name(const char *curve_name) {
 	}
 	if (strcmp(curve_name, SECP256K1_SMART_NAME) == 0) {
 		return &secp256k1_smart_info;
+	}
+	if (strcmp(curve_name, NIST256P1_NAME) == 0) {
+		return &nist256p1_info;
 	}
 	if (strcmp(curve_name, ED25519_NAME) == 0) {
 		return &ed25519_info;

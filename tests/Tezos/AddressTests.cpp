@@ -87,10 +87,10 @@ TEST(TezosAddress, string) {
 }
 
 TEST(TezosAddress, PublicKeyInit) {
-    std::array<uint8_t, 33> bytes {3, 249, 155, 77, 241, 23, 253, 247, 67, 73, 230, 138, 75, 159, 164, 53, 139, 19, 144, 243, 254, 68, 145, 220, 146, 163, 138, 154, 23, 67, 129, 243, 228};
+    std::array<uint8_t, 33> bytes {1, 254, 21, 124, 200, 1, 23, 39, 147, 108, 89, 47, 133, 108, 144, 113, 211, 156, 244, 172, 218, 223, 166, 215, 100, 53, 228, 97, 156, 157, 197, 111, 99,};
     const auto publicKey = PublicKey(bytes);
     auto address = Address(publicKey);
 
-    auto expected = "tz1STrmVM4Uk7HYAjCe8H3b7HE7rnBY2L4xk";
+    auto expected = "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT";
     ASSERT_EQ(address.string(), expected);
 }

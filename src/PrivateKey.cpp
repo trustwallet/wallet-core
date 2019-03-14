@@ -10,6 +10,7 @@
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/rand.h>
+#include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 
 using namespace TW;
@@ -42,14 +43,19 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     Data result;
     bool success = true;
     switch (curve) {
-    case TWCurveSECP256k1:
+    case TWCurveSECP256k1: {
         result.resize(65);
         success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data(), result.data() + 64, NULL) == 0;
-        break;
-    case TWCurveEd25519:
+    } break;
+    case TWCurveEd25519: {
         result.resize(64);
         const auto publicKey = getPublicKey(PublicKeyType::ed25519);
 	    ed25519_sign(digest.data(), digest.size(), bytes.data(), publicKey.bytes.data() + 1, result.data());
+    } break;
+    case TWCurveNIST256p1: {
+        result.resize(65);
+        success = ecdsa_sign_digest(&nist256p1, bytes.data(), digest.data(), result.data(), result.data() + 64, NULL) == 0;
+    } break;
     }
 
     if (!success) {

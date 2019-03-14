@@ -90,4 +90,10 @@ struct TWHDWallet *_Nullable TWStoredKeyWallet(struct TWStoredKey *_Nonnull key,
 TW_EXPORT_METHOD
 TWData *_Nullable TWStoredKeyExportJSON(struct TWStoredKey *_Nonnull key);
 
+/// Fills in empty and invalid addresses.
+///
+/// This method needs the encryption password to re-derive addresses from private keys.
+TW_EXPORT_METHOD
+void TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password);
+
 TW_EXTERN_C_END

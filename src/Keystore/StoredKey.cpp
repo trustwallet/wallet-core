@@ -95,6 +95,18 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& passw
     }
 }
 
+void StoredKey::fixAddresses(const std::string& password) {
+    const auto wallet = this->wallet(password);
+    for (auto& account : accounts) {
+        if (!account.address.empty() && TW::validateAddress(account.coin(), account.address)) {
+            continue;
+        }
+        const auto& derivationPath = account.derivationPath;
+        const auto key = wallet.getKey(derivationPath);
+        account.address = TW::deriveAddress(derivationPath.coin(), key);
+    }
+}
+
 // -----------------
 // Encoding/Decoding
 // -----------------
