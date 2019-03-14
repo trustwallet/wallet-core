@@ -180,7 +180,8 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveNimiq() {
-        // from https://github.com/Eligioo/nimiq-hd-wallet but it's not compatible with safe.nimiq.com
+        // mnemonic is from https://github.com/Eligioo/nimiq-hd-wallet, compatible with ledger
+        // but it's not compatible with safe.nimiq.com (can't import)
         let wallet = HDWallet(mnemonic: "insane mixed health squeeze physical trust pipe possible garage hero flock stand profit power tooth review note camera express vicious clock machine entire heavy", passphrase: "")
         let coin = CoinType.nimiq
         let key = wallet.getKeyForCoin(coin: coin)
