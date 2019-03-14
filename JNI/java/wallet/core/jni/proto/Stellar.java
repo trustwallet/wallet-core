@@ -1942,9 +1942,9 @@ public final class Stellar {
     int getFee();
 
     /**
-     * <code>int32 sequence = 3;</code>
+     * <code>int64 sequence = 3;</code>
      */
-    int getSequence();
+    long getSequence();
 
     /**
      * <code>string account = 4;</code>
@@ -2100,7 +2100,7 @@ public final class Stellar {
             }
             case 24: {
 
-              sequence_ = input.readInt32();
+              sequence_ = input.readInt64();
               break;
             }
             case 34: {
@@ -2285,11 +2285,11 @@ public final class Stellar {
     }
 
     public static final int SEQUENCE_FIELD_NUMBER = 3;
-    private int sequence_;
+    private long sequence_;
     /**
-     * <code>int32 sequence = 3;</code>
+     * <code>int64 sequence = 3;</code>
      */
-    public int getSequence() {
+    public long getSequence() {
       return sequence_;
     }
 
@@ -2524,8 +2524,8 @@ public final class Stellar {
       if (fee_ != 0) {
         output.writeInt32(2, fee_);
       }
-      if (sequence_ != 0) {
-        output.writeInt32(3, sequence_);
+      if (sequence_ != 0L) {
+        output.writeInt64(3, sequence_);
       }
       if (!getAccountBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, account_);
@@ -2568,9 +2568,9 @@ public final class Stellar {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(2, fee_);
       }
-      if (sequence_ != 0) {
+      if (sequence_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, sequence_);
+          .computeInt64Size(3, sequence_);
       }
       if (!getAccountBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, account_);
@@ -2671,7 +2671,8 @@ public final class Stellar {
       hash = (37 * hash) + FEE_FIELD_NUMBER;
       hash = (53 * hash) + getFee();
       hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
-      hash = (53 * hash) + getSequence();
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getSequence());
       hash = (37 * hash) + ACCOUNT_FIELD_NUMBER;
       hash = (53 * hash) + getAccount().hashCode();
       hash = (37 * hash) + DESTINATION_FIELD_NUMBER;
@@ -2843,7 +2844,7 @@ public final class Stellar {
 
         fee_ = 0;
 
-        sequence_ = 0;
+        sequence_ = 0L;
 
         account_ = "";
 
@@ -2975,7 +2976,7 @@ public final class Stellar {
         if (other.getFee() != 0) {
           setFee(other.getFee());
         }
-        if (other.getSequence() != 0) {
+        if (other.getSequence() != 0L) {
           setSequence(other.getSequence());
         }
         if (!other.getAccount().isEmpty()) {
@@ -3110,28 +3111,28 @@ public final class Stellar {
         return this;
       }
 
-      private int sequence_ ;
+      private long sequence_ ;
       /**
-       * <code>int32 sequence = 3;</code>
+       * <code>int64 sequence = 3;</code>
        */
-      public int getSequence() {
+      public long getSequence() {
         return sequence_;
       }
       /**
-       * <code>int32 sequence = 3;</code>
+       * <code>int64 sequence = 3;</code>
        */
-      public Builder setSequence(int value) {
+      public Builder setSequence(long value) {
         
         sequence_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>int32 sequence = 3;</code>
+       * <code>int64 sequence = 3;</code>
        */
       public Builder clearSequence() {
         
-        sequence_ = 0;
+        sequence_ = 0L;
         onChanged();
         return this;
       }
@@ -4683,7 +4684,7 @@ public final class Stellar {
       "oVoid\"\030\n\010MemoText\022\014\n\004text\030\001 \001(\t\"\024\n\006MemoI" +
       "d\022\n\n\002id\030\001 \001(\003\"\030\n\010MemoHash\022\014\n\004hash\030\001 \001(\014\"" +
       "\203\003\n\014SigningInput\022\016\n\006amount\030\001 \001(\003\022\013\n\003fee\030" +
-      "\002 \001(\005\022\020\n\010sequence\030\003 \001(\005\022\017\n\007account\030\004 \001(\t" +
+      "\002 \001(\005\022\020\n\010sequence\030\003 \001(\003\022\017\n\007account\030\004 \001(\t" +
       "\022\023\n\013destination\030\005 \001(\t\022\023\n\013private_key\030\006 \001" +
       "(\014\022/\n\tmemo_void\030\007 \001(\0132\032.TW.Stellar.Proto" +
       ".MemoVoidH\000\022/\n\tmemo_text\030\010 \001(\0132\032.TW.Stel" +
