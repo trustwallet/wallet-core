@@ -12,7 +12,8 @@ package wallet.core.jni;
 
 public enum Curve {
     SECP256K1 (0),
-    ED25519 (1);
+    ED25519 (1),
+    NIST256P1 (2);
 
     private final int value;
     Curve(int value) {
@@ -24,6 +25,7 @@ public enum Curve {
         switch (value) {
             case 0: return Curve.SECP256K1;
             case 1: return Curve.ED25519;
+            case 2: return Curve.NIST256P1;
             default: return null;
         }
     }
@@ -33,6 +35,7 @@ public enum Curve {
         switch (this) {
         case SECP256K1: return "secp256k1";
         case ED25519: return "ed25519";
+        case NIST256P1: return "nist256p1";
         default: return "";
         }
     }
