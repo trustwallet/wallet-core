@@ -13,30 +13,34 @@
 
 namespace TW {
 namespace Ontology {
-class Address {
-public:
-    static const size_t size = 20;
-    static const uint8_t version = 0x17;
 
-    std::array<uint8_t, size> data;
+    class Address {
 
-    explicit Address(const PublicKey &publicKey);
+    private:
 
-    explicit Address(const std::string &b58Address);
+        std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);
 
-    explicit Address(const std::vector<uint8_t> &bytes);
+    public:
 
-    static bool isValid(const std::string &string) noexcept;
+        static const size_t size = 20;
+        static const uint8_t version = 0x17;
 
-    std::string string() const;
+        std::array<uint8_t, size> data;
 
-private:
-    std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);
-};
+        explicit Address(const PublicKey &publicKey);
 
-static inline bool operator==(const Address &lhs, const Address &rhs) {
-    return lhs.data == rhs.data;
-}
+        explicit Address(const std::string &b58Address);
+
+        explicit Address(const std::vector<uint8_t> &bytes);
+
+        static bool isValid(const std::string &string) noexcept;
+
+        std::string string() const;
+    };
+
+    static inline bool operator==(const Address &lhs, const Address &rhs) {
+        return lhs.data == rhs.data;
+    }
 
 }
 } // namespace
