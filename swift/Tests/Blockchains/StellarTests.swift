@@ -37,7 +37,7 @@ class StellarTests: XCTestCase {
             $0.account = account
             $0.destination = destination
             $0.privateKey = privateKeyData
-            $0.operationType = OperationType.PAYMENT
+            $0.operationType = .payment
         }
         
         let output = StellarSigner.sign(input: input)
@@ -55,7 +55,7 @@ class StellarTests: XCTestCase {
             $0.memoHash = TWStellarMemoHash.with {
                 $0.hash = Data(hexString: "315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3")!
             }
-            $0.operationType = OperationType.PAYMENT
+            $0.operationType = .payment
         }
 
         let output = StellarSigner.sign(input: input)
@@ -73,7 +73,7 @@ class StellarTests: XCTestCase {
             $0.memoReturnHash = TWStellarMemoHash.with {
                 $0.hash = Data(hexString: "315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3")!
             }
-            $0.operationType = OperationType.PAYMENT
+            $0.operationType = .payment
         }
 
         let output = StellarSigner.sign(input: input)
@@ -91,7 +91,7 @@ class StellarTests: XCTestCase {
             $0.memoID = TWStellarMemoId.with {
                 $0.id = 1234567890
             }
-            $0.operationType = OperationType.PAYMENT
+            $0.operationType = .payment
         }
 
         let output = StellarSigner.sign(input: input)
@@ -109,10 +109,10 @@ class StellarTests: XCTestCase {
             $0.memoID = TWStellarMemoId.with {
                 $0.id = 1234567890
             }
-            $0.operationType = OperationType.CREATE_ACCOUNT
+            $0.operationType = .createAccount
         }
         
         let output = StellarSigner.sign(input: input)
-        XCTAssertEqual(output.signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB")
+        XCTAssertEqual(output.signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAAAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAmJaAAAAAAAAAAAEZ31yiAAAAQNgqNDqbe0X60gyH+1xf2Tv2RndFiJmyfbrvVjsTfjZAVRrS2zE9hHlqPQKpZkGKEFka7+1ElOS+/m/1JDnauQg=")
     }
 }
