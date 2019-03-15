@@ -330,7 +330,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
     case TWCoinTypeLitecoin:
         return Bitcoin::Bech32Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0, HRP_LITECOIN).string();
     case TWCoinTypeOntology:
-            return Ontology::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+            return Ontology::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
     case TWCoinTypeNimiq:
         return Nimiq::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
 
