@@ -36,7 +36,7 @@ PublicKey PrivateKey::getPublicKey(PublicKeyType type) const {
         ed25519_publickey(bytes.data(), result.data() + 1);
         break;
     case PublicKeyType::nist256p1:
-        result.resize(PublicKey::nist256p1Size);
+        result.resize(PublicKey::secp256k1Size);
         ecdsa_get_public_key33(&nist256p1, bytes.data(), result.data());
         break;
     }
