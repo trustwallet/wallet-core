@@ -218,7 +218,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeZcoin: string = "Zcoin"; break;
     case TWCoinTypeZcash: string = "Zcash"; break;
     case TWCoinTypeBinance: string = "Binance"; break;
-    case TWCoinTypeRipple: string = "Ripple"; break;
+    case TWCoinTypeRipple: string = "XRP"; break;
     case TWCoinTypeTezos: string = "Tezos"; break;
     case TWCoinTypeNimiq: string = "Nimiq"; break;
     case TWCoinTypeStellar: string = "Stellar"; break;
