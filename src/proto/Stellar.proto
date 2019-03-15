@@ -40,6 +40,12 @@ message SigningInput {
         MemoHash memo_hash = 10;
         MemoHash memo_return_hash = 11;
     }
+
+    enum OperationType {
+        CREATE_ACCOUNT = 0;
+        PAYMENT = 1;
+    }
+    OperationType operation_type = 12;
 }
 
 // Transaction signing output.
