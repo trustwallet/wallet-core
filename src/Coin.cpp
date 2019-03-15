@@ -261,8 +261,6 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
     case TWCoinTypeThunderToken:
@@ -274,7 +272,6 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
-
     case TWCoinTypeAion:
         return DerivationPath{
             DerivationPathIndex(purpose(coin), true),
@@ -283,7 +280,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
             DerivationPathIndex(0, true),
             DerivationPathIndex(0, true),
         };
-
+    case TWCoinTypeNimiq:
     case TWCoinTypeTezos:
         return DerivationPath{
             DerivationPathIndex(purpose(coin), true),
