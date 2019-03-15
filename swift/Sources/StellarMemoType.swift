@@ -12,5 +12,5 @@ public enum StellarMemoType: UInt32 {
     case text = 1
     case id = 2
     case hash = 3
-    case `return` = 4
+    case return = 4
 }

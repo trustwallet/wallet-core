@@ -147,6 +147,11 @@ public struct TW_Stellar_Proto_SigningInput {
     set {_uniqueStorage()._memoTypeOneof = .memoReturnHash(newValue)}
   }
 
+  public var operationType: TW_Stellar_Proto_SigningInput.OperationType {
+    get {return _storage._operationType}
+    set {_uniqueStorage()._operationType = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_MemoTypeOneof: Equatable {
@@ -170,10 +175,50 @@ public struct TW_Stellar_Proto_SigningInput {
   #endif
   }
 
+  public enum OperationType: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case createAccount // = 0
+    case payment // = 1
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .createAccount
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .createAccount
+      case 1: self = .payment
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .createAccount: return 0
+      case .payment: return 1
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+  }
+
   public init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
 }
+
+#if swift(>=4.2)
+
+extension TW_Stellar_Proto_SigningInput.OperationType: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static var allCases: [TW_Stellar_Proto_SigningInput.OperationType] = [
+    .createAccount,
+    .payment,
+  ]
+}
+
+#endif  // swift(>=4.2)
 
 /// Transaction signing output.
 public struct TW_Stellar_Proto_SigningOutput {
@@ -313,6 +358,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     9: .standard(proto: "memo_id"),
     10: .standard(proto: "memo_hash"),
     11: .standard(proto: "memo_return_hash"),
+    12: .standard(proto: "operation_type"),
   ]
 
   fileprivate class _StorageClass {
@@ -323,6 +369,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     var _destination: String = String()
     var _privateKey: Data = SwiftProtobuf.Internal.emptyData
     var _memoTypeOneof: TW_Stellar_Proto_SigningInput.OneOf_MemoTypeOneof?
+    var _operationType: TW_Stellar_Proto_SigningInput.OperationType = .createAccount
 
     static let defaultInstance = _StorageClass()
 
@@ -336,6 +383,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
       _destination = source._destination
       _privateKey = source._privateKey
       _memoTypeOneof = source._memoTypeOneof
+      _operationType = source._operationType
     }
   }
 
@@ -397,6 +445,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
           }
           try decoder.decodeSingularMessageField(value: &v)
           if let v = v {_storage._memoTypeOneof = .memoReturnHash(v)}
+        case 12: try decoder.decodeSingularEnumField(value: &_storage._operationType)
         default: break
         }
       }
@@ -436,6 +485,9 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
         try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
       case nil: break
       }
+      if _storage._operationType != .createAccount {
+        try visitor.visitSingularEnumField(value: _storage._operationType, fieldNumber: 12)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -452,6 +504,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
         if _storage._destination != rhs_storage._destination {return false}
         if _storage._privateKey != rhs_storage._privateKey {return false}
         if _storage._memoTypeOneof != rhs_storage._memoTypeOneof {return false}
+        if _storage._operationType != rhs_storage._operationType {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -459,6 +512,13 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension TW_Stellar_Proto_SigningInput.OperationType: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "CREATE_ACCOUNT"),
+    1: .same(proto: "PAYMENT"),
+  ]
 }
 
 extension TW_Stellar_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
