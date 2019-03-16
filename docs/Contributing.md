@@ -106,7 +106,7 @@ When implementing a new blockchain make sure you go through this checklist:
     - [ ] Transaction (if necessary)
     - [ ] Signer
 - [ ] Write unit tests. Put them in a subfolder of `tests/`.
-    - [ ] `Mnemonic phrase - > Address Derivation` Tests are necessary.
+    - [ ] `Mnemonic phrase - > Address Derivation` tests are necessary to avoid funds loss.
 - [ ] Add relevant constants in `TWCoinType`, `TWP2SHPrefix`, `TWEthereymChainID`, `TWHRP`, etc., as necessary.
 - [ ] Return correct curve and purpose in `src/Coin.cpp`.
 - [ ] Implement address validation and derivation in `src/Coin.cpp`.
