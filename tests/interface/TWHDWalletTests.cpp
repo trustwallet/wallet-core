@@ -41,6 +41,7 @@ TEST(HDWallet, Seed) {
 
 TEST(HDWallet, IsValid) {
     EXPECT_TRUE(TWHDWalletIsValid(valid.get()));
+    EXPECT_TRUE(TWHDWalletIsValid(STRING("rebuild park fatigue flame one clap grocery scheme upon symbol rifle flush brave feed clutch").get()));
 }
 
 TEST(HDWallet, InvalidWord) {
