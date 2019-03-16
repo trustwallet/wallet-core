@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum CoinType: UInt32 {
+public enum CoinType: UInt32, CaseIterable {
     case binance = 714
     case bitcoin = 0
     case bitcoinCash = 145

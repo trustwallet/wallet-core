@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum Purpose: UInt32 {
+public enum Purpose: UInt32, CaseIterable {
     case bip44 = 44
     case bip49 = 49
     case bip84 = 84

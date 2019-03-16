@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum HRP: UInt32, CustomStringConvertible  {
+public enum HRP: UInt32, CaseIterable, CustomStringConvertible  {
     case unknown = 0
     case bitcoin = 1
     case litecoin = 2
