@@ -69,9 +69,11 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     // Operations
     encode32BE(1, data); // Operation list size. Only 1 operation.
     encode32BE(0, data); // Source equals account
-    encode32BE(1, data); // Operation type - PAYMENT
+    encode32BE(input.operation_type(), data); // Operation type - PAYMENT
     encodeAddress(input.destination(), data);
-    encode32BE(0, data); // Asset type
+    if (input.operation_type() == Proto::SigningInput_OperationType_PAYMENT) {
+        encode32BE(0, data); // Asset type
+    }
     encode64BE(input.amount(), data);
     encode32BE(0, data); // Ext
     return data;

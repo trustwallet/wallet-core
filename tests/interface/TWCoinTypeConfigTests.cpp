@@ -293,4 +293,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     
     auto value21 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
     assertStringsEqual(value21, "Aion");
+
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRipple));
+    assertStringsEqual(value22, "XRP");
 }

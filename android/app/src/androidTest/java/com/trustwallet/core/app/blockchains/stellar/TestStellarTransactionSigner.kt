@@ -23,6 +23,7 @@ class TestStellarTransactionSigner {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             fee = 1000
             sequence = 2
+            operationType = Stellar.SigningInput.OperationType.PAYMENT
             memoVoid = memoVoidBuilder.build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
@@ -42,6 +43,7 @@ class TestStellarTransactionSigner {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             fee = 1000
             sequence = 2
+            operationType = Stellar.SigningInput.OperationType.PAYMENT
             memoHash = Stellar.MemoHash.newBuilder().setHash(ByteString.copyFrom("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3".toHexByteArray())).build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
@@ -61,6 +63,7 @@ class TestStellarTransactionSigner {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             fee = 1000
             sequence = 2
+            operationType = Stellar.SigningInput.OperationType.PAYMENT
             memoReturnHash = Stellar.MemoHash.newBuilder().setHash(ByteString.copyFrom("315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3".toHexByteArray())).build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
@@ -80,6 +83,7 @@ class TestStellarTransactionSigner {
             destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
             fee = 1000
             sequence = 2
+            operationType = Stellar.SigningInput.OperationType.PAYMENT
             memoId = Stellar.MemoId.newBuilder().setId(1234567890).build()
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
@@ -88,5 +92,25 @@ class TestStellarTransactionSigner {
         val signBytes = sign.signature
 
         assertEquals(signBytes, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB")
+    }
+
+    @Test
+    fun testStellarTransactionSigningCreateAccount() {
+        val signingInput = Stellar.SigningInput.newBuilder()
+        signingInput.apply {
+            account = "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"
+            amount = 10_000_000
+            destination = "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"
+            fee = 1000
+            sequence = 2
+            operationType = Stellar.SigningInput.OperationType.CREATE_ACCOUNT
+            memoId = Stellar.MemoId.newBuilder().setId(1234567890).build()
+            privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
+        }
+
+        val sign: Stellar.SigningOutput = StellarSigner.sign(signingInput.build())
+        val signBytes = sign.signature
+
+        assertEquals(signBytes, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAAAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAmJaAAAAAAAAAAAEZ31yiAAAAQNgqNDqbe0X60gyH+1xf2Tv2RndFiJmyfbrvVjsTfjZAVRrS2zE9hHlqPQKpZkGKEFka7+1ElOS+/m/1JDnauQg=")
     }
 }
