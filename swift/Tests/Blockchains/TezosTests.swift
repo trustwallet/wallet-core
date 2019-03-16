@@ -89,6 +89,7 @@ class TezosTests: XCTestCase {
         let signingOuput = TezosSigner.sign(input: signingInput);
         let expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0107000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b9572100d924cb3e56c4b9f55e50735e461899a2f616a26bfb0aa05d0b356b66f517b023df330ad3621f0bf39d518131a1becd6a7b2e226ed291483af3682535d1f4530f"
 
-        XCTAssertEqual(signingOuput.signedBytes, expected.data(using: .utf8)!)
+
+        XCTAssertEqual(signingOuput.signedBytes, Data(hexString: expected))
     }
 }

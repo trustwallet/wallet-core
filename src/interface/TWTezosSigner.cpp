@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWTezosSigner.h>
 
 #include "../Tezos/BinaryCoding.h"
@@ -51,7 +53,9 @@ TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data)
     auto signedBytesHex = signer.signOperationList(key, operationList);
 
     auto protoOutput = Proto::SigningOutput();
-    protoOutput.set_signed_bytes(signedBytesHex);
+    TWString *signedBytesHexString = TWStringCreateWithUTF8Bytes(signedBytesHex.c_str());
+    TWData *signedBytes = TWDataCreateWithHexString(signedBytesHexString);
+    protoOutput.set_signed_bytes(TWDataBytes(signedBytes), TWDataSize(signedBytes));
     auto serialized = protoOutput.SerializeAsString();
 
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
