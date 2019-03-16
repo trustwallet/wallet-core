@@ -16,7 +16,8 @@ namespace TW {
 enum class PublicKeyType {
     secp256k1,
     secp256k1Extended,
-    ed25519
+    ed25519,
+    nist256p1
 };
 
 class PublicKey {
@@ -40,7 +41,7 @@ public:
             return PublicKeyType::ed25519;
         case 2:
         case 3:
-            return PublicKeyType::secp256k1;
+            return PublicKeyType::nist256p1;
         case 4:
         case 6:
         case 7:
