@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum P2PKHPrefix: UInt8 {
+public enum P2PKHPrefix: UInt8, CaseIterable {
     case bitcoin = 0x00
     case litecoin = 0x30
     case dash = 0x4C

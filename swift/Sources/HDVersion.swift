@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum HDVersion: UInt32 {
+public enum HDVersion: UInt32, CaseIterable {
     case none = 0
     case xpub = 0x0488b21e
     case xprv = 0x0488ade4
