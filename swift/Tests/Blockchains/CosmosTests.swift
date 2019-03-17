@@ -9,11 +9,11 @@ import TrustWalletCore
 
 class CosmosTests: XCTestCase {
     func testAddressFromPrivateKey() {
-        let key = PrivateKey(data: Data(hexString: "124e69c2c2dacc76600f806a31333c100b41b1d4374e99f539e41156c2792c0c")!)!
+        let key = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005")!)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
         let address = TendermintAddress(hrp: .cosmos, publicKey: pubkey)
 
-        XCTAssertEqual(pubkey.data.hexString, "03F7707B1E983FE6231D46E586DCCAB76501302481C9656859C830A42A2C1BD414".lowercased())
-        XCTAssertEqual(address?.description, "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573")
+        XCTAssertEqual(pubkey.data.hexString, "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5".lowercased())
+        XCTAssertEqual(address?.description, "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02")
     }
 }
