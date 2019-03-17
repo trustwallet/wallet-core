@@ -32,16 +32,17 @@ Address::Address(const std::string& string) {
     size_t capacity = 128;
     uint8_t buffer[capacity];
     int size = xrp_base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    assert(size == Address::size);
+    if (size != Address::size) {
+        throw std::invalid_argument("Invalid address string");
+    }
     std::vector<uint8_t> vec(&buffer[0], &buffer[128]);
     auto str = TW::hex(vec);
     std::copy(buffer, buffer + Address::size, bytes.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    assert(isValid(data));
-    if (data.size() != size) {
-        throw std::invalid_argument("Invalid address data");
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address key data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }

@@ -34,19 +34,6 @@
 #include "options.h"
 #include <TrezorCrypto/memzero.h>
 
-#if USE_BIP39_CACHE
-
-static int bip39_cache_index = 0;
-
-static CONFIDENTIAL struct {
-	bool set;
-	char mnemonic[256];
-	char passphrase[64];
-	uint8_t seed[512 / 8];
-} bip39_cache[BIP39_CACHE_SIZE];
-
-#endif
-
 bool mnemonic_generate(int strength, char* mnemonic) {
 	if (strength % 32 || strength < 128 || strength > 256) {
 		return false;
@@ -108,7 +95,7 @@ int mnemonic_to_entropy(const char *mnemonic, uint8_t *entropy)
 	n++;
 
 	// check number of words
-	if (n != 12 && n != 18 && n != 24) {
+	if (n != 12 && n != 15 && n != 18 && n != 21 && n != 24) {
 		return 0;
 	}
 
@@ -159,7 +146,7 @@ int mnemonic_check(const char *mnemonic)
 {
 	uint8_t bits[32 + 1];
 	int seed_len = mnemonic_to_entropy(mnemonic, bits);
-	if (seed_len != (12 * 11) && seed_len != (18 * 11) && seed_len != (24 * 11)) {
+	if (seed_len != (12 * 11) && seed_len != (15 * 11) && seed_len != (18 * 11) && seed_len != (21 * 11) && seed_len != (24 * 11)) {
 		return 0;
 	}
 	int words = seed_len / 11;
@@ -168,8 +155,12 @@ int mnemonic_check(const char *mnemonic)
 	sha256_Raw(bits, words * 4 / 3, bits);
 	if (words == 12) {
 		return (bits[0] & 0xF0) == (checksum & 0xF0); // compare first 4 bits
+    } else if (words == 15) {
+        return (bits[0] & 0xF8) == (checksum & 0xF8); // compare first 5 bits
 	} else if (words == 18) {
 		return (bits[0] & 0xFC) == (checksum & 0xFC); // compare first 6 bits
+    } else if (words == 21) {
+        return (bits[0] & 0xFE) == (checksum & 0xFE); // compare first 7 bits
 	} else if (words == 24) {
 		return bits[0] == checksum; // compare 8 bits
 	}
@@ -214,19 +205,6 @@ void mnemonic_to_seed(const char *mnemonic, const char *passphrase, uint8_t seed
 	char *normalized = normalize_mnemonic(mnemonic);
 	int normalizedlen = strlen(normalized);
 	int passphraselen = strnlen(passphrase, 256);
-#if USE_BIP39_CACHE
-	// check cache
-	if (normalizedlen < 256 && passphraselen < 64) {
-		for (int i = 0; i < BIP39_CACHE_SIZE; i++) {
-			if (!bip39_cache[i].set) continue;
-			if (strcmp(bip39_cache[i].mnemonic, normalized) != 0) continue;
-			if (strcmp(bip39_cache[i].passphrase, passphrase) != 0) continue;
-			// found the correct entry
-			memcpy(seed, bip39_cache[i].seed, 512 / 8);
-			return;
-		}
-	}
-#endif
 	uint8_t salt[8 + 256];
 	memcpy(salt, "mnemonic", 8);
 	memcpy(salt + 8, passphrase, passphraselen);
@@ -243,16 +221,6 @@ void mnemonic_to_seed(const char *mnemonic, const char *passphrase, uint8_t seed
 	}
 	pbkdf2_hmac_sha512_Final(&pctx, seed);
 	memzero(salt, sizeof(salt));
-#if USE_BIP39_CACHE
-	// store to cache
-	if (normalizedlen < 256 && passphraselen < 64) {
-		bip39_cache[bip39_cache_index].set = true;
-		strcpy(bip39_cache[bip39_cache_index].mnemonic, normalized);
-		strcpy(bip39_cache[bip39_cache_index].passphrase, passphrase);
-		memcpy(bip39_cache[bip39_cache_index].seed, seed, 512 / 8);
-		bip39_cache_index = (bip39_cache_index + 1) % BIP39_CACHE_SIZE;
-	}
-#endif
 	free(normalized);
 }
 

@@ -83,6 +83,12 @@ struct StoredKey {
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
+
+    /// Fills in all empty and invalid addresses.
+    ///
+    /// Use to fix legacy wallets with invalid address data. This method needs
+    /// the encryption password to re-derive addresses from private keys.
+    void fixAddresses(const std::string& password);
 };
 
 }} // namespace

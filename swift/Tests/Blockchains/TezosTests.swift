@@ -21,7 +21,7 @@ class TezosTests: XCTestCase {
         XCTAssertNotNil(address)
         XCTAssertEqual(address?.description, validAddressString)
     }
-    
+
     public func testAddressFromData_validAddress() {
         let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
         guard let validAddressData = validAddressString.data(using: .utf8) else {
@@ -36,12 +36,12 @@ class TezosTests: XCTestCase {
     }
     
     public func testAddressFromPublicKey() {
-        let privateKey = PrivateKey(data: Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!)!
-        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let privateKey = PrivateKey(data: Data(hexString: "b177a72743f54ed4bdf51f1b55527c31bcd68c6d2cb2436d76cadd0227c99ff0")!)!
+        let publicKey = privateKey.getPublicKeyEd25519()
         
         let address = tezos.address(for: publicKey)
         
-        XCTAssertEqual(address.description, "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM")
+        XCTAssertEqual(address.description, "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT")
     }
 
     public func testSigning() {

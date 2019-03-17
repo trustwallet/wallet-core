@@ -51,6 +51,14 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(key.getPublicKeySecp256k1(compressed: true).description, key.getPublicKeySecp256k1(compressed: true).description)
     }
 
+    func testDeriveEthereum() {
+        let coin = CoinType.ethereum
+        let key = HDWallet.test.getKeyForCoin(coin: .ethereum)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("0x27Ef5cDBe01777D62438AfFeb695e33fC2335979", address.description)
+    }
+
     func testDeriveLitecoin() {
         let blockchain = Litecoin()
         let wallet = HDWallet.test
@@ -150,6 +158,36 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(key.data.hexString, "4fd1cb3c9c15c171b7b90dc3fefc7b2fc54de09b869cc9d6708d26b114e8d9a5")
         XCTAssertEqual(address.description, "GCRWFRVQP5XS7I4SFCL374VKV6OHJ3L3H3SDVGH7FW73N7LSNYJXOLDK")
         XCTAssertEqual(address.description, address2)
+    }
+
+    func testDeriveTezos() {
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: .tezos)
+        let pubkey = key.getPublicKeyEd25519()
+        let address = TezosAddress(publicKey: pubkey)
+
+        XCTAssertEqual(pubkey.data.hexString, "01c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371")
+        XCTAssertEqual("tz1RsC3AREfrMwh6Hdu7qGKxBwb1VgwJv1qw", address.description)
+    }
+
+    func testDeriveTezos2() {
+        let wallet = HDWallet(mnemonic: "kidney setup media hat relief plastic ghost census mouse science expect movie", passphrase: "")
+
+        let key = wallet.getKeyForCoin(coin: .tezos)
+        let address = CoinType.tezos.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("tz1M9ZMG1kthqQFK5dFi8rDCahqw6gHr1zoZ", address.description)
+    }
+
+    func testDeriveNimiq() {
+        // mnemonic is from https://github.com/Eligioo/nimiq-hd-wallet, compatible with ledger
+        // but it's not compatible with safe.nimiq.com (can't import)
+        let wallet = HDWallet(mnemonic: "insane mixed health squeeze physical trust pipe possible garage hero flock stand profit power tooth review note camera express vicious clock machine entire heavy", passphrase: "")
+        let coin = CoinType.nimiq
+        let key = wallet.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("NQ77 XYYH YUNC V52U 5ADV 5JAY QXMD 2F9C Q440", address.description)
     }
 
     func testSignHash() {

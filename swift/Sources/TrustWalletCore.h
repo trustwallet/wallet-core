@@ -45,6 +45,7 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWIconAddressType.h>
 #include <TrustWalletCore/TWIconSigner.h>
 #include <TrustWalletCore/TWKeyDerivation.h>
+#include <TrustWalletCore/TWNEOAddress.h>
 #include <TrustWalletCore/TWNimiqAddress.h>
 #include <TrustWalletCore/TWNimiqSigner.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -55,6 +56,7 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWRippleAddress.h>
 #include <TrustWalletCore/TWRippleSigner.h>
 #include <TrustWalletCore/TWStellarAddress.h>
+#include <TrustWalletCore/TWStellarMemoType.h>
 #include <TrustWalletCore/TWStellarSigner.h>
 #include <TrustWalletCore/TWStellarVersionByte.h>
 #include <TrustWalletCore/TWStoredKey.h>

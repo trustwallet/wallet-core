@@ -65,7 +65,9 @@ bool Address::isValid(const std::string& stringPadded) {
 }
 
 Address::Address(const std::string& stringPadded) {
-    assert(isValid(stringPadded));
+    if (!isValid(stringPadded)) {
+        throw std::invalid_argument("Invalid address data");
+    }
 
     std::string string = stringPadded;
 
@@ -80,7 +82,9 @@ Address::Address(const std::string& stringPadded) {
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    assert(Address::isValid(data));
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address data");
+    }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 

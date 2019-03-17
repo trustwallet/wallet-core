@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum StellarVersionByte: UInt16 {
+public enum StellarVersionByte: UInt16, CaseIterable {
     case accountID = 0x30
     case seed = 0xc0
     case preAuthTX = 0xc8

@@ -46,17 +46,21 @@ bool Address::isValid(const std::string& string) {
 }
 
 Address::Address(const std::string& string) {
-    uint8_t decoded[rawSize];
     // Ensure address is valid
-    assert(isValid(string));
+    if (!isValid(string)) {
+        throw std::invalid_argument("Invalid address data");
+    }
 
+    uint8_t decoded[rawSize];
     base32_decode(string.data(), size, decoded, sizeof(decoded), BASE32_ALPHABET_RFC4648);
     std::copy(decoded + 1, decoded + 33, bytes.begin());
     memzero(decoded, sizeof(decoded));
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    assert(isValid(data));
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address key data");
+    }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 

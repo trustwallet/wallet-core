@@ -35,7 +35,8 @@ public enum CoinType {
     NIMIQ (242),
     STELLAR (148),
     AION (425),
-    COSMOS (118);
+    COSMOS (118),
+    NEO (888);
 
     private final int value;
     CoinType(int value) {
@@ -70,6 +71,7 @@ public enum CoinType {
             case 148: return CoinType.STELLAR;
             case 425: return CoinType.AION;
             case 118: return CoinType.COSMOS;
+            case 888: return CoinType.NEO;
             default: return null;
         }
     }

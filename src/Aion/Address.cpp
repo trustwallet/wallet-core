@@ -17,16 +17,14 @@ bool Address::isValid(const std::string& string) {
 
 Address::Address(const std::string& string) {
     const auto data = parse_hex(string);
-    assert(Address::isValid(data));
-    if (data.size() != size) {
+    if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    assert(Address::isValid(data));
-    if (data.size() != size) {
+    if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());

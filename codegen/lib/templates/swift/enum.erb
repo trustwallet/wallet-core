@@ -1,6 +1,6 @@
 <%  has_string = entity.cases.all? { |c| !c.string.nil? } -%>
 <%  type = entity.raw_type ? SwiftHelper.type(entity.raw_type) : 'UInt32' -%>
-public enum <%= entity.name %>: <%= type %><% if has_string %>, CustomStringConvertible <% end %> {
+public enum <%= entity.name %>: <%= type %>, CaseIterable<% if has_string %>, CustomStringConvertible <% end %> {
 <%# Cases -%>
 <%  entity.cases.each do |c| -%>
     case <%= SwiftHelper.format_name(c.name) %><% unless c.value.nil? %> = <%= c.value %><% end %>

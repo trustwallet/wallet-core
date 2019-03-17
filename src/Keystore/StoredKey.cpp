@@ -56,7 +56,7 @@ HDWallet StoredKey::wallet(const std::string& password) {
         throw std::invalid_argument("Invalid account requested.");
     }
     const auto data = payload.decrypt(password);
-    const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()));
+    const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
     return HDWallet(mnemonic, "");
 }
 
@@ -92,6 +92,18 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& passw
 
     case StoredKeyType::watchOnly:
         throw std::invalid_argument("This is a watch-only key");
+    }
+}
+
+void StoredKey::fixAddresses(const std::string& password) {
+    const auto wallet = this->wallet(password);
+    for (auto& account : accounts) {
+        if (!account.address.empty() && TW::validateAddress(account.coin(), account.address)) {
+            continue;
+        }
+        const auto& derivationPath = account.derivationPath;
+        const auto key = wallet.getKey(derivationPath);
+        account.address = TW::deriveAddress(derivationPath.coin(), key);
     }
 }
 
