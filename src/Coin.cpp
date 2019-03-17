@@ -19,6 +19,7 @@
 #include "Tron/Address.h"
 #include "Zcash/TAddress.h"
 #include "Stellar/Address.h"
+#include "NEO/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -79,6 +80,8 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
 
     case TWCoinTypeTezos:
         return Tezos::Address(data).string();
+    case TWCoinTypeNEO:
+        return NEO::Address(data).string();
     }
 }
 
@@ -137,6 +140,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {TWP2PKHPrefixZcashT, TWP2SHPrefixZcashT});
+
+    case TWCoinTypeNEO:
+        return NEO::Address::isValid(string);
     }
 }
 
@@ -164,6 +170,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeNEO:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -194,6 +201,9 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWCurveSECP256k1;
+
+    case TWCoinTypeNEO:
+            return TWCurveNIST256p1;
 
     case TWCoinTypeAion:
     case TWCoinTypeNimiq:
@@ -233,6 +243,7 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
+    case TWCoinTypeNEO:
         return TWHDVersionNone;
     }
 }
@@ -261,6 +272,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcoin:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
+    case TWCoinTypeNEO:
         return DerivationPath{
             DerivationPathIndex(purpose(coin), true),
             DerivationPathIndex(coin, true),
@@ -341,5 +353,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 
     case TWCoinTypeStellar:
         return Stellar::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
+
+    case TWCoinTypeNEO:
+        return NEO::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
     }
 }
