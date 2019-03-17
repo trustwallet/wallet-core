@@ -32,6 +32,7 @@ public enum CoinType: UInt32 {
     case nimiq = 242
     case stellar = 148
     case aion = 425
+    case cosmos = 118
 
     public var purpose: Purpose {
         return Purpose(rawValue: TWCoinTypePurpose(TWCoinType(rawValue: rawValue)).rawValue)!

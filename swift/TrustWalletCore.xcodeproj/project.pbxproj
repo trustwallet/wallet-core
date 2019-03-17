@@ -19,6 +19,8 @@
 		14FDB4BC2236BDBD002FC058 /* Stellar.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */; };
 		34339D36023473D76FAF18EE /* Pods_TrustWalletCore_TrustWalletCoreTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */; };
 		467181FB9EFC0E4C01DDB460 /* Pods_TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */; };
+		4E7D1D54223E59A200504DE5 /* CosmosTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7D1D53223E59A200504DE5 /* CosmosTests.swift */; };
+		4E7D1D56223E652E00504DE5 /* Cosmos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7D1D55223E652E00504DE5 /* Cosmos.swift */; };
 		4E8BBE8C2230998600F98E04 /* RLP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E8BBE852230998500F98E04 /* RLP.h */; };
 		4E8BBE8D2230998600F98E04 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4E8BBE862230998500F98E04 /* Transaction.cpp */; };
 		4E8BBE8E2230998600F98E04 /* Signer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4E8BBE872230998500F98E04 /* Signer.cpp */; };
@@ -621,6 +623,8 @@
 		14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stellar.pb.cc; sourceTree = "<group>"; };
 		14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stellar.pb.h; sourceTree = "<group>"; };
 		36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E7D1D53223E59A200504DE5 /* CosmosTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmosTests.swift; sourceTree = "<group>"; };
+		4E7D1D55223E652E00504DE5 /* Cosmos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cosmos.swift; sourceTree = "<group>"; };
 		4E8BBE852230998500F98E04 /* RLP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RLP.h; path = Aion/RLP.h; sourceTree = "<group>"; };
 		4E8BBE862230998500F98E04 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = Aion/Transaction.cpp; sourceTree = "<group>"; };
 		4E8BBE872230998500F98E04 /* Signer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signer.cpp; path = Aion/Signer.cpp; sourceTree = "<group>"; };
@@ -1970,6 +1974,7 @@
 				61C4E8D622260B140020A917 /* Zcoin.swift */,
 				616F87BC223041F30007ECA3 /* Nimq.swift */,
 				140352F42233740C00DF0815 /* Stellar.swift */,
+				4E7D1D55223E652E00504DE5 /* Cosmos.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -2028,6 +2033,7 @@
 				61E813D92227522F00D4D2C9 /* ZcashTests.swift */,
 				61C4E916222614640020A917 /* ZcoinTests.swift */,
 				BB6AE9AA2233799C00F9EF85 /* StellarTests.swift */,
+				4E7D1D53223E59A200504DE5 /* CosmosTests.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -2719,6 +2725,7 @@
 				61E81431222758E100D4D2C9 /* SlipTests.swift in Sources */,
 				61C4E91A2226150F0020A917 /* BitconCashTests.swift in Sources */,
 				61E81435222758EC00D4D2C9 /* DerivationPathTests.swift in Sources */,
+				4E7D1D54223E59A200504DE5 /* CosmosTests.swift in Sources */,
 				61376FFF220D48E800573D0F /* BinanceSignerTests.swift in Sources */,
 				61E813DE2227528000D4D2C9 /* HDWalletTests.swift in Sources */,
 				61E81433222758E100D4D2C9 /* PurposeTests.swift in Sources */,
@@ -2883,6 +2890,7 @@
 				61B159D221CC5DBB00CFE93B /* TransactionOutput.cpp in Sources */,
 				61C4E924222615300020A917 /* PrivateKey+Bitcoin.swift in Sources */,
 				611BBE32223595550043FB94 /* EncryptionParameters.cpp in Sources */,
+				4E7D1D56223E652E00504DE5 /* Cosmos.swift in Sources */,
 				61C4E8EF22260B150020A917 /* Zcoin.swift in Sources */,
 				7782DF29222F0D9100599404 /* Tezos.swift in Sources */,
 				61735C69219DF044007BF637 /* aeskey.c in Sources */,
