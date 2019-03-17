@@ -521,6 +521,7 @@
 		61FE4B4122208E1C00C65017 /* VeChain.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61FE4B3F22208E1C00C65017 /* VeChain.pb.swift */; };
 		61FE4B4422208E5000C65017 /* VeChain.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 61FE4B4222208E5000C65017 /* VeChain.pb.cc */; };
 		61FE4B4522208E5000C65017 /* VeChain.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 61FE4B4322208E5000C65017 /* VeChain.pb.h */; };
+		770473EC223EBF4F00341F5B /* Kin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 770473EB223EBF4F00341F5B /* Kin.swift */; };
 		7706F5BF2231F5D300F124F3 /* Tezos.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7706F5BE2231F5D200F124F3 /* Tezos.pb.swift */; };
 		7706F5E62233E31D00F124F3 /* Transaction.h in Headers */ = {isa = PBXBuildFile; fileRef = 7706F5DC2233E31D00F124F3 /* Transaction.h */; };
 		7706F5E72233E31D00F124F3 /* Forging.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7706F5DD2233E31D00F124F3 /* Forging.cpp */; };
@@ -1182,6 +1183,7 @@
 		61FE4B4222208E5000C65017 /* VeChain.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VeChain.pb.cc; sourceTree = "<group>"; };
 		61FE4B4322208E5000C65017 /* VeChain.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VeChain.pb.h; sourceTree = "<group>"; };
 		667A8CF3B4C135CBB4CAC72E /* Pods-TrustWalletCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TrustWalletCore.release.xcconfig"; path = "Target Support Files/Pods-TrustWalletCore/Pods-TrustWalletCore.release.xcconfig"; sourceTree = "<group>"; };
+		770473EB223EBF4F00341F5B /* Kin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kin.swift; sourceTree = "<group>"; };
 		7706F5BE2231F5D200F124F3 /* Tezos.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tezos.pb.swift; sourceTree = "<group>"; };
 		7706F5DC2233E31D00F124F3 /* Transaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Transaction.h; sourceTree = "<group>"; };
 		7706F5DD2233E31D00F124F3 /* Forging.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Forging.cpp; sourceTree = "<group>"; };
@@ -2008,6 +2010,7 @@
 				61C4E8D622260B140020A917 /* Zcoin.swift */,
 				616F87BC223041F30007ECA3 /* Nimq.swift */,
 				140352F42233740C00DF0815 /* Stellar.swift */,
+				770473EB223EBF4F00341F5B /* Kin.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -3030,6 +3033,7 @@
 				611BBE24223595420043FB94 /* TWAccount.cpp in Sources */,
 				61FE4B19221F64B200C65017 /* EthereumAddress.swift in Sources */,
 				BB211062221C045000571DF7 /* RippleAddress.swift in Sources */,
+				770473EC223EBF4F00341F5B /* Kin.swift in Sources */,
 				616F87C0223044860007ECA3 /* TWNimiqAddress.cpp in Sources */,
 				BB3F05B2220BD93E008C6971 /* TAddress.cpp in Sources */,
 				61B159E521CC5DBB00CFE93B /* TWPrivateKey.cpp in Sources */,
