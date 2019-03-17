@@ -24,7 +24,7 @@ TEST(TezosSigner, SignString) {
     auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));    
     auto signedBytes = Signer().signHexString(key, bytesToSign);
 
-    ASSERT_EQ(signedBytes, expectedSignedBytes);
+    ASSERT_EQ(signedBytes, parse_hex(expectedSignedBytes));
 }
 
 TEST(TezosSigner, SignOperationList) {
@@ -59,5 +59,5 @@ TEST(TezosSigner, SignOperationList) {
     auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
     auto signedBytes = Signer().signOperationList(key, op_list);
 
-    ASSERT_EQ(signedBytes, expectedSignedBytes);
+    ASSERT_EQ(signedBytes, parse_hex(expectedSignedBytes));
 }

@@ -50,12 +50,10 @@ TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data)
 
     auto signer = Signer();
     PrivateKey key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto signedBytesHex = signer.signOperationList(key, operationList);
+    Data signedBytes = signer.signOperationList(key, operationList);
 
     auto protoOutput = Proto::SigningOutput();
-    TWString *signedBytesHexString = TWStringCreateWithUTF8Bytes(signedBytesHex.c_str());
-    TWData *signedBytes = TWDataCreateWithHexString(signedBytesHexString);
-    protoOutput.set_signed_bytes(TWDataBytes(signedBytes), TWDataSize(signedBytes));
+    protoOutput.set_signed_bytes(signedBytes.data(), signedBytes.size());
     auto serialized = protoOutput.SerializeAsString();
 
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
