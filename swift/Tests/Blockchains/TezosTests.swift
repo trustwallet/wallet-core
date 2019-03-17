@@ -51,7 +51,7 @@ class TezosTests: XCTestCase {
         operationList.branch = branch;
 
         var revealOperationData = TW_Tezos_Proto_RevealOperationData();
-        revealOperationData.publicKey = "edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"
+        revealOperationData.publicKey = Data(hexString: "01429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e")!
 
         var transactionOperationData = TW_Tezos_Proto_TransactionOperationData()
         transactionOperationData.amount = 1

@@ -31,16 +31,16 @@ message Operation {
   int64 fee = 3;
   int64 gas_limit = 4;
   int64 storage_limit = 5;
-  
+
   enum OperationKind {
     // Note: Proto3 semantics require a zero value.
     ENDORSEMENT = 0;
-    
+
     REVEAL = 7;
     TRANSACTION = 8;
   }
   OperationKind kind = 7;
-    
+
   // Operation specific data depending on the type of the operation.
   oneof operation_data {
     RevealOperationData reveal_operation_data = 8;
@@ -58,5 +58,5 @@ message TransactionOperationData {
 // Reveal operation specific data.
 // Next field: 2
 message RevealOperationData {
-  string public_key = 1;
+  bytes public_key = 1;
 }
