@@ -17,6 +17,7 @@
 		14FDB4B82236BC9B002FC058 /* Signer.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4B62236BC9B002FC058 /* Signer.h */; };
 		14FDB4BB2236BDBD002FC058 /* Stellar.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */; };
 		14FDB4BC2236BDBD002FC058 /* Stellar.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */; };
+		29587DC8223E08B300BAD800 /* CoinAddressDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29587DC6223E08A600BAD800 /* CoinAddressDerivationTests.swift */; };
 		34339D36023473D76FAF18EE /* Pods_TrustWalletCore_TrustWalletCoreTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */; };
 		467181FB9EFC0E4C01DDB460 /* Pods_TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */; };
 		4E8BBE8C2230998600F98E04 /* RLP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E8BBE852230998500F98E04 /* RLP.h */; };
@@ -632,6 +633,7 @@
 		14FDB4B62236BC9B002FC058 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
 		14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stellar.pb.cc; sourceTree = "<group>"; };
 		14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stellar.pb.h; sourceTree = "<group>"; };
+		29587DC6223E08A600BAD800 /* CoinAddressDerivationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoinAddressDerivationTests.swift; sourceTree = "<group>"; };
 		36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E8BBE852230998500F98E04 /* RLP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RLP.h; path = Aion/RLP.h; sourceTree = "<group>"; };
 		4E8BBE862230998500F98E04 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = Aion/Transaction.cpp; sourceTree = "<group>"; };
@@ -1717,6 +1719,7 @@
 				61E813EF2227585900D4D2C9 /* PublicKeyTests.swift */,
 				61E813F12227586800D4D2C9 /* PurposeTests.swift */,
 				61E813F32227587600D4D2C9 /* SlipTests.swift */,
+				29587DC6223E08A600BAD800 /* CoinAddressDerivationTests.swift */,
 				61C4E904222613DC0020A917 /* Addresses */,
 				61C4E905222613E70020A917 /* Blockchains */,
 				61A6250D2236DA1A009C450C /* Keystore */,
@@ -2782,6 +2785,7 @@
 				6198EA8021B6BFC9008CB60A /* DataTests.swift in Sources */,
 				61E813E62227535A00D4D2C9 /* BinanceChainTests.swift in Sources */,
 				61C4E920222615120020A917 /* BitcoinAddressTests.swift in Sources */,
+				29587DC8223E08B300BAD800 /* CoinAddressDerivationTests.swift in Sources */,
 				61C4E91E2226150F0020A917 /* WanchainTests.swift in Sources */,
 				61E81434222758E100D4D2C9 /* PublicKeyTests.swift in Sources */,
 				61E81432222758E100D4D2C9 /* PrivateKeyTests.swift in Sources */,
