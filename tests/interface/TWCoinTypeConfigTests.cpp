@@ -71,6 +71,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value21 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
     assertStringsEqual(value21, "AION");
 
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCosmos));
+    assertStringsEqual(value22, "ATOM");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -96,6 +98,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -169,6 +172,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value24 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
     assertStringsEqual(value24, "https://mainnet.aion.network/#/transaction/123");
+
+    auto value25 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
+    assertStringsEqual(value25, "http://rpc.hub.certus.one:26657/tx?hash=123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -231,6 +237,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value21 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
     assertStringsEqual(value21, "aion");
+
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
+    assertStringsEqual(value22, "atom");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -296,4 +305,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRipple));
     assertStringsEqual(value22, "XRP");
+
+    auto value23 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
+    assertStringsEqual(value23, "Atom");
 }

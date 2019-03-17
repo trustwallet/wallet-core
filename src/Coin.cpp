@@ -157,6 +157,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
+    case TWCoinTypeCosmos:
     case TWCoinTypeDash:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
@@ -175,9 +176,6 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
-    case TWCoinTypeStellar:
-    case TWCoinTypeAion:
-    case TWCoinTypeCosmos:
     case TWCoinTypeNEO:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
