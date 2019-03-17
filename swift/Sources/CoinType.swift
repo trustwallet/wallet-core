@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum CoinType: UInt32 {
+public enum CoinType: UInt32, CaseIterable {
     case binance = 714
     case bitcoin = 0
     case bitcoinCash = 145
@@ -32,6 +32,7 @@ public enum CoinType: UInt32 {
     case nimiq = 242
     case stellar = 148
     case aion = 425
+    case neo = 888
 
     public var purpose: Purpose {
         return Purpose(rawValue: TWCoinTypePurpose(TWCoinType(rawValue: rawValue)).rawValue)!

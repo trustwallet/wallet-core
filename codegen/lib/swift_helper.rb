@@ -1,14 +1,25 @@
 # frozen_string_literal: true
 
 module SwiftHelper
+  KEYWORDS = %w[
+    associatedtype class deinit enum extension fileprivate func import init inout internal let open operator private protocol public static struct subscript typealias var
+    break case continue default defer do else fallthrough for guard if in repeat return switch where while
+    as Any catch false is nil rethrows super self Self throw throws true try
+    _
+    #available #colorLiteral #column #else #elseif #endif #error #file #fileLiteral #function #if #imageLiteral #line #selector #sourceLocation #warning
+  ].freeze
+
   # Transforms an interface name to a Swift method or property name
   def self.format_name(n)
     return '< ' if n == 'Less'
     return '== ' if n == 'Equal'
 
+    formatted = n
     prefix = /^([A-Z]+)/.match(n)[1]
-    return n if prefix.nil?
-    n.sub(prefix, prefix.downcase)
+    formatted = formatted.sub(prefix, prefix.downcase) unless prefix.nil?
+    formatted = '`' + formatted + '`' if KEYWORDS.include?(formatted)
+
+    formatted
   end
 
   def self.parameters(params)

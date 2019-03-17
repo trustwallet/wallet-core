@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum StellarMemoType: UInt32 {
+public enum StellarMemoType: UInt32, CaseIterable {
     case none = 0
     case text = 1
     case id = 2

@@ -23,7 +23,7 @@ TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data)
     for (auto& operationProto : input.operation_list().operations()) {
         if (operationProto.has_reveal_operation_data()) {
             auto source = Address(operationProto.source());
-            auto publicKey = parsePublicKey(operationProto.reveal_operation_data().public_key());
+            auto publicKey = PublicKey(operationProto.reveal_operation_data().public_key());
             auto operation = Transaction(source,
                                          operationProto.fee(),
                                          operationProto.counter(),
