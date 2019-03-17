@@ -30,7 +30,8 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     switch (coin) {
     case TWCoinTypeBinance:
         return Tendermint::Address(HRP_BINANCE, data).string();
-
+    case TWCoinTypeCosmos:
+        return Tendermint::Address(HRP_COSMOS, data).string();
     case TWCoinTypeBitcoin:
         return Bitcoin::Bech32Address(HRP_BITCOIN, 0, data).string();
 
@@ -91,6 +92,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress::isValid(string) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
+
+    case TWCoinTypeCosmos:
+        return Tendermint::Address::isValid(string, HRP_COSMOS) || Tendermint::Address::isValid(string, HRP_COSMOS);
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -162,6 +166,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeStellar:
     case TWCoinTypeAion:
+    case TWCoinTypeCosmos:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -192,6 +197,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeCosmos:
         return TWCurveSECP256k1;
 
     case TWCoinTypeAion:
@@ -215,6 +221,7 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
 
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
+    case TWCoinTypeCosmos:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
@@ -270,6 +277,15 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
             DerivationPathIndex(0, true),
         };
 
+    case TWCoinTypeCosmos:
+        return DerivationPath{
+            DerivationPathIndex(purpose(coin), true),
+            DerivationPathIndex(coin, true),
+            DerivationPathIndex(0, true),
+            DerivationPathIndex(0, false),
+            DerivationPathIndex(0, false),
+        };
+
     case TWCoinTypeStellar:
         return DerivationPath{
             DerivationPathIndex(purpose(coin), true),
@@ -283,6 +299,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
     switch (coin) {
     case TWCoinTypeBinance:
         return Tendermint::Address(HRP_BINANCE, privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+    
+    case TWCoinTypeCosmos:
+        return Tendermint::Address(HRP_COSMOS, privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
 
     case TWCoinTypeBitcoin:
         return Bitcoin::Bech32Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0, HRP_BITCOIN).string();
