@@ -4264,14 +4264,9 @@ public final class Tezos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string public_key = 1;</code>
+     * <code>bytes public_key = 1;</code>
      */
-    java.lang.String getPublicKey();
-    /**
-     * <code>string public_key = 1;</code>
-     */
-    com.google.protobuf.ByteString
-        getPublicKeyBytes();
+    com.google.protobuf.ByteString getPublicKey();
   }
   /**
    * <pre>
@@ -4291,7 +4286,7 @@ public final class Tezos {
       super(builder);
     }
     private RevealOperationData() {
-      publicKey_ = "";
+      publicKey_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -4319,9 +4314,8 @@ public final class Tezos {
               done = true;
               break;
             case 10: {
-              java.lang.String s = input.readStringRequireUtf8();
 
-              publicKey_ = s;
+              publicKey_ = input.readBytes();
               break;
             }
             default: {
@@ -4357,37 +4351,12 @@ public final class Tezos {
     }
 
     public static final int PUBLIC_KEY_FIELD_NUMBER = 1;
-    private volatile java.lang.Object publicKey_;
+    private com.google.protobuf.ByteString publicKey_;
     /**
-     * <code>string public_key = 1;</code>
+     * <code>bytes public_key = 1;</code>
      */
-    public java.lang.String getPublicKey() {
-      java.lang.Object ref = publicKey_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        publicKey_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string public_key = 1;</code>
-     */
-    public com.google.protobuf.ByteString
-        getPublicKeyBytes() {
-      java.lang.Object ref = publicKey_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        publicKey_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+    public com.google.protobuf.ByteString getPublicKey() {
+      return publicKey_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -4404,8 +4373,8 @@ public final class Tezos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getPublicKeyBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, publicKey_);
+      if (!publicKey_.isEmpty()) {
+        output.writeBytes(1, publicKey_);
       }
       unknownFields.writeTo(output);
     }
@@ -4416,8 +4385,9 @@ public final class Tezos {
       if (size != -1) return size;
 
       size = 0;
-      if (!getPublicKeyBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, publicKey_);
+      if (!publicKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, publicKey_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -4587,7 +4557,7 @@ public final class Tezos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        publicKey_ = "";
+        publicKey_ = com.google.protobuf.ByteString.EMPTY;
 
         return this;
       }
@@ -4664,9 +4634,8 @@ public final class Tezos {
 
       public Builder mergeFrom(wallet.core.jni.proto.Tezos.RevealOperationData other) {
         if (other == wallet.core.jni.proto.Tezos.RevealOperationData.getDefaultInstance()) return this;
-        if (!other.getPublicKey().isEmpty()) {
-          publicKey_ = other.publicKey_;
-          onChanged();
+        if (other.getPublicKey() != com.google.protobuf.ByteString.EMPTY) {
+          setPublicKey(other.getPublicKey());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -4697,43 +4666,17 @@ public final class Tezos {
         return this;
       }
 
-      private java.lang.Object publicKey_ = "";
+      private com.google.protobuf.ByteString publicKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>string public_key = 1;</code>
+       * <code>bytes public_key = 1;</code>
        */
-      public java.lang.String getPublicKey() {
-        java.lang.Object ref = publicKey_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          publicKey_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
+      public com.google.protobuf.ByteString getPublicKey() {
+        return publicKey_;
       }
       /**
-       * <code>string public_key = 1;</code>
+       * <code>bytes public_key = 1;</code>
        */
-      public com.google.protobuf.ByteString
-          getPublicKeyBytes() {
-        java.lang.Object ref = publicKey_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          publicKey_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string public_key = 1;</code>
-       */
-      public Builder setPublicKey(
-          java.lang.String value) {
+      public Builder setPublicKey(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -4743,25 +4686,11 @@ public final class Tezos {
         return this;
       }
       /**
-       * <code>string public_key = 1;</code>
+       * <code>bytes public_key = 1;</code>
        */
       public Builder clearPublicKey() {
         
         publicKey_ = getDefaultInstance().getPublicKey();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string public_key = 1;</code>
-       */
-      public Builder setPublicKeyBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        publicKey_ = value;
         onChanged();
         return this;
       }
@@ -4875,7 +4804,7 @@ public final class Tezos {
       "NSACTION\020\010B\020\n\016operation_data\"?\n\030Transact" +
       "ionOperationData\022\023\n\013destination\030\001 \001(\t\022\016\n" +
       "\006amount\030\002 \001(\003\")\n\023RevealOperationData\022\022\n\n" +
-      "public_key\030\001 \001(\tB\027\n\025wallet.core.jni.prot" +
+      "public_key\030\001 \001(\014B\027\n\025wallet.core.jni.prot" +
       "ob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
