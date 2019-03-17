@@ -20,7 +20,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .aion:
                     XCTAssertEqual("0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e", address)
                 case .binance:
-                    XCTAssertEqual("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", address)
+                    XCTAssertEqual("tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl", address)
                 case .bitcoin:
                     XCTAssertEqual("bc1quvuarfksewfeuevuc6tn0kfyptgjvwsvrprk9d", address)
                 case .bitcoinCash:
