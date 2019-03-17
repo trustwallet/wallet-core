@@ -16,17 +16,17 @@
 using namespace TW;
 using namespace TW::Tezos;
 
-std::string Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
+Data Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
   auto forgedBytes = operationList.forge();
   return signHexString(privateKey, forgedBytes);
 }
 
-std::string Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes) {
+Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes) {
   auto watermark = "03";
   auto watermarkedForgedBytesHex = parse_hex(watermark + forgedBytes);
   auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
   TW::PublicKey pk = privateKey.getPublicKey(PublicKeyType::ed25519);
   Data signature = privateKey.sign(hash, TWCurve::TWCurveEd25519);
 
-  return forgedBytes + hex(signature);
+  return parse_hex(forgedBytes + hex(signature));
 }
