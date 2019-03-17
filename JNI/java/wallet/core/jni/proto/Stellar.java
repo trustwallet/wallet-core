@@ -2040,6 +2040,15 @@ public final class Stellar {
      */
     wallet.core.jni.proto.Stellar.MemoHashOrBuilder getMemoReturnHashOrBuilder();
 
+    /**
+     * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+     */
+    int getOperationTypeValue();
+    /**
+     * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+     */
+    wallet.core.jni.proto.Stellar.SigningInput.OperationType getOperationType();
+
     public wallet.core.jni.proto.Stellar.SigningInput.MemoTypeOneofCase getMemoTypeOneofCase();
   }
   /**
@@ -2062,6 +2071,7 @@ public final class Stellar {
       account_ = "";
       destination_ = "";
       privateKey_ = com.google.protobuf.ByteString.EMPTY;
+      operationType_ = 0;
     }
 
     @java.lang.Override
@@ -2190,6 +2200,12 @@ public final class Stellar {
               memoTypeOneofCase_ = 11;
               break;
             }
+            case 96: {
+              int rawValue = input.readEnum();
+
+              operationType_ = rawValue;
+              break;
+            }
             default: {
               if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
@@ -2220,6 +2236,104 @@ public final class Stellar {
       return wallet.core.jni.proto.Stellar.internal_static_TW_Stellar_Proto_SigningInput_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               wallet.core.jni.proto.Stellar.SigningInput.class, wallet.core.jni.proto.Stellar.SigningInput.Builder.class);
+    }
+
+    /**
+     * Protobuf enum {@code TW.Stellar.Proto.SigningInput.OperationType}
+     */
+    public enum OperationType
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>CREATE_ACCOUNT = 0;</code>
+       */
+      CREATE_ACCOUNT(0),
+      /**
+       * <code>PAYMENT = 1;</code>
+       */
+      PAYMENT(1),
+      UNRECOGNIZED(-1),
+      ;
+
+      /**
+       * <code>CREATE_ACCOUNT = 0;</code>
+       */
+      public static final int CREATE_ACCOUNT_VALUE = 0;
+      /**
+       * <code>PAYMENT = 1;</code>
+       */
+      public static final int PAYMENT_VALUE = 1;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static OperationType valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static OperationType forNumber(int value) {
+        switch (value) {
+          case 0: return CREATE_ACCOUNT;
+          case 1: return PAYMENT;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<OperationType>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          OperationType> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<OperationType>() {
+              public OperationType findValueByNumber(int number) {
+                return OperationType.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return wallet.core.jni.proto.Stellar.SigningInput.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final OperationType[] VALUES = values();
+
+      public static OperationType valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private OperationType(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:TW.Stellar.Proto.SigningInput.OperationType)
     }
 
     private int memoTypeOneofCase_ = 0;
@@ -2504,6 +2618,23 @@ public final class Stellar {
       return wallet.core.jni.proto.Stellar.MemoHash.getDefaultInstance();
     }
 
+    public static final int OPERATION_TYPE_FIELD_NUMBER = 12;
+    private int operationType_;
+    /**
+     * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+     */
+    public int getOperationTypeValue() {
+      return operationType_;
+    }
+    /**
+     * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+     */
+    public wallet.core.jni.proto.Stellar.SigningInput.OperationType getOperationType() {
+      @SuppressWarnings("deprecation")
+      wallet.core.jni.proto.Stellar.SigningInput.OperationType result = wallet.core.jni.proto.Stellar.SigningInput.OperationType.valueOf(operationType_);
+      return result == null ? wallet.core.jni.proto.Stellar.SigningInput.OperationType.UNRECOGNIZED : result;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2550,6 +2681,9 @@ public final class Stellar {
       }
       if (memoTypeOneofCase_ == 11) {
         output.writeMessage(11, (wallet.core.jni.proto.Stellar.MemoHash) memoTypeOneof_);
+      }
+      if (operationType_ != wallet.core.jni.proto.Stellar.SigningInput.OperationType.CREATE_ACCOUNT.getNumber()) {
+        output.writeEnum(12, operationType_);
       }
       unknownFields.writeTo(output);
     }
@@ -2602,6 +2736,10 @@ public final class Stellar {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(11, (wallet.core.jni.proto.Stellar.MemoHash) memoTypeOneof_);
       }
+      if (operationType_ != wallet.core.jni.proto.Stellar.SigningInput.OperationType.CREATE_ACCOUNT.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(12, operationType_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -2629,6 +2767,7 @@ public final class Stellar {
           .equals(other.getDestination())) return false;
       if (!getPrivateKey()
           .equals(other.getPrivateKey())) return false;
+      if (operationType_ != other.operationType_) return false;
       if (!getMemoTypeOneofCase().equals(other.getMemoTypeOneofCase())) return false;
       switch (memoTypeOneofCase_) {
         case 7:
@@ -2679,6 +2818,8 @@ public final class Stellar {
       hash = (53 * hash) + getDestination().hashCode();
       hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getPrivateKey().hashCode();
+      hash = (37 * hash) + OPERATION_TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + operationType_;
       switch (memoTypeOneofCase_) {
         case 7:
           hash = (37 * hash) + MEMO_VOID_FIELD_NUMBER;
@@ -2852,6 +2993,8 @@ public final class Stellar {
 
         privateKey_ = com.google.protobuf.ByteString.EMPTY;
 
+        operationType_ = 0;
+
         memoTypeOneofCase_ = 0;
         memoTypeOneof_ = null;
         return this;
@@ -2921,6 +3064,7 @@ public final class Stellar {
             result.memoTypeOneof_ = memoReturnHashBuilder_.build();
           }
         }
+        result.operationType_ = operationType_;
         result.memoTypeOneofCase_ = memoTypeOneofCase_;
         onBuilt();
         return result;
@@ -2989,6 +3133,9 @@ public final class Stellar {
         }
         if (other.getPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
           setPrivateKey(other.getPrivateKey());
+        }
+        if (other.operationType_ != 0) {
+          setOperationTypeValue(other.getOperationTypeValue());
         }
         switch (other.getMemoTypeOneofCase()) {
           case MEMO_VOID: {
@@ -3995,6 +4142,51 @@ public final class Stellar {
         onChanged();;
         return memoReturnHashBuilder_;
       }
+
+      private int operationType_ = 0;
+      /**
+       * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+       */
+      public int getOperationTypeValue() {
+        return operationType_;
+      }
+      /**
+       * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+       */
+      public Builder setOperationTypeValue(int value) {
+        operationType_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+       */
+      public wallet.core.jni.proto.Stellar.SigningInput.OperationType getOperationType() {
+        @SuppressWarnings("deprecation")
+        wallet.core.jni.proto.Stellar.SigningInput.OperationType result = wallet.core.jni.proto.Stellar.SigningInput.OperationType.valueOf(operationType_);
+        return result == null ? wallet.core.jni.proto.Stellar.SigningInput.OperationType.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+       */
+      public Builder setOperationType(wallet.core.jni.proto.Stellar.SigningInput.OperationType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        operationType_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.TW.Stellar.Proto.SigningInput.OperationType operation_type = 12;</code>
+       */
+      public Builder clearOperationType() {
+        
+        operationType_ = 0;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -4683,7 +4875,7 @@ public final class Stellar {
       "\n\rStellar.proto\022\020TW.Stellar.Proto\"\n\n\010Mem" +
       "oVoid\"\030\n\010MemoText\022\014\n\004text\030\001 \001(\t\"\024\n\006MemoI" +
       "d\022\n\n\002id\030\001 \001(\003\"\030\n\010MemoHash\022\014\n\004hash\030\001 \001(\014\"" +
-      "\203\003\n\014SigningInput\022\016\n\006amount\030\001 \001(\003\022\013\n\003fee\030" +
+      "\373\003\n\014SigningInput\022\016\n\006amount\030\001 \001(\003\022\013\n\003fee\030" +
       "\002 \001(\005\022\020\n\010sequence\030\003 \001(\003\022\017\n\007account\030\004 \001(\t" +
       "\022\023\n\013destination\030\005 \001(\t\022\023\n\013private_key\030\006 \001" +
       "(\014\022/\n\tmemo_void\030\007 \001(\0132\032.TW.Stellar.Proto" +
@@ -4692,7 +4884,10 @@ public final class Stellar {
       "TW.Stellar.Proto.MemoIdH\000\022/\n\tmemo_hash\030\n" +
       " \001(\0132\032.TW.Stellar.Proto.MemoHashH\000\0226\n\020me" +
       "mo_return_hash\030\013 \001(\0132\032.TW.Stellar.Proto." +
-      "MemoHashH\000B\021\n\017memo_type_oneof\"\"\n\rSigning" +
+      "MemoHashH\000\022D\n\016operation_type\030\014 \001(\0162,.TW." +
+      "Stellar.Proto.SigningInput.OperationType" +
+      "\"0\n\rOperationType\022\022\n\016CREATE_ACCOUNT\020\000\022\013\n" +
+      "\007PAYMENT\020\001B\021\n\017memo_type_oneof\"\"\n\rSigning" +
       "Output\022\021\n\tsignature\030\001 \001(\tB\027\n\025wallet.core" +
       ".jni.protob\006proto3"
     };
@@ -4737,7 +4932,7 @@ public final class Stellar {
     internal_static_TW_Stellar_Proto_SigningInput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Stellar_Proto_SigningInput_descriptor,
-        new java.lang.String[] { "Amount", "Fee", "Sequence", "Account", "Destination", "PrivateKey", "MemoVoid", "MemoText", "MemoId", "MemoHash", "MemoReturnHash", "MemoTypeOneof", });
+        new java.lang.String[] { "Amount", "Fee", "Sequence", "Account", "Destination", "PrivateKey", "MemoVoid", "MemoText", "MemoId", "MemoHash", "MemoReturnHash", "OperationType", "MemoTypeOneof", });
     internal_static_TW_Stellar_Proto_SigningOutput_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_TW_Stellar_Proto_SigningOutput_fieldAccessorTable = new

@@ -41,6 +41,7 @@ TEST(HDWallet, Seed) {
 
 TEST(HDWallet, IsValid) {
     EXPECT_TRUE(TWHDWalletIsValid(valid.get()));
+    EXPECT_TRUE(TWHDWalletIsValid(STRING("rebuild park fatigue flame one clap grocery scheme upon symbol rifle flush brave feed clutch").get()));
 }
 
 TEST(HDWallet, InvalidWord) {
@@ -214,6 +215,7 @@ TEST(StellarTransaction, sign) {
     input.set_sequence(2);
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.get()->impl.bytes.data(), privateKey.get()->impl.bytes.size());
+    input.set_operation_type(TW::Stellar::Proto::SigningInput_OperationType_PAYMENT);
 
     const auto signer = TW::Stellar::Signer(input);
 

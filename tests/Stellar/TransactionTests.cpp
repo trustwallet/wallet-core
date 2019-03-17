@@ -34,6 +34,7 @@ TEST(StellarTransaction, signWithMemoText) {
     *input.mutable_memo_text() = memoText;
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_PAYMENT);
 
     const auto signer = Signer(input);
 
@@ -54,6 +55,7 @@ TEST(StellarTransaction, signWithMemoHash) {
     *input.mutable_memo_hash() = memoHash;
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_PAYMENT);
 
     const auto signer = Signer(input);
 
@@ -74,6 +76,7 @@ TEST(StellarTransaction, signWithMemoReturn) {
     *input.mutable_memo_return_hash() = memoHash;
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_PAYMENT);
 
     const auto signer = Signer(input);
 
@@ -93,9 +96,30 @@ TEST(StellarTransaction, signWithMemoID) {
     *input.mutable_memo_id() = memoId;
     input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_PAYMENT);
 
     const auto signer = Signer(input);
 
     const auto signature = signer.sign();
     ASSERT_EQ(signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB");
+}
+
+TEST(StellarTransaction, signAcreateAccount) {
+    auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
+    auto input = Proto::SigningInput();
+    input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
+    input.set_amount(10000000);
+    input.set_fee(1000);
+    input.set_sequence(2);
+    auto memoId = Proto::MemoId();
+    memoId.set_id(1234567890);
+    *input.mutable_memo_id() = memoId;
+    input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_operation_type(Proto::SigningInput_OperationType_CREATE_ACCOUNT);
+
+    const auto signer = Signer(input);
+
+    const auto signature = signer.sign();
+    ASSERT_EQ(signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAAAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAmJaAAAAAAAAAAAEZ31yiAAAAQNgqNDqbe0X60gyH+1xf2Tv2RndFiJmyfbrvVjsTfjZAVRrS2zE9hHlqPQKpZkGKEFka7+1ElOS+/m/1JDnauQg=");
 }
