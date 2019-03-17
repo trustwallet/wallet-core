@@ -56,7 +56,7 @@ HDWallet StoredKey::wallet(const std::string& password) {
         throw std::invalid_argument("Invalid account requested.");
     }
     const auto data = payload.decrypt(password);
-    const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()));
+    const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
     return HDWallet(mnemonic, "");
 }
 
