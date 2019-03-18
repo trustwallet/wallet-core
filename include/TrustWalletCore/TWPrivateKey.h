@@ -42,6 +42,10 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateK
 
 /// Returns the public key associated with this pirvate key.
 TW_EXPORT_METHOD
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateKey *_Nonnull pk);
+
+/// Returns the public key associated with this pirvate key.
+TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519(struct TWPrivateKey *_Nonnull pk);
 
 /// Signs a digest using ECDSA secp256k1.
