@@ -34,6 +34,7 @@ public enum CoinType: UInt32, CaseIterable {
     case aion = 425
     case cosmos = 118
     case neo = 888
+    case kin = 2017
 
     public var purpose: Purpose {
         return Purpose(rawValue: TWCoinTypePurpose(TWCoinType(rawValue: rawValue)).rawValue)!

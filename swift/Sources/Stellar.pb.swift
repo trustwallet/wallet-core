@@ -152,6 +152,11 @@ public struct TW_Stellar_Proto_SigningInput {
     set {_uniqueStorage()._operationType = newValue}
   }
 
+  public var passphrase: String {
+    get {return _storage._passphrase}
+    set {_uniqueStorage()._passphrase = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_MemoTypeOneof: Equatable {
@@ -359,6 +364,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     10: .standard(proto: "memo_hash"),
     11: .standard(proto: "memo_return_hash"),
     12: .standard(proto: "operation_type"),
+    13: .same(proto: "passphrase"),
   ]
 
   fileprivate class _StorageClass {
@@ -370,6 +376,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     var _privateKey: Data = SwiftProtobuf.Internal.emptyData
     var _memoTypeOneof: TW_Stellar_Proto_SigningInput.OneOf_MemoTypeOneof?
     var _operationType: TW_Stellar_Proto_SigningInput.OperationType = .createAccount
+    var _passphrase: String = String()
 
     static let defaultInstance = _StorageClass()
 
@@ -384,6 +391,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
       _privateKey = source._privateKey
       _memoTypeOneof = source._memoTypeOneof
       _operationType = source._operationType
+      _passphrase = source._passphrase
     }
   }
 
@@ -446,6 +454,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
           try decoder.decodeSingularMessageField(value: &v)
           if let v = v {_storage._memoTypeOneof = .memoReturnHash(v)}
         case 12: try decoder.decodeSingularEnumField(value: &_storage._operationType)
+        case 13: try decoder.decodeSingularStringField(value: &_storage._passphrase)
         default: break
         }
       }
@@ -488,6 +497,9 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
       if _storage._operationType != .createAccount {
         try visitor.visitSingularEnumField(value: _storage._operationType, fieldNumber: 12)
       }
+      if !_storage._passphrase.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._passphrase, fieldNumber: 13)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -505,6 +517,7 @@ extension TW_Stellar_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
         if _storage._privateKey != rhs_storage._privateKey {return false}
         if _storage._memoTypeOneof != rhs_storage._memoTypeOneof {return false}
         if _storage._operationType != rhs_storage._operationType {return false}
+        if _storage._passphrase != rhs_storage._passphrase {return false}
         return true
       }
       if !storagesAreEqual {return false}

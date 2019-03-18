@@ -2049,6 +2049,16 @@ public final class Stellar {
      */
     wallet.core.jni.proto.Stellar.SigningInput.OperationType getOperationType();
 
+    /**
+     * <code>string passphrase = 13;</code>
+     */
+    java.lang.String getPassphrase();
+    /**
+     * <code>string passphrase = 13;</code>
+     */
+    com.google.protobuf.ByteString
+        getPassphraseBytes();
+
     public wallet.core.jni.proto.Stellar.SigningInput.MemoTypeOneofCase getMemoTypeOneofCase();
   }
   /**
@@ -2072,6 +2082,7 @@ public final class Stellar {
       destination_ = "";
       privateKey_ = com.google.protobuf.ByteString.EMPTY;
       operationType_ = 0;
+      passphrase_ = "";
     }
 
     @java.lang.Override
@@ -2204,6 +2215,12 @@ public final class Stellar {
               int rawValue = input.readEnum();
 
               operationType_ = rawValue;
+              break;
+            }
+            case 106: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              passphrase_ = s;
               break;
             }
             default: {
@@ -2635,6 +2652,40 @@ public final class Stellar {
       return result == null ? wallet.core.jni.proto.Stellar.SigningInput.OperationType.UNRECOGNIZED : result;
     }
 
+    public static final int PASSPHRASE_FIELD_NUMBER = 13;
+    private volatile java.lang.Object passphrase_;
+    /**
+     * <code>string passphrase = 13;</code>
+     */
+    public java.lang.String getPassphrase() {
+      java.lang.Object ref = passphrase_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        passphrase_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string passphrase = 13;</code>
+     */
+    public com.google.protobuf.ByteString
+        getPassphraseBytes() {
+      java.lang.Object ref = passphrase_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        passphrase_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -2684,6 +2735,9 @@ public final class Stellar {
       }
       if (operationType_ != wallet.core.jni.proto.Stellar.SigningInput.OperationType.CREATE_ACCOUNT.getNumber()) {
         output.writeEnum(12, operationType_);
+      }
+      if (!getPassphraseBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 13, passphrase_);
       }
       unknownFields.writeTo(output);
     }
@@ -2740,6 +2794,9 @@ public final class Stellar {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(12, operationType_);
       }
+      if (!getPassphraseBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(13, passphrase_);
+      }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
@@ -2768,6 +2825,8 @@ public final class Stellar {
       if (!getPrivateKey()
           .equals(other.getPrivateKey())) return false;
       if (operationType_ != other.operationType_) return false;
+      if (!getPassphrase()
+          .equals(other.getPassphrase())) return false;
       if (!getMemoTypeOneofCase().equals(other.getMemoTypeOneofCase())) return false;
       switch (memoTypeOneofCase_) {
         case 7:
@@ -2820,6 +2879,8 @@ public final class Stellar {
       hash = (53 * hash) + getPrivateKey().hashCode();
       hash = (37 * hash) + OPERATION_TYPE_FIELD_NUMBER;
       hash = (53 * hash) + operationType_;
+      hash = (37 * hash) + PASSPHRASE_FIELD_NUMBER;
+      hash = (53 * hash) + getPassphrase().hashCode();
       switch (memoTypeOneofCase_) {
         case 7:
           hash = (37 * hash) + MEMO_VOID_FIELD_NUMBER;
@@ -2995,6 +3056,8 @@ public final class Stellar {
 
         operationType_ = 0;
 
+        passphrase_ = "";
+
         memoTypeOneofCase_ = 0;
         memoTypeOneof_ = null;
         return this;
@@ -3065,6 +3128,7 @@ public final class Stellar {
           }
         }
         result.operationType_ = operationType_;
+        result.passphrase_ = passphrase_;
         result.memoTypeOneofCase_ = memoTypeOneofCase_;
         onBuilt();
         return result;
@@ -3136,6 +3200,10 @@ public final class Stellar {
         }
         if (other.operationType_ != 0) {
           setOperationTypeValue(other.getOperationTypeValue());
+        }
+        if (!other.getPassphrase().isEmpty()) {
+          passphrase_ = other.passphrase_;
+          onChanged();
         }
         switch (other.getMemoTypeOneofCase()) {
           case MEMO_VOID: {
@@ -4187,6 +4255,75 @@ public final class Stellar {
         onChanged();
         return this;
       }
+
+      private java.lang.Object passphrase_ = "";
+      /**
+       * <code>string passphrase = 13;</code>
+       */
+      public java.lang.String getPassphrase() {
+        java.lang.Object ref = passphrase_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          passphrase_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string passphrase = 13;</code>
+       */
+      public com.google.protobuf.ByteString
+          getPassphraseBytes() {
+        java.lang.Object ref = passphrase_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          passphrase_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string passphrase = 13;</code>
+       */
+      public Builder setPassphrase(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        passphrase_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string passphrase = 13;</code>
+       */
+      public Builder clearPassphrase() {
+        
+        passphrase_ = getDefaultInstance().getPassphrase();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string passphrase = 13;</code>
+       */
+      public Builder setPassphraseBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        passphrase_ = value;
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -4875,7 +5012,7 @@ public final class Stellar {
       "\n\rStellar.proto\022\020TW.Stellar.Proto\"\n\n\010Mem" +
       "oVoid\"\030\n\010MemoText\022\014\n\004text\030\001 \001(\t\"\024\n\006MemoI" +
       "d\022\n\n\002id\030\001 \001(\003\"\030\n\010MemoHash\022\014\n\004hash\030\001 \001(\014\"" +
-      "\373\003\n\014SigningInput\022\016\n\006amount\030\001 \001(\003\022\013\n\003fee\030" +
+      "\217\004\n\014SigningInput\022\016\n\006amount\030\001 \001(\003\022\013\n\003fee\030" +
       "\002 \001(\005\022\020\n\010sequence\030\003 \001(\003\022\017\n\007account\030\004 \001(\t" +
       "\022\023\n\013destination\030\005 \001(\t\022\023\n\013private_key\030\006 \001" +
       "(\014\022/\n\tmemo_void\030\007 \001(\0132\032.TW.Stellar.Proto" +
@@ -4886,10 +5023,10 @@ public final class Stellar {
       "mo_return_hash\030\013 \001(\0132\032.TW.Stellar.Proto." +
       "MemoHashH\000\022D\n\016operation_type\030\014 \001(\0162,.TW." +
       "Stellar.Proto.SigningInput.OperationType" +
-      "\"0\n\rOperationType\022\022\n\016CREATE_ACCOUNT\020\000\022\013\n" +
-      "\007PAYMENT\020\001B\021\n\017memo_type_oneof\"\"\n\rSigning" +
-      "Output\022\021\n\tsignature\030\001 \001(\tB\027\n\025wallet.core" +
-      ".jni.protob\006proto3"
+      "\022\022\n\npassphrase\030\r \001(\t\"0\n\rOperationType\022\022\n" +
+      "\016CREATE_ACCOUNT\020\000\022\013\n\007PAYMENT\020\001B\021\n\017memo_t" +
+      "ype_oneof\"\"\n\rSigningOutput\022\021\n\tsignature\030" +
+      "\001 \001(\tB\027\n\025wallet.core.jni.protob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4932,7 +5069,7 @@ public final class Stellar {
     internal_static_TW_Stellar_Proto_SigningInput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Stellar_Proto_SigningInput_descriptor,
-        new java.lang.String[] { "Amount", "Fee", "Sequence", "Account", "Destination", "PrivateKey", "MemoVoid", "MemoText", "MemoId", "MemoHash", "MemoReturnHash", "OperationType", "MemoTypeOneof", });
+        new java.lang.String[] { "Amount", "Fee", "Sequence", "Account", "Destination", "PrivateKey", "MemoVoid", "MemoText", "MemoId", "MemoHash", "MemoReturnHash", "OperationType", "Passphrase", "MemoTypeOneof", });
     internal_static_TW_Stellar_Proto_SigningOutput_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_TW_Stellar_Proto_SigningOutput_fieldAccessorTable = new

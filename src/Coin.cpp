@@ -25,6 +25,9 @@
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic fatal "-Wswitch"
+
 using namespace TW;
 
 std::string TW::loadAddress(TWCoinType coin, const Data& data) {
@@ -77,6 +80,7 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
         return Zcash::TAddress(data).string();
 
     case TWCoinTypeStellar:
+    case TWCoinTypeKIN:
         return Stellar::Address(data).string();
 
     case TWCoinTypeTezos:
@@ -132,6 +136,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Ripple::Address::isValid(string);
 
     case TWCoinTypeStellar:
+    case TWCoinTypeKIN:
         return Stellar::Address::isValid(string);
 
     case TWCoinTypeTezos:
@@ -177,6 +182,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeNEO:
+    case TWCoinTypeKIN:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -216,6 +222,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeNimiq:
     case TWCoinTypeStellar:
     case TWCoinTypeTezos:
+    case TWCoinTypeKIN:
         return TWCurveEd25519;
     }
 }
@@ -252,6 +259,7 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeNEO:
+    case TWCoinTypeKIN:
         return TWHDVersionNone;
     }
 }
@@ -307,6 +315,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
         };
 
     case TWCoinTypeStellar:
+    case TWCoinTypeKIN:
         return DerivationPath{
             DerivationPathIndex(purpose(coin), true),
             DerivationPathIndex(coin, true),
@@ -372,9 +381,12 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return Bitcoin::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2PKHPrefixZcoin).string();
 
     case TWCoinTypeStellar:
+    case TWCoinTypeKIN:
         return Stellar::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
 
     case TWCoinTypeNEO:
         return NEO::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
     }
 }
+
+#pragma clang diagnostic pop

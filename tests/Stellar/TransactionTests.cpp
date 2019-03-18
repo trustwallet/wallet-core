@@ -14,6 +14,7 @@
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWStellarMemoType.h>
 #include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWStellarPassphrase.h>
 #include "BinaryCoding.h"
 
 #include <gtest/gtest.h>
@@ -22,9 +23,32 @@ using namespace std;
 using namespace TW;
 using namespace TW::Stellar;
 
+TEST(StellarTransaction, sign) {
+    auto words = STRING("indicate rival expand cave giant same grocery burden ugly rose tuna blood");
+    auto passphrase = STRING("");
+
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeStellar));
+    auto input = TW::Stellar::Proto::SigningInput();
+    input.set_passphrase(TWStellarPassphrase_Stellar);
+    input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
+    input.set_amount(10000000);
+    input.set_fee(1000);
+    input.set_sequence(2);
+    input.set_destination("GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52");
+    input.set_private_key(privateKey.get()->impl.bytes.data(), privateKey.get()->impl.bytes.size());
+    input.set_operation_type(TW::Stellar::Proto::SigningInput_OperationType_PAYMENT);
+
+    const auto signer = TW::Stellar::Signer(input);
+
+    const auto signature = signer.sign();
+    ASSERT_EQ(signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAxYC2MXoOs5v3/NT6PBn9q0uJu6u/YQle5FBa9uzteq4AAAAAAAAAAACYloAAAAAAAAAAARnfXKIAAABAocQZwTnVvGMQlpdGacWvgenxN5ku8YB8yhEGrDfEV48yDqcj6QaePAitDj/N2gxfYD9Q2pJ+ZpkQMsZZG4ACAg==");
+}
+
 TEST(StellarTransaction, signWithMemoText) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto input = Proto::SigningInput();
+    input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_amount(10000000);
     input.set_fee(1000);
@@ -45,6 +69,7 @@ TEST(StellarTransaction, signWithMemoText) {
 TEST(StellarTransaction, signWithMemoHash) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto input = Proto::SigningInput();
+    input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_amount(10000000);
     input.set_fee(1000);
@@ -66,6 +91,7 @@ TEST(StellarTransaction, signWithMemoHash) {
 TEST(StellarTransaction, signWithMemoReturn) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto input = Proto::SigningInput();
+    input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_amount(10000000);
     input.set_fee(1000);
@@ -87,6 +113,7 @@ TEST(StellarTransaction, signWithMemoReturn) {
 TEST(StellarTransaction, signWithMemoID) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto input = Proto::SigningInput();
+    input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_amount(10000000);
     input.set_fee(1000);
@@ -107,6 +134,7 @@ TEST(StellarTransaction, signWithMemoID) {
 TEST(StellarTransaction, signAcreateAccount) {
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto input = Proto::SigningInput();
+    input.set_passphrase(TWStellarPassphrase_Stellar);
     input.set_account("GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
     input.set_amount(10000000);
     input.set_fee(1000);
