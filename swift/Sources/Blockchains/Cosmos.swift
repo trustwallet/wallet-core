@@ -12,9 +12,7 @@ public class Cosmos: Blockchain {
         super.init(purpose: purpose)
     }
 
-    public var hrp: HRP {
-        return .cosmos
-    }
+    public let hrp: HRP = .cosmos
 
     override public var coinType: CoinType {
         return .cosmos

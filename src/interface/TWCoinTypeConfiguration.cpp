@@ -135,7 +135,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         break;
     case TWCoinTypeBinance: break;
     case TWCoinTypeCosmos:
-        url += "/tx?hash=" + txId;
+        url += "/blocks/1/transactions/" + txId;
         break;
     default: break;
     }
@@ -168,7 +168,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNimiq: return "https://nimiq.watch";
     case TWCoinTypeStellar: return "https://stellarscan.io";
     case TWCoinTypeAion: return "https://mainnet.aion.network";
-    case TWCoinTypeCosmos: return "http://rpc.hub.certus.one:26657";
+    case TWCoinTypeCosmos: return "https://hubble.figment.network/chains/cosmoshub-1";
     case TWCoinTypeNEO: return "https://neoscan.io";
     default: return "";
     }
@@ -201,7 +201,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "nimiq"; break;
     case TWCoinTypeStellar: string = "stellar"; break;
     case TWCoinTypeAion: string = "aion"; break;
-    case TWCoinTypeCosmos: string = "atom"; break;
+    case TWCoinTypeCosmos: string = "cosmos"; break;
     case TWCoinTypeNEO: string = "neo"; break;
     default: string = ""; break;
     }
@@ -235,7 +235,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "Nimiq"; break;
     case TWCoinTypeStellar: string = "Stellar"; break;
     case TWCoinTypeAion: string = "Aion"; break;
-    case TWCoinTypeCosmos: string = "Atom"; break;
+    case TWCoinTypeCosmos: string = "Cosmos"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
     default: string = ""; break;
     }

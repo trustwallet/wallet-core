@@ -101,7 +101,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::CashAddress::isValid(string) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
 
     case TWCoinTypeCosmos:
-        return Tendermint::Address::isValid(string, HRP_COSMOS) || Tendermint::Address::isValid(string, HRP_COSMOS);
+        return Tendermint::Address::isValid(string, HRP_COSMOS);
 
     case TWCoinTypeDash:
         return Bitcoin::Address::isValid(string, {TWP2PKHPrefixDash, TWP2SHPrefixDash});

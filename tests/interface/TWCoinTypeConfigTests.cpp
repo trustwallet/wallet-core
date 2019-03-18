@@ -174,7 +174,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value24, "https://mainnet.aion.network/#/transaction/123");
 
     auto value25 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
-    assertStringsEqual(value25, "http://rpc.hub.certus.one:26657/tx?hash=123");
+    assertStringsEqual(value25, "https://hubble.figment.network/chains/cosmoshub-1/blocks/1/transactions/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -239,7 +239,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     assertStringsEqual(value21, "aion");
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
-    assertStringsEqual(value22, "atom");
+    assertStringsEqual(value22, "cosmos");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -307,5 +307,5 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     assertStringsEqual(value22, "XRP");
 
     auto value23 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
-    assertStringsEqual(value23, "Atom");
+    assertStringsEqual(value23, "Cosmos");
 }
