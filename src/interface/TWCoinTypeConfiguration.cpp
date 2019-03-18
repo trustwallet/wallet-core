@@ -41,6 +41,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeStellar: string = "XLM"; break;
     case TWCoinTypeAion: string = "AION"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
+    case TWCoinTypeKIN: string = "KIN"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -77,6 +78,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeTron:
         return 6;
     case TWCoinTypeNimiq:
+    case TWCoinTypeKIN:
         return 5;
     default:
         return 0;
@@ -103,6 +105,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
+    case TWCoinTypeKIN:
         url += "/tx/" + txId;
         break;
     case TWCoinTypePoa:
@@ -164,6 +167,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeStellar: return "https://stellarscan.io";
     case TWCoinTypeAion: return "https://mainnet.aion.network";
     case TWCoinTypeNEO: return "https://neoscan.io";
+    case TWCoinTypeKIN: return "https://kinexplorer.com";
     default: return "";
     }
 }
@@ -196,6 +200,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeStellar: string = "stellar"; break;
     case TWCoinTypeAion: string = "aion"; break;
     case TWCoinTypeNEO: string = "neo"; break;
+    case TWCoinTypeKIN: string = "kin"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -229,6 +234,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeStellar: string = "Stellar"; break;
     case TWCoinTypeAion: string = "Aion"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
+    case TWCoinTypeKIN: string = "Kin"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

@@ -67,6 +67,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P", address)
                 case .neo:
                     XCTAssertEqual("AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF", address)
+                case .kin:
+                    XCTAssertEqual("GBL3MT2ICHHM5OJ2QJ44CAHGDK6MLPINVXBKOKLHGBWQDVRWTWQ7U2EA", address)
                 }
             }
         }

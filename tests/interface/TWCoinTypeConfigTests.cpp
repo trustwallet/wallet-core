@@ -71,6 +71,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value21 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
     assertStringsEqual(value21, "AION");
 
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeKIN));
+    assertStringsEqual(value22, "KIN");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -96,6 +98,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKIN), 5);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -169,6 +172,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value24 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
     assertStringsEqual(value24, "https://mainnet.aion.network/#/transaction/123");
+
+    auto value25 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeKIN, txId));
+    assertStringsEqual(value25, "https://kinexplorer.com/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -231,6 +237,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value21 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
     assertStringsEqual(value21, "aion");
+
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKIN));
+    assertStringsEqual(value22, "kin");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -296,4 +305,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRipple));
     assertStringsEqual(value22, "XRP");
+
+    auto value23 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKIN));
+    assertStringsEqual(value23, "Kin");
 }
