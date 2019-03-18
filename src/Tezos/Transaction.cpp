@@ -9,6 +9,7 @@
 #include "Transaction.h"
 
 #include "../PublicKey.h"
+#include "../HexCoding.h"
 #include <variant>
 #include <sstream>
 
@@ -49,13 +50,13 @@ string Transaction::forge() {
 
     if (kind == operationtype::REVEAL) {
         if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key))
-            return "07" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
+            return "07" + hex(forgedSource) + forgedFee + forgedCounter + forgedGasLimit
                 + forgedStorageLimit + forgePublicKey(*publicKey);
         else throw std::invalid_argument( "Invalid publicKey" );
     }
     auto forgedAmount = forgeZarith(amount);
     if(auto destination = std::get_if<Address>(&destination_or_public_key))
-        return "08" + forgedSource + forgedFee + forgedCounter + forgedGasLimit
-            + forgedStorageLimit + forgedAmount + destination->forge() + forgeBool(false);
+        return "08" + hex(forgedSource) + forgedFee + forgedCounter + forgedGasLimit
+            + forgedStorageLimit + forgedAmount + hex(destination->forge()) + forgeBool(false);
     else throw std::invalid_argument( "Invalid destination" );
 }

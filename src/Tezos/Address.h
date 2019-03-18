@@ -38,7 +38,7 @@ public:
     std::string string() const;
 
     /// Forge an address to hex bytes.
-    std::string forge() const;
+    Data forge() const;
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {
