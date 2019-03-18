@@ -41,7 +41,7 @@ public:
             return PublicKeyType::ed25519;
         case 2:
         case 3:
-            return PublicKeyType::nist256p1;
+            return PublicKeyType::secp256k1;
         case 4:
         case 6:
         case 7:
