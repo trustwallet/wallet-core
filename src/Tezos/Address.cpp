@@ -74,9 +74,10 @@ Data Address::forge() const {
         const auto decoded = Base58::bitcoin.decodeCheck(s);
         if (decoded.size() != 23 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
             throw std::invalid_argument("Invalid Address For forge");
+        }
         data.push_back(0x01);
-        data.insert(data.end(), decoded, decoded + decodedLength);
-        data.push_back(0);
+        append(data, decoded);
+        data.push_back(0x00);
         return data;
     }
     data.push_back(0);

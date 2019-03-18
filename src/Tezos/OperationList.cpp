@@ -24,13 +24,12 @@ void OperationList::add_operation(Transaction transaction) {
 
 // Forge the given branch to a hex encoded string.
 Data OperationList::forgeBranch() const {
-    size_t capacity = 128;
-    uint8_t decoded[capacity];
-    size_t prefixLength = 2;
-    uint8_t prefix[] = {1, 52};
-
-    int decodedLength = base58CheckDecodePrefix(branch, prefixLength, prefix, decoded);
-    return parse_hex(hex(decoded, decoded + decodedLength));
+    std::array<byte, 2> prefix = {1, 52};
+    const auto decoded = Base58::bitcoin.decodeCheck(branch);
+    if (decoded.size() != 23 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        throw std::invalid_argument("Invalid branch for forge");
+    }
+    return decoded;
 }
 
 Data OperationList::forge() const {

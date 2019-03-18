@@ -23,7 +23,7 @@ Data Signer::signOperationList(const PrivateKey& privateKey, OperationList opera
 
 Data Signer::signData(const PrivateKey& privateKey, Data data) {
     Data watermarkedData = Data();
-    watermarkedData.push_back(3);
+    watermarkedData.push_back(0x03);
     append(watermarkedData, data);
     
     Data hash = Hash::blake2b(watermarkedData, 32);

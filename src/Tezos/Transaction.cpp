@@ -25,7 +25,7 @@ Data Transaction::forge() {
 
     if (kind == operationtype::REVEAL) {
         if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key)) {
-            forged.push_back(7);
+            forged.push_back(0x07);
             append(forged, forgedSource);
             append(forged, forgedFee);
             append(forged, forgedCounter);
@@ -39,7 +39,7 @@ Data Transaction::forge() {
     }
     auto forgedAmount = forgeZarith(amount);
     if (auto destination = std::get_if<Address>(&destination_or_public_key)) {
-        forged.push_back(8);
+        forged.push_back(0x08);
         append(forged, forgedSource);
         append(forged, forgedFee);
         append(forged, forgedCounter);

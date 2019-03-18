@@ -23,28 +23,27 @@ Data forgeBool(bool input) {
 // Note: This function supports tz1, tz2 and tz3 addresses.
 Data forgePublicKeyHash(const std::string &publicKeyHash) {
     Data forged = Data();
-    size_t prefixLength = 3;
-    uint8_t prefix[] = {6, 161, 0};
+    std::array<byte, 3> prefix = {2, 90, 121};
 
     // Adjust prefix based on tz1, tz2 or tz3.
     switch ((char) publicKeyHash[2]) {
         case '1':
-            forged.push_back(0);
+            forged.push_back(0x00);
             prefix[2] = 159;
             break;
         case '2':
-            forged.push_back(1);
+            forged.push_back(0x01);
             prefix[2] = 161;
             break;
         case '3':
-            forged.push_back(2);
+            forged.push_back(0x02);
             prefix[2] = 164;
             break;
         default:
           throw std::invalid_argument( "Invalid Prefix" );
     }
-    int decodedLength = base58CheckDecodePrefix(publicKeyHash, prefixLength, prefix, decoded);
-    append(forged, parse_hex(hex(decoded, decoded + decodedLength)));
+    const auto decoded = Base58::bitcoin.decodeCheck(publicKeyHash);
+    append(forged, decoded);
     return forged;
 }
 
