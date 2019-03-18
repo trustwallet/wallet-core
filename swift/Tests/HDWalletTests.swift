@@ -88,6 +88,15 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("hx78c6f744c68d48793cd64716189c181c66907b24", address0.description)
         XCTAssertEqual("hx92373c16531761b31a7124c94718da43db8c9d89", address1.description)
     }
+    
+    func testDeriveOntology() {
+        let blockchain = Ontology()
+        let wallet = HDWallet.test
+        let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
+        let address = blockchain.address(for: key.getPublicKeyNist256p1())
+
+        XCTAssertEqual("AH11LGtFk6VU9Z7suuM5eNpho1bAoE5Gbz", address.description)
+    }
 
     func testDeriveBitcoinCash() {
         let blockchain = BitcoinCash()
