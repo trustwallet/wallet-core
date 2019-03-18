@@ -21,7 +21,7 @@ std::string Signer::sign() const noexcept {
     auto encoded = encode(input);
 
     auto encodedWithHeaders = Data();
-    auto publicNetwork = std::string(input.passphrase());  // Header
+    auto publicNetwork = input.passphrase(); // Header
     auto passphrase = Hash::sha256(publicNetwork);
     encodedWithHeaders.insert(encodedWithHeaders.end(), passphrase.begin(), passphrase.end());
     auto transactionType = Data{0, 0, 0, 2}; // Header

@@ -12,7 +12,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_ENUM()
 enum TWStellarPassphrase {
     TWStellarPassphraseStellar     /* "Public Global Stellar Network ; September 2015" */,
-    TWStellarPassphraseKin /* "Kin Mainnet ; December 2018" */,
+    TWStellarPassphraseKin         /* "Kin Mainnet ; December 2018" */,
 };
 
 static const char *_Nonnull TWStellarPassphrase_Stellar = "Public Global Stellar Network ; September 2015";
