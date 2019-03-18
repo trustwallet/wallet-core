@@ -9,6 +9,9 @@
 #include <string.h>
 #include <string>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic fatal "-Wswitch"
+
 using namespace std;
 
 const char *explorerURLForCoinType(enum TWCoinType type);
@@ -41,6 +44,8 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "NIM"; break;
     case TWCoinTypeStellar: string = "XLM"; break;
     case TWCoinTypeAion: string = "AION"; break;
+    case TWCoinTypeNEO: string = "NEO"; break;
+    case TWCoinTypeKIN: string = "KIN"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -68,6 +73,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeBinance:
     case TWCoinTypeZcoin:
     case TWCoinTypeZcash:
+    case TWCoinTypeNEO:
      return 8;
     case TWCoinTypeStellar:
         return 7;
@@ -76,6 +82,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeTron:
         return 6;
     case TWCoinTypeNimiq:
+    case TWCoinTypeKIN:
         return 5;
     case TWCoinTypeOntology:
         return 1;
@@ -93,6 +100,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
     case TWCoinTypeStellar:
+    case TWCoinTypeNEO:
         url += "/transaction/" + txId;
         break;
     case TWCoinTypeEthereum:
@@ -103,6 +111,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
+    case TWCoinTypeKIN:
         url += "/tx/" + txId;
         break;
     case TWCoinTypeOntology:
@@ -167,6 +176,8 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNimiq: return "https://nimiq.watch";
     case TWCoinTypeStellar: return "https://stellarscan.io";
     case TWCoinTypeAion: return "https://mainnet.aion.network";
+    case TWCoinTypeNEO: return "https://neoscan.io";
+    case TWCoinTypeKIN: return "https://kinexplorer.com";
     default: return "";
     }
 }
@@ -199,6 +210,8 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "nimiq"; break;
     case TWCoinTypeStellar: string = "stellar"; break;
     case TWCoinTypeAion: string = "aion"; break;
+    case TWCoinTypeNEO: string = "neo"; break;
+    case TWCoinTypeKIN: string = "kin"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -227,12 +240,16 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeZcoin: string = "Zcoin"; break;
     case TWCoinTypeZcash: string = "Zcash"; break;
     case TWCoinTypeBinance: string = "Binance"; break;
-    case TWCoinTypeRipple: string = "Ripple"; break;
+    case TWCoinTypeRipple: string = "XRP"; break;
     case TWCoinTypeTezos: string = "Tezos"; break;
     case TWCoinTypeNimiq: string = "Nimiq"; break;
     case TWCoinTypeStellar: string = "Stellar"; break;
     case TWCoinTypeAion: string = "Aion"; break;
+    case TWCoinTypeNEO: string = "NEO"; break;
+    case TWCoinTypeKIN: string = "Kin"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
+
+#pragma clang diagnostic pop

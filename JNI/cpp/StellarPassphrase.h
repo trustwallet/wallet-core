@@ -7,14 +7,15 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum IconAddressType: UInt32, CaseIterable, CustomStringConvertible  {
-    case address = 0
-    case contract = 1
+#ifndef JNI_TW_STELLARPASSPHRASE_H
+#define JNI_TW_STELLARPASSPHRASE_H
 
-    public var description: String {
-        switch self {
-        case .address: return "hx"
-        case .contract: return "cx"
-        }
-    }
-}
+#include <jni.h>
+#include <TrustWalletCore/TWBase.h>
+
+TW_EXTERN_C_BEGIN
+
+
+TW_EXTERN_C_END
+
+#endif // JNI_TW_STELLARPASSPHRASE_H

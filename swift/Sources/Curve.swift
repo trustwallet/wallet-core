@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum Curve: UInt32, CustomStringConvertible  {
+public enum Curve: UInt32, CaseIterable, CustomStringConvertible  {
     case secp256k1 = 0
     case ed25519 = 1
     case nist256p1 = 2

@@ -20,10 +20,13 @@
 #include "Zcash/TAddress.h"
 #include "Stellar/Address.h"
 #include "Ontology/Address.h"
-
+#include "NEO/Address.h"
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic fatal "-Wswitch"
 
 using namespace TW;
 
@@ -79,10 +82,13 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
         return Zcash::TAddress(data).string();
 
     case TWCoinTypeStellar:
+    case TWCoinTypeKIN:
         return Stellar::Address(data).string();
 
     case TWCoinTypeTezos:
         return Tezos::Address(data).string();
+    case TWCoinTypeNEO:
+        return NEO::Address(data).string();
     }
 }
 
@@ -131,6 +137,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Ripple::Address::isValid(string);
 
     case TWCoinTypeStellar:
+    case TWCoinTypeKIN:
         return Stellar::Address::isValid(string);
 
     case TWCoinTypeTezos:
@@ -144,6 +151,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {TWP2PKHPrefixZcashT, TWP2SHPrefixZcashT});
+
+    case TWCoinTypeNEO:
+        return NEO::Address::isValid(string);
     }
 }
 
@@ -172,6 +182,8 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeNEO:
+    case TWCoinTypeKIN:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -203,10 +215,14 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcoin:
         return TWCurveSECP256k1;
 
+    case TWCoinTypeNEO:
+            return TWCurveNIST256p1;
+
     case TWCoinTypeAion:
     case TWCoinTypeNimiq:
     case TWCoinTypeStellar:
     case TWCoinTypeTezos:
+    case TWCoinTypeKIN:
         return TWCurveEd25519;
 
     case TWCoinTypeOntology:
@@ -245,6 +261,8 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
     case TWCoinTypeVeChain:
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
+    case TWCoinTypeNEO:
+    case TWCoinTypeKIN:
         return TWHDVersionNone;
     }
 }
@@ -274,6 +292,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcoin:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
+    case TWCoinTypeNEO:
         return DerivationPath{
             DerivationPathIndex(purpose(coin), true),
             DerivationPathIndex(coin, true),
@@ -291,6 +310,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
         };
 
     case TWCoinTypeStellar:
+    case TWCoinTypeKIN:
         return DerivationPath{
             DerivationPathIndex(purpose(coin), true),
             DerivationPathIndex(coin, true),
@@ -302,7 +322,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
 std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
     switch (coin) {
     case TWCoinTypeBinance:
-        return Tendermint::Address(HRP_BINANCE, privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+        return Tendermint::Address(HRP_BINANCE_TEST, privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
 
     case TWCoinTypeBitcoin:
         return Bitcoin::Bech32Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0, HRP_BITCOIN).string();
@@ -326,7 +346,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return Ethereum::Address(privateKey.getPublicKey(PublicKeyType::secp256k1Extended)).string();
 
     case TWCoinTypeICON:
-        return Icon::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), TWIconAddressTypeAddress).string();
+        return Icon::Address(privateKey.getPublicKey(PublicKeyType::secp256k1Extended), TWIconAddressTypeAddress).string();
 
     case TWCoinTypeLitecoin:
         return Bitcoin::Bech32Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0, HRP_LITECOIN).string();
@@ -354,6 +374,12 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return Bitcoin::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2PKHPrefixZcoin).string();
 
     case TWCoinTypeStellar:
+    case TWCoinTypeKIN:
         return Stellar::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
+
+    case TWCoinTypeNEO:
+        return NEO::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
     }
 }
+
+#pragma clang diagnostic pop

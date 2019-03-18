@@ -7,14 +7,14 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum IconAddressType: UInt32, CaseIterable, CustomStringConvertible  {
-    case address = 0
-    case contract = 1
+public enum StellarPassphrase: UInt32, CaseIterable, CustomStringConvertible  {
+    case stellar = 0
+    case kin = 1
 
     public var description: String {
         switch self {
-        case .address: return "hx"
-        case .contract: return "cx"
+        case .stellar: return "Public Global Stellar Network ; September 2015"
+        case .kin: return "Kin Mainnet ; December 2018"
         }
     }
 }
