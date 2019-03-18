@@ -27,14 +27,19 @@ public:
 
     std::array<uint8_t, size> data;
 
+    /// Initializes an address with a public key.
     explicit Address(const PublicKey &publicKey);
 
+    /// Initializes an address with a string representation.
     explicit Address(const std::string &b58Address);
 
+    /// Initializes an address with a collection of bytes.
     explicit Address(const std::vector<uint8_t> &bytes);
 
+    /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string &string) noexcept;
 
+    /// Returns a string representation of the address.
     std::string string() const;
 };
 
@@ -42,8 +47,7 @@ static inline bool operator==(const Address &lhs, const Address &rhs) {
     return lhs.data == rhs.data;
 }
 
-}
-} // namespace
+}} // namespace
 
 /// Wrapper for C interface.
 struct TWOntologyAddress {
