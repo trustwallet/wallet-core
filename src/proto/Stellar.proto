@@ -46,6 +46,8 @@ message SigningInput {
         PAYMENT = 1;
     }
     OperationType operation_type = 12;
+
+    string passphrase = 13;
 }
 
 // Transaction signing output.
