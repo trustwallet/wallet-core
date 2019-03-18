@@ -9,6 +9,8 @@
 #include "../Data.h"
 #include "../HexCoding.h"
 
+#include <sstream>
+
 using namespace TW;
 
 // Forge the given boolean into a hex encoded string.
@@ -56,4 +58,29 @@ Data forgePublicKey(PublicKey publicKey) {
     auto pk = Base58::bitcoin.encodeCheck(data);
     auto decoded = base58ToHex(pk, 4, prefix);
     return parse_hex(decoded);
+}
+
+// Forge the given zarith hash into a hex encoded string.
+Data forgeZarith(int input) {
+    std::string result = "";
+    while (true) {
+        if (input < 128) {
+            if (input < 16) {
+                result += "0";
+            }
+            std::stringstream ss;
+            ss << std::hex << input;
+            result += ss.str();
+            break;
+        } else {
+            int b = input % 128;
+            input -= b;
+            input /= 128;
+            b += 128;
+            std::stringstream ss;
+            ss << std::hex << b;
+            result += ss.str();
+        }
+    }
+    return parse_hex(result);
 }
