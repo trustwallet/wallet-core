@@ -20,7 +20,7 @@ class Signer {
 public:
     /// Signs the given transaction.
     Data signOperationList(const PrivateKey& privateKey, OperationList operationList);
-    Data signHexString(const PrivateKey& privateKey, std::string forgedBytesHex);
+    Data signData(const PrivateKey& privateKey, Data data);
 };
 
 }} // namespace
