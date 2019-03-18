@@ -8,7 +8,7 @@
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "Tezos/BinaryCoding.h"
+#include "Tezos/Forging.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 
