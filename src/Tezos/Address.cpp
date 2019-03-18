@@ -64,7 +64,7 @@ std::string Address::string() const {
     return Base58::bitcoin.encodeCheck(bytes);
 }
 
-std::string Address::forge() const {
+Data Address::forge() const {
     std::string s = string();
 
     if (s[0] == 'K') {
@@ -72,8 +72,7 @@ std::string Address::forge() const {
         const auto decoded = Base58::bitcoin.decodeCheck(s);
         if (decoded.size() != 23 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
             throw std::invalid_argument("Invalid Address For forge");
-        }
-        return "01" + TW::hex(decoded.begin() + prefix.size(), decoded.end()) + "00";
+        return parse_hex("01" + TW::hex(decoded, decoded + decodedLength) + "00");
     }
-    return "00" + forgePublicKeyHash(s);
+    return parse_hex("00" + forgePublicKeyHash(s));
 }
