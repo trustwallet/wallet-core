@@ -38,7 +38,7 @@ std::string OperationList::forge() const {
     std::string result = forgeBranch();
 
     for (auto operation : operation_list) {
-      result += operation.forge();
+      result += hex(operation.forge());
     }
     return result;
 }

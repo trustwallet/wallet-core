@@ -48,7 +48,7 @@ public:
 
 public:
     /// serialize transaction
-    std::string forge();
+    Data forge();
 };
 
 }} // namespace

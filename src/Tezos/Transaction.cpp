@@ -42,7 +42,7 @@ Data forgeZarith(int input) {
     return parse_hex(result);
 }
 
-string Transaction::forge() {
+Data Transaction::forge() {
     auto forgedSource = source.forge();
     auto forgedFee = forgeZarith(fee);
     auto forgedCounter = forgeZarith(counter);
@@ -50,14 +50,32 @@ string Transaction::forge() {
     auto forgedStorageLimit = forgeZarith(storage_limit);
 
     if (kind == operationtype::REVEAL) {
-        if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key))
-            return "07" + hex(forgedSource) + hex(forgedFee) + hex(forgedCounter) + hex(forgedGasLimit)
-                + hex(forgedStorageLimit) + hex(forgePublicKey(*publicKey));
-        else throw std::invalid_argument( "Invalid publicKey" );
+        if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key)) {
+            auto forged = parse_hex("07");
+            append(forged, forgedSource);
+            append(forged, forgedFee);
+            append(forged, forgedCounter);
+            append(forged, forgedGasLimit);
+            append(forged, forgedStorageLimit);
+            append(forged, forgePublicKey(*publicKey));
+            return forged;
+        } else {
+            throw std::invalid_argument( "Invalid publicKey" );
+        }
     }
     auto forgedAmount = forgeZarith(amount);
-    if(auto destination = std::get_if<Address>(&destination_or_public_key))
-        return "08" + hex(forgedSource) + hex(forgedFee) + hex(forgedCounter) + hex(forgedGasLimit)
-            + hex(forgedStorageLimit) + hex(forgedAmount) + hex(destination->forge()) + hex(forgeBool(false));
-    else throw std::invalid_argument( "Invalid destination" );
+    if (auto destination = std::get_if<Address>(&destination_or_public_key)) {
+        auto forged = parse_hex("08");
+        append(forged, forgedSource);
+        append(forged, forgedFee);
+        append(forged, forgedCounter);
+        append(forged, forgedGasLimit);
+        append(forged, forgedStorageLimit);
+        append(forged, forgedAmount);
+        append(forged, destination->forge());
+        append(forged, forgeBool(false));
+        return forged;
+    } else {
+        throw std::invalid_argument( "Invalid destination" );
+    }
 }
