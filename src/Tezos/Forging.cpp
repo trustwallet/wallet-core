@@ -47,7 +47,7 @@ Data forgePublicKeyHash(const std::string &publicKeyHash) {
 }
 
 // Forge the given public key into a hex encoded string.
-std::string forgePublicKey(PublicKey publicKey) {
+Data forgePublicKey(PublicKey publicKey) {
     uint8_t prefix[] = {13, 15, 37, 217};
     auto data = Data(prefix, prefix + 4);
     auto bytes = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
@@ -55,5 +55,5 @@ std::string forgePublicKey(PublicKey publicKey) {
 
     auto pk = Base58::bitcoin.encodeCheck(data);
     auto decoded = base58ToHex(pk, 4, prefix);
-    return decoded;
+    return parse_hex(decoded);
 }
