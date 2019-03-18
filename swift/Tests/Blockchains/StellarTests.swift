@@ -31,6 +31,7 @@ class StellarTests: XCTestCase {
 
     func testSigner() {
         let input = TWStellarSigningInput.with {
+            $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
@@ -46,6 +47,7 @@ class StellarTests: XCTestCase {
 
     func testSignWithMemoHash() {
         let input = TWStellarSigningInput.with {
+            $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
@@ -64,6 +66,7 @@ class StellarTests: XCTestCase {
 
     func testSignWithMemoReturn() {
         let input = TWStellarSigningInput.with {
+            $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
@@ -82,6 +85,7 @@ class StellarTests: XCTestCase {
 
     func testSignWithMemoId() {
         let input = TWStellarSigningInput.with {
+            $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api
@@ -100,6 +104,7 @@ class StellarTests: XCTestCase {
     
     func testSignCreateAccount() {
         let input = TWStellarSigningInput.with {
+            $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
             $0.sequence = 2 // from account info api

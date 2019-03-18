@@ -18,6 +18,9 @@
 		14FDB4BB2236BDBD002FC058 /* Stellar.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */; };
 		14FDB4BC2236BDBD002FC058 /* Stellar.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */; };
 		29587DC8223E08B300BAD800 /* CoinAddressDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29587DC6223E08A600BAD800 /* CoinAddressDerivationTests.swift */; };
+		29587DCC223F358000BAD800 /* TWStellarPassphrase.h in Headers */ = {isa = PBXBuildFile; fileRef = 29587DCB223F358000BAD800 /* TWStellarPassphrase.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		29587DCE223F374400BAD800 /* StellarPassphrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29587DCD223F374400BAD800 /* StellarPassphrase.swift */; };
+		29587DD0223F379800BAD800 /* KinSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29587DCF223F379800BAD800 /* KinSigner.swift */; };
 		34339D36023473D76FAF18EE /* Pods_TrustWalletCore_TrustWalletCoreTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */; };
 		467181FB9EFC0E4C01DDB460 /* Pods_TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */; };
 		4E8BBE8C2230998600F98E04 /* RLP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E8BBE852230998500F98E04 /* RLP.h */; };
@@ -635,6 +638,9 @@
 		14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stellar.pb.cc; sourceTree = "<group>"; };
 		14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stellar.pb.h; sourceTree = "<group>"; };
 		29587DC6223E08A600BAD800 /* CoinAddressDerivationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoinAddressDerivationTests.swift; sourceTree = "<group>"; };
+		29587DCB223F358000BAD800 /* TWStellarPassphrase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarPassphrase.h; sourceTree = "<group>"; };
+		29587DCD223F374400BAD800 /* StellarPassphrase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarPassphrase.swift; sourceTree = "<group>"; };
+		29587DCF223F379800BAD800 /* KinSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinSigner.swift; sourceTree = "<group>"; };
 		36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E8BBE852230998500F98E04 /* RLP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RLP.h; path = Aion/RLP.h; sourceTree = "<group>"; };
 		4E8BBE862230998500F98E04 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = Aion/Transaction.cpp; sourceTree = "<group>"; };
@@ -1425,6 +1431,7 @@
 		617358DF219DF043007BF637 /* TrustWalletCore */ = {
 			isa = PBXGroup;
 			children = (
+				29587DCB223F358000BAD800 /* TWStellarPassphrase.h */,
 				611BBE1D2235952A0043FB94 /* TWAccount.h */,
 				61CABAB421ED36F40086D9A0 /* TWAES.h */,
 				4E8BBE9D223099C500F98E04 /* TWAionAddress.h */,
@@ -1732,6 +1739,7 @@
 		61735CB7219F88C2007BF637 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				29587DCD223F374400BAD800 /* StellarPassphrase.swift */,
 				611BBE3B223595690043FB94 /* Account.swift */,
 				61C4E8D822260B150020A917 /* Addresses */,
 				61CABAB821ED37160086D9A0 /* AES.swift */,
@@ -2069,6 +2077,7 @@
 				61E813D92227522F00D4D2C9 /* ZcashTests.swift */,
 				61C4E916222614640020A917 /* ZcoinTests.swift */,
 				BB6AE9AA2233799C00F9EF85 /* StellarTests.swift */,
+				29587DCF223F379800BAD800 /* KinSigner.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -2427,6 +2436,7 @@
 				61B159CF21CC5DBB00CFE93B /* Script.h in Headers */,
 				6198EA8621B811A2008CB60A /* TWBech32Address.h in Headers */,
 				61735AD4219DF044007BF637 /* TWData.h in Headers */,
+				29587DCC223F358000BAD800 /* TWStellarPassphrase.h in Headers */,
 				61B159D921CC5DBB00CFE93B /* Transaction.h in Headers */,
 				61735C38219DF044007BF637 /* bip39_english.h in Headers */,
 				61FE4B2A221F736400C65017 /* Signer.h in Headers */,
@@ -2788,6 +2798,7 @@
 				6198EA8021B6BFC9008CB60A /* DataTests.swift in Sources */,
 				61E813E62227535A00D4D2C9 /* BinanceChainTests.swift in Sources */,
 				61C4E920222615120020A917 /* BitcoinAddressTests.swift in Sources */,
+				29587DD0223F379800BAD800 /* KinSigner.swift in Sources */,
 				29587DC8223E08B300BAD800 /* CoinAddressDerivationTests.swift in Sources */,
 				61C4E91E2226150F0020A917 /* WanchainTests.swift in Sources */,
 				61E81434222758E100D4D2C9 /* PublicKeyTests.swift in Sources */,
@@ -2847,6 +2858,7 @@
 				61977CCE21C9B9EF00C385D5 /* BitcoinCashAddress.swift in Sources */,
 				61B159E321CC5DBB00CFE93B /* TWData+Hex.cpp in Sources */,
 				61CABADD21EE5EA60086D9A0 /* HRP.swift in Sources */,
+				29587DCE223F374400BAD800 /* StellarPassphrase.swift in Sources */,
 				61B159D821CC5DBB00CFE93B /* TransactionSigner.cpp in Sources */,
 				61735C18219DF044007BF637 /* ed25519-donna-basepoint-table.c in Sources */,
 				61722C07220E461A00D7BA9A /* TWCoinTypeConfiguration.cpp in Sources */,
