@@ -31,7 +31,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://www.stellar.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/148.png" width="32" /></a>
 <a href="https://poa.network/xdai" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/700.png" width="32" /></a>
 <a href="https://thundercore.com" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1001.png" width="32" /></a>
-#<a href="https://kinecosystem.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2017.png" width="32" /></a>
+<a href="https://kinecosystem.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2017.png" width="32" /></a>
 <a href="https://neo.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/888.png" width="32" /></a>
 
 # Usage
