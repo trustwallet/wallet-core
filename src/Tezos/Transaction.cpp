@@ -17,7 +17,7 @@ using namespace std;
 using namespace TW::Tezos;
 
 // Forge the given zarith hash into a hex encoded string.
-std::string forgeZarith(int input) {
+Data forgeZarith(int input) {
     std::string result = "";
     while (true) {
         if (input < 128) {
@@ -38,7 +38,7 @@ std::string forgeZarith(int input) {
             result += ss.str();
         }
     }
-    return result;
+    return parse_hex(result);
 }
 
 string Transaction::forge() {
@@ -50,13 +50,13 @@ string Transaction::forge() {
 
     if (kind == operationtype::REVEAL) {
         if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key))
-            return "07" + hex(forgedSource) + forgedFee + forgedCounter + forgedGasLimit
-                + forgedStorageLimit + forgePublicKey(*publicKey);
+            return "07" + hex(forgedSource) + hex(forgedFee) + hex(forgedCounter) + hex(forgedGasLimit)
+                + hex(forgedStorageLimit) + forgePublicKey(*publicKey);
         else throw std::invalid_argument( "Invalid publicKey" );
     }
     auto forgedAmount = forgeZarith(amount);
     if(auto destination = std::get_if<Address>(&destination_or_public_key))
-        return "08" + hex(forgedSource) + forgedFee + forgedCounter + forgedGasLimit
-            + forgedStorageLimit + forgedAmount + hex(destination->forge()) + hex(forgeBool(false));
+        return "08" + hex(forgedSource) + hex(forgedFee) + hex(forgedCounter) + hex(forgedGasLimit)
+            + hex(forgedStorageLimit) + hex(forgedAmount) + hex(destination->forge()) + hex(forgeBool(false));
     else throw std::invalid_argument( "Invalid destination" );
 }
