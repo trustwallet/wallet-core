@@ -265,4 +265,14 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(address.description, "bc1qearv5ezm3xfgy2t98denkzxwst4f35fvz608wa")
         XCTAssertEqual(address.description, address1?.description)
     }
+
+    func testDeriveCosmosAddress() {
+        let wallet = HDWallet(mnemonic: "attract term foster morning tail foam excite copper disease measure cheese camera rug enroll cause flip sword waste try local purchase between idea thank", passphrase: "")
+
+        let key = wallet.getKeyForCoin(coin: .cosmos)
+        let address = CoinType.cosmos.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02", address.description)
+    }
+
 }
