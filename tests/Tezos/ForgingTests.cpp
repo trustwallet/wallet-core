@@ -99,6 +99,6 @@ TEST(Forgin, ForgePublicKey) {
   auto publicKey = privateKey.getPublicKey(PublicKeyType::ed25519);
   auto output = forgePublicKey(publicKey);
   
-  ASSERT_EQ(output, parse_hex(expected))
+  ASSERT_EQ(output, parse_hex(expected));
 }
 
