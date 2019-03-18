@@ -6,10 +6,10 @@
 
 #include <TrustWalletCore/TWZcashTAddress.h>
 
+#include "../Base58.h"
 #include "../PublicKey.h"
 
 #include <TrustWalletCore/TWPublicKey.h>
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
 #include <cstring>
@@ -27,13 +27,10 @@ bool TWZcashTAddressIsValid(TWData *_Nonnull data) {
 }
 
 bool TWZcashTAddressIsValidString(TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
+    auto& s = *reinterpret_cast<const std::string*>(string);
 
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != TWZcashTAddressSize) {
+    const auto decoded = TW::Base58::bitcoin.decodeCheck(s);
+    if (decoded.size() != TWZcashTAddressSize) {
         return false;
     }
 
@@ -41,17 +38,14 @@ bool TWZcashTAddressIsValidString(TWString *_Nonnull string) {
 }
 
 bool TWZcashTAddressInitWithString(struct TWZcashTAddress *_Nonnull address, TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
+    auto& s = *reinterpret_cast<const std::string*>(string);
 
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != TWZcashTAddressSize) {
+    const auto decoded = TW::Base58::bitcoin.decodeCheck(s);
+    if (decoded.size() != TWZcashTAddressSize) {
         return false;
     }
 
-    memcpy(address->bytes, buffer, TWZcashTAddressSize);
+    std::copy(decoded.begin(), decoded.end(), address->bytes);
     return true;
 }
 
@@ -75,14 +69,7 @@ bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, 
 }
 
 TWString *_Nonnull TWZcashTAddressDescription(struct TWZcashTAddress address) {
-    size_t size = 0;
-    b58enc(nullptr, &size, address.bytes, TWZcashTAddressSize);
-    size += 16;
-
-    std::string str(size, '\0');
-    const auto actualSize = base58_encode_check(address.bytes, TWZcashTAddressSize, HASHER_SHA2D, &str[0], size);
-    str.erase(str.begin() + actualSize - 1, str.end());
-
+    const auto str = TW::Base58::bitcoin.encodeCheck(address.bytes, address.bytes + TWZcashTAddressSize);
     return TWStringCreateWithUTF8Bytes(str.data());
 }
 

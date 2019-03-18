@@ -372,6 +372,8 @@
 		61BA0A7521F6C9EC005680E6 /* BinanceSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A7421F6C9EC005680E6 /* BinanceSigner.swift */; };
 		61BA0A7821F7DB29005680E6 /* Serialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61BA0A7621F7DB29005680E6 /* Serialization.cpp */; };
 		61BA0A7921F7DB29005680E6 /* Serialization.h in Headers */ = {isa = PBXBuildFile; fileRef = 61BA0A7721F7DB29005680E6 /* Serialization.h */; };
+		61BD017522404BD300D6625D /* Base58.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 61BD017322404BD300D6625D /* Base58.cpp */; };
+		61BD017622404BD300D6625D /* Base58.h in Headers */ = {isa = PBXBuildFile; fileRef = 61BD017422404BD300D6625D /* Base58.h */; };
 		61C4E8B12225C3960020A917 /* TronSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8AF2225C3930020A917 /* TronSigner.swift */; };
 		61C4E8B22225C3960020A917 /* Tron.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C4E8B02225C3940020A917 /* Tron.pb.swift */; };
 		61C4E8B52225C3A20020A917 /* TWTronSigner.h in Headers */ = {isa = PBXBuildFile; fileRef = 61C4E8B32225C3A20020A917 /* TWTronSigner.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1001,6 +1003,8 @@
 		61BA0A7421F6C9EC005680E6 /* BinanceSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinanceSigner.swift; sourceTree = "<group>"; };
 		61BA0A7621F7DB29005680E6 /* Serialization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serialization.cpp; sourceTree = "<group>"; };
 		61BA0A7721F7DB29005680E6 /* Serialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serialization.h; sourceTree = "<group>"; };
+		61BD017322404BD300D6625D /* Base58.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Base58.cpp; sourceTree = "<group>"; };
+		61BD017422404BD300D6625D /* Base58.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base58.h; sourceTree = "<group>"; };
 		61C4E8AF2225C3930020A917 /* TronSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TronSigner.swift; sourceTree = "<group>"; };
 		61C4E8B02225C3940020A917 /* Tron.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tron.pb.swift; sourceTree = "<group>"; };
 		61C4E8B32225C3A20020A917 /* TWTronSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWTronSigner.h; sourceTree = "<group>"; };
@@ -1374,6 +1378,8 @@
 			isa = PBXGroup;
 			children = (
 				4E8BBE842230996700F98E04 /* Aion */,
+				61BD017322404BD300D6625D /* Base58.cpp */,
+				61BD017422404BD300D6625D /* Base58.h */,
 				616F8795222F2CA00007ECA3 /* Base64.h */,
 				61A9B2E621F916FA00E601B3 /* Bech32.cpp */,
 				61A9B2E521F916FA00E601B3 /* Bech32.h */,
@@ -2469,6 +2475,7 @@
 				61735C4B219DF044007BF637 /* serialize.h in Headers */,
 				61735AF7219DF044007BF637 /* ed25519-donna-32bit-tables.h in Headers */,
 				61735C1A219DF044007BF637 /* curve25519-donna-scalarmult-base.h in Headers */,
+				61BD017622404BD300D6625D /* Base58.h in Headers */,
 				61735B0D219DF044007BF637 /* poly1305-donna.h in Headers */,
 				61CABAEB21F010160086D9A0 /* Amount.h in Headers */,
 				61722BF6220E45BA00D7BA9A /* Common.pb.h in Headers */,
@@ -2824,6 +2831,7 @@
 				611BBE3C223595690043FB94 /* StoredKey.swift in Sources */,
 				BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */,
 				61B159D121CC5DBB00CFE93B /* Script.cpp in Sources */,
+				61BD017522404BD300D6625D /* Base58.cpp in Sources */,
 				61722BE3220E457D00D7BA9A /* ChainID.swift in Sources */,
 				7782DF31222F218F00599404 /* TWTezosAddress.cpp in Sources */,
 				14FDB4AE2236B894002FC058 /* Stellar.pb.swift in Sources */,

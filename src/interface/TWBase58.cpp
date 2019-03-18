@@ -6,51 +6,40 @@
 
 #include <TrustWalletCore/TWBase58.h>
 
-#include <TrezorCrypto/base58.h>
+#include "../Base58.h"
+
 #include <string>
 
+using namespace TW;
+
 TWString *_Nonnull TWBase58Encode(TWData *_Nonnull data) {
-    size_t size = 0;
-    b58enc(nullptr, &size, TWDataBytes(data), TWDataSize(data));
-    size += 16;
-
-    std::string str(size, '\0');
-    const auto actualSize = base58_encode_check(TWDataBytes(data), (int)TWDataSize(data), HASHER_SHA2D, &str[0], (int)size);
-    str.erase(str.begin() + actualSize - 1, str.end());
-
+    auto& d = *reinterpret_cast<const Data*>(data);
+    const auto str = Base58::bitcoin.encodeCheck(d);
     return TWStringCreateWithUTF8Bytes(str.c_str());
 }
 
 TWString *_Nonnull TWBase58EncodeNoCheck(TWData *_Nonnull data) {
-    size_t size = 0;
-    b58enc(nullptr, &size, TWDataBytes(data), TWDataSize(data));
-
-    auto string = std::string();
-    string.resize(size);
-    b58enc(&string[0], &size, TWDataBytes(data), TWDataSize(data));
-
-    return TWStringCreateWithUTF8Bytes(string.c_str());
+    auto& d = *reinterpret_cast<const Data*>(data);
+    const auto encoded = Base58::bitcoin.encode(d);
+    return TWStringCreateWithUTF8Bytes(encoded.c_str());
 }
 
 TWData *_Nullable TWBase58Decode(TWString *_Nonnull string) {
-    size_t capacity = 128;
-    uint8_t result[capacity];
-
-    int size = base58_decode_check(TWStringUTF8Bytes(string), HASHER_SHA2D, result, (int)capacity);
-    if (size == 0) {
+    auto& s = *reinterpret_cast<const std::string*>(string);
+    const auto decoded = Base58::bitcoin.decodeCheck(s);
+    if (decoded.empty()) {
         return nullptr;
     }
 
-    return TWDataCreateWithBytes(result, size);
+    return TWDataCreateWithBytes(decoded.data(), decoded.size());
 }
 
 TWData *_Nullable TWBase58DecodeNoCheck(TWString *_Nonnull string) {
-    size_t capacity = 128;
-    size_t size = capacity;
-    uint8_t result[capacity];
-    if (!b58tobin(result, &size, TWStringUTF8Bytes(string))) {
+    auto& s = *reinterpret_cast<const std::string*>(string);
+    const auto decoded = Base58::bitcoin.decode(s);
+    if (decoded.empty()) {
         return nullptr;
     }
 
-    return TWDataCreateWithBytes(result + capacity - size, size);
+    return TWDataCreateWithBytes(decoded.data(), decoded.size());
 }
