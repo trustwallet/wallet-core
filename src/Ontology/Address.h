@@ -14,38 +14,38 @@
 namespace TW {
 namespace Ontology {
 
-    class Address {
+class Address {
 
-    private:
+private:
 
-        std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);
+    std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);
 
-    public:
+public:
 
-        static const size_t size = 20;
-        static const uint8_t version = 0x17;
+    static const size_t size = 20;
+    static const uint8_t version = 0x17;
 
-        std::array<uint8_t, size> data;
+    std::array<uint8_t, size> data;
 
-        explicit Address(const PublicKey &publicKey);
+    explicit Address(const PublicKey &publicKey);
 
-        explicit Address(const std::string &b58Address);
+    explicit Address(const std::string &b58Address);
 
-        explicit Address(const std::vector<uint8_t> &bytes);
+    explicit Address(const std::vector<uint8_t> &bytes);
 
-        static bool isValid(const std::string &string) noexcept;
+    static bool isValid(const std::string &string) noexcept;
 
-        std::string string() const;
-    };
+    std::string string() const;
+};
 
-    static inline bool operator==(const Address &lhs, const Address &rhs) {
-        return lhs.data == rhs.data;
-    }
+static inline bool operator==(const Address &lhs, const Address &rhs) {
+    return lhs.data == rhs.data;
+}
 
 }
 } // namespace
 
 /// Wrapper for C interface.
 struct TWOntologyAddress {
-TW::Ontology::Address impl;
+    TW::Ontology::Address impl;
 };
