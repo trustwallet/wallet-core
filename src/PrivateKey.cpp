@@ -74,7 +74,7 @@ Data PrivateKey::signAsDER(const Data& digest, TWCurve curve) const {
     if (!success) {
         return {};
     }
-
+    
     uint8_t resultBytes[72];
     size_t size = ecdsa_sig_to_der(sig.data(), resultBytes);
 
