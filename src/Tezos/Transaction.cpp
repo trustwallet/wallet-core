@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-#include "BinaryCoding.h"
+#include "Forging.h"
 #include "Transaction.h"
 
 #include "../PublicKey.h"
