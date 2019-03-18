@@ -24,7 +24,7 @@ TEST(TezosAddress, ForgeBoolTrue) {
 
     auto output = forgeBool(true);
 
-    ASSERT_EQ(output, expected);
+    ASSERT_EQ(output, parse_hex(expected));
 }
 
 TEST(TezosAddress, ForgeBoolFalse) {
@@ -32,7 +32,7 @@ TEST(TezosAddress, ForgeBoolFalse) {
 
     auto output = forgeBool(false);
 
-    ASSERT_EQ(output, expected);
+    ASSERT_EQ(output, parse_hex(expected));
 }
 
 TEST(TezosAddress, forge_tz1) {

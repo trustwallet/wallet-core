@@ -11,8 +11,9 @@
 using namespace TW;
 
 // Forge the given boolean into a hex encoded string.
-std::string forgeBool(bool input) {
-    return input ? "ff" : "00";
+Data forgeBool(bool input) {
+    auto result = input ? "ff" : "00";
+    return parse_hex(result);
 }
 
 // Forge the given public key hash into a hex encoded string.

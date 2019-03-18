@@ -17,5 +17,5 @@ int base58CheckDecodePrefix(const std::string& input, size_t prefixLength, uint8
 PublicKey parsePublicKey(std::string publicKey);
 std::string bytesToBase58(const uint8_t *data, size_t dataSize);
 std::string base58ToHex(const std::string data, size_t prefixLength, uint8_t *prefix);
-std::string forgeBool(bool input);
+Data forgeBool(bool input);
 std::string forgePublicKey(PublicKey publicKey);
