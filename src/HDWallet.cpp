@@ -7,12 +7,12 @@
 #include "HDWallet.h"
 
 #include "Coin.h"
+#include "Base58.h"
 #include "Bitcoin/Bech32Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Zcash/TAddress.h"
 #include "Ripple/Address.h"
 
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
@@ -111,12 +111,12 @@ PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCurv
 }
 
 std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& extended, TWCurve curve, TWCoinType coinType, uint32_t change, uint32_t address) {
-	uint8_t data[78];
-	if (base58_decode_check(extended.c_str(), HASHER_SHA2D, data, sizeof(data)) != sizeof(data)) {
-		return nullptr;
-	}
+    const auto decoded = Base58::bitcoin.decodeCheck(extended);
+    if (decoded.size() != 78) {
+        return {};
+    }
 
-	TWHDVersion version = (TWHDVersion) read_be(data);
+	TWHDVersion version = (TWHDVersion) read_be(decoded.data());
     if (version != TWHDVersionXPUB && version != TWHDVersionYPUB && version != TWHDVersionLTUB && version != TWHDVersionZPUB && version != TWHDVersionMTUB) {
         // Not a public key
         return {};

@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "BinaryCoding.h"
+#include "../Base58.h"
 #include "../Data.h"
 #include "../HexCoding.h"
 
@@ -21,8 +22,6 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
     std::string result = "0";
     size_t prefixLength = 3;
     uint8_t prefix[] = {6, 161, 0};
-    size_t capacity = 128;
-    uint8_t decoded[capacity];
 
     // Adjust prefix based on tz1, tz2 or tz3.
     switch ((char) publicKeyHash[2]) {
@@ -41,8 +40,8 @@ std::string forgePublicKeyHash(const std::string &publicKeyHash) {
         default:
           throw std::invalid_argument( "Invalid Prefix" );
     }
-    int decodedLength = base58CheckDecodePrefix(publicKeyHash, prefixLength, prefix, decoded);
-    result += hex(decoded, decoded + decodedLength);
+    const auto decoded = Base58::bitcoin.decodeCheck(publicKeyHash);
+    result += hex(decoded.begin() + prefixLength, decoded.end());
     return result;
 }
 
@@ -53,7 +52,7 @@ std::string forgePublicKey(PublicKey publicKey) {
     auto bytes = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
     append(data, bytes);
 
-    auto pk = bytesToBase58(data.data(), data.size());
+    auto pk = Base58::bitcoin.encodeCheck(data);
     auto decoded = base58ToHex(pk, 4, prefix);
     return decoded;
 }
