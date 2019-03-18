@@ -17,14 +17,16 @@ using namespace TW;
 using namespace TW::Tezos;
 
 TEST(TezosSigner, SignString) {
-    std::string bytesToSign = "ffaa";
-    std::string expectedSignature = "eaab7f4066217b072b79609a9f76cdfadd93f8dde41763887e131c02324f18c8e41b1009e334baf87f9d2e917bf4c0e73165622e5522409a0c5817234a48cc02";
-    std::string expectedSignedBytes =  bytesToSign + expectedSignature;
+    Data bytesToSign = parse_hex("ffaa");
+    Data expectedSignature = parse_hex("eaab7f4066217b072b79609a9f76cdfadd93f8dde41763887e131c02324f18c8e41b1009e334baf87f9d2e917bf4c0e73165622e5522409a0c5817234a48cc02");
+    Data expected = Data();
+    append(expected, bytesToSign);
+    append(expected, expectedSignature);
 
     auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));    
-    auto signedBytes = Signer().signHexString(key, bytesToSign);
+    auto signedBytes = Signer().signData(key, bytesToSign);
 
-    ASSERT_EQ(signedBytes, parse_hex(expectedSignedBytes));
+    ASSERT_EQ(signedBytes, expected);
 }
 
 TEST(TezosSigner, SignOperationList) {
