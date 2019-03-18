@@ -200,7 +200,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeStellar: string = "stellar"; break;
     case TWCoinTypeAion: string = "aion"; break;
     case TWCoinTypeNEO: string = "neo"; break;
-    case TWCoinTypeKIN: string = "KIN"; break;
+    case TWCoinTypeKIN: string = "kin"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

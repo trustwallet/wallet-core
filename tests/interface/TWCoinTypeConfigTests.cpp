@@ -239,7 +239,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     assertStringsEqual(value21, "aion");
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKIN));
-    assertStringsEqual(value22, "KIN");
+    assertStringsEqual(value22, "kin");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
