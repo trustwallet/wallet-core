@@ -57,6 +57,6 @@ string Transaction::forge() {
     auto forgedAmount = forgeZarith(amount);
     if(auto destination = std::get_if<Address>(&destination_or_public_key))
         return "08" + hex(forgedSource) + forgedFee + forgedCounter + forgedGasLimit
-            + forgedStorageLimit + forgedAmount + hex(destination->forge()) + forgeBool(false);
+            + forgedStorageLimit + forgedAmount + hex(destination->forge()) + hex(forgeBool(false));
     else throw std::invalid_argument( "Invalid destination" );
 }
