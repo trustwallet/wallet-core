@@ -17,6 +17,7 @@ using namespace std;
 using namespace TW::Tezos;
 
 // Forge the given zarith hash into a hex encoded string.
+// TODO(keefertaylor): Move to forging.cpp, unit test.
 Data forgeZarith(int input) {
     std::string result = "";
     while (true) {
@@ -51,7 +52,7 @@ string Transaction::forge() {
     if (kind == operationtype::REVEAL) {
         if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key))
             return "07" + hex(forgedSource) + hex(forgedFee) + hex(forgedCounter) + hex(forgedGasLimit)
-                + hex(forgedStorageLimit) + forgePublicKey(*publicKey);
+                + hex(forgedStorageLimit) + hex(forgePublicKey(*publicKey));
         else throw std::invalid_argument( "Invalid publicKey" );
     }
     auto forgedAmount = forgeZarith(amount);
