@@ -48,9 +48,16 @@ TEST(ParamsBuilder, pushInt) {
 
 
 TEST(ParamsBuilder, InvokeCode) {
-    auto builder = ParamsBuilder();
-    auto param = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD").data;
-    auto invokeCode = builder.buildNativeInvokeCode(Ont().contractAddress(), 0x00, "balanceOf", param);
+    auto balanceParam = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD").data;
+    auto invokeCode = ParamsBuilder::buildNativeInvokeCode(Ont().contractAddress(), 0x00, "balanceOf", balanceParam);
     auto hexInvokeCode = "1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f661400000000000000000000000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b65";
     EXPECT_EQ(hexInvokeCode, hex(invokeCode));
+    auto fromAddress = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD").data;
+    auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn").data;
+    uint64_t amount = 1;
+    std::unordered_map<std::string, boost::any> transferParam{{"from", fromAddress},{"to", toAddress},{"amount", amount}};
+    std::vector<boost::any> args{transferParam};
+    invokeCode = ParamsBuilder::buildNativeInvokeCode(Ont().contractAddress(), 0x00, "transfer", args);
+    hexInvokeCode = "00c66b1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b76a7cc814feec06b79ed299ea06fcb94abac41aaf3ead76586a7cc8516a7cc86c51c1087472616e736665721400000000000000000000000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b65";
+    EXPECT_EQ(hexInvokeCode,hex(invokeCode));
 }
