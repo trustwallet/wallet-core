@@ -7,6 +7,7 @@
 #include "Tezos/Address.h"
 #include "HDWallet.h"
 #include "HexCoding.h"
+#include "PublicKey.h"
 #include "PrivateKey.h"
 #include "Tezos/Forging.h"
 
@@ -91,4 +92,13 @@ TEST(Forging, forge_tz3) {
     ASSERT_EQ(output, parse_hex(expected));
 }
 
-// TODO(keefertaylor): Add tests for forging a public key. 
+TEST(Forgin, ForgePublicKey) {
+  auto expected = "00311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
+  
+  auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
+  auto publicKey = privateKey.getPublicKey(PublicKeyType::ed25519);
+  auto output = forgePublicKey(publicKey);
+  
+  ASSERT_EQ(output, parse_hex(expected))
+}
+
