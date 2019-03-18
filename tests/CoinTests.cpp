@@ -58,7 +58,7 @@ TEST(Coin, validateAddressZcash) {
 }
 
 TEST(Coin, validateAddressOntology){
-    EXPECT_TRUE(validateAddress(TWCoinTypeOntology,"AW2f6d82p7dC3jFMrzR5x5GhyTWSB5pxVz"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeOntology, "AW2f6d82p7dC3jFMrzR5x5GhyTWSB5pxVz"));
     EXPECT_FALSE(validateAddress(TWCoinTypeOntology,"BW2f6d82p7dC3jFMrzR5x5GhyTWSB5pxVz"));
     EXPECT_FALSE(validateAddress(TWCoinTypeOntology,"4646464646464646464646464646464646464646464646464646464646464646"));
 }
