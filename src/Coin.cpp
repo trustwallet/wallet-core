@@ -261,6 +261,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
     case TWCoinTypeThunderToken:
