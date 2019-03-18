@@ -21,18 +21,18 @@ void OperationList::add_operation(Transaction transaction) {
 }
 
 // Forge the given branch to a hex encoded string.
-std::string OperationList::forgeBranch() const {
+Data OperationList::forgeBranch() const {
     size_t capacity = 128;
     uint8_t decoded[capacity];
     size_t prefixLength = 2;
     uint8_t prefix[] = {1, 52};
 
     int decodedLength = base58CheckDecodePrefix(branch, prefixLength, prefix, decoded);
-    return hex(decoded, decoded + decodedLength);
+    return parse_hex(hex(decoded, decoded + decodedLength));
 }
 
 std::string OperationList::forge() const {
-    std::string result = forgeBranch();
+    std::string result = hex(forgeBranch());
 
     for (auto operation : operation_list) {
       result += hex(operation.forge());

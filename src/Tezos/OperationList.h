@@ -15,7 +15,7 @@ public:
     void add_operation(Transaction transaction);
     /// Returns a string representation of the operations.
     std::string forge() const;
-    std::string forgeBranch() const;
+    Data forgeBranch() const;
 };
 
 }} // namespace
