@@ -8,6 +8,7 @@
 #include "Tezos/BinaryCoding.h"
 #include "Tezos/OperationList.h"
 #include "Tezos/Transaction.h"
+#include "HexCoding.h"
 
 #include <gtest/gtest.h>
 using namespace TW::Tezos;
@@ -16,7 +17,7 @@ TEST(TezosOperationList, ForgeBranch) {
     auto input = OperationList("BMNY6Jkas7BzKb7wDLCFoQ4YxfYoieU7Xmo1ED3Y9Lo3ZvVGdgW");
     auto expected = "da8eb4f57f98a647588b47d29483d1edfdbec1428c11609cee0da6e0f27cfc38";
 
-    ASSERT_EQ(input.forgeBranch(), expected);
+    ASSERT_EQ(input.forgeBranch(), parse_hex(expected));
 }
 
 TEST(TezosOperationList, ForgeOperationList_TransactionOnly) {
