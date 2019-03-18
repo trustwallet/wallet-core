@@ -31,11 +31,11 @@ Data OperationList::forgeBranch() const {
     return parse_hex(hex(decoded, decoded + decodedLength));
 }
 
-std::string OperationList::forge() const {
-    std::string result = hex(forgeBranch());
+Data OperationList::forge() const {
+    auto forged = forgeBranch();
 
     for (auto operation : operation_list) {
-      result += hex(operation.forge());
+        append(forged, operation.forge());
     }
-    return result;
+    return forged;
 }

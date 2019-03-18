@@ -14,7 +14,7 @@ public:
     OperationList(const std::string& string);
     void add_operation(Transaction transaction);
     /// Returns a string representation of the operations.
-    std::string forge() const;
+    Data forge() const;
     Data forgeBranch() const;
 };
 

@@ -18,7 +18,7 @@ using namespace TW::Tezos;
 
 Data Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
   auto forgedBytes = operationList.forge();
-  return signHexString(privateKey, forgedBytes);
+  return signHexString(privateKey, hex(forgedBytes));
 }
 
 Data Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes) {
