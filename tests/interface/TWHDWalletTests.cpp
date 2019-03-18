@@ -201,3 +201,19 @@ TEST(HDWallet, MultipleThreads) {
     th2.join();
     th3.join();
 }
+
+TEST(HDWallet, DeriveCosmos) {
+    // use `gaiacli keys add key_name` to generate mnemonic words and private key
+    auto words = STRING("attract term foster morning tail foam excite copper disease measure cheese camera rug enroll cause flip sword waste try local purchase between idea thank");
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeCosmos));
+    auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
+    
+    assertHexEqual(privateKeyData, "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
+
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
+    auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
+
+    assertHexEqual(publicKeyData, "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5");
+}
