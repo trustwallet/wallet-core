@@ -16,6 +16,7 @@ using namespace std;
 using namespace TW::Tezos;
 
 Data Transaction::forge() {
+    auto forged = Data();
     auto forgedSource = source.forge();
     auto forgedFee = forgeZarith(fee);
     auto forgedCounter = forgeZarith(counter);
@@ -24,7 +25,7 @@ Data Transaction::forge() {
 
     if (kind == operationtype::REVEAL) {
         if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key)) {
-            auto forged = parse_hex("07");
+            forged.push_back(7);
             append(forged, forgedSource);
             append(forged, forgedFee);
             append(forged, forgedCounter);
@@ -38,7 +39,7 @@ Data Transaction::forge() {
     }
     auto forgedAmount = forgeZarith(amount);
     if (auto destination = std::get_if<Address>(&destination_or_public_key)) {
-        auto forged = parse_hex("08");
+        forged.push_back(8);
         append(forged, forgedSource);
         append(forged, forgedFee);
         append(forged, forgedCounter);

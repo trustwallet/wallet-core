@@ -22,8 +22,10 @@ Data Signer::signOperationList(const PrivateKey& privateKey, OperationList opera
 }
 
 Data Signer::signData(const PrivateKey& privateKey, Data data) {
-    Data watermarkedData = parse_hex("03");
+    Data watermarkedData = Data();
+    watermarkedData.push_back(3);
     append(watermarkedData, data);
+    
     Data hash = Hash::blake2b(watermarkedData, 32);
     TW::PublicKey pk = privateKey.getPublicKey(PublicKeyType::ed25519);
     Data signature = privateKey.sign(hash, TWCurve::TWCurveEd25519);

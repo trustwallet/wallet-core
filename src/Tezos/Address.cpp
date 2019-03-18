@@ -64,7 +64,7 @@ std::string Address::string() const {
 }
 
 Data Address::forge() const {
-    auto forged = Data();
+    auto data = Data();
     std::string s = string();
 
     if (s[0] == 'K') {
@@ -75,9 +75,12 @@ Data Address::forge() const {
         int decodedLength = base58CheckDecodePrefix(s, prefixLength, prefix, decoded);
         if (decodedLength != 20)
             throw std::invalid_argument("Invalid Address For forge");
-        return parse_hex("01" + TW::hex(decoded, decoded + decodedLength) + "00");
+        data.push_back(0x01);
+        data.insert(data.end(), decoded, decoded + decodedLength);
+        data.push_back(0);
+        return data;
     }
-    append(forged, parse_hex("00"));
-    append(forged, forgePublicKeyHash(s));
-    return forged;
+    data.push_back(0);
+    append(data, forgePublicKeyHash(s));
+    return data;
 }

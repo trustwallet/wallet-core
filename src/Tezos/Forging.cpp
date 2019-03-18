@@ -14,8 +14,8 @@ using namespace TW;
 
 // Forge the given boolean into a hex encoded string.
 Data forgeBool(bool input) {
-    auto result = input ? "ff" : "00";
-    return parse_hex(result);
+    unsigned char result = input ? 0xff : 0x00;
+    return Data { result };
 }
 
 // Forge the given public key hash into a hex encoded string.
@@ -30,15 +30,15 @@ Data forgePublicKeyHash(const std::string &publicKeyHash) {
     // Adjust prefix based on tz1, tz2 or tz3.
     switch ((char) publicKeyHash[2]) {
         case '1':
-            append(forged, parse_hex("0"));
+            forged.push_back(0);
             prefix[2] = 159;
             break;
         case '2':
-            append(forged, parse_hex("1"));
+            forged.push_back(1);
             prefix[2] = 161;
             break;
         case '3':
-            append(forged, parse_hex("2"));
+            forged.push_back(2);
             prefix[2] = 164;
             break;
         default:
