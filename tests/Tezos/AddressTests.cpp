@@ -19,55 +19,6 @@
 using namespace TW;
 using namespace TW::Tezos;
 
-// TODO(keefertaylor): Move these to a true forging test file.
-TEST(TezosAddress, ForgeBoolTrue) {
-    auto expected = "ff";
-
-    auto output = forgeBool(true);
-
-    ASSERT_EQ(output, parse_hex(expected));
-}
-
-TEST(TezosAddress, ForgeBoolFalse) {
-    auto expected = "00";
-
-    auto output = forgeBool(false);
-
-    ASSERT_EQ(output, parse_hex(expected));
-}
-
-TEST(TezosAddress, ForgeZarithZero) {
-  auto expected = "00";
-  
-  auto output = forgeZarith(0);
-  
-  ASSERT_EQ(output, parse_hex(expected));
-}
-
-TEST(TezosAddress, ForgeZarithTen) {
-  auto expected = "0a";
-  
-  auto output = forgeZarith(10);
-  
-  ASSERT_EQ(output, parse_hex(expected));
-}
-
-TEST(TezosAddress, ForgeZarithTwenty) {
-  auto expected = "14";
-  
-  auto output = forgeZarith(0);
-  
-  ASSERT_EQ(output, parse_hex(expected));
-}
-
-TEST(TezosAddress, ForgeZarithOneHundredFifty) {
-  auto expected = "9601";
-  
-  auto output = forgeZarith(150);
-  
-  ASSERT_EQ(output, parse_hex(expected));
-}
-
 TEST(TezosAddress, forge_tz1) {
     auto input = Address("tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don");
     auto expected = "0000cfa4aae60f5d9389752d41e320da224d43287fe2";
