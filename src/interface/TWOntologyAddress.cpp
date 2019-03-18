@@ -28,6 +28,11 @@ bool TWOntologyAddressIsValidString(TWString *_Nonnull string) {
     return Address::isValid(*s);
 }
 
+struct TWOntologyAddress *_Nullable TWOntologyAddressCreateWithData(TWData *_Nonnull data) {
+    auto d = reinterpret_cast<const std::vector<uint8_t> *>(data);
+    return new TWOntologyAddress{Address(*d)};
+}
+
 struct TWOntologyAddress *_Nullable TWOntologyAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string *>(string);
     if (!Address::isValid(*s)) {
