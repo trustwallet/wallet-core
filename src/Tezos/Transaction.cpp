@@ -11,36 +11,9 @@
 #include "../PublicKey.h"
 #include "../HexCoding.h"
 #include <variant>
-#include <sstream>
 
 using namespace std;
 using namespace TW::Tezos;
-
-// Forge the given zarith hash into a hex encoded string.
-// TODO(keefertaylor): Move to forging.cpp, unit test.
-Data forgeZarith(int input) {
-    std::string result = "";
-    while (true) {
-        if (input < 128) {
-            if (input < 16) {
-                result += "0";
-            }
-            std::stringstream ss;
-            ss << std::hex << input;
-            result += ss.str();
-            break;
-        } else {
-            int b = input % 128;
-            input -= b;
-            input /= 128;
-            b += 128;
-            std::stringstream ss;
-            ss << std::hex << b;
-            result += ss.str();
-        }
-    }
-    return parse_hex(result);
-}
 
 Data Transaction::forge() {
     auto forgedSource = source.forge();

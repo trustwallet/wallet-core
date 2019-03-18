@@ -19,6 +19,7 @@
 using namespace TW;
 using namespace TW::Tezos;
 
+// TODO(keefertaylor): Move these to a true forging test file.
 TEST(TezosAddress, ForgeBoolTrue) {
     auto expected = "ff";
 
@@ -33,6 +34,38 @@ TEST(TezosAddress, ForgeBoolFalse) {
     auto output = forgeBool(false);
 
     ASSERT_EQ(output, parse_hex(expected));
+}
+
+TEST(TezosAddress, ForgeZarithZero) {
+  auto expected = "00";
+  
+  auto output = forgeZarith(0);
+  
+  ASSERT_EQ(output, parse_hex(expected));
+}
+
+TEST(TezosAddress, ForgeZarithTen) {
+  auto expected = "0a";
+  
+  auto output = forgeZarith(10);
+  
+  ASSERT_EQ(output, parse_hex(expected));
+}
+
+TEST(TezosAddress, ForgeZarithTwenty) {
+  auto expected = "14";
+  
+  auto output = forgeZarith(0);
+  
+  ASSERT_EQ(output, parse_hex(expected));
+}
+
+TEST(TezosAddress, ForgeZarithOneHundredFifty) {
+  auto expected = "9601";
+  
+  auto output = forgeZarith(150);
+  
+  ASSERT_EQ(output, parse_hex(expected));
 }
 
 TEST(TezosAddress, forge_tz1) {
