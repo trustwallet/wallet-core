@@ -20,7 +20,7 @@ namespace TW {
 
             static PublicKey getPublicKey(const std::string &privateKey) noexcept;
 
-            static Data sign(const PrivateKey &privateKey, const Data &msg) noexcept;
+            static std::vector<uint8_t> sign(const PrivateKey &privateKey, const Data &msg) noexcept;
 
             static bool verify(const PublicKey &publicKey, const Data &signature, const Data &msg) noexcept;
         };

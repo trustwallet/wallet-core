@@ -25,14 +25,10 @@ PublicKey Signer::getPublicKey(const std::string &hexPrvKey) noexcept {
     return PrivateKey(parse_hex(hexPrvKey)).getPublicKey(PublicKeyType::nist256p1);
 }
 
-Data Signer::sign(const PrivateKey &privateKey, const Data &msg) noexcept {
+std::vector<uint8_t> Signer::sign(const PrivateKey &privateKey, const Data &msg) noexcept {
     auto digest = Hash::sha256(msg);
-    std::cout << "digest: " << hex(digest) << std::endl;
     auto signature = privateKey.sign(digest, TWCurveNIST256p1);
+    signature.pop_back();
     return signature;
 }
 
-bool Signer::verify(const PublicKey &publicKey, const Data &signature, const Data &msg) noexcept {
-    auto digest = Hash::sha256(msg);
-    return publicKey.verify(signature, digest);
-}
