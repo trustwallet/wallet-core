@@ -10,5 +10,5 @@
 using namespace TW;
 
 Data forgeBool(bool input);
-std::string forgePublicKeyHash(const std::string &publicKeyHash);
+Data forgePublicKeyHash(const std::string &publicKeyHash);
 std::string forgePublicKey(PublicKey publicKey);

@@ -14,6 +14,7 @@
 
 #include <TrezorCrypto/ecdsa.h>
 
+using namespace TW;
 using namespace TW::Tezos;
 
 bool Address::isValid(const std::string& string) {
@@ -65,6 +66,7 @@ std::string Address::string() const {
 }
 
 Data Address::forge() const {
+    auto forged = Data();
     std::string s = string();
 
     if (s[0] == 'K') {
@@ -74,5 +76,7 @@ Data Address::forge() const {
             throw std::invalid_argument("Invalid Address For forge");
         return parse_hex("01" + TW::hex(decoded, decoded + decodedLength) + "00");
     }
-    return parse_hex("00" + forgePublicKeyHash(s));
+    append(forged, parse_hex("00"));
+    append(forged, forgePublicKeyHash(s));
+    return forged;
 }
