@@ -25,6 +25,9 @@
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic fatal "-Wswitch"
+
 using namespace TW;
 
 std::string TW::loadAddress(TWCoinType coin, const Data& data) {
@@ -365,3 +368,5 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
         return NEO::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
     }
 }
+
+#pragma clang diagnostic pop

@@ -9,6 +9,9 @@
 #include <string.h>
 #include <string>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic fatal "-Wswitch"
+
 using namespace std;
 
 const char *explorerURLForCoinType(enum TWCoinType type);
@@ -239,3 +242,5 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
+
+#pragma clang diagnostic pop
