@@ -177,8 +177,11 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto value24 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
     assertStringsEqual(value24, "https://mainnet.aion.network/#/transaction/123");
 
-    auto value25 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
-    assertStringsEqual(value25, "https://hubble.figment.network/chains/cosmoshub-1/blocks/1/transactions/123");
+    auto value25 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeKIN, txId));
+    assertStringsEqual(value25, "https://kinexplorer.com/tx/123");
+
+    auto value26 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
+    assertStringsEqual(value26, "https://hubble.figment.network/chains/cosmoshub-1/blocks/1/transactions/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
