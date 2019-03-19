@@ -28,6 +28,10 @@ targets:
       - target: protobuf
         link: true
       - sdk: libc++.tbd
+    scheme:
+      testTargets:
+        - TrustWalletCoreTests
+      gatherCoverageData: true
   TrustWalletCoreTests:
     type: bundle.unit-test
     platform: iOS
