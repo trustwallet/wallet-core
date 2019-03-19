@@ -61,18 +61,11 @@ Data forgePublicKey(PublicKey publicKey) {
 
 // Forge the given zarith hash into a hex encoded string.
 Data forgeZarith(uint16_t input) {
-    Data result = Data();
-    while (true) {
-        if (input < 128) {
-            result.push_back(static_cast<byte>(input));
-            break;
-        } else {
-            byte b = input % 128;
-            input -= b;
-            input /= 128;
-            b += 128;
-            result.push_back(b);
-        }
+    Data forged = Data();
+    while (input > 0x80) {
+        forged.push_back(static_cast<byte>((input & 0xff) | 0x80));
+        input >>= 7;
     }
-    return result;
+    forged.push_back(static_cast<byte>(input));
+    return forged;
 }
