@@ -21,6 +21,7 @@
 #include "Stellar/Address.h"
 #include "Ontology/Address.h"
 #include "NEO/Address.h"
+#include "NULS/Address.h"
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
@@ -90,6 +91,8 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
         return Tezos::Address(data).string();
     case TWCoinTypeNEO:
         return NEO::Address(data).string();
+	case TWCoinTypeNULS:
+		return NULS::Address(data).string();
     }
 }
 
@@ -158,6 +161,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
+		
+	case TWCoinTypeNULS:
+		return NULS::Address::isValid(string);
     }
 }
 
@@ -189,6 +195,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
+	case TWCoinTypeNULS:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -208,6 +215,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
+	case TWCoinTypeNULS:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
     case TWCoinTypeThunderToken:
@@ -257,6 +265,7 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeNimiq:
+	case TWCoinTypeNULS:
     case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
@@ -287,6 +296,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
+	case TWCoinTypeNULS:
     case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
@@ -390,6 +400,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
+
+    case TWCoinTypeNULS:
+        return NULS::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
     }
 }
 

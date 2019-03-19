@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package TW.NULS.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message TransactionInput {
+    string from_hash = 1;
+    int32 from_index = 2;
+    int64 amount = 3;
+    int64 lock_time = 4;
+    string address = 5;
+}
+
+message TransactionOutput {
+    string to_address = 1;
+    int64 amount = 2;
+    int64 lock_time = 3;
+    int32 index = 4;
+}
+
+message Transaction {
+    bytes priv_key = 1;
+    string from_address = 2;
+    string to_address = 3;
+    int64 amount = 4;
+
+    /// UTF-8 encode strings
+    bytes remark = 5;
+
+    /// Unspent input list
+    repeated TransactionInput inputs = 6;
+    /// Output list
+    repeated TransactionOutput outputs = 7;
+}
+
+message SigningOutput {
+    bytes encoded = 1;
+}
