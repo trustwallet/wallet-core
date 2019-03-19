@@ -27,6 +27,7 @@
 		29587DD0223F379800BAD800 /* KinSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29587DCF223F379800BAD800 /* KinSigner.swift */; };
 		34339D36023473D76FAF18EE /* Pods_TrustWalletCore_TrustWalletCoreTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B3B8FA185E5408ACD70CFB5 /* Pods_TrustWalletCore_TrustWalletCoreTests.framework */; };
 		467181FB9EFC0E4C01DDB460 /* Pods_TrustWalletCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */; };
+		4E7D1D56223E652E00504DE5 /* Cosmos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7D1D55223E652E00504DE5 /* Cosmos.swift */; };
 		4E8BBE8C2230998600F98E04 /* RLP.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E8BBE852230998500F98E04 /* RLP.h */; };
 		4E8BBE8D2230998600F98E04 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4E8BBE862230998500F98E04 /* Transaction.cpp */; };
 		4E8BBE8E2230998600F98E04 /* Signer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4E8BBE872230998500F98E04 /* Signer.cpp */; };
@@ -656,6 +657,7 @@
 		29587DCD223F374400BAD800 /* StellarPassphrase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarPassphrase.swift; sourceTree = "<group>"; };
 		29587DCF223F379800BAD800 /* KinSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KinSigner.swift; sourceTree = "<group>"; };
 		36F25C48C7A120965C189BCE /* Pods_TrustWalletCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TrustWalletCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4E7D1D55223E652E00504DE5 /* Cosmos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cosmos.swift; sourceTree = "<group>"; };
 		4E8BBE852230998500F98E04 /* RLP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RLP.h; path = Aion/RLP.h; sourceTree = "<group>"; };
 		4E8BBE862230998500F98E04 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Transaction.cpp; path = Aion/Transaction.cpp; sourceTree = "<group>"; };
 		4E8BBE872230998500F98E04 /* Signer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signer.cpp; path = Aion/Signer.cpp; sourceTree = "<group>"; };
@@ -2046,6 +2048,7 @@
 				616F87BC223041F30007ECA3 /* Nimq.swift */,
 				140352F42233740C00DF0815 /* Stellar.swift */,
 				770473EB223EBF4F00341F5B /* Kin.swift */,
+				4E7D1D55223E652E00504DE5 /* Cosmos.swift */,
 			);
 			path = Blockchains;
 			sourceTree = "<group>";
@@ -3000,6 +3003,7 @@
 				61B159D221CC5DBB00CFE93B /* TransactionOutput.cpp in Sources */,
 				61C4E924222615300020A917 /* PrivateKey+Bitcoin.swift in Sources */,
 				611BBE32223595550043FB94 /* EncryptionParameters.cpp in Sources */,
+				4E7D1D56223E652E00504DE5 /* Cosmos.swift in Sources */,
 				61C4E8EF22260B150020A917 /* Zcoin.swift in Sources */,
 				7782DF29222F0D9100599404 /* Tezos.swift in Sources */,
 				61735C69219DF044007BF637 /* aeskey.c in Sources */,

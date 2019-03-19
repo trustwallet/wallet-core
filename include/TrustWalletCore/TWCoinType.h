@@ -44,6 +44,7 @@ enum TWCoinType {
     TWCoinTypeNimiq = 242,
     TWCoinTypeStellar = 148,
     TWCoinTypeAion = 425,
+    TWCoinTypeCosmos = 118,
     TWCoinTypeNEO = 888,
     TWCoinTypeKIN = 2017,
 };

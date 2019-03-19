@@ -33,4 +33,13 @@ TEST(Address, FromKeyHash) {
     ASSERT_EQ(address.string(), "bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2");
 }
 
+TEST(Address, FromKeyHashCosmos) {
+    auto privateKey = PrivateKey(parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"));
+    auto publicKeyData = privateKey.getPublicKey(PublicKeyType::secp256k1);
+    ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5");
+
+    auto publicKey = PublicKey(publicKeyData);
+    auto address = Address("cosmos", publicKey);
+    ASSERT_EQ(address.string(), "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
+}
 }} // namespace

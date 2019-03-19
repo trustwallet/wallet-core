@@ -44,6 +44,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "NIM"; break;
     case TWCoinTypeStellar: string = "XLM"; break;
     case TWCoinTypeAion: string = "AION"; break;
+    case TWCoinTypeCosmos: string = "ATOM"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "KIN"; break;
     default: string = ""; break;
@@ -65,6 +66,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeAion:
+    case TWCoinTypeCosmos:
         return 18;
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeBitcoin:
@@ -144,6 +146,9 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         url += "/#" + txId;
         break;
     case TWCoinTypeBinance: break;
+    case TWCoinTypeCosmos:
+        url += "/blocks/1/transactions/" + txId;
+        break;
     default: break;
     }
     return TWStringCreateWithUTF8Bytes(url.c_str());
@@ -176,6 +181,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNimiq: return "https://nimiq.watch";
     case TWCoinTypeStellar: return "https://stellarscan.io";
     case TWCoinTypeAion: return "https://mainnet.aion.network";
+    case TWCoinTypeCosmos: return "https://hubble.figment.network/chains/cosmoshub-1";
     case TWCoinTypeNEO: return "https://neoscan.io";
     case TWCoinTypeKIN: return "https://kinexplorer.com";
     default: return "";
@@ -210,6 +216,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "nimiq"; break;
     case TWCoinTypeStellar: string = "stellar"; break;
     case TWCoinTypeAion: string = "aion"; break;
+    case TWCoinTypeCosmos: string = "cosmos"; break;
     case TWCoinTypeNEO: string = "neo"; break;
     case TWCoinTypeKIN: string = "kin"; break;
     default: string = ""; break;
@@ -245,6 +252,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeNimiq: string = "Nimiq"; break;
     case TWCoinTypeStellar: string = "Stellar"; break;
     case TWCoinTypeAion: string = "Aion"; break;
+    case TWCoinTypeCosmos: string = "Cosmos"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "Kin"; break;
     default: string = ""; break;

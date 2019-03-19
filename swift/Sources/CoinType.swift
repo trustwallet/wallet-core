@@ -33,6 +33,7 @@ public enum CoinType: UInt32, CaseIterable {
     case nimiq = 242
     case stellar = 148
     case aion = 425
+    case cosmos = 118
     case neo = 888
     case kin = 2017
 

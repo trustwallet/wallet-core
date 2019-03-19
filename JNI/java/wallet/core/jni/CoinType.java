@@ -35,6 +35,7 @@ public enum CoinType {
     NIMIQ (242),
     STELLAR (148),
     AION (425),
+    COSMOS (118),
     NEO (888),
     KIN (2017);
 
@@ -70,6 +71,7 @@ public enum CoinType {
             case 242: return CoinType.NIMIQ;
             case 148: return CoinType.STELLAR;
             case 425: return CoinType.AION;
+            case 118: return CoinType.COSMOS;
             case 888: return CoinType.NEO;
             case 2017: return CoinType.KIN;
             default: return null;

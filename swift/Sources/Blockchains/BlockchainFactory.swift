@@ -47,6 +47,8 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Zcoin()
     case .binance:
         return BinanceChainTestnet()
+    case .cosmos:
+        return Cosmos()
     case .ripple:
         return Ripple()
     case .zcash:
