@@ -228,7 +228,7 @@ public struct TW_Tezos_Proto_RevealOperationData {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var publicKey: String = String()
+  public var publicKey: Data = SwiftProtobuf.Internal.emptyData
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -553,7 +553,7 @@ extension TW_Tezos_Proto_RevealOperationData: SwiftProtobuf.Message, SwiftProtob
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self.publicKey)
+      case 1: try decoder.decodeSingularBytesField(value: &self.publicKey)
       default: break
       }
     }
@@ -561,7 +561,7 @@ extension TW_Tezos_Proto_RevealOperationData: SwiftProtobuf.Message, SwiftProtob
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.publicKey.isEmpty {
-      try visitor.visitSingularStringField(value: self.publicKey, fieldNumber: 1)
+      try visitor.visitSingularBytesField(value: self.publicKey, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }

@@ -45,13 +45,17 @@ class TezosTests: XCTestCase {
     }
 
     public func testSigning() {
+        let privateKeyData = Data(hexString: "c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8")!
+        let privateKey = PrivateKey(data: privateKeyData)!
+        let publicKey = privateKey.getPublicKeyEd25519()
+
         let branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp"
 
         var operationList = TW_Tezos_Proto_OperationList()
         operationList.branch = branch;
 
         var revealOperationData = TW_Tezos_Proto_RevealOperationData();
-        revealOperationData.publicKey = "edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"
+        revealOperationData.publicKey = publicKey.data
 
         var transactionOperationData = TW_Tezos_Proto_TransactionOperationData()
         transactionOperationData.amount = 1
@@ -87,8 +91,9 @@ class TezosTests: XCTestCase {
         signingInput.privateKey = Data(privateKeyBytes)
 
         let signingOuput = TezosSigner.sign(input: signingInput);
-        let expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0107000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b9572100d924cb3e56c4b9f55e50735e461899a2f616a26bfb0aa05d0b356b66f517b023df330ad3621f0bf39d518131a1becd6a7b2e226ed291483af3682535d1f4530f"
+        let expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0107000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff9508000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721000cb9f42851890ab52582efa5a523fc3a119a1e5e392ffe90012d1af00d202339ecd0853106aff708ca52bc0742a894eae8d83b5f59fc4b83b9f59514e212410d"
 
-        XCTAssertEqual(signingOuput.signedBytes, expected.data(using: .utf8)!)
+        XCTAssertEqual(signingOuput.signedBytes, Data(hexString: expected))
     }
 }
+

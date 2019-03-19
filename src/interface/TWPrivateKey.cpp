@@ -68,6 +68,10 @@ TWData *TWPrivateKeyData(struct TWPrivateKey *_Nonnull pk) {
     return TWDataCreateWithBytes(pk->impl.bytes.data(), TWPrivateKeySize);
 }
 
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateKey *_Nonnull pk) {
+        return new TWPublicKey{ pk->impl.getPublicKey(PublicKeyType::nist256p1) };
+}
+
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateKey *_Nonnull pk, bool compressed) {
     if (compressed)  {
         return new TWPublicKey{ pk->impl.getPublicKey(PublicKeyType::secp256k1) };
