@@ -8,7 +8,6 @@
 #include "../Base58.h"
 #include "../Data.h"
 #include "../HexCoding.h"
-#include "../BinaryCoding.h"
 
 #include <sstream>
 
