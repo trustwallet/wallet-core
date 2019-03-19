@@ -5,6 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Decred/Address.h"
+
+#include "Coin.h"
+#include "HDWallet.h"
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>
