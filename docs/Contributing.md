@@ -3,7 +3,9 @@
 
 Wallet Core implements the cryptographic functionality of blockchains. This includes elliptic curve cryptography, hashing, address derivation and transaction signing. However it *does not* implement other aspects like networking and UI. Wallet core behaves like a black box for higher level users like Trust Wallet; it takes inputs from the blockchain and the user (for instance UTXOs, private keys, etc.) and produces an output (like a signed and encoded transaction).
 
-### How does Trust Wallet interact with Wallet Core:
+### How does Trust Wallet interact with Wallet Core
+
+Take Ethereum as an example:
 
 <img src="wallet-core.png">
 
@@ -147,11 +149,11 @@ Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload
 
 - Generate GPG Key
 - Send Key to the server using the installed tool GPG Keychain
-- Generate the signing.keyId value: 
+- Generate the signing.keyId value:
  ```
 $ gpg --list-keys --keyid-format short
 ```
-- Get the `.gpg` secret key that will be assigned to signing.secretKeyRingFile parameter: 
+- Get the `.gpg` secret key that will be assigned to signing.secretKeyRingFile parameter:
 ```
 $ gpg --export-secret-keys -o secring.gpg
 ```
