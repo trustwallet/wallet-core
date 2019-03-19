@@ -12,4 +12,4 @@ using namespace TW;
 Data forgeBool(bool input);
 Data forgePublicKeyHash(const std::string &publicKeyHash);
 Data forgePublicKey(PublicKey publicKey);
-Data forgeZarith(uint16_t input);
+Data forgeZarith(uint64_t input);
