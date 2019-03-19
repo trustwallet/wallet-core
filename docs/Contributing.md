@@ -25,7 +25,7 @@ Keep this in mind when adding to the library:
 
 * Install Xcode
 * Install Xcode command line tools: `xcode-select --install`
-* Install CMake, boost, protobuf: `brew install cmake ninja boost autoconf automake libtool`
+* Install CMake, boost, protobuf: `brew install cmake ninja boost autoconf automake libtool xcodegen`
 * Install [Android Studio](https://developer.android.com/studio/index.html)
 * Install the [Android NDK](https://developer.android.com/ndk/guides/)
 
