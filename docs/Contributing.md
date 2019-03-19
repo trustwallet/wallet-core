@@ -60,9 +60,7 @@ Use the `bootstrap.sh` script in the root folder to quickly build and test. Afte
 * Android: `tools/android-test`
 * iOS: `tools/ios-test`
 
-How to generate a Xcode project:
-
-`cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug`
+Or use XCode for testing and debugging. Run `cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug` to generate an Xcode project. Then go to `swift/` folder, run `pod install` and open `TrustWalletCore.xcworkspace`.
 
 ## C Headers
 
