@@ -4,10 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "OperationList.h"
+
 #include "BinaryCoding.h"
 #include "HexCoding.h"
-#include "OperationList.h"
 #include "Transaction.h"
+#include "../Base58.h"
 
 using namespace TW;
 using namespace TW::Tezos;
@@ -22,13 +24,14 @@ void OperationList::add_operation(Transaction transaction) {
 
 // Forge the given branch to a hex encoded string.
 std::string OperationList::forgeBranch() const {
-    size_t capacity = 128;
-    uint8_t decoded[capacity];
-    size_t prefixLength = 2;
-    uint8_t prefix[] = {1, 52};
+    std::array<byte, 2> prefix = {1, 52};
 
-    int decodedLength = base58CheckDecodePrefix(branch, prefixLength, prefix, decoded);
-    return hex(decoded, decoded + decodedLength);
+    const auto decoded = Base58::bitcoin.decodeCheck(branch);
+    if (decoded.size() < prefix.size() || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        return "";
+    }
+
+    return hex(decoded.begin() + prefix.size(), decoded.end());
 }
 
 std::string OperationList::forge() const {
