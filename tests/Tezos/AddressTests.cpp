@@ -44,7 +44,7 @@ TEST(TezosAddress, forge_KT1) {
     auto input = Address("KT1HiGcq47Yek7dcre7So2yfWTLU83FTBaf1");
     auto expected = "0164244bbdc7790d7896b6a52ac49802cfe4eafc4b00";
 
-    ASSERT_EQ(input.forge(), parse_hex(expected));
+    ASSERT_EQ(hex(input.forge()), hex(parse_hex(expected)));
 }
 
 TEST(TezosAddress, isInvalid) {

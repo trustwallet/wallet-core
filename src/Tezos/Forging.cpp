@@ -8,6 +8,7 @@
 #include "../Base58.h"
 #include "../Data.h"
 #include "../HexCoding.h"
+#include "../BinaryCoding.h"
 
 #include <sstream>
 
@@ -43,7 +44,7 @@ Data forgePublicKeyHash(const std::string &publicKeyHash) {
           throw std::invalid_argument( "Invalid Prefix" );
     }
     const auto decoded = Base58::bitcoin.decodeCheck(publicKeyHash);
-    append(forged, decoded);
+    forged.insert(forged.end(), decoded.begin() + prefix.size(), decoded.end());
     return forged;
 }
 
@@ -60,26 +61,26 @@ Data forgePublicKey(PublicKey publicKey) {
 }
 
 // Forge the given zarith hash into a hex encoded string.
-Data forgeZarith(int input) {
-    std::string result = "";
+Data forgeZarith(uint16_t input) {
+    Data forged = Data();
     while (true) {
         if (input < 128) {
             if (input < 16) {
-                result += "0";
+                forged.push_back(0x0);
             }
-            std::stringstream ss;
-            ss << std::hex << input;
-            result += ss.str();
+            Data encoded;
+            encode16BE(input, encoded);
+            append(forged, encoded);
             break;
         } else {
-            int b = input % 128;
-            input -= b;
-            input /= 128;
-            b += 128;
-            std::stringstream ss;
-            ss << std::hex << b;
-            result += ss.str();
+//            uint64_t b = input % 128;
+//            input -= b;
+//            input /= 128;
+//            b += 128;
+//            Data encoded;
+//            encode16BE(b, encoded);
+//            append(forged, encoded);
         }
     }
-    return parse_hex(result);
+    return forged;
 }

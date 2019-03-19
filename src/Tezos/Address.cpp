@@ -76,7 +76,7 @@ Data Address::forge() const {
             throw std::invalid_argument("Invalid Address For forge");
         }
         data.push_back(0x01);
-        append(data, decoded);
+        data.insert(data.end(), decoded.begin() + prefix.size(), decoded.end());
         data.push_back(0x00);
         return data;
     }

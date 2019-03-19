@@ -41,7 +41,7 @@ TEST(Forging, ForgeZarithZero) {
   
     auto output = forgeZarith(0);
   
-    ASSERT_EQ(output, parse_hex(expected));
+    ASSERT_EQ(hex(output), hex(parse_hex(expected)));
 }
 
 TEST(Forging, ForgeZarithTen) {

@@ -26,10 +26,12 @@ void OperationList::add_operation(Transaction transaction) {
 Data OperationList::forgeBranch() const {
     std::array<byte, 2> prefix = {1, 52};
     const auto decoded = Base58::bitcoin.decodeCheck(branch);
-    if (decoded.size() != 23 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+    if (decoded.size() != 34 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
         throw std::invalid_argument("Invalid branch for forge");
     }
-    return decoded;
+    auto forged = Data();
+    forged.insert(forged.end(), decoded.begin() + prefix.size(), decoded.end());
+    return forged;
 }
 
 Data OperationList::forge() const {
