@@ -19,8 +19,8 @@
 #include "Tron/Address.h"
 #include "Zcash/TAddress.h"
 #include "Stellar/Address.h"
+#include "Ontology/Address.h"
 #include "NEO/Address.h"
-
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
@@ -61,6 +61,9 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
 
     case TWCoinTypeLitecoin:
         return Bitcoin::Bech32Address(HRP_LITECOIN, 0, data).string();
+
+    case TWCoinTypeOntology:
+        return Ontology::Address(data).string();
 
     case TWCoinTypeNimiq:
         return Nimiq::Address(data).string();
@@ -124,6 +127,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeLitecoin:
         return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixLitecoin, TWP2SHPrefixLitecoin});
 
+    case TWCoinTypeOntology:
+        return Ontology::Address::isValid(string);
+
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);
 
@@ -163,6 +169,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeNimiq:
+    case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
     case TWCoinTypeStellar:
@@ -217,6 +224,9 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeTezos:
     case TWCoinTypeKIN:
         return TWCurveEd25519;
+
+    case TWCoinTypeOntology:
+        return TWCurveNIST256p1;
     }
 }
 
@@ -240,6 +250,7 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeNimiq:
+    case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
     case TWCoinTypeStellar:
@@ -268,6 +279,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
     case TWCoinTypeThunderToken:
@@ -338,7 +350,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 
     case TWCoinTypeLitecoin:
         return Bitcoin::Bech32Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0, HRP_LITECOIN).string();
-
+    case TWCoinTypeOntology:
+            return Ontology::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
     case TWCoinTypeNimiq:
         return Nimiq::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
 

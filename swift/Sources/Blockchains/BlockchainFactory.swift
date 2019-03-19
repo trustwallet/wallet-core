@@ -21,6 +21,8 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Go()
     case .thunderToken:
         return ThunderToken()
+    case .ontology:
+        return Ontology()
     case .poa:
         return POA()
     case .tron:

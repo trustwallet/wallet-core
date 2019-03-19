@@ -18,6 +18,7 @@ public enum CoinType: UInt32, CaseIterable {
     case go = 6060
     case icon = 74
     case litecoin = 2
+    case ontology = 1024
     case poa = 178
     case ripple = 144
     case tezos = 1729

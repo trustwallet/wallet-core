@@ -39,6 +39,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("hx18b380b53c23dc4ee9f6666bc20d1be02f3fe106", address)
                 case .litecoin:
                     XCTAssertEqual("ltc1qhd8fxxp2dx3vsmpac43z6ev0kllm4n53t5sk0u", address)
+                case .ontology:
+                    XCTAssertEqual("AHKTnybvnWo3TeY8uvNXekvYxMrXogUjeT", address)
                 case .poa:
                     XCTAssertEqual("0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9", address)
                 case .ripple:

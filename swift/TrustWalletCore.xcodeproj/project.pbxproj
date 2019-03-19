@@ -17,6 +17,10 @@
 		14FDB4B82236BC9B002FC058 /* Signer.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4B62236BC9B002FC058 /* Signer.h */; };
 		14FDB4BB2236BDBD002FC058 /* Stellar.pb.cc in Sources */ = {isa = PBXBuildFile; fileRef = 14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */; };
 		14FDB4BC2236BDBD002FC058 /* Stellar.pb.h in Headers */ = {isa = PBXBuildFile; fileRef = 14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */; };
+		252EC587223F8530003B1F02 /* Ontology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EC586223F8530003B1F02 /* Ontology.swift */; };
+		252EC589223F8553003B1F02 /* OntologyAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EC588223F8553003B1F02 /* OntologyAddress.swift */; };
+		252EC58B223F857F003B1F02 /* OntologyAddressExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EC58A223F857F003B1F02 /* OntologyAddressExtension.swift */; };
+		252EC58D223F9345003B1F02 /* OntologyAddressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252EC58C223F9345003B1F02 /* OntologyAddressTests.swift */; };
 		29587DC8223E08B300BAD800 /* CoinAddressDerivationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29587DC6223E08A600BAD800 /* CoinAddressDerivationTests.swift */; };
 		29587DCC223F358000BAD800 /* TWStellarPassphrase.h in Headers */ = {isa = PBXBuildFile; fileRef = 29587DCB223F358000BAD800 /* TWStellarPassphrase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		29587DCE223F374400BAD800 /* StellarPassphrase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29587DCD223F374400BAD800 /* StellarPassphrase.swift */; };
@@ -597,6 +601,10 @@
 		BB79409922397A4E00E268D4 /* StellarMemoType.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB79409822397A4E00E268D4 /* StellarMemoType.swift */; };
 		BBA9011D21FDAE3300D2CEF7 /* ZcashTAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */; };
 		BBA9012121FDAE4200D2CEF7 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */; };
+		BBF0B6DD223A19C500D25372 /* TWOntologyAddress.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF0B6DC223A19C500D25372 /* TWOntologyAddress.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BBF0B6E1223A19DC00D25372 /* Address.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF0B6DF223A19DC00D25372 /* Address.h */; };
+		BBF0B6E2223A19DC00D25372 /* Address.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBF0B6E0223A19DC00D25372 /* Address.cpp */; };
+		BBF0B6E4223A1A1C00D25372 /* TWOntologyAddress.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBF0B6E3223A1A1C00D25372 /* TWOntologyAddress.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -639,6 +647,10 @@
 		14FDB4B62236BC9B002FC058 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
 		14FDB4B92236BDBC002FC058 /* Stellar.pb.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Stellar.pb.cc; sourceTree = "<group>"; };
 		14FDB4BA2236BDBD002FC058 /* Stellar.pb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stellar.pb.h; sourceTree = "<group>"; };
+		252EC586223F8530003B1F02 /* Ontology.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ontology.swift; sourceTree = "<group>"; };
+		252EC588223F8553003B1F02 /* OntologyAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OntologyAddress.swift; sourceTree = "<group>"; };
+		252EC58A223F857F003B1F02 /* OntologyAddressExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OntologyAddressExtension.swift; sourceTree = "<group>"; };
+		252EC58C223F9345003B1F02 /* OntologyAddressTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OntologyAddressTests.swift; sourceTree = "<group>"; };
 		29587DC6223E08A600BAD800 /* CoinAddressDerivationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoinAddressDerivationTests.swift; sourceTree = "<group>"; };
 		29587DCB223F358000BAD800 /* TWStellarPassphrase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWStellarPassphrase.h; sourceTree = "<group>"; };
 		29587DCD223F374400BAD800 /* StellarPassphrase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarPassphrase.swift; sourceTree = "<group>"; };
@@ -1268,6 +1280,10 @@
 		BB79409822397A4E00E268D4 /* StellarMemoType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StellarMemoType.swift; sourceTree = "<group>"; };
 		BBA9011B21FDAE3200D2CEF7 /* ZcashTAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZcashTAddress.swift; sourceTree = "<group>"; };
 		BBA9011F21FDAE4200D2CEF7 /* Transaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Transaction.cpp; sourceTree = "<group>"; };
+		BBF0B6DC223A19C500D25372 /* TWOntologyAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWOntologyAddress.h; sourceTree = "<group>"; };
+		BBF0B6DF223A19DC00D25372 /* Address.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Address.h; sourceTree = "<group>"; };
+		BBF0B6E0223A19DC00D25372 /* Address.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Address.cpp; sourceTree = "<group>"; };
+		BBF0B6E3223A1A1C00D25372 /* TWOntologyAddress.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TWOntologyAddress.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1377,6 +1393,7 @@
 		617358DC219DF042007BF637 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BBF0B6DE223A19DC00D25372 /* Ontology */,
 				4E8BBE842230996700F98E04 /* Aion */,
 				61BD017322404BD300D6625D /* Base58.cpp */,
 				61BD017422404BD300D6625D /* Base58.h */,
@@ -1476,6 +1493,7 @@
 				616F879E223041710007ECA3 /* TWNimiqAddress.h */,
 				616F879D223041710007ECA3 /* TWNimiqProto.h */,
 				616F879F223041710007ECA3 /* TWNimiqSigner.h */,
+				BBF0B6DC223A19C500D25372 /* TWOntologyAddress.h */,
 				61CABAC721ED781A0086D9A0 /* TWP2PKHPrefix.h */,
 				61CABACB21ED781B0086D9A0 /* TWP2SHPrefix.h */,
 				617358E1219DF043007BF637 /* TWPrivateKey.h */,
@@ -1788,16 +1806,17 @@
 				616F87B7223041C10007ECA3 /* Nimiq.pb.swift */,
 				616F87B6223041C10007ECA3 /* NimiqAddress.swift */,
 				616F87B8223041C10007ECA3 /* NimiqSigner.swift */,
+				252EC588223F8553003B1F02 /* OntologyAddress.swift */,
 				61CABAD421ED782D0086D9A0 /* P2PKHPrefix.swift */,
 				61CABAD221ED782D0086D9A0 /* P2SHPrefix.swift */,
 				61735AD1219DF044007BF637 /* PrivateKey.swift */,
 				61C4E9232226152F0020A917 /* PrivateKey+Bitcoin.swift */,
 				61E814362227594F00D4D2C9 /* PrivateKeyExtension.swift */,
+				BB2422D222217B08000663D0 /* Ripple.pb.swift */,
 				61735CD221A3BF69007BF637 /* PublicKey.swift */,
 				61E813E92227562C00D4D2C9 /* PublicKey+Bitcoin.swift */,
 				61E814372227594F00D4D2C9 /* PublicKeyExtension.swift */,
 				61CABAD621ED782E0086D9A0 /* Purpose.swift */,
-				BB2422D222217B08000663D0 /* Ripple.pb.swift */,
 				BB211061221C045000571DF7 /* RippleAddress.swift */,
 				BB2422D122217B08000663D0 /* RippleSigner.swift */,
 				61735C87219DF64D007BF637 /* SecRandom.m */,
@@ -1922,6 +1941,7 @@
 		61B159B321CC5DBB00CFE93B /* interface */ = {
 			isa = PBXGroup;
 			children = (
+				BBF0B6E3223A1A1C00D25372 /* TWOntologyAddress.cpp */,
 				611BBE22223595420043FB94 /* TWAccount.cpp */,
 				61CABAB621ED37070086D9A0 /* TWAES.cpp */,
 				4E8BBE942230999400F98E04 /* TWAionAddress.cpp */,
@@ -2016,6 +2036,7 @@
 				61C4E8D422260B140020A917 /* Ethereum.swift */,
 				61C4E92D22261A1A0020A917 /* Icon.swift */,
 				61C4E8CA22260B140020A917 /* Litecoin.swift */,
+				252EC586223F8530003B1F02 /* Ontology.swift */,
 				61E813D3222751D900D4D2C9 /* Ripple.swift */,
 				61C4E8D222260B140020A917 /* Tron.swift */,
 				7782DF28222F0D9100599404 /* Tezos.swift */,
@@ -2039,6 +2060,7 @@
 				61C4E8DE22260B150020A917 /* EOSAddress.swift */,
 				61C4E8DD22260B150020A917 /* EthereumAddressExtension.swift */,
 				61C4E92F22261A220020A917 /* IconAddressExtension.swift */,
+				252EC58A223F857F003B1F02 /* OntologyAddressExtension.swift */,
 				61C4E8DB22260B150020A917 /* TendermintAddressExtension.swift */,
 				61C4E8E022260B150020A917 /* TronAddress.swift */,
 				61C4E8DA22260B150020A917 /* WanchainAddress.swift */,
@@ -2059,6 +2081,7 @@
 		61C4E904222613DC0020A917 /* Addresses */ = {
 			isa = PBXGroup;
 			children = (
+				252EC58C223F9345003B1F02 /* OntologyAddressTests.swift */,
 				61C4E910222614410020A917 /* BitcoinAddressTests.swift */,
 				61C4E92B22261A0F0020A917 /* IconAddressTests.swift */,
 				61C4E90C2226142A0020A917 /* TronAddressTests.swift */,
@@ -2345,6 +2368,15 @@
 			path = Stellar;
 			sourceTree = "<group>";
 		};
+		BBF0B6DE223A19DC00D25372 /* Ontology */ = {
+			isa = PBXGroup;
+			children = (
+				BBF0B6DF223A19DC00D25372 /* Address.h */,
+				BBF0B6E0223A19DC00D25372 /* Address.cpp */,
+			);
+			path = Ontology;
+			sourceTree = "<group>";
+		};
 		D79DFA430E7311B0E62847BA /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -2406,6 +2438,7 @@
 				BB6AE99722336FFE00F9EF85 /* TWStellarAddress.h in Headers */,
 				AC70E7BA223A7EDC00210067 /* TWNEOAddress.h in Headers */,
 				61A0E96D2239E81400D37C0D /* groestl.h in Headers */,
+				BBF0B6E1223A19DC00D25372 /* Address.h in Headers */,
 				BB3F05B3220BD93E008C6971 /* TAddress.h in Headers */,
 				61735C29219DF044007BF637 /* check_mem.h in Headers */,
 				61A9B3512200103000E601B3 /* Transaction.h in Headers */,
@@ -2553,6 +2586,7 @@
 				61735AF3219DF044007BF637 /* modm-donna-32bit.h in Headers */,
 				610AEF7421C8A934008ABB74 /* TWBitcoinTransactionSigner.h in Headers */,
 				61FE4B3922208E0300C65017 /* Transaction.h in Headers */,
+				BBF0B6DD223A19C500D25372 /* TWOntologyAddress.h in Headers */,
 				61E813B9222720EB00D4D2C9 /* TWIconAddress.h in Headers */,
 				AC70E7C7223A81AC00210067 /* Address.h in Headers */,
 				BB2E390B21F6EF17002A5139 /* TWZcashTAddress.h in Headers */,
@@ -2813,6 +2847,7 @@
 				BB4C2C28222CF8EA00BF42BB /* EthereumTests.swift in Sources */,
 				61C4E91F2226150F0020A917 /* ZcoinTests.swift in Sources */,
 				616D0413220A6C5B00A776E8 /* BitcoinTransactionSignerTests.swift in Sources */,
+				252EC58D223F9345003B1F02 /* OntologyAddressTests.swift in Sources */,
 				4E8BBEAA22309B7D00F98E04 /* AionTests.swift in Sources */,
 				61A625182236DA1A009C450C /* AccountTests.swift in Sources */,
 				61E813E82227535A00D4D2C9 /* ZcashTests.swift in Sources */,
@@ -2864,6 +2899,7 @@
 				61C4E8B12225C3960020A917 /* TronSigner.swift in Sources */,
 				4E8BBE8E2230998600F98E04 /* Signer.cpp in Sources */,
 				61977CCE21C9B9EF00C385D5 /* BitcoinCashAddress.swift in Sources */,
+				252EC587223F8530003B1F02 /* Ontology.swift in Sources */,
 				61B159E321CC5DBB00CFE93B /* TWData+Hex.cpp in Sources */,
 				61CABADD21EE5EA60086D9A0 /* HRP.swift in Sources */,
 				29587DCE223F374400BAD800 /* StellarPassphrase.swift in Sources */,
@@ -2937,6 +2973,7 @@
 				61C4E8EE22260B150020A917 /* Blockchain.swift in Sources */,
 				61735C75219DF044007BF637 /* chacha_merged.c in Sources */,
 				611BBE36223595550043FB94 /* ScryptParameters.cpp in Sources */,
+				252EC589223F8553003B1F02 /* OntologyAddress.swift in Sources */,
 				611BBE3D223595690043FB94 /* Account.swift in Sources */,
 				61735C47219DF044007BF637 /* xmr.c in Sources */,
 				61E813EA2227562D00D4D2C9 /* PublicKey+Bitcoin.swift in Sources */,
@@ -2969,6 +3006,7 @@
 				61C4E8F022260B150020A917 /* BlockchainFactory.swift in Sources */,
 				61735C03219DF044007BF637 /* blake256.c in Sources */,
 				61C4E8ED22260B150020A917 /* Ethereum.swift in Sources */,
+				BBF0B6E4223A1A1C00D25372 /* TWOntologyAddress.cpp in Sources */,
 				61A625072236DA0C009C450C /* KeyStore.Error.swift in Sources */,
 				140352F52233740C00DF0815 /* Stellar.swift in Sources */,
 				61C4E8EA22260B150020A917 /* Dash.swift in Sources */,
@@ -3036,6 +3074,7 @@
 				61FE4B3D22208E0F00C65017 /* TWVeChainSigner.cpp in Sources */,
 				61AAD3A521DEF72500B69A34 /* Base58.swift in Sources */,
 				61FE4B23221F734C00C65017 /* TWWanchainSigner.cpp in Sources */,
+				BBF0B6E2223A19DC00D25372 /* Address.cpp in Sources */,
 				61B159E021CC5DBB00CFE93B /* TWData.cpp in Sources */,
 				61722BE7220E457D00D7BA9A /* ZcashTransactionSigner.swift in Sources */,
 				61E813D22227213500D4D2C9 /* Icon.pb.cc in Sources */,
@@ -3078,6 +3117,7 @@
 				61C4E8F722260B150020A917 /* BitcoinAddressExtension.swift in Sources */,
 				61B159E821CC5DBB00CFE93B /* TWString.cpp in Sources */,
 				61735C7E219DF044007BF637 /* poly1305-donna.c in Sources */,
+				252EC58B223F857F003B1F02 /* OntologyAddressExtension.swift in Sources */,
 				61E813CD2227212600D4D2C9 /* TWIconAddress.cpp in Sources */,
 				61E813C92227211B00D4D2C9 /* Signer.cpp in Sources */,
 				616F87B9223041C10007ECA3 /* NimiqAddress.swift in Sources */,
@@ -3184,7 +3224,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9873B38DWV;
+				DEVELOPMENT_TEAM = UZ5E3YN55V;
 				INFOPLIST_FILE = tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3206,7 +3246,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9873B38DWV;
+				DEVELOPMENT_TEAM = UZ5E3YN55V;
 				INFOPLIST_FILE = tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3351,7 +3391,7 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 9873B38DWV;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -3393,7 +3433,7 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = 9873B38DWV;
+				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
