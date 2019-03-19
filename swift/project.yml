@@ -4,8 +4,8 @@ options:
   createIntermediateGroups: true
 settings:
   base:
-    HEADER_SEARCH_PATHS: $(SRCROOT)/../src ${SRCROOT}/trezor-crypto/src
-    SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/../include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
+    HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/src
+    SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
     CLANG_CXX_LANGUAGE_STANDARD: gnu++17
   configs:
     release:
