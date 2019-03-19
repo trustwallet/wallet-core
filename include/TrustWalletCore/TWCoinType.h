@@ -29,6 +29,7 @@ enum TWCoinType {
     TWCoinTypeGo = 6060,
     TWCoinTypeICON = 74,
     TWCoinTypeLitecoin = 2,
+    TWCoinTypeOntology = 1024,
     TWCoinTypePoa = 178,
     TWCoinTypeRipple = 144,
     TWCoinTypeTezos = 1729,

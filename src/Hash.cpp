@@ -15,94 +15,62 @@
 
 using namespace TW;
 
-template<typename T>
-Data Hash::sha1(const T& data) {
+Data Hash::sha1(const byte* begin, const byte* end) {
     Data result(sha1Size);
-    sha1_Raw(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data());
+    sha1_Raw(begin, end - begin, result.data());
     return result;
 }
 
-template Data Hash::sha1(const Data& data);
-template Data Hash::sha1(const std::string& data);
-
-template<typename T>
-Data Hash::sha256(const T& data) {
+Data Hash::sha256(const byte* begin, const byte* end) {
     Data result(sha256Size);
-    sha256_Raw(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data());
+    sha256_Raw(begin, end - begin, result.data());
     return result;
 }
 
-template Data Hash::sha256(const Data& data);
-template Data Hash::sha256(const std::string& data);
-
-template<typename T>
-Data Hash::sha512(const T& data) {
+Data Hash::sha512(const byte* begin, const byte* end) {
     Data result(sha512Size);
-    sha512_Raw(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data());
+    sha512_Raw(begin, end - begin, result.data());
     return result;
 }
-template Data Hash::sha512(const Data& data);
-template Data Hash::sha512(const std::string& data);
 
-template<typename T>
-Data Hash::keccak256(const T& data) {
+Data Hash::keccak256(const byte* begin, const byte* end) {
     Data result(sha256Size);
-    keccak_256(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data());
+    keccak_256(begin, end - begin, result.data());
     return result;
 }
-template Data Hash::keccak256(const Data& data);
-template Data Hash::keccak256(const std::string& data);
 
-template<typename T>
-Data Hash::keccak512(const T& data) {
+Data Hash::keccak512(const byte* begin, const byte* end) {
     Data result(sha512Size);
-    keccak_512(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data());
+    keccak_512(begin, end - begin, result.data());
     return result;
 }
-template Data Hash::keccak512(const Data& data);
-template Data Hash::keccak512(const std::string& data);
 
-template<typename T>
-Data Hash::sha3_256(const T& data) {
+Data Hash::sha3_256(const byte* begin, const byte* end) {
     Data result(sha256Size);
-    ::sha3_256(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data());
+    ::sha3_256(begin, end - begin, result.data());
     return result;
 }
-template Data Hash::sha3_256(const Data& data);
-template Data Hash::sha3_256(const std::string& data);
 
-template<typename T>
-Data Hash::sha3_512(const T& data) {
+Data Hash::sha3_512(const byte* begin, const byte* end) {
     Data result(sha512Size);
-    ::sha3_512(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data());
+    ::sha3_512(begin, end - begin, result.data());
     return result;
 }
-template Data Hash::sha3_512(const Data& data);
-template Data Hash::sha3_512(const std::string& data);
 
-template<typename T>
-Data Hash::ripemd(const T& data) {
+Data Hash::ripemd(const byte* begin, const byte* end) {
     Data result(ripemdSize);
-    ripemd160(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data());
+    ripemd160(begin, end - begin, result.data());
     return result;
 }
-template Data Hash::ripemd(const Data& data);
-template Data Hash::ripemd(const std::string& data);
 
-template<typename T>
-Data Hash::blake2b(const T& data, size_t size) {
+Data Hash::blake2b(const byte* begin, const byte* end, size_t size) {
     Data result(size);
-    ::blake2b(reinterpret_cast<const uint8_t*>(data.data()), data.size(), result.data(), size);
+    ::blake2b(begin, end - begin, result.data(), size);
     return result;
 }
-template Data Hash::blake2b(const Data& data, size_t size);
-template Data Hash::blake2b(const std::string& data, size_t size);
 
-template<typename T>
-Data Hash::blake2b(const T& data, size_t size, const Data& personal) {
+Data Hash::blake2b(const byte* begin, const byte* end, size_t size, const Data& personal) {
     Data result(size);
-    ::blake2b_Personal(reinterpret_cast<const uint8_t*>(data.data()), data.size(), personal.data(), personal.size(), result.data(), size);
+    ::blake2b_Personal(begin, end - begin, personal.data(), personal.size(), result.data(), size);
     return result;
 }
-template Data Hash::blake2b(const Data& data, size_t size, const Data& personal);
-template Data Hash::blake2b(const std::string& data, size_t size, const Data& personal);

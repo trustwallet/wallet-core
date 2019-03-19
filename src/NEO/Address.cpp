@@ -6,19 +6,15 @@
 
 #include "Address.h"
 
+#include "../Base58.h"
 #include "../Hash.h"
 #include "Tezos/BinaryCoding.h"
-
-#include <TrezorCrypto/base58.h>
 
 using namespace TW::NEO;
 
 bool Address::isValid(const std::string& string) {
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size || buffer[0] != version) {
+    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    if (decoded.size() != Address::size || decoded[0] != version) {
         return false;
     }
 
@@ -26,14 +22,12 @@ bool Address::isValid(const std::string& string) {
 }
 
 Address::Address(const std::string& string) {
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size)
+    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    if (decoded.size() != Address::size) {
         throw std::invalid_argument("Invalid address data");
+    }
 
-    std::copy(buffer, buffer + Address::size, bytes.begin());
+    std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
@@ -60,5 +54,5 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return bytesToBase58(bytes.data(), Address::size);
+    return Base58::bitcoin.encodeCheck(bytes);
 }
