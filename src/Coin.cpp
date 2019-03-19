@@ -236,7 +236,7 @@ TWCurve TW::curve(TWCoinType coin) {
     }
 }
 
-TWHDVersion TW::hdVersion(TWCoinType coin) {
+TWHDVersion TW::xpubVersion(TWCoinType coin) {
     switch(coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -271,6 +271,44 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
         return TWHDVersionNone;
+    }
+}
+
+TWHDVersion TW::xprvVersion(TWCoinType coin) {
+    switch(coin) {
+        case TWCoinTypeBitcoin:
+        case TWCoinTypeLitecoin:
+            return TWHDVersionZPRV;
+
+        case TWCoinTypeBitcoinCash:
+        case TWCoinTypeDash:
+        case TWCoinTypeZcash:
+        case TWCoinTypeZcoin:
+            return TWHDVersionXPRV;
+
+        case TWCoinTypeAion:
+        case TWCoinTypeBinance:
+        case TWCoinTypeCosmos:
+        case TWCoinTypeCallisto:
+        case TWCoinTypeEthereum:
+        case TWCoinTypeEthereumClassic:
+        case TWCoinTypeGo:
+        case TWCoinTypeICON:
+        case TWCoinTypeNimiq:
+        case TWCoinTypeOntology:
+        case TWCoinTypePoa:
+        case TWCoinTypeRipple:
+        case TWCoinTypeStellar:
+        case TWCoinTypeTezos:
+        case TWCoinTypeThunderToken:
+        case TWCoinTypeTomoChain:
+        case TWCoinTypeTron:
+        case TWCoinTypeVeChain:
+        case TWCoinTypeWanChain:
+        case TWCoinTypeXDai:
+        case TWCoinTypeNEO:
+        case TWCoinTypeKIN:
+            return TWHDVersionNone;
     }
 }
 
@@ -327,69 +365,114 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     }
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
+PublicKeyType TW::publicKeyType(TWCoinType coin) {
     switch (coin) {
-    case TWCoinTypeBinance:
-        return Tendermint::Address(HRP_BINANCE_TEST, privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
-    
-    case TWCoinTypeCosmos:
-        return Tendermint::Address(HRP_COSMOS, privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+        case TWCoinTypeBinance:
+        case TWCoinTypeBitcoin:
+        case TWCoinTypeBitcoinCash:
+        case TWCoinTypeCosmos:
+        case TWCoinTypeDash:
+        case TWCoinTypeLitecoin:
+        case TWCoinTypeZcash:
+        case TWCoinTypeZcoin:
+        case TWCoinTypeRipple:
+            return PublicKeyType::secp256k1;
 
-    case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0, HRP_BITCOIN).string();
+        case TWCoinTypeCallisto:
+        case TWCoinTypeEthereum:
+        case TWCoinTypeEthereumClassic:
+        case TWCoinTypeGo:
+        case TWCoinTypePoa:
+        case TWCoinTypeThunderToken:
+        case TWCoinTypeTomoChain:
+        case TWCoinTypeVeChain:
+        case TWCoinTypeWanChain:
+        case TWCoinTypeXDai:
+        case TWCoinTypeICON:
+        case TWCoinTypeTron:
+            return PublicKeyType::secp256k1Extended;
 
-    case TWCoinTypeBitcoinCash:
-        return Bitcoin::CashAddress(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+        case TWCoinTypeNEO:
+        case TWCoinTypeOntology:
+            return PublicKeyType::nist256p1;
 
-    case TWCoinTypeDash:
-        return Bitcoin::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2PKHPrefixDash).string();
+        case TWCoinTypeAion:
+        case TWCoinTypeKIN:
+        case TWCoinTypeNimiq:
+        case TWCoinTypeStellar:
+        case TWCoinTypeTezos:
+            return PublicKeyType::ed25519;
+    }
+}
 
-    case TWCoinTypeCallisto:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeGo:
-    case TWCoinTypePoa:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-        return Ethereum::Address(privateKey.getPublicKey(PublicKeyType::secp256k1Extended)).string();
+std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
+    auto keyType = TW::publicKeyType(coin);
+    return TW::deriveAddress(coin, privateKey.getPublicKey(keyType));
+}
 
-    case TWCoinTypeICON:
-        return Icon::Address(privateKey.getPublicKey(PublicKeyType::secp256k1Extended), TWIconAddressTypeAddress).string();
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
+    switch (coin) {
+        case TWCoinTypeBinance:
+            return Tendermint::Address(HRP_BINANCE_TEST, publicKey).string();
 
-    case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address(privateKey.getPublicKey(PublicKeyType::secp256k1), 0, HRP_LITECOIN).string();
-    case TWCoinTypeOntology:
-            return Ontology::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
-    case TWCoinTypeNimiq:
-        return Nimiq::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
+        case TWCoinTypeCosmos:
+            return Tendermint::Address(HRP_COSMOS, publicKey).string();
 
-    case TWCoinTypeAion:
-        return Aion::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
+        case TWCoinTypeBitcoin:
+            return Bitcoin::Bech32Address(publicKey, 0, HRP_BITCOIN).string();
 
-    case TWCoinTypeRipple:
-        return Ripple::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+        case TWCoinTypeBitcoinCash:
+            return Bitcoin::CashAddress(publicKey).string();
 
-    case TWCoinTypeTezos:
-        return Tezos::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
+        case TWCoinTypeDash:
+            return Bitcoin::Address(publicKey, TWP2PKHPrefixDash).string();
 
-    case TWCoinTypeTron:
-        return Tron::Address(privateKey.getPublicKey(PublicKeyType::secp256k1Extended)).string();
+        case TWCoinTypeCallisto:
+        case TWCoinTypeEthereum:
+        case TWCoinTypeEthereumClassic:
+        case TWCoinTypeGo:
+        case TWCoinTypePoa:
+        case TWCoinTypeThunderToken:
+        case TWCoinTypeTomoChain:
+        case TWCoinTypeVeChain:
+        case TWCoinTypeWanChain:
+        case TWCoinTypeXDai:
+            return Ethereum::Address(publicKey).string();
 
-    case TWCoinTypeZcash:
-        return Zcash::TAddress(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2SHPrefixZcashT).string();
+        case TWCoinTypeICON:
+            return Icon::Address(publicKey, TWIconAddressTypeAddress).string();
 
-    case TWCoinTypeZcoin:
-        return Bitcoin::Address(privateKey.getPublicKey(PublicKeyType::secp256k1), TWP2PKHPrefixZcoin).string();
+        case TWCoinTypeLitecoin:
+            return Bitcoin::Bech32Address(publicKey, 0, HRP_LITECOIN).string();
+        case TWCoinTypeOntology:
+            return Ontology::Address(publicKey).string();
+        case TWCoinTypeNimiq:
+            return Nimiq::Address(publicKey).string();
 
-    case TWCoinTypeStellar:
-    case TWCoinTypeKIN:
-        return Stellar::Address(privateKey.getPublicKey(PublicKeyType::ed25519)).string();
+        case TWCoinTypeAion:
+            return Aion::Address(publicKey).string();
 
-    case TWCoinTypeNEO:
-        return NEO::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
+        case TWCoinTypeRipple:
+            return Ripple::Address(publicKey).string();
+
+        case TWCoinTypeTezos:
+            return Tezos::Address(publicKey).string();
+
+        case TWCoinTypeTron:
+            return Tron::Address(publicKey).string();
+
+        case TWCoinTypeZcash:
+            return Zcash::TAddress(publicKey, TWP2PKHPrefixZcashT).string();
+
+        case TWCoinTypeZcoin:
+            return Bitcoin::Address(publicKey, TWP2PKHPrefixZcoin).string();
+
+        case TWCoinTypeStellar:
+        case TWCoinTypeKIN:
+            return Stellar::Address(publicKey).string();
+
+        case TWCoinTypeNEO:
+            return NEO::Address(publicKey).string();
     }
 }
 

@@ -8,6 +8,7 @@
 
 #include "Data.h"
 #include "DerivationPath.h"
+#include "PublicKey.h"
 #include "PrivateKey.h"
 
 #include <TrustWalletCore/TWCoinType.h>
@@ -34,13 +35,22 @@ TWPurpose purpose(TWCoinType coin);
 /// Returns the curve that should be used for a coin type.
 TWCurve curve(TWCoinType coin);
 
-/// Returns the HD version that should be used for a coin type.
-TWHDVersion hdVersion(TWCoinType coin);
+/// Returns the xpub HD version that should be used for a coin type.
+TWHDVersion xpubVersion(TWCoinType coin);
+
+/// Returns the xprv HD version that should be used for a coin type.
+TWHDVersion xprvVersion(TWCoinType coin);
 
 /// Returns the default derivation path for a particular coin.
 DerivationPath derivationPath(TWCoinType coin);
 
+/// Returns the public key type for a particular coin.
+PublicKeyType publicKeyType(TWCoinType coin);
+
 /// Derives the address for a particular coin from the private key.
 std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);
+
+/// Derives the address for a particular coin from the private key.
+std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
 
 } // namespace

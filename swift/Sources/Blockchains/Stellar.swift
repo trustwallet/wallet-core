@@ -12,32 +12,3 @@ public typealias TWStellarMemoText = TW_Stellar_Proto_MemoText
 public typealias TWStellarMemoVoid = TW_Stellar_Proto_MemoVoid
 public typealias TWStellarSigningInput = TW_Stellar_Proto_SigningInput
 public typealias TWStellarSigningOutput = TW_Stellar_Proto_SigningOutput
-
-public class Stellar: Blockchain {
-    
-    public override var coinType: CoinType {
-        return .stellar
-    }
-    
-    public override func address(data: Data) -> Address? {
-        return StellarAddress(data: data)
-    }
-    
-    public override func address(string: String) -> Address? {
-        return StellarAddress(string: string)
-    }
-    
-    public override func address(for publicKey: PublicKey) -> Address {
-        return StellarAddress(publicKey: publicKey.compressed)
-    }
-}
-
-extension StellarAddress: Address {
-    public static func isValid(data: Data) -> Bool {
-        return data.count == 32
-    }
-    
-    public var data: Data {
-        return keyHash
-    }
-}

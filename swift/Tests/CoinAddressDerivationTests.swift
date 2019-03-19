@@ -62,7 +62,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .xdai:
                     XCTAssertEqual("0x364d0551599B97EAf997bc06c8c40Aaf73124402", address)
                 case .zcash:
-                    XCTAssertEqual("t3ZEo7WrSBB1o1DCUytPsnUfoEoZn2qL5er", address)
+                    XCTAssertEqual("t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy", address)
                 case .zcoin:
                     XCTAssertEqual("aEd5XFChyXobvEics2ppAqgK3Bgusjxtik", address)
                 case .nimiq:

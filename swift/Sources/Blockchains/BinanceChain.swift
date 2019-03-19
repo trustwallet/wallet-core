@@ -6,35 +6,10 @@
 
 import Foundation
 
-public class BinanceChain: Blockchain {
+public typealias TWBinanceSigningInput = TW_Binance_Proto_SigningInput
+public typealias TWBinanceSendOrder = TW_Binance_Proto_SendOrder
 
-    public override init(purpose: Purpose = .bip44) {
-        super.init(purpose: purpose)
-    }
-
-    public var hrp: HRP {
-        return .binance
-    }
-
-    override public var coinType: CoinType {
-        return .binance
-    }
-
-    override public func address(for publicKey: PublicKey) -> Address {
-        return TendermintAddress(hrp: hrp, publicKey: publicKey.compressed)!
-    }
-
-    override open func address(string: String) -> Address? {
-        return TendermintAddress(string: string)
-    }
-
-    override open func address(data: Data) -> Address? {
-        return TendermintAddress(hrp: hrp, keyHash: data)
-    }
-}
-
-public class BinanceChainTestnet: BinanceChain {
-    override public var hrp: HRP {
-        return .binanceTest
-    }
+struct BinanceChain {
+    static let chainId = "Binance-Chain-Nile"
+    static let source: Int64 = 2
 }

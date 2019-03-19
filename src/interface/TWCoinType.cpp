@@ -16,6 +16,14 @@ enum TWCurve TWCoinTypeCurve(enum TWCoinType coin) {
     return TW::curve(coin);
 }
 
+enum TWHDVersion TWCoinTypeXpubVersion(enum TWCoinType coin) {
+    return TW::xpubVersion(coin);
+}
+
+enum TWHDVersion TWCoinTypeXprvVersion(enum TWCoinType coin) {
+    return TW::xprvVersion(coin);
+}
+
 bool TWCoinTypeValidate(enum TWCoinType coin, TWString *_Nonnull address) {
     return TW::validateAddress(coin, *reinterpret_cast<const std::string*>(address));
 }
@@ -28,5 +36,10 @@ TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin) {
 
 TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivateKey *_Nonnull privateKey) {
     const auto string = TW::deriveAddress(coin, privateKey->impl);
+    return TWStringCreateWithUTF8Bytes(string.c_str());
+}
+
+TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, struct TWPublicKey *_Nonnull publicKey) {
+    const auto string = TW::deriveAddress(coin, publicKey->impl);
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
