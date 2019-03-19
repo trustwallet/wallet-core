@@ -7,14 +7,16 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum Curve: UInt32, CustomStringConvertible  {
+public enum Curve: UInt32, CaseIterable, CustomStringConvertible  {
     case secp256k1 = 0
     case ed25519 = 1
+    case nist256p1 = 2
 
     public var description: String {
         switch self {
         case .secp256k1: return "secp256k1"
         case .ed25519: return "ed25519"
+        case .nist256p1: return "nist256p1"
         }
     }
 }

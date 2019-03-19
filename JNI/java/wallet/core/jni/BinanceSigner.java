@@ -22,45 +22,11 @@ public class BinanceSigner {
     static BinanceSigner createFromNative(long nativeHandle) {
         BinanceSigner instance = new BinanceSigner();
         instance.nativeHandle = nativeHandle;
-        BinanceSignerPhantomReference.register(instance, nativeHandle);
         return instance;
     }
 
-    static native long nativeCreate(wallet.core.jni.proto.Binance.SigningInput input);
-    static native void nativeDelete(long handle);
 
-    public native byte[] build();
-
-    public BinanceSigner(wallet.core.jni.proto.Binance.SigningInput input) {
-        nativeHandle = nativeCreate(input);
-        if (nativeHandle == 0) {
-            throw new InvalidParameterException();
-        }
-
-        BinanceSignerPhantomReference.register(this, nativeHandle);
-    }
+    public static native wallet.core.jni.proto.Binance.SigningOutput sign(wallet.core.jni.proto.Binance.SigningInput input);
 
 }
 
-class BinanceSignerPhantomReference extends java.lang.ref.PhantomReference<BinanceSigner> {
-    private static java.util.Set<BinanceSignerPhantomReference> references = new HashSet<BinanceSignerPhantomReference>();
-    private static java.lang.ref.ReferenceQueue<BinanceSigner> queue = new java.lang.ref.ReferenceQueue<BinanceSigner>();
-    private long nativeHandle;
-
-    private BinanceSignerPhantomReference(BinanceSigner referent, long nativeHandle) {
-        super(referent, queue);
-        this.nativeHandle = nativeHandle;
-    }
-
-    static void register(BinanceSigner referent, long nativeHandle) {
-        references.add(new BinanceSignerPhantomReference(referent, nativeHandle));
-    }
-
-    public static void doDeletes() {
-        BinanceSignerPhantomReference ref = (BinanceSignerPhantomReference) queue.poll();
-        for (; ref != null; ref = (BinanceSignerPhantomReference) queue.poll()) {
-            BinanceSigner.nativeDelete(ref.nativeHandle);
-            references.remove(ref);
-        }
-    }
-}

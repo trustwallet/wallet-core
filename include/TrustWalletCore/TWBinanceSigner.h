@@ -12,19 +12,12 @@
 
 TW_EXTERN_C_BEGIN
 
-/// Helper class to sign Binance DEX orders.
+/// Helper class to sign Binance transactions.
 TW_EXPORT_CLASS
 struct TWBinanceSigner;
 
-/// Creates a signer with input data (serialized from BinanceSigningInput)
+/// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
-struct TWBinanceSigner *_Nonnull TWBinanceSignerCreate(TW_Binance_Proto_SigningInput input);
-
-TW_EXPORT_METHOD
-void TWBinanceSignerDelete(struct TWBinanceSigner *_Nonnull signer);
-
-/// Builds a signed transaction.
-TW_EXPORT_METHOD
-TWData *_Nullable TWBinanceSignerBuild(struct TWBinanceSigner *_Nonnull signer);
+TW_Binance_Proto_SigningOutput TWBinanceSignerSign(TW_Binance_Proto_SigningInput input);
 
 TW_EXTERN_C_END

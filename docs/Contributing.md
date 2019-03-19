@@ -102,13 +102,18 @@ The proto file will be used to generate C++ classes and also classes in each sup
 
 When implementing a new blockchain make sure you go through this checklist:
 - [ ] Implement functionality in C++. Put it in a subfolder of `src/`.
+    - [ ] Address (if necessary)
+    - [ ] Transaction (if necessary)
+    - [ ] Signer
 - [ ] Write unit tests. Put them in a subfolder of `tests/`.
+    - [ ] `Mnemonic phrase - > Address` derivation test. Put this test in the `CoinTests.cpp` file
 - [ ] Add relevant constants in `TWCoinType`, `TWP2SHPrefix`, `TWEthereymChainID`, `TWHRP`, etc., as necessary.
+- [ ] Return correct curve and purpose in `src/Coin.cpp`.
 - [ ] Implement address validation and derivation in `src/Coin.cpp`.
-- [ ] Return correct curve and purpose in `src/interface/TWCoinType.cpp`.
+- [ ] Implement coin configuration `src/include/TWCoinTypeConfiguration.cpp`.
 - [ ] Write interface header in `include/TrustWalletCore` and implement the interface in `src/interface`.
-    - [ ] Write custom address type if necessary.
-    - [ ] Write interface for signing transactions.
+    - [ ] Address interface (if necessary).
+    - [ ] Signing interface.
 - [ ] Validate generated code in Android an iOS projects. Write integration tests for each.
 
 Also check out the [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain) document.
@@ -133,7 +138,20 @@ Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload
 
 1. See https://docs.gradle.org/current/userguide/signing_plugin.html to set up GPG signing.
 2. Get a OSSRH username and password, get added to the group ID.
-3. Create `~/.gradle/gradle.properties` and add your information from the previous steps:
+3. Install PGP Tools : `brew install gnupg`  -  https://gpgtools.org/
+4. Create `~/.gradle/gradle.properties` and add your information from the previous steps:
+
+- Generate GPG Key
+- Send Key to the server using the installed tool GPG Keychain
+- Generate the signing.keyId value: 
+ ```
+$ gpg --list-keys --keyid-format short
+```
+- Get the `.gpg` secret key that will be assigned to signing.secretKeyRingFile parameter: 
+```
+$ gpg --export-secret-keys -o secring.gpg
+```
+
 ```
 NEXUS_USERNAME=user
 NEXUS_PASSWORD=pass

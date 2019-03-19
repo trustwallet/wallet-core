@@ -21,6 +21,9 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWBitcoin.h>
 
 #include <TrustWalletCore/TWAES.h>
+#include <TrustWalletCore/TWAccount.h>
+#include <TrustWalletCore/TWAionAddress.h>
+#include <TrustWalletCore/TWAionSigner.h>
 #include <TrustWalletCore/TWBase58.h>
 #include <TrustWalletCore/TWBech32Address.h>
 #include <TrustWalletCore/TWBinanceSigner.h>
@@ -42,8 +45,10 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWIconAddressType.h>
 #include <TrustWalletCore/TWIconSigner.h>
 #include <TrustWalletCore/TWKeyDerivation.h>
+#include <TrustWalletCore/TWNEOAddress.h>
 #include <TrustWalletCore/TWNimiqAddress.h>
 #include <TrustWalletCore/TWNimiqSigner.h>
+#include <TrustWalletCore/TWOntologyAddress.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
@@ -51,8 +56,15 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWPurpose.h>
 #include <TrustWalletCore/TWRippleAddress.h>
 #include <TrustWalletCore/TWRippleSigner.h>
+#include <TrustWalletCore/TWStellarAddress.h>
+#include <TrustWalletCore/TWStellarMemoType.h>
+#include <TrustWalletCore/TWStellarPassphrase.h>
+#include <TrustWalletCore/TWStellarSigner.h>
+#include <TrustWalletCore/TWStellarVersionByte.h>
+#include <TrustWalletCore/TWStoredKey.h>
 #include <TrustWalletCore/TWTendermintAddress.h>
 #include <TrustWalletCore/TWTezosAddress.h>
+#include <TrustWalletCore/TWTezosSigner.h>
 #include <TrustWalletCore/TWTronSigner.h>
 #include <TrustWalletCore/TWVeChainSigner.h>
 #include <TrustWalletCore/TWWanchainSigner.h>

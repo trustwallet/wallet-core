@@ -5,61 +5,82 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "BinaryCoding.h"
+#include "Forging.h"
 
+#include "../Base58.h"
 #include "../HexCoding.h"
 #include "../Hash.h"
 
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
 
+using namespace TW;
 using namespace TW::Tezos;
 
 bool Address::isValid(const std::string& string) {
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
+    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    if (decoded.size() != Address::size) {
+        return false;
+    }
 
     // verify prefix
-    std::array<std::uint8_t, 3> prefix {6, 161, 159};
-    for (size_t i = 0; i< prefix.size(); i++) {
-        uint8_t byte = buffer[i];
-        if (prefix[i] != byte) {
-            return false;
-        }
+    std::array<byte, 3> prefix {6, 161, 159};
+    if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        return false;
     }
-    return size == Address::size;
+
+    return true;
 }
 
 Address::Address(const std::string& string) {
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size) {
-        throw std::invalid_argument("Invalid address key data");
+    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    if (decoded.size() != Address::size) {
+        throw std::invalid_argument("Invalid address string");
     }
-    std::copy(buffer, buffer + Address::size, bytes.begin());
+    std::copy(decoded.begin(), decoded.end(), bytes.begin());
+}
+
+Address::Address(const std::vector<uint8_t>& data) {
+    // TODO: isValid(bytes)
+    if (data.size() != size) {
+        throw std::invalid_argument("Invalid address data");
+    }
+    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto publicKeySize = publicKey.isCompressed() ? publicKey.secp256k1Size : publicKey.secp256k1ExtendedSize;
-    auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.begin() + publicKeySize);
+    auto publicKeySize = publicKey.ed25519Size;
+
+    // Drop first byte of the public key which is a tag.
+    auto encoded = Data(publicKey.bytes.begin() + 1, publicKey.bytes.begin()  + publicKeySize);
     auto hash = Hash::blake2b(encoded, 20);
     auto addressData = Data({6, 161, 159});
     append(addressData, hash);
-    if (addressData.size() != Address::size) {
+    if (addressData.size() != Address::size)
         throw std::invalid_argument("Invalid address key data");
-    }
     std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
 }
 
 std::string Address::string() const {
-    size_t size = 0;
-    b58enc(nullptr, &size, bytes.data(), Address::size);
-    size += 16;
+    return Base58::bitcoin.encodeCheck(bytes);
+}
 
-    std::string str(size, '\0');
-    const auto actualSize = base58_encode_check(bytes.data(), Address::size, HASHER_SHA2D, &str[0], size);
-    str.erase(str.begin() + actualSize - 1, str.end());
+Data Address::forge() const {
+    auto data = Data();
+    std::string s = string();
 
-    return std::string(str.c_str());
+    if (s[0] == 'K') {
+        std::array<byte, 3> prefix = {2, 90, 121};
+        const auto decoded = Base58::bitcoin.decodeCheck(s);
+        if (decoded.size() != 23 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+            throw std::invalid_argument("Invalid Address For forge");
+        }
+        data.push_back(0x01);
+        data.insert(data.end(), decoded.begin() + prefix.size(), decoded.end());
+        data.push_back(0x00);
+        return data;
+    }
+    data.push_back(0);
+    append(data, forgePublicKeyHash(s));
+    return data;
 }

@@ -21,6 +21,8 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Go()
     case .thunderToken:
         return ThunderToken()
+    case .ontology:
+        return Ontology()
     case .poa:
         return POA()
     case .tron:
@@ -31,12 +33,12 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Callisto()
     case .wanChain:
         return Wanchain()
+    case .xdai:
+        return XDai();
     case .dash:
         return Dash()
     case .icon:
         return Icon()
-    case .eos:
-        return EOS()
     case .bitcoinCash:
         return BitcoinCash()
     case .tomoChain:
@@ -45,6 +47,8 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Zcoin()
     case .binance:
         return BinanceChainTestnet()
+    case .cosmos:
+        return Cosmos()
     case .ripple:
         return Ripple()
     case .zcash:
@@ -53,5 +57,13 @@ public func blockchain(coin: CoinType) -> Blockchain {
         return Tezos()
     case .nimiq:
         return Nimq()
+    case .stellar:
+        return Stellar()
+    case .aion:
+        return Aion()
+    case .neo:
+        return NEO()
+    case .kin:
+        return KIN()
     }
 }

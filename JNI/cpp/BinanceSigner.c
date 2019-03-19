@@ -16,30 +16,19 @@
 #include "TWJNI.h"
 #include "BinanceSigner.h"
 
-jlong JNICALL Java_wallet_core_jni_BinanceSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input) {
+jobject JNICALL Java_wallet_core_jni_BinanceSigner_sign(JNIEnv *env, jclass thisClass, jobject input) {
     jclass inputClass = (*env)->GetObjectClass(env, input);
     jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
     jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
     TWData *inputData = TWDataCreateWithJByteArray(env, inputByteArray);
-    struct TWBinanceSigner *instance = TWBinanceSignerCreate(inputData);
+    jbyteArray resultData = TWDataJByteArray(TWBinanceSignerSign(inputData), env);
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Binance$SigningOutput");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Binance$SigningOutput;");
+    jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
+
+    (*env)->DeleteLocalRef(env, resultClass);
     (*env)->DeleteLocalRef(env, inputByteArray);
     (*env)->DeleteLocalRef(env, inputClass);
-    return (jlong) instance;
-}
-
-void JNICALL Java_wallet_core_jni_BinanceSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
-    TWBinanceSignerDelete((struct TWBinanceSigner *) handle);
-}
-
-jbyteArray JNICALL Java_wallet_core_jni_BinanceSigner_build(JNIEnv *env, jobject thisObject) {
-    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
-    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
-    struct TWBinanceSigner *instance = (struct TWBinanceSigner *) (*env)->GetLongField(env, thisObject, handleFieldID);
-
-    jbyteArray result = TWDataJByteArray(TWBinanceSignerBuild(instance), env);
-
-
-    (*env)->DeleteLocalRef(env, thisClass);
 
     return result;
 }

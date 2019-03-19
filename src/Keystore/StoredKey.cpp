@@ -6,15 +6,39 @@
 
 #include "StoredKey.h"
 
+#include "Coin.h"
+
+#define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 #include <nlohmann/json.hpp>
+
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 using namespace TW;
 using namespace TW::Keystore;
 
-StoredKey StoredKey::load(const std::string& path, const std::string& password) {
+StoredKey::StoredKey(StoredKeyType type, EncryptionParameters payload) : type(type), payload(payload), id(), accounts() {
+    boost::uuids::random_generator gen;
+    id = boost::lexical_cast<std::string>(gen());
+}
+
+StoredKey::StoredKey(StoredKeyType type, const std::string& password, Data data) : type(type), payload(password, data), id(), accounts() {
+    boost::uuids::random_generator gen;
+    id = boost::lexical_cast<std::string>(gen());
+}
+
+StoredKey StoredKey::load(const std::string& path) {
     std::ifstream stream(path);
+    if (!stream.is_open()) {
+        throw std::invalid_argument("Can't open file");
+    }
     nlohmann::json j;
     stream >> j;
 
@@ -22,9 +46,65 @@ StoredKey StoredKey::load(const std::string& path, const std::string& password) 
     return key;
 }
 
-void StoredKey::store(const std::string& path, const std::string& password) {
+void StoredKey::store(const std::string& path) {
     auto stream = std::ofstream(path);
     stream << json();
+}
+
+HDWallet StoredKey::wallet(const std::string& password) {
+    if (type != StoredKeyType::mnemonicPhrase) {
+        throw std::invalid_argument("Invalid account requested.");
+    }
+    const auto data = payload.decrypt(password);
+    const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()), data.size());
+    return HDWallet(mnemonic, "");
+}
+
+const Account& StoredKey::account(TWCoinType coin, const std::string& password) {
+    for (auto& account : accounts) {
+        if (account.coin() == coin) {
+            return account;
+        }
+    }
+
+    const auto wallet = this->wallet(password);
+    const auto derivationPath = TW::derivationPath(coin);
+    const auto address = TW::deriveAddress(coin, wallet.getKey(derivationPath));
+    const auto version = TW::hdVersion(coin);
+
+    std::string extendedPublicKey;
+    if (version != TWHDVersionNone) {
+        extendedPublicKey = wallet.getExtendedPublicKey(derivationPath.purpose(), coin, version);
+    }
+
+    accounts.emplace_back(address, derivationPath, extendedPublicKey);
+    return accounts.back();
+}
+
+const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& password) {
+    const auto& account = this->account(coin, password);
+    switch (type) {
+    case StoredKeyType::mnemonicPhrase:
+        return wallet(password).getKey(account.derivationPath);
+
+    case StoredKeyType::privateKey:
+        return PrivateKey(payload.decrypt(password));
+
+    case StoredKeyType::watchOnly:
+        throw std::invalid_argument("This is a watch-only key");
+    }
+}
+
+void StoredKey::fixAddresses(const std::string& password) {
+    const auto wallet = this->wallet(password);
+    for (auto& account : accounts) {
+        if (!account.address.empty() && TW::validateAddress(account.coin(), account.address)) {
+            continue;
+        }
+        const auto& derivationPath = account.derivationPath;
+        const auto key = wallet.getKey(derivationPath);
+        account.address = TW::deriveAddress(derivationPath.coin(), key);
+    }
 }
 
 // -----------------

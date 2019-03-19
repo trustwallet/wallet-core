@@ -15,38 +15,47 @@
 using namespace TW::Bitcoin;
 
 /// Cash address human-readable part
-static const char* const cashHRP = "bitcoincash";
+static const std::string cashHRP = "bitcoincash";
 
 static const size_t maxHRPSize = 20;
 static const size_t maxDataSize = 104;
 
 bool CashAddress::isValid(const std::string& string) {
+    auto withPrefix = string;
+    if (!std::equal(cashHRP.begin(), cashHRP.end(), string.begin())) {
+        withPrefix = cashHRP + ":" + string;
+    }
+
     char hrp[maxHRPSize + 1];
     uint8_t data[maxDataSize];
     size_t dataLen;
-    if (cash_decode(hrp, data, &dataLen, string.c_str()) == 0 || dataLen != CashAddress::size) {
+    if (cash_decode(hrp, data, &dataLen, withPrefix.c_str()) == 0 || dataLen != CashAddress::size) {
         return false;
     }
-    if (std::strcmp(hrp, cashHRP) != 0) {
+    if (std::strcmp(hrp, cashHRP.c_str()) != 0) {
         return false;
     }
     return true;
 }
 
 CashAddress::CashAddress(const std::string& string) {
+    auto withPrefix = string;
+    if (!std::equal(cashHRP.begin(), cashHRP.end(), string.begin())) {
+        withPrefix = cashHRP + ":" + string;
+    }
+
     uint8_t data[maxDataSize];
     char hrp[maxHRPSize + 1];
     size_t dataLen;
-    auto success = cash_decode(hrp, data, &dataLen, string.c_str()) != 0;
-    assert(success && "Invalid cash address string");
-    assert(std::strcmp(hrp, cashHRP) == 0);
-    assert(dataLen == CashAddress::size);
+    auto success = cash_decode(hrp, data, &dataLen, withPrefix.c_str()) != 0;
+    if (!success || std::strcmp(hrp, cashHRP.c_str()) != 0 || dataLen != CashAddress::size) {
+        throw std::invalid_argument("Invalid address string");
+    }
     std::copy(data, data + CashAddress::size, bytes.begin());
 }
 
 CashAddress::CashAddress(const std::vector<uint8_t>& data) {
-    assert(isValid(data));
-    if (data.size() != size) {
+    if (!isValid(data)) {
         throw std::invalid_argument("Invalid address key data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
@@ -64,7 +73,7 @@ CashAddress::CashAddress(const PublicKey& publicKey) {
 
 std::string CashAddress::string() const {
     char result[129];
-    cash_encode(result, cashHRP, bytes.data(), CashAddress::size);
+    cash_encode(result, cashHRP.c_str(), bytes.data(), CashAddress::size);
     return result;
 }
 

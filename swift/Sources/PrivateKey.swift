@@ -59,6 +59,10 @@ public final class PrivateKey {
         return PublicKey(rawValue: TWPrivateKeyGetPublicKeySecp256k1(rawValue, compressed))
     }
 
+    public func getPublicKeyNist256p1() -> PublicKey {
+        return PublicKey(rawValue: TWPrivateKeyGetPublicKeyNist256p1(rawValue))
+    }
+
     public func getPublicKeyEd25519() -> PublicKey {
         return PublicKey(rawValue: TWPrivateKeyGetPublicKeyEd25519(rawValue))
     }

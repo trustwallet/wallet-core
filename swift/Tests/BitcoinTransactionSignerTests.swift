@@ -7,12 +7,6 @@
 import XCTest
 import TrustWalletCore
 
-typealias TWBitcoinSigningInput = TW_Bitcoin_Proto_SigningInput
-typealias TWBitcoinSigningOutput = TW_Bitcoin_Proto_SigningOutput
-typealias TWBitcoinUnspentTransaction = TW_Bitcoin_Proto_UnspentTransaction
-typealias TWBitcoinTransactionPlan = TW_Bitcoin_Proto_TransactionPlan
-typealias TWBitcoinOutPoint = TW_Bitcoin_Proto_OutPoint
-
 class BitcoinTransactionSignerTests: XCTestCase {
     override func setUp() {
         continueAfterFailure = false

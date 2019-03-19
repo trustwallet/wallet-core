@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum IconAddressType: UInt32, CustomStringConvertible  {
+public enum IconAddressType: UInt32, CaseIterable, CustomStringConvertible  {
     case address = 0
     case contract = 1
 

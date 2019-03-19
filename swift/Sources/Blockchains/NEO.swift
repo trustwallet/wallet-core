@@ -6,26 +6,31 @@
 
 import Foundation
 
-public final class EOS: Blockchain {
-    public var chainIDString: String {
-        return "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906"
-    }
-
+public final class NEO: Blockchain {
+    
     public override var coinType: CoinType {
-        return .eos
+        return .neo
     }
-
+    
     public override func address(for publicKey: PublicKey) -> Address {
-        let compressed = publicKey.compressed
-        let check = Hash.ripemd(data: compressed.data)[0..<4]
-        return EOSAddress(data: compressed.data + check)!
+        return NEOAddress(publicKey: publicKey)
     }
 
     public override func address(string: String) -> Address? {
-        return EOSAddress(string: string)
+        return NEOAddress(string: string)
     }
 
     public override func address(data: Data) -> Address? {
-        return EOSAddress(data: data)
+        return NEOAddress(data: data)
+    }
+}
+
+extension NEOAddress: Address {
+    public var data: Data {
+       return keyHash
+    }
+
+    public static func isValid(data: Data) -> Bool {
+        return NEOAddress(data: data) != nil
     }
 }

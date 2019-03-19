@@ -93,3 +93,9 @@ message SigningInput {
         TokenUnfreezeOrder unfreeze_order = 12;
     }
 }
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+}

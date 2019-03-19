@@ -7,23 +7,25 @@
 import TrustWalletCore
 import XCTest
 
-let testWallet = HDWallet(mnemonic: "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", passphrase: "TREZOR")
+extension HDWallet {
+    static let test = HDWallet(mnemonic: "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal", passphrase: "TREZOR")
+}
 
 class HDWalletTests: XCTestCase {
     func testSeed() {
-        let wallet = testWallet
+        let wallet = HDWallet.test
 
         XCTAssertEqual(wallet.seed.hexString, "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29")
     }
 
     func testSeedNoPassword() {
-        let wallet = HDWallet(mnemonic: testWallet.mnemonic, passphrase: "")
+        let wallet = HDWallet(mnemonic: HDWallet.test.mnemonic, passphrase: "")
 
         XCTAssertEqual(wallet.seed.hexString, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d")
     }
 
     func testDerive() {
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key0 = wallet.getKey(at: Ethereum().derivationPath(at: 0))
         let key1 = wallet.getKey(at: Ethereum().derivationPath(at: 1))
 
@@ -33,7 +35,7 @@ class HDWalletTests: XCTestCase {
 
     func testWanchain() {
         let blockchain = Wanchain()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key0 = wallet.getKey(at: blockchain.derivationPath(at: 0))
 
         XCTAssertEqual(blockchain.address(for: key0.getPublicKeySecp256k1(compressed: false)).description, "0x4DDa26870B4b3fa3FbA32222159359038f588318")
@@ -41,7 +43,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveBitcoin() {
         let blockchain = Bitcoin()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
 
@@ -49,9 +51,17 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(key.getPublicKeySecp256k1(compressed: true).description, key.getPublicKeySecp256k1(compressed: true).description)
     }
 
+    func testDeriveEthereum() {
+        let coin = CoinType.ethereum
+        let key = HDWallet.test.getKeyForCoin(coin: .ethereum)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("0x27Ef5cDBe01777D62438AfFeb695e33fC2335979", address.description)
+    }
+
     func testDeriveLitecoin() {
         let blockchain = Litecoin()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
 
@@ -60,7 +70,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveTron() {
         let blockchain = Tron()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
@@ -69,7 +79,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveIcon() {
         let blockchain = Icon()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key0 = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let key1 = wallet.getKey(at: blockchain.derivationPath(at: 1))
         let address0 = blockchain.address(for: key0.getPublicKeySecp256k1(compressed: false))
@@ -78,19 +88,19 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("hx78c6f744c68d48793cd64716189c181c66907b24", address0.description)
         XCTAssertEqual("hx92373c16531761b31a7124c94718da43db8c9d89", address1.description)
     }
-
-    func testDeriveEOS() {
-        let blockchain = EOS()
-        let wallet = testWallet
+    
+    func testDeriveOntology() {
+        let blockchain = Ontology()
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
-        let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
+        let address = blockchain.address(for: key.getPublicKeyNist256p1())
 
-        XCTAssertEqual("EOS5LhLzbYV9jL94MYSFFnuKUX4fSB9xRp2zmXBxZ9AjmbAwZKxoq", address.description)
+        XCTAssertEqual("AH11LGtFk6VU9Z7suuM5eNpho1bAoE5Gbz", address.description)
     }
 
     func testDeriveBitcoinCash() {
         let blockchain = BitcoinCash()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: true))
 
@@ -99,7 +109,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveDash() {
         let blockchain = Dash()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
@@ -108,7 +118,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveZcoin() {
         let blockchain = Zcoin()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
@@ -117,7 +127,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveBinanceChain() {
         let blockchain = BinanceChain()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
@@ -126,7 +136,7 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveZcash() {
         let blockchain = Zcash()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
         XCTAssertEqual("t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy", address.description)
@@ -134,14 +144,63 @@ class HDWalletTests: XCTestCase {
 
     func testDeriveRipple() {
         let blockchain = Ripple()
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: blockchain.derivationPath(at: 0))
         let address = blockchain.address(for: key.getPublicKeySecp256k1(compressed: false))
 
         XCTAssertEqual("r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav", address.description)
     }
+
+    func testDeriveAion() {
+        let key = HDWallet.test.getKeyForCoin(coin: .aion)
+        let address = CoinType.aion.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("0xa0dcc9e5e3bbd6a5a092f6b4975f6c5856e8eb750f37b7079bf7888e8cc1deb8", address.description)
+    }
+
+    func testDevieStellar() {
+        let chain = Stellar()
+        let key = HDWallet.test.getKeyForCoin(coin: .stellar)
+        let address = chain.address(for: key.getPublicKeyEd25519())
+        let address2 = CoinType.stellar.deriveAddress(privateKey: key)
+
+        XCTAssertEqual(key.data.hexString, "4fd1cb3c9c15c171b7b90dc3fefc7b2fc54de09b869cc9d6708d26b114e8d9a5")
+        XCTAssertEqual(address.description, "GCRWFRVQP5XS7I4SFCL374VKV6OHJ3L3H3SDVGH7FW73N7LSNYJXOLDK")
+        XCTAssertEqual(address.description, address2)
+    }
+
+    func testDeriveTezos() {
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: .tezos)
+        let pubkey = key.getPublicKeyEd25519()
+        let address = TezosAddress(publicKey: pubkey)
+
+        XCTAssertEqual(pubkey.data.hexString, "01c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371")
+        XCTAssertEqual("tz1RsC3AREfrMwh6Hdu7qGKxBwb1VgwJv1qw", address.description)
+    }
+
+    func testDeriveTezos2() {
+        let wallet = HDWallet(mnemonic: "kidney setup media hat relief plastic ghost census mouse science expect movie", passphrase: "")
+
+        let key = wallet.getKeyForCoin(coin: .tezos)
+        let address = CoinType.tezos.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("tz1M9ZMG1kthqQFK5dFi8rDCahqw6gHr1zoZ", address.description)
+    }
+
+    func testDeriveNimiq() {
+        // mnemonic is from https://github.com/Eligioo/nimiq-hd-wallet, compatible with ledger
+        // but it's not compatible with safe.nimiq.com (can't import)
+        let wallet = HDWallet(mnemonic: "insane mixed health squeeze physical trust pipe possible garage hero flock stand profit power tooth review note camera express vicious clock machine entire heavy", passphrase: "")
+        let coin = CoinType.nimiq
+        let key = wallet.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("NQ77 XYYH YUNC V52U 5ADV 5JAY QXMD 2F9C Q440", address.description)
+    }
+
     func testSignHash() {
-        let wallet = testWallet
+        let wallet = HDWallet.test
         let key = wallet.getKey(at: Ethereum().derivationPath(at: 0))
         let hash = Data(hexString: "3F891FDA3704F0368DAB65FA81EBE616F4AA2A0854995DA4DC0B59D2CADBD64F")!
         let result = key.sign(digest: hash, curve: .secp256k1)!

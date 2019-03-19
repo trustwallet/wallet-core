@@ -43,7 +43,13 @@ JNIEXPORT
 jstring JNICALL Java_wallet_core_jni_HDWallet_mnemonic(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jobject JNICALL Java_wallet_core_jni_HDWallet_getKey(JNIEnv *env, jobject thisObject, jobject coin, jint account, jint change, jint address);
+jobject JNICALL Java_wallet_core_jni_HDWallet_getKeyForCoin(JNIEnv *env, jobject thisObject, jobject coin);
+
+JNIEXPORT
+jobject JNICALL Java_wallet_core_jni_HDWallet_getKey(JNIEnv *env, jobject thisObject, jstring derivationPath);
+
+JNIEXPORT
+jobject JNICALL Java_wallet_core_jni_HDWallet_getKeyBIP44(JNIEnv *env, jobject thisObject, jobject coin, jint account, jint change, jint address);
 
 JNIEXPORT
 jstring JNICALL Java_wallet_core_jni_HDWallet_getExtendedPrivateKey(JNIEnv *env, jobject thisObject, jobject purpose, jobject coin, jobject version);

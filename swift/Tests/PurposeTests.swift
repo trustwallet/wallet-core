@@ -22,5 +22,6 @@ class PurposeTests: XCTestCase {
         XCTAssertEqual(.bip44, Go().coinPurpose)
         XCTAssertEqual(.bip44, Icon().coinPurpose)
         XCTAssertEqual(.bip44, TomoChain().coinPurpose)
+        XCTAssertEqual(.bip44, Ontology().coinPurpose)
     }
 }

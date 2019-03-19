@@ -23,6 +23,8 @@ add_library(TrezorCrypto
     src/memzero.c
     src/scrypt.c
     src/ripple/base58.c
+    src/nist256p1.c
+    src/groestl.c
 )
 
 target_compile_options(TrezorCrypto

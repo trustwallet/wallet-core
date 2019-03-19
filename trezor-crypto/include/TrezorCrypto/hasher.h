@@ -29,13 +29,10 @@
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
 #include <TrezorCrypto/blake256.h>
+#include <TrezorCrypto/groestl.h>
 #include <TrezorCrypto/blake2b.h>
 
 #define HASHER_DIGEST_LENGTH 32
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef enum {
     HASHER_SHA2,
@@ -49,11 +46,10 @@ typedef enum {
     HASHER_BLAKED,
     HASHER_BLAKE_RIPEMD,
 
-    HASHER_OVERWINTER_PREVOUTS,
-    HASHER_OVERWINTER_SEQUENCE,
-    HASHER_OVERWINTER_OUTPUTS,
-    HASHER_OVERWINTER_PREIMAGE,
-    HASHER_SAPLING_PREIMAGE,
+    HASHER_GROESTLD_TRUNC, /* Double Groestl512 hasher truncated to 256 bits */
+
+    HASHER_BLAKE2B,
+    HASHER_BLAKE2B_PERSONAL,
 } HasherType;
 
 typedef struct {
@@ -63,19 +59,20 @@ typedef struct {
         SHA256_CTX sha2;        // for HASHER_SHA2{,D}
         SHA3_CTX sha3;          // for HASHER_SHA3{,K}
         BLAKE256_CTX blake;     // for HASHER_BLAKE{,D}
-        BLAKE2B_CTX blake2b;    // for HASHER_OVERWINTER_*, HASHER_SAPLING_*
+        GROESTL512_CTX groestl; // for HASHER_GROESTLD_TRUNC
+        BLAKE2B_CTX blake2b;    // for HASHER_BLAKE2B{,_PERSONAL}
     } ctx;
+
+    const void *param;
+    uint32_t param_size;
 } Hasher;
 
+void hasher_InitParam(Hasher *hasher, HasherType type, const void *param, uint32_t param_size);
 void hasher_Init(Hasher *hasher, HasherType type);
 void hasher_Reset(Hasher *hasher);
 void hasher_Update(Hasher *hasher, const uint8_t *data, size_t length);
 void hasher_Final(Hasher *hasher, uint8_t hash[HASHER_DIGEST_LENGTH]);
 
 void hasher_Raw(HasherType type, const uint8_t *data, size_t length, uint8_t hash[HASHER_DIGEST_LENGTH]);
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
 
 #endif
