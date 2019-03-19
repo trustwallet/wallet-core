@@ -110,7 +110,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeDash:
         return Bitcoin::Address::isValid(string, {TWP2PKHPrefixDash, TWP2SHPrefixDash});
 
-
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
@@ -270,6 +269,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
+    case TWCoinTypeCosmos:
     case TWCoinTypeDash:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
@@ -303,15 +303,6 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
             DerivationPathIndex(coin, true),
             DerivationPathIndex(0, true),
             DerivationPathIndex(0, true),
-        };
-
-    case TWCoinTypeCosmos:
-        return DerivationPath{
-            DerivationPathIndex(purpose(coin), true),
-            DerivationPathIndex(coin, true),
-            DerivationPathIndex(0, true),
-            DerivationPathIndex(0, false),
-            DerivationPathIndex(0, false),
         };
 
     case TWCoinTypeStellar:
