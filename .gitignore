@@ -13,3 +13,6 @@ lib/json
 lib/protobuf
 
 .idea/
+
+# Generated files
+swift/TrustWalletCore.xcodeproj
