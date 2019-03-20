@@ -56,11 +56,13 @@ If you change interface files in the include folder you need to regenerate the i
 
 ## Testing
 
-Use the `bootstrap.sh` script in the root folder to quickly build and test. After you have run either `bootstrap.sh` or `cmake`, run `make -C build tests && build/tests/tests tests`. This will run all the C++ tests. To run integration tests on each platform run the respective script in the tools folder:
-* Android: `tools/android-test`
-* iOS: `tools/ios-test`
+Use the `bootstrap.sh` script in the root folder to quickly build and test. After you have run either `bootstrap.sh` or `cmake`, run `make -C build tests && build/tests/tests tests`. This will run all the C++ tests, Or use XCode for testing and debugging. Run `cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug` to generate a Xcode project. Then go to `xcode/` folder and open `TrustWalletCore.xcodeproj`.
 
-Or use XCode for testing and debugging. Run `cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug` to generate an Xcode project. Then go to `swift/` folder, run `pod install` and open `TrustWalletCore.xcworkspace`.
+To run integration tests on each platform run the respective script in the tools folder:
+
+* Android: run `tools/android-test` or import `android` folder to Android Studio
+* iOS: run `tools/ios-test` or cd `swift` folder, run `pod install` and open `TrustWalletCore.xcworkspace`
+
 
 ## C Headers
 
