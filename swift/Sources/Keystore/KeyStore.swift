@@ -56,10 +56,7 @@ public final class KeyStore {
 
     /// Adds accounts to a wallet.
     public func addAccounts(wallet: Wallet, coins: [CoinType], password: String) throws -> [Account] {
-        var accounts = [Account]()
-        for coin in coins {
-            accounts.append(try wallet.getAccount(password: password, coin: coin))
-        }
+        let accounts = try wallet.getAccounts(password: password, coins: coins)
         try save(wallet: wallet)
         return accounts
     }
