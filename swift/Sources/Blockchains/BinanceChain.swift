@@ -8,8 +8,3 @@ import Foundation
 
 public typealias TWBinanceSigningInput = TW_Binance_Proto_SigningInput
 public typealias TWBinanceSendOrder = TW_Binance_Proto_SendOrder
-
-struct BinanceChain {
-    static let chainId = "Binance-Chain-Nile"
-    static let source: Int64 = 2
-}
