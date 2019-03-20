@@ -47,7 +47,8 @@ class KeystoreKeyTests: XCTestCase {
     func testDecodingEthereumAddress() {
         let url = Bundle(for: type(of: self)).url(forResource: "key", withExtension: "json")!
         let key = StoredKey.load(path: url.path)!
-        let account = key.accountForCoin(coin: .ethereum, password: "")!
+        let wallet = key.wallet(password: "testpassword")!
+        let account = key.accountForCoin(coin: .ethereum, wallet: wallet)!
 
         XCTAssertEqual(account.address.description, "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b")
     }
@@ -55,7 +56,8 @@ class KeystoreKeyTests: XCTestCase {
     func testDecodingBitcoinAddress() {
         let url = Bundle(for: type(of: self)).url(forResource: "key_bitcoin", withExtension: "json")!
         let key = StoredKey.load(path: url.path)!
-        let account = key.accountForCoin(coin: .bitcoin, password: "")!
+        let wallet = key.wallet(password: "testpassword")!
+        let account = key.accountForCoin(coin: .bitcoin, wallet: wallet)!
 
         XCTAssertEqual(account.address.description, "3PWazDi9n1Hfyq9gXFxDxzADNL8RNYyK2y")
     }
