@@ -6,35 +6,9 @@
 
 import Foundation
 
-public class Tezos: Blockchain {
-    public override var coinType: CoinType {
-        return .tezos
-    }
-
-    public override func address(for publicKey: PublicKey) -> Address {
-        return TezosAddress(publicKey: publicKey)
-    }
-
-    public override func address(string: String) -> Address? {
-        return TezosAddress(string: string)
-    }
-
-    public override func address(data: Data) -> Address? {
-        guard let stringRepresentation = String(data: data, encoding: .utf8) else {
-            return nil
-        }
-        return TezosAddress(string: stringRepresentation)
-    }
-}
+public typealias TWTezosSigningInput = TW_Tezos_Proto_SigningInput
 
 extension TezosAddress: Address {
-    public static func isValid(data: Data) -> Bool {
-        guard let stringRepresentation = String(data: data, encoding: .utf8) else {
-            return false
-        }
-        return TWTezosAddressIsValidString(stringRepresentation)
-    }
-
     public var data: Data {
         return keyHash
     }

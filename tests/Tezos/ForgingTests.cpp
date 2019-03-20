@@ -68,6 +68,14 @@ TEST(Forging, ForgeZarithOneHundredFifty) {
     ASSERT_EQ(output, parse_hex(expected));
 }
 
+TEST(Forging, ForgeZarithLarge) {
+    auto expected = "82fc43";
+  
+    auto output = forgeZarith(1113602);
+  
+    ASSERT_EQ(output, parse_hex(expected));
+}
+
 TEST(Forging, forge_tz1) {
     auto expected = "00cfa4aae60f5d9389752d41e320da224d43287fe2";
 

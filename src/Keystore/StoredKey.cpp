@@ -70,7 +70,7 @@ const Account& StoredKey::account(TWCoinType coin, const std::string& password) 
     const auto wallet = this->wallet(password);
     const auto derivationPath = TW::derivationPath(coin);
     const auto address = TW::deriveAddress(coin, wallet.getKey(derivationPath));
-    const auto version = TW::hdVersion(coin);
+    const auto version = TW::xpubVersion(coin);
 
     std::string extendedPublicKey;
     if (version != TWHDVersionNone) {
