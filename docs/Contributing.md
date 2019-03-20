@@ -3,6 +3,12 @@
 
 Wallet Core implements the cryptographic functionality of blockchains. This includes elliptic curve cryptography, hashing, address derivation and transaction signing. However it *does not* implement other aspects like networking and UI. Wallet core behaves like a black box for higher level users like Trust Wallet; it takes inputs from the blockchain and the user (for instance UTXOs, private keys, etc.) and produces an output (like a signed and encoded transaction).
 
+### How does Trust Wallet interact with Wallet Core
+
+Take Ethereum as an example:
+
+<img src="wallet-core.png">
+
 ## Library Design Guidelines
 
 This library is designed so that it can be used from any other programming languages, and that every language has an idiomatic interface. Design goals also include minimizing the binary size and maximizing perfomance.
@@ -50,13 +56,13 @@ If you change interface files in the include folder you need to regenerate the i
 
 ## Testing
 
-Use the `bootstrap.sh` script in the root folder to quickly build and test. After you have run either `bootstrap.sh` or `cmake`, run `make -C build tests && build/tests/tests tests`. This will run all the C++ tests. To run integration tests on each platform run the respective script in the tools folder:
-* Android: `tools/android-test`
-* iOS: `tools/ios-test`
+Use the `bootstrap.sh` script in the root folder to quickly build and test. After you have run either `bootstrap.sh` or `cmake`, run `make -C build tests && build/tests/tests tests`. This will run all the C++ tests, Or use XCode for testing and debugging. Run `cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug` to generate a Xcode project. Then go to `xcode/` folder and open `TrustWalletCore.xcodeproj`.
 
-How to generate a Xcode project:
+To run integration tests on each platform run the respective script in the tools folder:
 
-`cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug`
+* Android: run `tools/android-test` or import `android` folder to Android Studio
+* iOS: run `tools/ios-test` or cd `swift` folder, run `pod install` and open `TrustWalletCore.xcworkspace`
+
 
 ## C Headers
 
@@ -143,11 +149,11 @@ Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload
 
 - Generate GPG Key
 - Send Key to the server using the installed tool GPG Keychain
-- Generate the signing.keyId value: 
+- Generate the signing.keyId value:
  ```
 $ gpg --list-keys --keyid-format short
 ```
-- Get the `.gpg` secret key that will be assigned to signing.secretKeyRingFile parameter: 
+- Get the `.gpg` secret key that will be assigned to signing.secretKeyRingFile parameter:
 ```
 $ gpg --export-secret-keys -o secring.gpg
 ```
