@@ -36,9 +36,7 @@ public final class Wallet: Hashable {
     /// - Returns: the account
     /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
     public func getAccount(password: String, coin: CoinType) throws -> Account {
-        guard let wallet = key.wallet(password: password) else {
-            throw KeyStore.Error.invalidPassword
-        }
+        let wallet = key.wallet(password: password)
         guard let account = key.accountForCoin(coin: coin, wallet: wallet) else {
             throw KeyStore.Error.invalidPassword
         }
