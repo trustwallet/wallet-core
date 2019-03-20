@@ -11,17 +11,22 @@ import XCTest
 
 extension KeyStore {
     var keyWallet: Wallet? {
-        return wallets.first(where: { !$0.key.isMnemonic })
+        return wallets.first(where: { $0.identifier == "key.json" })
     }
 
     var hdWallet: Wallet? {
-        return wallets.first(where: { $0.key.isMnemonic })
+        return wallets.first(where: { $0.identifier == "wallet.json" })
+    }
+
+    var bitcoinWallet: Wallet {
+        return wallets.first(where: { $0.identifier == "btc_missing_address.json"})!
     }
 }
 
 class KeyStoreTests: XCTestCase {
     let keyAddress = EthereumAddress(string: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b")!
     let walletAddress = EthereumAddress(string: "0x32dd55E0BCF509a35A3F5eEb8593fbEb244796b1")!
+    let mnemonic = "often tobacco bread scare imitate song kind common bar forest yard wisdom"
 
     var keyDirectory: URL!
 
@@ -45,11 +50,17 @@ class KeyStoreTests: XCTestCase {
 
         try? fileManager.removeItem(at: walletDestination)
         try? fileManager.copyItem(at: walletURL, to: walletDestination)
+
+        let bitcoinWalletURL = Bundle(for: type(of: self)).url(forResource: "btc_missing_address", withExtension: "json")!
+        let bitcoinWalletDestination = keyDirectory.appendingPathComponent("btc_missing_address.json")
+
+        try? fileManager.removeItem(at: bitcoinWalletDestination)
+        try? fileManager.copyItem(at: bitcoinWalletURL, to: bitcoinWalletDestination)
     }
 
     func testLoadKeyStore() {
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
-        XCTAssertEqual(keyStore.wallets.count, 2)
+        XCTAssertEqual(keyStore.wallets.count, 3)
     }
 
     func testCreateHDWallet() throws {
@@ -58,7 +69,7 @@ class KeyStoreTests: XCTestCase {
         let newWallet = try keyStore.createWallet(password: "password", coins: coins)
 
         XCTAssertEqual(newWallet.accounts.count, 1)
-        XCTAssertEqual(keyStore.wallets.count, 3)
+        XCTAssertEqual(keyStore.wallets.count, 4)
         XCTAssertNoThrow(try newWallet.getAccount(password: "password", coin: .ethereum))
     }
 
@@ -128,7 +139,7 @@ class KeyStoreTests: XCTestCase {
 
     func testImportWallet() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = try keyStore.import(mnemonic: "often tobacco bread scare imitate song kind common bar forest yard wisdom", encryptPassword: "newPassword", coin: .ethereum)
+        let wallet = try keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coin: .ethereum)
         let storedData = wallet.key.decryptMnemonic(password: "newPassword")
 
         XCTAssertNotNil(storedData)
@@ -137,9 +148,8 @@ class KeyStoreTests: XCTestCase {
     }
 
     func testExportMnemonic() throws {
-        let mnemonic = "often tobacco bread scare imitate song kind common bar forest yard wisdom"
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = try keyStore.import(mnemonic: mnemonic,encryptPassword: "newPassword", coin: .ethereum)
+        let wallet = try keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coin: .ethereum)
         let exported = try keyStore.exportMnemonic(wallet: wallet, password: "newPassword")
 
         XCTAssertEqual(mnemonic, exported)
@@ -163,5 +173,32 @@ class KeyStoreTests: XCTestCase {
         let fileName = keyStore.generateFileName(identifier: keyAddress.description, date: date, timeZone: timeZone)
 
         XCTAssertEqual(fileName, "UTC--2018-01-02T20-55-25.186770975Z--0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b")
+    }
+
+    func testDeriveActiveAccounts() {
+        let keyStore = try! KeyStore(keyDirectory: keyDirectory)
+        let wallet = try! keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coin: .ethereum)
+        let coins = CoinType.allCases
+        let accounts = try! keyStore.addAccounts(wallet: wallet, coins: coins, password: "newPassword")
+
+        for account in accounts {
+            XCTAssertFalse(account.address.isEmpty)
+        }
+
+        XCTAssertEqual(coins.count, wallet.accounts.count)
+    }
+
+    func testMissingBitcoinAddressDerivation() {
+        let keyStore = try! KeyStore(keyDirectory: keyDirectory)
+        let wallet = keyStore.bitcoinWallet
+        let coins = CoinType.allCases
+
+        let accounts = try! keyStore.addAccounts(wallet: wallet, coins: coins, password: "bc487bc88da81d8f48b3bf148f1278577d9bff072888a00f75508a922a5d1446")
+
+        for account in accounts {
+            XCTAssertFalse(account.address.isEmpty)
+        }
+
+        XCTAssertEqual(coins.count, wallet.accounts.count)
     }
 }
