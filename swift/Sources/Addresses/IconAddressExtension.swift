@@ -8,10 +8,6 @@ import Foundation
 
 /// Icon address.
 extension IconAddress: Address, Hashable {
-    public static func isValid(data: Data) -> Bool {
-        return data.count == 20
-    }
-
     public var data: Data {
         return keyHash
     }
