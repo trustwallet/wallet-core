@@ -9,6 +9,7 @@
 #include "Ontology/Transaction.h"
 
 #include <iostream>
+#include <unordered_map>
 
 #include <gtest/gtest.h>
 #include <PrivateKey.h>
