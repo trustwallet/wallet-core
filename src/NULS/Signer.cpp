@@ -101,7 +101,7 @@ static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash
 
 std::vector<uint8_t> Signer::sign(uint64_t timestamp) const
 {
-    if (tx.priv_key().empty()) {
+    if (tx.private_key().empty()) {
         throw std::invalid_argument("Must have private key string");
     }
     else if (tx.inputs_size()==0) {
@@ -110,7 +110,7 @@ std::vector<uint8_t> Signer::sign(uint64_t timestamp) const
     else if (tx.outputs_size()==0) {
         throw std::invalid_argument("There must be at least one output, something is missed");
     }
-    auto priv = Address::importHexPrivateKey(tx.priv_key());
+    auto priv = Address::importHexPrivateKey(tx.private_key());
 
     auto data = Data();
     // Transaction Type

@@ -62,7 +62,7 @@ public struct TW_NULS_Proto_Transaction {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var privKey: Data = SwiftProtobuf.Internal.emptyData
+  public var privateKey: Data = SwiftProtobuf.Internal.emptyData
 
   public var fromAddress: String = String()
 
@@ -71,7 +71,7 @@ public struct TW_NULS_Proto_Transaction {
   public var amount: Int64 = 0
 
   //// UTF-8 encode strings
-  public var remark: Data = SwiftProtobuf.Internal.emptyData
+  public var remark: String = String()
 
   //// Unspent input list
   public var inputs: [TW_NULS_Proto_TransactionInput] = []
@@ -203,7 +203,7 @@ extension TW_NULS_Proto_TransactionOutput: SwiftProtobuf.Message, SwiftProtobuf.
 extension TW_NULS_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Transaction"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .standard(proto: "priv_key"),
+    1: .standard(proto: "private_key"),
     2: .standard(proto: "from_address"),
     3: .standard(proto: "to_address"),
     4: .same(proto: "amount"),
@@ -215,11 +215,11 @@ extension TW_NULS_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._Messa
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.privKey)
+      case 1: try decoder.decodeSingularBytesField(value: &self.privateKey)
       case 2: try decoder.decodeSingularStringField(value: &self.fromAddress)
       case 3: try decoder.decodeSingularStringField(value: &self.toAddress)
       case 4: try decoder.decodeSingularInt64Field(value: &self.amount)
-      case 5: try decoder.decodeSingularBytesField(value: &self.remark)
+      case 5: try decoder.decodeSingularStringField(value: &self.remark)
       case 6: try decoder.decodeRepeatedMessageField(value: &self.inputs)
       case 7: try decoder.decodeRepeatedMessageField(value: &self.outputs)
       default: break
@@ -228,8 +228,8 @@ extension TW_NULS_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.privKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.privKey, fieldNumber: 1)
+    if !self.privateKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.privateKey, fieldNumber: 1)
     }
     if !self.fromAddress.isEmpty {
       try visitor.visitSingularStringField(value: self.fromAddress, fieldNumber: 2)
@@ -241,7 +241,7 @@ extension TW_NULS_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._Messa
       try visitor.visitSingularInt64Field(value: self.amount, fieldNumber: 4)
     }
     if !self.remark.isEmpty {
-      try visitor.visitSingularBytesField(value: self.remark, fieldNumber: 5)
+      try visitor.visitSingularStringField(value: self.remark, fieldNumber: 5)
     }
     if !self.inputs.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.inputs, fieldNumber: 6)
@@ -253,7 +253,7 @@ extension TW_NULS_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._Messa
   }
 
   public static func ==(lhs: TW_NULS_Proto_Transaction, rhs: TW_NULS_Proto_Transaction) -> Bool {
-    if lhs.privKey != rhs.privKey {return false}
+    if lhs.privateKey != rhs.privateKey {return false}
     if lhs.fromAddress != rhs.fromAddress {return false}
     if lhs.toAddress != rhs.toAddress {return false}
     if lhs.amount != rhs.amount {return false}

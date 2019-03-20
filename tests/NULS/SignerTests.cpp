@@ -37,13 +37,13 @@ inline auto makeOutput(std::string toAddress, uint64_t amount, uint64_t lock_tim
 
 inline auto makeTransaction(std::vector<Proto::TransactionInput> inputs,
         std::vector<Proto::TransactionOutput> outputs,
-        std::string privKey,
+        std::string privateKey,
         std::string remark)
 {
     auto tx = Proto::Transaction();
     *tx.mutable_inputs() = {inputs.begin(), inputs.end()};
     *tx.mutable_outputs() = {outputs.begin(), outputs.end()};
-    tx.set_priv_key(privKey);
+    tx.set_private_key(privateKey);
     tx.set_remark(remark);
     return tx;
 }

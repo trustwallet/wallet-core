@@ -1630,9 +1630,9 @@ public final class NULS {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes priv_key = 1;</code>
+     * <code>bytes private_key = 1;</code>
      */
-    com.google.protobuf.ByteString getPrivKey();
+    com.google.protobuf.ByteString getPrivateKey();
 
     /**
      * <code>string from_address = 2;</code>
@@ -1664,9 +1664,18 @@ public final class NULS {
      *&#47; UTF-8 encode strings
      * </pre>
      *
-     * <code>bytes remark = 5;</code>
+     * <code>string remark = 5;</code>
      */
-    com.google.protobuf.ByteString getRemark();
+    java.lang.String getRemark();
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getRemarkBytes();
 
     /**
      * <pre>
@@ -1769,10 +1778,10 @@ public final class NULS {
       super(builder);
     }
     private Transaction() {
-      privKey_ = com.google.protobuf.ByteString.EMPTY;
+      privateKey_ = com.google.protobuf.ByteString.EMPTY;
       fromAddress_ = "";
       toAddress_ = "";
-      remark_ = com.google.protobuf.ByteString.EMPTY;
+      remark_ = "";
       inputs_ = java.util.Collections.emptyList();
       outputs_ = java.util.Collections.emptyList();
     }
@@ -1803,7 +1812,7 @@ public final class NULS {
               break;
             case 10: {
 
-              privKey_ = input.readBytes();
+              privateKey_ = input.readBytes();
               break;
             }
             case 18: {
@@ -1824,8 +1833,9 @@ public final class NULS {
               break;
             }
             case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              remark_ = input.readBytes();
+              remark_ = s;
               break;
             }
             case 50: {
@@ -1885,13 +1895,13 @@ public final class NULS {
     }
 
     private int bitField0_;
-    public static final int PRIV_KEY_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString privKey_;
+    public static final int PRIVATE_KEY_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString privateKey_;
     /**
-     * <code>bytes priv_key = 1;</code>
+     * <code>bytes private_key = 1;</code>
      */
-    public com.google.protobuf.ByteString getPrivKey() {
-      return privKey_;
+    public com.google.protobuf.ByteString getPrivateKey() {
+      return privateKey_;
     }
 
     public static final int FROM_ADDRESS_FIELD_NUMBER = 2;
@@ -1972,16 +1982,45 @@ public final class NULS {
     }
 
     public static final int REMARK_FIELD_NUMBER = 5;
-    private com.google.protobuf.ByteString remark_;
+    private volatile java.lang.Object remark_;
     /**
      * <pre>
      *&#47; UTF-8 encode strings
      * </pre>
      *
-     * <code>bytes remark = 5;</code>
+     * <code>string remark = 5;</code>
      */
-    public com.google.protobuf.ByteString getRemark() {
-      return remark_;
+    public java.lang.String getRemark() {
+      java.lang.Object ref = remark_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        remark_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getRemarkBytes() {
+      java.lang.Object ref = remark_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        remark_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int INPUTS_FIELD_NUMBER = 6;
@@ -2108,8 +2147,8 @@ public final class NULS {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!privKey_.isEmpty()) {
-        output.writeBytes(1, privKey_);
+      if (!privateKey_.isEmpty()) {
+        output.writeBytes(1, privateKey_);
       }
       if (!getFromAddressBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, fromAddress_);
@@ -2120,8 +2159,8 @@ public final class NULS {
       if (amount_ != 0L) {
         output.writeInt64(4, amount_);
       }
-      if (!remark_.isEmpty()) {
-        output.writeBytes(5, remark_);
+      if (!getRemarkBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, remark_);
       }
       for (int i = 0; i < inputs_.size(); i++) {
         output.writeMessage(6, inputs_.get(i));
@@ -2138,9 +2177,9 @@ public final class NULS {
       if (size != -1) return size;
 
       size = 0;
-      if (!privKey_.isEmpty()) {
+      if (!privateKey_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, privKey_);
+          .computeBytesSize(1, privateKey_);
       }
       if (!getFromAddressBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, fromAddress_);
@@ -2152,9 +2191,8 @@ public final class NULS {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(4, amount_);
       }
-      if (!remark_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, remark_);
+      if (!getRemarkBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, remark_);
       }
       for (int i = 0; i < inputs_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -2179,8 +2217,8 @@ public final class NULS {
       }
       wallet.core.jni.proto.NULS.Transaction other = (wallet.core.jni.proto.NULS.Transaction) obj;
 
-      if (!getPrivKey()
-          .equals(other.getPrivKey())) return false;
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
       if (!getFromAddress()
           .equals(other.getFromAddress())) return false;
       if (!getToAddress()
@@ -2204,8 +2242,8 @@ public final class NULS {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PRIV_KEY_FIELD_NUMBER;
-      hash = (53 * hash) + getPrivKey().hashCode();
+      hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getPrivateKey().hashCode();
       hash = (37 * hash) + FROM_ADDRESS_FIELD_NUMBER;
       hash = (53 * hash) + getFromAddress().hashCode();
       hash = (37 * hash) + TO_ADDRESS_FIELD_NUMBER;
@@ -2358,7 +2396,7 @@ public final class NULS {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        privKey_ = com.google.protobuf.ByteString.EMPTY;
+        privateKey_ = com.google.protobuf.ByteString.EMPTY;
 
         fromAddress_ = "";
 
@@ -2366,7 +2404,7 @@ public final class NULS {
 
         amount_ = 0L;
 
-        remark_ = com.google.protobuf.ByteString.EMPTY;
+        remark_ = "";
 
         if (inputsBuilder_ == null) {
           inputs_ = java.util.Collections.emptyList();
@@ -2408,7 +2446,7 @@ public final class NULS {
         wallet.core.jni.proto.NULS.Transaction result = new wallet.core.jni.proto.NULS.Transaction(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        result.privKey_ = privKey_;
+        result.privateKey_ = privateKey_;
         result.fromAddress_ = fromAddress_;
         result.toAddress_ = toAddress_;
         result.amount_ = amount_;
@@ -2480,8 +2518,8 @@ public final class NULS {
 
       public Builder mergeFrom(wallet.core.jni.proto.NULS.Transaction other) {
         if (other == wallet.core.jni.proto.NULS.Transaction.getDefaultInstance()) return this;
-        if (other.getPrivKey() != com.google.protobuf.ByteString.EMPTY) {
-          setPrivKey(other.getPrivKey());
+        if (other.getPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
+          setPrivateKey(other.getPrivateKey());
         }
         if (!other.getFromAddress().isEmpty()) {
           fromAddress_ = other.fromAddress_;
@@ -2494,8 +2532,9 @@ public final class NULS {
         if (other.getAmount() != 0L) {
           setAmount(other.getAmount());
         }
-        if (other.getRemark() != com.google.protobuf.ByteString.EMPTY) {
-          setRemark(other.getRemark());
+        if (!other.getRemark().isEmpty()) {
+          remark_ = other.remark_;
+          onChanged();
         }
         if (inputsBuilder_ == null) {
           if (!other.inputs_.isEmpty()) {
@@ -2579,31 +2618,31 @@ public final class NULS {
       }
       private int bitField0_;
 
-      private com.google.protobuf.ByteString privKey_ = com.google.protobuf.ByteString.EMPTY;
+      private com.google.protobuf.ByteString privateKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes priv_key = 1;</code>
+       * <code>bytes private_key = 1;</code>
        */
-      public com.google.protobuf.ByteString getPrivKey() {
-        return privKey_;
+      public com.google.protobuf.ByteString getPrivateKey() {
+        return privateKey_;
       }
       /**
-       * <code>bytes priv_key = 1;</code>
+       * <code>bytes private_key = 1;</code>
        */
-      public Builder setPrivKey(com.google.protobuf.ByteString value) {
+      public Builder setPrivateKey(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        privKey_ = value;
+        privateKey_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes priv_key = 1;</code>
+       * <code>bytes private_key = 1;</code>
        */
-      public Builder clearPrivKey() {
+      public Builder clearPrivateKey() {
         
-        privKey_ = getDefaultInstance().getPrivKey();
+        privateKey_ = getDefaultInstance().getPrivateKey();
         onChanged();
         return this;
       }
@@ -2772,25 +2811,55 @@ public final class NULS {
         return this;
       }
 
-      private com.google.protobuf.ByteString remark_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object remark_ = "";
       /**
        * <pre>
        *&#47; UTF-8 encode strings
        * </pre>
        *
-       * <code>bytes remark = 5;</code>
+       * <code>string remark = 5;</code>
        */
-      public com.google.protobuf.ByteString getRemark() {
-        return remark_;
+      public java.lang.String getRemark() {
+        java.lang.Object ref = remark_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          remark_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
        * <pre>
        *&#47; UTF-8 encode strings
        * </pre>
        *
-       * <code>bytes remark = 5;</code>
+       * <code>string remark = 5;</code>
        */
-      public Builder setRemark(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getRemarkBytes() {
+        java.lang.Object ref = remark_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          remark_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public Builder setRemark(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -2804,11 +2873,29 @@ public final class NULS {
        *&#47; UTF-8 encode strings
        * </pre>
        *
-       * <code>bytes remark = 5;</code>
+       * <code>string remark = 5;</code>
        */
       public Builder clearRemark() {
         
         remark_ = getDefaultInstance().getRemark();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public Builder setRemarkBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        remark_ = value;
         onChanged();
         return this;
       }
@@ -4001,14 +4088,14 @@ public final class NULS {
       "\030\002 \001(\005\022\016\n\006amount\030\003 \001(\003\022\021\n\tlock_time\030\004 \001(" +
       "\003\022\017\n\007address\030\005 \001(\t\"Y\n\021TransactionOutput\022" +
       "\022\n\nto_address\030\001 \001(\t\022\016\n\006amount\030\002 \001(\003\022\021\n\tl" +
-      "ock_time\030\003 \001(\003\022\r\n\005index\030\004 \001(\005\"\315\001\n\013Transa" +
-      "ction\022\020\n\010priv_key\030\001 \001(\014\022\024\n\014from_address\030" +
-      "\002 \001(\t\022\022\n\nto_address\030\003 \001(\t\022\016\n\006amount\030\004 \001(" +
-      "\003\022\016\n\006remark\030\005 \001(\014\022/\n\006inputs\030\006 \003(\0132\037.TW.N" +
-      "ULS.Proto.TransactionInput\0221\n\007outputs\030\007 " +
-      "\003(\0132 .TW.NULS.Proto.TransactionOutput\" \n" +
-      "\rSigningOutput\022\017\n\007encoded\030\001 \001(\014B\027\n\025walle" +
-      "t.core.jni.protob\006proto3"
+      "ock_time\030\003 \001(\003\022\r\n\005index\030\004 \001(\005\"\320\001\n\013Transa" +
+      "ction\022\023\n\013private_key\030\001 \001(\014\022\024\n\014from_addre" +
+      "ss\030\002 \001(\t\022\022\n\nto_address\030\003 \001(\t\022\016\n\006amount\030\004" +
+      " \001(\003\022\016\n\006remark\030\005 \001(\t\022/\n\006inputs\030\006 \003(\0132\037.T" +
+      "W.NULS.Proto.TransactionInput\0221\n\007outputs" +
+      "\030\007 \003(\0132 .TW.NULS.Proto.TransactionOutput" +
+      "\" \n\rSigningOutput\022\017\n\007encoded\030\001 \001(\014B\027\n\025wa" +
+      "llet.core.jni.protob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4039,7 +4126,7 @@ public final class NULS {
     internal_static_TW_NULS_Proto_Transaction_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_NULS_Proto_Transaction_descriptor,
-        new java.lang.String[] { "PrivKey", "FromAddress", "ToAddress", "Amount", "Remark", "Inputs", "Outputs", });
+        new java.lang.String[] { "PrivateKey", "FromAddress", "ToAddress", "Amount", "Remark", "Inputs", "Outputs", });
     internal_static_TW_NULS_Proto_SigningOutput_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_TW_NULS_Proto_SigningOutput_fieldAccessorTable = new
