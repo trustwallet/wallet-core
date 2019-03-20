@@ -304,6 +304,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeNimiq:
+    case TWCoinTypeNULS:
     case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
@@ -386,6 +387,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeRipple:
+    case TWCoinTypeNULS:
         return PublicKeyType::secp256k1;
 
     case TWCoinTypeCallisto:
@@ -482,10 +484,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Stellar::Address(publicKey).string();
 
     case TWCoinTypeNEO:
-        return NEO::Address(privateKey.getPublicKey(PublicKeyType::nist256p1)).string();
+        return NEO::Address(publicKey).string();
 
     case TWCoinTypeNULS:
-        return NULS::Address(privateKey.getPublicKey(PublicKeyType::secp256k1)).string();
+        return NULS::Address(publicKey).string();
     }
 }
 
