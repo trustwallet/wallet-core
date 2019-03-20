@@ -25,7 +25,7 @@ namespace TW {
         public:
             virtual std::vector<uint8_t> contractAddress() = 0;
 
-            virtual Transaction queryBalance(std::string &address) = 0;
+            virtual Transaction balanceOf(std::string &address) = 0;
 
             virtual Transaction transfer(const Account &from, std::string &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) = 0;
 
