@@ -14,19 +14,21 @@
 
 int64_t getCurrentTime()
 {
-  struct timeval tv;
-  gettimeofday(&tv, NULL);
-  return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec*1000+tv.tv_usec/1000;
 }
+
 using namespace TW;
 using namespace TW::NULS;
 
-TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_Transaction data) {
-  Proto::Transaction tx;
-  tx.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_Transaction data)
+{
+    Proto::Transaction tx;
+    tx.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
-  const auto signer = Signer(tx);
-  const auto output = signer.sign(getCurrentTime());
+    const auto signer = Signer(tx);
+    const auto output = signer.sign(getCurrentTime());
 
-  return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(output.data()), output.size());
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(output.data()), output.size());
 }
