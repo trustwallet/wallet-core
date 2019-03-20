@@ -8,38 +8,21 @@ import TrustWalletCore
 import XCTest
 
 class TezosTests: XCTestCase {
-    public let tezos = Tezos()
-    
-    public func testCoinType() {
-        XCTAssertEqual(tezos.coinType, .tezos)
-    }
-    
+    public let tezos = CoinType.tezos
+
     public func testAddressFromString_validAddress() {
         let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
-        let address = tezos.address(string: validAddressString)
+        let address = TezosAddress(string: validAddressString)
         
         XCTAssertNotNil(address)
         XCTAssertEqual(address?.description, validAddressString)
-    }
-
-    public func testAddressFromData_validAddress() {
-        let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
-        guard let validAddressData = validAddressString.data(using: .utf8) else {
-            XCTFail("Couldn't decode address to data")
-            return
-        }
-        
-        let address = tezos.address(data: validAddressData)
-        
-        XCTAssertNotNil(address)
-        XCTAssertEqual(address?.data, Base58.decode(string: validAddressString))
     }
     
     public func testAddressFromPublicKey() {
         let privateKey = PrivateKey(data: Data(hexString: "b177a72743f54ed4bdf51f1b55527c31bcd68c6d2cb2436d76cadd0227c99ff0")!)!
         let publicKey = privateKey.getPublicKeyEd25519()
         
-        let address = tezos.address(for: publicKey)
+        let address = tezos.deriveAddressFromPublicKey(publicKey: publicKey)
         
         XCTAssertEqual(address.description, "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT")
     }

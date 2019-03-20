@@ -37,6 +37,9 @@ JNIEXPORT
 jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKeySecp256k1(JNIEnv *env, jobject thisObject, jboolean compressed);
 
 JNIEXPORT
+jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKeyNist256p1(JNIEnv *env, jobject thisObject);
+
+JNIEXPORT
 jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKeyEd25519(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT

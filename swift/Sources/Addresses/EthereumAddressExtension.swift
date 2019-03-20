@@ -10,11 +10,6 @@ import Foundation
 extension EthereumAddress: Address, Hashable {
     public static let size = 20
 
-    /// Validates that the raw data is a valid address.
-    static public func isValid(data: Data) -> Bool {
-        return data.count == EthereumAddress.size
-    }
-
     /// EIP55 representation of the address.
     public var eip55String: String {
         return description

@@ -6,12 +6,8 @@
 
 import Foundation
 
-public final class Wanchain: Ethereum {
-    public override var chainID: Int {
-        return 1
-    }
-
-    public override var coinType: CoinType {
-        return .wanChain
+extension DecredAddress: Address {
+    public var data: Data {
+        fatalError("Data representation not supported")
     }
 }
