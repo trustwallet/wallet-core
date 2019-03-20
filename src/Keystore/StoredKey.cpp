@@ -63,17 +63,20 @@ HDWallet StoredKey::wallet(const std::string& password) {
 const Account& StoredKey::account(TWCoinType coin, const std::string& password) {
     for (auto& account : accounts) {
         if (account.coin() == coin) {
+            if (account.address.empty()) {
+                account.address = this->wallet(password).deriveAddress(coin);
+            }
             return account;
         }
     }
 
     const auto wallet = this->wallet(password);
-    const auto derivationPath = TW::derivationPath(coin);
-    const auto address = TW::deriveAddress(coin, wallet.getKey(derivationPath));
-    const auto version = TW::xpubVersion(coin);
+    const auto address = wallet.deriveAddress(coin);
 
     std::string extendedPublicKey;
+    const auto version = TW::xpubVersion(coin);
     if (version != TWHDVersionNone) {
+        const auto derivationPath = TW::derivationPath(coin);
         extendedPublicKey = wallet.getExtendedPublicKey(derivationPath.purpose(), coin, version);
     }
 
