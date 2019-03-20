@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,4 +23,16 @@ public enum P2PKHPrefix {
         this.value = value;
     }
     public byte value() { return value; }
+
+    public static P2PKHPrefix createFromValue(byte value) {
+        switch (value) {
+            case (byte) 0x00: return P2PKHPrefix.BITCOIN;
+            case (byte) 0x30: return P2PKHPrefix.LITECOIN;
+            case (byte) 0x4C: return P2PKHPrefix.DASH;
+            case (byte) 0x52: return P2PKHPrefix.ZCOIN;
+            case (byte) 0xB8: return P2PKHPrefix.ZCASHT;
+            default: return null;
+        }
+    }
+
 }

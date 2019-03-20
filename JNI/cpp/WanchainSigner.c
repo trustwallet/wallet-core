@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -22,8 +22,8 @@ jobject JNICALL Java_wallet_core_jni_WanchainSigner_sign(JNIEnv *env, jclass thi
     jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
     TWData *inputData = TWDataCreateWithJByteArray(env, inputByteArray);
     jbyteArray resultData = TWDataJByteArray(TWWanchainSignerSign(inputData), env);
-    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Proto$SigningOutput");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Proto$SigningOutput;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Ethereum$SigningOutput");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Ethereum$SigningOutput;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);

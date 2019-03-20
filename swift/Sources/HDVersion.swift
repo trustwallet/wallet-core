@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum HDVersion: UInt32 {
+public enum HDVersion: UInt32, CaseIterable {
     case none = 0
     case xpub = 0x0488b21e
     case xprv = 0x0488ade4

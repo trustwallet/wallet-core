@@ -1,9 +1,10 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Coin.h"
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "proto/Binance.pb.h"
@@ -11,8 +12,6 @@
 #include "Binance/Signer.h"
 #include "Tendermint/Address.h"
 #include "proto/Binance.pb.h"
-
-#include "../TWTestUtilities.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
@@ -152,13 +151,15 @@ TEST(BinanceSigner, BuildSend) {
 }
 
 TEST(BinanceSigner, BuildSend2) {
+    const auto derivationPath = TW::derivationPath(TWCoinTypeBinance);
+
     const auto fromWallet = HDWallet("swift slam quote sail high remain mandate sample now stamp title among fiscal captain joy puppy ghost arrow attract ozone situate install gain mean", "");
-    const auto fromPrivateKey = fromWallet.getKey(TWPurposeBIP44, TWCoinTypeBinance, 0, 0, 0);
-    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(true));
+    const auto fromPrivateKey = fromWallet.getKey(derivationPath);
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(PublicKeyType::secp256k1));
 
     const auto toWallet = HDWallet( "bottom quick strong ranch section decide pepper broken oven demand coin run jacket curious business achieve mule bamboo remain vote kid rigid bench rubber", "");
-    const auto toPrivateKey = toWallet.getKey(TWPurposeBIP44, TWCoinTypeBinance, 0, 0, 0);
-    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(true));
+    const auto toPrivateKey = toWallet.getKey(derivationPath);
+    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(PublicKeyType::secp256k1));
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("bnbchain-1000");

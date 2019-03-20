@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -32,11 +32,13 @@ public class HDWallet {
     static native void nativeDelete(long handle);
 
     public static native boolean isValid(String mnemonic);
-    public static native PublicKey getPublicKeyFromExtended(String extended, HDVersion versionPublic, HDVersion versionPrivate, int change, int address);
-    public static native String getAddressFromExtended(String extended, CoinType coinType, int change, int address);
+    public static native PublicKey getPublicKeyFromExtended(String extended, Curve curve, HDVersion versionPublic, HDVersion versionPrivate, int change, int address);
+    public static native String getAddressFromExtended(String extended, Curve curve, CoinType coinType, int change, int address);
     public native byte[] seed();
     public native String mnemonic();
-    public native PrivateKey getKey(Purpose purpose, CoinType coin, int account, int change, int address);
+    public native PrivateKey getKeyForCoin(CoinType coin);
+    public native PrivateKey getKey(String derivationPath);
+    public native PrivateKey getKeyBIP44(CoinType coin, int account, int change, int address);
     public native String getExtendedPrivateKey(Purpose purpose, CoinType coin, HDVersion version);
     public native String getExtendedPublicKey(Purpose purpose, CoinType coin, HDVersion version);
 

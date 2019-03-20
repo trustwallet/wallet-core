@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -22,13 +22,27 @@ struct TransactionBuilder {
         auto plan = TransactionPlan();
         plan.amount = input.amount();
 
+        auto output_size = 2;
+        auto calculator = UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
+        auto unspentSelector = UnspentSelector(calculator);
         if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
-            plan.amount -= UnspentSelector::calculateFee(input.utxo().size(), 2, input.byte_fee());
+            output_size = 1;
+            auto newAmount = 0;
+            auto input_size = 0;
+
+            for (auto utxo: input.utxo()) {
+                if (utxo.amount() > unspentSelector.calculator.calculateSingleInput(input.byte_fee())) {
+                    input_size++;
+                    newAmount += utxo.amount();
+                }
+            }
+
+            plan.amount = newAmount - unspentSelector.calculator.calculate(input_size, output_size, input.byte_fee());
             plan.amount = std::max(Amount(0), plan.amount);
         }
 
-        plan.utxos = UnspentSelector::select(input.utxo(), plan.amount, input.byte_fee());
-        plan.fee = UnspentSelector::calculateFee(plan.utxos.size(), 2, input.byte_fee());        
+        plan.utxos = unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(), output_size);
+        plan.fee = unspentSelector.calculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
 
         plan.availableAmount = UnspentSelector::sum(plan.utxos);
 

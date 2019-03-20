@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -34,13 +34,19 @@ JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_data(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKey(JNIEnv *env, jobject thisObject, jboolean compressed);
+jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKeySecp256k1(JNIEnv *env, jobject thisObject, jboolean compressed);
 
 JNIEXPORT
-jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_sign(JNIEnv *env, jobject thisObject, jbyteArray digest);
+jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKeyNist256p1(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_signAsDER(JNIEnv *env, jobject thisObject, jbyteArray digest);
+jobject JNICALL Java_wallet_core_jni_PrivateKey_getPublicKeyEd25519(JNIEnv *env, jobject thisObject);
+
+JNIEXPORT
+jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_sign(JNIEnv *env, jobject thisObject, jbyteArray digest, jobject curve);
+
+JNIEXPORT
+jbyteArray JNICALL Java_wallet_core_jni_PrivateKey_signAsDER(JNIEnv *env, jobject thisObject, jbyteArray digest, jobject curve);
 
 
 TW_EXTERN_C_END

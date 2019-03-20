@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum EthereumChainID: UInt32 {
+public enum EthereumChainID: UInt32, CaseIterable {
     case ethereum = 1
     case go = 60
     case poa = 99
@@ -16,4 +16,5 @@ public enum EthereumChainID: UInt32 {
     case veChain = 74
     case thunderToken = 18
     case tomoChain = 88
+    case xdai = 100
 }

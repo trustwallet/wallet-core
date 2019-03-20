@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,11 +8,12 @@
 
 #include "Protobuf/TronInternal.pb.h"
 
-#include "../Bitcoin/BinaryCoding.h"
+#include "../Base58.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrezorCrypto/base58.h>
+#include <cassert>
 
 using namespace TW;
 using namespace TW::Tron;
@@ -23,13 +24,11 @@ size_t base58Capacity = 128;
 protocol::TransferContract to_internal(const Proto::TransferContract& transfer) {
     auto internal = protocol::TransferContract();
 
-    uint8_t ownerAddressData[base58Capacity];
-    int ownerAddressSize = base58_decode_check(transfer.owner_address().c_str(), HASHER_SHA2D, ownerAddressData, (int)base58Capacity);
-    internal.set_owner_address(ownerAddressData, ownerAddressSize);
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(transfer.owner_address());
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
 
-    uint8_t toAddressData[base58Capacity];
-    int toAddressSize = base58_decode_check(transfer.to_address().c_str(), HASHER_SHA2D, toAddressData, (int)base58Capacity);
-    internal.set_to_address(toAddressData, toAddressSize);
+    const auto toAddress = Base58::bitcoin.decodeCheck(transfer.to_address());
+    internal.set_to_address(toAddress.data(), toAddress.size());
 
     internal.set_amount(transfer.amount());
 
@@ -42,13 +41,11 @@ protocol::TransferAssetContract to_internal(const Proto::TransferAssetContract& 
 
     internal.set_asset_name(transfer.asset_name());
 
-    uint8_t ownerAddressData[base58Capacity];
-    int ownerAddressSize = base58_decode_check(transfer.owner_address().c_str(), HASHER_SHA2D, ownerAddressData, (int)base58Capacity);
-    internal.set_owner_address(ownerAddressData, ownerAddressSize);
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(transfer.owner_address());
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
 
-    uint8_t toAddressData[base58Capacity];
-    int toAddressSize = base58_decode_check(transfer.to_address().c_str(), HASHER_SHA2D, toAddressData, (int)base58Capacity);
-    internal.set_to_address(toAddressData, toAddressSize);
+    const auto toAddress = Base58::bitcoin.decodeCheck(transfer.to_address());
+    internal.set_to_address(toAddress.data(), toAddress.size());
 
     internal.set_amount(transfer.amount());
 
@@ -81,7 +78,7 @@ void setBlockReference(const Proto::Transaction& transaction, protocol::Transact
 
     const auto blockHeight = transaction.block_header().number();
     auto heightData = Data();
-    Bitcoin::encode64(blockHeight, heightData);
+    encode64LE(blockHeight, heightData);
     std::reverse(heightData.begin(), heightData.end());
     internal.mutable_raw_data()->set_ref_block_bytes(heightData.data() + heightData.size() - 2, 2);
 }
@@ -119,7 +116,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     const auto hash = Hash::sha256(Data(serialized.begin(), serialized.end()));
 
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    const auto signature = key.sign(hash);
+    const auto signature = key.sign(hash, TWCurveSECP256k1);
 
     output.set_id(hash.data(), hash.size());
     output.set_signature(signature.data(), signature.size());

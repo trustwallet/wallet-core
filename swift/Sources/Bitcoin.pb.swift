@@ -174,8 +174,11 @@ public struct TW_Bitcoin_Proto_SigningInput {
   /// Available unspent transaction outputs.
   public var utxo: [TW_Bitcoin_Proto_UnspentTransaction] = []
 
-  /// If sending max amount
+  /// If sending max amount.
   public var useMaxAmount: Bool = false
+
+  /// Coin type (forks).
+  public var coinType: UInt32 = 0
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -548,6 +551,7 @@ extension TW_Bitcoin_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     11: .same(proto: "scripts"),
     12: .same(proto: "utxo"),
     13: .standard(proto: "use_max_amount"),
+    14: .standard(proto: "coin_type"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -562,6 +566,7 @@ extension TW_Bitcoin_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
       case 11: try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufBytes>.self, value: &self.scripts)
       case 12: try decoder.decodeRepeatedMessageField(value: &self.utxo)
       case 13: try decoder.decodeSingularBoolField(value: &self.useMaxAmount)
+      case 14: try decoder.decodeSingularUInt32Field(value: &self.coinType)
       default: break
       }
     }
@@ -595,6 +600,9 @@ extension TW_Bitcoin_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     if self.useMaxAmount != false {
       try visitor.visitSingularBoolField(value: self.useMaxAmount, fieldNumber: 13)
     }
+    if self.coinType != 0 {
+      try visitor.visitSingularUInt32Field(value: self.coinType, fieldNumber: 14)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -608,6 +616,7 @@ extension TW_Bitcoin_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._M
     if lhs.scripts != rhs.scripts {return false}
     if lhs.utxo != rhs.utxo {return false}
     if lhs.useMaxAmount != rhs.useMaxAmount {return false}
+    if lhs.coinType != rhs.coinType {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

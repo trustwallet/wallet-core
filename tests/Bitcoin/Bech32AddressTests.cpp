@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,6 +7,7 @@
 #include "Bech32.h"
 #include "Bitcoin/Bech32Address.h"
 
+#include <cstring>
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -161,9 +162,9 @@ TEST(Bech32Address, ValidAddress) {
         ASSERT_TRUE(dec.second);
 
         std::vector<uint8_t> spk = segwit_scriptpubkey(dec.first.witnessVersion, dec.first.witnessProgram);
-        ASSERT_TRUE(spk.size() == valid_address[i].scriptPubKeyLen && memcmp(&spk[0], valid_address[i].scriptPubKey, spk.size()) == 0);
-        
-        std::string recode = dec.first.encode();
+        ASSERT_TRUE(spk.size() == valid_address[i].scriptPubKeyLen && std::memcmp(&spk[0], valid_address[i].scriptPubKey, spk.size()) == 0);
+
+        std::string recode = dec.first.string();
         ASSERT_FALSE(recode.empty());
 
         ASSERT_TRUE(case_insensitive_equal(valid_address[i].address, recode));
@@ -180,7 +181,7 @@ TEST(Bech32Address, InvalidAddress) {
 TEST(Bech32Address, InvalidAddressEncoding) {
     for (auto i = 0; i < sizeof(invalid_address_enc) / sizeof(invalid_address_enc[0]); ++i) {
         auto address = Bech32Address(invalid_address_enc[i].hrp, invalid_address_enc[i].version, std::vector<uint8_t>(invalid_address_enc[i].program_length, 0));
-        std::string code = address.encode();
+        std::string code = address.string();
         EXPECT_TRUE(code.empty());
     }
 }

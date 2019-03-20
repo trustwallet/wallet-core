@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -17,13 +17,28 @@ public enum HRP {
     VIACOIN (14),
     BITCOINCASH (3),
     BINANCE (4),
-    BINANCETEST (5);
+    BINANCETEST (5),
+    COSMOS (6);
 
     private final int value;
     HRP(int value) {
         this.value = value;
     }
     public int value() { return value; }
+
+    public static HRP createFromValue(int value) {
+        switch (value) {
+            case 0: return HRP.UNKNOWN;
+            case 1: return HRP.BITCOIN;
+            case 2: return HRP.LITECOIN;
+            case 3: return HRP.BITCOINCASH;
+            case 4: return HRP.BINANCE;
+            case 5: return HRP.BINANCETEST;
+            case 6: return HRP.COSMOS;
+            default: return null;
+        }
+    }
+
 
     public String toString() {
         switch (this) {
@@ -34,6 +49,7 @@ public enum HRP {
         case BITCOINCASH: return "bitcoincash";
         case BINANCE: return "bnb";
         case BINANCETEST: return "tbnb";
+        case COSMOS: return "cosmos";
         default: return "";
         }
     }

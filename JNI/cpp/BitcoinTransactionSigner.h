@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -17,6 +17,9 @@ TW_EXTERN_C_BEGIN
 
 JNIEXPORT
 jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreate(JNIEnv *env, jclass thisClass, jobject input);
+
+JNIEXPORT
+jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreateWithPlan(JNIEnv *env, jclass thisClass, jobject input, jobject plan);
 
 JNIEXPORT
 void JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);

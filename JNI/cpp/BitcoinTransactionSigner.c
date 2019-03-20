@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,6 +27,23 @@ jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreate(JNIEnv 
     return (jlong) instance;
 }
 
+jlong JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeCreateWithPlan(JNIEnv *env, jclass thisClass, jobject input, jobject plan) {
+    jclass inputClass = (*env)->GetObjectClass(env, input);
+    jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
+    jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
+    TWData *inputData = TWDataCreateWithJByteArray(env, inputByteArray);
+    jclass planClass = (*env)->GetObjectClass(env, plan);
+    jmethodID planToByteArrayMethodID = (*env)->GetMethodID(env, planClass, "toByteArray", "()[B");
+    jbyteArray planByteArray = (*env)->CallObjectMethod(env, plan, planToByteArrayMethodID);
+    TWData *planData = TWDataCreateWithJByteArray(env, planByteArray);
+    struct TWBitcoinTransactionSigner *instance = TWBitcoinTransactionSignerCreateWithPlan(inputData, planData);
+    (*env)->DeleteLocalRef(env, inputByteArray);
+    (*env)->DeleteLocalRef(env, inputClass);
+    (*env)->DeleteLocalRef(env, planByteArray);
+    (*env)->DeleteLocalRef(env, planClass);
+    return (jlong) instance;
+}
+
 void JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle) {
     TWBitcoinTransactionSignerDelete((struct TWBitcoinTransactionSigner *) handle);
 }
@@ -37,8 +54,8 @@ jobject JNICALL Java_wallet_core_jni_BitcoinTransactionSigner_plan(JNIEnv *env, 
     struct TWBitcoinTransactionSigner *instance = (struct TWBitcoinTransactionSigner *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     jbyteArray resultData = TWDataJByteArray(TWBitcoinTransactionSignerPlan(instance), env);
-    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Proto$TransactionPlan");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Proto$TransactionPlan;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Bitcoin$TransactionPlan");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Bitcoin$TransactionPlan;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);

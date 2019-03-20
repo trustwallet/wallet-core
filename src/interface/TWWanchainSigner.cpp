@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -32,7 +32,7 @@ TW_Ethereum_Proto_SigningOutput TWWanchainSignerSign(TW_Ethereum_Proto_SigningIn
 
     auto protoOutput = Ethereum::Proto::SigningOutput();
 
-    auto encoded = Ethereum::RLP::encode(transaction);
+    auto encoded = signer.encode(transaction);
     protoOutput.set_encoded(encoded.data(), encoded.size());
 
     auto v = store(transaction.v);
@@ -43,7 +43,7 @@ TW_Ethereum_Proto_SigningOutput TWWanchainSignerSign(TW_Ethereum_Proto_SigningIn
 
     auto s = store(transaction.s);
     protoOutput.set_s(s.data(), s.size());
-    
+
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

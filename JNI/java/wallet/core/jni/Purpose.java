@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,4 +20,14 @@ public enum Purpose {
         this.value = value;
     }
     public int value() { return value; }
+
+    public static Purpose createFromValue(int value) {
+        switch (value) {
+            case 44: return Purpose.BIP44;
+            case 49: return Purpose.BIP49;
+            case 84: return Purpose.BIP84;
+            default: return null;
+        }
+    }
+
 }

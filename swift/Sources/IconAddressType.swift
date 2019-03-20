@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum IconAddressType: UInt32, CustomStringConvertible  {
+public enum IconAddressType: UInt32, CaseIterable, CustomStringConvertible  {
     case address = 0
     case contract = 1
 

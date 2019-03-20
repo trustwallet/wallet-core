@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,42 +6,57 @@
 
 #include "HDWallet.h"
 
+#include "Coin.h"
+#include "Base58.h"
 #include "Bitcoin/Bech32Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Zcash/TAddress.h"
 #include "Ripple/Address.h"
 
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
+#include <TrustWalletCore/TWP2SHPrefix.h>
 
 using namespace TW;
 
 namespace {
-    HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin);
-    HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin, uint32_t account, uint32_t change, uint32_t address);
-    HDNode getMasterNode(const HDWallet& wallet);
+    HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath);
+    HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
+
+    const char* curveName(TWCurve curve);
 }
 
 bool HDWallet::isValid(const std::string& mnemonic) {
     return mnemonic_check(mnemonic.c_str()) != 0;
 }
 
-HDWallet::HDWallet(int strength, const std::string& passphrase) : seed(), mnemonic(), passphrase(passphrase) {
+HDWallet::HDWallet(int strength, const std::string& passphrase)
+    : seed()
+    , mnemonic()
+    , passphrase(passphrase)
+{
     char mnemonic_chars[HDWallet::maxMnemomincSize];
     mnemonic_generate(strength, mnemonic_chars);
     mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
     mnemonic = mnemonic_chars;
 }
 
-HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase) : seed(), mnemonic(mnemonic), passphrase(passphrase) {
+HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
+    : seed()
+    , mnemonic(mnemonic)
+    , passphrase(passphrase)
+{
     mnemonic_to_seed(mnemonic.c_str(), passphrase.c_str(), seed.data(), nullptr);
 }
 
-HDWallet::HDWallet(const Data& data, const std::string& passphrase) : seed(), mnemonic(), passphrase(passphrase) {
+HDWallet::HDWallet(const Data& data, const std::string& passphrase)
+    : seed()
+    , mnemonic()
+    , passphrase(passphrase)
+{
     char mnemonic_chars[maxMnemomincSize];
     mnemonic_from_data(data.data(), data.size(), mnemonic_chars);
     mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
@@ -54,14 +69,17 @@ HDWallet::~HDWallet() {
     std::fill(passphrase.begin(), passphrase.end(), 0);
 }
 
-PrivateKey HDWallet::getKey(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const {
-    auto node = getNode(*this, purpose, coin, account, change, address);
-    auto data = Data(node.private_key, node.private_key  + PrivateKey::size);
+PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
+    const auto curve = TWCoinTypeCurve(derivationPath.coin());
+    auto node = getNode(*this, curve, derivationPath);
+    auto data = Data(node.private_key, node.private_key + PrivateKey::size);
     return PrivateKey(data);
 }
 
 std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
-    auto node = getNode(*this, purpose, coin);
+    const auto curve = TWCoinTypeCurve(coin);
+    auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
+    auto node = getNode(*this, curve, derivationPath);
     char buffer[HDWallet::maxExtendedKeySize] = {0};
     auto fingerprint = hdnode_fingerprint(&node);
     hdnode_private_ckd(&node, 0x80000000);
@@ -70,7 +88,9 @@ std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, 
 }
 
 std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
-    auto node = getNode(*this, purpose, coin);
+    const auto curve = TWCoinTypeCurve(coin);
+    auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
+    auto node = getNode(*this, curve, derivationPath);
     char buffer[HDWallet::maxExtendedKeySize] = {0};
     auto fingerprint = hdnode_fingerprint(&node);
     hdnode_private_ckd(&node, 0x80000000);
@@ -79,42 +99,57 @@ std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, T
     return buffer;
 }
 
-PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address) {
+PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCurve curve, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address) {
     auto node = HDNode{};
     uint32_t fingerprint = 0;
 
-    hdnode_deserialize(extended.c_str(), versionPublic, versionPrivate, SECP256K1_NAME, &node, &fingerprint);
+    hdnode_deserialize(extended.c_str(), versionPublic, versionPrivate, curveName(curve), &node, &fingerprint);
     hdnode_public_ckd(&node, change);
     hdnode_public_ckd(&node, address);
     hdnode_fill_public_key(&node);
 
-    auto data = Data(node.public_key, node.public_key + PublicKey::compressedSize);
-    return PublicKey(data);
+    return PublicKey(Data(node.public_key, node.public_key + 33));
 }
 
-std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& extended, TWCoinType coinType, uint32_t change, uint32_t address) {
-	uint8_t data[78];
-	if (base58_decode_check(extended.c_str(), HASHER_SHA2D, data, sizeof(data)) != sizeof(data)) {
-		return nullptr;
-	}
+std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& extended, TWCurve curve, TWCoinType coinType, uint32_t change, uint32_t address) {
+    const auto decoded = Base58::bitcoin.decodeCheck(extended);
+    if (decoded.size() != 78) {
+        return {};
+    }
 
-	TWHDVersion version = (TWHDVersion) read_be(data);
+	TWHDVersion version = (TWHDVersion) read_be(decoded.data());
     if (version != TWHDVersionXPUB && version != TWHDVersionYPUB && version != TWHDVersionLTUB && version != TWHDVersionZPUB && version != TWHDVersionMTUB) {
         // Not a public key
         return {};
     }
 
-    auto publicKey = HDWallet::getPublicKeyFromExtended(extended, version, TWHDVersionNone, change, address);
+    auto publicKey = HDWallet::getPublicKeyFromExtended(extended, curve, version, TWHDVersionNone, change, address);
 
     std::string string;
     switch (coinType) {
     case TWCoinTypeBitcoin: {
-        auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_BITCOIN);
-        string = address.encode();
+        if (version == TWHDVersionXPUB) {
+            auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2PKHPrefixBitcoin);
+            string = address.string();
+        } else if (version == TWHDVersionYPUB) {
+            auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2SHPrefixBitcoin);
+            string = address.string();
+        } else {
+            auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_BITCOIN);
+            string = address.string();
+        }
     } break;
     case TWCoinTypeLitecoin: {
-        auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_LITECOIN);
-        string = address.encode();
+        if (version == TWHDVersionLTUB) {
+            auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2PKHPrefixLitecoin);
+            string = address.string();
+        } else if (version == TWHDVersionMTUB) {
+            auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2SHPrefixLitecoin);
+            string = address.string();
+        } else {
+            auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_LITECOIN);
+            string = address.string();
+        }
     } break;
     case TWCoinTypeViacoin: {
         auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_VIACOIN);
@@ -149,26 +184,26 @@ std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& e
 }
 
 namespace {
-    HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin) {
-        auto node = getMasterNode(wallet);
-        hdnode_private_ckd(&node, purpose | 0x80000000);
-        hdnode_private_ckd(&node, coin | 0x80000000);
+    HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath) {
+        auto node = getMasterNode(wallet, curve);
+        for (auto& index : derivationPath.indices) {
+            hdnode_private_ckd(&node, index.derivationIndex());
+        }
         return node;
     }
 
-    HDNode getNode(const HDWallet& wallet, uint32_t purpose, uint32_t coin, uint32_t account, uint32_t change, uint32_t address) {
-        auto node = getMasterNode(wallet);
-        hdnode_private_ckd(&node, purpose | 0x80000000);
-        hdnode_private_ckd(&node, coin | 0x80000000);
-        hdnode_private_ckd(&node, account | 0x80000000);
-        hdnode_private_ckd(&node, change);
-        hdnode_private_ckd(&node, address);
-        return node;
-    }
-
-    HDNode getMasterNode(const HDWallet& wallet) {
+    HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
         auto node = HDNode();
-        hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, SECP256K1_NAME, &node);
+        hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, curveName(curve), &node);
         return node;
+    }
+
+    const char* curveName(TWCurve curve) {
+        switch (curve) {
+        case TWCurveSECP256k1: return SECP256K1_NAME;
+        case TWCurveEd25519: return ED25519_NAME;
+        case TWCurveNIST256p1: return NIST256P1_NAME;
+        default: return "";
+        }
     }
 }

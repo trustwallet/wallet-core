@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,7 +16,10 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jbyteArray JNICALL Java_wallet_core_jni_PublicKey_initWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
+jlong JNICALL Java_wallet_core_jni_PublicKey_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
+
+JNIEXPORT
+void JNICALL Java_wallet_core_jni_PublicKey_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT
 jboolean JNICALL Java_wallet_core_jni_PublicKey_isValid(JNIEnv *env, jclass thisClass, jbyteArray data);

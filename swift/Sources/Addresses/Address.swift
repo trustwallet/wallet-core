@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,9 +7,6 @@
 import Foundation
 
 public protocol Address: CustomStringConvertible {
-    /// Validates that the raw data is a valid address.
-    static func isValid(data: Data) -> Bool
-
     /// Validates that the string is a valid address.
     static func isValidString(string: String) -> Bool
 

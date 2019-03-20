@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -44,14 +44,8 @@ struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithKeyHash(enum 
     return new TWTendermintAddress{ Address(stringForHRP(hrp), *d) };
 }
 
-struct TWTendermintAddress *_Nonnull TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey) {
-    std::vector<uint8_t> data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
-    } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
-    }
-    return new TWTendermintAddress{ Address(stringForHRP(hrp), PublicKey(data)) };
+struct TWTendermintAddress *_Nonnull TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey) {
+    return new TWTendermintAddress{ Address(stringForHRP(hrp), publicKey->impl) };
 }
 
 void TWTendermintAddressDelete(struct TWTendermintAddress *_Nonnull address) {
@@ -59,7 +53,7 @@ void TWTendermintAddressDelete(struct TWTendermintAddress *_Nonnull address) {
 }
 
 TWString *_Nonnull TWTendermintAddressDescription(struct TWTendermintAddress *_Nonnull address) {
-    const auto string = address->impl.encode();
+    const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 

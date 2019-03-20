@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -37,7 +37,7 @@ struct TWIconAddress *_Nullable TWIconAddressCreateWithKeyHash(TWData *_Nonnull 
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, enum TWIconAddressType type);
+struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWIconAddressType type);
 
 TW_EXPORT_METHOD
 void TWIconAddressDelete(struct TWIconAddress *_Nonnull address);

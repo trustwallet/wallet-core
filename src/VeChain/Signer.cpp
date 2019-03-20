@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,6 +16,6 @@ using namespace TW::VeChain;
 Data Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
     auto encoded = transaction.encode();
     auto hash = Hash::blake2b(encoded, 32);
-    auto signature = privateKey.sign(hash);
+    auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return Data(signature.begin(), signature.end());
 }

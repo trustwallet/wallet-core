@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,10 +7,6 @@
 import Foundation
 
 extension TendermintAddress: Address, Equatable {
-    public static func isValid(data: Data) -> Bool {
-        return data.count == 20
-    }
-
     public var data: Data {
         return keyHash
     }

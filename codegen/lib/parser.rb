@@ -131,7 +131,7 @@ class Parser
 
     @buffer.skip(/\s*/)
     report_error 'Invalid enum' if @buffer.scan(/enum TW(\w+)\s*\{/).nil?
-    @entity = EnumDecl.new(name: @buffer[1], type: TypeDecl.fromPrimitive(type))
+    @entity = EnumDecl.new(name: @buffer[1], raw_type: TypeDecl.fromPrimitive(type))
     incremental_value = 0
 
     until @buffer.eos?
@@ -177,11 +177,14 @@ class Parser
     if method.parameters.count.zero? || @entity.name != method.parameters.first.type.name
       report_error 'First parameter on a method needs to be the struct or class the method belongs to'
     end
-    if @entity.is_struct && method.parameters.first.type.is_class
+    if @entity.struct? && method.parameters.first.type.is_class
       report_error 'First parameter on a struct method needs to be the struct'
     end
-    if !@entity.is_struct && !method.parameters.first.type.is_class
+    if @entity.class? && !method.parameters.first.type.is_class
       report_error 'First parameter on a class method needs to be the class'
+    end
+    if @entity.enum? && !method.parameters.first.type.is_enum
+      report_error 'Only parameter on a enum method needs to be the enum'
     end
 
     @entity.methods << method
@@ -207,11 +210,14 @@ class Parser
     if method.parameters.count > 2
       report_error 'Only parameter on a property needs to be the struct or class the property belongs to'
     end
-    if @entity.is_struct && method.parameters.first.type.is_class
+    if @entity.struct? && method.parameters.first.type.is_class
       report_error 'Only parameter on a struct property needs to be the struct'
     end
-    if !@entity.is_struct && !method.parameters.first.type.is_class
+    if @entity.class? && !method.parameters.first.type.is_class
       report_error 'Only parameter on a class property needs to be the class'
+    end
+    if @entity.enum? && !method.parameters.first.type.is_enum
+      report_error 'Only parameter on a enum property needs to be the enum'
     end
 
     @entity.properties << method

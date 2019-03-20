@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -25,8 +25,8 @@ TEST(RLP, Integers) {
     EXPECT_EQ(hex(RLP::encode(256)), "820100");
     EXPECT_EQ(hex(RLP::encode(1024)), "820400");
     EXPECT_EQ(hex(RLP::encode(0xffffff)), "83ffffff");
-    EXPECT_EQ(hex(RLP::encode(0xffffffffULL)), "84ffffffff");
-    EXPECT_EQ(hex(RLP::encode(0xffffffffffffffULL)), "87ffffffffffffff");
+    EXPECT_EQ(hex(RLP::encode(static_cast<uint64_t>(0xffffffffULL))), "84ffffffff");
+    EXPECT_EQ(hex(RLP::encode(static_cast<uint64_t>(0xffffffffffffffULL))), "87ffffffffffffff");
 }
 
 TEST(RLP, uint256_t) {

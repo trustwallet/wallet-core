@@ -3,15 +3,17 @@
 # Fail if any commands fails
 set -e
 
-echo "#### Updating submodules... ####"
-git submodule update --init
+echo "#### Initializing... ####"
+tools/install-dependencies
 
 echo "#### Generating files... ####"
 tools/generate-files
 
 echo "#### Building... ####"
-cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DGIT_SUBMODULE=OFF
-make -C build tests
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
+make -Cbuild tests
 
 echo "#### Testing... ####"
-build/tests/tests
+ROOT="`dirname \"$0\"`"
+TESTS_ROOT="`(cd \"$ROOT/tests\" && pwd)`"
+build/tests/tests "$TESTS_ROOT"

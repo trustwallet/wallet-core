@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,6 +23,18 @@ public final class BitcoinTransactionSigner {
             TWDataDelete(inputData)
         }
         rawValue = TWBitcoinTransactionSignerCreate(inputData)
+    }
+
+    public init(input: TW_Bitcoin_Proto_SigningInput, plan: TW_Bitcoin_Proto_TransactionPlan) {
+        let inputData = TWDataCreateWithNSData(try! input.serializedData())
+        defer {
+            TWDataDelete(inputData)
+        }
+        let planData = TWDataCreateWithNSData(try! plan.serializedData())
+        defer {
+            TWDataDelete(planData)
+        }
+        rawValue = TWBitcoinTransactionSignerCreateWithPlan(inputData, planData)
     }
 
     deinit {

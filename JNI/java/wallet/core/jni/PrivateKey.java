@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -29,9 +29,11 @@ public class PrivateKey {
 
     public static native boolean isValid(byte[] data);
     public native byte[] data();
-    public native PublicKey getPublicKey(boolean compressed);
-    public native byte[] sign(byte[] digest);
-    public native byte[] signAsDER(byte[] digest);
+    public native PublicKey getPublicKeySecp256k1(boolean compressed);
+    public native PublicKey getPublicKeyNist256p1();
+    public native PublicKey getPublicKeyEd25519();
+    public native byte[] sign(byte[] digest, Curve curve);
+    public native byte[] signAsDER(byte[] digest, Curve curve);
 
     public PrivateKey() {
         nativeHandle = nativeCreate();

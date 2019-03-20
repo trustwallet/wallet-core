@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,17 +6,30 @@
 
 #include "TAddress.h"
 
-#include <TrezorCrypto/base58.h>
+#include "../Base58.h"
+
 #include <TrezorCrypto/ecdsa.h>
+
+#include <cassert>
 
 using namespace TW::Zcash;
 
 bool TAddress::isValid(const std::string& string) {
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
+    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    if (decoded.size() != TAddress::size) {
+        return false;
+    }
 
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    if (size != TAddress::size) {
+    return true;
+}
+
+bool TAddress::isValid(const std::string& string, const std::vector<byte>& validPrefixes) {
+    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    if (decoded.size() != TAddress::size) {
+        return false;
+    }
+
+    if (std::find(validPrefixes.begin(), validPrefixes.end(), decoded[1]) == validPrefixes.end()) {
         return false;
     }
 
@@ -24,17 +37,18 @@ bool TAddress::isValid(const std::string& string) {
 }
 
 TAddress::TAddress(const std::string& string) {
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
+    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    if (decoded.size() != TAddress::size) {
+        throw std::invalid_argument("Invalid address data");
+    }
 
-    int size = base58_decode_check(string.data(), HASHER_SHA2D, buffer, (int)capacity);
-    assert(size == TAddress::size);
-
-    memcpy(bytes, buffer, TAddress::size);
+    std::copy(decoded.begin(), decoded.end(), bytes);
 }
 
 TAddress::TAddress(const std::vector<uint8_t>& data) {
-    assert(isValid(data));
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address key data");
+    }
     std::copy(data.begin(), data.end(), bytes);
 }
 
@@ -45,12 +59,5 @@ TAddress::TAddress(const PublicKey& publicKey, uint8_t prefix) {
 }
 
 std::string TAddress::string() const {
-    size_t size = 0;
-    b58enc(nullptr, &size, bytes, TAddress::size);
-    size += 16;
-
-    std::string str(size, ' ');
-    base58_encode_check(bytes, TAddress::size, HASHER_SHA2D, &str[0], size);
-
-    return str;
+    return Base58::bitcoin.encodeCheck(bytes, bytes + TAddress::size);
 }

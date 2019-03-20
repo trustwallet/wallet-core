@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -44,14 +44,8 @@ struct TWBech32Address *_Nullable TWBech32AddressCreateWithData(enum TWHRP hrp, 
     return new TWBech32Address{ Bech32Address(stringForHRP(hrp), 0, *d) };
 }
 
-struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey) {
-    std::vector<uint8_t> data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
-    } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
-    }
-    const auto address = Bech32Address(PublicKey(data), 0, stringForHRP(hrp));
+struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey) {
+    const auto address = Bech32Address(publicKey->impl, 0, stringForHRP(hrp));
     return new TWBech32Address{ std::move(address) };
 }
 
@@ -60,7 +54,7 @@ void TWBech32AddressDelete(struct TWBech32Address *_Nonnull address) {
 }
 
 TWString *_Nonnull TWBech32AddressDescription(struct TWBech32Address *_Nonnull address) {
-    const auto string = address->impl.encode();
+    const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 

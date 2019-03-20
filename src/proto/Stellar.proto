@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package TW.Stellar.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message MemoVoid {
+}
+
+message MemoText {
+    string text = 1;
+}
+
+message MemoId {
+    int64 id = 1;
+}
+
+message MemoHash {
+    bytes hash = 1;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    int64 amount = 1;
+
+    int32 fee = 2;
+
+    int64 sequence = 3;
+
+    string account = 4;
+
+    string destination = 5;
+
+    // Private key.
+    bytes private_key = 6;
+
+    oneof memo_type_oneof {
+        MemoVoid memo_void = 7;
+        MemoText memo_text = 8;
+        MemoId memo_id = 9;
+        MemoHash memo_hash = 10;
+        MemoHash memo_return_hash = 11;
+    }
+
+    enum OperationType {
+        CREATE_ACCOUNT = 0;
+        PAYMENT = 1;
+    }
+    OperationType operation_type = 12;
+
+    string passphrase = 13;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signature.
+    string signature = 1;
+}

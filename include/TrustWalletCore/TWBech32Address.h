@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -37,7 +37,7 @@ struct TWBech32Address *_Nullable TWBech32AddressCreateWithData(enum TWHRP hrp, 
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey);
+struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
 void TWBech32AddressDelete(struct TWBech32Address *_Nonnull address);

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -19,6 +19,15 @@ public enum IconAddressType {
         this.value = value;
     }
     public int value() { return value; }
+
+    public static IconAddressType createFromValue(int value) {
+        switch (value) {
+            case 0: return IconAddressType.ADDRESS;
+            case 1: return IconAddressType.CONTRACT;
+            default: return null;
+        }
+    }
+
 
     public String toString() {
         switch (this) {

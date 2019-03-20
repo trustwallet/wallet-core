@@ -1,10 +1,15 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+
+#include "Data.h"
+#include "PublicKey.h"
+
+#include <TrustWalletCore/TWCurve.h>
 
 #include <array>
 #include <vector>
@@ -40,7 +45,9 @@ public:
     /// Initializes a private key with a collection of bytes.
     template<typename T>
     explicit PrivateKey(const T& data) {
-        assert(data.size() == size);
+        if (data.size() != size) {
+            throw std::invalid_argument("Invalid private key data");
+        }
         std::copy(std::begin(data), std::end(data), std::begin(bytes));
     }
 
@@ -49,14 +56,14 @@ public:
 
     ~PrivateKey();
 
-    /// Returns the public key data for this private key.
-    std::vector<uint8_t> getPublicKey(bool compressed) const;
+    /// Returns the public key for this private key.
+    PublicKey getPublicKey(PublicKeyType type) const;
 
-    /// Signs a digest using ECDSA secp256k1.
-    std::array<uint8_t, 65> sign(const std::vector<uint8_t>&  digest) const;
+    /// Signs a digest using the given ECDSA curve.
+    Data sign(const Data& digest, TWCurve curve) const;
 
-    /// Signs a digest using ECDSA secp256k1. The result is encoded with DER.
-    std::vector<uint8_t> signAsDER(const std::vector<uint8_t>&  digest) const;
+    /// Signs a digest using the given ECDSA curve. The result is encoded with DER.
+    Data signAsDER(const Data& digest, TWCurve curve) const;
 };
 
 inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes == rhs.bytes; }

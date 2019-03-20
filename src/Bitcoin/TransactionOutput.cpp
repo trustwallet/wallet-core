@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,11 +6,11 @@
 
 #include "TransactionOutput.h"
 
-#include "BinaryCoding.h"
+#include "../BinaryCoding.h"
 
 using namespace TW::Bitcoin;
 
 void TransactionOutput::encode(std::vector<uint8_t>& data) const {
-    encode64(value, data);
+    encode64LE(value, data);
     script.encode(data);
 }

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -77,7 +77,7 @@ Proto::SigningOutput Signer::sign() const noexcept {
     const auto hash = Hash::sha3_256(Signer::preImage());
 
     const auto key = PrivateKey(input.private_key());
-    const auto signature = key.sign(hash);
+    const auto signature = key.sign(hash, TWCurveSECP256k1);
 
     auto output = Proto::SigningOutput();
     output.set_signature(signature.data(), signature.size());

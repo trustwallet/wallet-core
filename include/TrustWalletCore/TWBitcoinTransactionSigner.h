@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -20,6 +20,10 @@ struct TWBitcoinTransactionSigner;
 /// Creates a transaction signer with input data (serialized from BitcoinSigningInput)
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreate(TW_Bitcoin_Proto_SigningInput input);
+
+/// Creates a transaction signer with input data (serialized from Proto::SigningInput) and plan
+TW_EXPORT_STATIC_METHOD
+struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput input, TW_Bitcoin_Proto_TransactionPlan plan);
 
 TW_EXPORT_METHOD
 void TWBitcoinTransactionSignerDelete(struct TWBitcoinTransactionSigner *_Nonnull signer);

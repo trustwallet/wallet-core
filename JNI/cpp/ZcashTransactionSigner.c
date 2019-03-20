@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -54,8 +54,8 @@ jobject JNICALL Java_wallet_core_jni_ZcashTransactionSigner_plan(JNIEnv *env, jo
     struct TWZcashTransactionSigner *instance = (struct TWZcashTransactionSigner *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     jbyteArray resultData = TWDataJByteArray(TWZcashTransactionSignerPlan(instance), env);
-    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Proto$TransactionPlan");
-    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Proto$TransactionPlan;");
+    jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Bitcoin$TransactionPlan");
+    jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Bitcoin$TransactionPlan;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);

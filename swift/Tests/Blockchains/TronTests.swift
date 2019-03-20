@@ -1,4 +1,4 @@
-// Copyright © 2017-2018 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,10 +10,7 @@ import TrustWalletCore
 class TronTests: XCTestCase {
 
     func testTronAddress() {
-        let blockchain = Tron()
-        let address = blockchain.address(string: "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")
-
-        XCTAssertEqual(address?.description, "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")
-        XCTAssertTrue(address is TronAddress)
+        let address = TronAddress(string: "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")!
+        XCTAssertEqual(address.description, "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")
     }
 }

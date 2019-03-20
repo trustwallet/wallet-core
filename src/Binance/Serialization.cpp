@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,7 +16,7 @@ using json = nlohmann::json;
 static inline std::string addressString(const std::string& bytes, bool testNet) {
     auto data = std::vector<uint8_t>(bytes.begin(), bytes.end());
     auto address = Tendermint::Address(testNet ? HRP_BINANCE_TEST : HRP_BINANCE, data);
-    return address.encode();
+    return address.string();
 }
 
 json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {

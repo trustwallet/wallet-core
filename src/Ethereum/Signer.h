@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -42,7 +42,7 @@ public:
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID, const std::array<byte, 65>& signature) noexcept;
+    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID, const Data& signature) noexcept;
 
 protected:
     /// Computes the transaction hash.

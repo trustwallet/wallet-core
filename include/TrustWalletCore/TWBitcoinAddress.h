@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -43,7 +43,7 @@ bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWD
 
 /// Initializes an address from a public key and a prefix byte.
 TW_EXPORT_STATIC_METHOD
-void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix);
+void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey, uint8_t prefix);
 
 /// Returns the address base58 string representation.
 TW_EXPORT_PROPERTY

@@ -129,7 +129,6 @@ public final class Icon {
       toAddress_ = "";
       value_ = com.google.protobuf.ByteString.EMPTY;
       stepLimit_ = com.google.protobuf.ByteString.EMPTY;
-      timestamp_ = 0L;
       nonce_ = com.google.protobuf.ByteString.EMPTY;
       networkId_ = com.google.protobuf.ByteString.EMPTY;
       privateKey_ = com.google.protobuf.ByteString.EMPTY;
@@ -202,7 +201,7 @@ public final class Icon {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -487,25 +486,24 @@ public final class Icon {
       }
       wallet.core.jni.proto.Icon.SigningInput other = (wallet.core.jni.proto.Icon.SigningInput) obj;
 
-      boolean result = true;
-      result = result && getFromAddress()
-          .equals(other.getFromAddress());
-      result = result && getToAddress()
-          .equals(other.getToAddress());
-      result = result && getValue()
-          .equals(other.getValue());
-      result = result && getStepLimit()
-          .equals(other.getStepLimit());
-      result = result && (getTimestamp()
-          == other.getTimestamp());
-      result = result && getNonce()
-          .equals(other.getNonce());
-      result = result && getNetworkId()
-          .equals(other.getNetworkId());
-      result = result && getPrivateKey()
-          .equals(other.getPrivateKey());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getFromAddress()
+          .equals(other.getFromAddress())) return false;
+      if (!getToAddress()
+          .equals(other.getToAddress())) return false;
+      if (!getValue()
+          .equals(other.getValue())) return false;
+      if (!getStepLimit()
+          .equals(other.getStepLimit())) return false;
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
+      if (!getNonce()
+          .equals(other.getNonce())) return false;
+      if (!getNetworkId()
+          .equals(other.getNetworkId())) return false;
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -725,35 +723,35 @@ public final class Icon {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1245,7 +1243,7 @@ public final class Icon {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
@@ -1301,7 +1299,7 @@ public final class Icon {
 
     /**
      * <pre>
-     * Encoded transaction (signature pre-image).
+     * JSON-encoded transaction parameters.
      * </pre>
      *
      * <code>string encoded = 1;</code>
@@ -1309,7 +1307,7 @@ public final class Icon {
     java.lang.String getEncoded();
     /**
      * <pre>
-     * Encoded transaction (signature pre-image).
+     * JSON-encoded transaction parameters.
      * </pre>
      *
      * <code>string encoded = 1;</code>
@@ -1383,7 +1381,7 @@ public final class Icon {
               break;
             }
             default: {
-              if (!parseUnknownFieldProto3(
+              if (!parseUnknownField(
                   input, unknownFields, extensionRegistry, tag)) {
                 done = true;
               }
@@ -1418,7 +1416,7 @@ public final class Icon {
     private volatile java.lang.Object encoded_;
     /**
      * <pre>
-     * Encoded transaction (signature pre-image).
+     * JSON-encoded transaction parameters.
      * </pre>
      *
      * <code>string encoded = 1;</code>
@@ -1437,7 +1435,7 @@ public final class Icon {
     }
     /**
      * <pre>
-     * Encoded transaction (signature pre-image).
+     * JSON-encoded transaction parameters.
      * </pre>
      *
      * <code>string encoded = 1;</code>
@@ -1520,13 +1518,12 @@ public final class Icon {
       }
       wallet.core.jni.proto.Icon.SigningOutput other = (wallet.core.jni.proto.Icon.SigningOutput) obj;
 
-      boolean result = true;
-      result = result && getEncoded()
-          .equals(other.getEncoded());
-      result = result && getSignature()
-          .equals(other.getSignature());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (!getEncoded()
+          .equals(other.getEncoded())) return false;
+      if (!getSignature()
+          .equals(other.getSignature())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -1715,35 +1712,35 @@ public final class Icon {
 
       @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
       @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1796,7 +1793,7 @@ public final class Icon {
       private java.lang.Object encoded_ = "";
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1815,7 +1812,7 @@ public final class Icon {
       }
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1835,7 +1832,7 @@ public final class Icon {
       }
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1852,7 +1849,7 @@ public final class Icon {
       }
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1865,7 +1862,7 @@ public final class Icon {
       }
       /**
        * <pre>
-       * Encoded transaction (signature pre-image).
+       * JSON-encoded transaction parameters.
        * </pre>
        *
        * <code>string encoded = 1;</code>
@@ -1925,7 +1922,7 @@ public final class Icon {
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override

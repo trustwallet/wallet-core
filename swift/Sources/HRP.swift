@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,7 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
-public enum HRP: UInt32, CustomStringConvertible  {
+public enum HRP: UInt32, CaseIterable, CustomStringConvertible  {
     case unknown = 0
     case bitcoin = 1
     case litecoin = 2
@@ -15,6 +15,7 @@ public enum HRP: UInt32, CustomStringConvertible  {
     case bitcoinCash = 3
     case binance = 4
     case binanceTest = 5
+    case cosmos = 6
 
     public var description: String {
         switch self {
@@ -25,6 +26,7 @@ public enum HRP: UInt32, CustomStringConvertible  {
         case .bitcoinCash: return "bitcoincash"
         case .binance: return "bnb"
         case .binanceTest: return "tbnb"
+        case .cosmos: return "cosmos"
         }
     }
 }

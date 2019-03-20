@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -30,6 +30,9 @@ public:
     /// Determines whether a string makes a valid Bech32 address.
     static bool isValid(const std::string& string);
 
+    /// Determines whether a string makes a valid Bech32 address, and the HRP matches.
+    static bool isValid(const std::string& string, const std::string& hrp);
+
     /// Initializes a Bech32 address with a human-readable part, a witness version, and a witness program.
     Bech32Address(const std::string& hrp, int witver, const std::vector<uint8_t>& witprog) : hrp(hrp), witnessVersion(witver), witnessProgram(witprog) {}
 
@@ -38,7 +41,7 @@ public:
 
     /// Initializes a Bech32 address with a public key and a HRP prefix.
     Bech32Address(const PublicKey& publicKey, int witver, const std::string& hrp);
-    
+
     /// Decodes a SegWit address.
     ///
     /// \returns a pair with the address and a success flag.
@@ -47,7 +50,7 @@ public:
     /// Encodes the SegWit address.
     ///
     /// \returns encoded address string, or empty string on failure.
-    std::string encode() const;
+    std::string string() const;
 
     /// Initializes a Bech32 address with raw data.
     static std::pair<Bech32Address, bool> fromRaw(const std::string& hrp, const std::vector<uint8_t>& data);

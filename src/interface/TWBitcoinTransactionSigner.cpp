@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -21,6 +21,14 @@ struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreate(TW_
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
     return new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input)) };
+}
+
+struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    Proto::TransactionPlan plan;
+    plan.ParseFromArray(TWDataBytes(planData), TWDataSize(planData));
+    return new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input), std::move(plan)) };
 }
 
 void TWBitcoinTransactionSignerDelete(struct TWBitcoinTransactionSigner *_Nonnull signer) {

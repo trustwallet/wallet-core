@@ -1,4 +1,4 @@
-// Copyright © 2017-2018 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -16,3 +16,4 @@ typedef TWData *_Nonnull TW_Binance_Proto_SendOrder;
 typedef TWData *_Nonnull TW_Binance_Proto_TokenFreezeOrder;
 typedef TWData *_Nonnull TW_Binance_Proto_TokenUnfreezeOrder;
 typedef TWData *_Nonnull TW_Binance_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Binance_Proto_SigningOutput;

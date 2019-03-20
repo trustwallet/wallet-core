@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,10 +7,12 @@
 #pragma once
 
 #include "Data.h"
+#include "DerivationPath.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWCurve.h>
 #include <TrustWalletCore/TWHDVersion.h>
 #include <TrustWalletCore/TWPurpose.h>
 
@@ -51,7 +53,7 @@ public:
     virtual ~HDWallet();
 
     /// Returns the private key at the given derivation path.
-    PrivateKey getKey(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) const;
+    PrivateKey getKey(const DerivationPath& derivationPath) const;
 
     /// Returns the extended private key.
     std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
@@ -60,10 +62,10 @@ public:
     std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
     /// Computes the public key from an exteded public key representation.
-    static PublicKey getPublicKeyFromExtended(const std::string& extended, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);
+    static PublicKey getPublicKeyFromExtended(const std::string& extended, TWCurve curve, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);
 
     /// Generates an address from an exteded public key representation, coin type, and change and address indices.
-    static std::optional<std::string> getAddressFromExtended(const std::string& extended, TWCoinType coinType, uint32_t change, uint32_t address);
+    static std::optional<std::string> getAddressFromExtended(const std::string& extended, TWCurve curve, TWCoinType coinType, uint32_t change, uint32_t address);
 };
 
 } // namespace

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,8 +9,8 @@
 #include "Address.h"
 #include "Bech32Address.h"
 #include "CashAddress.h"
-#include "BinaryCoding.h"
 
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../PublicKey.h"
 #include "../Zcash/TAddress.h"
@@ -18,6 +18,9 @@
 #include <TrustWalletCore/TWBitcoinOpCodes.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
+
+#include <algorithm>
+#include <cassert>
 
 using namespace TW::Bitcoin;
 
@@ -51,14 +54,14 @@ bool Script::isWitnessProgram() const {
 }
 
 bool Script::matchPayToPubkey(std::vector<uint8_t>& result) const {
-    if (bytes.size() == PublicKey::uncompressedSize + 2 && bytes[0] == PublicKey::uncompressedSize && bytes.back() == OP_CHECKSIG) {
+    if (bytes.size() == PublicKey::secp256k1ExtendedSize + 2 && bytes[0] == PublicKey::secp256k1ExtendedSize && bytes.back() == OP_CHECKSIG) {
         result.clear();
-        std::copy(std::begin(bytes) + 1, std::begin(bytes) + 1 + PublicKey::uncompressedSize, std::back_inserter(result));
+        std::copy(std::begin(bytes) + 1, std::begin(bytes) + 1 + PublicKey::secp256k1Size, std::back_inserter(result));
         return true;
     }
-    if (bytes.size() == PublicKey::compressedSize + 2 && bytes[0] == PublicKey::compressedSize && bytes.back() == OP_CHECKSIG) {
+    if (bytes.size() == PublicKey::secp256k1Size + 2 && bytes[0] == PublicKey::secp256k1Size && bytes.back() == OP_CHECKSIG) {
         result.clear();
-        std::copy(std::begin(bytes) + 1, std::begin(bytes) + 1 + PublicKey::compressedSize, std::back_inserter(result));
+        std::copy(std::begin(bytes) + 1, std::begin(bytes) + 1 + PublicKey::secp256k1Size, std::back_inserter(result));
         return true;
     }
     return false;
@@ -181,13 +184,13 @@ bool Script::getScriptOp(size_t& index, uint8_t& opcode, std::vector<uint8_t>& o
         if (bytes.size() - index < 2) {
             return false;
         }
-        size = static_cast<size_t>(decode16(bytes.data() + index));
+        size = static_cast<size_t>(decode16LE(bytes.data() + index));
         index += 2;
     } else if (opcode == OP_PUSHDATA4) {
         if (bytes.size() - index < 4) {
             return false;
         }
-        size = static_cast<size_t>(decode32(bytes.data() + index));
+        size = static_cast<size_t>(decode32LE(bytes.data() + index));
         index += 4;
     }
     if (bytes.size() - index < size) {
@@ -240,7 +243,7 @@ Script Script::buildPayToWitnessScriptHash(const std::vector<uint8_t>& scriptHas
 }
 
 void Script::encode(std::vector<uint8_t>& data) const {
-    Bitcoin::writeCompactSize(bytes.size(), data);
+    writeCompactSize(bytes.size(), data);
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 
@@ -255,7 +258,7 @@ Script Script::buildForAddress(const std::string& string) {
             // address starts with 1/L
             auto data = std::vector<uint8_t>();
             data.reserve(Address::size - 1);
-            std::copy(address.bytes + 1, address.bytes + Address::size, std::back_inserter(data));
+            std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToPublicKeyHash(data);
         }
         auto p2sh = std::find(p2shPrefixes.begin(), p2shPrefixes.end(), address.bytes[0]);
@@ -263,7 +266,7 @@ Script Script::buildForAddress(const std::string& string) {
             // address starts with 3/M
             auto data = std::vector<uint8_t>();
             data.reserve(Address::size - 1);
-            std::copy(address.bytes + 1, address.bytes + Address::size, std::back_inserter(data));
+            std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToScriptHash(data);
         }
     } else if (Bech32Address::isValid(string)) {

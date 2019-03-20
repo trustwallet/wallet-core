@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -39,15 +39,8 @@ struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull
     return new TWRippleAddress{ Address(*d) };
 }
 
-struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey publicKey) {
-    std::vector<uint8_t> data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
-    } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
-    }
-    const auto address = Address(PublicKey(data));
-    return new TWRippleAddress{ std::move(address) };
+struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
+    return new TWRippleAddress{ Address(publicKey->impl) };
 }
 
 void TWRippleAddressDelete(struct TWRippleAddress *_Nonnull address) {
@@ -60,5 +53,5 @@ TWString *_Nonnull TWRippleAddressDescription(struct TWRippleAddress *_Nonnull a
 }
 
 TWData *_Nonnull TWRippleAddressKeyHash(struct TWRippleAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes, Address::size);
+    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::size);
 }

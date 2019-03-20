@@ -1,5 +1,5 @@
 // Copyright © 2017 Pieter Wuille
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,15 +8,33 @@
 #include "Address.h"
 
 #include "../Bech32.h"
+
 #include <TrustWalletCore/TWHRP.h>
 #include <TrezorCrypto/ecdsa.h>
 
 using namespace TW::Tendermint;
-typedef std::vector<uint8_t> Data;
 
 bool Address::isValid(const std::string& addr) {
     auto dec = Bech32::decode(addr);
     if (dec.second.empty()) {
+        return false;
+    }
+
+    Data conv;
+    auto success = Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
+    if (!success || conv.size() < 2 || conv.size() > 40) {
+        return false;
+    }
+
+    return true;
+}
+
+bool Address::isValid(const std::string& addr, const std::string& hrp) {
+    auto dec = Bech32::decode(addr);
+    if (dec.second.empty()) {
+        return false;
+    }
+    if (dec.first != hrp) {
         return false;
     }
 
@@ -49,7 +67,7 @@ std::pair<Address, bool> Address::decode(const std::string& addr) {
     return std::make_pair(Address(dec.first, std::move(conv)), true);
 }
 
-std::string Address::encode() const {
+std::string Address::string() const {
     Data enc;
     Bech32::convertBits<8, 5, true>(enc, keyHash);
     std::string result = Bech32::encode(hrp, enc);

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -40,14 +40,10 @@ jlong JNICALL Java_wallet_core_jni_Bech32Address_nativeCreateWithPublicKey(JNIEn
     jmethodID hrpValueMethodID = (*env)->GetMethodID(env, hrpClass, "value", "()I");
     jint hrpValue = (*env)->CallIntMethod(env, hrp, hrpValueMethodID);
     jclass publicKeyClass = (*env)->GetObjectClass(env, publicKey);
-    jfieldID publicKeyBytesFieldID = (*env)->GetFieldID(env, publicKeyClass, "bytes", "[B");
-    jbyteArray publicKeyBytesArray = (*env)->GetObjectField(env, publicKey, publicKeyBytesFieldID);
-    jbyte* publicKeyBytesBuffer = (*env)->GetByteArrayElements(env, publicKeyBytesArray, NULL);
-    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) publicKeyBytesBuffer;
-    struct TWBech32Address *instance = TWBech32AddressCreateWithPublicKey(hrpValue, *publicKeyInstance);
+    jfieldID publicKeyHandleFieldID = (*env)->GetFieldID(env, publicKeyClass, "nativeHandle", "J");
+    struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) (*env)->GetLongField(env, publicKey, publicKeyHandleFieldID);
+    struct TWBech32Address *instance = TWBech32AddressCreateWithPublicKey(hrpValue, publicKeyInstance);
     (*env)->DeleteLocalRef(env, hrpClass);
-    (*env)->ReleaseByteArrayElements(env, publicKeyBytesArray, publicKeyBytesBuffer, JNI_ABORT);
-    (*env)->DeleteLocalRef(env, publicKeyBytesArray);
     (*env)->DeleteLocalRef(env, publicKeyClass);
     return (jlong) instance;
 }
@@ -98,12 +94,14 @@ jobject JNICALL Java_wallet_core_jni_Bech32Address_hrp(JNIEnv *env, jobject this
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWBech32Address *instance = (struct TWBech32Address *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
-    jobject resultValue = (jobject) TWBech32AddressHRP(instance);
+    enum TWHRP result = TWBech32AddressHRP(instance);
 
 
     (*env)->DeleteLocalRef(env, thisClass);
 
-    return resultValue;
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/HRP");
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromValue", "(I)Lwallet/core/jni/HRP;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jint) result);
 }
 
 jbyteArray JNICALL Java_wallet_core_jni_Bech32Address_witnessProgram(JNIEnv *env, jobject thisObject) {

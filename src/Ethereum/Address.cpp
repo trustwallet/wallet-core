@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,6 +12,8 @@
 
 #include <TrezorCrypto/sha3.h>
 
+#include <cassert>
+
 using namespace TW::Ethereum;
 
 bool Address::isValid(const std::string& string) {
@@ -21,18 +23,22 @@ bool Address::isValid(const std::string& string) {
 
 Address::Address(const std::string& string) {
     const auto data = parse_hex(string);
-    assert(Address::isValid(data));
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address data");
+    }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    assert(Address::isValid(data));
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address data");
+    }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
-    keccak_256(publicKey.bytes.data() + 1, PublicKey::uncompressedSize - 1, hash.data());
+    keccak_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 

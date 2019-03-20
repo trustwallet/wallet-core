@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -44,14 +44,8 @@ struct TWIconAddress *_Nullable TWIconAddressCreateWithKeyHash(TWData *_Nonnull 
     return new TWIconAddress{ Address(*d, type) };
 }
 
-struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKey publicKey, TWIconAddressType type) {
-    Data data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
-    } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
-    }
-    return new TWIconAddress{ Address(PublicKey(data), type) };
+struct TWIconAddress *_Nonnull TWIconAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, TWIconAddressType type) {
+    return new TWIconAddress{ Address(publicKey->impl, type) };
 }
 
 void TWIconAddressDelete(struct TWIconAddress *_Nonnull address) {

@@ -6,10 +6,22 @@
             TWDataDelete(<%= param.name %>Data)
         }
 <%    elsif param.type.name == :string -%>
+<%      if param.type.is_nullable -%>
+        let <%= param.name %>String: UnsafeRawPointer?
+        if let s = <%= param.name %> {
+            <%= param.name %>String = TWStringCreateWithNSString(s)
+            defer {
+                TWStringDelete(s)
+            }
+        } else {
+            <%= param.name %>String = nil
+        }
+<%      else -%>
         let <%= param.name %>String = TWStringCreateWithNSString(<%= param.name %>)
         defer {
             TWStringDelete(<%= param.name %>String)
         }
+<%      end -%>
 <%    elsif param.type.is_proto -%>
         let <%= param.name %>Data = TWDataCreateWithNSData(try! <%= param.name %>.serializedData())
         defer {

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -37,7 +37,7 @@ struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithKeyHash(enum 
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey);
+struct TWTendermintAddress *_Nullable TWTendermintAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
 void TWTendermintAddressDelete(struct TWTendermintAddress *_Nonnull address);

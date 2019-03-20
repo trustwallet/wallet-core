@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,7 +24,6 @@ TEST(IconSigner, Sign) {
     input.set_value(valueData.data(), valueData.size());
 
     auto stepLimitData = store(uint256_t("74565"));
-    std::cout << hex(stepLimitData) << std::endl;
     input.set_step_limit(stepLimitData.data(), stepLimitData.size());
 
     input.set_timestamp(1516942975500598);

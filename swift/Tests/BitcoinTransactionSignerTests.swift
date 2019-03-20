@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Binance.
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,12 +6,6 @@
 
 import XCTest
 import TrustWalletCore
-
-typealias TWBitcoinSigningInput = TW_Bitcoin_Proto_SigningInput
-typealias TWBitcoinSigningOutput = TW_Bitcoin_Proto_SigningOutput
-typealias TWBitcoinUnspentTransaction = TW_Bitcoin_Proto_UnspentTransaction
-typealias TWBitcoinTransactionPlan = TW_Bitcoin_Proto_TransactionPlan
-typealias TWBitcoinOutPoint = TW_Bitcoin_Proto_OutPoint
 
 class BitcoinTransactionSignerTests: XCTestCase {
     override func setUp() {
