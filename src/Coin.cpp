@@ -195,7 +195,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
-	case TWCoinTypeNULS:
+    case TWCoinTypeNULS:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -215,7 +215,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
-	case TWCoinTypeNULS:
+    case TWCoinTypeNULS:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
     case TWCoinTypeThunderToken:
@@ -265,7 +265,7 @@ TWHDVersion TW::hdVersion(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeNimiq:
-	case TWCoinTypeNULS:
+    case TWCoinTypeNULS:
     case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
@@ -296,7 +296,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
-	case TWCoinTypeNULS:
+    case TWCoinTypeNULS:
     case TWCoinTypeOntology:
     case TWCoinTypePoa:
     case TWCoinTypeRipple:
