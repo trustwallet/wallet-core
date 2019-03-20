@@ -4,11 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-extension OntologyAddress: Address, Hashable {
-    public static func isValid(data: Data) -> Bool {
-        return data.count == 20
-    }
-    
+extension OntologyAddress: Address, Hashable {    
     public var data: Data {
         return keyHash
     }
