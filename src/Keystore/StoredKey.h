@@ -60,6 +60,9 @@ struct StoredKey {
     /// other than the default is requested.
     const Account& account(TWCoinType coin, const std::string& password);
 
+    /// Returns the account for a specific coin, creating it if necessary.
+    const Account& account(TWCoinType coin, const HDWallet& wallet);
+
     /// Returns the private key for a specific coin, creating an account if necessary.
     ///
     /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase` and a coin

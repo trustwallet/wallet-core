@@ -95,10 +95,9 @@ struct TWAccount *_Nullable TWStoredKeyAccount(struct TWStoredKey *_Nonnull key,
     return new TWAccount{ key->impl.accounts[index] };
 }
 
-struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, TWString *_Nonnull password) {
-    auto& s = *reinterpret_cast<const std::string*>(password);
+struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, struct TWHDWallet *_Nonnull wallet) {
     try {
-       return new TWAccount{ key->impl.account(coin, s) };
+       return new TWAccount{ key->impl.account(coin, wallet->impl) };
     } catch (std::exception) {
         return nullptr;
     }
