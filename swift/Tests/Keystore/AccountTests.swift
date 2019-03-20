@@ -64,8 +64,8 @@ class AccountTests: XCTestCase {
         let wallet = Wallet(keyURL: URL(fileURLWithPath: "/"), key: key)
 
         let hdwallet = wallet.key.wallet(password: password)!
-        let privateKey = hdwallet.getKeyForCoin(coin: .bitcoin)
+        let privateKey = hdwallet.getKeyForCoin(coin: .bitcoinCash)
 
-        XCTAssertEqual(privateKey.wif(), "5KC2mUrQBRJZf4xuoDgNWCYz9cj5ZHxZeHho8ieJex8KnVgng6r")
+        XCTAssertEqual(privateKey.wif(), "5HrML9AyXwvCGAtfogRh7cLRnmTNsPYmwWs5hufiyvpBNpgzkLE")
     }
 }

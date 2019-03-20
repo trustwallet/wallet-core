@@ -18,6 +18,7 @@
 #include <TrezorCrypto/curves.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
+#include <TrustWalletCore/TWP2SHPrefix.h>
 
 using namespace TW;
 
@@ -127,12 +128,28 @@ std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& e
     std::string string;
     switch (coinType) {
     case TWCoinTypeBitcoin: {
-        auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_BITCOIN);
-        string = address.string();
+        if (version == TWHDVersionXPUB) {
+            auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2PKHPrefixBitcoin);
+            string = address.string();
+        } else if (version == TWHDVersionYPUB) {
+            auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2SHPrefixBitcoin);
+            string = address.string();
+        } else {
+            auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_BITCOIN);
+            string = address.string();
+        }
     } break;
     case TWCoinTypeLitecoin: {
-        auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_LITECOIN);
-        string = address.string();
+        if (version == TWHDVersionLTUB) {
+            auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2PKHPrefixLitecoin);
+            string = address.string();
+        } else if (version == TWHDVersionMTUB) {
+            auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2SHPrefixLitecoin);
+            string = address.string();
+        } else {
+            auto address = Bitcoin::Bech32Address(reinterpret_cast<PublicKey&>(publicKey), 0, HRP_LITECOIN);
+            string = address.string();
+        }
     } break;
     case TWCoinTypeBitcoinCash: {
         auto address = Bitcoin::CashAddress(reinterpret_cast<PublicKey&>(publicKey));

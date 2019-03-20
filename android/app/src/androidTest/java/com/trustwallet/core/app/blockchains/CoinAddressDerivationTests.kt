@@ -65,7 +65,7 @@ class CoinAddressDerivationTests {
                     VECHAIN -> assertEquals("0x1a553275dF34195eAf23942CB7328AcF9d48c160", address)
                     WANCHAIN -> assertEquals("0xD5ca90b928279FE5D06144136a25DeD90127aC15", address)
                     XDAI -> assertEquals("0x364d0551599B97EAf997bc06c8c40Aaf73124402", address)
-                    ZCASH -> assertEquals("t3ZEo7WrSBB1o1DCUytPsnUfoEoZn2qL5er", address)
+                    ZCASH -> assertEquals("t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy", address)
                     ZCOIN ->  assertEquals("aEd5XFChyXobvEics2ppAqgK3Bgusjxtik", address)
                     NIMIQ -> assertEquals("NQ76 7AVR EHDA N05U X7SY XB14 XJU7 8ERV GM6H", address)
                     STELLAR -> assertEquals("GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P", address)

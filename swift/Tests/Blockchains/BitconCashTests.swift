@@ -21,22 +21,24 @@ class BitcoinCashTests: XCTestCase {
 
     func testDeriveFromXPub() {
         let xpub = "xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw"
-        let bc = BitcoinCash()
-        let xpubAddr2 = bc.derive(from: xpub, at: bc.derivationPath(at: 2))!
-        let xpubAddr9 = bc.derive(from: xpub, at: bc.derivationPath(at: 9))!
 
-        XCTAssertEqual(xpubAddr2.description, "bitcoincash:qq4cm0hcc4trsj98v425f4ackdq7h92rsy6zzstrgy")
-        XCTAssertEqual(xpubAddr9.description, "bitcoincash:qqyqupaugd7mycyr87j899u02exc6t2tcg9frrqnve")
+        let coin = CoinType.bitcoinCash
+        let xpubAddr2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: coin.purpose, coinType: coin, account: 0, change: 0, address: 2))!
+
+        let xpubAddr9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: coin.purpose, coinType: coin, account: 0, change: 0, address: 9))!
+
+        XCTAssertEqual(coin.deriveAddressFromPublicKey(publicKey: xpubAddr2), "bitcoincash:qq4cm0hcc4trsj98v425f4ackdq7h92rsy6zzstrgy")
+        XCTAssertEqual(coin.deriveAddressFromPublicKey(publicKey: xpubAddr9), "bitcoincash:qqyqupaugd7mycyr87j899u02exc6t2tcg9frrqnve")
     }
 
     func testAddress() {
         XCTAssertEqual(
             "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
-            BitcoinCash().address(string: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd")?.description
+            BitcoinCashAddress(string: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd")?.description
         )
         XCTAssertEqual(
             "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
-            BitcoinCash().address(string: "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd")?.description
+            BitcoinCashAddress(string: "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd")?.description
         )
     }
 }

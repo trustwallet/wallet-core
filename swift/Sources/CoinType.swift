@@ -45,6 +45,14 @@ public enum CoinType: UInt32, CaseIterable {
         return Curve(rawValue: TWCoinTypeCurve(TWCoinType(rawValue: rawValue)).rawValue)!
     }
 
+    public var xpubVersion: HDVersion {
+        return HDVersion(rawValue: TWCoinTypeXpubVersion(TWCoinType(rawValue: rawValue)).rawValue)!
+    }
+
+    public var xprvVersion: HDVersion {
+        return HDVersion(rawValue: TWCoinTypeXprvVersion(TWCoinType(rawValue: rawValue)).rawValue)!
+    }
+
     public func validate(address: String) -> Bool {
         let addressString = TWStringCreateWithNSString(address)
         defer {
@@ -61,6 +69,11 @@ public enum CoinType: UInt32, CaseIterable {
 
     public func deriveAddress(privateKey: PrivateKey) -> String {
         return TWStringNSString(TWCoinTypeDeriveAddress(TWCoinType(rawValue: rawValue), privateKey.rawValue))
+    }
+
+
+    public func deriveAddressFromPublicKey(publicKey: PublicKey) -> String {
+        return TWStringNSString(TWCoinTypeDeriveAddressFromPublicKey(TWCoinType(rawValue: rawValue), publicKey.rawValue))
     }
 
 }

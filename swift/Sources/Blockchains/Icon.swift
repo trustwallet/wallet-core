@@ -8,27 +8,3 @@ import Foundation
 
 public typealias TWIconSigningInput = TW_Icon_Proto_SigningInput
 public typealias TWIconSigningOutput = TW_Icon_Proto_SigningOutput
-
-public final class Icon: Ethereum {
-    /// Chain identifier.
-    public override var chainID: Int {
-        return 1
-    }
-
-    /// SLIP-044 coin type.
-    public override var coinType: CoinType {
-        return .icon
-    }
-
-    public override func address(for publicKey: PublicKey) -> Address {
-        return IconAddress(publicKey: publicKey, type: .address)
-    }
-
-    public override func address(string: String) -> Address? {
-        return IconAddress(string: string)
-    }
-
-    public override func address(data: Data) -> Address? {
-        return IconAddress(keyHash: data, type: .address)
-    }
-}
