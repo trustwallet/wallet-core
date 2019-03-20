@@ -7,6 +7,7 @@
 #include "HexCoding.h"
 #include "Ontology/Account.h"
 #include "Ontology/Transaction.h"
+#include "Ontology/ParamsBuilder.h"
 
 #include <iostream>
 #include <unordered_map>
