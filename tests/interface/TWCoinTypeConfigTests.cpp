@@ -73,6 +73,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeKIN));
     assertStringsEqual(value22, "KIN");
+
+    auto value23 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCosmos));
+    assertStringsEqual(value23, "ATOM");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -99,6 +102,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKIN), 5);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -175,6 +179,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value25 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeKIN, txId));
     assertStringsEqual(value25, "https://kinexplorer.com/tx/123");
+
+    auto value26 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
+    assertStringsEqual(value26, "https://hubble.figment.network/chains/cosmoshub-1/blocks/1/transactions/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -240,6 +247,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKIN));
     assertStringsEqual(value22, "kin");
+
+    auto value23 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
+    assertStringsEqual(value23, "cosmos");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -308,4 +318,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value23 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKIN));
     assertStringsEqual(value23, "Kin");
+
+    auto value24 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
+    assertStringsEqual(value24, "Cosmos");
 }

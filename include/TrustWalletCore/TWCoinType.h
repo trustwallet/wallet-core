@@ -11,6 +11,7 @@
 #include "TWPrivateKey.h"
 #include "TWPurpose.h"
 #include "TWString.h"
+#include "TWHDVersion.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -44,6 +45,7 @@ enum TWCoinType {
     TWCoinTypeNimiq = 242,
     TWCoinTypeStellar = 148,
     TWCoinTypeAion = 425,
+    TWCoinTypeCosmos = 118,
     TWCoinTypeNEO = 888,
     TWCoinTypeKIN = 2017,
 };
@@ -56,6 +58,14 @@ enum TWPurpose TWCoinTypePurpose(enum TWCoinType coin);
 TW_EXPORT_PROPERTY
 enum TWCurve TWCoinTypeCurve(enum TWCoinType coin);
 
+/// Returns the xpub HD version that should be used for a coin type.
+TW_EXPORT_PROPERTY
+enum TWHDVersion TWCoinTypeXpubVersion(enum TWCoinType coin);
+
+/// Returns the xprv HD version that should be used for a coin type.
+TW_EXPORT_PROPERTY
+enum TWHDVersion TWCoinTypeXprvVersion(enum TWCoinType coin);
+
 /// Validates an address string.
 TW_EXPORT_METHOD
 bool TWCoinTypeValidate(enum TWCoinType coin, TWString *_Nonnull address);
@@ -67,5 +77,9 @@ TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
 /// Derives the address for a particular coin from the private key.
 TW_EXPORT_METHOD
 TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivateKey *_Nonnull privateKey);
+
+/// Derives the address for a particular coin from the public key.
+TW_EXPORT_METHOD
+TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXTERN_C_END

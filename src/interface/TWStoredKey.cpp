@@ -53,7 +53,7 @@ struct TWStoredKey *_Nonnull TWStoredKeyImportHDWallet(TWString *_Nonnull mnemon
     auto wallet = TW::HDWallet(mnemonicString, "");
     const auto dp = TW::derivationPath(coin);
     const auto address = TW::deriveAddress(dp.coin(), wallet.getKey(dp));
-    const auto extendedKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TW::hdVersion(coin));
+    const auto extendedKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TW::xpubVersion(coin));
     result->impl.accounts.emplace_back(address, dp, extendedKey);
 
     return result;

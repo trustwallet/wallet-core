@@ -14,6 +14,7 @@ public enum HRP: UInt32, CaseIterable, CustomStringConvertible  {
     case bitcoinCash = 3
     case binance = 4
     case binanceTest = 5
+    case cosmos = 6
 
     public var description: String {
         switch self {
@@ -23,6 +24,7 @@ public enum HRP: UInt32, CaseIterable, CustomStringConvertible  {
         case .bitcoinCash: return "bitcoincash"
         case .binance: return "bnb"
         case .binanceTest: return "tbnb"
+        case .cosmos: return "cosmos"
         }
     }
 }

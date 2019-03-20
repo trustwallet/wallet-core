@@ -36,3 +36,11 @@ popd
 cmake -H. -Bbuild
 make -Cbuild protoc-gen-int
 "$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=build/protobuf-plugin/protoc-gen-int --int_out include/TrustWalletCore src/proto/*.proto
+
+# Generate Xcode project
+if [ -x "$(command -v xcodegen)" ]; then
+    pushd swift
+    xcodegen
+    pod install
+    popd
+fi

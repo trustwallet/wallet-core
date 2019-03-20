@@ -21,6 +21,7 @@ public enum CoinType {
     GO (6060),
     ICON (74),
     LITECOIN (2),
+    ONTOLOGY (1024),
     POA (178),
     RIPPLE (144),
     TEZOS (1729),
@@ -35,6 +36,7 @@ public enum CoinType {
     NIMIQ (242),
     STELLAR (148),
     AION (425),
+    COSMOS (118),
     NEO (888),
     KIN (2017);
 
@@ -56,6 +58,7 @@ public enum CoinType {
             case 6060: return CoinType.GO;
             case 74: return CoinType.ICON;
             case 2: return CoinType.LITECOIN;
+            case 1024: return CoinType.ONTOLOGY;
             case 178: return CoinType.POA;
             case 144: return CoinType.RIPPLE;
             case 1729: return CoinType.TEZOS;
@@ -70,6 +73,7 @@ public enum CoinType {
             case 242: return CoinType.NIMIQ;
             case 148: return CoinType.STELLAR;
             case 425: return CoinType.AION;
+            case 118: return CoinType.COSMOS;
             case 888: return CoinType.NEO;
             case 2017: return CoinType.KIN;
             default: return null;
@@ -78,7 +82,10 @@ public enum CoinType {
 
     public native Purpose purpose();
     public native Curve curve();
+    public native HDVersion xpubVersion();
+    public native HDVersion xprvVersion();
     public native boolean validate(String address);
     public native String derivationPath();
     public native String deriveAddress(PrivateKey privateKey);
+    public native String deriveAddressFromPublicKey(PublicKey publicKey);
 }
