@@ -7,6 +7,8 @@
 #include "Ong.h"
 #include "ParamsBuilder.h"
 
+#include <unordered_map>
+
 #include <TrezorCrypto/rand.h>
 
 using namespace TW;

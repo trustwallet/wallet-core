@@ -7,6 +7,8 @@
 #include "Ont.h"
 #include "ParamsBuilder.h"
 
+#include <unordered_map>
+
 #include <TrezorCrypto/rand.h>
 
 using namespace TW;
@@ -21,7 +23,7 @@ Transaction Ont::balanceOf(std::string &address) {
 
 Transaction Ont::transfer(const Account &from, std::string &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) {
     auto toAddress = Address(to);
-    std::unordered_map<std::string, boost::any> transferParam{{"from",   from.getAddress().data}, {"to",    toAddress.data}, {"amount", amount}};
+    std::unordered_map<std::string, boost::any> transferParam{{"from", from.getAddress().data}, {"to", toAddress.data}, {"amount", amount}};
     std::vector<boost::any> args{transferParam};
     auto invokeCode = ParamsBuilder::buildNativeInvokeCode(ontContract, 0x00, "transfer", args);
     auto tx = Transaction(version, txType, random32(), gasPrice, gasLimit, toAddress.string(), invokeCode);
