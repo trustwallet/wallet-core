@@ -37,52 +37,21 @@ static inline void encode48LE(uint64_t val, std::vector<uint8_t>& data)
     data.push_back(static_cast<uint8_t>((val >> 40)));
 }
 
-/// Encodes a VarInt little-endian value into the provided buffer.
-static inline void encodeVarIntLE(uint64_t val, std::vector<uint8_t>& data)
+static inline void serializerRemark(std::string& remark, std::vector<uint8_t>& data)
 {
-    if (val<0xFD) {
-        data.push_back(static_cast<uint8_t>(val));
-    }
-    else if (val<=0xFFFF) {
-        data.push_back(static_cast<uint8_t>(0xFD));
-        data.push_back(static_cast<uint8_t>(val));
-        data.push_back(static_cast<uint8_t>((val >> 8)));
-    }
-    else if (val<=0xFFFFFFFF) {
-        data.push_back(static_cast<uint8_t>(0xFE));
-        data.push_back(static_cast<uint8_t>(val));
-        data.push_back(static_cast<uint8_t>((val >> 8)));
-        data.push_back(static_cast<uint8_t>((val >> 16)));
-        data.push_back(static_cast<uint8_t>((val >> 24)));
-    }
-    else if (val>0xFFFFFFFF) {
-        data.push_back(static_cast<uint8_t>(0xFF));
-        data.push_back(static_cast<uint8_t>(val));
-        data.push_back(static_cast<uint8_t>((val >> 8)));
-        data.push_back(static_cast<uint8_t>((val >> 16)));
-        data.push_back(static_cast<uint8_t>((val >> 24)));
-        data.push_back(static_cast<uint8_t>((val >> 32)));
-        data.push_back(static_cast<uint8_t>((val >> 40)));
-        data.push_back(static_cast<uint8_t>((val >> 48)));
-        data.push_back(static_cast<uint8_t>((val >> 56)));
-    }
-}
-
-static inline void serializerRemark(std::string remark, std::vector<uint8_t>& data)
-{
-    encodeVarIntLE(remark.length(), data);
+    writeCompactSize(remark.length(), data);
     std::copy(remark.begin(), remark.end(), std::back_inserter(data));
 }
 
 static inline void serializerInput(std::vector<Proto::TransactionInput>& inputs, std::vector<uint8_t>& data)
 {
-    encodeVarIntLE(inputs.size(), data);
+    writeCompactSize(inputs.size(), data);
     for (const auto& input : inputs) {
         Data owner = parse_hex(input.from_hash());
         // Input owner is txid and index
-        encodeVarIntLE((uint16_t) input.from_index(), owner);
+        writeCompactSize((uint16_t) input.from_index(), owner);
 
-        encodeVarIntLE(owner.size(), data);
+        writeCompactSize(owner.size(), data);
         std::copy(owner.begin(), owner.end(), std::back_inserter(data));
 
         encode64LE((uint64_t) input.amount(), data);
@@ -92,7 +61,7 @@ static inline void serializerInput(std::vector<Proto::TransactionInput>& inputs,
 
 static inline void serializerOutput(std::vector<Proto::TransactionOutput>& outputs, std::vector<uint8_t>& data)
 {
-    encodeVarIntLE(outputs.size(), data);
+    writeCompactSize(outputs.size(), data);
     for (const auto& output : outputs) {
         const auto& toAddress = output.to_address();
         if (!NULS::Address::isValid(toAddress)) {
@@ -100,7 +69,7 @@ static inline void serializerOutput(std::vector<Proto::TransactionOutput>& outpu
         }
 
         const auto& addr = NULS::Address(toAddress);
-        encodeVarIntLE(addr.bytes.size()-1, data);
+        writeCompactSize(addr.bytes.size()-1, data);
         std::copy(addr.bytes.begin(), addr.bytes.end()-1, std::back_inserter(data));
         encode64LE((uint64_t) output.amount(), data);
         encode48LE((uint64_t) output.lock_time(), data);
@@ -119,12 +88,12 @@ static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash
     PublicKey pubKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
 
     Data transactionSignature = Data();
-    encodeVarIntLE(pubKey.bytes.size(), transactionSignature);
+    writeCompactSize(pubKey.bytes.size(), transactionSignature);
     std::copy(pubKey.bytes.begin(), pubKey.bytes.end(), std::back_inserter(transactionSignature));
     auto signature = privateKey.signAsDER(txHash, TWCurve::TWCurveSECP256k1);
 
     transactionSignature.push_back(static_cast<uint8_t>(0x00));
-    encodeVarIntLE(signature.size(), transactionSignature);
+    writeCompactSize(signature.size(), transactionSignature);
 
     std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));
     return transactionSignature;
@@ -149,7 +118,8 @@ std::vector<uint8_t> Signer::sign(uint64_t timestamp) const
     // Timestamp
     encode48LE(timestamp, data);
     // Remark
-    serializerRemark(tx.remark(), data);
+    std::string remark = tx.remark();
+    serializerRemark(remark, data);
     // txData
     encode32LE(0xffffffff, data);
     // CoinData Input
@@ -166,7 +136,7 @@ std::vector<uint8_t> Signer::sign(uint64_t timestamp) const
 
     auto transactionSignature = makeTransactionSignature(priv, txHash);
 
-    encodeVarIntLE(transactionSignature.size(), data);
+    writeCompactSize(transactionSignature.size(), data);
     std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(data));
 
     return data;
