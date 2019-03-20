@@ -6,8 +6,6 @@
 
 import Foundation
 
-public typealias BitcoinSegwitAddress = Bech32Address
-
 extension Bech32Address: Address, Equatable {
     public static func isValid(data: Data) -> Bool {
         return data.count >= 2 && data.count <= 40

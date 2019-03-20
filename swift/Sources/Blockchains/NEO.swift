@@ -6,4 +6,8 @@
 
 import Foundation
 
-public typealias TWEthereumSigningInput = TW_Ethereum_Proto_SigningInput
+extension NEOAddress: Address {
+    public var data: Data {
+        return keyHash
+    }
+}

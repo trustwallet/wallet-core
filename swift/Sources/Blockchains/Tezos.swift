@@ -7,3 +7,9 @@
 import Foundation
 
 public typealias TWTezosSigningInput = TW_Tezos_Proto_SigningInput
+
+extension TezosAddress: Address {
+    public var data: Data {
+        return keyHash
+    }
+}
