@@ -5,10 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 #include "Address.h"
 
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
-#include <HexCoding.h>
-#include <BinaryCoding.h>
+
+#include "../Base58.h"
+#include "../BinaryCoding.h"
+#include "../HexCoding.h"
 
 using namespace TW::NULS;
 
@@ -18,26 +19,18 @@ bool Address::isValid(const std::string& string)
         return false;
     }
 
-    size_t capacity = 24;
-    uint8_t result[capacity];
-    if (!base58_to_bin(result, &capacity, string.data(), b58digits_ordered, b58digits_map)) {
+    Data decoded = TW::Base58::bitcoin.decode(string);
+    if (decoded.size()!=Address::addressSize) {
         return false;
     }
-
-    if (capacity!=Address::addressSize) {
-        return false;
-    }
-
-    std::array<byte, addressSize> bytes{0};
-    memcpy(bytes.data(), result, 24);
 
     // Check Xor
     uint8_t checkSum = 0x00;
     for (int i = 0; i<23; ++i) {
-        checkSum ^= bytes[i];
+        checkSum ^= decoded[i];
     }
 
-    return bytes[23]==checkSum;
+    return decoded[23]==checkSum;
 }
 
 Address::Address(const std::string& string)
@@ -46,12 +39,8 @@ Address::Address(const std::string& string)
         return;
     }
 
-    size_t capacity = Address::addressSize;
-    uint8_t result[capacity];
-    bool success = b58tobin(result, &capacity, string.data());
-    if (success) {
-        std::copy(result, result+Address::addressSize, bytes.begin());
-    }
+    Data decoded = TW::Base58::bitcoin.decode(string);
+    std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
 Address::Address(const TW::PublicKey& publicKey)
@@ -83,17 +72,7 @@ Address::Address(const std::vector<uint8_t>& data)
 
 std::string Address::string() const
 {
-    size_t size = 0;
-    base58_encode(nullptr, &size, bytes.data(), Address::addressSize, b58digits_ordered);
-
-    std::string str(size, ' ');
-    size_t res = size;
-    bool success = base58_encode(&str[0], &res, bytes.data(), Address::addressSize, b58digits_ordered);
-    if (success) {
-        str.resize(size-1);
-        return str;
-    }
-    return std::string();
+    return TW::Base58::bitcoin.encode(bytes.begin(), bytes.end());
 }
 
 uint16_t Address::chainID() const
@@ -108,10 +87,10 @@ uint8_t Address::type() const
 
 bool Address::isValid() const
 {
-    if (chainID() != 8964) {
+    if (chainID()!=8964) {
         return false;
     }
-    if (type() != 0x01 && type() != 0x02) {
+    if (type()!=0x01 && type()!=0x02) {
         return false;
     }
 
