@@ -152,7 +152,7 @@ jobject JNICALL Java_wallet_core_jni_StoredKey_account(JNIEnv *env, jobject this
     return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
-jobject JNICALL Java_wallet_core_jni_StoredKey_accountForCoin(JNIEnv *env, jobject thisObject, jobject coin, jstring password) {
+jobject JNICALL Java_wallet_core_jni_StoredKey_accountForCoin(JNIEnv *env, jobject thisObject, jobject coin, jobject wallet) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
@@ -160,11 +160,13 @@ jobject JNICALL Java_wallet_core_jni_StoredKey_accountForCoin(JNIEnv *env, jobje
     jclass coinClass = (*env)->GetObjectClass(env, coin);
     jmethodID coinValueMethodID = (*env)->GetMethodID(env, coinClass, "value", "()I");
     jint coinValue = (*env)->CallIntMethod(env, coin, coinValueMethodID);
-    TWString *passwordString = TWStringCreateWithJString(env, password);
-    struct TWAccount *result = TWStoredKeyAccountForCoin(instance, coinValue, passwordString);
+    jclass walletClass = (*env)->GetObjectClass(env, wallet);
+    jfieldID walletHandleFieldID = (*env)->GetFieldID(env, walletClass, "nativeHandle", "J");
+    struct TWHDWallet *walletInstance = (struct TWHDWallet *) (*env)->GetLongField(env, wallet, walletHandleFieldID);
+    struct TWAccount *result = TWStoredKeyAccountForCoin(instance, coinValue, walletInstance);
 
     (*env)->DeleteLocalRef(env, coinClass);
-    TWStringDelete(passwordString);
+    (*env)->DeleteLocalRef(env, walletClass);
 
     (*env)->DeleteLocalRef(env, thisClass);
 

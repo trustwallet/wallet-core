@@ -56,7 +56,7 @@ class AccountTests: XCTestCase {
         let hdwallet = wallet.key.wallet(password: password)!
         let privateKey = hdwallet.getKeyForCoin(coin: .bitcoin)
 
-        XCTAssertEqual(privateKey.wif(), "5KC2mUrQBRJZf4xuoDgNWCYz9cj5ZHxZeHho8ieJex8KnVgng6r")
+        XCTAssertEqual(privateKey.data.hexString, "b511e175dc474c810ad567557a13a29f9e82576990d5f36dab342dd2d00fb5c4")
     }
 
     func testBCHPrivateKeyWithPaths() throws {
@@ -64,8 +64,8 @@ class AccountTests: XCTestCase {
         let wallet = Wallet(keyURL: URL(fileURLWithPath: "/"), key: key)
 
         let hdwallet = wallet.key.wallet(password: password)!
-        let privateKey = hdwallet.getKeyForCoin(coin: .bitcoin)
+        let privateKey = hdwallet.getKeyForCoin(coin: .bitcoinCash)
 
-        XCTAssertEqual(privateKey.wif(), "5KC2mUrQBRJZf4xuoDgNWCYz9cj5ZHxZeHho8ieJex8KnVgng6r")
+        XCTAssertEqual(privateKey.data.hexString, "04b02272b75eaee0b7f1a96d667cb4629b400e2152a841c6791f802b336a8af8")
     }
 }

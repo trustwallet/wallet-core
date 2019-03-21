@@ -37,7 +37,7 @@ public class StoredKey {
     public native boolean isMnemonic();
     public native int accountCount();
     public native Account account(int index);
-    public native Account accountForCoin(CoinType coin, String password);
+    public native Account accountForCoin(CoinType coin, HDWallet wallet);
     public native void addAccount(String address, String derivationPath, String extetndedPublicKey);
     public native boolean store(String path);
     public native byte[] decryptPrivateKey(String password);

@@ -11,6 +11,7 @@ public enum P2PKHPrefix: UInt8, CaseIterable {
     case bitcoin = 0x00
     case litecoin = 0x30
     case dash = 0x4C
+    case decred = 0x3f
     case zcoin = 0x52
     case zcashT = 0xB8
 }
