@@ -12,6 +12,7 @@
 
 #include "Data.h"
 #include "Account.h"
+#include "Address.h"
 #include "Transaction.h"
 #include "BinaryCoding.h"
 
@@ -26,7 +27,7 @@ protected:
 public:
     virtual Data contractAddress() = 0;
 
-    virtual Transaction balanceOf(const std::string &address) = 0;
+    virtual Transaction balanceOf(const Address &address) = 0;
 
     virtual Transaction transfer(const Account &from, std::string &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) = 0;
 

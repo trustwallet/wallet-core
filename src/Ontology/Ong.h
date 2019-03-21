@@ -26,7 +26,7 @@ public:
         return ongContract;
     }
 
-    Transaction balanceOf(const std::string &address) override;
+    Transaction balanceOf(const Address &address) override;
 
     Transaction transfer(const Account &from, std::string &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) override;
 

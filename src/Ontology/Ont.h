@@ -10,7 +10,6 @@
 
 #include "Data.h"
 #include "Asset.h"
-#include "Transaction.h"
 
 namespace TW {
 namespace Ontology {
@@ -28,7 +27,7 @@ public:
         return ontContract;
     }
 
-    Transaction balanceOf(const std::string &address) override;
+    Transaction balanceOf(const Address &address) override;
 
     Transaction transfer(const Account &from, std::string &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) override;
 

@@ -17,7 +17,7 @@ using namespace TW;
 using namespace TW::Ontology;
 
 TW_Ontology_Proto_SigningOutput TWOntologyOntBalanceOf(const Ontology::Proto::SigningInput &input) {
-    auto queryAddress = input.query_address();
+    auto queryAddress = Address(input.query_address());
     auto transaction = Ont().balanceOf(queryAddress);
     auto encoded = transaction.serialize();
     auto protoOutput = Proto::SigningOutput();
@@ -39,7 +39,7 @@ TW_Ontology_Proto_SigningOutput TWOntologyOntTransfer(const Ontology::Proto::Sig
 }
 
 TW_Ontology_Proto_SigningOutput TWOntologyOngBalanceOf(const Ontology::Proto::SigningInput &input) {
-    auto queryAddress = input.query_address();
+    auto queryAddress = Address(input.query_address());
     auto transaction = Ong().balanceOf(queryAddress);
     auto encoded = transaction.serialize();
     auto protoOutput = Proto::SigningOutput();
