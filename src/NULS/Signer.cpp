@@ -20,7 +20,7 @@ static const uint64_t MIN_PRICE_PRE_1024_BYTES = 100000;
 static inline uint64_t calculateFee(uint64_t size)
 {
     uint64_t fee = (size/1024)*MIN_PRICE_PRE_1024_BYTES;
-    if (size%1024>0) {
+    if (size % 1024 > 0) {
         fee += MIN_PRICE_PRE_1024_BYTES;
     }
     return fee;
