@@ -26,9 +26,7 @@ TEST(OntologyTransaction, validity) {
     auto fromAddress = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
     auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     uint64_t amount = 1;
-    std::unordered_map<std::string, boost::any> transferParam{{"from",   fromAddress.data},
-                                                              {"to",     toAddress.data},
-                                                              {"amount", amount}};
+    std::unordered_map<std::string, boost::any> transferParam{{"from", fromAddress.data}, {"to", toAddress.data}, {"amount", amount}};
     std::vector<boost::any> args{transferParam};
     auto invokeCode = ParamsBuilder::buildNativeInvokeCode(ontContract, 0x00, "transfer", args);
     uint8_t version = 0;
