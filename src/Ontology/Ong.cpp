@@ -25,8 +25,10 @@ Transaction Ong::transfer(const Account &from, std::string &to, uint64_t amount,
     auto toAddress = Address(to);
     std::unordered_map<std::string, boost::any> transferParam{{"from", from.getAddress().data},{"to", toAddress.data},{"amount", amount}};
     std::vector<boost::any> args{transferParam};
-    auto invokeCode = ParamsBuilder::buildNativeInvokeCode(ongContract, 0x00, "transfer", args);
+    auto invokeCode = ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
     auto tx = Transaction(version, txType, random32(), gasPrice, gasLimit, toAddress.string(), invokeCode);
+    tx.sign(from);
+    tx.addSign(payer);
     return tx;
 }
 
