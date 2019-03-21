@@ -4,7 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-import Foundation
+#pragma once
 
-public typealias TWOntologySigningInput = TW_Ontology_Proto_SigningInput
-public typealias TWOntologySigningOutput = TW_Ontology_Proto_SigningOutput
+#include "TWData.h"
+
+typedef TWData *_Nonnull TW_Ontology_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Ontology_Proto_SigningOutput;
