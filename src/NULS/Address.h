@@ -17,6 +17,9 @@ public:
     /// Number of bytes in an address.
     static const size_t addressSize = 24;
 
+    /// NULS Main Net Chain ID
+    static const uint16_t MainNetID = 8964;
+
     /// Address data consisting of a prefix byte followed by the public key hash.
     std::array<byte, addressSize> bytes;
 

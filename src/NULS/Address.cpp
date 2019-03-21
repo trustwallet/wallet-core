@@ -87,7 +87,7 @@ uint8_t Address::type() const
 
 bool Address::isValid() const
 {
-    if (chainID()!=8964) {
+    if (chainID()!=MainNetID) {
         return false;
     }
     if (type()!=0x01 && type()!=0x02) {
