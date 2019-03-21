@@ -6,21 +6,23 @@
 
 #include "Coin.h"
 
+#include "Aion/Address.h"
 #include "Bitcoin/Address.h"
-#include "Bitcoin/CashAddress.h"
 #include "Bitcoin/Bech32Address.h"
+#include "Bitcoin/CashAddress.h"
+#include "Decred/Address.h"
 #include "Ethereum/Address.h"
 #include "Icon/Address.h"
+#include "NEO/Address.h"
 #include "Nimiq/Address.h"
-#include "Aion/Address.h"
+#include "Ontology/Address.h"
 #include "Ripple/Address.h"
+#include "Stellar/Address.h"
 #include "Tendermint/Address.h"
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
 #include "Zcash/TAddress.h"
-#include "Stellar/Address.h"
-#include "Ontology/Address.h"
-#include "NEO/Address.h"
+
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
@@ -90,6 +92,9 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
         return Tezos::Address(data).string();
     case TWCoinTypeNEO:
         return NEO::Address(data).string();
+
+    case TWCoinTypeDecred:
+        return "";
     }
 }
 
@@ -112,6 +117,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeDash:
         return Bitcoin::Address::isValid(string, {TWP2PKHPrefixDash, TWP2SHPrefixDash});
+
+    case TWCoinTypeDecred:
+        return Decred::Address::isValid(string);
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -169,6 +177,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -203,6 +212,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -244,6 +254,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWHDVersionXPUB;
@@ -282,6 +293,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
         return TWHDVersionXPRV;
@@ -320,6 +332,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -372,6 +385,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeLitecoin:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
@@ -426,6 +440,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeDash:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixDash).string();
+
+    case TWCoinTypeDecred:
+        return Decred::Address(publicKey).string();
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:

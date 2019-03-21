@@ -97,12 +97,8 @@ public final class StoredKey {
         return Account(rawValue: value)
     }
 
-    public func accountForCoin(coin: CoinType, password: String) -> Account? {
-        let passwordString = TWStringCreateWithNSString(password)
-        defer {
-            TWStringDelete(passwordString)
-        }
-        guard let value = TWStoredKeyAccountForCoin(rawValue, TWCoinType(rawValue: coin.rawValue), passwordString) else {
+    public func accountForCoin(coin: CoinType, wallet: HDWallet?) -> Account? {
+        guard let value = TWStoredKeyAccountForCoin(rawValue, TWCoinType(rawValue: coin.rawValue), wallet?.rawValue) else {
             return nil
         }
         return Account(rawValue: value)

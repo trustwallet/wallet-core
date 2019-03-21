@@ -55,6 +55,9 @@ public:
     /// Returns the private key at the given derivation path.
     PrivateKey getKey(const DerivationPath& derivationPath) const;
 
+    /// Derives the address for a coin.
+    std::string deriveAddress(TWCoinType coin) const;
+
     /// Returns the extended private key.
     std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 

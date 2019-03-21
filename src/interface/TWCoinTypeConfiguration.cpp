@@ -24,6 +24,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeBitcoinCash:  string = "BCH"; break;
     case TWCoinTypeCallisto:  string = "CLO"; break;
     case TWCoinTypeDash:  string = "DASH"; break;
+    case TWCoinTypeDecred: string = "DCR"; break;
     case TWCoinTypeEthereumClassic:  string = "ETC"; break;
     case TWCoinTypeGo:  string =  "GO"; break;
     case TWCoinTypeICON:  string =  "ICX"; break;
@@ -71,6 +72,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeBitcoin:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeLitecoin:
     case TWCoinTypeBinance:
     case TWCoinTypeZcoin:
@@ -107,6 +109,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         break;
     case TWCoinTypeEthereum:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -161,6 +164,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeBitcoinCash: return "https://blockchair.com/bitcoin-cash";
     case TWCoinTypeCallisto: return "https://explorer2.callisto.network";
     case TWCoinTypeDash: return "https://live.blockcypher.com/dash";
+    case TWCoinTypeDecred: return "https://mainnet.decred.org";
     case TWCoinTypeEthereumClassic: return "https://gastracker.io";
     case TWCoinTypeGo: return "https://explorer.gochain.io";
     case TWCoinTypeICON: return "https://tracker.icon.foundation";
@@ -196,6 +200,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeBitcoinCash:  string = "bitcoincash"; break;
     case TWCoinTypeCallisto:  string = "callisto"; break;
     case TWCoinTypeDash:  string = "dash"; break;
+    case TWCoinTypeDecred: string = "decred"; break;
     case TWCoinTypeEthereumClassic:  string = "classic"; break;
     case TWCoinTypeGo:  string =  "gochain"; break;
     case TWCoinTypeICON:  string =  "icon"; break;
@@ -232,6 +237,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeBitcoinCash:  string = "Bitcoin Cash"; break;
     case TWCoinTypeCallisto:  string = "Callisto"; break;
     case TWCoinTypeDash:  string = "Dash"; break;
+    case TWCoinTypeDecred: string = "Decred"; break;
     case TWCoinTypeEthereumClassic:  string = "Ethereum Classic"; break;
     case TWCoinTypeGo:  string =  "GoChain"; break;
     case TWCoinTypeICON:  string =  "ICON"; break;

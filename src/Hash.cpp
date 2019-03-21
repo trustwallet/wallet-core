@@ -6,6 +6,7 @@
 
 #include "Hash.h"
 
+#include <TrezorCrypto/blake256.h>
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha2.h>
@@ -59,7 +60,13 @@ Data Hash::sha3_512(const byte* begin, const byte* end) {
 
 Data Hash::ripemd(const byte* begin, const byte* end) {
     Data result(ripemdSize);
-    ripemd160(begin, end - begin, result.data());
+    ::ripemd160(begin, end - begin, result.data());
+    return result;
+}
+
+Data Hash::blake256(const byte* begin, const byte* end) {
+    Data result(sha256Size);
+    ::blake256(begin, end - begin, result.data());
     return result;
 }
 
