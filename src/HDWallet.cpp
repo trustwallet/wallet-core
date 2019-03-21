@@ -10,8 +10,9 @@
 #include "Base58.h"
 #include "Bitcoin/Bech32Address.h"
 #include "Bitcoin/CashAddress.h"
-#include "Zcash/TAddress.h"
+#include "Decred/Address.h"
 #include "Ripple/Address.h"
+#include "Zcash/TAddress.h"
 
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
@@ -74,6 +75,11 @@ PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
     auto node = getNode(*this, curve, derivationPath);
     auto data = Data(node.private_key, node.private_key + PrivateKey::size);
     return PrivateKey(data);
+}
+
+std::string HDWallet::deriveAddress(TWCoinType coin) const {
+    const auto derivationPath = TW::derivationPath(coin);
+    return TW::deriveAddress(coin, getKey(derivationPath));
 }
 
 std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
@@ -157,6 +163,10 @@ std::optional<std::string> HDWallet::getAddressFromExtended(const std::string& e
     } break;
     case TWCoinTypeDash: {
         auto address = Bitcoin::Address(reinterpret_cast<PublicKey&>(publicKey), TWP2PKHPrefixDash);
+        string = address.string();
+    } break;
+    case TWCoinTypeDecred: {
+        auto address = Decred::Address(reinterpret_cast<PublicKey&>(publicKey));
         string = address.string();
     } break;
     case TWCoinTypeZcoin: {
