@@ -47,6 +47,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeCosmos: string = "ATOM"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "KIN"; break;
+    case TWCoinTypeNULS: string = "NULS"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -76,6 +77,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeZcoin:
     case TWCoinTypeZcash:
     case TWCoinTypeNEO:
+    case TWCoinTypeNULS:
      return 8;
     case TWCoinTypeStellar:
         return 7;
@@ -131,6 +133,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         break;
     case TWCoinTypeVeChain:
     case TWCoinTypeThunderToken:
+    case TWCoinTypeNULS:
         url += "/transactions/" + txId;
         break;
     case TWCoinTypeZcash:
@@ -184,6 +187,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeCosmos: return "https://hubble.figment.network/chains/cosmoshub-1";
     case TWCoinTypeNEO: return "https://neoscan.io";
     case TWCoinTypeKIN: return "https://kinexplorer.com";
+    case TWCoinTypeNULS: return "https://nuls.world";
     default: return "";
     }
 }
@@ -219,6 +223,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeCosmos: string = "cosmos"; break;
     case TWCoinTypeNEO: string = "neo"; break;
     case TWCoinTypeKIN: string = "kin"; break;
+    case TWCoinTypeNULS: string = "nuls"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -255,6 +260,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeCosmos: string = "Cosmos"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "Kin"; break;
+    case TWCoinTypeNULS: string = "NULS"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
