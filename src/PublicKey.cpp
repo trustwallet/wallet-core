@@ -32,5 +32,4 @@ bool PublicKey::verify(const std::vector<uint8_t>& signature, const std::vector<
         return ed25519_sign_open(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
     case PublicKeyType::nist256p1:
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
-    }
-}
+    }}
