@@ -98,7 +98,7 @@ std::string Address::string() const
 
 uint16_t Address::chainID() const
 {
-    return decode16LE((uint8_t*) bytes.data());
+    return decode16LE(bytes.data());
 }
 
 uint8_t Address::type() const
