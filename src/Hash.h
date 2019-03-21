@@ -47,6 +47,9 @@ Data sha3_512(const byte* begin, const byte* end);
 /// Computes the RIPEMD160 hash.
 Data ripemd(const byte* begin, const byte* end);
 
+/// Computes the Blake256 hash.
+Data blake256(const byte* begin, const byte* end);
+
 /// Computes the Blake2b hash.
 Data blake2b(const byte* begin, const byte* end, size_t size);
 
@@ -107,6 +110,13 @@ template<typename T>
 Data ripemd(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return ripemd(begin, begin + data.size());
+}
+
+/// Computes the Blake256 hash.
+template<typename T>
+Data blake256(const T& data) {
+    const auto begin = reinterpret_cast<const byte*>(data.data());
+    return blake256(begin, begin + data.size());
 }
 
 /// Computes the Blake2b hash.

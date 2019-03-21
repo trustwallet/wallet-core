@@ -6,4 +6,4 @@
 
 import Foundation
 
-typealias TWEthereumSigningInput = TW_Ethereum_Proto_SigningInput
+public typealias TWEthereumSigningInput = TW_Ethereum_Proto_SigningInput

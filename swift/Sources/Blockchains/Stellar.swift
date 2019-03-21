@@ -12,3 +12,9 @@ public typealias TWStellarMemoText = TW_Stellar_Proto_MemoText
 public typealias TWStellarMemoVoid = TW_Stellar_Proto_MemoVoid
 public typealias TWStellarSigningInput = TW_Stellar_Proto_SigningInput
 public typealias TWStellarSigningOutput = TW_Stellar_Proto_SigningOutput
+
+extension StellarAddress: Address {
+    public var data: Data {
+        return keyHash
+    }
+}

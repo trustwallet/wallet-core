@@ -60,7 +60,7 @@ struct TWAccount *_Nullable TWStoredKeyAccount(struct TWStoredKey *_Nonnull key,
 
 /// Returns the account for a specific coin, creating it if necessary.
 TW_EXPORT_METHOD
-struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, TWString *_Nonnull password);
+struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, struct TWHDWallet *_Nullable wallet);
 
 /// Adds a new account.
 TW_EXPORT_METHOD
