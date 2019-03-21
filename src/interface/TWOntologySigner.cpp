@@ -61,7 +61,7 @@ TW_Ontology_Proto_SigningOutput TWOntologyOngTransfer(const Ontology::Proto::Sig
 }
 
 TW_Ontology_Proto_SigningOutput TWOntologyOnt(const Ontology::Proto::SigningInput &input) {
-    auto method = std::string(input.method().begin(), input.method().begin());
+    auto method = std::string(input.method().begin(), input.method().end());
     if (method == "transfer") {
         return TWOntologyOntTransfer(input);
     }
@@ -73,7 +73,7 @@ TW_Ontology_Proto_SigningOutput TWOntologyOnt(const Ontology::Proto::SigningInpu
 }
 
 TW_Ontology_Proto_SigningOutput TWOntologyOng(const Ontology::Proto::SigningInput &input) {
-    auto method = std::string(input.method().begin(), input.method().begin());
+    auto method = std::string(input.method().begin(), input.method().end());
     if (method == "transfer") {
         return TWOntologyOngTransfer(input);
     }
@@ -87,7 +87,7 @@ TW_Ontology_Proto_SigningOutput TWOntologyOng(const Ontology::Proto::SigningInpu
 TW_Ontology_Proto_SigningOutput TWOntologySignerSign(TW_Ontology_Proto_SigningInput data) {
     Ontology::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    auto contract = std::string(input.contract().begin(), input.contract().begin());
+    auto contract = std::string(input.contract().begin(), input.contract().end());
     if (contract == "ONT") {
         return TWOntologyOnt(input);
     }
