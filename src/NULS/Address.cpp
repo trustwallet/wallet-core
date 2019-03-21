@@ -111,7 +111,7 @@ bool Address::isValid() const
     if (chainID() != 8964) {
         return false;
     }
-    if (this->type()!=0x01 && this->type()!=0x02) {
+    if (type() != 0x01 && type() != 0x02) {
         return false;
     }
 
