@@ -15,7 +15,6 @@ namespace TW {
 namespace Ontology {
 
 class Address {
-
 private:
 
     std::vector<uint8_t> toScriptHash(std::vector<uint8_t> &data);

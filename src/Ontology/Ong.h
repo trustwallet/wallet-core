@@ -14,7 +14,6 @@ namespace TW {
 namespace Ontology {
 
 class Ong : public Asset {
-
 private:
 
     static const uint8_t version = 0x00;

@@ -18,7 +18,6 @@
 namespace TW {
 namespace Ontology {
 
-
 class ParamsBuilder {
 
 private:

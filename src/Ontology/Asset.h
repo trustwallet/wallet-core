@@ -18,7 +18,6 @@ namespace TW {
 namespace Ontology {
 
 class Asset {
-
 protected:
 
     const uint8_t txType = 0xD1;

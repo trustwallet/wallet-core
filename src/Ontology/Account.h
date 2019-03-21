@@ -18,7 +18,6 @@ namespace TW {
 namespace Ontology {
 
 class Account {
-
 private:
 
     Data publicKey;
