@@ -7,6 +7,9 @@
 #pragma once
 
 #include "TWData.h"
+#include "TWOntologyProto.h"
 
 typedef TWData *_Nonnull TW_Ontology_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Ontology_Proto_SigningOutput;
+
+TW_Ontology_Proto_SigningOutput TWOntologySignerSign(TW_Ontology_Proto_SigningInput data);
