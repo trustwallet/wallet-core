@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 
+#include "Data.h"
 #include "ParamsBuilder.h"
 
 using namespace TW;
@@ -16,8 +17,8 @@ void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const boost::any &pa
         builder.push(boost::any_cast<std::string>(param));
     } else if (param.type() == typeid(std::array<uint8_t, 20>)) {
         builder.push(boost::any_cast<std::array<uint8_t, 20>>(param));
-    } else if (param.type() == typeid(std::vector<uint8_t>)) {
-        builder.push(boost::any_cast<std::vector<uint8_t>>(param));
+    } else if (param.type() == typeid(Data)) {
+        builder.push(boost::any_cast<Data>(param));
     } else if (param.type() == typeid(uint64_t)) {
         builder.push(boost::any_cast<uint64_t>(param));
     } else if (param.type() == typeid(std::vector<boost::any>)) {
@@ -48,14 +49,14 @@ void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const std::string &p
 }
 
 void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const std::array<uint8_t, 20> &param) {
-    builder.pushBack(std::vector<uint8_t>(param.begin(), param.end()));
+    builder.pushBack(Data(param.begin(), param.end()));
 }
 
-void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const std::vector<uint8_t> &param) {
+void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const Data &param) {
     builder.push(param);
 }
 
-void ParamsBuilder::pushVar(const std::vector<uint8_t> &data) {
+void ParamsBuilder::pushVar(const Data &data) {
     pushVar(data.size());
     bytes.insert(bytes.end(), data.begin(), data.end());
 }
@@ -78,14 +79,14 @@ void ParamsBuilder::pushVar(T data) {
 }
 
 void ParamsBuilder::push(const std::string &data) {
-    push(std::vector<uint8_t>(data.begin(), data.end()));
+    push(Data(data.begin(), data.end()));
 }
 
 void ParamsBuilder::push(const std::array<uint8_t, 20> &data) {
-    push(std::vector<uint8_t>(data.begin(), data.end()));
+    push(Data(data.begin(), data.end()));
 }
 
-void ParamsBuilder::push(const std::vector<uint8_t> &data) {
+void ParamsBuilder::push(const Data &data) {
     auto dataSize = data.size();
     if (dataSize < 75) {
         bytes.push_back(static_cast<uint8_t>(dataSize));
@@ -109,9 +110,9 @@ void ParamsBuilder::push(uint64_t num) {
         num += 80;
         bytes.push_back(static_cast<uint8_t>(num));
     } else if (num < 128) {
-        push(std::vector<uint8_t>{static_cast<uint8_t>(num)});
+        push(Data{static_cast<uint8_t>(num)});
     } else {
-        push(std::vector<uint8_t>{static_cast<uint8_t>(num), static_cast<uint8_t>((num >> 8))});
+        push(Data{static_cast<uint8_t>(num), static_cast<uint8_t>((num >> 8))});
     }
 }
 
@@ -147,20 +148,20 @@ void ParamsBuilder::push(uint8_t num) {
         num += 80;
         bytes.push_back(static_cast<uint8_t>(num));
     } else if (num < 128) {
-        push(std::vector<uint8_t>{num});
+        push(Data{num});
     } else {
-        push(std::vector<uint8_t>{num, 0x00});
+        push(Data{num, 0x00});
     }
 }
 
-std::vector<uint8_t> ParamsBuilder::buildNativeInvokeCode(const std::vector<uint8_t> &contractAddress, uint8_t version, const std::string &method, const boost::any &params) {
+Data ParamsBuilder::buildNativeInvokeCode(const Data &contractAddress, uint8_t version, const std::string &method, const boost::any &params) {
     ParamsBuilder builder;
     ParamsBuilder::buildNeoVmParam(builder, params);
-    builder.push(std::vector<uint8_t>(method.begin(), method.end()));
+    builder.push(Data(method.begin(), method.end()));
     builder.push(contractAddress);
     builder.push(version);
     builder.pushBack((uint8_t) 0x68);
     std::string nativeInvoke = "Ontology.Native.Invoke";
-    builder.push(std::vector<uint8_t>(nativeInvoke.begin(), nativeInvoke.end()));
+    builder.push(Data(nativeInvoke.begin(), nativeInvoke.end()));
     return builder.getBytes();
 }
