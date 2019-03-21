@@ -22,7 +22,8 @@ class BitcoinAddressTests: XCTestCase {
     }
 
     func testFromPrivateKey() {
-        let privateKey = PrivateKey(wif: "L5XECLxq1MDvBeYXjZwz5tTYsFZRWmaYziY3Wvc2bqSRAuRcBqhg")!
+        let data = Data(hexString: "f7b5f7a8090c5c93cd2d6d01383c9286b221ea78d8bef3e482f0c5cdde653e68")!
+        let privateKey = PrivateKey(data: data)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: P2SHPrefix.bitcoin.rawValue)
 
@@ -30,7 +31,8 @@ class BitcoinAddressTests: XCTestCase {
     }
 
     func testFromPrivateKeyUncompressed() {
-        let privateKey = PrivateKey(wif: "L5XECLxq1MDvBeYXjZwz5tTYsFZRWmaYziY3Wvc2bqSRAuRcBqhg")!
+        let data = Data(hexString: "f7b5f7a8090c5c93cd2d6d01383c9286b221ea78d8bef3e482f0c5cdde653e68")!
+        let privateKey = PrivateKey(data: data)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let address = BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: P2SHPrefix.bitcoin.rawValue)
 
@@ -38,7 +40,8 @@ class BitcoinAddressTests: XCTestCase {
     }
 
     func testFromPrivateKeySegwitAddress() {
-        let privateKey = PrivateKey(wif: "KxZX6Jv3to6RWnhsffTcLLryRnNyyc8Ng2G8P9LFkbCdzGDEhNy1")!
+        let data = Data(hexString: "28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4")!
+        let privateKey = PrivateKey(data: data)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
         let address = BitcoinAddress(publicKey: publicKey, prefix: P2PKHPrefix.bitcoin.rawValue)
