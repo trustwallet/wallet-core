@@ -108,7 +108,7 @@ uint8_t Address::type() const
 
 bool Address::isValid() const
 {
-    if (this->chainID()!=8964) {
+    if (chainID() != 8964) {
         return false;
     }
     if (this->type()!=0x01 && this->type()!=0x02) {
