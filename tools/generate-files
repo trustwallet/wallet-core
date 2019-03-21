@@ -43,4 +43,6 @@ if [ -x "$(command -v xcodegen)" ]; then
     xcodegen
     pod install
     popd
+else
+    echo -e "\nWARNING: Skipped generating Xcode project because the xcodegen tool is not installed."
 fi
