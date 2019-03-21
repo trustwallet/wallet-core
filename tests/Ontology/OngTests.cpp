@@ -17,7 +17,7 @@ using namespace TW::Ontology;
 
 
 TEST(OntologyOng, queryBalance) {
-    std::string address = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD";
+    auto address = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
     auto tx = Ong().balanceOf(address);
     auto serializedTx = hex(tx.serialize());
     auto hexInvokeCode = "1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f661400000000000000000000000000000000000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b65";
