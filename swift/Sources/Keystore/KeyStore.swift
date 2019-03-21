@@ -67,9 +67,9 @@ public final class KeyStore {
     /// - json: json wallet
     /// - password: key password
     /// - newPassword: password to use for the imported key
-    /// - coin: coin to use for this wallet
+    /// - coins: coins to use for this wallet
     /// - Returns: new account
-    public func `import`(json: Data, password: String, newPassword: String, coin: CoinType) throws -> Wallet {
+    public func `import`(json: Data, password: String, newPassword: String, coins: [CoinType]) throws -> Wallet {
         guard let key = StoredKey.importJSON(json: json) else {
             throw Error.invalidKey
         }
@@ -78,13 +78,13 @@ public final class KeyStore {
         }
 
         if let mnemonic = checkMnemonic(data) {
-            return try self.import(mnemonic: mnemonic, encryptPassword: newPassword, coin: coin)
+            return try self.import(mnemonic: mnemonic, encryptPassword: newPassword, coins: coins)
         }
 
         guard let privateKey = PrivateKey(data: data) else {
             throw Error.invalidKey
         }
-        return try self.import(privateKey: privateKey, password: newPassword, coin: coin)
+        return try self.import(privateKey: privateKey, password: newPassword, coin: coins.first ?? .ethereum)
     }
 
     private func checkMnemonic(_ data: Data) -> String? {
@@ -118,16 +118,17 @@ public final class KeyStore {
     /// - Parameters:
     ///   - mnemonic: wallet's mnemonic phrase
     ///   - encryptPassword: password to use for encrypting
-    ///   - coin: coin to add as the wallet's first account
+    ///   - coins: coins to add
     /// - Returns: new account
-    public func `import`(mnemonic: String, encryptPassword: String, coin: CoinType) throws -> Wallet {
+    public func `import`(mnemonic: String, encryptPassword: String, coins: [CoinType]) throws -> Wallet {
         guard HDWallet.isValid(mnemonic: mnemonic) else {
             throw Error.invalidMnemonic
         }
 
-        let key = StoredKey.importHDWallet(mnemonic: mnemonic, password: encryptPassword, coin: coin)
+        let key = StoredKey.importHDWallet(mnemonic: mnemonic, password: encryptPassword, coin: coins.first ?? .ethereum)
         let url = makeAccountURL()
         let wallet = Wallet(keyURL: url, key: key)
+        _ = try wallet.getAccounts(password: encryptPassword, coins: coins)
 
         wallets.append(wallet)
 
