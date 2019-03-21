@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 
+#include "Data.h"
 #include "Account.h"
 #include "Transaction.h"
 #include "BinaryCoding.h"
@@ -23,7 +24,7 @@ protected:
     const uint8_t txType = 0xD1;
 
 public:
-    virtual std::vector<uint8_t> contractAddress() = 0;
+    virtual Data contractAddress() = 0;
 
     virtual Transaction balanceOf(const std::string &address) = 0;
 
