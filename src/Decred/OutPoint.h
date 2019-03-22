@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../Data.h"
+#include "../proto/Bitcoin.pb.h"
 
 #include <array>
 #include <algorithm>
@@ -37,6 +38,13 @@ public:
     /// Initializes an out-point reference.
     OutPoint(const Data& hash, uint32_t index, int8_t tree) : hash(), index(index), tree(tree) {
         std::copy(hash.begin(), hash.end(), this->hash.begin());
+    }
+
+    /// Initializes an out-point from a Protobuf out-point.
+    OutPoint(const Bitcoin::Proto::OutPoint& other) {
+        std::copy(other.hash().begin(), other.hash().begin() + hash.size(), hash.begin());
+        index = other.index();
+        tree = 0;
     }
 
     /// Encodes the out-point into the provided buffer.

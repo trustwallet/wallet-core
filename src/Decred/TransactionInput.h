@@ -42,9 +42,3 @@ public:
 };
 
 }} // namespace
-
-/// Wrapper for C interface.
-struct TWDecredTransactionInput {
-    TW::Decred::TransactionInput impl;
-};
-

@@ -52,3 +52,21 @@ message TransactionOutput {
     // Usually contains the public key as a Decred script setting up conditions to claim this output.
     bytes script = 3;
 }
+
+// Transaction signing output.
+message SigningOutput {
+    // Resulting transaction. Note that the amount may be different than the requested amount to account for fees and available funds.
+    Transaction transaction = 1;
+
+    // Signed and encoded transaction bytes.
+    bytes encoded = 2;
+
+    // Total transaction fees.
+    int64 fee = 3;
+
+    // Maximum spendable amount.
+    int64 max_amount = 4;
+
+    // Transaction id
+    string transaction_id = 5;
+}

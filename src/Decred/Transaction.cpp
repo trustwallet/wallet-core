@@ -174,6 +174,27 @@ void Transaction::encodeWitness(Data& data) const {
 	}
 }
 
+Proto::Transaction Transaction::proto() const {
+    auto protoTx = Proto::Transaction();
+    protoTx.set_version(version);
+    protoTx.set_locktime(lockTime);
+
+    for (const auto& input : inputs) {
+        auto protoInput = protoTx.add_inputs();
+        protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(), input.previousOutput.hash.size());
+        protoInput->mutable_previousoutput()->set_index(input.previousOutput.index);
+        protoInput->set_sequence(input.sequence);
+        protoInput->set_script(input.script.bytes.data(), input.script.bytes.size());
+    }
+
+    for (const auto& output : outputs) {
+        auto protoOutput = protoTx.add_outputs();
+        protoOutput->set_value(output.value);
+        protoOutput->set_script(output.script.bytes.data(), output.script.bytes.size());
+    }
+
+    return protoTx;
+}
 
 namespace {
     /// Returns the number of bytes the passed parameters would take when encoded

@@ -8,6 +8,7 @@
 
 #include "Transaction.h"
 #include "TransactionInput.h"
+#include "TransactionBuilder.h"
 #include "../Bitcoin/Amount.h"
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/TransactionPlan.h"
@@ -47,6 +48,11 @@ public:
 
     /// Initializes a transaction signer with signing input.
     Signer(Bitcoin::Proto::SigningInput&& input) : input(input) {}
+
+    /// Initializes a transaction signer with signing input, a transaction, and a hash type.
+    Signer(Bitcoin::Proto::SigningInput&& input, Bitcoin::TransactionPlan plan) : input(input), plan(plan) {
+        transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
+    }
 
     /// Signs the transaction.
     ///

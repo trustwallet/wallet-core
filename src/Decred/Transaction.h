@@ -10,6 +10,7 @@
 #include "TransactionOutput.h"
 #include "../Data.h"
 #include "../Bitcoin/Script.h"
+#include "../proto/Decred.pb.h"
 
 #include <TrustWalletCore/TWBitcoin.h>
 #include <vector>
@@ -56,6 +57,9 @@ struct Transaction {
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
 
+    /// Converts to Protobuf model
+    Proto::Transaction proto() const;
+
 private:
     Data computePrefixHash(
         const std::vector<TransactionInput>& inputsToSign,
@@ -71,8 +75,3 @@ private:
 };
 
 }} // namespace
-
-/// Wrapper for C interface.
-struct TWBitcoinTransaction {
-    TW::Decred::Transaction impl;
-};
