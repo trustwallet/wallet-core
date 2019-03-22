@@ -17,8 +17,6 @@
 #include "../proto/Bitcoin.pb.h"
 #include "../Zcash/Transaction.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -72,15 +70,6 @@ private:
 
     /// Returns the redeem script for the given script hash.
     Data scriptForScriptHash(const Data& hash) const;
-
-    /// Encodes a small integer
-    static uint8_t encodeNumber(int n) {
-        assert(n >= 0 && n <= 16);
-        if (n == 0) {
-            return OP_0;
-        }
-        return OP_1 + uint8_t(n - 1);
-    }
 };
 
 }} // namespace
