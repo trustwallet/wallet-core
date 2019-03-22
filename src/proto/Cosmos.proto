@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package TW.Cosmos.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message TestTransaction {
+    repeated bytes signers = 1; 
+}
+
+// Input data necessary to create a signed order.
+message SigningInput {
+    uint64 account_number = 1;
+    string chain_id = 2;
+    bytes fee = 3;
+    string memo = 4;
+    uint64 sequence = 5; 
+}

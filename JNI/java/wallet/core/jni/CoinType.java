@@ -39,13 +39,7 @@ public enum CoinType {
     WANCHAIN (5718350),
     XDAI (700),
     ZCASH (133),
-    ZCOIN (136),
-    NIMIQ (242),
-    STELLAR (148),
-    AION (425),
-    COSMOS (118),
-    NEO (888),
-    KIN (2017);
+    ZCOIN (136);
 
     private final int value;
     CoinType(int value) {
@@ -84,12 +78,6 @@ public enum CoinType {
             case 700: return CoinType.XDAI;
             case 133: return CoinType.ZCASH;
             case 136: return CoinType.ZCOIN;
-            case 242: return CoinType.NIMIQ;
-            case 148: return CoinType.STELLAR;
-            case 425: return CoinType.AION;
-            case 118: return CoinType.COSMOS;
-            case 888: return CoinType.NEO;
-            case 2017: return CoinType.KIN;
             default: return null;
         }
     }
