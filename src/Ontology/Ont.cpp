@@ -21,9 +21,8 @@ Transaction Ont::balanceOf(const Address &address) {
     return tx;
 }
 
-Transaction Ont::transfer(const Account &from, std::string &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) {
-    auto toAddress = Address(to);
-    std::unordered_map<std::string, boost::any> transferParam{{"from", from.getAddress().data}, {"to", toAddress.data}, {"amount", amount}};
+Transaction Ont::transfer(const Account &from, const Address &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) {
+    std::unordered_map<std::string, boost::any> transferParam{{"from", from.getAddress().data}, {"to", to.data}, {"amount", amount}};
     std::vector<boost::any> args{transferParam};
     auto invokeCode = ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
     auto tx = Transaction(version, txType, random32(), gasPrice, gasLimit, payer.getAddress().string(), invokeCode);
