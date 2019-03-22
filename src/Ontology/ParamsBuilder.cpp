@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "Data.h"
+#include "OpCode.h"
 #include "ParamsBuilder.h"
 
 using namespace TW;
