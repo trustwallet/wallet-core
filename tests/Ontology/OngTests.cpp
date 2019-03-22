@@ -27,11 +27,9 @@ TEST(OntologyOng, queryBalance) {
 }
 
 TEST(OntologyOng, transfer) {
-    std::vector<uint8_t> ontContract{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
     auto acct1 = Account("4646464646464646464646464646464646464646464646464646464646464646");
     auto acct2 = Account("4646464646464646464646464646464646464646464646464646464646464652");
-    auto fromAddress = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
-    std::string toAddress = "Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn";
+    auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     uint64_t amount = 1;
     uint64_t gasPrice = 500;
     uint64_t gasLimit = 20000;
