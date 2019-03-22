@@ -23,8 +23,8 @@ TEST(OntologyOnt, queryBalance) {
     auto address = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
     auto tx = Ont().balanceOf(address);
     auto serializedTx = hex(tx.serialize());
-    ASSERT_EQ(86, serializedTx.find("1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f66140000000000000000000000000000000000000001"));
     EXPECT_EQ(0, serializedTx.find("00d1"));
+    ASSERT_EQ(86, serializedTx.find("1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f66140000000000000000000000000000000000000001"));
 }
 
 TEST(OntologyOnt, transfer) {
