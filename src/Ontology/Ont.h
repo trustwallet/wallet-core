@@ -29,7 +29,7 @@ public:
 
     Transaction balanceOf(const Address &address) override;
 
-    Transaction transfer(const Account &from, std::string &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) override;
+    Transaction transfer(const Account &from, const Address &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) override;
 
 };
 
