@@ -243,7 +243,7 @@ Script Script::buildPayToWitnessScriptHash(const std::vector<uint8_t>& scriptHas
 }
 
 void Script::encode(std::vector<uint8_t>& data) const {
-    writeCompactSize(bytes.size(), data);
+    encodeVarInt(bytes.size(), data);
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 

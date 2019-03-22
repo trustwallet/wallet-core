@@ -63,27 +63,57 @@ static inline uint64_t decode64LE(const uint8_t *_Nonnull src) {
         | (static_cast<uint64_t>(src[7]) << 56);
 }
 
-/// Encodes a size into the provided buffer using Bitcoin's compact representation.
-inline void writeCompactSize(uint64_t size, std::vector<uint8_t>& data) {
-    if (size < 253) {
+/// Returns the number of bytes it would take to serialize the provided value
+/// as a variable-length integer (varint).
+inline std::size_t varIntSize(std::size_t value) {
+	// The value is small enough to be represented by itself.
+	if (value < 0xfd) {
+		return 1;
+	}
+
+	// Discriminant 1 byte plus 2 bytes for the uint16.
+	if (value <= UINT16_MAX) {
+		return 3;
+	}
+
+	// Discriminant 1 byte plus 4 bytes for the uint32.
+	if (value <= UINT32_MAX) {
+		return 5;
+	}
+
+	// Discriminant 1 byte plus 8 bytes for the uint64.
+	return 9;
+}
+
+/// Encodes a value as a variable-length integer.
+///
+/// A variable-length integer (varint) is an encoding for integers up to a max
+/// value of 2^64-1 that uses a variable number of bytes depending on the value
+/// being encoded. It produces fewer bytes for smaller numbers as opposed to a
+/// fixed-size encoding.
+///
+/// @returns the number of bytes written.
+inline std::size_t encodeVarInt(std::size_t size, std::vector<uint8_t>& data) {
+    if (size < 0xfd) {
         data.push_back(static_cast<uint8_t>(size));
-        return;
-    }
-    
-    if (size <= UINT16_MAX) {
-        data.push_back(253);
-        encode16LE((uint16_t) size, data);
-        return;
-    }
-    
-    if (size <= UINT32_MAX) {
-        data.push_back(254);
-        encode32LE((uint32_t) size, data);
-        return;
+        return 1;
     }
 
-    data.push_back(255);
+    if (size <= UINT16_MAX) {
+        data.push_back(0xfd);
+        encode16LE((uint16_t) size, data);
+        return 3;
+    }
+
+    if (size <= UINT32_MAX) {
+        data.push_back(0xfe);
+        encode32LE((uint32_t) size, data);
+        return 5;
+    }
+
+    data.push_back(0xff);
     encode64LE((uint64_t) size, data);
+    return 9;
 }
 
 /// Encodes a 16-bit big-endian value into the provided buffer.

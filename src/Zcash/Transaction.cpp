@@ -149,13 +149,13 @@ void Transaction::encode(Data& data) const {
     encode32LE(versionGroupId, data);
 
     // vin
-    writeCompactSize(inputs.size(), data);
+    encodeVarInt(inputs.size(), data);
     for (auto& input : inputs) {
         input.encode(data);
     }
 
     // vout
-    writeCompactSize(outputs.size(), data);
+    encodeVarInt(outputs.size(), data);
     for (auto& output : outputs) {
         output.encode(data);
     }
@@ -165,11 +165,11 @@ void Transaction::encode(Data& data) const {
     encode64LE(valueBalance, data);
 
     // vShieldedSpend
-    writeCompactSize(0, data);
+    encodeVarInt(0, data);
     // vShieldedOutput
-    writeCompactSize(0, data);
+    encodeVarInt(0, data);
     // vJoinSplit
-    writeCompactSize(0, data);
+    encodeVarInt(0, data);
 }
 
 Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType, uint64_t amount, TWBitcoinSignatureVersion version) const {
