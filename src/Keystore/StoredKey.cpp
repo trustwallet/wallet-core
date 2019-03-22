@@ -60,33 +60,49 @@ HDWallet StoredKey::wallet(const std::string& password) {
     return HDWallet(mnemonic, "");
 }
 
-const Account& StoredKey::account(TWCoinType coin, const std::string& password) {
+const Account* StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
     for (auto& account : accounts) {
         if (account.coin() == coin) {
-            return account;
+            if (account.address.empty() && wallet != nullptr) {
+                account.address = wallet->deriveAddress(coin);
+            }
+            return &account;
         }
     }
 
-    const auto wallet = this->wallet(password);
+    if (wallet == nullptr) {
+        return nullptr;
+    }
+
     const auto derivationPath = TW::derivationPath(coin);
-    const auto address = TW::deriveAddress(coin, wallet.getKey(derivationPath));
-    const auto version = TW::xpubVersion(coin);
+    const auto address = wallet->deriveAddress(coin);
 
     std::string extendedPublicKey;
+    const auto version = TW::xpubVersion(coin);
     if (version != TWHDVersionNone) {
-        extendedPublicKey = wallet.getExtendedPublicKey(derivationPath.purpose(), coin, version);
+        extendedPublicKey = wallet->getExtendedPublicKey(derivationPath.purpose(), coin, version);
     }
 
     accounts.emplace_back(address, derivationPath, extendedPublicKey);
-    return accounts.back();
+    return &accounts.back();
+}
+
+const Account* StoredKey::account(TWCoinType coin) const {
+    for (auto& account : accounts) {
+        if (account.coin() == coin) {
+            return &account;
+        }
+    }
+    return nullptr;
 }
 
 const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& password) {
-    const auto& account = this->account(coin, password);
     switch (type) {
-    case StoredKeyType::mnemonicPhrase:
-        return wallet(password).getKey(account.derivationPath);
-
+    case StoredKeyType::mnemonicPhrase: {
+        const auto wallet = this->wallet(password);
+        const auto account = *this->account(coin, &wallet);
+        return wallet.getKey(account.derivationPath);
+    }
     case StoredKeyType::privateKey:
         return PrivateKey(payload.decrypt(password));
 
