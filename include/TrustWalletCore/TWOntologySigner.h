@@ -12,4 +12,9 @@
 typedef TWData *_Nonnull TW_Ontology_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Ontology_Proto_SigningOutput;
 
+TW_EXTERN_C_BEGIN
+
+TW_EXPORT_STATIC_METHOD
 TW_Ontology_Proto_SigningOutput TWOntologySignerSign(TW_Ontology_Proto_SigningInput data);
+
+TW_EXTERN_C_END
