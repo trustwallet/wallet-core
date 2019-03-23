@@ -616,6 +616,11 @@ public final class Cosmos {
      * <code>uint64 sequence = 4;</code>
      */
     long getSequence();
+
+    /**
+     * <code>bytes private_Key = 5;</code>
+     */
+    com.google.protobuf.ByteString getPrivateKey();
   }
   /**
    * <pre>
@@ -636,6 +641,7 @@ public final class Cosmos {
     private SigningInput() {
       chainId_ = "";
       memo_ = "";
+      privateKey_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -682,6 +688,11 @@ public final class Cosmos {
             case 32: {
 
               sequence_ = input.readUInt64();
+              break;
+            }
+            case 42: {
+
+              privateKey_ = input.readBytes();
               break;
             }
             default: {
@@ -802,6 +813,15 @@ public final class Cosmos {
       return sequence_;
     }
 
+    public static final int PRIVATE_KEY_FIELD_NUMBER = 5;
+    private com.google.protobuf.ByteString privateKey_;
+    /**
+     * <code>bytes private_Key = 5;</code>
+     */
+    public com.google.protobuf.ByteString getPrivateKey() {
+      return privateKey_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -828,6 +848,9 @@ public final class Cosmos {
       if (sequence_ != 0L) {
         output.writeUInt64(4, sequence_);
       }
+      if (!privateKey_.isEmpty()) {
+        output.writeBytes(5, privateKey_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -850,6 +873,10 @@ public final class Cosmos {
       if (sequence_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(4, sequence_);
+      }
+      if (!privateKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(5, privateKey_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -874,6 +901,8 @@ public final class Cosmos {
           .equals(other.getMemo())) return false;
       if (getSequence()
           != other.getSequence()) return false;
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -895,6 +924,8 @@ public final class Cosmos {
       hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getSequence());
+      hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getPrivateKey().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -1040,6 +1071,8 @@ public final class Cosmos {
 
         sequence_ = 0L;
 
+        privateKey_ = com.google.protobuf.ByteString.EMPTY;
+
         return this;
       }
 
@@ -1070,6 +1103,7 @@ public final class Cosmos {
         result.chainId_ = chainId_;
         result.memo_ = memo_;
         result.sequence_ = sequence_;
+        result.privateKey_ = privateKey_;
         onBuilt();
         return result;
       }
@@ -1131,6 +1165,9 @@ public final class Cosmos {
         }
         if (other.getSequence() != 0L) {
           setSequence(other.getSequence());
+        }
+        if (other.getPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
+          setPrivateKey(other.getPrivateKey());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -1350,6 +1387,35 @@ public final class Cosmos {
         onChanged();
         return this;
       }
+
+      private com.google.protobuf.ByteString privateKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes private_Key = 5;</code>
+       */
+      public com.google.protobuf.ByteString getPrivateKey() {
+        return privateKey_;
+      }
+      /**
+       * <code>bytes private_Key = 5;</code>
+       */
+      public Builder setPrivateKey(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        privateKey_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes private_Key = 5;</code>
+       */
+      public Builder clearPrivateKey() {
+        
+        privateKey_ = getDefaultInstance().getPrivateKey();
+        onChanged();
+        return this;
+      }
       @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -1423,10 +1489,11 @@ public final class Cosmos {
   static {
     java.lang.String[] descriptorData = {
       "\n\014Cosmos.proto\022\017TW.Cosmos.Proto\"\"\n\017TestT" +
-      "ransaction\022\017\n\007signers\030\001 \003(\014\"X\n\014SigningIn" +
+      "ransaction\022\017\n\007signers\030\001 \003(\014\"m\n\014SigningIn" +
       "put\022\026\n\016account_number\030\001 \001(\004\022\020\n\010chain_id\030" +
-      "\002 \001(\t\022\014\n\004memo\030\003 \001(\t\022\020\n\010sequence\030\004 \001(\004B\027\n" +
-      "\025wallet.core.jni.protob\006proto3"
+      "\002 \001(\t\022\014\n\004memo\030\003 \001(\t\022\020\n\010sequence\030\004 \001(\004\022\023\n" +
+      "\013private_Key\030\005 \001(\014B\027\n\025wallet.core.jni.pr" +
+      "otob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1451,7 +1518,7 @@ public final class Cosmos {
     internal_static_TW_Cosmos_Proto_SigningInput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Cosmos_Proto_SigningInput_descriptor,
-        new java.lang.String[] { "AccountNumber", "ChainId", "Memo", "Sequence", });
+        new java.lang.String[] { "AccountNumber", "ChainId", "Memo", "Sequence", "PrivateKey", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

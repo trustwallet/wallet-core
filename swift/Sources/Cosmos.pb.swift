@@ -45,6 +45,8 @@ public struct TW_Cosmos_Proto_SigningInput {
 
   public var sequence: UInt64 = 0
 
+  public var privateKey: Data = SwiftProtobuf.Internal.emptyData
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -90,6 +92,7 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
     2: .standard(proto: "chain_id"),
     3: .same(proto: "memo"),
     4: .same(proto: "sequence"),
+    5: .standard(proto: "private_Key"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -99,6 +102,7 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 2: try decoder.decodeSingularStringField(value: &self.chainID)
       case 3: try decoder.decodeSingularStringField(value: &self.memo)
       case 4: try decoder.decodeSingularUInt64Field(value: &self.sequence)
+      case 5: try decoder.decodeSingularBytesField(value: &self.privateKey)
       default: break
       }
     }
@@ -117,6 +121,9 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
     if self.sequence != 0 {
       try visitor.visitSingularUInt64Field(value: self.sequence, fieldNumber: 4)
     }
+    if !self.privateKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.privateKey, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -125,6 +132,7 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs.chainID != rhs.chainID {return false}
     if lhs.memo != rhs.memo {return false}
     if lhs.sequence != rhs.sequence {return false}
+    if lhs.privateKey != rhs.privateKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -13,4 +13,6 @@ message SigningInput {
     string chain_id = 2;
     string memo = 3;
     uint64 sequence = 4; 
+
+    bytes private_Key = 5;
 }

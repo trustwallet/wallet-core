@@ -19,8 +19,10 @@ using namespace TW;
 using namespace TW::Cosmos;
 
 std::vector<uint8_t> Signer::sign() const {
-    signaturePreimage();
-    return std::vector<uint8_t>();
+    auto key = PrivateKey(input.private_key());
+    auto hash = Hash::sha256(signaturePreimage());
+    auto signature = key.sign(hash, TWCurveSECP256k1);
+    return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
 }
 
 std::string Signer::signaturePreimage() const {
