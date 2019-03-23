@@ -11,7 +11,6 @@ message TestTransaction {
 message SigningInput {
     uint64 account_number = 1;
     string chain_id = 2;
-    bytes fee = 3;
-    string memo = 4;
-    uint64 sequence = 5; 
+    string memo = 3;
+    uint64 sequence = 4; 
 }

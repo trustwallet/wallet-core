@@ -603,22 +603,17 @@ public final class Cosmos {
         getChainIdBytes();
 
     /**
-     * <code>bytes fee = 3;</code>
-     */
-    com.google.protobuf.ByteString getFee();
-
-    /**
-     * <code>string memo = 4;</code>
+     * <code>string memo = 3;</code>
      */
     java.lang.String getMemo();
     /**
-     * <code>string memo = 4;</code>
+     * <code>string memo = 3;</code>
      */
     com.google.protobuf.ByteString
         getMemoBytes();
 
     /**
-     * <code>uint64 sequence = 5;</code>
+     * <code>uint64 sequence = 4;</code>
      */
     long getSequence();
   }
@@ -640,7 +635,6 @@ public final class Cosmos {
     }
     private SigningInput() {
       chainId_ = "";
-      fee_ = com.google.protobuf.ByteString.EMPTY;
       memo_ = "";
     }
 
@@ -680,17 +674,12 @@ public final class Cosmos {
               break;
             }
             case 26: {
-
-              fee_ = input.readBytes();
-              break;
-            }
-            case 34: {
               java.lang.String s = input.readStringRequireUtf8();
 
               memo_ = s;
               break;
             }
-            case 40: {
+            case 32: {
 
               sequence_ = input.readUInt64();
               break;
@@ -770,19 +759,10 @@ public final class Cosmos {
       }
     }
 
-    public static final int FEE_FIELD_NUMBER = 3;
-    private com.google.protobuf.ByteString fee_;
-    /**
-     * <code>bytes fee = 3;</code>
-     */
-    public com.google.protobuf.ByteString getFee() {
-      return fee_;
-    }
-
-    public static final int MEMO_FIELD_NUMBER = 4;
+    public static final int MEMO_FIELD_NUMBER = 3;
     private volatile java.lang.Object memo_;
     /**
-     * <code>string memo = 4;</code>
+     * <code>string memo = 3;</code>
      */
     public java.lang.String getMemo() {
       java.lang.Object ref = memo_;
@@ -797,7 +777,7 @@ public final class Cosmos {
       }
     }
     /**
-     * <code>string memo = 4;</code>
+     * <code>string memo = 3;</code>
      */
     public com.google.protobuf.ByteString
         getMemoBytes() {
@@ -813,10 +793,10 @@ public final class Cosmos {
       }
     }
 
-    public static final int SEQUENCE_FIELD_NUMBER = 5;
+    public static final int SEQUENCE_FIELD_NUMBER = 4;
     private long sequence_;
     /**
-     * <code>uint64 sequence = 5;</code>
+     * <code>uint64 sequence = 4;</code>
      */
     public long getSequence() {
       return sequence_;
@@ -842,14 +822,11 @@ public final class Cosmos {
       if (!getChainIdBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, chainId_);
       }
-      if (!fee_.isEmpty()) {
-        output.writeBytes(3, fee_);
-      }
       if (!getMemoBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, memo_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, memo_);
       }
       if (sequence_ != 0L) {
-        output.writeUInt64(5, sequence_);
+        output.writeUInt64(4, sequence_);
       }
       unknownFields.writeTo(output);
     }
@@ -867,16 +844,12 @@ public final class Cosmos {
       if (!getChainIdBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, chainId_);
       }
-      if (!fee_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, fee_);
-      }
       if (!getMemoBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, memo_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, memo_);
       }
       if (sequence_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(5, sequence_);
+          .computeUInt64Size(4, sequence_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -897,8 +870,6 @@ public final class Cosmos {
           != other.getAccountNumber()) return false;
       if (!getChainId()
           .equals(other.getChainId())) return false;
-      if (!getFee()
-          .equals(other.getFee())) return false;
       if (!getMemo()
           .equals(other.getMemo())) return false;
       if (getSequence()
@@ -919,8 +890,6 @@ public final class Cosmos {
           getAccountNumber());
       hash = (37 * hash) + CHAIN_ID_FIELD_NUMBER;
       hash = (53 * hash) + getChainId().hashCode();
-      hash = (37 * hash) + FEE_FIELD_NUMBER;
-      hash = (53 * hash) + getFee().hashCode();
       hash = (37 * hash) + MEMO_FIELD_NUMBER;
       hash = (53 * hash) + getMemo().hashCode();
       hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
@@ -1067,8 +1036,6 @@ public final class Cosmos {
 
         chainId_ = "";
 
-        fee_ = com.google.protobuf.ByteString.EMPTY;
-
         memo_ = "";
 
         sequence_ = 0L;
@@ -1101,7 +1068,6 @@ public final class Cosmos {
         wallet.core.jni.proto.Cosmos.SigningInput result = new wallet.core.jni.proto.Cosmos.SigningInput(this);
         result.accountNumber_ = accountNumber_;
         result.chainId_ = chainId_;
-        result.fee_ = fee_;
         result.memo_ = memo_;
         result.sequence_ = sequence_;
         onBuilt();
@@ -1158,9 +1124,6 @@ public final class Cosmos {
         if (!other.getChainId().isEmpty()) {
           chainId_ = other.chainId_;
           onChanged();
-        }
-        if (other.getFee() != com.google.protobuf.ByteString.EMPTY) {
-          setFee(other.getFee());
         }
         if (!other.getMemo().isEmpty()) {
           memo_ = other.memo_;
@@ -1293,38 +1256,9 @@ public final class Cosmos {
         return this;
       }
 
-      private com.google.protobuf.ByteString fee_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>bytes fee = 3;</code>
-       */
-      public com.google.protobuf.ByteString getFee() {
-        return fee_;
-      }
-      /**
-       * <code>bytes fee = 3;</code>
-       */
-      public Builder setFee(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        fee_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bytes fee = 3;</code>
-       */
-      public Builder clearFee() {
-        
-        fee_ = getDefaultInstance().getFee();
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object memo_ = "";
       /**
-       * <code>string memo = 4;</code>
+       * <code>string memo = 3;</code>
        */
       public java.lang.String getMemo() {
         java.lang.Object ref = memo_;
@@ -1339,7 +1273,7 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>string memo = 4;</code>
+       * <code>string memo = 3;</code>
        */
       public com.google.protobuf.ByteString
           getMemoBytes() {
@@ -1355,7 +1289,7 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>string memo = 4;</code>
+       * <code>string memo = 3;</code>
        */
       public Builder setMemo(
           java.lang.String value) {
@@ -1368,7 +1302,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>string memo = 4;</code>
+       * <code>string memo = 3;</code>
        */
       public Builder clearMemo() {
         
@@ -1377,7 +1311,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>string memo = 4;</code>
+       * <code>string memo = 3;</code>
        */
       public Builder setMemoBytes(
           com.google.protobuf.ByteString value) {
@@ -1393,13 +1327,13 @@ public final class Cosmos {
 
       private long sequence_ ;
       /**
-       * <code>uint64 sequence = 5;</code>
+       * <code>uint64 sequence = 4;</code>
        */
       public long getSequence() {
         return sequence_;
       }
       /**
-       * <code>uint64 sequence = 5;</code>
+       * <code>uint64 sequence = 4;</code>
        */
       public Builder setSequence(long value) {
         
@@ -1408,7 +1342,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>uint64 sequence = 5;</code>
+       * <code>uint64 sequence = 4;</code>
        */
       public Builder clearSequence() {
         
@@ -1489,11 +1423,10 @@ public final class Cosmos {
   static {
     java.lang.String[] descriptorData = {
       "\n\014Cosmos.proto\022\017TW.Cosmos.Proto\"\"\n\017TestT" +
-      "ransaction\022\017\n\007signers\030\001 \003(\014\"e\n\014SigningIn" +
+      "ransaction\022\017\n\007signers\030\001 \003(\014\"X\n\014SigningIn" +
       "put\022\026\n\016account_number\030\001 \001(\004\022\020\n\010chain_id\030" +
-      "\002 \001(\t\022\013\n\003fee\030\003 \001(\014\022\014\n\004memo\030\004 \001(\t\022\020\n\010sequ" +
-      "ence\030\005 \001(\004B\027\n\025wallet.core.jni.protob\006pro" +
-      "to3"
+      "\002 \001(\t\022\014\n\004memo\030\003 \001(\t\022\020\n\010sequence\030\004 \001(\004B\027\n" +
+      "\025wallet.core.jni.protob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1518,7 +1451,7 @@ public final class Cosmos {
     internal_static_TW_Cosmos_Proto_SigningInput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Cosmos_Proto_SigningInput_descriptor,
-        new java.lang.String[] { "AccountNumber", "ChainId", "Fee", "Memo", "Sequence", });
+        new java.lang.String[] { "AccountNumber", "ChainId", "Memo", "Sequence", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

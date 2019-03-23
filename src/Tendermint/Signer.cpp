@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "Serialization.h"
 
 #include "../Hash.h"
 #include "../HexCoding.h"
@@ -18,4 +19,13 @@ using namespace TW;
 using namespace TW::Cosmos;
 
 std::vector<uint8_t> Signer::sign() const {
+    signaturePreimage();
+    return std::vector<uint8_t>();
+}
+
+std::string Signer::signaturePreimage() const {
+    auto json = signatureJSON(input);
+    std::cout << "Signer::signaturePreimage()" << std::endl;
+    std::cout << json.dump() << std::endl;
+    return json.dump();
 }

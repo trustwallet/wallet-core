@@ -21,7 +21,6 @@ TEST(CosmosSigner, Sign) {
     auto input = Proto::SigningInput();
     input.set_account_number(0);
     input.set_chain_id("mychainid");
-    //input.set_fee();
     input.set_memo("");
     input.set_sequence(0);
 

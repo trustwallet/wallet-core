@@ -41,8 +41,6 @@ public struct TW_Cosmos_Proto_SigningInput {
 
   public var chainID: String = String()
 
-  public var fee: Data = SwiftProtobuf.Internal.emptyData
-
   public var memo: String = String()
 
   public var sequence: UInt64 = 0
@@ -90,9 +88,8 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "account_number"),
     2: .standard(proto: "chain_id"),
-    3: .same(proto: "fee"),
-    4: .same(proto: "memo"),
-    5: .same(proto: "sequence"),
+    3: .same(proto: "memo"),
+    4: .same(proto: "sequence"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -100,9 +97,8 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self.accountNumber)
       case 2: try decoder.decodeSingularStringField(value: &self.chainID)
-      case 3: try decoder.decodeSingularBytesField(value: &self.fee)
-      case 4: try decoder.decodeSingularStringField(value: &self.memo)
-      case 5: try decoder.decodeSingularUInt64Field(value: &self.sequence)
+      case 3: try decoder.decodeSingularStringField(value: &self.memo)
+      case 4: try decoder.decodeSingularUInt64Field(value: &self.sequence)
       default: break
       }
     }
@@ -115,14 +111,11 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
     if !self.chainID.isEmpty {
       try visitor.visitSingularStringField(value: self.chainID, fieldNumber: 2)
     }
-    if !self.fee.isEmpty {
-      try visitor.visitSingularBytesField(value: self.fee, fieldNumber: 3)
-    }
     if !self.memo.isEmpty {
-      try visitor.visitSingularStringField(value: self.memo, fieldNumber: 4)
+      try visitor.visitSingularStringField(value: self.memo, fieldNumber: 3)
     }
     if self.sequence != 0 {
-      try visitor.visitSingularUInt64Field(value: self.sequence, fieldNumber: 5)
+      try visitor.visitSingularUInt64Field(value: self.sequence, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -130,7 +123,6 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
   public static func ==(lhs: TW_Cosmos_Proto_SigningInput, rhs: TW_Cosmos_Proto_SigningInput) -> Bool {
     if lhs.accountNumber != rhs.accountNumber {return false}
     if lhs.chainID != rhs.chainID {return false}
-    if lhs.fee != rhs.fee {return false}
     if lhs.memo != rhs.memo {return false}
     if lhs.sequence != rhs.sequence {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
