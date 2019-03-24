@@ -44,7 +44,7 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
         j["timeinforce"] = input.trade_order().timeinforce();
     } else if (input.has_cancel_trade_order()) {
         j["refid"] = input.cancel_trade_order().refid();
-        j["sender"] = input.cancel_trade_order().sender();
+        j["sender"] = addressString(input.cancel_trade_order().sender(), input.test_net());
         j["symbol"] = input.cancel_trade_order().symbol();
     } else if (input.has_send_order()) {
         j["inputs"] = inputsJSON(input.send_order(), input.test_net());
