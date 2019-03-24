@@ -16,13 +16,13 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string);
+jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string, jobject type);
 
 JNIEXPORT
-jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithKeyHash(JNIEnv *env, jclass thisClass, jbyteArray keyHash);
+jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithKeyHash(JNIEnv *env, jclass thisClass, jbyteArray keyHash, jobject type);
 
 JNIEXPORT
-jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey);
+jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey, jobject type);
 
 JNIEXPORT
 void JNICALL Java_wallet_core_jni_EthereumAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);

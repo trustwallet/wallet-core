@@ -37,30 +37,30 @@ public final class EthereumAddress {
         self.rawValue = rawValue
     }
 
-    public init?(string: String) {
+    public init?(string: String, type: EthereumChecksumType) {
         let stringString = TWStringCreateWithNSString(string)
         defer {
             TWStringDelete(stringString)
         }
-        guard let rawValue = TWEthereumAddressCreateWithString(stringString) else {
+        guard let rawValue = TWEthereumAddressCreateWithString(stringString, TWEthereumChecksumType(rawValue: type.rawValue)) else {
             return nil
         }
         self.rawValue = rawValue
     }
 
-    public init?(keyHash: Data) {
+    public init?(keyHash: Data, type: EthereumChecksumType) {
         let keyHashData = TWDataCreateWithNSData(keyHash)
         defer {
             TWDataDelete(keyHashData)
         }
-        guard let rawValue = TWEthereumAddressCreateWithKeyHash(keyHashData) else {
+        guard let rawValue = TWEthereumAddressCreateWithKeyHash(keyHashData, TWEthereumChecksumType(rawValue: type.rawValue)) else {
             return nil
         }
         self.rawValue = rawValue
     }
 
-    public init(publicKey: PublicKey) {
-        rawValue = TWEthereumAddressCreateWithPublicKey(publicKey.rawValue)
+    public init(publicKey: PublicKey, type: EthereumChecksumType) {
+        rawValue = TWEthereumAddressCreateWithPublicKey(publicKey.rawValue, TWEthereumChecksumType(rawValue: type.rawValue))
     }
 
     deinit {

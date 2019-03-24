@@ -8,6 +8,10 @@ import Foundation
 
 /// Ethereum address.
 extension EthereumAddress: Address, Hashable {
+    public convenience init?(string: String) {
+        self.init(string: string, type: .eip55)
+    }
+
     public static let size = 20
 
     /// EIP55 representation of the address.

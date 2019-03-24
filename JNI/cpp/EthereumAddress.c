@@ -17,26 +17,38 @@
 #include "TWJNI.h"
 #include "EthereumAddress.h"
 
-jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string) {
+jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string, jobject type) {
     TWString *stringString = TWStringCreateWithJString(env, string);
-    struct TWEthereumAddress *instance = TWEthereumAddressCreateWithString(stringString);
+    jclass typeClass = (*env)->GetObjectClass(env, type);
+    jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
+    jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);
+    struct TWEthereumAddress *instance = TWEthereumAddressCreateWithString(stringString, typeValue);
     TWStringDelete(stringString);
+    (*env)->DeleteLocalRef(env, typeClass);
     return (jlong) instance;
 }
 
-jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithKeyHash(JNIEnv *env, jclass thisClass, jbyteArray keyHash) {
+jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithKeyHash(JNIEnv *env, jclass thisClass, jbyteArray keyHash, jobject type) {
     TWData *keyHashData = TWDataCreateWithJByteArray(env, keyHash);
-    struct TWEthereumAddress *instance = TWEthereumAddressCreateWithKeyHash(keyHashData);
+    jclass typeClass = (*env)->GetObjectClass(env, type);
+    jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
+    jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);
+    struct TWEthereumAddress *instance = TWEthereumAddressCreateWithKeyHash(keyHashData, typeValue);
     TWDataDelete(keyHashData);
+    (*env)->DeleteLocalRef(env, typeClass);
     return (jlong) instance;
 }
 
-jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey) {
+jlong JNICALL Java_wallet_core_jni_EthereumAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey, jobject type) {
     jclass publicKeyClass = (*env)->GetObjectClass(env, publicKey);
     jfieldID publicKeyHandleFieldID = (*env)->GetFieldID(env, publicKeyClass, "nativeHandle", "J");
     struct TWPublicKey *publicKeyInstance = (struct TWPublicKey *) (*env)->GetLongField(env, publicKey, publicKeyHandleFieldID);
-    struct TWEthereumAddress *instance = TWEthereumAddressCreateWithPublicKey(publicKeyInstance);
+    jclass typeClass = (*env)->GetObjectClass(env, type);
+    jmethodID typeValueMethodID = (*env)->GetMethodID(env, typeClass, "value", "()I");
+    jint typeValue = (*env)->CallIntMethod(env, type, typeValueMethodID);
+    struct TWEthereumAddress *instance = TWEthereumAddressCreateWithPublicKey(publicKeyInstance, typeValue);
     (*env)->DeleteLocalRef(env, publicKeyClass);
+    (*env)->DeleteLocalRef(env, typeClass);
     return (jlong) instance;
 }
 

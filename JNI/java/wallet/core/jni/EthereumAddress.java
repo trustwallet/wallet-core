@@ -26,9 +26,9 @@ public class EthereumAddress {
         return instance;
     }
 
-    static native long nativeCreateWithString(String string);
-    static native long nativeCreateWithKeyHash(byte[] keyHash);
-    static native long nativeCreateWithPublicKey(PublicKey publicKey);
+    static native long nativeCreateWithString(String string, EthereumChecksumType type);
+    static native long nativeCreateWithKeyHash(byte[] keyHash, EthereumChecksumType type);
+    static native long nativeCreateWithPublicKey(PublicKey publicKey, EthereumChecksumType type);
     static native void nativeDelete(long handle);
 
     public static native boolean equals(EthereumAddress lhs, EthereumAddress rhs);
@@ -36,8 +36,8 @@ public class EthereumAddress {
     public native String description();
     public native byte[] keyHash();
 
-    public EthereumAddress(String string) {
-        nativeHandle = nativeCreateWithString(string);
+    public EthereumAddress(String string, EthereumChecksumType type) {
+        nativeHandle = nativeCreateWithString(string, type);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();
         }
@@ -45,8 +45,8 @@ public class EthereumAddress {
         EthereumAddressPhantomReference.register(this, nativeHandle);
     }
 
-    public EthereumAddress(byte[] keyHash) {
-        nativeHandle = nativeCreateWithKeyHash(keyHash);
+    public EthereumAddress(byte[] keyHash, EthereumChecksumType type) {
+        nativeHandle = nativeCreateWithKeyHash(keyHash, type);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();
         }
@@ -54,8 +54,8 @@ public class EthereumAddress {
         EthereumAddressPhantomReference.register(this, nativeHandle);
     }
 
-    public EthereumAddress(PublicKey publicKey) {
-        nativeHandle = nativeCreateWithPublicKey(publicKey);
+    public EthereumAddress(PublicKey publicKey, EthereumChecksumType type) {
+        nativeHandle = nativeCreateWithPublicKey(publicKey, type);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();
         }
