@@ -454,9 +454,11 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
         return Ethereum::Address(publicKey).string();
+
+    case TWCoinTypeWanChain:
+        return Ethereum::Address(publicKey, TWEthereumChecksumTypeWanchain).string();
 
     case TWCoinTypeICON:
         return Icon::Address(publicKey, TWIconAddressTypeAddress).string();
