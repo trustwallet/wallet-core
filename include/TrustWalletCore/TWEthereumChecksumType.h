@@ -5,14 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+#include "TWBase.h"
 
-#include "Address.h"
-#include "TrustWalletCore/TWEthereumChecksumType.h"
-#include <string>
+TW_EXTERN_C_BEGIN
 
-namespace TW {
-namespace Ethereum {
+/// Checksum types for Ethereum-based blockchains.
+TW_EXPORT_ENUM()
+enum TWEthereumChecksumType {
+    TWEthereumChecksumTypeEIP55 = 0,
+    TWEthereumChecksumTypeWanchain = 1,
+};
 
-std::string checksumed(const Address& address, TWEthereumChecksumType type);
-    
-}} // namespace
+TW_EXTERN_C_END

@@ -21,27 +21,30 @@ bool Address::isValid(const std::string& string) {
     return Address::isValid(data);
 }
 
-Address::Address(const std::string& string) {
+Address::Address(const std::string& string, TWEthereumChecksumType type) {
     const auto data = parse_hex(string);
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
+    checksumType = type;
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const std::vector<uint8_t>& data) {
+Address::Address(const std::vector<uint8_t>& data, TWEthereumChecksumType type) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
+    checksumType = type;
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey& publicKey) {
+Address::Address(const PublicKey& publicKey, TWEthereumChecksumType type) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
     keccak_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
+    checksumType = type;
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 
 std::string Address::string() const {
-    return checksumed(*this);
+    return checksumed(*this, checksumType);
 }

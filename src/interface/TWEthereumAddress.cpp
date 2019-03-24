@@ -28,24 +28,24 @@ bool TWEthereumAddressIsValidString(TWString *_Nonnull string) {
     return Address::isValid(*s);
 }
 
-struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithString(TWString *_Nonnull string) {
+struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithString(TWString *_Nonnull string, enum TWEthereumChecksumType type) {
     auto s = reinterpret_cast<const std::string*>(string);
     if (!Address::isValid(*s)) {
         return nullptr;
     }
-    return new TWEthereumAddress{ Address(*s) };
+    return new TWEthereumAddress{ Address(*s, type) };
 }
 
-struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_Nonnull keyHash) {
+struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWEthereumChecksumType type) {
     auto d = reinterpret_cast<const Data*>(keyHash);
     if (!Address::isValid(*d)) {
         return nullptr;
     }
-    return new TWEthereumAddress{ Address(*d) };
+    return new TWEthereumAddress{ Address(*d, type) };
 }
 
-struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
-    return new TWEthereumAddress{ Address(publicKey->impl) };
+struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWEthereumChecksumType type) {
+    return new TWEthereumAddress{ Address(publicKey->impl, type) };
 }
 
 void TWEthereumAddressDelete(struct TWEthereumAddress *_Nonnull address) {

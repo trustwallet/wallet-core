@@ -9,6 +9,7 @@
 #include "TWBase.h"
 #include "TWData.h"
 #include "TWString.h"
+#include "TWEthereumChecksumType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -28,15 +29,15 @@ bool TWEthereumAddressIsValidString(TWString *_Nonnull string);
 
 /// Creates an address from a string representaion.
 TW_EXPORT_STATIC_METHOD
-struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithString(TWString *_Nonnull string);
+struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithString(TWString *_Nonnull string, enum TWEthereumChecksumType type);
 
 /// Creates an address from a key hash.
 TW_EXPORT_STATIC_METHOD
-struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_Nonnull keyHash);
+struct TWEthereumAddress *_Nullable TWEthereumAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWEthereumChecksumType type);
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
+struct TWEthereumAddress *_Nonnull TWEthereumAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWEthereumChecksumType type);
 
 TW_EXPORT_METHOD
 void TWEthereumAddressDelete(struct TWEthereumAddress *_Nonnull address);
