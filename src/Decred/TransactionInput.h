@@ -27,9 +27,9 @@ public:
     /// Intended for "replacement" of transactions when information is updated before inclusion into a block.
     uint32_t sequence = std::numeric_limits<uint32_t>::max();
 
-	int64_t valueIn;
-	uint32_t blockHeight;
-	uint32_t blockIndex = std::numeric_limits<uint32_t>::max();
+    int64_t valueIn;
+    uint32_t blockHeight;
+    uint32_t blockIndex = std::numeric_limits<uint32_t>::max();
 
     /// Computational Script for confirming transaction authorization.
     Bitcoin::Script script;
