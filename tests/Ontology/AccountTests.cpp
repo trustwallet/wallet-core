@@ -25,7 +25,4 @@ TEST(OntologyAccount, validity) {
     auto pubKey = signer.getPublicKey();
     EXPECT_EQ(hexPrvKey, hex(prvKey.bytes));
     EXPECT_EQ(hexPubKey, hex(pubKey.bytes));
-//    auto msg = parse_hex("00");
-//    auto signature = signer.sign(msg);
-//    EXPECT_EQ(64, signature.size());
 }
