@@ -28,7 +28,7 @@ struct TransactionPlan {
 
     /// Selected unspent transaction outputs.
     std::vector<Bitcoin::Proto::UnspentTransaction> utxos;
-    
+
     TransactionPlan() = default;
 
     TransactionPlan(const Proto::TransactionPlan& plan)

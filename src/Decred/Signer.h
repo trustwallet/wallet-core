@@ -47,7 +47,7 @@ public:
     Signer() = default;
 
     /// Initializes a transaction signer with signing input.
-    Signer(Bitcoin::Proto::SigningInput&& input) : input(input) {}
+    explicit Signer(Bitcoin::Proto::SigningInput&& input) : input(input) {}
 
     /// Initializes a transaction signer with signing input, a transaction, and a hash type.
     Signer(Bitcoin::Proto::SigningInput&& input, Bitcoin::TransactionPlan plan) : input(input), plan(plan) {

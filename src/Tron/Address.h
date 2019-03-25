@@ -36,13 +36,13 @@ public:
     static bool isValid(const std::string& string);
 
     /// Initializes a  address with a string representation.
-    Address(const std::string& string);
+    explicit Address(const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
-    Address(const Data& data);
+    explicit Address(const Data& data);
 
     /// Initializes a  address with a public key and a prefix.
-    Address(const PublicKey& publicKey);
+    explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
