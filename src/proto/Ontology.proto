@@ -12,7 +12,8 @@ message SigningInput {
 
     bytes from_private_key = 3;
 
-    bytes to_address = 4;
+    // base58 encode address string (160-bit number)
+    string to_address = 4;
 
     uint64 amount = 5;
 
@@ -22,7 +23,8 @@ message SigningInput {
 
     uint64 gas_limit = 8;
 
-    bytes query_address = 9;
+    // base58 encode address string (160-bit number)
+    string query_address = 9;
 
 }
 
