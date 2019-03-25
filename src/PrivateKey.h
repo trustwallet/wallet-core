@@ -54,7 +54,13 @@ public:
     /// Initializes a private key with a static array of bytes.
     PrivateKey(std::array<uint8_t, size>&& array) : bytes(array) {}
 
-    ~PrivateKey();
+    PrivateKey(const PrivateKey& other) = delete;
+    PrivateKey& operator =(const PrivateKey& other) = delete;
+
+    PrivateKey(PrivateKey&& other) = delete;
+    PrivateKey& operator =(PrivateKey&& other) = delete;
+
+    virtual ~PrivateKey();
 
     /// Returns the public key for this private key.
     PublicKey getPublicKey(PublicKeyType type) const;

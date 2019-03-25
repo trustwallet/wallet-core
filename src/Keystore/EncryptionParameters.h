@@ -67,6 +67,11 @@ struct EncryptionParameters {
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
 
+    EncryptionParameters(const EncryptionParameters& other) = default;
+    EncryptionParameters(EncryptionParameters&& other) = default;
+    EncryptionParameters& operator =(const EncryptionParameters& other) = default;
+    EncryptionParameters& operator =(EncryptionParameters&& other) = default;
+
     virtual ~EncryptionParameters();
 };
 
