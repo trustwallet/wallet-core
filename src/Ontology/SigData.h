@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <vector>
+#include "Data.h"
 
 namespace TW {
 namespace Ontology {
@@ -16,13 +16,13 @@ private:
 
     uint8_t m;
 
-    std::vector<std::vector<uint8_t>> pubKeys;
-    
-    std::vector<std::vector<uint8_t>> sigs;
+    std::vector<Data> pubKeys;
+
+    std::vector<Data> sigs;
 
 public:
 
-    explicit SigData(const std::vector<uint8_t> &pubKey, const std::vector<uint8_t> &sig, uint8_t m) : m(m) {
+    explicit SigData(const Data &pubKey, const Data &sig, uint8_t m) : m(m) {
         sigs.push_back(sig);
         pubKeys.push_back(pubKey);
     }

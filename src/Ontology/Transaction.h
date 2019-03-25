@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "Signer.h"
 #include "SigData.h"
 
 namespace TW {

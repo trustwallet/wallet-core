@@ -9,6 +9,7 @@
 #include "../Hash.h"
 
 #include "Signer.h"
+#include "SigData.h"
 #include "HexCoding.h"
 
 using namespace TW;
@@ -46,7 +47,7 @@ void Signer::sign(Transaction &tx) const {
     }
     auto signature = getPrivateKey().sign(Hash::sha256(tx.txHash()), TWCurveNIST256p1);
     signature.pop_back();
-    tx.sigVec.emplace_back(getPrivateKey().bytes, signature, 1);
+    tx.sigVec.emplace_back(privateKey, signature, 1);
 }
 
 void Signer::addSign(Transaction &tx) const {
@@ -55,7 +56,7 @@ void Signer::addSign(Transaction &tx) const {
     }
     auto signature = getPrivateKey().sign(Hash::sha256(tx.txHash()), TWCurveNIST256p1);
     signature.pop_back();
-    tx.sigVec.emplace_back(getPrivateKey().bytes, signature, 1);
+    tx.sigVec.emplace_back(privateKey, signature, 1);
 }
 
 
