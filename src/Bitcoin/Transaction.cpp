@@ -109,12 +109,12 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
         data.push_back(1);
     }
 
-    writeCompactSize(inputs.size(), data);
+    encodeVarInt(inputs.size(), data);
     for (auto& input : inputs) {
         input.encode(data);
     }
 
-    writeCompactSize(outputs.size(), data);
+    encodeVarInt(outputs.size(), data);
     for (auto& output : outputs) {
         output.encode(data);
     }
@@ -153,7 +153,7 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     encode32LE(version, data);
 
     auto serializedInputCount = (hashType & TWSignatureHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
-    writeCompactSize(serializedInputCount, data);
+    encodeVarInt(serializedInputCount, data);
     for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
         serializeInput(subindex, scriptCode, index, hashType, data);
     }
@@ -161,7 +161,7 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     auto hashNone = (hashType & 0x1f) == TWSignatureHashTypeNone;
     auto hashSingle = (hashType & 0x1f) == TWSignatureHashTypeSingle;
     auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index+1 : outputs.size());
-    writeCompactSize(serializedOutputCount, data);
+    encodeVarInt(serializedOutputCount, data);
     for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
             auto output = TransactionOutput(-1, {});
@@ -191,7 +191,7 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
 
     // Serialize the script
     if (subindex != index) {
-        writeCompactSize(0, data);
+        encodeVarInt(0, data);
     } else {
         scriptCode.encode(data);
     }
