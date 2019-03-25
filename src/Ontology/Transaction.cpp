@@ -47,8 +47,7 @@ std::vector<uint8_t> Transaction::serialize() {
 
 std::vector<uint8_t> Transaction::txHash() {
     auto txSerialized = Transaction::serializeUnsigned();
-    auto digest = Hash::sha256(Hash::sha256(txSerialized));
-    return digest;
+    return Hash::sha256(Hash::sha256(txSerialized));
 }
 
 std::vector<uint8_t> Transaction::serialize(const PublicKey &pk) {
