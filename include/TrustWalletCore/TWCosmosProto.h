@@ -8,5 +8,5 @@
 
 #include "TWData.h"
 
-typedef TWData *_Nonnull TW_Cosmos_Proto_TestTransaction;
+typedef TWData *_Nonnull TW_Cosmos_Proto_SendTokensMessage;
 typedef TWData *_Nonnull TW_Cosmos_Proto_SigningInput;

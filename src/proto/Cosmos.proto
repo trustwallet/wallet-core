@@ -3,8 +3,16 @@ syntax = "proto3";
 package TW.Cosmos.Proto;
 option java_package = "wallet.core.jni.proto";
 
-message TestTransaction {
-    repeated bytes signers = 1; 
+// Message for sending tokens.
+message SendTokensMessage {
+    message Token {
+        string denom = 1;
+        int64 amount = 2;
+    }
+
+    bytes from_address = 1;
+    bytes to_address = 2;
+    repeated Token amount = 3;
 }
 
 // Input data necessary to create a signed order.
@@ -15,4 +23,8 @@ message SigningInput {
     uint64 sequence = 4; 
 
     bytes private_Key = 5;
+
+    oneof message_oneof {
+        SendTokensMessage message = 6;
+    }
 }

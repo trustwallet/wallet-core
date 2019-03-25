@@ -17,7 +17,19 @@
 namespace TW {
 namespace Cosmos {
 
-TEST(CosmosSigner, Sign) {
+TEST(CosmosSigner, SignSendMessage) {
+    auto fromAddress = parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21");
+    auto toAddress = parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9");
+
+    auto sendTokensMsg = Proto::SendTokensMessage();
+    sendTokensMsg.set_from_address(fromAddress.data(), fromAddress.size());
+    sendTokensMsg.set_to_address(toAddress.data(), toAddress.size());
+    auto amount = sendTokensMsg.add_amount();
+    amount->set_denom("atom");
+    amount->set_amount(10);
+}
+
+TEST(CosmosSigner, SignTx) {
     auto input = Proto::SigningInput();
     input.set_account_number(0);
     input.set_chain_id("mychainid");
@@ -30,7 +42,7 @@ TEST(CosmosSigner, Sign) {
     auto signer = Cosmos::Signer(std::move(input));
     auto signature = signer.sign();
 
-    ASSERT_EQ(hex(signature.begin(), signature.end()), "a9c49e54f2889d7684a112946a010f4f6d75191439ca36ec5d569e9bfa9bf6db6df4340263796af6c896c915d67e671d77e77f9dd27329f04c1a4cb454a96779");
+    ASSERT_EQ(hex(signature.begin(), signature.end()), "229f4a6102d33899ad212532778bd0e97a51863698f5df81314a6c0a70bd61ac3d8d73a7faeb2fc8b78a17fb45def0207594bd7e880914a694eac10c653edd53");
 }
 
-}} // namespace
+}}
