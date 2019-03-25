@@ -11,6 +11,7 @@
 #include "CashAddress.h"
 
 #include "../BinaryCoding.h"
+#include "../Decred/Address.h"
 #include "../Hash.h"
 #include "../PublicKey.h"
 #include "../Zcash/TAddress.h"
@@ -243,7 +244,7 @@ Script Script::buildPayToWitnessScriptHash(const std::vector<uint8_t>& scriptHas
 }
 
 void Script::encode(std::vector<uint8_t>& data) const {
-    writeCompactSize(bytes.size(), data);
+    encodeVarInt(bytes.size(), data);
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 
@@ -278,6 +279,9 @@ Script Script::buildForAddress(const std::string& string) {
         auto address = CashAddress(string);
         auto bitcoinAddress = address.legacyAddress();
         return buildForAddress(bitcoinAddress.string());
+    } else if (Decred::Address::isValid(string)) {
+        auto address = Decred::Address(string);
+        return buildPayToPublicKeyHash(Data(address.keyhash.begin(), address.keyhash.end()));
     } else if (Zcash::TAddress::isValid(string)) {
         auto address = Zcash::TAddress(string);
         auto data = std::vector<uint8_t>();

@@ -21,7 +21,7 @@ public:
     std::array<byte, 20> keyhash;
 
     /// Determines whether a string makes a valid  address.
-    static bool isValid(const std::string& string);
+    static bool isValid(const std::string& string) noexcept;
 
     /// Initializes an address with a string representation.
     Address(const std::string& string);
