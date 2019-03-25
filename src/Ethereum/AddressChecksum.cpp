@@ -13,7 +13,7 @@
 using namespace TW;
 using namespace TW::Ethereum;
 
-std::string Ethereum::checksumed(const Address& address) {
+std::string Ethereum::checksumed(const Address& address, enum ChecksumType type) {
     const auto addressString = hex(address.bytes);
     const auto hash = hex(Hash::keccak256(addressString));
 
@@ -24,9 +24,23 @@ std::string Ethereum::checksumed(const Address& address) {
         if (a >= '0' && a <= 9) {
             string.push_back(a);
         } else if ((h >= '8' && h <= '9') || (h >= 'a' && h <= 'f')) {
-            string.push_back(toupper(a));
+            switch (type) {
+                case eip55:
+                    string.push_back(toupper(a));
+                    break;
+                case wanchain:
+                    string.push_back(tolower(a));
+                    break;
+            }
         } else {
-            string.push_back(tolower(a));
+            switch (type) {
+                case eip55:
+                    string.push_back(tolower(a));
+                    break;
+                case wanchain:
+                    string.push_back(toupper(a));
+                    break;
+            }
         }
     }
 
