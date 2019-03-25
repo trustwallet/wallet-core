@@ -17,7 +17,7 @@
 namespace TW {
 namespace Ontology {
 
-class Account {
+class Signer {
 private:
 
     Data publicKey;
@@ -26,9 +26,9 @@ private:
 
 public:
 
-    explicit Account(const std::string &priKey);
+    explicit Signer(const std::string &priKey);
 
-    explicit Account(const Data &priKey);
+    explicit Signer(const Data &priKey);
 
     PrivateKey getPrivateKey() const;
 
@@ -43,5 +43,5 @@ public:
 
 /// Wrapper for C interface.
 struct TWOntologyAccount {
-    TW::Ontology::Account impl;
+    TW::Ontology::Signer impl;
 };
