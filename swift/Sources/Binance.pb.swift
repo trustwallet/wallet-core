@@ -554,7 +554,7 @@ extension TW_Binance_Proto_CancelTradeOrder: SwiftProtobuf.Message, SwiftProtobu
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "sender"),
     2: .same(proto: "symbol"),
-    4: .same(proto: "refid"),
+    3: .same(proto: "refid"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -562,7 +562,7 @@ extension TW_Binance_Proto_CancelTradeOrder: SwiftProtobuf.Message, SwiftProtobu
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self.sender)
       case 2: try decoder.decodeSingularStringField(value: &self.symbol)
-      case 4: try decoder.decodeSingularStringField(value: &self.refid)
+      case 3: try decoder.decodeSingularStringField(value: &self.refid)
       default: break
       }
     }
@@ -576,7 +576,7 @@ extension TW_Binance_Proto_CancelTradeOrder: SwiftProtobuf.Message, SwiftProtobu
       try visitor.visitSingularStringField(value: self.symbol, fieldNumber: 2)
     }
     if !self.refid.isEmpty {
-      try visitor.visitSingularStringField(value: self.refid, fieldNumber: 4)
+      try visitor.visitSingularStringField(value: self.refid, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
