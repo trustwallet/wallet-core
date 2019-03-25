@@ -3666,7 +3666,7 @@ public final class Binance {
      * order id to cancel
      * </pre>
      *
-     * <code>string refid = 4;</code>
+     * <code>string refid = 3;</code>
      */
     java.lang.String getRefid();
     /**
@@ -3674,7 +3674,7 @@ public final class Binance {
      * order id to cancel
      * </pre>
      *
-     * <code>string refid = 4;</code>
+     * <code>string refid = 3;</code>
      */
     com.google.protobuf.ByteString
         getRefidBytes();
@@ -3732,7 +3732,7 @@ public final class Binance {
               symbol_ = s;
               break;
             }
-            case 34: {
+            case 26: {
               java.lang.String s = input.readStringRequireUtf8();
 
               refid_ = s;
@@ -3825,14 +3825,14 @@ public final class Binance {
       }
     }
 
-    public static final int REFID_FIELD_NUMBER = 4;
+    public static final int REFID_FIELD_NUMBER = 3;
     private volatile java.lang.Object refid_;
     /**
      * <pre>
      * order id to cancel
      * </pre>
      *
-     * <code>string refid = 4;</code>
+     * <code>string refid = 3;</code>
      */
     public java.lang.String getRefid() {
       java.lang.Object ref = refid_;
@@ -3851,7 +3851,7 @@ public final class Binance {
      * order id to cancel
      * </pre>
      *
-     * <code>string refid = 4;</code>
+     * <code>string refid = 3;</code>
      */
     public com.google.protobuf.ByteString
         getRefidBytes() {
@@ -3888,7 +3888,7 @@ public final class Binance {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, symbol_);
       }
       if (!getRefidBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, refid_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, refid_);
       }
       unknownFields.writeTo(output);
     }
@@ -3907,7 +3907,7 @@ public final class Binance {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, symbol_);
       }
       if (!getRefidBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, refid_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, refid_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -4339,7 +4339,7 @@ public final class Binance {
        * order id to cancel
        * </pre>
        *
-       * <code>string refid = 4;</code>
+       * <code>string refid = 3;</code>
        */
       public java.lang.String getRefid() {
         java.lang.Object ref = refid_;
@@ -4358,7 +4358,7 @@ public final class Binance {
        * order id to cancel
        * </pre>
        *
-       * <code>string refid = 4;</code>
+       * <code>string refid = 3;</code>
        */
       public com.google.protobuf.ByteString
           getRefidBytes() {
@@ -4378,7 +4378,7 @@ public final class Binance {
        * order id to cancel
        * </pre>
        *
-       * <code>string refid = 4;</code>
+       * <code>string refid = 3;</code>
        */
       public Builder setRefid(
           java.lang.String value) {
@@ -4395,7 +4395,7 @@ public final class Binance {
        * order id to cancel
        * </pre>
        *
-       * <code>string refid = 4;</code>
+       * <code>string refid = 3;</code>
        */
       public Builder clearRefid() {
         
@@ -4408,7 +4408,7 @@ public final class Binance {
        * order id to cancel
        * </pre>
        *
-       * <code>string refid = 4;</code>
+       * <code>string refid = 3;</code>
        */
       public Builder setRefidBytes(
           com.google.protobuf.ByteString value) {
@@ -12205,7 +12205,7 @@ public final class Binance {
       "\030\003 \001(\t\022\021\n\tordertype\030\004 \001(\003\022\014\n\004side\030\005 \001(\003\022" +
       "\r\n\005price\030\006 \001(\003\022\020\n\010quantity\030\007 \001(\003\022\023\n\013time" +
       "inforce\030\010 \001(\003\"A\n\020CancelTradeOrder\022\016\n\006sen" +
-      "der\030\001 \001(\014\022\016\n\006symbol\030\002 \001(\t\022\r\n\005refid\030\004 \001(\t" +
+      "der\030\001 \001(\014\022\016\n\006symbol\030\002 \001(\t\022\r\n\005refid\030\003 \001(\t" +
       "\"\264\002\n\tSendOrder\0221\n\006inputs\030\001 \003(\0132!.TW.Bina" +
       "nce.Proto.SendOrder.Input\0223\n\007outputs\030\002 \003" +
       "(\0132\".TW.Binance.Proto.SendOrder.Output\032&" +
