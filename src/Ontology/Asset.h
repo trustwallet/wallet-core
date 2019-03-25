@@ -27,6 +27,8 @@ protected:
 public:
     virtual Data contractAddress() = 0;
 
+    virtual  Transaction decimals(const Address &address) = 0;
+
     virtual Transaction balanceOf(const Address &address) = 0;
 
     virtual Transaction transfer(const Signer &from, const Address &to, uint64_t amount, const Signer &payer, uint64_t gasPrice, uint64_t gasLimit) = 0;

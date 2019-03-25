@@ -14,6 +14,13 @@
 using namespace TW;
 using namespace TW::Ontology;
 
+Transaction Ong::decimals(const Address &address){
+    auto builder = ParamsBuilder();
+    auto invokeCode = ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "decimals", address.data);
+    auto tx = Transaction(version, txType, random32(), (uint64_t) 0, (uint64_t) 0, (std::string) "", invokeCode);
+    return tx;
+}
+
 Transaction Ong::balanceOf(const Address &address) {
     auto builder = ParamsBuilder();
     auto invokeCode = ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", address.data);

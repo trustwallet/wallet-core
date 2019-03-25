@@ -16,6 +16,16 @@
 using namespace TW;
 using namespace TW::Ontology;
 
+TW_Ontology_Proto_SigningOutput TWOntologyOntDecimals(const Ontology::Proto::SigningInput &input) {
+    auto queryAddress = Address(input.query_address());
+    auto transaction = Ont().balanceOf(queryAddress);
+    auto encoded = transaction.serialize();
+    auto protoOutput = Proto::SigningOutput();
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+    auto serialized = protoOutput.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
 TW_Ontology_Proto_SigningOutput TWOntologyOntBalanceOf(const Ontology::Proto::SigningInput &input) {
     auto queryAddress = Address(input.query_address());
     auto transaction = Ont().balanceOf(queryAddress);
@@ -32,6 +42,16 @@ TW_Ontology_Proto_SigningOutput TWOntologyOntTransfer(const Ontology::Proto::Sig
     auto toAddress = Address(Data(input.to_address().begin(), input.to_address().end()));
     auto tranferTx = Ont().transfer(fromSigner, toAddress, input.amount(), payerSigner, input.gas_price(), input.gas_limit());
     auto encoded = tranferTx.serialize();
+    auto protoOutput = Proto::SigningOutput();
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+    auto serialized = protoOutput.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
+TW_Ontology_Proto_SigningOutput TWOntologyOngDecimals(const Ontology::Proto::SigningInput &input) {
+    auto queryAddress = Address(input.query_address());
+    auto transaction = Ong().balanceOf(queryAddress);
+    auto encoded = transaction.serialize();
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_encoded(encoded.data(), encoded.size());
     auto serialized = protoOutput.SerializeAsString();
@@ -68,6 +88,9 @@ TW_Ontology_Proto_SigningOutput TWOntologyOnt(const Ontology::Proto::SigningInpu
     if (method == "balanceOf") {
         return TWOntologyOntBalanceOf(input);
     }
+    if (method == "decimals") {
+        return TWOntologyOntDecimals(input);
+    }
     std::vector<uint8_t> nullData;
     return TWDataCreateWithBytes(nullData.data(), nullData.size());
 }
@@ -79,6 +102,9 @@ TW_Ontology_Proto_SigningOutput TWOntologyOng(const Ontology::Proto::SigningInpu
     }
     if (method == "balanceOf") {
         return TWOntologyOngBalanceOf(input);
+    }
+    if (method == "decimals") {
+        return TWOntologyOngDecimals(input);
     }
     std::vector<uint8_t> nullData;
     return TWDataCreateWithBytes(nullData.data(), nullData.size());
