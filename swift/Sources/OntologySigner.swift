@@ -11,7 +11,7 @@ import Foundation
 
 public final class OntologySigner {
     
-    public static func sign(input: TWOntologySigningInput) -> TWOntologySigningOutput {
+    public static func encode(input: TWOntologySigningInput) -> TWOntologySigningOutput {
         let inputData = TWDataCreateWithNSData(try! input.serializedData())
         defer {
             TWDataDelete(inputData)
