@@ -17,6 +17,16 @@
 using namespace TW;
 using namespace TW::Ontology;
 
+TEST(OntologyOnt, decimals) {
+    auto address = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
+    auto tx = Ont().decimals(address);
+    auto serializedTx = hex(tx.serialize());
+    EXPECT_EQ(0, serializedTx.find("00d1"));
+    EXPECT_EQ(12, serializedTx.find("0000000000000000000000000000000000000000000000000000000000000000000000004"));
+    EXPECT_EQ(85, serializedTx.find("c1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b708646563696d616c73"));
+    EXPECT_EQ(146, serializedTx.find("140000000000000000000000000000000000000001"));
+    EXPECT_EQ(188, serializedTx.find("0068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"));
+}
 
 TEST(OntologyOnt, queryBalance) {
     auto address = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
@@ -24,9 +34,9 @@ TEST(OntologyOnt, queryBalance) {
     auto serializedTx = hex(tx.serialize());
     EXPECT_EQ(0, serializedTx.find("00d1"));
     EXPECT_EQ(12, serializedTx.find("0000000000000000000000000000000000000000000000000000000000000000000000004"));
-    ASSERT_EQ(85, serializedTx.find("d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f66"));
-    ASSERT_EQ(148, serializedTx.find("140000000000000000000000000000000000000001"));
-    ASSERT_EQ(190, serializedTx.find("0068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"));
+    EXPECT_EQ(85, serializedTx.find("d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f66"));
+    EXPECT_EQ(148, serializedTx.find("140000000000000000000000000000000000000001"));
+    EXPECT_EQ(190, serializedTx.find("0068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"));
 }
 
 TEST(OntologyOnt, transfer) {
