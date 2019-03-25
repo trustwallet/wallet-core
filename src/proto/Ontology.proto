@@ -8,16 +8,16 @@ message SigningInput {
 
     string contract = 1;
 
-    bytes method = 2;
+    string method = 2;
 
-    bytes from_private_key = 3;
+    string from_private_key = 3;
 
     // base58 encode address string (160-bit number)
     string to_address = 4;
 
     uint64 amount = 5;
 
-    bytes payer_private_key = 6;
+    string payer_private_key = 6;
 
     uint64 gas_price = 7;
 
