@@ -8,7 +8,7 @@
 
 #include "../Ontology/Ont.h"
 #include "../Ontology/Ong.h"
-#include "../Ontology/Account.h"
+#include "Ontology/Signer.h"
 #include "../Ontology/Address.h"
 #include "../proto/Ontology.pb.h"
 #include "../uint256.h"
@@ -27,10 +27,10 @@ TW_Ontology_Proto_SigningOutput TWOntologyOntBalanceOf(const Ontology::Proto::Si
 }
 
 TW_Ontology_Proto_SigningOutput TWOntologyOntTransfer(const Ontology::Proto::SigningInput &input) {
-    auto payerAccount = Account(Data(input.payer_private_key().begin(), input.payer_private_key().end()));
-    auto fromAccount = Account(Data(input.from_private_key().begin(), input.from_private_key().end()));
+    auto payerSigner = Signer(Data(input.payer_private_key().begin(), input.payer_private_key().end()));
+    auto fromSigner = Signer(Data(input.from_private_key().begin(), input.from_private_key().end()));
     auto toAddress = Address(Data(input.to_address().begin(), input.to_address().end()));
-    auto tranferTx = Ont().transfer(fromAccount, toAddress, input.amount(), payerAccount, input.gas_price(), input.gas_limit());
+    auto tranferTx = Ont().transfer(fromSigner, toAddress, input.amount(), payerSigner, input.gas_price(), input.gas_limit());
     auto encoded = tranferTx.serialize();
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_encoded(encoded.data(), encoded.size());
@@ -49,8 +49,8 @@ TW_Ontology_Proto_SigningOutput TWOntologyOngBalanceOf(const Ontology::Proto::Si
 }
 
 TW_Ontology_Proto_SigningOutput TWOntologyOngTransfer(const Ontology::Proto::SigningInput &input) {
-    auto payerAccount = Account(Data(input.payer_private_key().begin(), input.payer_private_key().end()));
-    auto fromAccount = Account(Data(input.from_private_key().begin(), input.from_private_key().end()));
+    auto payerAccount = Signer(Data(input.payer_private_key().begin(), input.payer_private_key().end()));
+    auto fromAccount = Signer(Data(input.from_private_key().begin(), input.from_private_key().end()));
     auto toAddress = Address(Data(input.to_address().begin(), input.to_address().end()));
     auto transaction = Ong().transfer(fromAccount, toAddress, input.amount(), payerAccount, input.gas_price(), input.gas_limit());
     auto encoded = transaction.serialize();

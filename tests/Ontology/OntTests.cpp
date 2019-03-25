@@ -30,13 +30,13 @@ TEST(OntologyOnt, queryBalance) {
 }
 
 TEST(OntologyOnt, transfer) {
-    auto acct1 = Account("4646464646464646464646464646464646464646464646464646464646464646");
-    auto acct2 = Account("4646464646464646464646464646464646464646464646464646464646464652");
+    auto signer1 = Signer("4646464646464646464646464646464646464646464646464646464646464646");
+    auto signer2 = Signer("4646464646464646464646464646464646464646464646464646464646464652");
     auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     uint64_t amount = 1;
     uint64_t gasPrice = 500;
     uint64_t gasLimit = 20000;
-    auto tx = Ont().transfer(acct1, toAddress, amount, acct2, gasPrice, gasLimit);
+    auto tx = Ont().transfer(signer1, toAddress, amount, signer2, gasPrice, gasLimit);
     auto serializedTx = hex(tx.serialize());
     EXPECT_EQ(724, serializedTx.length());
     EXPECT_EQ(0, serializedTx.find("00d1"));

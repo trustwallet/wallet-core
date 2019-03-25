@@ -7,6 +7,7 @@
 #include <string>
 
 #include "../Hash.h"
+#include "HexCoding.h"
 
 #include "Address.h"
 #include "Transaction.h"
@@ -57,23 +58,23 @@ std::vector<uint8_t> Transaction::serialize(const PublicKey &pk) {
     return builder.getBytes();
 }
 
-void Transaction::sign(const Account &acct) {
+void Transaction::sign(const Signer &signer) {
     if (sigVec.size() >= sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
-    auto signature = acct.getPrivateKey().sign(txHash(), TWCurveNIST256p1);
+    auto signature = signer.getPrivateKey().sign(Hash::sha256(txHash()), TWCurveNIST256p1);
     signature.pop_back();
-    auto sigData = SigData(acct.getPublicKey().bytes, signature, 1);
+    auto sigData = SigData(signer.getPublicKey().bytes, signature, 1);
     sigVec.clear();
     sigVec.push_back(sigData);
 }
 
-void Transaction::addSign(const Account &acct) {
+void Transaction::addSign(const Signer &signer) {
     if (sigVec.size() >= sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
-    auto signature = acct.getPrivateKey().sign(txHash(), TWCurveNIST256p1);
+    auto signature = signer.getPrivateKey().sign(Hash::sha256(txHash()), TWCurveNIST256p1);
     signature.pop_back();
-    auto sigData = SigData(acct.getPublicKey().bytes, signature, 1);
+    auto sigData = SigData(signer.getPublicKey().bytes, signature, 1);
     sigVec.push_back(sigData);
 }

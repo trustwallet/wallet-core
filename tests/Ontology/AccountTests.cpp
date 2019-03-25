@@ -7,7 +7,7 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "Ontology/Account.h"
+#include "Ontology/Signer.h"
 
 #include <gtest/gtest.h>
 
@@ -20,12 +20,12 @@ using namespace TW::Ontology;
 TEST(OntologyAccount, validity) {
     auto hexPrvKey = "4646464646464646464646464646464646464646464646464646464646464646";
     auto hexPubKey = "031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486";
-    auto acct = Account(hexPrvKey);
-    auto prvKey = acct.getPrivateKey();
-    auto pubKey = acct.getPublicKey();
+    auto signer = Signer(hexPrvKey);
+    auto prvKey = signer.getPrivateKey();
+    auto pubKey = signer.getPublicKey();
     EXPECT_EQ(hexPrvKey, hex(prvKey.bytes));
     EXPECT_EQ(hexPubKey, hex(pubKey.bytes));
     auto msg = parse_hex("00");
-    auto signature = acct.sign(msg);
+    auto signature = signer.sign(msg);
     EXPECT_EQ(64, signature.size());
 }

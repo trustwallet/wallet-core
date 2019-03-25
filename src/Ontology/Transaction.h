@@ -8,8 +8,8 @@
 
 #include <string>
 
+#include "Signer.h"
 #include "SigData.h"
-#include "Account.h"
 
 namespace TW {
 namespace Ontology {
@@ -47,9 +47,9 @@ public:
 
     std::vector<uint8_t> serialize(const PublicKey &pk);
 
-    void sign(const Account &acct);
+    void sign(const Signer &acct);
 
-    void addSign(const Account &acct);
+    void addSign(const Signer &acct);
 
 };
 

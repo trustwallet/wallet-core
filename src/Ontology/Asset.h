@@ -11,7 +11,7 @@
 #include <string>
 
 #include "Data.h"
-#include "Account.h"
+#include "Signer.h"
 #include "Address.h"
 #include "Transaction.h"
 #include "BinaryCoding.h"
@@ -29,7 +29,7 @@ public:
 
     virtual Transaction balanceOf(const Address &address) = 0;
 
-    virtual Transaction transfer(const Account &from, const Address &to, uint64_t amount, const Account &payer, uint64_t gasPrice, uint64_t gasLimit) = 0;
+    virtual Transaction transfer(const Signer &from, const Address &to, uint64_t amount, const Signer &payer, uint64_t gasPrice, uint64_t gasLimit) = 0;
 
 };
 }} // namespace
