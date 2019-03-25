@@ -26,8 +26,8 @@ Transaction Ong::transfer(const Signer &from, const Address &to, uint64_t amount
     std::vector<boost::any> args{transferParam};
     auto invokeCode = ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
     auto tx = Transaction(version, txType, random32(), gasPrice, gasLimit, payer.getAddress().string(), invokeCode);
-    tx.sign(from);
-    tx.addSign(payer);
+    from.sign(tx);
+    payer.addSign(tx);
     return tx;
 }
 

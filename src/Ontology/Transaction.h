@@ -18,7 +18,6 @@ class Transaction {
 
 private:
 
-    static const size_t sigVecLimit = 16;
     uint8_t version;
     uint8_t txType;
     uint32_t nonce;
@@ -27,9 +26,12 @@ private:
     std::string payer;
     std::vector<uint8_t> payload;
     std::vector<uint8_t> attributes;
-    std::vector<SigData> sigVec;
 
 public:
+
+    static const size_t sigVecLimit = 16;
+
+    std::vector<SigData> sigVec;
 
     Transaction(uint8_t ver, uint8_t type, uint32_t nonce, uint64_t gasPrice, uint64_t gasLimit, std::string payer, std::vector<uint8_t> payload)
             : version(ver), txType(type), nonce(nonce), gasPrice(gasPrice), gasLimit(gasLimit), payload(std::move(payload)) {
@@ -46,10 +48,6 @@ public:
     std::vector<uint8_t> txHash();
 
     std::vector<uint8_t> serialize(const PublicKey &pk);
-
-    void sign(const Signer &acct);
-
-    void addSign(const Signer &acct);
 
 };
 

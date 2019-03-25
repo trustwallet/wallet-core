@@ -12,7 +12,7 @@
 
 #include "Address.h"
 #include "PrivateKey.h"
-#include "BinaryCoding.h"
+#include "Transaction.h"
 
 namespace TW {
 namespace Ontology {
@@ -36,7 +36,9 @@ public:
 
     Address getAddress() const;
 
-    Data sign(const Data &msg) noexcept;
+    void sign(Transaction &tx) const;
+
+    void addSign(Transaction &tx) const;
 
 };
 }} // namespace

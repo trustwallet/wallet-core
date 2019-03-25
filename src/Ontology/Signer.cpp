@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <stdexcept>
+
 #include "../Hash.h"
 
 #include "Signer.h"
@@ -19,7 +21,7 @@ Signer::Signer(const std::string &priKey) {
     address = Address(pubKey).string();
 }
 
-Signer::Signer(const Data &priKey){
+Signer::Signer(const Data &priKey) {
     privateKey = priKey;
     auto pubKey = PrivateKey(privateKey).getPublicKey(PublicKeyType::nist256p1);
     publicKey = pubKey.bytes;
@@ -38,12 +40,23 @@ Address Signer::getAddress() const {
     return Address(address);
 }
 
-Data Signer::sign(const Data &msg) noexcept {
-    auto digest = Hash::sha256(msg);
-    auto sk = getPrivateKey();
-    auto signature = sk.sign(digest, TWCurveNIST256p1);
+void Signer::sign(Transaction &tx) const {
+    if (tx.sigVec.size() >= Transaction::sigVecLimit) {
+        throw std::runtime_error("the number of transaction signatures should not be over 16.");
+    }
+    auto signature = getPrivateKey().sign(Hash::sha256(tx.txHash()), TWCurveNIST256p1);
     signature.pop_back();
-    return signature;
+    tx.sigVec.emplace_back(getPrivateKey().bytes, signature, 1);
 }
+
+void Signer::addSign(Transaction &tx) const {
+    if (tx.sigVec.size() >= Transaction::sigVecLimit) {
+        throw std::runtime_error("the number of transaction signatures should not be over 16.");
+    }
+    auto signature = getPrivateKey().sign(Hash::sha256(tx.txHash()), TWCurveNIST256p1);
+    signature.pop_back();
+    tx.sigVec.emplace_back(getPrivateKey().bytes, signature, 1);
+}
+
 
 
