@@ -10,6 +10,7 @@ export PATH="$PREFIX/bin":$PATH
 export LDFLAGS="-L$PREFIX/lib"
 export LT_SYS_LIBRARY_PATH="$PREFIX/lib"
 export DYLD_LIBRARY_PATH="$PREFIX/lib"
+export LD_LIBRARY_PATH="$PREFIX/lib"
 
 # Download Google Test
 export GTEST_VERSION=1.8.1
@@ -54,6 +55,8 @@ cd protobuf-$PROTOBUF_VERSION
 make -j4
 make install
 "$PREFIX/bin/protoc" --version
+
+exit 0
 
 # Download Swift Protobuf sources
 export SWIFT_PROTOBUF_VERSION=1.3.1

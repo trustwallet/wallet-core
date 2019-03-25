@@ -23,6 +23,9 @@ static const size_t sha512Size = 64;
 /// Number of bytes in a RIPEMD160 hash.
 static const size_t ripemdSize = 20;
 
+// Alias to pass pointers to below functions.
+using Hasher = Data (*)(const byte*, const byte*);
+
 /// Computes the SHA1 hash.
 Data sha1(const byte* begin, const byte* end);
 

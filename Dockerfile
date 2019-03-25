@@ -32,6 +32,8 @@ RUN curl -fSsL https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_
     && mv boost_1_66_0/boost /usr/include \
     && rm -rf boost*
 
+RUN apt-get install libcurl4-gnutls-dev
+
 # Install CMake
 ENV CMAKE_VERSION=$CMAKE_VERSION
 RUN cd /usr/local/src \
@@ -45,14 +47,24 @@ RUN cd /usr/local/src \
     && rm -rf cmake*
 RUN cmake --version
 
+# Install swift
+RUN curl -fSsL https://swift.org/builds/swift-4.2.3-release/ubuntu1604/swift-4.2.3-RELEASE/swift-4.2.3-RELEASE-ubuntu16.04.tar.gz -o swift.tar.gz \
+    && tar xf swift.tar.gz --directory / --strip-components=1 \
+    && rm -rf swift.tar.gz
+
+RUN apt-get install -y libcurl3 libdispatch-dev
+
 # Clean Up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Clone repo
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
-RUN git clone https://github.com/TrustWallet/wallet-core.git \
+ENV LD_LIBRARY_PATH=/wallet-core/build/local/lib/
+ADD . /wallet-core
+RUN mkdir -p wallet-core-build \
     && cd wallet-core \
+    && ln -s ../wallet-core-build build \
     && tools/install-dependencies
 
 CMD ["/bin/bash"]
