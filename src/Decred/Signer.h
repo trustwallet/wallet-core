@@ -6,34 +6,34 @@
 
 #pragma once
 
-#include "Amount.h"
-#include "Script.h"
 #include "Transaction.h"
-#include "TransactionBuilder.h"
 #include "TransactionInput.h"
+#include "TransactionBuilder.h"
+#include "../Bitcoin/Amount.h"
+#include "../Bitcoin/Script.h"
+#include "../Bitcoin/TransactionPlan.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../Result.h"
 #include "../proto/Bitcoin.pb.h"
-#include "../Zcash/Transaction.h"
+#include "../proto/Decred.pb.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
 namespace TW {
-namespace Bitcoin {
+namespace Decred {
 
-/// Helper class that performs Bitcoin transaction signing.
-template<typename Transaction>
-class TransactionSigner {
+/// Helper class that performs Decred transaction signing.
+class Signer {
 private:
     /// Private key and redeem script provider for signing.
-    Proto::SigningInput input;
+    Bitcoin::Proto::SigningInput input;
 
 public:
     /// Transaction plan.
-    TransactionPlan plan;
+    Bitcoin::TransactionPlan plan;
 
     /// Transaction being signed.
     Transaction transaction;
@@ -43,14 +43,15 @@ private:
     std::vector<TransactionInput> signedInputs;
 
 public:
+    /// Initializes a transaction signer.
+    Signer() = default;
+
     /// Initializes a transaction signer with signing input.
-    TransactionSigner(Bitcoin::Proto::SigningInput&& input) : input(input), plan(TransactionBuilder::plan(input)) {
-        transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(), input.change_address()); 
-    }
+    Signer(Bitcoin::Proto::SigningInput&& input) : input(input) {}
 
     /// Initializes a transaction signer with signing input, a transaction, and a hash type.
-    TransactionSigner(Bitcoin::Proto::SigningInput&& input, TransactionPlan plan) : input(input), plan(plan) {
-        transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(), input.change_address());
+    Signer(Bitcoin::Proto::SigningInput&& input, Bitcoin::TransactionPlan plan) : input(input), plan(plan) {
+        transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
     }
 
     /// Signs the transaction.
@@ -58,11 +59,14 @@ public:
     /// \returns the signed transaction or an error.
     Result<Transaction> sign();
 
-private:
+    /// Signs a particular input.
+    ///
+    /// \returns the signed transaction script.
+    Result<Bitcoin::Script> sign(Bitcoin::Script script, size_t index);
 
-    Result<void> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
-    Result<std::vector<Data>> signStep(Script script, size_t index, const Proto::UnspentTransaction& utxo, uint32_t version);
-    Data createSignature(const Transaction& transaction, const Script& script, const Data& key, size_t index, Amount amount, uint32_t version);
+private:
+    Result<std::vector<Data>> signStep(Bitcoin::Script script, size_t index);
+    Data createSignature(const Transaction& transaction, const Bitcoin::Script& script, const Data& key, size_t index);
     Data pushAll(const std::vector<Data>& results);
 
     /// Returns the private key for the given public key hash.
@@ -75,11 +79,6 @@ private:
 }} // namespace
 
 /// Wrapper for C interface.
-struct TWBitcoinTransactionSigner {
-    TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction> impl;
-};
-
-/// Wrapper for Zcash C interface.
-struct TWZcashTransactionSigner {
-    TW::Bitcoin::TransactionSigner<TW::Zcash::Transaction> impl;
+struct TWDecredSigner {
+    TW::Decred::Signer impl;
 };

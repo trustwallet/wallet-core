@@ -8,6 +8,8 @@
 
 #include "../Data.h"
 
+#include <TrustWalletCore/TWBitcoinOpCodes.h>
+
 #include <string>
 #include <vector>
 
@@ -81,6 +83,15 @@ public:
 
     /// Encodes the script.
     void encode(Data& data) const;
+
+    /// Encodes a small integer
+    static uint8_t encodeNumber(int n) {
+        assert(n >= 0 && n <= 16);
+        if (n == 0) {
+            return OP_0;
+        }
+        return OP_1 + uint8_t(n - 1);
+    }
 
 private:
 

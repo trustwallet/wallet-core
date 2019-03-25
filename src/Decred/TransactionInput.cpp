@@ -8,19 +8,16 @@
 
 #include "../BinaryCoding.h"
 
-using namespace TW::Bitcoin;
+using namespace TW::Decred;
 
 void TransactionInput::encode(Data& data) const {
-    auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(previousOutput);
-    outpoint.encode(data);
-    script.encode(data);
+    previousOutput.encode(data);
     encode32LE(sequence, data);
 }
 
 void TransactionInput::encodeWitness(Data& data) const {
-    encodeVarInt(scriptWitness.size(), data);
-    for (auto& item : scriptWitness) {
-        encodeVarInt(item.size(), data);
-        std::copy(std::begin(item), std::end(item), std::back_inserter(data));
-    }
+    encode64LE(valueIn, data);
+    encode32LE(blockHeight, data);
+    encode32LE(blockIndex, data);
+    script.encode(data);
 }
