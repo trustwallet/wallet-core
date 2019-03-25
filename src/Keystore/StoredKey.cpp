@@ -24,7 +24,7 @@
 using namespace TW;
 using namespace TW::Keystore;
 
-StoredKey::StoredKey(StoredKeyType type, EncryptionParameters payload) : type(type), payload(payload), id(), accounts() {
+StoredKey::StoredKey(StoredKeyType type, const EncryptionParameters& payload) : type(type), payload(payload), id(), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }

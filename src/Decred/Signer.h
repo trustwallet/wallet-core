@@ -50,7 +50,7 @@ public:
     explicit Signer(Bitcoin::Proto::SigningInput&& input) : input(input) {}
 
     /// Initializes a transaction signer with signing input, a transaction, and a hash type.
-    Signer(Bitcoin::Proto::SigningInput&& input, Bitcoin::TransactionPlan plan) : input(input), plan(plan) {
+    Signer(Bitcoin::Proto::SigningInput&& input, const Bitcoin::TransactionPlan& plan) : input(input), plan(plan) {
         transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
     }
 

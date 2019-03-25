@@ -79,7 +79,7 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     return data;
 }
 
-void Signer::encodeAddress(Address address, Data& data) const {
+void Signer::encodeAddress(const Address& address, Data& data) const {
     encode32BE(0, data);
     data.insert(data.end(), address.bytes.begin(), address.bytes.end());
 }

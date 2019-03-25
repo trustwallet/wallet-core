@@ -21,7 +21,7 @@ public:
     Data data;
 
     Clause() = default;
-    Clause(Ethereum::Address to, uint256_t value, Data data = {}) : to(to), value(value), data(data) {}
+    Clause(const Ethereum::Address& to, const uint256_t& value, Data data = {}) : to(to), value(value), data(data) {}
 
     /// Decodes from a proto representation.
     Clause(const Proto::Clause& proto)

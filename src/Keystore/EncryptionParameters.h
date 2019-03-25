@@ -48,7 +48,7 @@ struct EncryptionParameters {
     EncryptionParameters() = default;
 
     /// Initializes `EncryptionParameters` with standard values.
-    EncryptionParameters(Data encrypted, AESParameters cipherParams, ScryptParameters kdfParams, Data mac)
+    EncryptionParameters(const Data& encrypted, const AESParameters& cipherParams, const ScryptParameters& kdfParams, const Data& mac)
         : encrypted(encrypted)
         , cipherParams(cipherParams)
         , kdfParams(kdfParams)
