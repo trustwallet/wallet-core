@@ -6,7 +6,7 @@ option java_package = "wallet.core.jni.proto";
 // Input data necessary to create a signed transaction.
 message SigningInput {
 
-    bytes contract = 1;
+    string contract = 1;
 
     bytes method = 2;
 
