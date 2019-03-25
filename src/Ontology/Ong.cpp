@@ -17,7 +17,7 @@ using namespace TW::Ontology;
 Transaction Ong::balanceOf(const Address &address) {
     auto builder = ParamsBuilder();
     auto invokeCode = ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", address.data);
-    auto tx = Transaction((uint8_t) 0, txType, random32(), (uint64_t) 0, (uint64_t) 0, (std::string) "", invokeCode);
+    auto tx = Transaction(version, txType, random32(), (uint64_t) 0, (uint64_t) 0, (std::string) "", invokeCode);
     return tx;
 }
 
