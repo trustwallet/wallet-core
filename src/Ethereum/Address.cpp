@@ -43,5 +43,5 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    return checksumed(*this);
+    return checksumed(*this, ChecksumType::eip55);
 }
