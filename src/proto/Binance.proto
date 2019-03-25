@@ -40,7 +40,7 @@ message CancelTradeOrder {
     // 0x166E681B      // prefix
     bytes sender = 1;  // originating address
     string symbol = 2; // symbol for trading pair in full name of the tokens
-    string refid = 4;  // order id to cancel
+    string refid = 3;  // order id to cancel
 }
 
 message SendOrder {
