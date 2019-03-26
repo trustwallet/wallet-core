@@ -5,10 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 #pragma once
 
+#include "Address.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include "Address.h"
 #include <proto/Stellar.pb.h>
 
 namespace TW {

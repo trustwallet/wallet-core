@@ -5,9 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Transaction.h"
+#include "BinaryCoding.h"
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
-#include "BinaryCoding.h"
 
 using namespace TW;
 using namespace TW::Ripple;

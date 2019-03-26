@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include "Address.h"
 #include "../Data.h"
 #include "../proto/Ripple.pb.h"
-#include "Address.h"
 
 namespace TW {
 namespace Ripple {

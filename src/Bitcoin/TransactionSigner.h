@@ -6,16 +6,16 @@
 
 #pragma once
 
-#include "../Hash.h"
-#include "../PrivateKey.h"
-#include "../Result.h"
-#include "../Zcash/Transaction.h"
-#include "../proto/Bitcoin.pb.h"
 #include "Amount.h"
 #include "Script.h"
 #include "Transaction.h"
 #include "TransactionBuilder.h"
 #include "TransactionInput.h"
+#include "../Hash.h"
+#include "../PrivateKey.h"
+#include "../Result.h"
+#include "../Zcash/Transaction.h"
+#include "../proto/Bitcoin.pb.h"
 
 #include <memory>
 #include <string>

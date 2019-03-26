@@ -6,11 +6,11 @@
 
 #pragma once
 
+#include "TransactionInput.h"
+#include "TransactionOutput.h"
 #include "../Bitcoin/Script.h"
 #include "../Data.h"
 #include "../proto/Decred.pb.h"
-#include "TransactionInput.h"
-#include "TransactionOutput.h"
 
 #include <TrustWalletCore/TWBitcoin.h>
 #include <vector>

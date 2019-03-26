@@ -6,8 +6,8 @@
 
 #include "Transaction.h"
 
-#include "../Ethereum/RLP.h"
 #include "RLP.h"
+#include "../Ethereum/RLP.h"
 
 using namespace TW;
 using namespace TW::Aion;

@@ -6,10 +6,10 @@
 
 #include <string>
 
-#include "../Hash.h"
-#include "../HexCoding.h"
 #include "OperationList.h"
 #include "Signer.h"
+#include "../Hash.h"
+#include "../HexCoding.h"
 
 #include <TrustWalletCore/TWCurve.h>
 

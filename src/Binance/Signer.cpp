@@ -6,10 +6,10 @@
 
 #include "Signer.h"
 
+#include "Serialization.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
-#include "Serialization.h"
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>

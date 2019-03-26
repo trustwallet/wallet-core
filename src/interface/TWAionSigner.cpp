@@ -27,7 +27,8 @@ TW_Aion_Proto_SigningOutput TWAionSignerSign(TW_Aion_Proto_SigningInput data) {
         /* gasLimit: */ static_cast<uint128_t>(load(input.gas_limit())),
         /* to: */ Address(input.to_address()),
         /* amount: */ static_cast<uint128_t>(load(input.amount())),
-        /* payload: */ Data(input.payload().begin(), input.payload().end()));
+        /* payload: */ Data(input.payload().begin(), input.payload().end())
+    );
     Signer::sign(key, transaction);
 
     auto protoOutput = Proto::SigningOutput();
@@ -36,6 +37,5 @@ TW_Aion_Proto_SigningOutput TWAionSignerSign(TW_Aion_Proto_SigningInput data) {
     protoOutput.set_signature(transaction.signature.data(), transaction.signature.size());
 
     auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
-                                 serialized.size());
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

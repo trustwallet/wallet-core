@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include "OperationList.h"
 #include "../Data.h"
 #include "../PrivateKey.h"
-#include "OperationList.h"
 
 #include <string>
 

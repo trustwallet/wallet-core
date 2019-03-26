@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include "Transaction.h"
+#include "TransactionBuilder.h"
+#include "TransactionInput.h"
 #include "../Bitcoin/Amount.h"
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/TransactionPlan.h"
@@ -14,9 +17,6 @@
 #include "../Result.h"
 #include "../proto/Bitcoin.pb.h"
 #include "../proto/Decred.pb.h"
-#include "Transaction.h"
-#include "TransactionBuilder.h"
-#include "TransactionInput.h"
 
 #include <memory>
 #include <string>

@@ -6,10 +6,10 @@
 
 #include "OperationList.h"
 
-#include "../Base58.h"
 #include "BinaryCoding.h"
 #include "HexCoding.h"
 #include "Transaction.h"
+#include "../Base58.h"
 
 using namespace TW;
 using namespace TW::Tezos;

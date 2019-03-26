@@ -6,9 +6,9 @@
 
 #include "Address.h"
 
+#include "AddressChecksum.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "AddressChecksum.h"
 
 #include <TrezorCrypto/sha3.h>
 

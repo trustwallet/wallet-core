@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "../proto/Bitcoin.pb.h"
 #include "Amount.h"
+#include "../proto/Bitcoin.pb.h"
 
 namespace TW {
 namespace Bitcoin {

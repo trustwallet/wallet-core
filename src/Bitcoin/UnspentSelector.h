@@ -9,8 +9,8 @@
 #include <numeric>
 #include <vector>
 
-#include "../proto/Bitcoin.pb.h"
 #include "UnspentCalculator.h"
+#include "../proto/Bitcoin.pb.h"
 
 namespace TW {
 namespace Bitcoin {

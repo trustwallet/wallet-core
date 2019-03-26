@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include "Transaction.h"
 #include "../Data.h"
 #include "../uint256.h"
-#include "Transaction.h"
 
 #include <stdint.h>
 #include <string>

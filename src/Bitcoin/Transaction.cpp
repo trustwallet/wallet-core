@@ -6,9 +6,9 @@
 
 #include "Transaction.h"
 
+#include "Bech32Address.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
-#include "Bech32Address.h"
 
 #include <TrustWalletCore/TWBitcoin.h>
 

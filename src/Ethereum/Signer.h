@@ -6,11 +6,11 @@
 
 #pragma once
 
+#include "RLP.h"
+#include "Transaction.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include "RLP.h"
-#include "Transaction.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>

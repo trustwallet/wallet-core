@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "../Data.h"
-#include "../HDWallet.h"
 #include "Account.h"
 #include "EncryptionParameters.h"
+#include "../Data.h"
+#include "../HDWallet.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <nlohmann/json.hpp>

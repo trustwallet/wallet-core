@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "../Data.h"
 #include "Clause.h"
+#include "../Data.h"
 
 #include <cstdint>
 #include <vector>

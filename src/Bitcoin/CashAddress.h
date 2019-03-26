@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "../PublicKey.h"
 #include "Address.h"
+#include "../PublicKey.h"
 
 #include <stdint.h>
 #include <string>

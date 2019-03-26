@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "../Data.h"
 #include "AESParameters.h"
 #include "ScryptParameters.h"
+#include "../Data.h"
 
 #include <nlohmann/json.hpp>
 #include <string>

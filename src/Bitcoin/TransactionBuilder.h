@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "../proto/Bitcoin.pb.h"
 #include "Transaction.h"
 #include "TransactionPlan.h"
 #include "UnspentSelector.h"
+#include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
 
