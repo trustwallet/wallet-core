@@ -15,7 +15,7 @@ namespace TW {
 namespace Aion {
 
 class Transaction {
-public:
+  public:
     typedef boost::multiprecision::uint128_t uint128_t;
 
     uint128_t nonce;
@@ -29,18 +29,19 @@ public:
     std::vector<uint8_t> signature;
 
     Transaction() = default;
-    Transaction(uint128_t nonce, uint128_t gasPrice, uint128_t gasLimit, const Address& to, uint128_t amount, const std::vector<uint8_t>& payload)
-    : nonce(nonce)
-    , gasPrice(gasPrice)
-    , gasLimit(gasLimit)
-    , to(to)
-    , amount(amount)
-    , payload(payload)
-    {}
+    Transaction(uint128_t nonce, uint128_t gasPrice, uint128_t gasLimit, const Address& to,
+                uint128_t amount, const std::vector<uint8_t>& payload)
+        : nonce(nonce)
+        , gasPrice(gasPrice)
+        , gasLimit(gasLimit)
+        , to(to)
+        , amount(amount)
+        , payload(payload) {}
 
-public:
+  public:
     /// Encodes the transaction.
     Data encode() const noexcept;
 };
 
-}} // namespace
+} // namespace Aion
+} // namespace TW

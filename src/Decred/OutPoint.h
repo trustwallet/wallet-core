@@ -9,8 +9,8 @@
 #include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
 
-#include <array>
 #include <algorithm>
+#include <array>
 
 namespace TW {
 namespace Decred {
@@ -18,7 +18,7 @@ namespace Decred {
 /// OutPoint defines a Decred data type that is used to track previous
 /// transaction outputs.
 class OutPoint {
-public:
+  public:
     /// The hash of the referenced transaction.
     std::array<byte, 32> hash;
 
@@ -60,9 +60,8 @@ public:
         return (cmp == 0 && a.index == b.index);
     }
 
-    friend bool operator!=(const OutPoint& a, const OutPoint& b) {
-        return !(a == b);
-    }
+    friend bool operator!=(const OutPoint& a, const OutPoint& b) { return !(a == b); }
 };
 
-}} // namespace
+} // namespace Decred
+} // namespace TW

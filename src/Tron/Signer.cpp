@@ -35,7 +35,8 @@ protocol::TransferContract to_internal(const Proto::TransferContract& transfer) 
     return internal;
 }
 
-/// Converts an external TransferAssetContract to an internal one used for signing.
+/// Converts an external TransferAssetContract to an internal one used for
+/// signing.
 protocol::TransferAssetContract to_internal(const Proto::TransferAssetContract& transfer) {
     auto internal = protocol::TransferAssetContract();
 

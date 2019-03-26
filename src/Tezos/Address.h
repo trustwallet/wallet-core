@@ -15,11 +15,12 @@ namespace TW {
 namespace Tezos {
 
 class Address {
-public:
+  public:
     /// Number of bytes in an address.
     static const size_t size = 23;
 
-    /// Address data consisting of a prefix byte followed by the public key hash.
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
     std::array<byte, size> bytes;
 
     /// Determines whether a string makes a valid  address.
@@ -45,7 +46,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-}} // namespace
+} // namespace Tezos
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWTezosAddress {

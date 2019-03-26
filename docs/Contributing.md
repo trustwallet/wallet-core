@@ -25,7 +25,7 @@ Keep this in mind when adding to the library:
 
 * Install Xcode
 * Install Xcode command line tools: `xcode-select --install`
-* Install CMake, boost, protobuf: `brew install cmake ninja boost autoconf automake libtool xcodegen`
+* Install other tools: `brew install cmake ninja boost autoconf automake libtool xcodegen clang-format`
 * Install [Android Studio](https://developer.android.com/studio/index.html)
 * Install the [Android NDK](https://developer.android.com/ndk/guides/)
 
@@ -125,6 +125,10 @@ When implementing a new blockchain make sure you go through this checklist:
     - [ ] Upload coin icon to [TrustWallet/tokens](https://github.com/TrustWallet/tokens) if necessary
 
 Also check out the [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain) document.
+
+## Code Style
+
+Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html) for C++. We use `clang-format` to ensure a consistent code sytle. Please run `git clang-format` on your code before you submit a PR. Alternatively add a [pre-commit hook](https://github.com/andrewseidl/githook-clang-format). **Do not** reformat files that you didn't modify. You can also install a clang-format extension for your IDE.
 
 ## Releasing
 

@@ -76,5 +76,5 @@ std::array<byte, 4> Address::checksum(const std::array<byte, 20>& keyhash) {
     preimage.insert(preimage.end(), keyhash.begin(), keyhash.end());
 
     const auto hash = Hash::blake256(Hash::blake256(preimage));
-    return { hash[0], hash[1], hash[2], hash[3] };
+    return {hash[0], hash[1], hash[2], hash[3]};
 }

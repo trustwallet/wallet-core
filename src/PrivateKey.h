@@ -17,7 +17,7 @@
 namespace TW {
 
 class PrivateKey {
-public:
+  public:
     /// The number of bytes in a private key.
     static const size_t size = 32;
 
@@ -25,7 +25,7 @@ public:
     std::array<uint8_t, size> bytes;
 
     /// Determines if a collection of bytes makes a valid private key.
-    template<typename T>
+    template <typename T>
     static bool isValid(const T& data) {
         // Check length
         if (data.size() != size) {
@@ -43,7 +43,7 @@ public:
     }
 
     /// Initializes a private key with a collection of bytes.
-    template<typename T>
+    template <typename T>
     explicit PrivateKey(const T& data) {
         if (data.size() != size) {
             throw std::invalid_argument("Invalid private key data");
@@ -55,10 +55,10 @@ public:
     PrivateKey(std::array<uint8_t, size>&& array) : bytes(array) {}
 
     PrivateKey(const PrivateKey& other) = delete;
-    PrivateKey& operator =(const PrivateKey& other) = delete;
+    PrivateKey& operator=(const PrivateKey& other) = delete;
 
     PrivateKey(PrivateKey&& other) = delete;
-    PrivateKey& operator =(PrivateKey&& other) = delete;
+    PrivateKey& operator=(PrivateKey&& other) = delete;
 
     virtual ~PrivateKey();
 
@@ -68,14 +68,19 @@ public:
     /// Signs a digest using the given ECDSA curve.
     Data sign(const Data& digest, TWCurve curve) const;
 
-    /// Signs a digest using the given ECDSA curve. The result is encoded with DER.
+    /// Signs a digest using the given ECDSA curve. The result is encoded with
+    /// DER.
     Data signAsDER(const Data& digest, TWCurve curve) const;
 };
 
-inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes == rhs.bytes; }
-inline bool operator!=(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes != rhs.bytes; }
+inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) {
+    return lhs.bytes == rhs.bytes;
+}
+inline bool operator!=(const PrivateKey& lhs, const PrivateKey& rhs) {
+    return lhs.bytes != rhs.bytes;
+}
 
-} // namespace
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWPrivateKey {

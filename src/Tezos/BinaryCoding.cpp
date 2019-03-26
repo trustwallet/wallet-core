@@ -6,15 +6,15 @@
 
 #include "../Base58.h"
 #include "../Data.h"
-#include "../PublicKey.h"
 #include "../HexCoding.h"
+#include "../PublicKey.h"
 
-#include <string>
 #include <TrezorCrypto/ecdsa.h>
+#include <string>
 
 using namespace TW;
 
-std::string base58ToHex(const std::string& string, size_t prefixLength, uint8_t *prefix) {
+std::string base58ToHex(const std::string& string, size_t prefixLength, uint8_t* prefix) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
     if (decoded.size() < prefixLength) {
         return "";

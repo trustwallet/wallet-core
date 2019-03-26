@@ -9,8 +9,8 @@
 #include "Forging.h"
 
 #include "../Base58.h"
-#include "../HexCoding.h"
 #include "../Hash.h"
+#include "../HexCoding.h"
 
 #include <TrezorCrypto/ecdsa.h>
 
@@ -24,7 +24,7 @@ bool Address::isValid(const std::string& string) {
     }
 
     // verify prefix
-    std::array<byte, 3> prefix {6, 161, 159};
+    std::array<byte, 3> prefix{6, 161, 159};
     if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
         return false;
     }
@@ -52,7 +52,7 @@ Address::Address(const PublicKey& publicKey) {
     auto publicKeySize = publicKey.ed25519Size;
 
     // Drop first byte of the public key which is a tag.
-    auto encoded = Data(publicKey.bytes.begin() + 1, publicKey.bytes.begin()  + publicKeySize);
+    auto encoded = Data(publicKey.bytes.begin() + 1, publicKey.bytes.begin() + publicKeySize);
     auto hash = Hash::blake2b(encoded, 20);
     auto addressData = Data({6, 161, 159});
     append(addressData, hash);

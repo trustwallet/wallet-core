@@ -15,15 +15,16 @@ namespace TW {
 namespace Zcash {
 
 class TAddress {
-public:
-/// Number of bytes in an address.
+  public:
+    /// Number of bytes in an address.
     static const size_t size = 22;
 
-    /// Address data consisting of a prefix byte followed by the public key hash.
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
     uint8_t bytes[size];
 
     /// Determines whether a collection of bytes makes a valid  address.
-    template<typename T>
+    template <typename T>
     static bool isValid(const T& data) {
         return data.size() == size;
     }
@@ -31,7 +32,8 @@ public:
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string);
 
-    /// Determines whether a string makes a valid address, and the prefix is within the valid set.
+    /// Determines whether a string makes a valid address, and the prefix is
+    /// within the valid set.
     static bool isValid(const std::string& string, const std::vector<byte>& validPrefixes);
 
     /// Initializes a  address with a string representation.
@@ -46,11 +48,12 @@ public:
     /// Returns a string representation of the address.
     std::string string() const;
 
-private:
+  private:
     TAddress() = default;
 };
 
-}} // namespace
+} // namespace Zcash
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWZcashTAddress {

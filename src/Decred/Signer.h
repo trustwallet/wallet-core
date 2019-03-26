@@ -7,8 +7,8 @@
 #pragma once
 
 #include "Transaction.h"
-#include "TransactionInput.h"
 #include "TransactionBuilder.h"
+#include "TransactionInput.h"
 #include "../Bitcoin/Amount.h"
 #include "../Bitcoin/Script.h"
 #include "../Bitcoin/TransactionPlan.h"
@@ -27,30 +27,32 @@ namespace Decred {
 
 /// Helper class that performs Decred transaction signing.
 class Signer {
-private:
+  private:
     /// Private key and redeem script provider for signing.
     Bitcoin::Proto::SigningInput input;
 
-public:
+  public:
     /// Transaction plan.
     Bitcoin::TransactionPlan plan;
 
     /// Transaction being signed.
     Transaction transaction;
 
-private:
+  private:
     /// List of signed inputs.
     std::vector<TransactionInput> signedInputs;
 
-public:
+  public:
     /// Initializes a transaction signer.
     Signer() = default;
 
     /// Initializes a transaction signer with signing input.
     explicit Signer(Bitcoin::Proto::SigningInput&& input) : input(input) {}
 
-    /// Initializes a transaction signer with signing input, a transaction, and a hash type.
-    Signer(Bitcoin::Proto::SigningInput&& input, const Bitcoin::TransactionPlan& plan) : input(input), plan(plan) {
+    /// Initializes a transaction signer with signing input, a transaction, and
+    /// a hash type.
+    Signer(Bitcoin::Proto::SigningInput&& input, const Bitcoin::TransactionPlan& plan)
+        : input(input), plan(plan) {
         transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
     }
 
@@ -64,9 +66,10 @@ public:
     /// \returns the signed transaction script.
     Result<Bitcoin::Script> sign(Bitcoin::Script script, size_t index);
 
-private:
+  private:
     Result<std::vector<Data>> signStep(Bitcoin::Script script, size_t index);
-    Data createSignature(const Transaction& transaction, const Bitcoin::Script& script, const Data& key, size_t index);
+    Data createSignature(const Transaction& transaction, const Bitcoin::Script& script,
+                         const Data& key, size_t index);
     Data pushAll(const std::vector<Data>& results);
 
     /// Returns the private key for the given public key hash.
@@ -76,7 +79,8 @@ private:
     Data scriptForScriptHash(const Data& hash) const;
 };
 
-}} // namespace
+} // namespace Decred
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWDecredSigner {

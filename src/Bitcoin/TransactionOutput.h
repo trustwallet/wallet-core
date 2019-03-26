@@ -19,7 +19,8 @@ struct TransactionOutput {
     /// Transaction amount.
     Amount value;
 
-    /// Usually contains the public key as a Bitcoin script setting up conditions to claim this output.
+    /// Usually contains the public key as a Bitcoin script setting up
+    /// conditions to claim this output.
     Script script;
 
     /// Initializes an empty transaction output.
@@ -32,7 +33,8 @@ struct TransactionOutput {
     void encode(std::vector<uint8_t>& data) const;
 };
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWBitcoinTransactionOutput {

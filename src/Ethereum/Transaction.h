@@ -13,7 +13,7 @@ namespace TW {
 namespace Ethereum {
 
 class Transaction {
-public:
+  public:
     typedef boost::multiprecision::uint256_t uint256_t;
 
     uint256_t nonce;
@@ -29,14 +29,15 @@ public:
     uint256_t s = uint256_t();
 
     Transaction() = default;
-    Transaction(const uint256_t& nonce, const uint256_t& gasPrice, const uint256_t& gasLimit, const Address& to, const uint256_t& amount, const std::vector<uint8_t>& payload)
+    Transaction(const uint256_t& nonce, const uint256_t& gasPrice, const uint256_t& gasLimit,
+                const Address& to, const uint256_t& amount, const std::vector<uint8_t>& payload)
         : nonce(nonce)
         , gasPrice(gasPrice)
         , gasLimit(gasLimit)
         , to(to)
         , amount(amount)
-        , payload(payload)
-        {}
+        , payload(payload) {}
 };
 
-}} // namespace
+} // namespace Ethereum
+} // namespace TW

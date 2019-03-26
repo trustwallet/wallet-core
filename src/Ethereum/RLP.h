@@ -26,13 +26,9 @@ struct RLP {
         return encode(Data(string.begin(), string.end()));
     }
 
-    static Data encode(uint8_t number) noexcept {
-        return encode(uint256_t(number));
-    }
+    static Data encode(uint8_t number) noexcept { return encode(uint256_t(number)); }
 
-    static Data encode(uint16_t number) noexcept {
-        return encode(uint256_t(number));
-    }
+    static Data encode(uint16_t number) noexcept { return encode(uint256_t(number)); }
 
     static Data encode(int32_t number) noexcept {
         if (number < 0) {
@@ -41,9 +37,7 @@ struct RLP {
         return encode(static_cast<uint32_t>(number));
     }
 
-    static Data encode(uint32_t number) noexcept {
-        return encode(uint256_t(number));
-    }
+    static Data encode(uint32_t number) noexcept { return encode(uint256_t(number)); }
 
     static Data encode(int64_t number) noexcept {
         if (number < 0) {
@@ -52,9 +46,7 @@ struct RLP {
         return encode(static_cast<uint64_t>(number));
     }
 
-    static Data encode(uint64_t number) noexcept {
-        return encode(uint256_t(number));
-    }
+    static Data encode(uint64_t number) noexcept { return encode(uint256_t(number)); }
 
     static Data encode(const uint256_t& number) noexcept;
 
@@ -68,7 +60,7 @@ struct RLP {
     static Data encode(const Data& data) noexcept;
 
     /// Encodes a static array.
-    template<std::size_t N>
+    template <std::size_t N>
     static Data encode(const std::array<uint8_t, N>& data) noexcept {
         if (N == 1 && data[0] <= 0x7f) {
             // Fits in single byte, no header
@@ -81,7 +73,7 @@ struct RLP {
     }
 
     /// Encodes a list of elements.
-    template<typename T>
+    template <typename T>
     static Data encodeList(T elements) noexcept {
         auto encodedData = Data();
         for (const auto& el : elements) {
@@ -100,8 +92,10 @@ struct RLP {
     /// Encodes a list header.
     static Data encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexcept;
 
-    /// Returns the representation of an integer using the least number of bytes needed.
+    /// Returns the representation of an integer using the least number of bytes
+    /// needed.
     static Data putint(uint64_t i) noexcept;
 };
 
-}} // namespace
+} // namespace Ethereum
+} // namespace TW
