@@ -20,9 +20,11 @@ using namespace TW::Decred;
 
 Result<Transaction> Signer::sign() {
     signedInputs.clear();
-    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs), std::back_inserter(signedInputs));
+    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
+              std::back_inserter(signedInputs));
 
-    const bool hashSingle = ((input.hash_type() & ~TWSignatureHashTypeAnyoneCanPay) == TWSignatureHashTypeSingle);
+    const bool hashSingle =
+        ((input.hash_type() & ~TWSignatureHashTypeAnyoneCanPay) == TWSignatureHashTypeSingle);
     for (auto i = 0; i < plan.utxos.size(); i += 1) {
         auto& utxo = plan.utxos[i];
 
@@ -141,7 +143,8 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
     }
 }
 
-Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Script& script, const Data& key, size_t index) {
+Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Script& script,
+                             const Data& key, size_t index) {
     auto sighash = transaction.computeSignatureHash(script, index, input.hash_type());
     auto pk = PrivateKey(key);
     auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);

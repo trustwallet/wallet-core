@@ -15,7 +15,7 @@ namespace TW {
 namespace Bitcoin {
 
 class Bech32Address {
-public:
+  public:
     /// Human-readable part.
     ///
     /// \see https://github.com/satoshilabs/slips/blob/master/slip-0173.md
@@ -30,14 +30,19 @@ public:
     /// Determines whether a string makes a valid Bech32 address.
     static bool isValid(const std::string& string);
 
-    /// Determines whether a string makes a valid Bech32 address, and the HRP matches.
+    /// Determines whether a string makes a valid Bech32 address, and the HRP
+    /// matches.
     static bool isValid(const std::string& string, const std::string& hrp);
 
-    /// Initializes a Bech32 address with a human-readable part, a witness version, and a witness program.
-    Bech32Address(const std::string& hrp, int witver, const std::vector<uint8_t>& witprog) : hrp(hrp), witnessVersion(witver), witnessProgram(witprog) {}
+    /// Initializes a Bech32 address with a human-readable part, a witness
+    /// version, and a witness program.
+    Bech32Address(const std::string& hrp, int witver, const std::vector<uint8_t>& witprog)
+        : hrp(hrp), witnessVersion(witver), witnessProgram(witprog) {}
 
-    /// Initializes a Bech32 address with a human-readable part, a witness version, and a witness program.
-    Bech32Address(const std::string& hrp, int witver, std::vector<uint8_t>&& witprog) : hrp(hrp), witnessVersion(witver), witnessProgram(witprog) {}
+    /// Initializes a Bech32 address with a human-readable part, a witness
+    /// version, and a witness program.
+    Bech32Address(const std::string& hrp, int witver, std::vector<uint8_t>&& witprog)
+        : hrp(hrp), witnessVersion(witver), witnessProgram(witprog) {}
 
     /// Initializes a Bech32 address with a public key and a HRP prefix.
     Bech32Address(const PublicKey& publicKey, int witver, const std::string& hrp);
@@ -53,17 +58,20 @@ public:
     std::string string() const;
 
     /// Initializes a Bech32 address with raw data.
-    static std::pair<Bech32Address, bool> fromRaw(const std::string& hrp, const std::vector<uint8_t>& data);
+    static std::pair<Bech32Address, bool> fromRaw(const std::string& hrp,
+                                                  const std::vector<uint8_t>& data);
 
     bool operator==(const Bech32Address& rhs) const {
-        return hrp == rhs.hrp && witnessVersion == rhs.witnessVersion && witnessProgram == rhs.witnessProgram;
+        return hrp == rhs.hrp && witnessVersion == rhs.witnessVersion &&
+               witnessProgram == rhs.witnessProgram;
     }
 
-private:
+  private:
     Bech32Address() = default;
 };
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWBech32Address {

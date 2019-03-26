@@ -6,12 +6,12 @@
 
 #include <TrustWalletCore/TWBitcoinCashAddress.h>
 
-#include "../PublicKey.h"
 #include "../Bitcoin/CashAddress.h"
+#include "../PublicKey.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <cassert>
 #include <cstring>
@@ -24,16 +24,17 @@ bool TWBitcoinCashAddressEqual(struct TWBitcoinCashAddress lhs, struct TWBitcoin
     return std::memcmp(lhs.bytes, rhs.bytes, dataSize) == 0;
 }
 
-bool TWBitcoinCashAddressIsValid(TWData *_Nonnull data) {
+bool TWBitcoinCashAddressIsValid(TWData* _Nonnull data) {
     return TWDataSize(data) == dataSize && (TWDataGet(data, 0) == 0 || TWDataGet(data, 0) == 1);
 }
 
-bool TWBitcoinCashAddressIsValidString(TWString *_Nonnull string) {
+bool TWBitcoinCashAddressIsValidString(TWString* _Nonnull string) {
     auto& stdString = *reinterpret_cast<const std::string*>(string);
     return TW::Bitcoin::CashAddress::isValid(stdString);
 }
 
-bool TWBitcoinCashAddressInitWithString(struct TWBitcoinCashAddress *_Nonnull address, TWString *_Nonnull string) {
+bool TWBitcoinCashAddressInitWithString(struct TWBitcoinCashAddress* _Nonnull address,
+                                        TWString* _Nonnull string) {
     auto& stdString = *reinterpret_cast<const std::string*>(string);
     try {
         const auto addr = TW::Bitcoin::CashAddress(stdString);
@@ -44,7 +45,8 @@ bool TWBitcoinCashAddressInitWithString(struct TWBitcoinCashAddress *_Nonnull ad
     }
 }
 
-bool TWBitcoinCashAddressInitWithData(struct TWBitcoinCashAddress *_Nonnull address, TWData *_Nonnull data) {
+bool TWBitcoinCashAddressInitWithData(struct TWBitcoinCashAddress* _Nonnull address,
+                                      TWData* _Nonnull data) {
     if (!TWBitcoinCashAddressIsValid(data)) {
         return false;
     }
@@ -52,7 +54,8 @@ bool TWBitcoinCashAddressInitWithData(struct TWBitcoinCashAddress *_Nonnull addr
     return true;
 }
 
-void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey) {
+void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress* _Nonnull address,
+                                           struct TWPublicKey* _Nonnull publicKey) {
     uint8_t payload[21];
     payload[0] = 0;
     ecdsa_get_pubkeyhash(publicKey->impl.bytes.data(), HASHER_SHA2_RIPEMD, payload + 1);
@@ -61,13 +64,13 @@ void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull
     cash_addr_to_data(address->bytes, &outlen, payload, 21);
 }
 
-TWString *_Nonnull TWBitcoinCashAddressDescription(struct TWBitcoinCashAddress address) {
+TWString* _Nonnull TWBitcoinCashAddressDescription(struct TWBitcoinCashAddress address) {
     char result[104];
     cash_encode(result, hrp, address.bytes, dataSize);
     return TWStringCreateWithUTF8Bytes(result);
 }
 
-TWData *_Nonnull TWBitcoinCashAddressData(struct TWBitcoinCashAddress address) {
+TWData* _Nonnull TWBitcoinCashAddressData(struct TWBitcoinCashAddress address) {
     return TWDataCreateWithBytes(address.bytes, dataSize);
 }
 

@@ -14,19 +14,19 @@
 namespace TW {
 namespace Ethereum {
 
-template <typename T , typename... Ts>
+template <typename T, typename... Ts>
 auto head(std::tuple<T, Ts...> t) {
     return std::get<0>(t);
 }
 
-template <std::size_t... Ns , typename... Ts>
+template <std::size_t... Ns, typename... Ts>
 auto tail_impl(std::index_sequence<Ns...>, std::tuple<Ts...> t) {
     return std::make_tuple(std::get<Ns + 1u>(t)...);
 }
 
 template <typename... Ts>
 auto tail(std::tuple<Ts...> t) {
-    return tail_impl(std::make_index_sequence<sizeof...(Ts) - 1u>() , t);
+    return tail_impl(std::make_index_sequence<sizeof...(Ts) - 1u>(), t);
 }
 
 bool is_dynamic(const std::tuple<>& tuple) {
@@ -57,10 +57,12 @@ std::size_t size(const std::tuple<First, T...>& tuple) {
     return size(head(tuple)) + size(tail(tuple));
 }
 
-void encode_small(const std::tuple<>& tuple, std::size_t headSize, std::size_t& offset, Data& data) {}
+void encode_small(const std::tuple<>& tuple, std::size_t headSize, std::size_t& offset,
+                  Data& data) {}
 
 template <typename First, typename... T>
-void encode_small(const std::tuple<First, T...>& tuple, std::size_t headSize, std::size_t& offset, Data& data) {
+void encode_small(const std::tuple<First, T...>& tuple, std::size_t headSize, std::size_t& offset,
+                  Data& data) {
     auto value = head(tuple);
     if (is_dynamic(value)) {
         encode(uint256_t(headSize + offset), data);
@@ -106,4 +108,5 @@ std::string type_string(const std::tuple<T...>& tuple) {
     return string;
 }
 
-}} // namespace
+} // namespace Ethereum
+} // namespace TW

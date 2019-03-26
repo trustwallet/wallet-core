@@ -1,0 +1,9 @@
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: Yes
+BasedOnStyle: LLVM
+BreakConstructorInitializers: BeforeComma
+ColumnLimit: 100
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+IndentWidth: 4
+PointerAlignment: Left

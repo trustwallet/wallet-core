@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include "../Data.h"
 #include "AESParameters.h"
 #include "ScryptParameters.h"
-#include "../Data.h"
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -48,14 +48,12 @@ struct EncryptionParameters {
     EncryptionParameters() = default;
 
     /// Initializes `EncryptionParameters` with standard values.
-    EncryptionParameters(const Data& encrypted, const AESParameters& cipherParams, const ScryptParameters& kdfParams, const Data& mac)
-        : encrypted(encrypted)
-        , cipherParams(cipherParams)
-        , kdfParams(kdfParams)
-        , mac(mac)
-    {}
+    EncryptionParameters(const Data& encrypted, const AESParameters& cipherParams,
+                         const ScryptParameters& kdfParams, const Data& mac)
+        : encrypted(encrypted), cipherParams(cipherParams), kdfParams(kdfParams), mac(mac) {}
 
-    /// Initializes `EncryptionParameters` by encrypting data with a password using standard values.
+    /// Initializes `EncryptionParameters` by encrypting data with a password
+    /// using standard values.
     EncryptionParameters(const std::string& password, Data data);
 
     /// Initializes `EncryptionParameters` with a JSON object.
@@ -69,10 +67,11 @@ struct EncryptionParameters {
 
     EncryptionParameters(const EncryptionParameters& other) = default;
     EncryptionParameters(EncryptionParameters&& other) = default;
-    EncryptionParameters& operator =(const EncryptionParameters& other) = default;
-    EncryptionParameters& operator =(EncryptionParameters&& other) = default;
+    EncryptionParameters& operator=(const EncryptionParameters& other) = default;
+    EncryptionParameters& operator=(EncryptionParameters&& other) = default;
 
     virtual ~EncryptionParameters();
 };
 
-}} // namespace
+} // namespace Keystore
+} // namespace TW

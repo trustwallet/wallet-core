@@ -6,8 +6,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <stdint.h>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace TW {
 namespace Bech32 {
@@ -19,11 +19,12 @@ std::string encode(const std::string& hrp, const std::vector<uint8_t>& values);
 
 /// Decodes a Bech32 string.
 ///
-/// \returns a pair with the human-readable part and the data, or a pair or empty collections on failure.
+/// \returns a pair with the human-readable part and the data, or a pair or
+/// empty collections on failure.
 std::pair<std::string, std::vector<uint8_t>> decode(const std::string& str);
 
 /// Converts from one power-of-2 number base to another.
-template<int frombits, int tobits, bool pad>
+template <int frombits, int tobits, bool pad>
 inline bool convertBits(std::vector<uint8_t>& out, const std::vector<uint8_t>& in) {
     int acc = 0;
     int bits = 0;
@@ -39,11 +40,13 @@ inline bool convertBits(std::vector<uint8_t>& out, const std::vector<uint8_t>& i
         }
     }
     if (pad) {
-        if (bits) out.push_back((acc << (tobits - bits)) & maxv);
+        if (bits)
+            out.push_back((acc << (tobits - bits)) & maxv);
     } else if (bits >= frombits || ((acc << (tobits - bits)) & maxv)) {
         return false;
     }
     return true;
 }
 
-}} // namespace
+} // namespace Bech32
+} // namespace TW

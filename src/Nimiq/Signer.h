@@ -16,11 +16,11 @@ namespace Nimiq {
 
 /// Helper class that performs Nimiq transaction signing.
 class Signer {
-public:
+  public:
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 
-    template<typename T>
+    template <typename T>
     static PublicKey publicKeyFromBytes(const T& data) {
         assert(data.size() == 32);
         std::vector<uint8_t> pubkeyInternal;
@@ -30,7 +30,8 @@ public:
     }
 };
 
-}} // namespace
+} // namespace Nimiq
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWNimiqSigner {

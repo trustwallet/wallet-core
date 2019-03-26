@@ -6,8 +6,8 @@
 
 #include "CashAddress.h"
 
-#include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/cash_addr.h>
+#include <TrezorCrypto/ecdsa.h>
 
 #include <cassert>
 #include <cstring>

@@ -6,22 +6,23 @@
 
 #pragma once
 
-#include "../PublicKey.h"
 #include "../Ethereum/Address.h"
+#include "../PublicKey.h"
 #include <array>
 #include <stdint.h>
 #include <vector>
 
 namespace TW {
 namespace Wanchain {
-class Address: public Ethereum::Address {
-public:
+class Address : public Ethereum::Address {
+  public:
     using Ethereum::Address::Address;
 
     /// Returns a string representation of the address.
     std::string string() const;
 };
-}} // namespace
+} // namespace Wanchain
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWWanchainAddress {

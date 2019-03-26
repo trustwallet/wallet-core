@@ -23,7 +23,7 @@
 namespace TW {
 
 class HDWallet {
-public:
+  public:
     static constexpr size_t seedSize = 64;
     static constexpr size_t maxMnemomincSize = 240;
     static constexpr size_t maxExtendedKeySize = 128;
@@ -37,7 +37,7 @@ public:
     /// Mnemonic passphrase.
     std::string passphrase;
 
-public:
+  public:
     /// Determines if a mnemonic phrase is valid.
     static bool isValid(const std::string& mnemonic);
 
@@ -52,8 +52,8 @@ public:
 
     HDWallet(const HDWallet& other) = default;
     HDWallet(HDWallet&& other) = default;
-    HDWallet& operator =(const HDWallet& other) = default;
-    HDWallet& operator =(HDWallet&& other) = default;
+    HDWallet& operator=(const HDWallet& other) = default;
+    HDWallet& operator=(HDWallet&& other) = default;
 
     virtual ~HDWallet();
 
@@ -64,19 +64,26 @@ public:
     std::string deriveAddress(TWCoinType coin) const;
 
     /// Returns the extended private key.
-    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
+    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin,
+                                      TWHDVersion version) const;
 
     /// Returns the exteded public key.
     std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
     /// Computes the public key from an exteded public key representation.
-    static PublicKey getPublicKeyFromExtended(const std::string& extended, TWCurve curve, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);
+    static PublicKey getPublicKeyFromExtended(const std::string& extended, TWCurve curve,
+                                              enum TWHDVersion versionPublic,
+                                              enum TWHDVersion versionPrivate, uint32_t change,
+                                              uint32_t address);
 
-    /// Generates an address from an exteded public key representation, coin type, and change and address indices.
-    static std::optional<std::string> getAddressFromExtended(const std::string& extended, TWCurve curve, TWCoinType coinType, uint32_t change, uint32_t address);
+    /// Generates an address from an exteded public key representation, coin
+    /// type, and change and address indices.
+    static std::optional<std::string> getAddressFromExtended(const std::string& extended,
+                                                             TWCurve curve, TWCoinType coinType,
+                                                             uint32_t change, uint32_t address);
 };
 
-} // namespace
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWHDWallet {

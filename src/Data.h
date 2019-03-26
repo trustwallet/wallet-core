@@ -18,4 +18,4 @@ inline void append(Data& data, const Data& suffix) {
     data.insert(data.end(), suffix.begin(), suffix.end());
 }
 
-} // namespace
+} // namespace TW

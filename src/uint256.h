@@ -25,14 +25,16 @@ inline uint256_t load(const Data& data) {
     return result;
 }
 
-/// Loads a `uint256_t` from Protobuf bytes (which are wrongly represented as std::string).
+/// Loads a `uint256_t` from Protobuf bytes (which are wrongly represented as
+/// std::string).
 inline uint256_t load(const std::string& data) {
     using boost::multiprecision::cpp_int;
     if (std::empty(data)) {
         return uint256_t(0);
     }
     uint256_t result;
-    import_bits(result, reinterpret_cast<const byte*>(data.data()), reinterpret_cast<const byte*>(data.data() + data.size()));
+    import_bits(result, reinterpret_cast<const byte*>(data.data()),
+                reinterpret_cast<const byte*>(data.data() + data.size()));
     return result;
 }
 
@@ -45,4 +47,4 @@ inline Data store(const uint256_t& v) {
     return bytes;
 }
 
-} // namespace
+} // namespace TW
