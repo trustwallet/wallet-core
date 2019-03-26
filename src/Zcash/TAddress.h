@@ -35,10 +35,10 @@ public:
     static bool isValid(const std::string& string, const std::vector<byte>& validPrefixes);
 
     /// Initializes a  address with a string representation.
-    TAddress(const std::string& string);
+    explicit TAddress(const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
-    TAddress(const std::vector<uint8_t>& data);
+    explicit TAddress(const std::vector<uint8_t>& data);
 
     /// Initializes a  address with a public key and a prefix.
     TAddress(const PublicKey& publicKey, uint8_t prefix);

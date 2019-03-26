@@ -26,7 +26,7 @@ public:
     boost::multiprecision::uint256_t chainID;
 
     /// Initializes a signer with a chain identifier.
-    Signer(boost::multiprecision::uint256_t chainID) : chainID(chainID) {}
+    Signer(const boost::multiprecision::uint256_t& chainID) : chainID(chainID) {}
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept;

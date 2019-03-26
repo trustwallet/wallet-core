@@ -18,7 +18,7 @@ OperationList::OperationList(const std::string& str) {
     branch = str;
 }
 
-void OperationList::add_operation(Transaction transaction) {
+void OperationList::addOperation(const Transaction& transaction) {
     operation_list.push_back(transaction);
 }
 

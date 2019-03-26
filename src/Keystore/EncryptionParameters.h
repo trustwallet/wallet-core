@@ -48,7 +48,7 @@ struct EncryptionParameters {
     EncryptionParameters() = default;
 
     /// Initializes `EncryptionParameters` with standard values.
-    EncryptionParameters(Data encrypted, AESParameters cipherParams, ScryptParameters kdfParams, Data mac)
+    EncryptionParameters(const Data& encrypted, const AESParameters& cipherParams, const ScryptParameters& kdfParams, const Data& mac)
         : encrypted(encrypted)
         , cipherParams(cipherParams)
         , kdfParams(kdfParams)
@@ -66,6 +66,11 @@ struct EncryptionParameters {
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
+
+    EncryptionParameters(const EncryptionParameters& other) = default;
+    EncryptionParameters(EncryptionParameters&& other) = default;
+    EncryptionParameters& operator =(const EncryptionParameters& other) = default;
+    EncryptionParameters& operator =(EncryptionParameters&& other) = default;
 
     virtual ~EncryptionParameters();
 };

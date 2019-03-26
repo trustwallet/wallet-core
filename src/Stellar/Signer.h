@@ -26,7 +26,7 @@ public:
     Data encode(const Proto::SigningInput& input) const;
 
 private:
-    void encodeAddress(Address address, Data& data) const;
+    void encodeAddress(const Address& address, Data& data) const;
 
     void pad(Data& data) const;
 };

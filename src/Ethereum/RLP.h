@@ -7,8 +7,9 @@
 #pragma once
 
 #include "Transaction.h"
+#include "../Data.h"
+#include "../uint256.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -20,12 +21,8 @@ namespace Ethereum {
 ///
 /// - SeeAlso: https://github.com/ethereum/wiki/wiki/RLP
 struct RLP {
-    typedef std::vector<uint8_t> Data;
-    typedef std::string String;
-    typedef boost::multiprecision::uint256_t uint256_t;
-
     /// Encodes a string;
-    static Data encode(String string) noexcept {
+    static Data encode(const std::string& string) noexcept {
         return encode(Data(string.begin(), string.end()));
     }
 
@@ -59,16 +56,16 @@ struct RLP {
         return encode(uint256_t(number));
     }
 
-    static Data encode(uint256_t number) noexcept;
+    static Data encode(const uint256_t& number) noexcept;
 
     /// Encodes a transaction.
-    static Data encode(Transaction transaction) noexcept;
+    static Data encode(const Transaction& transaction) noexcept;
 
     /// Wraps encoded data as a list.
-    static Data encodeList(Data encoded) noexcept;
+    static Data encodeList(const Data& encoded) noexcept;
 
     /// Encodes a block of data.
-    static Data encode(Data data) noexcept;
+    static Data encode(const Data& data) noexcept;
 
     /// Encodes a static array.
     template<std::size_t N>

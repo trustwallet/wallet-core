@@ -17,19 +17,19 @@ namespace Aion {
 class Transaction {
 public:
     typedef boost::multiprecision::uint128_t uint128_t;
-    
+
     uint128_t nonce;
     uint128_t gasPrice;
     uint128_t gasLimit;
     Address to;
     uint128_t amount;
     std::vector<uint8_t> payload;
-    
+
     /// Transaction signature.
     std::vector<uint8_t> signature;
-    
+
     Transaction() = default;
-    Transaction(uint128_t nonce, uint128_t gasPrice, uint128_t gasLimit, Address to, uint128_t amount, const std::vector<uint8_t>& payload)
+    Transaction(uint128_t nonce, uint128_t gasPrice, uint128_t gasLimit, const Address& to, uint128_t amount, const std::vector<uint8_t>& payload)
     : nonce(nonce)
     , gasPrice(gasPrice)
     , gasLimit(gasLimit)
@@ -37,7 +37,7 @@ public:
     , amount(amount)
     , payload(payload)
     {}
-    
+
 public:
     /// Encodes the transaction.
     Data encode() const noexcept;
