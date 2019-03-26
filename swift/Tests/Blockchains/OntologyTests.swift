@@ -58,7 +58,7 @@ class OntologyTests: XCTestCase {
             $0.amount = 1
             $0.gasPrice = 500
             $0.gasLimit = 20000
-            $0.payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652"S
+            $0.payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652"
         }
         
         let output = OntologySigner.encode(input: input)
