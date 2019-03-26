@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "ABI/Array.h"
-#include "ABI/Bytes.h"
-#include "ABI/Function.h"
 #include "ABI/Numbers.h"
+#include "ABI/Bytes.h"
+#include "ABI/Array.h"
 #include "ABI/Tuple.h"
+#include "ABI/Function.h"
