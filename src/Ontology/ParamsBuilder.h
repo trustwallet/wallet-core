@@ -53,6 +53,8 @@ public:
 
     void push(const std::vector<uint8_t> &data);
 
+    void push(uint64_t num, uint8_t len);
+
     void push(uint64_t num);
 
     void push(uint8_t num);

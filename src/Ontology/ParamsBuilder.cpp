@@ -103,6 +103,18 @@ void ParamsBuilder::push(const Data &data) {
     bytes.insert(bytes.end(), data.begin(), data.end());
 }
 
+void ParamsBuilder::push(uint64_t num, uint8_t len) {
+    Data data;
+    for (auto i = 0; i < len; i++) {
+        data.push_back(static_cast<uint8_t>(num));
+        num >>= 8;
+    }
+    if (data.back() >> 7 == 1) {
+        data.push_back(0x00);
+    }
+    push(data);
+}
+
 void ParamsBuilder::push(uint64_t num) {
     if (num == 0) {
         bytes.push_back(PUSH0);
@@ -111,8 +123,20 @@ void ParamsBuilder::push(uint64_t num) {
         bytes.push_back(static_cast<uint8_t>(num));
     } else if (num < 128) {
         push(Data{static_cast<uint8_t>(num)});
+    } else if (num <= 0xFFFF) {
+        push(num, 2);
+    } else if (num <= 0xFFFFFF) {
+        push(num, 3);
+    } else if (num <= 0xFFFFFFFF) {
+        push(num, 4);
+    } else if (num <= 0xFFFFFFFFFF) {
+        push(num, 5);
+    } else if (num <= 0xFFFFFFFFFFFF) {
+        push(num, 6);
+    } else if (num <= 0xFFFFFFFFFFFFFF) {
+        push(num, 7);
     } else {
-        push(Data{static_cast<uint8_t>(num), static_cast<uint8_t>((num >> 8))});
+        push(num, 8);
     }
 }
 
