@@ -19,7 +19,7 @@ namespace Decred {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
-    static Bitcoin::TransactionPlan plan(Bitcoin::Proto::SigningInput input) {
+    static Bitcoin::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
         auto plan = Bitcoin::TransactionPlan();
         plan.amount = input.amount();
 

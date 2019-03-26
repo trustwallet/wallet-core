@@ -50,6 +50,11 @@ public:
     /// Initializes an HDWallet from a seed.
     HDWallet(const Data& data, const std::string& passphrase);
 
+    HDWallet(const HDWallet& other) = default;
+    HDWallet(HDWallet&& other) = default;
+    HDWallet& operator =(const HDWallet& other) = default;
+    HDWallet& operator =(HDWallet&& other) = default;
+
     virtual ~HDWallet();
 
     /// Returns the private key at the given derivation path.

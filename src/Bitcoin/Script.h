@@ -29,7 +29,7 @@ public:
     Script(It begin, It end) : bytes(begin, end) {}
 
     /// Initializaes a script with a collection of raw bytes by moving.
-    Script(Data&& bytes) : bytes(bytes) {}
+    explicit Script(Data&& bytes) : bytes(bytes) {}
 
     /// Whether the script is empty.
     bool empty() const {

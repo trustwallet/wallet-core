@@ -144,11 +144,14 @@ void Transaction::encode(Data& data) const {
     switch (serializeType) {
     case SerializeType::noWitness:
         encodePrefix(data);
+        break;
     case SerializeType::onlyWitness:
         encodeWitness(data);
+        break;
     case SerializeType::full:
         encodePrefix(data);
         encodeWitness(data);
+        break;
     }
 }
 

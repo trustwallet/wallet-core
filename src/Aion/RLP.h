@@ -15,16 +15,13 @@
 #include <string>
 #include <vector>
 
-using boost::multiprecision::uint128_t;
-
 namespace TW {
 namespace Aion {
 
 /// Aion's RLP encoging for long numbers
 /// https://github.com/aionnetwork/aion/issues/680
 struct RLP {
-    
-    static Data encodeLong(uint128_t l) noexcept {
+    static Data encodeLong(boost::multiprecision::uint128_t l) noexcept {
         if ((l & 0x00000000FFFFFFFFL) == l) {
             return Ethereum::RLP::encode(l);
         }
@@ -36,7 +33,6 @@ struct RLP {
         }
         return result;
     }
-
 };
 
 }} // namespace

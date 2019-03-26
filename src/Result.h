@@ -56,6 +56,52 @@ public:
         new (&storage_) E(error.val);
     }
 
+    Result(const Result& other) : success_(success_) {
+        if (success_) {
+            new (&storage_) T(other.get<T>());
+        } else {
+            new (&storage_) E(other.get<E>());
+        }
+    }
+
+    Result& operator =(const Result& other) {
+        if (success_) {
+            get<T>().~T();
+        } else {
+            get<E>().~E();
+        }
+
+        success_ = other.success_;
+        if (success_) {
+            new (&storage_) T(other.get<T>());
+        } else {
+            new (&storage_) E(other.get<E>());
+        }
+    }
+
+    Result(Result&& other) {
+        if (success_) {
+            new (&storage_) T(other.get<T>());
+        } else {
+            new (&storage_) E(other.get<E>());
+        }
+    }
+
+    Result& operator =(Result&& other) {
+        if (success_) {
+            get<T>().~T();
+        } else {
+            get<E>().~E();
+        }
+
+        success_ = other.success_;
+        if (success_) {
+            new (&storage_) T(std::move(other.get<T>()));
+        } else {
+            new (&storage_) E(std::move(other.get<E>()));
+        }
+    }
+
     ~Result() {
         if (success_)
             get<T>().~T();
@@ -95,8 +141,8 @@ public:
         return Result(Types::Failure<E>(std::forward<E>(val)));
     }
 
-    operator bool() const { 
-        return success_; 
+    operator bool() const {
+        return success_;
     }
 
 private:

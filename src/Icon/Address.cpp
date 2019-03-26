@@ -39,7 +39,6 @@ Address::Address(const std::string& string) {
         type = TWIconAddressTypeContract;
     } else {
         throw std::invalid_argument("Invalid address prefix");
-        type = TWIconAddressTypeAddress;
     }
 
     const auto data = parse_hex(string.begin() + 2, string.end());

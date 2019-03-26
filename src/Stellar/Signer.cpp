@@ -17,7 +17,7 @@ using namespace TW::Stellar;
 std::string Signer::sign() const noexcept {
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    Address account = input.account();
+    auto account = Address(input.account());
     auto encoded = encode(input);
 
     auto encodedWithHeaders = Data();
@@ -45,7 +45,7 @@ std::string Signer::sign() const noexcept {
 Data Signer::encode(const Proto::SigningInput& input) const {
 //    Address account, uint32_t fee, uint64_t sequence, uint32_t memoType, Data memoData, Address destination, uint64_t amount;
     auto data = Data();
-    encodeAddress(input.account(), data);
+    encodeAddress(Address(input.account()), data);
     encode32BE(input.fee(), data);
     encode64BE(input.sequence(), data);
     encode32BE(0, data); // Time bounds
@@ -70,7 +70,7 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     encode32BE(1, data); // Operation list size. Only 1 operation.
     encode32BE(0, data); // Source equals account
     encode32BE(input.operation_type(), data); // Operation type - PAYMENT
-    encodeAddress(input.destination(), data);
+    encodeAddress(Address(input.destination()), data);
     if (input.operation_type() == Proto::SigningInput_OperationType_PAYMENT) {
         encode32BE(0, data); // Asset type
     }
@@ -79,7 +79,7 @@ Data Signer::encode(const Proto::SigningInput& input) const {
     return data;
 }
 
-void Signer::encodeAddress(Address address, Data& data) const {
+void Signer::encodeAddress(const Address& address, Data& data) const {
     encode32BE(0, data);
     data.insert(data.end(), address.bytes.begin(), address.bytes.end());
 }

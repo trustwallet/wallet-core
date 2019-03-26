@@ -27,7 +27,7 @@ public:
     std::array<uint8_t, 64> signature;
 
     Transaction() = default;
-    Transaction(std::array<uint8_t, 32> sender, Address dest, uint64_t amount, uint64_t fee, uint32_t vsh)
+    Transaction(const std::array<uint8_t, 32>& sender, const Address& dest, uint64_t amount, uint64_t fee, uint32_t vsh)
         : sender_pub_key(sender)
         , destination(dest)
         , amount(amount)

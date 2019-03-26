@@ -86,8 +86,8 @@ struct DerivationPath {
     }
 
     DerivationPath() = default;
-    DerivationPath(std::initializer_list<DerivationPathIndex> l) : indices(l) {}
-    DerivationPath(std::vector<DerivationPathIndex> indices) : indices(indices) {}
+    explicit DerivationPath(std::initializer_list<DerivationPathIndex> l) : indices(l) {}
+    explicit DerivationPath(std::vector<DerivationPathIndex> indices) : indices(indices) {}
 
     /// Creates a `DerivationPath` by BIP44 components.
     DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
@@ -102,7 +102,7 @@ struct DerivationPath {
     /// Creates a derivation path with a string description like `m/10/0/2'/3`
     ///
     /// @throws std::invalid_argument if the string is not a valid derivation path.
-    DerivationPath(const std::string& string);
+    explicit DerivationPath(const std::string& string);
 
     /// String representation.
     std::string string() const noexcept;

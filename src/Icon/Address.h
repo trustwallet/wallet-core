@@ -37,7 +37,7 @@ public:
     static bool isValid(const std::string& string);
 
     /// Initializes an address with a string representation.
-    Address(const std::string& string);
+    explicit Address(const std::string& string);
 
     /// Initializes an address with a collection of bytes.
     Address(const std::vector<uint8_t>& data, TWIconAddressType type);
