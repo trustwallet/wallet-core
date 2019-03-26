@@ -16,7 +16,7 @@
 
 using namespace TW;
 
-Data Hash::sha1(const byte* begin, const byte* end) {
+Data Hash::sha1(const byte* begin, const byte * end) {
     Data result(sha1Size);
     sha1_Raw(begin, end - begin, result.data());
     return result;
