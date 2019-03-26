@@ -62,6 +62,9 @@ CashAddress::CashAddress(const std::vector<uint8_t>& data) {
 }
 
 CashAddress::CashAddress(const PublicKey& publicKey) {
+    if (publicKey.type() != PublicKeyType::secp256k1) {
+        throw std::invalid_argument("CashAddress needs a compressed SECP256k1 public key.");
+    }
     uint8_t payload[21];
     payload[0] = 0;
     ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, payload + 1);
