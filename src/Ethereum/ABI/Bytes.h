@@ -76,4 +76,5 @@ std::string type_string(const std::string& data) {
     return "string";
 }
 
-}} // namespace
+} // namespace Ethereum
+} // namespace TW

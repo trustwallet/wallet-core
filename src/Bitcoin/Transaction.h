@@ -44,12 +44,11 @@ struct Transaction {
         : version(version), lockTime(lockTime), inputs(), outputs() {}
 
     /// Whether the transaction is empty.
-    bool empty() const {
-        return inputs.empty() && outputs.empty();
-    }
+    bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    std::vector<uint8_t> getPreImage(const Script& scriptCode, int index, uint32_t hashType, uint64_t amount) const;
+    std::vector<uint8_t> getPreImage(const Script& scriptCode, int index, uint32_t hashType,
+                                     uint64_t amount) const;
     std::vector<uint8_t> getPrevoutHash() const;
     std::vector<uint8_t> getSequenceHash() const;
     std::vector<uint8_t> getOutputsHash() const;
@@ -58,22 +57,27 @@ struct Transaction {
     void encode(bool witness, std::vector<uint8_t>& data) const;
 
     /// Generates the signature hash for this transaction.
-    std::vector<uint8_t> getSignatureHash(const Script& scriptCode, size_t index, uint32_t hashType, uint64_t amount, TWBitcoinSignatureVersion version) const;
+    std::vector<uint8_t> getSignatureHash(const Script& scriptCode, size_t index, uint32_t hashType,
+                                          uint64_t amount, TWBitcoinSignatureVersion version) const;
 
-    void serializeInput(size_t subindex, const Script&, size_t index, uint32_t hashType, std::vector<uint8_t>& data) const;
+    void serializeInput(size_t subindex, const Script&, size_t index, uint32_t hashType,
+                        std::vector<uint8_t>& data) const;
 
     /// Converts to Protobuf model
     Proto::Transaction proto() const;
 
-private:
+  private:
     /// Generates the signature hash for Witness version 0 scripts.
-    std::vector<uint8_t> getSignatureHashWitnessV0(const Script& scriptCode, size_t index, uint32_t hashType, uint64_t amount) const;
+    std::vector<uint8_t> getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
+                                                   uint32_t hashType, uint64_t amount) const;
 
     /// Generates the signature hash for for scripts other than witness scripts.
-    std::vector<uint8_t> getSignatureHashBase(const Script& scriptCode, size_t index, uint32_t hashType) const;
+    std::vector<uint8_t> getSignatureHashBase(const Script& scriptCode, size_t index,
+                                              uint32_t hashType) const;
 };
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWBitcoinTransaction {

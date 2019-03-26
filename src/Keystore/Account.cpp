@@ -14,20 +14,21 @@ using namespace TW;
 using namespace TW::Keystore;
 
 namespace CodingKeys {
-    static const auto address = "address";
-    static const auto addressData = "addressData";
-    static const auto derivationPath = "derivationPath";
-    static const auto extendedPublicKey = "extendedPublicKey";
-    static const auto indices = "indices";
-    static const auto value = "value";
-    static const auto hardened = "hardened";
-}
+static const auto address = "address";
+static const auto addressData = "addressData";
+static const auto derivationPath = "derivationPath";
+static const auto extendedPublicKey = "extendedPublicKey";
+static const auto indices = "indices";
+static const auto value = "value";
+static const auto hardened = "hardened";
+} // namespace CodingKeys
 
 Account::Account(const nlohmann::json& json) {
     if (json[CodingKeys::derivationPath].is_object()) {
         const auto indices = json[CodingKeys::derivationPath][CodingKeys::indices];
         for (auto& indexJSON : indices) {
-            derivationPath.indices.emplace_back(indexJSON[CodingKeys::value].get<uint32_t>(), indexJSON[CodingKeys::hardened].get<bool>());
+            derivationPath.indices.emplace_back(indexJSON[CodingKeys::value].get<uint32_t>(),
+                                                indexJSON[CodingKeys::hardened].get<bool>());
         }
     } else if (json[CodingKeys::derivationPath].is_string()) {
         derivationPath = DerivationPath(json[CodingKeys::derivationPath].get<std::string>());
@@ -35,16 +36,19 @@ Account::Account(const nlohmann::json& json) {
 
     if (json.count(CodingKeys::address) != 0 && json[CodingKeys::address].is_string()) {
         address = json[CodingKeys::address].get<std::string>();
-    } else if (json.count(CodingKeys::addressData) != 0 && json[CodingKeys::addressData].is_string()) {
+    } else if (json.count(CodingKeys::addressData) != 0 &&
+               json[CodingKeys::addressData].is_string()) {
         try {
-            const auto addressData = Base64::decode(json[CodingKeys::addressData].get<std::string>());
+            const auto addressData =
+                Base64::decode(json[CodingKeys::addressData].get<std::string>());
             address = loadAddress(derivationPath.coin(), addressData);
         } catch (std::exception) {
             address = "";
         }
     }
 
-    if (json.count(CodingKeys::extendedPublicKey) > 0 && json[CodingKeys::extendedPublicKey].is_string()) {
+    if (json.count(CodingKeys::extendedPublicKey) > 0 &&
+        json[CodingKeys::extendedPublicKey].is_string()) {
         extendedPublicKey = json[CodingKeys::extendedPublicKey].get<std::string>();
     }
 }

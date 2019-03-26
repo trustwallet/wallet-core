@@ -17,7 +17,7 @@ namespace TW {
 namespace Bitcoin {
 
 class Script {
-public:
+  public:
     /// Script raw bytes.
     Data bytes;
 
@@ -25,16 +25,14 @@ public:
     Script() = default;
 
     /// Initializes a script with a collection of raw bytes.
-    template<typename It>
+    template <typename It>
     Script(It begin, It end) : bytes(begin, end) {}
 
     /// Initializaes a script with a collection of raw bytes by moving.
     explicit Script(Data&& bytes) : bytes(bytes) {}
 
     /// Whether the script is empty.
-    bool empty() const {
-        return bytes.empty();
-    }
+    bool empty() const { return bytes.empty(); }
 
     /// Returns the script's script hash.
     Data hash() const;
@@ -72,13 +70,15 @@ public:
     /// Builds a pay-to-script-hash (P2SH) script from a script hash.
     static Script buildPayToScriptHash(const Data& scriptHash);
 
-    /// Builds a pay-to-witness-public-key-hash (P2WPKH) script from a public key hash.
+    /// Builds a pay-to-witness-public-key-hash (P2WPKH) script from a public
+    /// key hash.
     static Script buildPayToWitnessPubkeyHash(const Data& hash);
 
     /// Builds a pay-to-witness-script-hash (P2WSH) script from a script hash.
     static Script buildPayToWitnessScriptHash(const Data& scriptHash);
 
-    /// Builds a pay-to-public-key-hash (P2PKH) script appropriate for the given address.
+    /// Builds a pay-to-public-key-hash (P2PKH) script appropriate for the given
+    /// address.
     static Script buildForAddress(const std::string& address);
 
     /// Encodes the script.
@@ -93,21 +93,25 @@ public:
         return OP_1 + uint8_t(n - 1);
     }
 
-private:
-
+  private:
     /// Extracts a single opcode at the given index including its operand.
     ///
-    /// \param index [in/out] index where the operation starts, on return the index of the next operation.
-    /// \param opcode [out] the opcode.
-    /// \param operand [out] the opcode's operand.
-    /// \returns whether an opcode was available.
+    /// \param index [in/out] index where the operation starts, on return the
+    /// index of the next operation. \param opcode [out] the opcode. \param
+    /// operand [out] the opcode's operand. \returns whether an opcode was
+    /// available.
     bool getScriptOp(size_t& index, uint8_t& opcode, Data& operand) const;
 };
 
-inline bool operator==(const Script& lhs, const Script& rhs) { return lhs.bytes == rhs.bytes; }
-inline bool operator!=(const Script& lhs, const Script& rhs) { return !(lhs == rhs); }
+inline bool operator==(const Script& lhs, const Script& rhs) {
+    return lhs.bytes == rhs.bytes;
+}
+inline bool operator!=(const Script& lhs, const Script& rhs) {
+    return !(lhs == rhs);
+}
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWBitcoinScript {

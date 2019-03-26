@@ -15,14 +15,15 @@ namespace Tron {
 
 /// Helper class that performs Tron transaction signing.
 class Signer {
-public:
+  public:
     Signer() = delete;
 
     /// Signs the given transaction.
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
-}} // namespace
+} // namespace Tron
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWTronSigner {

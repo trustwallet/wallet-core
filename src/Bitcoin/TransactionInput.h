@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "../Data.h"
 #include "OutPoint.h"
 #include "Script.h"
+#include "../Data.h"
 
 #include <vector>
 
@@ -17,13 +17,14 @@ namespace Bitcoin {
 
 /// Bitcoin transaction input.
 class TransactionInput {
-public:
+  public:
     /// Reference to the previous transaction's output.
     OutPoint previousOutput;
 
     /// Transaction version as defined by the sender.
     ///
-    /// Intended for "replacement" of transactions when information is updated before inclusion into a block.
+    /// Intended for "replacement" of transactions when information is updated
+    /// before inclusion into a block.
     uint32_t sequence;
 
     /// Computational Script for confirming transaction authorization.
@@ -35,7 +36,8 @@ public:
     /// Initializes an empty transaction input.
     TransactionInput() = default;
 
-    /// Initializes a transaction input with a previous output, a script and a sequence number.
+    /// Initializes a transaction input with a previous output, a script and a
+    /// sequence number.
     TransactionInput(const OutPoint& previousOutput, const Script& script, uint32_t sequence)
         : previousOutput(previousOutput), sequence(sequence), script(script) {}
 
@@ -46,10 +48,10 @@ public:
     void encodeWitness(Data& data) const;
 };
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWBitcoinTransactionInput {
     TW::Bitcoin::TransactionInput impl;
 };
-

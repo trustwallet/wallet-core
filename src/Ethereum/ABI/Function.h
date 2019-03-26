@@ -18,12 +18,13 @@ namespace Ethereum {
 
 template <typename... Params>
 class Function {
-public:
+  public:
     std::string name;
     std::tuple<Params...> parameters;
 
     Function() = default;
-    Function(std::string name, std::tuple<Params...> parameters) : name(name), parameters(parameters) {}
+    Function(std::string name, std::tuple<Params...> parameters)
+        : name(name), parameters(parameters) {}
 };
 
 template <typename... Params>
@@ -50,4 +51,5 @@ std::string type_string(const Function<Params...>& f) {
     return f.name + "(" + type_string(f.parameters) + ")";
 }
 
-}} // namespace
+} // namespace Ethereum
+} // namespace TW

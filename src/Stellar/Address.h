@@ -15,8 +15,7 @@ namespace TW {
 namespace Stellar {
 
 class Address {
-public:
-
+  public:
     // 56 character base-32 encoded string
     static const size_t size = 56;
     // Decodes to 35 bytes
@@ -24,11 +23,12 @@ public:
     // Raw key size is 32 bytes
     static const size_t keySize = 32;
 
-    /// Address data consisting of a prefix byte followed by the public key hash.
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
     std::array<byte, keySize> bytes;
 
     /// Determines whether a collection of bytes makes a valid Stellar address.
-    template<typename T>
+    template <typename T>
     static bool isValid(const T& data) {
         return data.size() == size;
     }
@@ -53,7 +53,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-}} // namespace
+} // namespace Stellar
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWStellarAddress {

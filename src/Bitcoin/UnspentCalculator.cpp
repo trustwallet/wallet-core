@@ -4,15 +4,14 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 UnspentCalculator UnspentCalculator::getCalculator(TWCoinType coinType) {
-    switch (coinType)
-    {
-        case TWCoinTypeZcash: {
-            auto calc = [](size_t inputs, size_t outputs, int64_t byteFee) -> int64_t { return 10000; };
-            auto calcInput = [](int64_t byteFee) -> int64_t { return 0; };
-            return UnspentCalculator(calc, calcInput);
-        }
-        default:
-            return UnspentCalculator();
+    switch (coinType) {
+    case TWCoinTypeZcash: {
+        auto calc = [](size_t inputs, size_t outputs, int64_t byteFee) -> int64_t { return 10000; };
+        auto calcInput = [](int64_t byteFee) -> int64_t { return 0; };
+        return UnspentCalculator(calc, calcInput);
+    }
+    default:
+        return UnspentCalculator();
     }
 }
 

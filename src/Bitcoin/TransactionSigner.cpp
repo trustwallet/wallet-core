@@ -18,12 +18,14 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-template<typename Transaction>
+template <typename Transaction>
 Result<Transaction> TransactionSigner<Transaction>::sign() {
     signedInputs.clear();
-    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs), std::back_inserter(signedInputs));
+    std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
+              std::back_inserter(signedInputs));
 
-    const bool hashSingle = ((input.hash_type() & ~TWSignatureHashTypeAnyoneCanPay) == TWSignatureHashTypeSingle);
+    const bool hashSingle =
+        ((input.hash_type() & ~TWSignatureHashTypeAnyoneCanPay) == TWSignatureHashTypeSingle);
     for (auto i = 0; i < plan.utxos.size(); i += 1) {
         auto& utxo = plan.utxos[i];
 
@@ -44,8 +46,9 @@ Result<Transaction> TransactionSigner<Transaction>::sign() {
     return Result<Transaction>::success(std::move(tx));
 }
 
-template<typename Transaction>
-Result<void> TransactionSigner<Transaction>::sign(Script script, size_t index, const Bitcoin::Proto::UnspentTransaction& utxo) {
+template <typename Transaction>
+Result<void> TransactionSigner<Transaction>::sign(Script script, size_t index,
+                                                  const Bitcoin::Proto::UnspentTransaction& utxo) {
     Script redeemScript;
     std::vector<Data> results;
     std::vector<Data> witnessStack;
@@ -106,13 +109,15 @@ Result<void> TransactionSigner<Transaction>::sign(Script script, size_t index, c
         results.push_back(redeemScript.bytes);
     }
 
-    signedInputs[index] = TransactionInput(txin.previousOutput, Script(pushAll(results)), txin.sequence);
+    signedInputs[index] =
+        TransactionInput(txin.previousOutput, Script(pushAll(results)), txin.sequence);
     signedInputs[index].scriptWitness = witnessStack;
     return Result<void>::success();
 }
 
-template<typename Transaction>
-Result<std::vector<Data>> TransactionSigner<Transaction>::signStep(Script script, size_t index, const Bitcoin::Proto::UnspentTransaction& utxo, uint32_t version) {
+template <typename Transaction>
+Result<std::vector<Data>> TransactionSigner<Transaction>::signStep(
+    Script script, size_t index, const Bitcoin::Proto::UnspentTransaction& utxo, uint32_t version) {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs = signedInputs;
     transactionToSign.outputs = transaction.outputs;
@@ -153,7 +158,8 @@ Result<std::vector<Data>> TransactionSigner<Transaction>::signStep(Script script
                 // Error: missing key
                 return Result<std::vector<Data>>::failure("Missing private key.");
             }
-            auto signature = createSignature(transactionToSign, script, key, index, utxo.amount(), version);
+            auto signature =
+                createSignature(transactionToSign, script, key, index, utxo.amount(), version);
             if (signature.empty()) {
                 // Error: Failed to sign
                 return Result<std::vector<Data>>::failure("Failed to sign.");
@@ -169,7 +175,8 @@ Result<std::vector<Data>> TransactionSigner<Transaction>::signStep(Script script
             // Error: Missing key
             return Result<std::vector<Data>>::failure("Missing private key.");
         }
-        auto signature = createSignature(transactionToSign, script, key, index, utxo.amount(), version);
+        auto signature =
+            createSignature(transactionToSign, script, key, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>>::failure("Failed to sign.");
@@ -183,7 +190,8 @@ Result<std::vector<Data>> TransactionSigner<Transaction>::signStep(Script script
         }
 
         auto pubkey = PrivateKey(key).getPublicKey(PublicKeyType::secp256k1);
-        auto signature = createSignature(transactionToSign, script, key, index, utxo.amount(), version);
+        auto signature =
+            createSignature(transactionToSign, script, key, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>>::failure("Failed to sign.");
@@ -195,9 +203,13 @@ Result<std::vector<Data>> TransactionSigner<Transaction>::signStep(Script script
     }
 }
 
-template<typename Transaction>
-Data TransactionSigner<Transaction>::createSignature(const Transaction& transaction, const Script& script, const Data& key, size_t index, Amount amount, uint32_t version) {
-    auto sighash = transaction.getSignatureHash(script, index, input.hash_type(), amount, static_cast<TWBitcoinSignatureVersion>(version));
+template <typename Transaction>
+Data TransactionSigner<Transaction>::createSignature(const Transaction& transaction,
+                                                     const Script& script, const Data& key,
+                                                     size_t index, Amount amount,
+                                                     uint32_t version) {
+    auto sighash = transaction.getSignatureHash(script, index, input.hash_type(), amount,
+                                                static_cast<TWBitcoinSignatureVersion>(version));
     auto pk = PrivateKey(key);
     auto sig = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
     if (sig.empty()) {
@@ -207,7 +219,7 @@ Data TransactionSigner<Transaction>::createSignature(const Transaction& transact
     return sig;
 }
 
-template<typename Transaction>
+template <typename Transaction>
 Data TransactionSigner<Transaction>::pushAll(const std::vector<Data>& results) {
     auto data = Data{};
     for (auto& result : results) {
@@ -232,7 +244,7 @@ Data TransactionSigner<Transaction>::pushAll(const std::vector<Data>& results) {
     return data;
 }
 
-template<typename Transaction>
+template <typename Transaction>
 Data TransactionSigner<Transaction>::keyForPublicKeyHash(const Data& hash) const {
     for (auto& key : input.private_key()) {
         auto publicKey = PrivateKey(key).getPublicKey(PublicKeyType::secp256k1);
@@ -244,7 +256,7 @@ Data TransactionSigner<Transaction>::keyForPublicKeyHash(const Data& hash) const
     return {};
 }
 
-template<typename Transaction>
+template <typename Transaction>
 Data TransactionSigner<Transaction>::scriptForScriptHash(const Data& hash) const {
     auto hashString = hex(hash.begin(), hash.end());
     auto it = input.scripts().find(hashString);

@@ -28,7 +28,9 @@ static Data computeMAC(Iter begin, Iter end, Data key) {
 
 EncryptionParameters::EncryptionParameters(const std::string& password, Data data) : mac() {
     auto derivedKey = Data(kdfParams.desiredKeyLength);
-    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), kdfParams.salt.data(), kdfParams.salt.size(), kdfParams.n, kdfParams.r, kdfParams.p, derivedKey.data(), kdfParams.desiredKeyLength);
+    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), kdfParams.salt.data(),
+           kdfParams.salt.size(), kdfParams.n, kdfParams.r, kdfParams.p, derivedKey.data(),
+           kdfParams.desiredKeyLength);
 
     aes_encrypt_ctx ctx;
     auto result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
@@ -51,7 +53,9 @@ Data EncryptionParameters::decrypt(const std::string& password) const {
     }
 
     auto derivedKey = Data(kdfParams.defaultDesiredKeyLength);
-    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), kdfParams.salt.data(), kdfParams.salt.size(), kdfParams.n, kdfParams.r, kdfParams.p, derivedKey.data(), kdfParams.defaultDesiredKeyLength);
+    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), kdfParams.salt.data(),
+           kdfParams.salt.size(), kdfParams.n, kdfParams.r, kdfParams.p, derivedKey.data(),
+           kdfParams.defaultDesiredKeyLength);
 
     const auto mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
     if (mac != this->mac) {
@@ -65,7 +69,8 @@ Data EncryptionParameters::decrypt(const std::string& password) const {
         auto result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
         assert(result != EXIT_FAILURE);
 
-        aes_ctr_decrypt(encrypted.data(), decrypted.data(), encrypted.size(), iv.data(), aes_ctr_cbuf_inc, &ctx);
+        aes_ctr_decrypt(encrypted.data(), decrypted.data(), encrypted.size(), iv.data(),
+                        aes_ctr_cbuf_inc, &ctx);
     } else if (cipher == "aes-128-cbc") {
         aes_decrypt_ctx ctx;
         auto result = aes_decrypt_key(derivedKey.data(), 16, &ctx);
@@ -86,13 +91,13 @@ Data EncryptionParameters::decrypt(const std::string& password) const {
 // -----------------
 
 namespace CodingKeys {
-    static const auto encrypted = "ciphertext";
-    static const auto cipher = "cipher";
-    static const auto cipherParams = "cipherparams";
-    static const auto kdf = "kdf";
-    static const auto kdfParams = "kdfparams";
-    static const auto mac = "mac";
-}
+static const auto encrypted = "ciphertext";
+static const auto cipher = "cipher";
+static const auto cipherParams = "cipherparams";
+static const auto kdf = "kdf";
+static const auto kdfParams = "kdfparams";
+static const auto mac = "mac";
+} // namespace CodingKeys
 
 EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     encrypted = parse_hex(json[CodingKeys::encrypted].get<std::string>());

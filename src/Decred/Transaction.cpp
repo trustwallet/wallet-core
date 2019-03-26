@@ -17,31 +17,35 @@ using namespace TW;
 using namespace TW::Decred;
 
 namespace {
-    // Indicates the serialization does not include any witness data.
-    static const uint32_t sigHashSerializePrefix = 1;
+// Indicates the serialization does not include any witness data.
+static const uint32_t sigHashSerializePrefix = 1;
 
-    // Indicates the serialization only contains witness data.
-    static const uint32_t sigHashSerializeWitness = 3;
+// Indicates the serialization only contains witness data.
+static const uint32_t sigHashSerializeWitness = 3;
 
-    // Defines the number of bits of the hash type which is used to identify which outputs are signed.
-    static const byte sigHashMask = 0x1f;
+// Defines the number of bits of the hash type which is used to identify which
+// outputs are signed.
+static const byte sigHashMask = 0x1f;
 
-    std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs, const Bitcoin::Script& signScript);
-}
+std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs,
+                               const Bitcoin::Script& signScript);
+} // namespace
 
-Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, int index, uint32_t hashType) const {
+Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, int index,
+                                       uint32_t hashType) const {
     assert(index < inputs.size());
 
-	if (TWSignatureHashTypeIsSingle(hashType) && index >= outputs.size()) {
-        throw std::invalid_argument("attempt to sign single input at index larger than the number of outputs");
-	}
+    if (TWSignatureHashTypeIsSingle(hashType) && index >= outputs.size()) {
+        throw std::invalid_argument("attempt to sign single input at index "
+                                    "larger than the number of outputs");
+    }
 
     auto inputsToSign = inputs;
-	auto signIndex = index;
-	if ((hashType & TWSignatureHashTypeAnyoneCanPay) != 0) {
-		inputsToSign = { inputs[index] };
-		signIndex = 0;
-	}
+    auto signIndex = index;
+    if ((hashType & TWSignatureHashTypeAnyoneCanPay) != 0) {
+        inputsToSign = {inputs[index]};
+        signIndex = 0;
+    }
 
     auto outputsToSign = outputs;
     switch (hashType & sigHashMask) {
@@ -61,20 +65,26 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, int
     preimage.reserve(Hash::sha256Size * 2 + 4);
     encode32LE(hashType, preimage);
 
-    const auto prefixHash = computePrefixHash(inputsToSign, outputsToSign, signIndex, index, hashType);
+    const auto prefixHash =
+        computePrefixHash(inputsToSign, outputsToSign, signIndex, index, hashType);
     std::copy(prefixHash.begin(), prefixHash.end(), std::back_inserter(preimage));
 
-	const auto witnessHash = computeWitnessHash(inputsToSign, prevOutScript, signIndex);
+    const auto witnessHash = computeWitnessHash(inputsToSign, prevOutScript, signIndex);
     std::copy(witnessHash.begin(), witnessHash.end(), std::back_inserter(preimage));
 
-	return Hash::blake256(preimage);
+    return Hash::blake256(preimage);
 }
 
-Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsToSign, const std::vector<TransactionOutput>& outputsToSign, std::size_t signIndex, std::size_t index, uint32_t hashType) const {
+Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsToSign,
+                                    const std::vector<TransactionOutput>& outputsToSign,
+                                    std::size_t signIndex, std::size_t index,
+                                    uint32_t hashType) const {
     auto preimage = Data{};
 
     // Commit to the version and hash serialization type.
-    encode32LE(static_cast<uint32_t>(version) | (static_cast<uint32_t>(sigHashSerializePrefix) << 16), preimage);
+    encode32LE(static_cast<uint32_t>(version) |
+                   (static_cast<uint32_t>(sigHashSerializePrefix) << 16),
+               preimage);
 
     // Commit to the relevant transaction inputs.
     encodeVarInt(inputsToSign.size(), preimage);
@@ -83,7 +93,8 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
         input.previousOutput.encode(preimage);
 
         auto sequence = input.sequence;
-        if ((TWSignatureHashTypeIsNone(hashType) || TWSignatureHashTypeIsSingle(hashType)) && i != signIndex) {
+        if ((TWSignatureHashTypeIsNone(hashType) || TWSignatureHashTypeIsSingle(hashType)) &&
+            i != signIndex) {
             sequence = 0;
         }
         encode32LE(sequence, preimage);
@@ -110,30 +121,36 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
     return Hash::blake256(preimage);
 }
 
-Data Transaction::computeWitnessHash(const std::vector<TransactionInput>& inputsToSign, const Bitcoin::Script& signScript, std::size_t signIndex) const {
+Data Transaction::computeWitnessHash(const std::vector<TransactionInput>& inputsToSign,
+                                     const Bitcoin::Script& signScript,
+                                     std::size_t signIndex) const {
     const auto size = sigHashWitnessSize(inputsToSign, signScript);
-	auto witnessBuf = Data();
+    auto witnessBuf = Data();
     witnessBuf.reserve(size);
 
-	// Commit to the version and hash serialization type.
-    encode32LE(static_cast<uint32_t>(version) | (static_cast<uint32_t>(sigHashSerializeWitness) << 16), witnessBuf);
+    // Commit to the version and hash serialization type.
+    encode32LE(static_cast<uint32_t>(version) |
+                   (static_cast<uint32_t>(sigHashSerializeWitness) << 16),
+               witnessBuf);
 
-	// Commit to the relevant transaction inputs.
-	encodeVarInt(inputsToSign.size(), witnessBuf);
+    // Commit to the relevant transaction inputs.
+    encodeVarInt(inputsToSign.size(), witnessBuf);
     for (auto i = 0; i < inputsToSign.size(); i += 1) {
         if (i == signIndex) {
             signScript.encode(witnessBuf);
         } else {
             Bitcoin::Script().encode(witnessBuf);
-		}
+        }
     }
 
-	return Hash::blake256(witnessBuf);
+    return Hash::blake256(witnessBuf);
 }
 
 Data Transaction::hash() const {
     Data preimage;
-    encode32LE(static_cast<uint32_t>(version) | (static_cast<uint32_t>(SerializeType::noWitness) << 16), preimage);
+    encode32LE(static_cast<uint32_t>(version) |
+                   (static_cast<uint32_t>(SerializeType::noWitness) << 16),
+               preimage);
     encodePrefix(preimage);
     return Hash::blake256(preimage);
 }
@@ -159,12 +176,12 @@ void Transaction::encodePrefix(Data& data) const {
     encodeVarInt(inputs.size(), data);
     for (auto& input : inputs) {
         input.encode(data);
-	}
+    }
 
     encodeVarInt(outputs.size(), data);
     for (auto& output : outputs) {
         output.encode(data);
-	}
+    }
 
     encode32LE(lockTime, data);
     encode32LE(expiry, data);
@@ -174,7 +191,7 @@ void Transaction::encodeWitness(Data& data) const {
     encodeVarInt(inputs.size(), data);
     for (auto& input : inputs) {
         input.encodeWitness(data);
-	}
+    }
 }
 
 Proto::Transaction Transaction::proto() const {
@@ -184,7 +201,8 @@ Proto::Transaction Transaction::proto() const {
 
     for (const auto& input : inputs) {
         auto protoInput = protoTx.add_inputs();
-        protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(), input.previousOutput.hash.size());
+        protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(),
+                                                       input.previousOutput.hash.size());
         protoInput->mutable_previousoutput()->set_index(input.previousOutput.index);
         protoInput->set_sequence(input.sequence);
         protoInput->set_script(input.script.bytes.data(), input.script.bytes.size());
@@ -200,24 +218,26 @@ Proto::Transaction Transaction::proto() const {
 }
 
 namespace {
-    /// Returns the number of bytes the passed parameters would take when encoded
-    /// with the format used by the witness hash portion of the overall signature hash.
-    std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs, const Bitcoin::Script& signScript) {
-        // 1) 4 bytes version/serialization type
-        // 2) number of inputs varint
-        // 3) per input:
-        //    a) prevout pkscript varint (1 byte if not input being signed)
-        //    b) N bytes prevout pkscript (0 bytes if not input being signed)
-        //
-        // NOTE: The prevout pkscript is replaced by nil for all inputs except
-        // the input being signed.  Thus, all other inputs (aka numTxIns-1) commit
-        // to a nil script which gets encoded as a single 0x00 byte.  This is
-        // because encoding 0 as a varint results in 0x00 and there is no script
-        // to write.  So, rather than looping through all inputs and manually
-        // calculating the size per input, use (numTxIns - 1) as an
-        // optimization.
-        const auto numTxIns = inputs.size();
-        return 4 + varIntSize(numTxIns) + (numTxIns - 1) +
-            varIntSize(signScript.bytes.size()) + signScript.bytes.size();
-    }
+/// Returns the number of bytes the passed parameters would take when encoded
+/// with the format used by the witness hash portion of the overall signature
+/// hash.
+std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs,
+                               const Bitcoin::Script& signScript) {
+    // 1) 4 bytes version/serialization type
+    // 2) number of inputs varint
+    // 3) per input:
+    //    a) prevout pkscript varint (1 byte if not input being signed)
+    //    b) N bytes prevout pkscript (0 bytes if not input being signed)
+    //
+    // NOTE: The prevout pkscript is replaced by nil for all inputs except
+    // the input being signed.  Thus, all other inputs (aka numTxIns-1) commit
+    // to a nil script which gets encoded as a single 0x00 byte.  This is
+    // because encoding 0 as a varint results in 0x00 and there is no script
+    // to write.  So, rather than looping through all inputs and manually
+    // calculating the size per input, use (numTxIns - 1) as an
+    // optimization.
+    const auto numTxIns = inputs.size();
+    return 4 + varIntSize(numTxIns) + (numTxIns - 1) + varIntSize(signScript.bytes.size()) +
+           signScript.bytes.size();
 }
+} // namespace

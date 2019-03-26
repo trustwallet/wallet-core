@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include "../Data.h"
 #include "../Ethereum/RLP.h"
 #include "../Ethereum/Transaction.h"
-#include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
@@ -22,7 +22,7 @@ namespace Wanchain {
 
 /// Helper class that performs Wanchain transaction signing.
 class Signer {
-public:
+  public:
     boost::multiprecision::uint256_t chainID;
 
     /// Initializes a signer with a chain identifier.
@@ -34,15 +34,15 @@ public:
     /// Encodes a transaction.
     Data encode(const Ethereum::Transaction& transaction) const noexcept;
 
-protected:
+  protected:
     /// Computes the transaction hash.
     Data hash(const Ethereum::Transaction& transaction) const noexcept;
 };
 
-}} // namespace
+} // namespace Wanchain
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWWanchainSigner {
     TW::Wanchain::Signer impl;
 };
-

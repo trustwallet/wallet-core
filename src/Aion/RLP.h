@@ -28,11 +28,12 @@ struct RLP {
         Data result(9);
         result[0] = 0x80 + 8;
         for (int i = 8; i > 0; i--) {
-            result[i] = (byte) l & 0xFF;
+            result[i] = (byte)l & 0xFF;
             l >>= 8;
         }
         return result;
     }
 };
 
-}} // namespace
+} // namespace Aion
+} // namespace TW

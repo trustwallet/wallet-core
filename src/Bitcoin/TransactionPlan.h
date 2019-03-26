@@ -36,8 +36,7 @@ struct TransactionPlan {
         , availableAmount(plan.available_amount())
         , fee(plan.fee())
         , change(plan.change())
-        , utxos(plan.utxos().begin(), plan.utxos().end())
-    {}
+        , utxos(plan.utxos().begin(), plan.utxos().end()) {}
 
     Proto::TransactionPlan proto() const {
         auto plan = Proto::TransactionPlan();
@@ -45,9 +44,10 @@ struct TransactionPlan {
         plan.set_available_amount(availableAmount);
         plan.set_fee(fee);
         plan.set_change(change);
-        *plan.mutable_utxos() = { utxos.begin(), utxos.end() };
+        *plan.mutable_utxos() = {utxos.begin(), utxos.end()};
         return plan;
     }
 };
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW

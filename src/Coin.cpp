@@ -22,8 +22,8 @@
 #include "Tendermint/Address.h"
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
-#include "Zcash/TAddress.h"
 #include "Wanchain/Address.h"
+#include "Zcash/TAddress.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -109,13 +109,16 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Aion::Address::isValid(string);
 
     case TWCoinTypeBinance:
-        return Tendermint::Address::isValid(string, HRP_BINANCE) || Tendermint::Address::isValid(string, HRP_BINANCE_TEST);
+        return Tendermint::Address::isValid(string, HRP_BINANCE) ||
+               Tendermint::Address::isValid(string, HRP_BINANCE_TEST);
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
+        return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) ||
+               Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
 
     case TWCoinTypeBitcoinCash:
-        return Bitcoin::CashAddress::isValid(string) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
+        return Bitcoin::CashAddress::isValid(string) ||
+               Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
 
     case TWCoinTypeCosmos:
         return Tendermint::Address::isValid(string, HRP_COSMOS);
@@ -142,7 +145,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Icon::Address::isValid(string);
 
     case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixLitecoin, TWP2SHPrefixLitecoin});
+        return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) ||
+               Bitcoin::Address::isValid(string, {TWP2PKHPrefixLitecoin, TWP2SHPrefixLitecoin});
 
     case TWCoinTypeOntology:
         return Ontology::Address::isValid(string);
@@ -178,7 +182,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 }
 
 TWPurpose TW::purpose(TWCoinType coin) {
-    switch(coin) {
+    switch (coin) {
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoinCash:
@@ -215,7 +219,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
 }
 
 TWCurve TW::curve(TWCoinType coin) {
-    switch(coin) {
+    switch (coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
@@ -242,7 +246,7 @@ TWCurve TW::curve(TWCoinType coin) {
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
-            return TWCurveNIST256p1;
+        return TWCurveNIST256p1;
 
     case TWCoinTypeAion:
     case TWCoinTypeNimiq:
@@ -257,7 +261,7 @@ TWCurve TW::curve(TWCoinType coin) {
 }
 
 TWHDVersion TW::xpubVersion(TWCoinType coin) {
-    switch(coin) {
+    switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
         return TWHDVersionZPUB;
@@ -297,7 +301,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
 }
 
 TWHDVersion TW::xprvVersion(TWCoinType coin) {
-    switch(coin) {
+    switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
         return TWHDVersionZPRV;

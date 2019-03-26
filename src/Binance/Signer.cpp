@@ -6,10 +6,10 @@
 
 #include "Signer.h"
 
+#include "Serialization.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
-#include "Serialization.h"
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -19,13 +19,13 @@ using namespace TW;
 using namespace TW::Binance;
 
 // Message prefixes
-static const auto sendOrderPrefix = std::vector<uint8_t>{ 0x2A, 0x2C, 0x87, 0xFA };
-static const auto tradeOrderPrefix = std::vector<uint8_t>{ 0xCE, 0x6D, 0xC0, 0x43 };
-static const auto cancelTradeOrderPrefix = std::vector<uint8_t>{ 0x16, 0x6E, 0x68, 0x1B };
-static const auto tokenFreezeOrderPrefix = std::vector<uint8_t>{ 0xE7, 0x74, 0xB3, 0x2D };
-static const auto tokenUnfreezeOrderPrefix = std::vector<uint8_t>{ 0x65, 0x15, 0xFF, 0x0D };
-static const auto pubKeyPrefix = std::vector<uint8_t>{ 0xEB, 0x5A, 0xE9, 0x87 };
-static const auto transactionPrefix = std::vector<uint8_t>{ 0xF0, 0x62, 0x5D, 0xEE };
+static const auto sendOrderPrefix = std::vector<uint8_t>{0x2A, 0x2C, 0x87, 0xFA};
+static const auto tradeOrderPrefix = std::vector<uint8_t>{0xCE, 0x6D, 0xC0, 0x43};
+static const auto cancelTradeOrderPrefix = std::vector<uint8_t>{0x16, 0x6E, 0x68, 0x1B};
+static const auto tokenFreezeOrderPrefix = std::vector<uint8_t>{0xE7, 0x74, 0xB3, 0x2D};
+static const auto tokenUnfreezeOrderPrefix = std::vector<uint8_t>{0x65, 0x15, 0xFF, 0x0D};
+static const auto pubKeyPrefix = std::vector<uint8_t>{0xEB, 0x5A, 0xE9, 0x87};
+static const auto transactionPrefix = std::vector<uint8_t>{0xF0, 0x62, 0x5D, 0xEE};
 
 std::vector<uint8_t> Signer::build() const {
     auto signature = encodeSignature(sign());
@@ -97,7 +97,9 @@ std::vector<uint8_t> Signer::encodeSignature(const std::vector<uint8_t>& signatu
     return aminoWrap(object.SerializeAsString(), {}, false);
 }
 
-std::vector<uint8_t> Signer::aminoWrap(const std::string& raw, const std::vector<uint8_t>& typePrefix, bool prefixWithSize) const {
+std::vector<uint8_t> Signer::aminoWrap(const std::string& raw,
+                                       const std::vector<uint8_t>& typePrefix,
+                                       bool prefixWithSize) const {
     const auto contentsSize = raw.size() + typePrefix.size();
     auto size = contentsSize;
     if (prefixWithSize) {

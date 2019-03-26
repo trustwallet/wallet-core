@@ -29,4 +29,5 @@ struct AESParameters {
     nlohmann::json json() const;
 };
 
-}} // namespace
+} // namespace Keystore
+} // namespace TW

@@ -8,8 +8,8 @@
 
 #include "Data.h"
 #include "DerivationPath.h"
-#include "PublicKey.h"
 #include "PrivateKey.h"
+#include "PublicKey.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWCurve.h>
@@ -53,4 +53,4 @@ std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);
 /// Derives the address for a particular coin from the private key.
 std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey);
 
-} // namespace
+} // namespace TW

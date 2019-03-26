@@ -8,8 +8,8 @@
 
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
-#include "../Data.h"
 #include "../Bitcoin/Script.h"
+#include "../Data.h"
 #include "../proto/Decred.pb.h"
 
 #include <TrustWalletCore/TWBitcoin.h>
@@ -18,9 +18,7 @@
 namespace TW {
 namespace Decred {
 
-enum class SerializeType: uint16_t {
-    full, noWitness, onlyWitness
-};
+enum class SerializeType : uint16_t { full, noWitness, onlyWitness };
 
 struct Transaction {
     /// Serialization format
@@ -35,21 +33,28 @@ struct Transaction {
     /// A list of 1 or more transaction outputs or destinations for coins
     std::vector<TransactionOutput> outputs;
 
-    /// The time when a transaction can be spent (usually zero, in which case it has no effect).
+    /// The time when a transaction can be spent (usually zero, in which case it
+    /// has no effect).
     uint32_t lockTime;
 
-    /// The block height at which the transaction expires and is no longer valid.
+    /// The block height at which the transaction expires and is no longer
+    /// valid.
     uint32_t expiry;
 
-    Transaction() : serializeType(SerializeType::full), version(1), inputs(), outputs(), lockTime(), expiry(0) {}
+    Transaction()
+        : serializeType(SerializeType::full)
+        , version(1)
+        , inputs()
+        , outputs()
+        , lockTime()
+        , expiry(0) {}
 
     /// Whether the transaction is empty.
-    bool empty() const {
-        return inputs.empty() && outputs.empty();
-    }
+    bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    Data computeSignatureHash(const Bitcoin::Script& scriptCode, int index, uint32_t hashType) const;
+    Data computeSignatureHash(const Bitcoin::Script& scriptCode, int index,
+                              uint32_t hashType) const;
 
     /// Generates the transaction hash.
     Data hash() const;
@@ -60,18 +65,16 @@ struct Transaction {
     /// Converts to Protobuf model
     Proto::Transaction proto() const;
 
-private:
-    Data computePrefixHash(
-        const std::vector<TransactionInput>& inputsToSign,
-        const std::vector<TransactionOutput>& outputsToSign,
-        std::size_t signIndex, std::size_t index, uint32_t hashType) const;
-    Data computeWitnessHash(
-        const std::vector<TransactionInput>& inputsToSign,
-        const Bitcoin::Script& signScript,
-        std::size_t signIndex) const;
+  private:
+    Data computePrefixHash(const std::vector<TransactionInput>& inputsToSign,
+                           const std::vector<TransactionOutput>& outputsToSign,
+                           std::size_t signIndex, std::size_t index, uint32_t hashType) const;
+    Data computeWitnessHash(const std::vector<TransactionInput>& inputsToSign,
+                            const Bitcoin::Script& signScript, std::size_t signIndex) const;
 
     void encodePrefix(Data& data) const;
     void encodeWitness(Data& data) const;
 };
 
-}} // namespace
+} // namespace Decred
+} // namespace TW

@@ -16,17 +16,16 @@ namespace TW {
 namespace Ethereum {
 
 class Address {
-public:
+  public:
     /// Number of bytes in an address.
     static const size_t size = 20;
 
-    /// Address data consisting of a prefix byte followed by the public key hash.
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
     std::array<uint8_t, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
-    static bool isValid(const std::vector<uint8_t>& data) {
-        return data.size() == size;
-    }
+    static bool isValid(const std::vector<uint8_t>& data) { return data.size() == size; }
 
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string);
@@ -48,7 +47,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-}} // namespace
+} // namespace Ethereum
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWEthereumAddress {

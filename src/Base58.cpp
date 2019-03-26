@@ -9,15 +9,18 @@
 
 #include "Hash.h"
 
-#include <cctype>
 #include <algorithm>
+#include <cctype>
 
 using namespace TW;
 
+// clang-format off
+
 static const std::array<char, 58> bitcoinDigits = {
-    '1','2','3','4','5','6','7','8','9',
-    'A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z',
-    'a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z'
+    '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+    'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
+    'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm',
+    'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
 };
 
 static const std::array<signed char, 128> bitcoinCharacterMap = {
@@ -32,9 +35,10 @@ static const std::array<signed char, 128> bitcoinCharacterMap = {
 };
 
 static const std::array<char, 58> rippleDigits = {
-    'r','p','s','h','n','a','f','3','9',
-    'w','B','U','D','N','E','G','H','J','K','L','M','4','P','Q','R','S','T','7','V','W','X','Y','Z',
-    '2','b','c','d','e','C','g','6','5','j','k','m','8','o','F','q','i','1','t','u','v','A','x','y','z'
+    'r', 'p', 's', 'h', 'n', 'a', 'f', '3', '9', 'w', 'B', 'U', 'D', 'N', 'E',
+    'G', 'H', 'J', 'K', 'L', 'M', '4', 'P', 'Q', 'R', 'S', 'T', '7', 'V', 'W',
+    'X', 'Y', 'Z', '2', 'b', 'c', 'd', 'e', 'C', 'g', '6', '5', 'j', 'k', 'm',
+    '8', 'o', 'F', 'q', 'i', '1', 't', 'u', 'v', 'A', 'x', 'y', 'z'
 };
 
 static const std::array<signed char, 128> rippleCharacterMap = {
@@ -47,6 +51,8 @@ static const std::array<signed char, 128> rippleCharacterMap = {
     -1,5,34,35,36,37,6,39,3,49,42,43,-1,44,4,46,
     1,48,0,2,51,52,53,9,55,56,57,-1,-1,-1,-1,-1,
 };
+
+// clang-format on
 
 Base58 Base58::bitcoin = Base58(bitcoinDigits, bitcoinCharacterMap);
 
@@ -82,7 +88,7 @@ Data Base58::decode(const char* begin, const char* end) const {
     }
 
     // Allocate enough space in big-endian base256 representation.
-    std::size_t base258Size = (end - it) * 733 /1000 + 1; // log(58) / log(256), rounded up.
+    std::size_t base258Size = (end - it) * 733 / 1000 + 1; // log(58) / log(256), rounded up.
     Data b256(base258Size);
 
     // Process the characters.
@@ -100,7 +106,8 @@ Data Base58::decode(const char* begin, const char* end) const {
         }
 
         std::size_t i = 0;
-        for (auto b256it = b256.rbegin(); (carry != 0 || i < length) && (b256it != b256.rend()); ++b256it, ++i) {
+        for (auto b256it = b256.rbegin(); (carry != 0 || i < length) && (b256it != b256.rend());
+             ++b256it, ++i) {
             carry += 58 * (*b256it);
             *b256it = carry % 256;
             carry /= 256;
@@ -157,7 +164,8 @@ std::string Base58::encode(const byte* begin, const byte* end) const {
         int carry = *begin;
         int i = 0;
         // Apply "b58 = b58 * 256 + ch".
-        for (auto b58it = b58.rbegin(); (carry != 0 || i < length) && (b58it != b58.rend()); b58it++, i++) {
+        for (auto b58it = b58.rbegin(); (carry != 0 || i < length) && (b58it != b58.rend());
+             b58it++, i++) {
             carry += 256 * (*b58it);
             *b58it = carry % 58;
             carry /= 58;
