@@ -9,42 +9,47 @@
 
 import Foundation
 
-    public final class TronAddress {
+public final class TronAddress {
 
-  public
-    static func == (lhs : TronAddress, rhs : TronAddress)->Bool {
+    public static func == (lhs: TronAddress, rhs: TronAddress) -> Bool {
         return TWTronAddressEqual(lhs.rawValue, rhs.rawValue)
     }
 
-  public
-    static func isValidString(string : String)->Bool {
-        let stringString = TWStringCreateWithNSString(string) defer { TWStringDelete(stringString) }
+    public static func isValidString(string: String) -> Bool {
+        let stringString = TWStringCreateWithNSString(string)
+        defer {
+            TWStringDelete(stringString)
+        }
         return TWTronAddressIsValidString(stringString)
     }
 
-  public
-    var description : String{return TWStringNSString(TWTronAddressDescription(rawValue))}
+    public var description: String {
+        return TWStringNSString(TWTronAddressDescription(rawValue))
+    }
 
-                      let rawValue : OpaquePointer
+    let rawValue: OpaquePointer
 
-                                     init(rawValue
-                                          : OpaquePointer) {
+    init(rawValue: OpaquePointer) {
         self.rawValue = rawValue
     }
 
-  public
-    init ? (string : String) {
+    public init?(string: String) {
         let stringString = TWStringCreateWithNSString(string)
-            defer{TWStringDelete(stringString)} guard let rawValue =
-                TWTronAddressCreateWithString(stringString) else {return nil} self.rawValue =
-                    rawValue
+        defer {
+            TWStringDelete(stringString)
+        }
+        guard let rawValue = TWTronAddressCreateWithString(stringString) else {
+            return nil
+        }
+        self.rawValue = rawValue
     }
 
-  public
-    init(publicKey
-         : PublicKey){rawValue = TWTronAddressCreateWithPublicKey(publicKey.rawValue)}
+    public init(publicKey: PublicKey) {
+        rawValue = TWTronAddressCreateWithPublicKey(publicKey.rawValue)
+    }
 
     deinit {
         TWTronAddressDelete(rawValue)
     }
+
 }

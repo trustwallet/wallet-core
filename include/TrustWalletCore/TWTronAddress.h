@@ -21,26 +21,25 @@ struct TWTronAddress;
 
 /// Compares two addresses for equality.
 TW_EXPORT_STATIC_METHOD
-bool TWTronAddressEqual(struct TWTronAddress* _Nonnull lhs, struct TWTronAddress* _Nonnull rhs);
+bool TWTronAddressEqual(struct TWTronAddress *_Nonnull lhs, struct TWTronAddress *_Nonnull rhs);
 
 /// Determines if the string is a valid Tron address.
 TW_EXPORT_STATIC_METHOD
-bool TWTronAddressIsValidString(TWString* _Nonnull string);
+bool TWTronAddressIsValidString(TWString *_Nonnull string);
 
 /// Creates an address from a string representaion.
 TW_EXPORT_STATIC_METHOD
-struct TWTronAddress* _Nullable TWTronAddressCreateWithString(TWString* _Nonnull string);
+struct TWTronAddress *_Nullable TWTronAddressCreateWithString(TWString *_Nonnull string);
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWTronAddress* _Nonnull TWTronAddressCreateWithPublicKey(
-    struct TWPublicKey* _Nonnull publicKey);
+struct TWTronAddress *_Nonnull TWTronAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
-void TWTronAddressDelete(struct TWTronAddress* _Nonnull address);
+void TWTronAddressDelete(struct TWTronAddress *_Nonnull address);
 
 /// Returns the address string representation.
 TW_EXPORT_PROPERTY
-TWString* _Nonnull TWTronAddressDescription(struct TWTronAddress* _Nonnull address);
+TWString *_Nonnull TWTronAddressDescription(struct TWTronAddress *_Nonnull address);
 
 TW_EXTERN_C_END

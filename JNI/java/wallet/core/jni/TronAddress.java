@@ -15,7 +15,9 @@ import java.util.HashSet;
 public class TronAddress {
     private long nativeHandle;
 
-    private TronAddress() { nativeHandle = 0; }
+    private TronAddress() {
+        nativeHandle = 0;
+    }
 
     static TronAddress createFromNative(long nativeHandle) {
         TronAddress instance = new TronAddress();
@@ -49,13 +51,12 @@ public class TronAddress {
 
         TronAddressPhantomReference.register(this, nativeHandle);
     }
+
 }
 
 class TronAddressPhantomReference extends java.lang.ref.PhantomReference<TronAddress> {
-    private static java.util.Set<TronAddressPhantomReference> references =
-        new HashSet<TronAddressPhantomReference>();
-    private static java.lang.ref.ReferenceQueue<TronAddress> queue =
-        new java.lang.ref.ReferenceQueue<TronAddress>();
+    private static java.util.Set<TronAddressPhantomReference> references = new HashSet<TronAddressPhantomReference>();
+    private static java.lang.ref.ReferenceQueue<TronAddress> queue = new java.lang.ref.ReferenceQueue<TronAddress>();
     private long nativeHandle;
 
     private TronAddressPhantomReference(TronAddress referent, long nativeHandle) {
@@ -68,8 +69,8 @@ class TronAddressPhantomReference extends java.lang.ref.PhantomReference<TronAdd
     }
 
     public static void doDeletes() {
-        TronAddressPhantomReference ref = (TronAddressPhantomReference)queue.poll();
-        for (; ref != null; ref = (TronAddressPhantomReference)queue.poll()) {
+        TronAddressPhantomReference ref = (TronAddressPhantomReference) queue.poll();
+        for (; ref != null; ref = (TronAddressPhantomReference) queue.poll()) {
             TronAddress.nativeDelete(ref.nativeHandle);
             references.remove(ref);
         }

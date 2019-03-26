@@ -10,34 +10,29 @@
 #ifndef JNI_TW_TRONADDRESS_H
 #define JNI_TW_TRONADDRESS_H
 
-#include <TrustWalletCore/TWBase.h>
 #include <jni.h>
+#include <TrustWalletCore/TWBase.h>
 
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jlong JNICALL Java_wallet_core_jni_TronAddress_nativeCreateWithString(JNIEnv* env, jclass thisClass,
-                                                                      jstring string);
+jlong JNICALL Java_wallet_core_jni_TronAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jlong JNICALL Java_wallet_core_jni_TronAddress_nativeCreateWithPublicKey(JNIEnv* env,
-                                                                         jclass thisClass,
-                                                                         jobject publicKey);
+jlong JNICALL Java_wallet_core_jni_TronAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey);
 
 JNIEXPORT
-void JNICALL Java_wallet_core_jni_TronAddress_nativeDelete(JNIEnv* env, jclass thisClass,
-                                                           jlong handle);
+void JNICALL Java_wallet_core_jni_TronAddress_nativeDelete(JNIEnv *env, jclass thisClass, jlong handle);
 
 JNIEXPORT
-jboolean JNICALL Java_wallet_core_jni_TronAddress_equals(JNIEnv* env, jclass thisClass, jobject lhs,
-                                                         jobject rhs);
+jboolean JNICALL Java_wallet_core_jni_TronAddress_equals(JNIEnv *env, jclass thisClass, jobject lhs, jobject rhs);
 
 JNIEXPORT
-jboolean JNICALL Java_wallet_core_jni_TronAddress_isValidString(JNIEnv* env, jclass thisClass,
-                                                                jstring string);
+jboolean JNICALL Java_wallet_core_jni_TronAddress_isValidString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jstring JNICALL Java_wallet_core_jni_TronAddress_description(JNIEnv* env, jobject thisObject);
+jstring JNICALL Java_wallet_core_jni_TronAddress_description(JNIEnv *env, jobject thisObject);
+
 
 TW_EXTERN_C_END
 
