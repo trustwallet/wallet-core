@@ -22,9 +22,9 @@ class OntologyTests: XCTestCase {
     func testSignOngBalanceOf() {
         
         let input = TWOntologySigningInput.with {
-            $0.contract = "ONG".data(using: .utf8)!
-            $0.method = "balanceOf".data(using: .utf8)!
-            $0.queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD".data(using: .utf8)!
+            $0.contract = "ONG"
+            $0.method = "balanceOf"
+            $0.queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"
         }
         
         let output = OntologySigner.encode(input: input)
@@ -36,9 +36,9 @@ class OntologyTests: XCTestCase {
     func testSignOntBalanceOf() {
         
         let input = TWOntologySigningInput.with {
-            $0.contract = "ONT".data(using: .utf8)!
-            $0.method = "balanceOf".data(using: .utf8)!
-            $0.queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD".data(using: .utf8)!
+            $0.contract = "ONT"
+            $0.method = "balanceOf"
+            $0.queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"
         }
         
         let output = OntologySigner.encode(input: input)
@@ -51,14 +51,14 @@ class OntologyTests: XCTestCase {
     func testSignOntTransfer() {
         
         let input = TWOntologySigningInput.with {
-            $0.contract = "ONT".data(using: .utf8)!
-            $0.method = "transfer".data(using: .utf8)!
-            $0.fromPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!
-            $0.toAddress = OntologyAddress(string: "Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn")!.data
+            $0.contract = "ONT"
+            $0.method = "transfer"
+            $0.fromPrivateKey = "4646464646464646464646464646464646464646464646464646464646464646"
+            $0.toAddress = "Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn"
             $0.amount = 1
             $0.gasPrice = 500
             $0.gasLimit = 20000
-            $0.payerPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464652")!
+            $0.payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652"S
         }
         
         let output = OntologySigner.encode(input: input)
