@@ -49,6 +49,9 @@ Address::Address(const std::vector<uint8_t>& data) {
 }
 
 Address::Address(const PublicKey& publicKey, uint8_t prefix) {
+    if (publicKey.type() != PublicKeyType::secp256k1) {
+        throw std::invalid_argument("Bitcoin::Address needs a compressed SECP256k1 public key.");
+    }
     bytes[0] = prefix;
     ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
 }

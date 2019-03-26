@@ -51,6 +51,9 @@ bool Bech32Address::isValid(const std::string& string, const std::string& hrp) {
 
 Bech32Address::Bech32Address(const PublicKey& publicKey, int witver, const std::string& hrp)
     : hrp(hrp), witnessVersion(witver), witnessProgram() {
+    if (publicKey.type() != PublicKeyType::secp256k1) {
+        throw std::invalid_argument("Bech32Addressneeds a compressed SECP256k1 public key.");
+    }
     witnessProgram.resize(20);
     ecdsa_get_pubkeyhash(publicKey.compressed().bytes.data(), HASHER_SHA2_RIPEMD,
                          witnessProgram.data());
