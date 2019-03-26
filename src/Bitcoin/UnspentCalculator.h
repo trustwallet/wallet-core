@@ -27,7 +27,7 @@ public:
         : calculate(UnspentCalculator::calculateFee)
         , calculateSingleInput(UnspentCalculator::calculateSingleInputFee)
         {}
-    UnspentCalculator(FeeCalculator calculateFee, SingleInputFeeCalculator calculateSingleInputFee)
+    UnspentCalculator(const FeeCalculator& calculateFee, const SingleInputFeeCalculator& calculateSingleInputFee)
         : calculate(calculateFee)
         , calculateSingleInput(calculateSingleInputFee)
         {}

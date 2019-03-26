@@ -17,8 +17,6 @@
 #include "../proto/Bitcoin.pb.h"
 #include "../Zcash/Transaction.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -47,11 +45,11 @@ private:
 public:
     /// Initializes a transaction signer with signing input.
     TransactionSigner(Bitcoin::Proto::SigningInput&& input) : input(input), plan(TransactionBuilder::plan(input)) {
-        transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(), input.change_address()); 
+        transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(), input.change_address());
     }
 
     /// Initializes a transaction signer with signing input, a transaction, and a hash type.
-    TransactionSigner(Bitcoin::Proto::SigningInput&& input, TransactionPlan plan) : input(input), plan(plan) {
+    TransactionSigner(Bitcoin::Proto::SigningInput&& input, const TransactionPlan& plan) : input(input), plan(plan) {
         transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(), input.change_address());
     }
 
@@ -72,15 +70,6 @@ private:
 
     /// Returns the redeem script for the given script hash.
     Data scriptForScriptHash(const Data& hash) const;
-
-    /// Encodes a small integer
-    static uint8_t encodeNumber(int n) {
-        assert(n >= 0 && n <= 16);
-        if (n == 0) {
-            return OP_0;
-        }
-        return OP_1 + uint8_t(n - 1);
-    }
 };
 
 }} // namespace

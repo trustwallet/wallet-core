@@ -29,7 +29,7 @@ public:
     UnspentCalculator calculator;
 
     UnspentSelector(): calculator(UnspentCalculator()) {}
-    UnspentSelector(UnspentCalculator calculator): calculator(calculator) {}
+    explicit UnspentSelector(const UnspentCalculator& calculator): calculator(calculator) {}
 
 public:
     template<typename T>

@@ -19,7 +19,7 @@ namespace Tezos {
 class Signer {
 public:
     /// Signs the given transaction.
-    Data signOperationList(const PrivateKey& privateKey, OperationList operationList);
+    Data signOperationList(const PrivateKey& privateKey, const OperationList& operationList);
     Data signData(const PrivateKey& privateKey, Data data);
 };
 

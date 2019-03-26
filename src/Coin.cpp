@@ -22,6 +22,7 @@
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
 #include "Zcash/TAddress.h"
+#include "Wanchain/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -55,10 +56,10 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
         return Ethereum::Address(data).string();
-
+    case TWCoinTypeWanChain:
+        return Wanchain::Address(data).string();
     case TWCoinTypeICON:
         return Icon::Address(data, TWIconAddressTypeAddress).string();
 
@@ -129,10 +130,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
         return Ethereum::Address::isValid(string);
-
+    case TWCoinTypeWanChain:
+        return Wanchain::Address::isValid(string);
     case TWCoinTypeICON:
         return Icon::Address::isValid(string);
 
@@ -452,10 +453,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
         return Ethereum::Address(publicKey).string();
-
+    case TWCoinTypeWanChain:
+        return Wanchain::Address(publicKey).string();
     case TWCoinTypeICON:
         return Icon::Address(publicKey, TWIconAddressTypeAddress).string();
 

@@ -33,13 +33,13 @@ public:
     static bool isValid(const std::string& string);
 
     /// Initializes a  address with a string representation.
-    CashAddress(const std::string& string);
+    explicit CashAddress(const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
-    CashAddress(const std::vector<uint8_t>& data);
+    explicit CashAddress(const std::vector<uint8_t>& data);
 
     /// Initializes a  address with a public key.
-    CashAddress(const PublicKey& publicKey);
+    explicit CashAddress(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;

@@ -20,7 +20,7 @@ public:
     Proto::SigningInput input;
 
     /// Initializes a transaction signer.
-    Signer(Proto::SigningInput&& input) : input(input) {}
+    explicit Signer(Proto::SigningInput&& input) : input(input) {}
 
     /// Builds a signed transaction.
     ///

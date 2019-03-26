@@ -29,7 +29,7 @@ public:
     uint256_t s = uint256_t();
 
     Transaction() = default;
-    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, const std::vector<uint8_t>& payload)
+    Transaction(const uint256_t& nonce, const uint256_t& gasPrice, const uint256_t& gasLimit, const Address& to, const uint256_t& amount, const std::vector<uint8_t>& payload)
         : nonce(nonce)
         , gasPrice(gasPrice)
         , gasLimit(gasLimit)

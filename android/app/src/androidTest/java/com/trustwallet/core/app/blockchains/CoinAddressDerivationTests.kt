@@ -63,7 +63,7 @@ class CoinAddressDerivationTests {
                     TOMOCHAIN -> assertEquals("0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424", address)
                     TRON -> assertEquals("TQ5NMqJjhpQGK7YJbESKtNCo86PJ89ujio", address)
                     VECHAIN -> assertEquals("0x1a553275dF34195eAf23942CB7328AcF9d48c160", address)
-                    WANCHAIN -> assertEquals("0xD5ca90b928279FE5D06144136a25DeD90127aC15", address)
+                    WANCHAIN -> assertEquals("0xd5CA90B928279fe5d06144136A25dEd90127Ac15", address)
                     XDAI -> assertEquals("0x364d0551599B97EAf997bc06c8c40Aaf73124402", address)
                     ZCASH -> assertEquals("t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy", address)
                     ZCOIN ->  assertEquals("aEd5XFChyXobvEics2ppAqgK3Bgusjxtik", address)

@@ -42,7 +42,7 @@ TEST(TezosSigner, SignOperationList) {
         parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
         operationtype::REVEAL
     );
-    op_list.add_operation(tx1);
+    op_list.addOperation(tx1);
     auto tx2 = Transaction(
         Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
         1272,
@@ -53,7 +53,7 @@ TEST(TezosSigner, SignOperationList) {
         Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
         operationtype::TRANSACTION
     );
-    op_list.add_operation(tx2);
+    op_list.addOperation(tx2);
 
     std::string expectedForgedBytesToSign = hex(op_list.forge());
     std::string expectedSignature = "d924cb3e56c4b9f55e50735e461899a2f616a26bfb0aa05d0b356b66f517b023df330ad3621f0bf39d518131a1becd6a7b2e226ed291483af3682535d1f4530f";

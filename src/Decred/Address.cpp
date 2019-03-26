@@ -18,7 +18,7 @@ static const std::array<byte, 2> prefix = {0x07, 0x3f};
 static const auto keyhashSize = Hash::ripemdSize;
 static const auto addressDataSize = keyhashSize + 6;
 
-bool Address::isValid(const std::string& string) {
+bool Address::isValid(const std::string& string) noexcept {
     const auto data = Base58::bitcoin.decode(string);
     if (data.size() != addressDataSize) {
         return false;
@@ -29,7 +29,7 @@ bool Address::isValid(const std::string& string) {
 
     const auto expectedChecksum = checksum(keyhash);
     if (!std::equal(expectedChecksum.begin(), expectedChecksum.end(), data.end() - 4)) {
-        throw std::invalid_argument("Invalid address string");
+        return false;
     }
 
     return true;

@@ -29,7 +29,7 @@ public:
     const std::array<signed char, 128> characterMap;
 
     /// Initializes a Base58 class with custom digit mapping.
-    Base58(const std::array<char, 58> digits, std::array<signed char, 128> characterMap) : digits(digits), characterMap(characterMap) {}
+    Base58(const std::array<char, 58>& digits, const std::array<signed char, 128>& characterMap) : digits(digits), characterMap(characterMap) {}
 
     /// Decodes a base 58 string into `result` verifying the checksum, returns `false` on failure.
     Data decodeCheck(const std::string& string) const {

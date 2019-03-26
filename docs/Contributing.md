@@ -121,6 +121,8 @@ When implementing a new blockchain make sure you go through this checklist:
     - [ ] Address interface (if necessary).
     - [ ] Signing interface.
 - [ ] Validate generated code in Android an iOS projects. Write integration tests for each.
+- [ ] Add a coin icon to "Supported Blockchains" section in `README.md`
+    - [ ] Upload coin icon to [TrustWallet/tokens](https://github.com/TrustWallet/tokens) if necessary
 
 Also check out the [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain) document.
 
