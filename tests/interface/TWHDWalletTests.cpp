@@ -171,15 +171,12 @@ TEST(HDWallet, PublicKeyFromZ) {
     auto data4 = WRAPD(TWPublicKeyData(zpubAddr4));
     auto data11 = WRAPD(TWPublicKeyData(zpubAddr11));
 
+    auto address4 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeBitcoin, zpubAddr4));
+
     assertHexEqual(data4, "03995137c8eb3b223c904259e9b571a8939a0ec99b0717684c3936407ca8538c1b");
     assertHexEqual(data11, "0226a07edd0227fa6bc36239c0bd4db83d5e488f8fb1eeb68f89a5be916aad2d60");
-}
 
-TEST(HDWallet, AddressFromExtended) {
-    auto zpub = STRING("zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs");
-    auto address = WRAPS(TWHDWalletGetAddressFromExtended(zpub.get(), TWCurveSECP256k1, TWCoinTypeBitcoin, 0, 4));
-
-    assertStringsEqual(address, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n");
+    assertStringsEqual(address4, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n");
 }
 
 TEST(HDWallet, MultipleThreads) {
@@ -206,10 +203,10 @@ TEST(HDWallet, DeriveCosmos) {
     // use `gaiacli keys add key_name` to generate mnemonic words and private key
     auto words = STRING("attract term foster morning tail foam excite copper disease measure cheese camera rug enroll cause flip sword waste try local purchase between idea thank");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
-    
+
     auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeCosmos));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
-    
+
     assertHexEqual(privateKeyData, "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
 
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
