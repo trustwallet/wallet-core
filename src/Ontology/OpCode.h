@@ -11,11 +11,17 @@ namespace Ontology {
 
     static const uint8_t PUSH0{0x00};
 
+    static const uint8_t PUSH_BYTE_33{0x21};
+
     static const uint8_t PUSH_DATA1{0x4C};
 
     static const uint8_t PUSH_DATA2{0x4D};
 
     static const uint8_t PUSH_DATA4{0x4E};
+
+    static const uint8_t CHECK_SIG{0xAC};
+
+    static const uint8_t CHECK_MULTI_SIG{0xAE};
 
     static const uint8_t PACK{0xC1};
 
