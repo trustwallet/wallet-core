@@ -22,17 +22,17 @@ namespace VeChain {
 
 /// Helper class that performs VeChain transaction signing.
 class Signer {
-public:
+  public:
     Signer() = delete;
 
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
 };
 
-}} // namespace
+} // namespace VeChain
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWVeChainSigner {
     TW::VeChain::Signer impl;
 };
-

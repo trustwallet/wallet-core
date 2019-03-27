@@ -144,4 +144,5 @@ std::string type_string(uint64_t value) {
     return "uint64";
 }
 
-}} // namespace
+} // namespace Ethereum
+} // namespace TW

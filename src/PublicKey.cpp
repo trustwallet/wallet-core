@@ -7,8 +7,8 @@
 #include "PublicKey.h"
 
 #include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/nist256p1.h>
+#include <TrezorCrypto/secp256k1.h>
 
 using namespace TW;
 
@@ -23,13 +23,15 @@ PublicKey PublicKey::compressed() const {
     return PublicKey(newBytes);
 }
 
-bool PublicKey::verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const {
+bool PublicKey::verify(const std::vector<uint8_t>& signature,
+                       const std::vector<uint8_t>& message) const {
     switch (type()) {
     case PublicKeyType::secp256k1:
     case PublicKeyType::secp256k1Extended:
         return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
     case PublicKeyType::ed25519:
-        return ed25519_sign_open(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
+        return ed25519_sign_open(message.data(), message.size(), bytes.data() + 1,
+                                 signature.data()) == 0;
     case PublicKeyType::nist256p1:
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     }

@@ -16,8 +16,7 @@ typedef std::function<int64_t(size_t, size_t, int64_t)> FeeCalculator;
 typedef std::function<int64_t(int64_t)> SingleInputFeeCalculator;
 
 class UnspentCalculator {
-public:
-
+  public:
     static UnspentCalculator getCalculator(TWCoinType coinType);
 
     FeeCalculator calculate;
@@ -25,15 +24,15 @@ public:
 
     UnspentCalculator()
         : calculate(UnspentCalculator::calculateFee)
-        , calculateSingleInput(UnspentCalculator::calculateSingleInputFee)
-        {}
-    UnspentCalculator(const FeeCalculator& calculateFee, const SingleInputFeeCalculator& calculateSingleInputFee)
-        : calculate(calculateFee)
-        , calculateSingleInput(calculateSingleInputFee)
-        {}
-private:
+        , calculateSingleInput(UnspentCalculator::calculateSingleInputFee) {}
+    UnspentCalculator(const FeeCalculator& calculateFee,
+                      const SingleInputFeeCalculator& calculateSingleInputFee)
+        : calculate(calculateFee), calculateSingleInput(calculateSingleInputFee) {}
+
+  private:
     static int64_t calculateFee(size_t inputs, size_t outputs = 2, int64_t byteFee = 1);
     static int64_t calculateSingleInputFee(int64_t byteFee);
 };
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW

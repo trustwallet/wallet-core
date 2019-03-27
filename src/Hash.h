@@ -55,81 +55,81 @@ Data blake2b(const byte* begin, const byte* end, size_t size);
 
 Data blake2b(const byte* begin, const byte* end, size_t size, const Data& personal);
 
-
 /// Computes the SHA1 hash.
-template<typename T>
+template <typename T>
 Data sha1(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return sha1(begin, begin + data.size());
 }
 
 /// Computes the SHA256 hash.
-template<typename T>
+template <typename T>
 Data sha256(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return sha256(begin, begin + data.size());
 }
 
 /// Computes the SHA512 hash.
-template<typename T>
+template <typename T>
 Data sha512(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return sha512(begin, begin + data.size());
 }
 
 /// Computes the Keccak SHA256 hash.
-template<typename T>
+template <typename T>
 Data keccak256(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return keccak256(begin, begin + data.size());
 }
 
 /// Computes the Keccak SHA512 hash.
-template<typename T>
+template <typename T>
 Data keccak512(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return keccak512(begin, begin + data.size());
 }
 
 /// Computes the version 3 SHA256 hash.
-template<typename T>
+template <typename T>
 Data sha3_256(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return sha3_256(begin, begin + data.size());
 }
 
 /// Computes the version 3 SHA512 hash.
-template<typename T>
+template <typename T>
 Data sha3_512(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return sha3_512(begin, begin + data.size());
 }
 
 /// Computes the RIPEMD160 hash.
-template<typename T>
+template <typename T>
 Data ripemd(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return ripemd(begin, begin + data.size());
 }
 
 /// Computes the Blake256 hash.
-template<typename T>
+template <typename T>
 Data blake256(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return blake256(begin, begin + data.size());
 }
 
 /// Computes the Blake2b hash.
-template<typename T>
+template <typename T>
 Data blake2b(const T& data, size_t size) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return blake2b(begin, begin + data.size(), size);
 }
 
-template<typename T>
+template <typename T>
 Data blake2b(const T& data, size_t size, const Data& personal) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return blake2b(begin, begin + data.size(), size, personal);
 }
 
-}} // namespace
+} // namespace Hash
+} // namespace TW

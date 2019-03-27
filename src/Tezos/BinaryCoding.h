@@ -14,4 +14,4 @@
 using namespace TW;
 
 PublicKey parsePublicKey(const std::string& publicKey);
-std::string base58ToHex(const std::string& data, size_t prefixLength, uint8_t *prefix);
+std::string base58ToHex(const std::string& data, size_t prefixLength, uint8_t* prefix);

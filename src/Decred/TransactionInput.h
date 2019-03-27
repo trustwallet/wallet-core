@@ -7,8 +7,8 @@
 #pragma once
 
 #include "OutPoint.h"
-#include "../Data.h"
 #include "../Bitcoin/Script.h"
+#include "../Data.h"
 
 #include <limits>
 #include <vector>
@@ -18,13 +18,14 @@ namespace Decred {
 
 /// Decred transaction input.
 class TransactionInput {
-public:
+  public:
     /// Reference to the previous transaction's output.
     OutPoint previousOutput;
 
     /// Transaction version as defined by the sender.
     ///
-    /// Intended for "replacement" of transactions when information is updated before inclusion into a block.
+    /// Intended for "replacement" of transactions when information is updated
+    /// before inclusion into a block.
     uint32_t sequence = std::numeric_limits<uint32_t>::max();
 
     int64_t valueIn;
@@ -41,4 +42,5 @@ public:
     void encodeWitness(Data& data) const;
 };
 
-}} // namespace
+} // namespace Decred
+} // namespace TW

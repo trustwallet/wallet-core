@@ -25,7 +25,7 @@ json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
     j["chain_id"] = input.chain_id();
     j["data"] = nullptr;
     j["memo"] = input.memo();
-    j["msgs"] = json::array({ orderJSON(input) });
+    j["msgs"] = json::array({orderJSON(input)});
     j["sequence"] = std::to_string(input.sequence());
     j["source"] = std::to_string(input.source());
     return j;
@@ -83,7 +83,8 @@ json Binance::outputsJSON(const Binance::Proto::SendOrder& order, bool testNet) 
     return j;
 }
 
-json Binance::tokensJSON(const ::google::protobuf::RepeatedPtrField<Binance::Proto::SendOrder_Token>& tokens) {
+json Binance::tokensJSON(
+    const ::google::protobuf::RepeatedPtrField<Binance::Proto::SendOrder_Token>& tokens) {
     json j = json::array();
     for (auto& token : tokens) {
         json sj;

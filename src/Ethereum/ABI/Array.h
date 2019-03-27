@@ -18,7 +18,8 @@ bool is_dynamic(std::vector<T>) {
 
 template <typename T>
 std::size_t size(const std::vector<T>& array) {
-    return 32 + std::accumulate(array.begin(), array.end(), 0u, [](size_t sum, auto x) { return sum + size(x); });
+    return 32 + std::accumulate(array.begin(), array.end(), 0u,
+                                [](size_t sum, auto x) { return sum + size(x); });
 }
 
 template <typename T>
@@ -55,4 +56,5 @@ std::string type_string(const std::vector<T>& array) {
     return type_string(array[0]) + "[]";
 }
 
-}} // namespace
+} // namespace Ethereum
+} // namespace TW

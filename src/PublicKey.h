@@ -21,7 +21,7 @@ enum class PublicKeyType {
 };
 
 class PublicKey {
-public:
+  public:
     /// The number of bytes in a secp256k1 and nist256p1 public key.
     static const size_t secp256k1Size = 33;
 
@@ -75,7 +75,7 @@ public:
     }
 
     /// Initializes a public key with a collection of bytes.
-    template<typename T>
+    template <typename T>
     explicit PublicKey(const T& data) {
         assert(isValid(data));
         bytes.reserve(data.size());
@@ -83,9 +83,7 @@ public:
     }
 
     /// Determines if this is a compressed public key.
-    bool isCompressed() const {
-        return bytes[0] >= 1 && bytes[0] <= 3;
-    }
+    bool isCompressed() const { return bytes[0] >= 1 && bytes[0] <= 3; }
 
     /// Returns a compressed version of this public key.
     PublicKey compressed() const;
@@ -94,10 +92,14 @@ public:
     bool verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const;
 };
 
-inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) { return lhs.bytes == rhs.bytes; }
-inline bool operator!=(const PublicKey& lhs, const PublicKey& rhs) { return lhs.bytes != rhs.bytes; }
+inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {
+    return lhs.bytes == rhs.bytes;
+}
+inline bool operator!=(const PublicKey& lhs, const PublicKey& rhs) {
+    return lhs.bytes != rhs.bytes;
+}
 
-} // namespace
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWPublicKey {

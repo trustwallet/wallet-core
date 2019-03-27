@@ -16,7 +16,7 @@ namespace TW {
 namespace Decred {
 
 class Address {
-public:
+  public:
     /// Public key hash.
     std::array<byte, 20> keyhash;
 
@@ -32,7 +32,7 @@ public:
     /// Returns a string representation of the address.
     std::string string() const;
 
-private:
+  private:
     static std::array<byte, 4> checksum(const std::array<byte, 20>& keyhash);
 };
 
@@ -40,7 +40,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.keyhash == rhs.keyhash;
 }
 
-}} // namespace
+} // namespace Decred
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWDecredAddress {

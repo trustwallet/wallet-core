@@ -19,5 +19,6 @@ enum ChecksumType {
 };
 
 std::string checksumed(const Address& address, enum ChecksumType type);
-    
-}} // namespace
+
+} // namespace Ethereum
+} // namespace TW

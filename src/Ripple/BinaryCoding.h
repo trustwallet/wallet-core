@@ -29,16 +29,16 @@ static inline void encodeType(FieldType type, int key, std::vector<uint8_t>& dat
 /// Encodes a variable length.
 static inline void encodeVariableLength(int length, std::vector<uint8_t>& data) {
     if (length <= 192) {
-        data.push_back(static_cast<unsigned char> (length));
+        data.push_back(static_cast<unsigned char>(length));
     } else if (length <= 12480) {
         length -= 193;
-        data.push_back(static_cast<unsigned char> (length >> 8));
-        data.push_back(static_cast<unsigned char> (length & 0xff));
+        data.push_back(static_cast<unsigned char>(length >> 8));
+        data.push_back(static_cast<unsigned char>(length & 0xff));
     } else if (length <= 918744) {
         length -= 12481;
-        data.push_back(static_cast<unsigned char> (length >> 16));
-        data.push_back(static_cast<unsigned char> ((length >> 8) & 0xff));
-        data.push_back(static_cast<unsigned char> (length & 0xff));
+        data.push_back(static_cast<unsigned char>(length >> 16));
+        data.push_back(static_cast<unsigned char>((length >> 8) & 0xff));
+        data.push_back(static_cast<unsigned char>(length & 0xff));
     }
 }
 
@@ -48,4 +48,5 @@ static inline void encodeBytes(std::vector<uint8_t> bytes, std::vector<uint8_t>&
     data.insert(data.end(), bytes.begin(), bytes.end());
 }
 
-}} // namespace
+} // namespace Ripple
+} // namespace TW

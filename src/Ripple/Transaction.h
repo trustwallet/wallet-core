@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "../proto/Ripple.pb.h"
-#include "../Data.h"
 #include "Address.h"
+#include "../Data.h"
+#include "../proto/Ripple.pb.h"
 
 namespace TW {
 namespace Ripple {
@@ -21,15 +21,13 @@ enum class FieldType: int {
     account = 8
 };
 
-enum class TransactionType {
-    payment = 0
-};
+enum class TransactionType { payment = 0 };
 
 class Transaction {
     /// We only support transaction types other than the Payment transaction.
     /// Non-XRP currencies are not supported. Float and negative amounts are not supported.
     /// See https://github.com/trezor/trezor-core/tree/master/src/apps/ripple#transactions
-public:
+  public:
     int64_t amount;
     int64_t fee;
     int64_t flags;
@@ -42,19 +40,21 @@ public:
     Data signature;
 
     Transaction() = default;
-    Transaction(int64_t amount, int64_t fee, int64_t flags, int32_t sequence, int32_t last_ledger_sequence, Address account, Address destination, int64_t destination_tag)
-    : amount(amount)
-    , fee(fee)
-    , flags(flags)
-    , sequence(sequence)
-    , last_ledger_sequence(last_ledger_sequence)
-    , account(account)
-    , destination(destination)
-    , destination_tag(destination_tag)
-    {}
+    Transaction(int64_t amount, int64_t fee, int64_t flags, int32_t sequence,
+                int32_t last_ledger_sequence, Address account, Address destination,
+                int64_t destination_tag)
+        : amount(amount)
+        , fee(fee)
+        , flags(flags)
+        , sequence(sequence)
+        , last_ledger_sequence(last_ledger_sequence)
+        , account(account)
+        , destination(destination)
+        , destination_tag(destination_tag) {}
 
-public:
-    /// simplified serialization format tailored for Payment transaction type exclusively.
+  public:
+    /// simplified serialization format tailored for Payment transaction type
+    /// exclusively.
     Data serialize() const;
     Data getPreImage() const;
 
@@ -62,4 +62,5 @@ public:
     static Data serializeAddress(Address address);
 };
 
-}} // namespace
+} // namespace Ripple
+} // namespace TW
