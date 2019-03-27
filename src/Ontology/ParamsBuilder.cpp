@@ -4,20 +4,20 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <unordered_map>
-
-#include <TrezorCrypto/ecdsa.h>
-#include <TrezorCrypto/bignum.h>
-#include <TrezorCrypto/nist256p1.h>
-
+#include "ParamsBuilder.h"
 #include "Data.h"
 #include "OpCode.h"
-#include "ParamsBuilder.h"
+
+#include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/nist256p1.h>
+
+#include <unordered_map>
 
 using namespace TW;
 using namespace TW::Ontology;
 
-void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const boost::any &param) {
+void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const boost::any& param) {
     if (param.type() == typeid(std::string)) {
         builder.push(boost::any_cast<std::string>(param));
     } else if (param.type() == typeid(std::array<uint8_t, 20>)) {
@@ -28,7 +28,7 @@ void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const boost::any &pa
         builder.push(boost::any_cast<uint64_t>(param));
     } else if (param.type() == typeid(std::vector<boost::any>)) {
         auto paramVec = boost::any_cast<std::vector<boost::any>>(param);
-        for (const auto &item : paramVec) {
+        for (const auto& item : paramVec) {
             ParamsBuilder::buildNeoVmParam(builder, item);
         }
         builder.push(static_cast<uint8_t>(paramVec.size()));
@@ -37,7 +37,7 @@ void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const boost::any &pa
         builder.pushBack(PUSH0);
         builder.pushBack(NEW_STRUCT);
         builder.pushBack(TO_ALT_STACK);
-        for (auto const &p : boost::any_cast<std::unordered_map<std::string, boost::any>>(param)) {
+        for (auto const& p : boost::any_cast<std::unordered_map<std::string, boost::any>>(param)) {
             ParamsBuilder::buildNeoVmParam(builder, p.second);
             builder.pushBack(DUP_FROM_ALT_STACK);
             builder.pushBack(SWAP);
@@ -49,48 +49,47 @@ void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const boost::any &pa
     }
 }
 
-void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const std::string &param) {
+void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const std::string& param) {
     builder.pushBack(param);
 }
 
-void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const std::array<uint8_t, 20> &param) {
+void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const std::array<uint8_t, 20>& param) {
     builder.pushBack(Data(param.begin(), param.end()));
 }
 
-void ParamsBuilder::buildNeoVmParam(ParamsBuilder &builder, const Data &param) {
+void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const Data& param) {
     builder.push(param);
 }
 
-void ParamsBuilder::pushVar(const Data &data) {
+void ParamsBuilder::pushVar(const Data& data) {
     pushVar(data.size());
     bytes.insert(bytes.end(), data.begin(), data.end());
 }
 
-template<typename T>
-void ParamsBuilder::pushVar(T data) {
-    if (data < (T) 0xFD) {
-        ParamsBuilder::pushBack(static_cast<uint8_t >(data));
-    } else if (data < (T) 0xFFFF) {
+void ParamsBuilder::pushVar(std::size_t value) {
+    if (value < 0xFD) {
+        ParamsBuilder::pushBack(static_cast<uint8_t>(value));
+    } else if (value < 0xFFFF) {
         bytes.push_back(0xFD);
-        encode16LE(static_cast<uint16_t>(data), bytes);
-    } else if (data < (T) 0xFFFFFFFF) {
+        encode16LE(static_cast<uint16_t>(value), bytes);
+    } else if (value < 0xFFFFFFFF) {
         bytes.push_back(0xFE);
-        encode32LE(static_cast<uint32_t>(data), bytes);
+        encode32LE(static_cast<uint32_t>(value), bytes);
     } else {
         bytes.push_back(0xFF);
-        encode64LE(data, bytes);
+        encode64LE(value, bytes);
     }
 }
 
-void ParamsBuilder::push(const std::string &data) {
+void ParamsBuilder::push(const std::string& data) {
     push(Data(data.begin(), data.end()));
 }
 
-void ParamsBuilder::push(const std::array<uint8_t, 20> &data) {
+void ParamsBuilder::push(const std::array<uint8_t, 20>& data) {
     push(Data(data.begin(), data.end()));
 }
 
-void ParamsBuilder::push(const Data &data) {
+void ParamsBuilder::push(const Data& data) {
     auto dataSize = data.size();
     if (dataSize < 75) {
         bytes.push_back(static_cast<uint8_t>(dataSize));
@@ -156,16 +155,11 @@ void ParamsBuilder::pushBack(uint64_t data) {
     encode64LE(data, bytes);
 }
 
-void ParamsBuilder::pushBack(const std::string &data) {
+void ParamsBuilder::pushBack(const std::string& data) {
     bytes.insert(bytes.end(), data.begin(), data.end());
 }
 
-void ParamsBuilder::pushBack(const std::array<uint8_t, 20> &data) {
-    bytes.insert(bytes.end(), data.begin(), data.end());
-}
-
-template<typename T>
-void ParamsBuilder::pushBack(const std::vector<T> &data) {
+void ParamsBuilder::pushBack(const std::array<uint8_t, 20>& data) {
     bytes.insert(bytes.end(), data.begin(), data.end());
 }
 
@@ -182,22 +176,22 @@ void ParamsBuilder::push(uint8_t num) {
     }
 }
 
-Data ParamsBuilder::fromSigs(const std::vector<Data> &sigs) {
+Data ParamsBuilder::fromSigs(const std::vector<Data>& sigs) {
     ParamsBuilder builder;
-    for (auto const &sig : sigs) {
+    for (auto const& sig : sigs) {
         builder.push(sig);
     }
     return builder.getBytes();
 }
 
-Data ParamsBuilder::fromPubkey(const Data &publicKey) {
+Data ParamsBuilder::fromPubkey(const Data& publicKey) {
     ParamsBuilder builder;
     builder.push(publicKey);
     builder.pushBack(CHECK_SIG);
     return builder.getBytes();
 }
 
-Data ParamsBuilder::fromMultiPubkey(uint8_t m, const std::vector<Data> &pubKeys) {
+Data ParamsBuilder::fromMultiPubkey(uint8_t m, const std::vector<Data>& pubKeys) {
     if (m > pubKeys.size()) {
         throw std::runtime_error("Invalid m in signature data.");
     }
@@ -207,7 +201,7 @@ Data ParamsBuilder::fromMultiPubkey(uint8_t m, const std::vector<Data> &pubKeys)
     ParamsBuilder builder;
     builder.push(m);
     auto sortedPubKeys = pubKeys;
-    std::sort(sortedPubKeys.begin(), sortedPubKeys.end(), [](Data &o1, Data &o2) -> int {
+    std::sort(sortedPubKeys.begin(), sortedPubKeys.end(), [](Data& o1, Data& o2) -> int {
         curve_point p1, p2;
         ecdsa_read_pubkey(&nist256p1, o1.data(), &p1);
         ecdsa_read_pubkey(&nist256p1, o2.data(), &p2);
@@ -217,15 +211,16 @@ Data ParamsBuilder::fromMultiPubkey(uint8_t m, const std::vector<Data> &pubKeys)
         }
         return bn_is_less(&p1.y, &p2.y);
     });
-    for (auto const &pk : sortedPubKeys) {
+    for (auto const& pk : sortedPubKeys) {
         builder.push(pk);
     }
-    builder.push((uint8_t) sortedPubKeys.size());
+    builder.push((uint8_t)sortedPubKeys.size());
     builder.pushBack(CHECK_MULTI_SIG);
     return builder.getBytes();
 }
 
-Data ParamsBuilder::buildNativeInvokeCode(const Data &contractAddress, uint8_t version, const std::string &method, const boost::any &params) {
+Data ParamsBuilder::buildNativeInvokeCode(const Data& contractAddress, uint8_t version,
+                                          const std::string& method, const boost::any& params) {
     ParamsBuilder builder;
     ParamsBuilder::buildNeoVmParam(builder, params);
     builder.push(Data(method.begin(), method.end()));

@@ -4,14 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <string>
-
-#include "../Hash.h"
-#include "HexCoding.h"
-
 #include "Address.h"
-#include "Transaction.h"
 #include "ParamsBuilder.h"
+#include "Transaction.h"
+
+#include "../HexCoding.h"
+#include "../Hash.h"
+
+#include <string>
 
 using namespace TW;
 using namespace TW::Ontology;
@@ -29,7 +29,7 @@ std::vector<uint8_t> Transaction::serializeUnsigned() {
     if (!payload.empty()) {
         builder.pushVar(payload);
     }
-    builder.pushBack((uint8_t) 0x00);
+    builder.pushBack((uint8_t)0x00);
     return builder.getBytes();
 }
 
@@ -52,9 +52,9 @@ std::vector<uint8_t> Transaction::txHash() {
     return Hash::sha256(Hash::sha256(txSerialized));
 }
 
-std::vector<uint8_t> Transaction::serialize(const PublicKey &pk) {
+std::vector<uint8_t> Transaction::serialize(const PublicKey& pk) {
     ParamsBuilder builder;
     builder.push(pk.bytes);
-    builder.pushBack((uint8_t) 0xAC);
+    builder.pushBack((uint8_t)0xAC);
     return builder.getBytes();
 }

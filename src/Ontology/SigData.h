@@ -6,29 +6,27 @@
 
 #pragma once
 
-#include "Data.h"
+#include "../Data.h"
 
 namespace TW {
 namespace Ontology {
 
 class SigData {
-private:
-
+  private:
     uint8_t m;
 
     std::vector<Data> pubKeys;
 
     std::vector<Data> sigs;
 
-public:
-
-    explicit SigData(const Data &pubKey, const Data &sig, uint8_t m) : m(m) {
+  public:
+    explicit SigData(const Data& pubKey, const Data& sig, uint8_t m) : m(m) {
         sigs.push_back(sig);
         pubKeys.push_back(pubKey);
     }
 
     std::vector<uint8_t> serialize();
-
 };
 
-}} // namespace
+} // namespace Ontology
+} // namespace TW
