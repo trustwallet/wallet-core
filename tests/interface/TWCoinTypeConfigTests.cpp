@@ -67,7 +67,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value19 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
     assertStringsEqual(value19, "XLM");
-  
+
     auto value20 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
     assertStringsEqual(value20, "xDAI");
 
@@ -124,7 +124,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value4, "https://explorer2.callisto.network/tx/123");
 
     auto value5 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDash, txId));
-    assertStringsEqual(value5, "https://live.blockcypher.com/dash/tx/123");
+    assertStringsEqual(value5, "https://blockchair.com/dash/transaction/123");
 
     auto value6 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereumClassic, txId));
     assertStringsEqual(value6, "https://gastracker.io/tx/123");
@@ -174,7 +174,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
     assertStringsEqual(value22, "https://stellarscan.io/transaction/123");
-  
+
     auto value23 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId));
     assertStringsEqual(value23, "https://blockscout.com/poa/dai/tx/123");
 
@@ -313,7 +313,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value20 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
     assertStringsEqual(value20, "xDai");
-    
+
     auto value21 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
     assertStringsEqual(value21, "Aion");
 
