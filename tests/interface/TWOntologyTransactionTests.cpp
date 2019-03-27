@@ -20,7 +20,7 @@ TEST(TWOntologySignerSign, OntTransfer) {
     auto input = Ontology::Proto::SigningInput();
     input.set_contract("ONT");
     input.set_method("transfer");
-    input.set_from_private_key("4646464646464646464646464646464646464646464646464646464646464646");
+    input.set_owner_private_key("4646464646464646464646464646464646464646464646464646464646464646");
     input.set_payer_private_key("4646464646464646464646464646464646464646464646464646464646464652");
     input.set_to_address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     input.set_amount(1);
@@ -46,7 +46,7 @@ TEST(TWOntologySignerSign, OngTransfer) {
     auto input = Ontology::Proto::SigningInput();
     input.set_contract("ONG");
     input.set_method("transfer");
-    input.set_from_private_key("4646464646464646464646464646464646464646464646464646464646464646");
+    input.set_owner_private_key("4646464646464646464646464646464646464646464646464646464646464646");
     input.set_payer_private_key("4646464646464646464646464646464646464646464646464646464646464652");
     input.set_to_address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     input.set_amount(1);
