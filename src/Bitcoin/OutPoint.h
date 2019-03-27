@@ -9,8 +9,8 @@
 #include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
 
-#include <array>
 #include <algorithm>
+#include <array>
 #include <cstring>
 
 namespace TW {
@@ -18,7 +18,7 @@ namespace Bitcoin {
 
 /// Bitcoin transaction out-point reference.
 class OutPoint {
-public:
+  public:
     /// The hash of the referenced transaction.
     std::array<byte, 32> hash;
 
@@ -52,9 +52,8 @@ public:
         return (cmp == 0 && a.index == b.index);
     }
 
-    friend bool operator!=(const OutPoint& a, const OutPoint& b) {
-        return !(a == b);
-    }
+    friend bool operator!=(const OutPoint& a, const OutPoint& b) { return !(a == b); }
 };
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW

@@ -81,23 +81,6 @@ jobject JNICALL Java_wallet_core_jni_HDWallet_getPublicKeyFromExtended(JNIEnv *e
     return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
-jstring JNICALL Java_wallet_core_jni_HDWallet_getAddressFromExtended(JNIEnv *env, jclass thisClass, jstring extended, jobject curve, jobject coinType, jint change, jint address) {
-    TWString *extendedString = TWStringCreateWithJString(env, extended);
-    jclass curveClass = (*env)->GetObjectClass(env, curve);
-    jmethodID curveValueMethodID = (*env)->GetMethodID(env, curveClass, "value", "()I");
-    jint curveValue = (*env)->CallIntMethod(env, curve, curveValueMethodID);
-    jclass coinTypeClass = (*env)->GetObjectClass(env, coinType);
-    jmethodID coinTypeValueMethodID = (*env)->GetMethodID(env, coinTypeClass, "value", "()I");
-    jint coinTypeValue = (*env)->CallIntMethod(env, coinType, coinTypeValueMethodID);
-    jstring result = TWStringJString(TWHDWalletGetAddressFromExtended(extendedString, curveValue, coinTypeValue, change, address), env);
-
-    TWStringDelete(extendedString);
-    (*env)->DeleteLocalRef(env, curveClass);
-    (*env)->DeleteLocalRef(env, coinTypeClass);
-
-    return result;
-}
-
 jbyteArray JNICALL Java_wallet_core_jni_HDWallet_seed(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");

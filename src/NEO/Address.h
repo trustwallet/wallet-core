@@ -15,7 +15,7 @@ namespace TW {
 namespace NEO {
 
 class Address {
-public:
+  public:
     /// Number of bytes in an address.
     static const size_t size = 21;
 
@@ -23,7 +23,8 @@ public:
     /// https://github.com/neo-project/neo/blob/427a3cd08f61a33e98856e4b4312b8147708105a/neo/protocol.json#L4
     static const byte version = 0x17;
 
-    /// Address data consisting of a prefix byte followed by the public key hash.
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
     std::array<byte, size> bytes;
 
     /// Determines whether a string makes a valid NEO address.
@@ -46,7 +47,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-}} // namespace
+} // namespace NEO
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWNEOAddress {

@@ -20,9 +20,11 @@ struct Selection {
 };
 
 // Filters utxos that are dust
-std::vector<Proto::UnspentTransaction> UnspentSelector::filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee) {
+std::vector<Proto::UnspentTransaction>
+UnspentSelector::filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos,
+                                 int64_t byteFee) {
     std::vector<Proto::UnspentTransaction> filteredUtxos;
-    for(auto utxo: selectedUtxos) {
+    for (auto utxo : selectedUtxos) {
         if (utxo.amount() > calculator.calculateSingleInput(byteFee)) {
             filteredUtxos.push_back(utxo);
         }
@@ -33,8 +35,9 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::filterDustInput(std::vec
 // Slice Array
 // [0,1,2,3,4,5,6,7,8,9].eachSlices(3)
 // >
-// [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7], [6, 7, 8], [7, 8, 9]]
-template<typename T>
+// [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5, 6], [5, 6, 7], [6, 7, 8],
+// [7, 8, 9]]
+template <typename T>
 static inline auto slice(const T& elements, size_t sliceSize) {
     std::vector<std::vector<Proto::UnspentTransaction>> slices;
     for (auto i = 0; i <= elements.size() - sliceSize; i += 1) {
@@ -47,8 +50,9 @@ static inline auto slice(const T& elements, size_t sliceSize) {
     return slices;
 }
 
-template<typename T>
-std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
+template <typename T>
+std::vector<Proto::UnspentTransaction>
+UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
     // if target value is zero, fee is zero
     if (targetValue == 0) {
         return {};
@@ -62,11 +66,13 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
     // definitions for the following caluculation
     const auto doubleTargetValue = targetValue * 2;
 
-    // Get all possible utxo selections up to a maximum size, sort by total amount
+    // Get all possible utxo selections up to a maximum size, sort by total
+    // amount
     auto sortedUtxos = utxos;
-    std::sort(sortedUtxos.begin(), sortedUtxos.end(), [](const Proto::UnspentTransaction& lhs, const Proto::UnspentTransaction& rhs) {
-        return lhs.amount() < rhs.amount();
-    });
+    std::sort(sortedUtxos.begin(), sortedUtxos.end(),
+              [](const Proto::UnspentTransaction& lhs, const Proto::UnspentTransaction& rhs) {
+                  return lhs.amount() < rhs.amount();
+              });
 
     // difference from 2x targetValue
     auto distFrom2x = [doubleTargetValue](int64_t val) -> int64_t {
@@ -84,13 +90,18 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
         const auto fee = calculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
         auto slices = slice(sortedUtxos, numInputs);
-        slices.erase(std::remove_if(slices.begin(), slices.end(), [targetWithFeeAndDust](const std::vector<Proto::UnspentTransaction>& slice) {
-            return sum(slice) < targetWithFeeAndDust;
-        }), slices.end());
+        slices.erase(std::remove_if(slices.begin(), slices.end(),
+                                    [targetWithFeeAndDust](
+                                        const std::vector<Proto::UnspentTransaction>& slice) {
+                                        return sum(slice) < targetWithFeeAndDust;
+                                    }),
+                     slices.end());
         if (!slices.empty()) {
-            std::sort(slices.begin(), slices.end(), [distFrom2x](const std::vector<Proto::UnspentTransaction>& lhs, const std::vector<Proto::UnspentTransaction>& rhs) {
-                return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
-            });
+            std::sort(slices.begin(), slices.end(),
+                      [distFrom2x](const std::vector<Proto::UnspentTransaction>& lhs,
+                                   const std::vector<Proto::UnspentTransaction>& rhs) {
+                          return distFrom2x(sum(lhs)) < distFrom2x(sum(rhs));
+                      });
             return filterDustInput(slices.front(), byteFee);
         }
     }
@@ -101,9 +112,12 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
         const auto fee = calculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
         auto slices = slice(sortedUtxos, numInputs);
-        slices.erase(std::remove_if(slices.begin(), slices.end(), [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {
-            return sum(slice) < targetWithFee;
-        }), slices.end());
+        slices.erase(
+            std::remove_if(slices.begin(), slices.end(),
+                           [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {
+                               return sum(slice) < targetWithFee;
+                           }),
+            slices.end());
         if (!slices.empty()) {
             return filterDustInput(slices.front(), byteFee);
         }
@@ -112,5 +126,9 @@ std::vector<Proto::UnspentTransaction> UnspentSelector::select(const T& utxos, i
     return {};
 }
 
-template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);
-template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);
+template std::vector<Proto::UnspentTransaction> UnspentSelector::select(
+    const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos,
+    int64_t targetValue, int64_t byteFee, int64_t numOutputs);
+template std::vector<Proto::UnspentTransaction>
+UnspentSelector::select(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue,
+                        int64_t byteFee, int64_t numOutputs);

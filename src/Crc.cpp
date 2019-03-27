@@ -10,7 +10,7 @@
 
 using namespace TW;
 
-uint16_t Crc::crc16(uint8_t *bytes, uint32_t length) {
+uint16_t Crc::crc16(uint8_t* bytes, uint32_t length) {
     // Calculate checksum for existing bytes
     uint16_t crc = 0x0000;
     const uint16_t polynomial = 0x1021;

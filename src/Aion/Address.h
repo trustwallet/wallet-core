@@ -16,7 +16,7 @@ namespace TW {
 namespace Aion {
 
 class Address {
-public:
+  public:
     /// Number of bytes in Aion address.
     static const size_t size = 32;
 
@@ -48,7 +48,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-}} // namespace
+} // namespace Aion
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWAionAddress {

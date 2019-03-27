@@ -7,13 +7,13 @@
 #include "Address.h"
 
 #include <TrezorCrypto/base32.h>
-#include <TrustWalletCore/TWStellarVersionByte.h>
 #include <TrezorCrypto/memzero.h>
+#include <TrustWalletCore/TWStellarVersionByte.h>
 
-#include <cassert>
-#include <HexCoding.h>
 #include "Crc.h"
 #include "Data.h"
+#include <HexCoding.h>
+#include <cassert>
 
 using namespace TW::Stellar;
 
@@ -26,7 +26,7 @@ bool Address::isValid(const std::string& string) {
     }
 
     // Check that it decodes correctly
-    uint8_t *ret = base32_decode(string.data(), size, decoded, sizeof(decoded), BASE32_ALPHABET_RFC4648);
+    uint8_t* ret = base32_decode(string.data(), size, decoded, sizeof(decoded), BASE32_ALPHABET_RFC4648);
     valid = (ret != NULL);
 
     // ... and that version byte is 0x30
@@ -80,8 +80,8 @@ std::string Address::string() const {
 
     // Last two bytes are the checksum
     uint16_t checksum = Crc::crc16(bytes_full, 33);
-    bytes_full[keylen-2] = checksum & 0x00ff;
-    bytes_full[keylen-1] = (checksum>>8) & 0x00ff;
+    bytes_full[keylen - 2] = checksum & 0x00ff;
+    bytes_full[keylen - 1] = (checksum >> 8) & 0x00ff;
 
     base32_encode(bytes_full, keylen, out, sizeof(out), BASE32_ALPHABET_RFC4648);
 

@@ -4,12 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <Base64.h>
-#include <TrustWalletCore/TWStellarMemoType.h>
 #include "Signer.h"
+#include "Base64.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+
+#include <TrustWalletCore/TWStellarMemoType.h>
 
 using namespace TW;
 using namespace TW::Stellar;
@@ -25,7 +26,8 @@ std::string Signer::sign() const noexcept {
     auto passphrase = Hash::sha256(publicNetwork);
     encodedWithHeaders.insert(encodedWithHeaders.end(), passphrase.begin(), passphrase.end());
     auto transactionType = Data{0, 0, 0, 2}; // Header
-    encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(), transactionType.end());
+    encodedWithHeaders.insert(encodedWithHeaders.end(), transactionType.begin(),
+                              transactionType.end());
     encodedWithHeaders.insert(encodedWithHeaders.end(), encoded.begin(), encoded.end());
 
     auto hash = Hash::sha256(encodedWithHeaders);
@@ -43,7 +45,8 @@ std::string Signer::sign() const noexcept {
 }
 
 Data Signer::encode(const Proto::SigningInput& input) const {
-//    Address account, uint32_t fee, uint64_t sequence, uint32_t memoType, Data memoData, Address destination, uint64_t amount;
+    //    Address account, uint32_t fee, uint64_t sequence, uint32_t memoType,
+    //    Data memoData, Address destination, uint64_t amount;
     auto data = Data();
     encodeAddress(Address(input.account()), data);
     encode32BE(input.fee(), data);
@@ -62,13 +65,14 @@ Data Signer::encode(const Proto::SigningInput& input) const {
         data.insert(data.end(), input.memo_hash().hash().begin(), input.memo_hash().hash().end());
     } else if (input.has_memo_return_hash()) {
         encode32BE(TWStellarMemoTypeReturn, data);
-        data.insert(data.end(), input.memo_return_hash().hash().begin(), input.memo_return_hash().hash().end());
+        data.insert(data.end(), input.memo_return_hash().hash().begin(),
+                    input.memo_return_hash().hash().end());
     } else {
         encode32BE(TWStellarMemoTypeNone, data);
     }
     // Operations
-    encode32BE(1, data); // Operation list size. Only 1 operation.
-    encode32BE(0, data); // Source equals account
+    encode32BE(1, data);                      // Operation list size. Only 1 operation.
+    encode32BE(0, data);                      // Source equals account
     encode32BE(input.operation_type(), data); // Operation type - PAYMENT
     encodeAddress(Address(input.destination()), data);
     if (input.operation_type() == Proto::SigningInput_OperationType_PAYMENT) {

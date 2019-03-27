@@ -12,3 +12,9 @@ public typealias TWTronTransaction = TW_Tron_Proto_Transaction
 public typealias TWTronTransferContract = TW_Tron_Proto_TransferContract
 public typealias TWTronTransferAssetContract = TW_Tron_Proto_TransferAssetContract
 public typealias TWTronBlockHeader = TW_Tron_Proto_BlockHeader
+
+extension TronAddress: Address {
+    public var data: Data {
+        fatalError("Data representation not supported")
+    }
+}

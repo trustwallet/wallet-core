@@ -22,7 +22,8 @@ bool Address::isValid(const std::string& string) {
     if (string.size() != Address::size * 2 + 2) {
         return false;
     }
-    if (!std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin()) && !std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
+    if (!std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin()) &&
+        !std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
         return false;
     }
     return true;

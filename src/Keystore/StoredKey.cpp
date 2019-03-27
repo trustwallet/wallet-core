@@ -10,10 +10,10 @@
 
 #define BOOST_UUID_RANDOM_PROVIDER_FORCE_POSIX 1
 
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/lexical_cast.hpp>
 #include <nlohmann/json.hpp>
 
 #include <fstream>
@@ -24,12 +24,14 @@
 using namespace TW;
 using namespace TW::Keystore;
 
-StoredKey::StoredKey(StoredKeyType type, const EncryptionParameters& payload) : type(type), payload(payload), id(), accounts() {
+StoredKey::StoredKey(StoredKeyType type, const EncryptionParameters& payload)
+    : type(type), payload(payload), id(), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }
 
-StoredKey::StoredKey(StoredKeyType type, const std::string& password, Data data) : type(type), payload(password, data), id(), accounts() {
+StoredKey::StoredKey(StoredKeyType type, const std::string& password, Data data)
+    : type(type), payload(password, data), id(), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }
@@ -128,31 +130,33 @@ void StoredKey::fixAddresses(const std::string& password) {
 // -----------------
 
 namespace CodingKeys {
-    static const auto address = "address";
-    static const auto type = "type";
-    static const auto id = "id";
-    static const auto crypto = "crypto";
-    static const auto activeAccounts = "activeAccounts";
-    static const auto version = "version";
-    static const auto coin = "coin";
-}
+static const auto address = "address";
+static const auto type = "type";
+static const auto id = "id";
+static const auto crypto = "crypto";
+static const auto activeAccounts = "activeAccounts";
+static const auto version = "version";
+static const auto coin = "coin";
+} // namespace CodingKeys
 
 namespace UppercaseCodingKeys {
-    static const auto crypto = "Crypto";
+static const auto crypto = "Crypto";
 }
 
 namespace TypeString {
-    static const auto privateKey = "private-key";
-    static const auto mnemonic = "mnemonic";
-    static const auto watch = "watch";
-}
+static const auto privateKey = "private-key";
+static const auto mnemonic = "mnemonic";
+static const auto watch = "watch";
+} // namespace TypeString
 
 StoredKey::StoredKey(const nlohmann::json& json) {
-    if (json.count(CodingKeys::type) != 0 && json[CodingKeys::type].get<std::string>() == TypeString::mnemonic) {
+    if (json.count(CodingKeys::type) != 0 &&
+        json[CodingKeys::type].get<std::string>() == TypeString::mnemonic) {
         type = StoredKeyType::mnemonicPhrase;
-    } else if (json.count(CodingKeys::type) != 0 && json[CodingKeys::type].get<std::string>() == TypeString::watch) {
+    } else if (json.count(CodingKeys::type) != 0 &&
+               json[CodingKeys::type].get<std::string>() == TypeString::watch) {
         type = StoredKeyType::watchOnly;
-    }  else {
+    } else {
         type = StoredKeyType::privateKey;
     }
 
@@ -171,7 +175,8 @@ StoredKey::StoredKey(const nlohmann::json& json) {
         throw DecryptionError::invalidKeyFile;
     }
 
-    if (json.count(CodingKeys::activeAccounts) != 0 && json[CodingKeys::activeAccounts].is_array()) {
+    if (json.count(CodingKeys::activeAccounts) != 0 &&
+        json[CodingKeys::activeAccounts].is_array()) {
         for (auto& accountJSON : json[CodingKeys::activeAccounts]) {
             accounts.emplace_back(accountJSON);
         }

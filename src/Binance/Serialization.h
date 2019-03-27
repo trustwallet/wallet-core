@@ -18,4 +18,5 @@ nlohmann::json inputsJSON(const Binance::Proto::SendOrder& order, bool testNet);
 nlohmann::json outputsJSON(const Binance::Proto::SendOrder& order, bool testNet);
 nlohmann::json tokensJSON(const ::google::protobuf::RepeatedPtrField<Binance::Proto::SendOrder_Token>& tokens);
 
-}} // namespace
+} // namespace Binance
+} // namespace TW

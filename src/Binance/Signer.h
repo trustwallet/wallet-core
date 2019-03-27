@@ -16,7 +16,7 @@ namespace Binance {
 
 /// Helper class that performs Binance transaction signing.
 class Signer {
-public:
+  public:
     Proto::SigningInput input;
 
     /// Initializes a transaction signer.
@@ -24,23 +24,27 @@ public:
 
     /// Builds a signed transaction.
     ///
-    /// \returns the signed transaction data or an empty vector if there is an error.
+    /// \returns the signed transaction data or an empty vector if there is an
+    /// error.
     std::vector<uint8_t> build() const;
 
     /// Signs the transaction.
     ///
-    /// \returns the transaction signature or an empty vector if there is an error.
+    /// \returns the transaction signature or an empty vector if there is an
+    /// error.
     std::vector<uint8_t> sign() const;
 
-private:
+  private:
     std::string signaturePreimage() const;
     std::vector<uint8_t> encodeTransaction(const std::vector<uint8_t>& signature) const;
     std::vector<uint8_t> encodeOrder() const;
     std::vector<uint8_t> encodeSignature(const std::vector<uint8_t>& signature) const;
-    std::vector<uint8_t> aminoWrap(const std::string& raw, const std::vector<uint8_t>& typePrefix, bool isPrefixLength) const;
+    std::vector<uint8_t> aminoWrap(const std::string& raw, const std::vector<uint8_t>& typePrefix,
+                                   bool isPrefixLength) const;
 };
 
-}} // namespace
+} // namespace Binance
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWBinanceSigner {

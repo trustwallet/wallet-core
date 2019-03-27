@@ -17,13 +17,14 @@ namespace Tezos {
 
 /// Helper class that performs Tezos transaction signing.
 class Signer {
-public:
+  public:
     /// Signs the given transaction.
     Data signOperationList(const PrivateKey& privateKey, const OperationList& operationList);
     Data signData(const PrivateKey& privateKey, Data data);
 };
 
-}} // namespace
+} // namespace Tezos
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWTezosSigner {

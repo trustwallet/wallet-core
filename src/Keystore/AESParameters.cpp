@@ -19,7 +19,7 @@ AESParameters::AESParameters() {
 }
 
 namespace CodingKeys {
-    static const auto iv = "iv";
+static const auto iv = "iv";
 }
 
 /// Initializes `AESParameters` with a JSON object.

@@ -16,15 +16,16 @@ namespace TW {
 namespace Bitcoin {
 
 class CashAddress {
-public:
+  public:
     /// Number of bytes in an address.
     static const size_t size = 34;
 
-    /// Address data consisting of a prefix byte followed by the public key hash.
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
     std::array<byte, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
-    template<typename T>
+    template <typename T>
     static bool isValid(const T& data) {
         return data.size() == size && (data[0] == 0 || data[0] == 1);
     }
@@ -52,4 +53,5 @@ static inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW

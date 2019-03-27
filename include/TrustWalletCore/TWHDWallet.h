@@ -75,8 +75,4 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wa
 TW_EXPORT_STATIC_METHOD
 struct TWPublicKey *_Nonnull TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCurve curve, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);
 
-/// Generates an address from an exteded public key representation, coin type, and change and address indices.
-TW_EXPORT_STATIC_METHOD
-TWString *_Nullable TWHDWalletGetAddressFromExtended(TWString *_Nonnull extended, enum TWCurve curve, enum TWCoinType coinType, uint32_t change, uint32_t address);
-
 TW_EXTERN_C_END
