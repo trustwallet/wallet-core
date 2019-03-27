@@ -41,7 +41,7 @@ public:
 
     static TW_Ontology_Proto_SigningOutput transfer(const Ontology::Proto::SigningInput &input) {
         auto payerAccount = Signer(input.payer_private_key());
-        auto fromAccount = Signer(input.from_private_key());
+        auto fromAccount = Signer(input.owner_private_key());
         auto toAddress = Address(input.to_address());
         auto transaction = Ong().transfer(fromAccount, toAddress, input.amount(), payerAccount, input.gas_price(), input.gas_limit());
         auto encoded = transaction.serialize();
