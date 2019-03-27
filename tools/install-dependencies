@@ -67,7 +67,7 @@ tar xzf $SWIFT_PROTOBUF_VERSION.tar.gz
 
 # Build Swift Protobuf
 cd swift-protobuf-$SWIFT_PROTOBUF_VERSION
-swift build -c release -Xswiftc -static-stdlib
+swift build --static-swift-stdlib -c release
 cp -f "$SWIFT_PROTOBUF_DIR/swift-protobuf-$SWIFT_PROTOBUF_VERSION/.build/release/protoc-gen-swift" "$PREFIX/bin" | true
 $PREFIX/bin/protoc-gen-swift --version
 
