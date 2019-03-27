@@ -4,11 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Address.h"
 #include "../Hash.h"
 
-#include <stdexcept>
+#include "OpCode.h"
+#include "Address.h"
+#include "ParamsBuilder.h"
+
 #include <string>
+#include <stdexcept>
 
 #include <TrezorCrypto/base58.h>
 
@@ -17,10 +20,8 @@ using namespace TW::Ontology;
 
 Address::Address(const PublicKey& publicKey) {
     std::vector<uint8_t> builder(publicKey.bytes);
-    uint8_t pushBytes33 = 0x21;
-    builder.insert(builder.begin(), pushBytes33);
-    uint8_t checkSig = 0xAC;
-    builder.push_back(checkSig);
+    builder.insert(builder.begin(), PUSH_BYTE_33);
+    builder.push_back(CHECK_SIG);
     auto builderData = toScriptHash(builder);
     std::copy(builderData.begin(), builderData.end(), data.begin());
 }
@@ -41,7 +42,12 @@ Address::Address(const std::vector<uint8_t>& bytes) {
     std::copy(bytes.begin(), bytes.end(), data.begin());
 }
 
-std::vector<uint8_t> Address::toScriptHash(std::vector<uint8_t>& data) {
+Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
+    auto builderData = toScriptHash(ParamsBuilder::fromMultiPubkey(m, publicKeys));
+    std::copy(builderData.begin(), builderData.end(), data.begin());
+}
+
+Data Address::toScriptHash(const Data& data) {
     return Hash::ripemd(Hash::sha256(data));
 }
 
@@ -51,7 +57,7 @@ bool Address::isValid(const std::string& b58Address) noexcept {
     }
     Data addressWithVersion(size + 1);
     auto len =
-        base58_decode_check(b58Address.c_str(), HASHER_SHA2D, addressWithVersion.data(), size + 1);
+            base58_decode_check(b58Address.c_str(), HASHER_SHA2D, addressWithVersion.data(), size + 1);
     return len == size + 1;
 }
 
