@@ -6,6 +6,10 @@
 
 #include <unordered_map>
 
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/nist256p1.h>
+
 #include "Data.h"
 #include "OpCode.h"
 #include "ParamsBuilder.h"
@@ -176,6 +180,49 @@ void ParamsBuilder::push(uint8_t num) {
     } else {
         push(Data{num, PUSH0});
     }
+}
+
+Data ParamsBuilder::fromSigs(const std::vector<Data> &sigs) {
+    ParamsBuilder builder;
+    for (auto const &sig : sigs) {
+        builder.push(sig);
+    }
+    return builder.getBytes();
+}
+
+Data ParamsBuilder::fromPubkey(const Data &publicKey) {
+    ParamsBuilder builder;
+    builder.push(publicKey);
+    builder.pushBack(CHECK_SIG);
+    return builder.getBytes();
+}
+
+Data ParamsBuilder::fromMultiPubkey(uint8_t m, const std::vector<Data> &pubKeys) {
+    if (m > pubKeys.size()) {
+        throw std::runtime_error("Invalid m in signature data.");
+    }
+    if (pubKeys.size() > MAX_PK_SIZE) {
+        throw std::runtime_error("Too many public key found.");
+    }
+    ParamsBuilder builder;
+    builder.push(m);
+    auto sortedPubKeys = pubKeys;
+    std::sort(sortedPubKeys.begin(), sortedPubKeys.end(), [](Data &o1, Data &o2) -> int {
+        curve_point p1, p2;
+        ecdsa_read_pubkey(&nist256p1, o1.data(), &p1);
+        ecdsa_read_pubkey(&nist256p1, o2.data(), &p2);
+        auto result = bn_is_less(&p1.x, &p2.x);
+        if (result != 0) {
+            return result;
+        }
+        return bn_is_less(&p1.y, &p2.y);
+    });
+    for (auto const &pk : sortedPubKeys) {
+        builder.push(pk);
+    }
+    builder.push(sortedPubKeys.size());
+    builder.pushBack(CHECK_MULTI_SIG);
+    return builder.getBytes();
 }
 
 Data ParamsBuilder::buildNativeInvokeCode(const Data &contractAddress, uint8_t version, const std::string &method, const boost::any &params) {

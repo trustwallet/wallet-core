@@ -26,6 +26,8 @@ private:
 
 public:
 
+    static const size_t MAX_PK_SIZE = 16;
+
     std::vector<uint8_t> getBytes() {
         return bytes;
     }
@@ -33,6 +35,12 @@ public:
     void cleanUp() {
         bytes.clear();
     }
+
+    static Data fromSigs(const std::vector<Data>& sigs);
+
+    static Data fromPubkey(const Data &publicKey);
+
+    static Data fromMultiPubkey(uint8_t m,const std::vector<Data>& pubKeys);
 
     static void buildNeoVmParam(ParamsBuilder &builder, const boost::any &param);
 
