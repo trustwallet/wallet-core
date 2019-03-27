@@ -17,7 +17,7 @@ namespace Ontology {
 class Address {
 
   private:
-    std::vector<uint8_t> toScriptHash(std::vector<uint8_t>& data);
+    Data toScriptHash(const Data& data);
 
   public:
     static const size_t size = 20;
@@ -33,6 +33,9 @@ class Address {
 
     /// Initializes an address with a collection of bytes.
     explicit Address(const std::vector<uint8_t>& bytes);
+
+    /// Initializes an address with a collection of public key.
+    Address(uint8_t m, const std::vector<Data>& publicKeys);
 
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string) noexcept;
