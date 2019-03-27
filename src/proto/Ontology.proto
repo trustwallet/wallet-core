@@ -10,14 +10,14 @@ message SigningInput {
 
     string method = 2;
 
-    string from_private_key = 3;
+    bytes owner_private_key = 3;
 
     // base58 encode address string (160-bit number)
     string to_address = 4;
 
     uint64 amount = 5;
 
-    string payer_private_key = 6;
+    bytes payer_private_key = 6;
 
     uint64 gas_price = 7;
 
