@@ -7,31 +7,31 @@
 #pragma once
 
 #include <array>
-#include <vector>
 #include <string>
+#include <vector>
 
+#include "Address.h"
+#include "BinaryCoding.h"
 #include "Data.h"
 #include "Signer.h"
-#include "Address.h"
 #include "Transaction.h"
-#include "BinaryCoding.h"
 
 namespace TW {
 namespace Ontology {
 
 class Asset {
-protected:
-
+  protected:
     const uint8_t txType = 0xD1;
 
-public:
+  public:
     virtual Data contractAddress() = 0;
 
-    virtual  Transaction decimals(const Address &address) = 0;
+    virtual Transaction decimals(const Address& address) = 0;
 
-    virtual Transaction balanceOf(const Address &address) = 0;
+    virtual Transaction balanceOf(const Address& address) = 0;
 
-    virtual Transaction transfer(const Signer &from, const Address &to, uint64_t amount, const Signer &payer, uint64_t gasPrice, uint64_t gasLimit) = 0;
-
+    virtual Transaction transfer(const Signer& from, const Address& to, uint64_t amount,
+                                 const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) = 0;
 };
-}} // namespace
+} // namespace Ontology
+} // namespace TW

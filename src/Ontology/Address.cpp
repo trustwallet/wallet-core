@@ -6,12 +6,12 @@
 
 #include "../Hash.h"
 
-#include "OpCode.h"
 #include "Address.h"
+#include "OpCode.h"
 #include "ParamsBuilder.h"
 
-#include <string>
 #include <stdexcept>
+#include <string>
 
 #include <TrezorCrypto/base58.h>
 
@@ -57,7 +57,7 @@ bool Address::isValid(const std::string& b58Address) noexcept {
     }
     Data addressWithVersion(size + 1);
     auto len =
-            base58_decode_check(b58Address.c_str(), HASHER_SHA2D, addressWithVersion.data(), size + 1);
+        base58_decode_check(b58Address.c_str(), HASHER_SHA2D, addressWithVersion.data(), size + 1);
     return len == size + 1;
 }
 

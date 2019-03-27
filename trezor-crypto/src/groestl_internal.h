@@ -101,7 +101,7 @@ typedef int64_t sph_s64;
 /*
  * ARM, little-endian.
  */
-#elif defined __arm__ && __ARMEL__
+#elif defined __arm__ || __ARM_ARCH
 
 #define SPH_DETECT_LITTLE_ENDIAN     1
 #define SPH_DETECT_BIG_ENDIAN        0
