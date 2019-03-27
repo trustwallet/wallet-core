@@ -13,6 +13,7 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 # Install all required packages
 RUN apt-get install -y \
     git \
+    libcurl4-openssl-dev \
     libicu-dev \
     libssl-dev \
     ninja-build \
