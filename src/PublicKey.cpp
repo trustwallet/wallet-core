@@ -23,6 +23,21 @@ PublicKey PublicKey::compressed() const {
     return PublicKey(newBytes);
 }
 
+PublicKey PublicKey::uncompressed() const {
+    auto keyType = type();
+    if (!isCompressed() || keyType == PublicKeyType::ed25519) {
+        return *this;
+    }
+
+    std::array<uint8_t, secp256k1ExtendedSize> newBytes;
+    if (keyType == PublicKeyType::secp256k1) {
+        ecdsa_uncompress_pubkey(&secp256k1, bytes.data(), newBytes.data());
+    } else if (keyType == PublicKeyType::nist256p1) {
+        ecdsa_uncompress_pubkey(&nist256p1, bytes.data(), newBytes.data());
+    }
+    return PublicKey(newBytes);
+}
+
 bool PublicKey::verify(const std::vector<uint8_t>& signature,
                        const std::vector<uint8_t>& message) const {
     switch (type()) {

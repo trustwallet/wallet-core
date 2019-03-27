@@ -83,6 +83,24 @@ jobject JNICALL Java_wallet_core_jni_PublicKey_compressed(JNIEnv *env, jobject t
     return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
 }
 
+jobject JNICALL Java_wallet_core_jni_PublicKey_uncompressed(JNIEnv *env, jobject thisObject) {
+    jclass thisClass = (*env)->GetObjectClass(env, thisObject);
+    jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
+    struct TWPublicKey *instance = (struct TWPublicKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
+
+    struct TWPublicKey *result = TWPublicKeyUncompressed(instance);
+
+
+    (*env)->DeleteLocalRef(env, thisClass);
+
+    jclass class = (*env)->FindClass(env, "wallet/core/jni/PublicKey");
+    if (result == NULL) {
+        return NULL;
+    }
+    jmethodID method = (*env)->GetStaticMethodID(env, class, "createFromNative", "(J)Lwallet/core/jni/PublicKey;");
+    return (*env)->CallStaticObjectMethod(env, class, method, (jlong) result);
+}
+
 jbyteArray JNICALL Java_wallet_core_jni_PublicKey_data(JNIEnv *env, jobject thisObject) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");

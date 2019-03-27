@@ -72,9 +72,9 @@ TEST(Zcash, DerivePubkeyFromXpub) {
     assertStringsEqual(address5String, "t1TWk2mmvESDnE4dmCfT7MQ97ij6ZqLpNVU");
 }
 
-TEST(Zcash, DeriveAddressFromXpub) {
+TEST(Zcash, DerivePubkeyFromXpub2) {
     auto xpub = STRING("xpub6C7HhMqpir3KBA6ammv5B58RT3XFTJqoZFoj3J56dz9XwehZ2puSH38ERtnz7HaXGxaZP8AHT4M2bSRHpBXUZrbsJ2xg3xs53DGKYCqj8mr");
-    auto address = WRAPS(TWHDWalletGetAddressFromExtended(xpub.get(), TWCurveSECP256k1, TWCoinTypeZcash, 0, 0));
-
+    auto pubKey = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 0);
+    auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeZcash, pubKey));
     assertStringsEqual(address, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt");
 }

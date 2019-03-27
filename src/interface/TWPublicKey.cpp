@@ -46,6 +46,10 @@ struct TWPublicKey *_Nonnull TWPublicKeyCompressed(struct TWPublicKey *_Nonnull 
     return new TWPublicKey{ pk->impl.compressed() };
 }
 
+struct TWPublicKey *_Nonnull TWPublicKeyUncompressed(struct TWPublicKey *_Nonnull pk) {
+    return new TWPublicKey{ pk->impl.uncompressed() };
+}
+
 bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *signature, TWData *message) {
     auto& s = *reinterpret_cast<const TW::Data *>(signature);
     auto& m = *reinterpret_cast<const TW::Data *>(message);

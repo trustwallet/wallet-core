@@ -33,7 +33,6 @@ public class HDWallet {
 
     public static native boolean isValid(String mnemonic);
     public static native PublicKey getPublicKeyFromExtended(String extended, Curve curve, HDVersion versionPublic, HDVersion versionPrivate, int change, int address);
-    public static native String getAddressFromExtended(String extended, Curve curve, CoinType coinType, int change, int address);
     public native byte[] seed();
     public native String mnemonic();
     public native PrivateKey getKeyForCoin(CoinType coin);
