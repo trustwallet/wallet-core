@@ -10,6 +10,8 @@ export PATH="$PREFIX/bin":$PATH
 export LDFLAGS="-L$PREFIX/lib"
 export LT_SYS_LIBRARY_PATH="$PREFIX/lib"
 export DYLD_LIBRARY_PATH="$PREFIX/lib"
+export LD_LIBRARY_PATH="$PREFIX/lib"
+export LD_RUN_PATH="$PREFIX/lib"
 
 # Download Google Test
 export GTEST_VERSION=1.8.1
