@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace TW {
 namespace Ontology {
 
