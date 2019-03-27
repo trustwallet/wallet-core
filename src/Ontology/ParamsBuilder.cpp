@@ -4,15 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <unordered_map>
+#include "Data.h"
+#include "OpCode.h"
+#include "ParamsBuilder.h"
 
 #include <TrezorCrypto/bignum.h>
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/nist256p1.h>
 
-#include "Data.h"
-#include "OpCode.h"
-#include "ParamsBuilder.h"
+#include <unordered_map>
 
 using namespace TW;
 using namespace TW::Ontology;
@@ -66,19 +66,18 @@ void ParamsBuilder::pushVar(const Data& data) {
     bytes.insert(bytes.end(), data.begin(), data.end());
 }
 
-template <typename T>
-void ParamsBuilder::pushVar(T data) {
-    if (data < (T)0xFD) {
-        ParamsBuilder::pushBack(static_cast<uint8_t>(data));
-    } else if (data < (T)0xFFFF) {
+void ParamsBuilder::pushVar(std::size_t value) {
+    if (value < 0xFD) {
+        ParamsBuilder::pushBack(static_cast<uint8_t>(value));
+    } else if (value < 0xFFFF) {
         bytes.push_back(0xFD);
-        encode16LE(static_cast<uint16_t>(data), bytes);
-    } else if (data < (T)0xFFFFFFFF) {
+        encode16LE(static_cast<uint16_t>(value), bytes);
+    } else if (value < 0xFFFFFFFF) {
         bytes.push_back(0xFE);
-        encode32LE(static_cast<uint32_t>(data), bytes);
+        encode32LE(static_cast<uint32_t>(value), bytes);
     } else {
         bytes.push_back(0xFF);
-        encode64LE(data, bytes);
+        encode64LE(value, bytes);
     }
 }
 
@@ -161,11 +160,6 @@ void ParamsBuilder::pushBack(const std::string& data) {
 }
 
 void ParamsBuilder::pushBack(const std::array<uint8_t, 20>& data) {
-    bytes.insert(bytes.end(), data.begin(), data.end());
-}
-
-template <typename T>
-void ParamsBuilder::pushBack(const std::vector<T>& data) {
     bytes.insert(bytes.end(), data.begin(), data.end());
 }
 

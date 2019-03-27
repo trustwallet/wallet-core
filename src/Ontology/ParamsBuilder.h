@@ -6,14 +6,15 @@
 
 #pragma once
 
+#include "../BinaryCoding.h"
+#include "../Data.h"
+
 #include <array>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include <boost/any.hpp>
-
-#include "BinaryCoding.h"
 
 namespace TW {
 namespace Ontology {
@@ -46,8 +47,7 @@ class ParamsBuilder {
 
     void pushVar(const std::vector<uint8_t>& data);
 
-    template <typename T>
-    void pushVar(T data);
+    void pushVar(std::size_t value);
 
     void push(const std::string& data);
 
@@ -72,7 +72,9 @@ class ParamsBuilder {
     void pushBack(const std::array<uint8_t, 20>& data);
 
     template <typename T>
-    void pushBack(const std::vector<T>& data);
+    void pushBack(const std::vector<T>& data) {
+        bytes.insert(bytes.end(), data.begin(), data.end());
+    }
 
     static std::vector<uint8_t> buildNativeInvokeCode(const std::vector<uint8_t>& contractAddress,
                                                       uint8_t version, const std::string& method,
