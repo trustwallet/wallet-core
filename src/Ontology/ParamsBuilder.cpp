@@ -220,7 +220,7 @@ Data ParamsBuilder::fromMultiPubkey(uint8_t m, const std::vector<Data> &pubKeys)
     for (auto const &pk : sortedPubKeys) {
         builder.push(pk);
     }
-    builder.push(sortedPubKeys.size());
+    builder.push((uint8_t)sortedPubKeys.size());
     builder.pushBack(CHECK_MULTI_SIG);
     return builder.getBytes();
 }
