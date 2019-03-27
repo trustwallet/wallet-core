@@ -53,7 +53,7 @@ class OntologyTests: XCTestCase {
         let input = TWOntologySigningInput.with {
             $0.contract = "ONT"
             $0.method = "transfer"
-            $0.fromPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!
+            $0.ownerPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!
             $0.toAddress = "Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn"
             $0.amount = 1
             $0.gasPrice = 500
