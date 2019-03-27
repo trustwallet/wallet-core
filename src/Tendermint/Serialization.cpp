@@ -13,14 +13,18 @@ using json = nlohmann::json;
 
 json messageJSON(const TW::Cosmos::Proto::SigningInput& input) {
     json j;
-    /*
-    if (input.has_send_tokens_message()) {
-        j["from_address"] = input.send_tokens_message().fromAddress();
-        j["to_address"] = input.send_tokens_message().toAddress();
-        j["amount"] = input.send_tokens_message().amount();
+    
+    if (input.has_message()) {
+        j["from_address"] = input.message().from_address();
+        j["to_address"] = input.message().to_address();
+        //j["amount"] = json::array({input.message().amount()});
     }
-    */
-    return j;
+    
+    json wrapper;
+    j["type"] = "cosmos-sdk/MsgSend";
+    j["value"] = j;
+
+    return wrapper;
 }
 
 json TW::Cosmos::signatureJSON(const TW::Cosmos::Proto::SigningInput& input) {
@@ -28,7 +32,7 @@ json TW::Cosmos::signatureJSON(const TW::Cosmos::Proto::SigningInput& input) {
     j["account_number"] = std::to_string(input.account_number());
     j["chain_id"] = input.chain_id();
     j["memo"] = input.memo();
-    j["msgs"] = nullptr;
+    j["msgs"] = json::array({messageJSON(input)});
     j["sequence"] = std::to_string(input.sequence());
     return j;
 }

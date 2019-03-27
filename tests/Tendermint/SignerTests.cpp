@@ -17,18 +17,6 @@
 namespace TW {
 namespace Cosmos {
 
-TEST(CosmosSigner, SignSendMessage) {
-    auto fromAddress = parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21");
-    auto toAddress = parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9");
-
-    auto sendTokensMsg = Proto::SendTokensMessage();
-    sendTokensMsg.set_from_address(fromAddress.data(), fromAddress.size());
-    sendTokensMsg.set_to_address(toAddress.data(), toAddress.size());
-    auto amount = sendTokensMsg.add_amount();
-    amount->set_denom("atom");
-    amount->set_amount(10);
-}
-
 TEST(CosmosSigner, SignTx) {
     auto input = Proto::SigningInput();
     input.set_account_number(0);
@@ -36,6 +24,18 @@ TEST(CosmosSigner, SignTx) {
     input.set_memo("");
     input.set_sequence(0);
 
+    auto fromAddress = parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21");
+    auto toAddress = parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9");
+
+    auto message = Proto::SendTokensMessage();
+    message.set_from_address(fromAddress.data(), fromAddress.size());
+    message.set_to_address(toAddress.data(), toAddress.size());
+    auto amount = message.add_amount();
+    amount->set_denom("atom");
+    amount->set_amount(10);
+    
+    *input.mutable_message() = message;
+    
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
 
