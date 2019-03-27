@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "OpCode.h"
 #include "Address.h"
 #include "../Hash.h"
 
@@ -17,10 +18,8 @@ using namespace TW::Ontology;
 
 Address::Address(const PublicKey& publicKey) {
     std::vector<uint8_t> builder(publicKey.bytes);
-    uint8_t pushBytes33 = 0x21;
-    builder.insert(builder.begin(), pushBytes33);
-    uint8_t checkSig = 0xAC;
-    builder.push_back(checkSig);
+    builder.insert(builder.begin(), PUSH_BYTE_33);
+    builder.push_back(CHECK_SIG);
     auto builderData = toScriptHash(builder);
     std::copy(builderData.begin(), builderData.end(), data.begin());
 }
