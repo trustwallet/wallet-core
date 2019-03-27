@@ -103,6 +103,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     switch (type) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeDash:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
     case TWCoinTypeStellar:
@@ -110,7 +111,6 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         url += "/transaction/" + txId;
         break;
     case TWCoinTypeEthereum:
-    case TWCoinTypeDash:
     case TWCoinTypeDecred:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereumClassic:
@@ -166,7 +166,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeBitcoin: return "https://blockchair.com/bitcoin";
     case TWCoinTypeBitcoinCash: return "https://blockchair.com/bitcoin-cash";
     case TWCoinTypeCallisto: return "https://explorer2.callisto.network";
-    case TWCoinTypeDash: return "https://live.blockcypher.com/dash";
+    case TWCoinTypeDash: return "https://blockchair.com/dash";
     case TWCoinTypeDecred: return "https://mainnet.decred.org";
     case TWCoinTypeEthereumClassic: return "https://gastracker.io";
     case TWCoinTypeGo: return "https://explorer.gochain.io";
