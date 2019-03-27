@@ -128,7 +128,7 @@ Also check out the [Adding Support for a New Blockchain](https://github.com/Trus
 
 ## Code Style
 
-Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html) for C++. We use `clang-format` to ensure a consistent code sytle. Please run `git clang-format` on your code before you submit a PR. Alternatively add a [pre-commit hook](https://github.com/andrewseidl/githook-clang-format). **Do not** reformat files that you didn't modify. You can also install a clang-format extension for your IDE.
+Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html) for C++. We use `clang-format` to ensure a consistent code sytle. **Do not** reformat files that you didn't modify, or the header files in the `include` folder. You can install a clang-format extension for your IDE.
 
 ## Releasing
 
