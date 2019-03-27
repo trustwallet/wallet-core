@@ -32,7 +32,7 @@ PublicKey PublicKey::uncompressed() const {
     std::array<uint8_t, secp256k1ExtendedSize> newBytes;
     if (keyType == PublicKeyType::secp256k1) {
         ecdsa_uncompress_pubkey(&secp256k1, bytes.data(), newBytes.data());
-    } else {
+    } else if (keyType == PublicKeyType::nist256p1) {
         ecdsa_uncompress_pubkey(&nist256p1, bytes.data(), newBytes.data());
     }
     return PublicKey(newBytes);
