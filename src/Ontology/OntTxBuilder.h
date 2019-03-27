@@ -11,8 +11,7 @@
 #include "../proto/Ontology.pb.h"
 
 #include <TrustWalletCore/TWOntologyProto.h>
-#include <iostream>
-#include "HexCoding.h"
+
 namespace TW {
 namespace Ontology {
 
@@ -42,7 +41,7 @@ public:
 
     static TW_Ontology_Proto_SigningOutput transfer(const Ontology::Proto::SigningInput &input) {
         auto payerSigner = Signer(input.payer_private_key());
-        auto fromSigner = Signer(input.from_private_key());
+        auto fromSigner = Signer(input.owner_private_key());
         auto toAddress = Address(input.to_address());
         auto tranferTx = Ont().transfer(fromSigner, toAddress, input.amount(), payerSigner, input.gas_price(), input.gas_limit());
         auto encoded = tranferTx.serialize();
