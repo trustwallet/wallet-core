@@ -55,3 +55,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
 
 } // namespace Tron
 } // namespace TW
+
+/// Wrapper for C interface.
+struct TWTronAddress {
+    TW::Tron::Address impl;
+};
