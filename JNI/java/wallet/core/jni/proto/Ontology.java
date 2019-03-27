@@ -19,24 +19,47 @@ public final class Ontology {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes contract = 1;</code>
+     * <code>string contract = 1;</code>
      */
-    com.google.protobuf.ByteString getContract();
+    java.lang.String getContract();
+    /**
+     * <code>string contract = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getContractBytes();
 
     /**
-     * <code>bytes method = 2;</code>
+     * <code>string method = 2;</code>
      */
-    com.google.protobuf.ByteString getMethod();
+    java.lang.String getMethod();
+    /**
+     * <code>string method = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getMethodBytes();
 
     /**
-     * <code>bytes from_private_key = 3;</code>
+     * <code>bytes owner_private_key = 3;</code>
      */
-    com.google.protobuf.ByteString getFromPrivateKey();
+    com.google.protobuf.ByteString getOwnerPrivateKey();
 
     /**
-     * <code>bytes to_address = 4;</code>
+     * <pre>
+     * base58 encode address string (160-bit number)
+     * </pre>
+     *
+     * <code>string to_address = 4;</code>
      */
-    com.google.protobuf.ByteString getToAddress();
+    java.lang.String getToAddress();
+    /**
+     * <pre>
+     * base58 encode address string (160-bit number)
+     * </pre>
+     *
+     * <code>string to_address = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getToAddressBytes();
 
     /**
      * <code>uint64 amount = 5;</code>
@@ -59,9 +82,22 @@ public final class Ontology {
     long getGasLimit();
 
     /**
-     * <code>bytes query_address = 9;</code>
+     * <pre>
+     * base58 encode address string (160-bit number)
+     * </pre>
+     *
+     * <code>string query_address = 9;</code>
      */
-    com.google.protobuf.ByteString getQueryAddress();
+    java.lang.String getQueryAddress();
+    /**
+     * <pre>
+     * base58 encode address string (160-bit number)
+     * </pre>
+     *
+     * <code>string query_address = 9;</code>
+     */
+    com.google.protobuf.ByteString
+        getQueryAddressBytes();
   }
   /**
    * <pre>
@@ -80,12 +116,12 @@ public final class Ontology {
       super(builder);
     }
     private SigningInput() {
-      contract_ = com.google.protobuf.ByteString.EMPTY;
-      method_ = com.google.protobuf.ByteString.EMPTY;
-      fromPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
-      toAddress_ = com.google.protobuf.ByteString.EMPTY;
+      contract_ = "";
+      method_ = "";
+      ownerPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
+      toAddress_ = "";
       payerPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
-      queryAddress_ = com.google.protobuf.ByteString.EMPTY;
+      queryAddress_ = "";
     }
 
     @java.lang.Override
@@ -113,23 +149,26 @@ public final class Ontology {
               done = true;
               break;
             case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              contract_ = input.readBytes();
+              contract_ = s;
               break;
             }
             case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              method_ = input.readBytes();
+              method_ = s;
               break;
             }
             case 26: {
 
-              fromPrivateKey_ = input.readBytes();
+              ownerPrivateKey_ = input.readBytes();
               break;
             }
             case 34: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              toAddress_ = input.readBytes();
+              toAddress_ = s;
               break;
             }
             case 40: {
@@ -153,8 +192,9 @@ public final class Ontology {
               break;
             }
             case 74: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              queryAddress_ = input.readBytes();
+              queryAddress_ = s;
               break;
             }
             default: {
@@ -190,39 +230,122 @@ public final class Ontology {
     }
 
     public static final int CONTRACT_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString contract_;
+    private volatile java.lang.Object contract_;
     /**
-     * <code>bytes contract = 1;</code>
+     * <code>string contract = 1;</code>
      */
-    public com.google.protobuf.ByteString getContract() {
-      return contract_;
+    public java.lang.String getContract() {
+      java.lang.Object ref = contract_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        contract_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string contract = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getContractBytes() {
+      java.lang.Object ref = contract_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        contract_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int METHOD_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString method_;
+    private volatile java.lang.Object method_;
     /**
-     * <code>bytes method = 2;</code>
+     * <code>string method = 2;</code>
      */
-    public com.google.protobuf.ByteString getMethod() {
-      return method_;
+    public java.lang.String getMethod() {
+      java.lang.Object ref = method_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        method_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string method = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getMethodBytes() {
+      java.lang.Object ref = method_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        method_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
-    public static final int FROM_PRIVATE_KEY_FIELD_NUMBER = 3;
-    private com.google.protobuf.ByteString fromPrivateKey_;
+    public static final int OWNER_PRIVATE_KEY_FIELD_NUMBER = 3;
+    private com.google.protobuf.ByteString ownerPrivateKey_;
     /**
-     * <code>bytes from_private_key = 3;</code>
+     * <code>bytes owner_private_key = 3;</code>
      */
-    public com.google.protobuf.ByteString getFromPrivateKey() {
-      return fromPrivateKey_;
+    public com.google.protobuf.ByteString getOwnerPrivateKey() {
+      return ownerPrivateKey_;
     }
 
     public static final int TO_ADDRESS_FIELD_NUMBER = 4;
-    private com.google.protobuf.ByteString toAddress_;
+    private volatile java.lang.Object toAddress_;
     /**
-     * <code>bytes to_address = 4;</code>
+     * <pre>
+     * base58 encode address string (160-bit number)
+     * </pre>
+     *
+     * <code>string to_address = 4;</code>
      */
-    public com.google.protobuf.ByteString getToAddress() {
-      return toAddress_;
+    public java.lang.String getToAddress() {
+      java.lang.Object ref = toAddress_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        toAddress_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * base58 encode address string (160-bit number)
+     * </pre>
+     *
+     * <code>string to_address = 4;</code>
+     */
+    public com.google.protobuf.ByteString
+        getToAddressBytes() {
+      java.lang.Object ref = toAddress_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        toAddress_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int AMOUNT_FIELD_NUMBER = 5;
@@ -262,12 +385,45 @@ public final class Ontology {
     }
 
     public static final int QUERY_ADDRESS_FIELD_NUMBER = 9;
-    private com.google.protobuf.ByteString queryAddress_;
+    private volatile java.lang.Object queryAddress_;
     /**
-     * <code>bytes query_address = 9;</code>
+     * <pre>
+     * base58 encode address string (160-bit number)
+     * </pre>
+     *
+     * <code>string query_address = 9;</code>
      */
-    public com.google.protobuf.ByteString getQueryAddress() {
-      return queryAddress_;
+    public java.lang.String getQueryAddress() {
+      java.lang.Object ref = queryAddress_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        queryAddress_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * base58 encode address string (160-bit number)
+     * </pre>
+     *
+     * <code>string query_address = 9;</code>
+     */
+    public com.google.protobuf.ByteString
+        getQueryAddressBytes() {
+      java.lang.Object ref = queryAddress_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        queryAddress_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     private byte memoizedIsInitialized = -1;
@@ -284,17 +440,17 @@ public final class Ontology {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!contract_.isEmpty()) {
-        output.writeBytes(1, contract_);
+      if (!getContractBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, contract_);
       }
-      if (!method_.isEmpty()) {
-        output.writeBytes(2, method_);
+      if (!getMethodBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, method_);
       }
-      if (!fromPrivateKey_.isEmpty()) {
-        output.writeBytes(3, fromPrivateKey_);
+      if (!ownerPrivateKey_.isEmpty()) {
+        output.writeBytes(3, ownerPrivateKey_);
       }
-      if (!toAddress_.isEmpty()) {
-        output.writeBytes(4, toAddress_);
+      if (!getToAddressBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, toAddress_);
       }
       if (amount_ != 0L) {
         output.writeUInt64(5, amount_);
@@ -308,8 +464,8 @@ public final class Ontology {
       if (gasLimit_ != 0L) {
         output.writeUInt64(8, gasLimit_);
       }
-      if (!queryAddress_.isEmpty()) {
-        output.writeBytes(9, queryAddress_);
+      if (!getQueryAddressBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 9, queryAddress_);
       }
       unknownFields.writeTo(output);
     }
@@ -320,21 +476,18 @@ public final class Ontology {
       if (size != -1) return size;
 
       size = 0;
-      if (!contract_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, contract_);
+      if (!getContractBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, contract_);
       }
-      if (!method_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, method_);
+      if (!getMethodBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, method_);
       }
-      if (!fromPrivateKey_.isEmpty()) {
+      if (!ownerPrivateKey_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, fromPrivateKey_);
+          .computeBytesSize(3, ownerPrivateKey_);
       }
-      if (!toAddress_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, toAddress_);
+      if (!getToAddressBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, toAddress_);
       }
       if (amount_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
@@ -352,9 +505,8 @@ public final class Ontology {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(8, gasLimit_);
       }
-      if (!queryAddress_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(9, queryAddress_);
+      if (!getQueryAddressBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(9, queryAddress_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -375,8 +527,8 @@ public final class Ontology {
           .equals(other.getContract())) return false;
       if (!getMethod()
           .equals(other.getMethod())) return false;
-      if (!getFromPrivateKey()
-          .equals(other.getFromPrivateKey())) return false;
+      if (!getOwnerPrivateKey()
+          .equals(other.getOwnerPrivateKey())) return false;
       if (!getToAddress()
           .equals(other.getToAddress())) return false;
       if (getAmount()
@@ -404,8 +556,8 @@ public final class Ontology {
       hash = (53 * hash) + getContract().hashCode();
       hash = (37 * hash) + METHOD_FIELD_NUMBER;
       hash = (53 * hash) + getMethod().hashCode();
-      hash = (37 * hash) + FROM_PRIVATE_KEY_FIELD_NUMBER;
-      hash = (53 * hash) + getFromPrivateKey().hashCode();
+      hash = (37 * hash) + OWNER_PRIVATE_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getOwnerPrivateKey().hashCode();
       hash = (37 * hash) + TO_ADDRESS_FIELD_NUMBER;
       hash = (53 * hash) + getToAddress().hashCode();
       hash = (37 * hash) + AMOUNT_FIELD_NUMBER;
@@ -558,13 +710,13 @@ public final class Ontology {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        contract_ = com.google.protobuf.ByteString.EMPTY;
+        contract_ = "";
 
-        method_ = com.google.protobuf.ByteString.EMPTY;
+        method_ = "";
 
-        fromPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
+        ownerPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
 
-        toAddress_ = com.google.protobuf.ByteString.EMPTY;
+        toAddress_ = "";
 
         amount_ = 0L;
 
@@ -574,7 +726,7 @@ public final class Ontology {
 
         gasLimit_ = 0L;
 
-        queryAddress_ = com.google.protobuf.ByteString.EMPTY;
+        queryAddress_ = "";
 
         return this;
       }
@@ -604,7 +756,7 @@ public final class Ontology {
         wallet.core.jni.proto.Ontology.SigningInput result = new wallet.core.jni.proto.Ontology.SigningInput(this);
         result.contract_ = contract_;
         result.method_ = method_;
-        result.fromPrivateKey_ = fromPrivateKey_;
+        result.ownerPrivateKey_ = ownerPrivateKey_;
         result.toAddress_ = toAddress_;
         result.amount_ = amount_;
         result.payerPrivateKey_ = payerPrivateKey_;
@@ -659,17 +811,20 @@ public final class Ontology {
 
       public Builder mergeFrom(wallet.core.jni.proto.Ontology.SigningInput other) {
         if (other == wallet.core.jni.proto.Ontology.SigningInput.getDefaultInstance()) return this;
-        if (other.getContract() != com.google.protobuf.ByteString.EMPTY) {
-          setContract(other.getContract());
+        if (!other.getContract().isEmpty()) {
+          contract_ = other.contract_;
+          onChanged();
         }
-        if (other.getMethod() != com.google.protobuf.ByteString.EMPTY) {
-          setMethod(other.getMethod());
+        if (!other.getMethod().isEmpty()) {
+          method_ = other.method_;
+          onChanged();
         }
-        if (other.getFromPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
-          setFromPrivateKey(other.getFromPrivateKey());
+        if (other.getOwnerPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
+          setOwnerPrivateKey(other.getOwnerPrivateKey());
         }
-        if (other.getToAddress() != com.google.protobuf.ByteString.EMPTY) {
-          setToAddress(other.getToAddress());
+        if (!other.getToAddress().isEmpty()) {
+          toAddress_ = other.toAddress_;
+          onChanged();
         }
         if (other.getAmount() != 0L) {
           setAmount(other.getAmount());
@@ -683,8 +838,9 @@ public final class Ontology {
         if (other.getGasLimit() != 0L) {
           setGasLimit(other.getGasLimit());
         }
-        if (other.getQueryAddress() != com.google.protobuf.ByteString.EMPTY) {
-          setQueryAddress(other.getQueryAddress());
+        if (!other.getQueryAddress().isEmpty()) {
+          queryAddress_ = other.queryAddress_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -715,17 +871,43 @@ public final class Ontology {
         return this;
       }
 
-      private com.google.protobuf.ByteString contract_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object contract_ = "";
       /**
-       * <code>bytes contract = 1;</code>
+       * <code>string contract = 1;</code>
        */
-      public com.google.protobuf.ByteString getContract() {
-        return contract_;
+      public java.lang.String getContract() {
+        java.lang.Object ref = contract_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          contract_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes contract = 1;</code>
+       * <code>string contract = 1;</code>
        */
-      public Builder setContract(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getContractBytes() {
+        java.lang.Object ref = contract_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          contract_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string contract = 1;</code>
+       */
+      public Builder setContract(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -735,7 +917,7 @@ public final class Ontology {
         return this;
       }
       /**
-       * <code>bytes contract = 1;</code>
+       * <code>string contract = 1;</code>
        */
       public Builder clearContract() {
         
@@ -743,18 +925,58 @@ public final class Ontology {
         onChanged();
         return this;
       }
-
-      private com.google.protobuf.ByteString method_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes method = 2;</code>
+       * <code>string contract = 1;</code>
        */
-      public com.google.protobuf.ByteString getMethod() {
-        return method_;
+      public Builder setContractBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        contract_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object method_ = "";
+      /**
+       * <code>string method = 2;</code>
+       */
+      public java.lang.String getMethod() {
+        java.lang.Object ref = method_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          method_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes method = 2;</code>
+       * <code>string method = 2;</code>
        */
-      public Builder setMethod(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getMethodBytes() {
+        java.lang.Object ref = method_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          method_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string method = 2;</code>
+       */
+      public Builder setMethod(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -764,7 +986,7 @@ public final class Ontology {
         return this;
       }
       /**
-       * <code>bytes method = 2;</code>
+       * <code>string method = 2;</code>
        */
       public Builder clearMethod() {
         
@@ -772,47 +994,99 @@ public final class Ontology {
         onChanged();
         return this;
       }
-
-      private com.google.protobuf.ByteString fromPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes from_private_key = 3;</code>
+       * <code>string method = 2;</code>
        */
-      public com.google.protobuf.ByteString getFromPrivateKey() {
-        return fromPrivateKey_;
+      public Builder setMethodBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        method_ = value;
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.ByteString ownerPrivateKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes owner_private_key = 3;</code>
+       */
+      public com.google.protobuf.ByteString getOwnerPrivateKey() {
+        return ownerPrivateKey_;
       }
       /**
-       * <code>bytes from_private_key = 3;</code>
+       * <code>bytes owner_private_key = 3;</code>
        */
-      public Builder setFromPrivateKey(com.google.protobuf.ByteString value) {
+      public Builder setOwnerPrivateKey(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        fromPrivateKey_ = value;
+        ownerPrivateKey_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes from_private_key = 3;</code>
+       * <code>bytes owner_private_key = 3;</code>
        */
-      public Builder clearFromPrivateKey() {
+      public Builder clearOwnerPrivateKey() {
         
-        fromPrivateKey_ = getDefaultInstance().getFromPrivateKey();
+        ownerPrivateKey_ = getDefaultInstance().getOwnerPrivateKey();
         onChanged();
         return this;
       }
 
-      private com.google.protobuf.ByteString toAddress_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object toAddress_ = "";
       /**
-       * <code>bytes to_address = 4;</code>
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string to_address = 4;</code>
        */
-      public com.google.protobuf.ByteString getToAddress() {
-        return toAddress_;
+      public java.lang.String getToAddress() {
+        java.lang.Object ref = toAddress_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          toAddress_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes to_address = 4;</code>
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string to_address = 4;</code>
        */
-      public Builder setToAddress(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getToAddressBytes() {
+        java.lang.Object ref = toAddress_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          toAddress_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string to_address = 4;</code>
+       */
+      public Builder setToAddress(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -822,11 +1096,33 @@ public final class Ontology {
         return this;
       }
       /**
-       * <code>bytes to_address = 4;</code>
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string to_address = 4;</code>
        */
       public Builder clearToAddress() {
         
         toAddress_ = getDefaultInstance().getToAddress();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string to_address = 4;</code>
+       */
+      public Builder setToAddressBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        toAddress_ = value;
         onChanged();
         return this;
       }
@@ -938,17 +1234,55 @@ public final class Ontology {
         return this;
       }
 
-      private com.google.protobuf.ByteString queryAddress_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object queryAddress_ = "";
       /**
-       * <code>bytes query_address = 9;</code>
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string query_address = 9;</code>
        */
-      public com.google.protobuf.ByteString getQueryAddress() {
-        return queryAddress_;
+      public java.lang.String getQueryAddress() {
+        java.lang.Object ref = queryAddress_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          queryAddress_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes query_address = 9;</code>
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string query_address = 9;</code>
        */
-      public Builder setQueryAddress(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getQueryAddressBytes() {
+        java.lang.Object ref = queryAddress_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          queryAddress_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string query_address = 9;</code>
+       */
+      public Builder setQueryAddress(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -958,11 +1292,33 @@ public final class Ontology {
         return this;
       }
       /**
-       * <code>bytes query_address = 9;</code>
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string query_address = 9;</code>
        */
       public Builder clearQueryAddress() {
         
         queryAddress_ = getDefaultInstance().getQueryAddress();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * base58 encode address string (160-bit number)
+       * </pre>
+       *
+       * <code>string query_address = 9;</code>
+       */
+      public Builder setQueryAddressBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        queryAddress_ = value;
         onChanged();
         return this;
       }
@@ -1544,14 +1900,14 @@ public final class Ontology {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\016Ontology.proto\022\021TW.Ontology.Proto\"\306\001\n\014" +
-      "SigningInput\022\020\n\010contract\030\001 \001(\014\022\016\n\006method" +
-      "\030\002 \001(\014\022\030\n\020from_private_key\030\003 \001(\014\022\022\n\nto_a" +
-      "ddress\030\004 \001(\014\022\016\n\006amount\030\005 \001(\004\022\031\n\021payer_pr" +
-      "ivate_key\030\006 \001(\014\022\021\n\tgas_price\030\007 \001(\004\022\021\n\tga" +
-      "s_limit\030\010 \001(\004\022\025\n\rquery_address\030\t \001(\014\" \n\r" +
-      "SigningOutput\022\017\n\007encoded\030\001 \001(\014B\027\n\025wallet" +
-      ".core.jni.protob\006proto3"
+      "\n\016Ontology.proto\022\021TW.Ontology.Proto\"\307\001\n\014" +
+      "SigningInput\022\020\n\010contract\030\001 \001(\t\022\016\n\006method" +
+      "\030\002 \001(\t\022\031\n\021owner_private_key\030\003 \001(\014\022\022\n\nto_" +
+      "address\030\004 \001(\t\022\016\n\006amount\030\005 \001(\004\022\031\n\021payer_p" +
+      "rivate_key\030\006 \001(\014\022\021\n\tgas_price\030\007 \001(\004\022\021\n\tg" +
+      "as_limit\030\010 \001(\004\022\025\n\rquery_address\030\t \001(\t\" \n" +
+      "\rSigningOutput\022\017\n\007encoded\030\001 \001(\014B\027\n\025walle" +
+      "t.core.jni.protob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1570,7 +1926,7 @@ public final class Ontology {
     internal_static_TW_Ontology_Proto_SigningInput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Ontology_Proto_SigningInput_descriptor,
-        new java.lang.String[] { "Contract", "Method", "FromPrivateKey", "ToAddress", "Amount", "PayerPrivateKey", "GasPrice", "GasLimit", "QueryAddress", });
+        new java.lang.String[] { "Contract", "Method", "OwnerPrivateKey", "ToAddress", "Amount", "PayerPrivateKey", "GasPrice", "GasLimit", "QueryAddress", });
     internal_static_TW_Ontology_Proto_SigningOutput_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_TW_Ontology_Proto_SigningOutput_fieldAccessorTable = new

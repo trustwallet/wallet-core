@@ -20,48 +20,48 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// Input data necessary to create a signed transaction.
-struct TW_Ontology_Proto_SigningInput {
+public struct TW_Ontology_Proto_SigningInput {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var contract: String = String()
+  public var contract: String = String()
 
-  var method: String = String()
+  public var method: String = String()
 
-  var ownerPrivateKey: Data = SwiftProtobuf.Internal.emptyData
-
-  /// base58 encode address string (160-bit number)
-  var toAddress: String = String()
-
-  var amount: UInt64 = 0
-
-  var payerPrivateKey: Data = SwiftProtobuf.Internal.emptyData
-
-  var gasPrice: UInt64 = 0
-
-  var gasLimit: UInt64 = 0
+  public var ownerPrivateKey: Data = SwiftProtobuf.Internal.emptyData
 
   /// base58 encode address string (160-bit number)
-  var queryAddress: String = String()
+  public var toAddress: String = String()
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var amount: UInt64 = 0
 
-  init() {}
+  public var payerPrivateKey: Data = SwiftProtobuf.Internal.emptyData
+
+  public var gasPrice: UInt64 = 0
+
+  public var gasLimit: UInt64 = 0
+
+  /// base58 encode address string (160-bit number)
+  public var queryAddress: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
 }
 
 /// Transaction signing output.
-struct TW_Ontology_Proto_SigningOutput {
+public struct TW_Ontology_Proto_SigningOutput {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   /// Signed and encoded transaction bytes.
-  var encoded: Data = SwiftProtobuf.Internal.emptyData
+  public var encoded: Data = SwiftProtobuf.Internal.emptyData
 
-  var unknownFields = SwiftProtobuf.UnknownStorage()
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
-  init() {}
+  public init() {}
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -69,8 +69,8 @@ struct TW_Ontology_Proto_SigningOutput {
 fileprivate let _protobuf_package = "TW.Ontology.Proto"
 
 extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".SigningInput"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  public static let protoMessageName: String = _protobuf_package + ".SigningInput"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "contract"),
     2: .same(proto: "method"),
     3: .standard(proto: "owner_private_key"),
@@ -82,7 +82,7 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
     9: .standard(proto: "query_address"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularStringField(value: &self.contract)
@@ -99,7 +99,7 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.contract.isEmpty {
       try visitor.visitSingularStringField(value: self.contract, fieldNumber: 1)
     }
@@ -130,7 +130,7 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: TW_Ontology_Proto_SigningInput, rhs: TW_Ontology_Proto_SigningInput) -> Bool {
+  public static func ==(lhs: TW_Ontology_Proto_SigningInput, rhs: TW_Ontology_Proto_SigningInput) -> Bool {
     if lhs.contract != rhs.contract {return false}
     if lhs.method != rhs.method {return false}
     if lhs.ownerPrivateKey != rhs.ownerPrivateKey {return false}
@@ -146,12 +146,12 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
 }
 
 extension TW_Ontology_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".SigningOutput"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+  public static let protoMessageName: String = _protobuf_package + ".SigningOutput"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "encoded"),
   ]
 
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self.encoded)
@@ -160,14 +160,14 @@ extension TW_Ontology_Proto_SigningOutput: SwiftProtobuf.Message, SwiftProtobuf.
     }
   }
 
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.encoded.isEmpty {
       try visitor.visitSingularBytesField(value: self.encoded, fieldNumber: 1)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: TW_Ontology_Proto_SigningOutput, rhs: TW_Ontology_Proto_SigningOutput) -> Bool {
+  public static func ==(lhs: TW_Ontology_Proto_SigningOutput, rhs: TW_Ontology_Proto_SigningOutput) -> Bool {
     if lhs.encoded != rhs.encoded {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
