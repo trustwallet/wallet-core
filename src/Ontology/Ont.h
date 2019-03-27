@@ -6,10 +6,8 @@
 
 #pragma once
 
-#include <vector>
-
 #include "Asset.h"
-#include "Data.h"
+#include "../Data.h"
 
 namespace TW {
 namespace Ontology {

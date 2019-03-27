@@ -7,9 +7,9 @@
 #include "Ont.h"
 #include "ParamsBuilder.h"
 
-#include <unordered_map>
-
 #include <TrezorCrypto/rand.h>
+
+#include <unordered_map>
 
 using namespace TW;
 using namespace TW::Ontology;

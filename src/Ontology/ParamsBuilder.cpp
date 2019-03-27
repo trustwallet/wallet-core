@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "ParamsBuilder.h"
 #include "Data.h"
 #include "OpCode.h"
-#include "ParamsBuilder.h"
 
 #include <TrezorCrypto/bignum.h>
 #include <TrezorCrypto/ecdsa.h>

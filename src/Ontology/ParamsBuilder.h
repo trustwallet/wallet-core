@@ -9,12 +9,12 @@
 #include "../BinaryCoding.h"
 #include "../Data.h"
 
+#include <boost/any.hpp>
+
 #include <array>
 #include <stdexcept>
 #include <string>
 #include <vector>
-
-#include <boost/any.hpp>
 
 namespace TW {
 namespace Ontology {

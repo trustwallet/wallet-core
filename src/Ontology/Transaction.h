@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include <string>
-
 #include "SigData.h"
+
+#include <string>
 
 namespace TW {
 namespace Ontology {

@@ -6,15 +6,15 @@
 
 #pragma once
 
+#include "Address.h"
+#include "Signer.h"
+#include "Transaction.h"
+#include "../BinaryCoding.h"
+#include "../Data.h"
+
 #include <array>
 #include <string>
 #include <vector>
-
-#include "Address.h"
-#include "BinaryCoding.h"
-#include "Data.h"
-#include "Signer.h"
-#include "Transaction.h"
 
 namespace TW {
 namespace Ontology {

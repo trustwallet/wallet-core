@@ -6,13 +6,14 @@
 
 #pragma once
 
+#include "Address.h"
+#include "Transaction.h"
+#include "../PrivateKey.h"
+
 #include <array>
 #include <string>
 #include <vector>
 
-#include "Address.h"
-#include "PrivateKey.h"
-#include "Transaction.h"
 
 namespace TW {
 namespace Ontology {
