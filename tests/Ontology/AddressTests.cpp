@@ -4,10 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-
-#include "Ontology/Address.h"
 #include "PublicKey.h"
 #include "HexCoding.h"
+#include "Ontology/Signer.h"
+#include "Ontology/Address.h"
 
 #include <gtest/gtest.h>
 
@@ -32,4 +32,14 @@ TEST(OntologyAddress, fromString) {
     EXPECT_EQ(b58Str, address.string());
     auto errB58Str = "AATxeseHT5khTWhtWX1pFFP1mbQrd4q1zz";
     ASSERT_THROW(new Address(errB58Str), std::runtime_error);
+}
+
+TEST(OntologyAddress, fromMultiPubKeys) {
+    auto signer1 = Signer("4646464646464646464646464646464646464646464646464646464646464646");
+    auto signer2 = Signer("4646464646464646464646464646464646464646464646464646464646464652");
+    auto signer3 = Signer("4646464646464646464646464646464646464646464646464646464646464658");
+    std::vector<Data> pubKeys{signer1.getPublicKey().bytes, signer2.getPublicKey().bytes, signer3.getPublicKey().bytes};
+    uint8_t m = 2;
+    auto multiAddress = Address(m, pubKeys);
+    EXPECT_EQ("AYGWgijVZnrUa2tRoCcydsHUXR1111DgdW", multiAddress.string());
 }
