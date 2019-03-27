@@ -29,14 +29,14 @@ struct TW_Ontology_Proto_SigningInput {
 
   var method: String = String()
 
-  var fromPrivateKey: String = String()
+  var ownerPrivateKey: Data = SwiftProtobuf.Internal.emptyData
 
   /// base58 encode address string (160-bit number)
   var toAddress: String = String()
 
   var amount: UInt64 = 0
 
-  var payerPrivateKey: String = String()
+  var payerPrivateKey: Data = SwiftProtobuf.Internal.emptyData
 
   var gasPrice: UInt64 = 0
 
@@ -73,7 +73,7 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "contract"),
     2: .same(proto: "method"),
-    3: .standard(proto: "from_private_key"),
+    3: .standard(proto: "owner_private_key"),
     4: .standard(proto: "to_address"),
     5: .same(proto: "amount"),
     6: .standard(proto: "payer_private_key"),
@@ -87,10 +87,10 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
       switch fieldNumber {
       case 1: try decoder.decodeSingularStringField(value: &self.contract)
       case 2: try decoder.decodeSingularStringField(value: &self.method)
-      case 3: try decoder.decodeSingularStringField(value: &self.fromPrivateKey)
+      case 3: try decoder.decodeSingularBytesField(value: &self.ownerPrivateKey)
       case 4: try decoder.decodeSingularStringField(value: &self.toAddress)
       case 5: try decoder.decodeSingularUInt64Field(value: &self.amount)
-      case 6: try decoder.decodeSingularStringField(value: &self.payerPrivateKey)
+      case 6: try decoder.decodeSingularBytesField(value: &self.payerPrivateKey)
       case 7: try decoder.decodeSingularUInt64Field(value: &self.gasPrice)
       case 8: try decoder.decodeSingularUInt64Field(value: &self.gasLimit)
       case 9: try decoder.decodeSingularStringField(value: &self.queryAddress)
@@ -106,8 +106,8 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
     if !self.method.isEmpty {
       try visitor.visitSingularStringField(value: self.method, fieldNumber: 2)
     }
-    if !self.fromPrivateKey.isEmpty {
-      try visitor.visitSingularStringField(value: self.fromPrivateKey, fieldNumber: 3)
+    if !self.ownerPrivateKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.ownerPrivateKey, fieldNumber: 3)
     }
     if !self.toAddress.isEmpty {
       try visitor.visitSingularStringField(value: self.toAddress, fieldNumber: 4)
@@ -116,7 +116,7 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
       try visitor.visitSingularUInt64Field(value: self.amount, fieldNumber: 5)
     }
     if !self.payerPrivateKey.isEmpty {
-      try visitor.visitSingularStringField(value: self.payerPrivateKey, fieldNumber: 6)
+      try visitor.visitSingularBytesField(value: self.payerPrivateKey, fieldNumber: 6)
     }
     if self.gasPrice != 0 {
       try visitor.visitSingularUInt64Field(value: self.gasPrice, fieldNumber: 7)
@@ -133,7 +133,7 @@ extension TW_Ontology_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._
   static func ==(lhs: TW_Ontology_Proto_SigningInput, rhs: TW_Ontology_Proto_SigningInput) -> Bool {
     if lhs.contract != rhs.contract {return false}
     if lhs.method != rhs.method {return false}
-    if lhs.fromPrivateKey != rhs.fromPrivateKey {return false}
+    if lhs.ownerPrivateKey != rhs.ownerPrivateKey {return false}
     if lhs.toAddress != rhs.toAddress {return false}
     if lhs.amount != rhs.amount {return false}
     if lhs.payerPrivateKey != rhs.payerPrivateKey {return false}
