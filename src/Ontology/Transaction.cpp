@@ -16,6 +16,8 @@
 using namespace TW;
 using namespace TW::Ontology;
 
+const std::string Transaction::ZERO_PAYER = "AFmseVrdL9f9oyCzZefL9tG6UbvhPbdYzM";
+
 std::vector<uint8_t> Transaction::serializeUnsigned() {
     ParamsBuilder builder;
     builder.pushBack(version);
