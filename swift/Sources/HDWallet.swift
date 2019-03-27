@@ -27,17 +27,6 @@ public final class HDWallet {
         return PublicKey(rawValue: TWHDWalletGetPublicKeyFromExtended(extendedString, TWCurve(rawValue: curve.rawValue), TWHDVersion(rawValue: versionPublic.rawValue), TWHDVersion(rawValue: versionPrivate.rawValue), change, address))
     }
 
-    public static func getAddressFromExtended(extended: String, curve: Curve, coinType: CoinType, change: UInt32, address: UInt32) -> String? {
-        let extendedString = TWStringCreateWithNSString(extended)
-        defer {
-            TWStringDelete(extendedString)
-        }
-        guard let result = TWHDWalletGetAddressFromExtended(extendedString, TWCurve(rawValue: curve.rawValue), TWCoinType(rawValue: coinType.rawValue), change, address) else {
-            return nil
-        }
-        return TWStringNSString(result)
-    }
-
     public var seed: Data {
         return TWDataNSData(TWHDWalletSeed(rawValue))
     }

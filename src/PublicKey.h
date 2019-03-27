@@ -88,6 +88,9 @@ class PublicKey {
     /// Returns a compressed version of this public key.
     PublicKey compressed() const;
 
+    /// Returns an uncompressed version of this public key.
+    PublicKey uncompressed() const;
+
     /// Verifies a signature for the provided message.
     bool verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const;
 };

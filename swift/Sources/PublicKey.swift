@@ -42,6 +42,10 @@ public final class PublicKey {
         return PublicKey(rawValue: TWPublicKeyCompressed(rawValue))
     }
 
+    public var uncompressed: PublicKey {
+        return PublicKey(rawValue: TWPublicKeyUncompressed(rawValue))
+    }
+
     public var data: Data {
         return TWDataNSData(TWPublicKeyData(rawValue))
     }
