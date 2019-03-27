@@ -7,31 +7,23 @@
 #include <stdexcept>
 
 #include "SigData.h"
-#include "HexCoding.h"
 #include "ParamsBuilder.h"
 
 using namespace TW;
 using namespace TW::Ontology;
 
-std::vector<uint8_t> SigData::serialize() {
-    ParamsBuilder builder;
-    for (auto const &sig : sigs) {
-        builder.push(sig);
-    }
-    auto sigInfo = builder.getBytes();
-    builder.cleanUp();
+Data SigData::serialize() {
+    auto sigInfo = ParamsBuilder::fromSigs(sigs);
     if (pubKeys.empty()) {
         throw std::runtime_error("Public key is empty.");
     }
     std::vector<uint8_t> verifyInfo;
     if (pubKeys.size() == 1) {
-        builder.push(pubKeys[0]);
-        builder.pushBack((uint8_t) 0xAC);
-        verifyInfo = builder.getBytes();
-        builder.cleanUp();
+        verifyInfo = ParamsBuilder::fromPubkey(pubKeys[0]);
     } else {
-        throw std::runtime_error("multi-signature is unsupported.");
+        verifyInfo = ParamsBuilder::fromMultiPubkey(m, pubKeys);
     }
+    ParamsBuilder builder;
     builder.pushVar(sigInfo);
     builder.pushVar(verifyInfo);
     return builder.getBytes();
