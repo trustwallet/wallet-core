@@ -75,12 +75,6 @@ class HDWallet {
                                               enum TWHDVersion versionPublic,
                                               enum TWHDVersion versionPrivate, uint32_t change,
                                               uint32_t address);
-
-    /// Generates an address from an exteded public key representation, coin
-    /// type, and change and address indices.
-    static std::optional<std::string> getAddressFromExtended(const std::string& extended,
-                                                             TWCurve curve, TWCoinType coinType,
-                                                             uint32_t change, uint32_t address);
 };
 
 } // namespace TW

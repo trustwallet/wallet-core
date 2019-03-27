@@ -34,6 +34,9 @@ JNIEXPORT
 jobject JNICALL Java_wallet_core_jni_PublicKey_compressed(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
+jobject JNICALL Java_wallet_core_jni_PublicKey_uncompressed(JNIEnv *env, jobject thisObject);
+
+JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_jni_PublicKey_data(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT

@@ -34,6 +34,9 @@ TW_EXPORT_PROPERTY
 struct TWPublicKey *_Nonnull TWPublicKeyCompressed(struct TWPublicKey *_Nonnull from);
 
 TW_EXPORT_PROPERTY
+struct TWPublicKey *_Nonnull TWPublicKeyUncompressed(struct TWPublicKey *_Nonnull from);
+
+TW_EXPORT_PROPERTY
 TWData *_Nonnull TWPublicKeyData(struct TWPublicKey *_Nonnull pk);
 
 TW_EXPORT_METHOD
