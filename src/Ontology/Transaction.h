@@ -6,16 +6,16 @@
 
 #pragma once
 
-#include <string>
-
 #include "SigData.h"
+
+#include <string>
 
 namespace TW {
 namespace Ontology {
 
 class Transaction {
 
-private:
+  private:
     uint8_t version;
 
     uint8_t txType;
@@ -34,14 +34,19 @@ private:
 
     static const std::string ZERO_PAYER;
 
-public:
-
+  public:
     static const size_t sigVecLimit = 16;
 
     std::vector<SigData> sigVec;
 
-    Transaction(uint8_t ver, uint8_t type, uint32_t nonce, uint64_t gasPrice, uint64_t gasLimit, std::string payer, std::vector<uint8_t> payload)
-            : version(ver), txType(type), nonce(nonce), gasPrice(gasPrice), gasLimit(gasLimit), payload(std::move(payload)) {
+    Transaction(uint8_t ver, uint8_t type, uint32_t nonce, uint64_t gasPrice, uint64_t gasLimit,
+                std::string payer, std::vector<uint8_t> payload)
+        : version(ver)
+        , txType(type)
+        , nonce(nonce)
+        , gasPrice(gasPrice)
+        , gasLimit(gasLimit)
+        , payload(std::move(payload)) {
         if (payer.empty()) {
             payer = ZERO_PAYER;
         }
@@ -54,8 +59,8 @@ public:
 
     std::vector<uint8_t> txHash();
 
-    std::vector<uint8_t> serialize(const PublicKey &pk);
-
+    std::vector<uint8_t> serialize(const PublicKey& pk);
 };
 
-}} // namespace
+} // namespace Ontology
+} // namespace TW

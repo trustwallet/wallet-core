@@ -4,25 +4,25 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <stdexcept>
+#include "HexCoding.h"
+#include "SigData.h"
+#include "Signer.h"
 
 #include "../Hash.h"
 
-#include "Signer.h"
-#include "SigData.h"
-#include "HexCoding.h"
+#include <stdexcept>
 
 using namespace TW;
 using namespace TW::Ontology;
 
-Signer::Signer(const std::string &priKey) {
+Signer::Signer(const std::string& priKey) {
     privateKey = parse_hex(priKey);
     auto pubKey = PrivateKey(privateKey).getPublicKey(PublicKeyType::nist256p1);
     publicKey = pubKey.bytes;
     address = Address(pubKey).string();
 }
 
-Signer::Signer(const Data &priKey) {
+Signer::Signer(const Data& priKey) {
     privateKey = priKey;
     auto pubKey = PrivateKey(privateKey).getPublicKey(PublicKeyType::nist256p1);
     publicKey = pubKey.bytes;
@@ -41,7 +41,7 @@ Address Signer::getAddress() const {
     return Address(address);
 }
 
-void Signer::sign(Transaction &tx) const {
+void Signer::sign(Transaction& tx) const {
     if (tx.sigVec.size() >= Transaction::sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
@@ -50,7 +50,7 @@ void Signer::sign(Transaction &tx) const {
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }
 
-void Signer::addSign(Transaction &tx) const {
+void Signer::addSign(Transaction& tx) const {
     if (tx.sigVec.size() >= Transaction::sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
@@ -58,6 +58,3 @@ void Signer::addSign(Transaction &tx) const {
     signature.pop_back();
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }
-
-
-
