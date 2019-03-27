@@ -57,20 +57,22 @@ make -j4
 make install
 "$PREFIX/bin/protoc" --version
 
-# Download Swift Protobuf sources
-export SWIFT_PROTOBUF_VERSION=1.3.1
-SWIFT_PROTOBUF_DIR="$ROOT/build/swift-protobuf/staging"
-mkdir -p "$SWIFT_PROTOBUF_DIR"
-cd "$SWIFT_PROTOBUF_DIR"
-if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
-    curl -fSsOL https://github.com/apple/swift-protobuf/archive/$SWIFT_PROTOBUF_VERSION.tar.gz
-fi
-tar xzf $SWIFT_PROTOBUF_VERSION.tar.gz
+if [ -x "$(command -v swift)" ]; then
+    # Download Swift Protobuf sources
+    export SWIFT_PROTOBUF_VERSION=1.3.1
+    SWIFT_PROTOBUF_DIR="$ROOT/build/swift-protobuf/staging"
+    mkdir -p "$SWIFT_PROTOBUF_DIR"
+    cd "$SWIFT_PROTOBUF_DIR"
+    if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
+        curl -fSsOL https://github.com/apple/swift-protobuf/archive/$SWIFT_PROTOBUF_VERSION.tar.gz
+    fi
+    tar xzf $SWIFT_PROTOBUF_VERSION.tar.gz
 
-# Build Swift Protobuf
-cd swift-protobuf-$SWIFT_PROTOBUF_VERSION
-swift build --static-swift-stdlib -c release
-cp -f "$SWIFT_PROTOBUF_DIR/swift-protobuf-$SWIFT_PROTOBUF_VERSION/.build/release/protoc-gen-swift" "$PREFIX/bin" | true
-$PREFIX/bin/protoc-gen-swift --version
+    # Build Swift Protobuf
+    cd swift-protobuf-$SWIFT_PROTOBUF_VERSION
+    swift build --static-swift-stdlib -c release
+    cp -f "$SWIFT_PROTOBUF_DIR/swift-protobuf-$SWIFT_PROTOBUF_VERSION/.build/release/protoc-gen-swift" "$PREFIX/bin" | true
+    $PREFIX/bin/protoc-gen-swift --version
+fi
 
 cd "$ROOT"
