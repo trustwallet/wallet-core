@@ -29,6 +29,7 @@ import wallet.core.jni.CoinType.NIMIQ
 import wallet.core.jni.CoinType.STELLAR
 import wallet.core.jni.CoinType.AION
 import wallet.core.jni.CoinType.NEO
+import wallet.core.jni.CoinType.THETA
 
 class CoinAddressDerivationTests {
 
@@ -71,6 +72,7 @@ class CoinAddressDerivationTests {
                     STELLAR -> assertEquals("GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P", address)
                     AION -> assertEquals("0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e", address)
                     NEO -> assertEquals("AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF", address)
+                    THETA -> assertEquals("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
                 }
             }
         }
