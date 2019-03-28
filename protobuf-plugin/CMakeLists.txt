@@ -10,7 +10,7 @@ endif()
 include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
-find_library(Protobuf REQUIRED PATH ${PREFIX}/lib/pkgconfig NO_DEFAULT_PATH)
+find_library(Protobuf REQUIRED PATH ${PREFIX}/lib/pkgconfig)
 include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
