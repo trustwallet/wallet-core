@@ -6,8 +6,8 @@
 
 #include <stdexcept>
 
-#include "SigData.h"
 #include "ParamsBuilder.h"
+#include "SigData.h"
 
 using namespace TW;
 using namespace TW::Ontology;
