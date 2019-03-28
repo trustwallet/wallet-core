@@ -65,7 +65,6 @@ target_include_directories(TrustWalletCore
 )
 
 if(NOT ANDROID AND NOT IOS_PLATFORM)
-    add_subdirectory(protobuf-plugin)
     add_subdirectory(tests)
 endif()
 
