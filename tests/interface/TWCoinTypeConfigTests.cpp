@@ -86,6 +86,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value25 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
     assertStringsEqual(value25, "GRS");
 
+
+    auto value26 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLUX));
+    assertStringsEqual(value24, "LUX");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -116,6 +119,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKIN), 5);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLux), 8);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -201,6 +205,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value28 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
     assertStringsEqual(value28, "https://blockbook.groestlcoin.org/tx/123");
+
+    auto value29 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
+    assertStringsEqual(value27, "https://explorer.poswallet.io/#/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -275,6 +282,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value25 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
     assertStringsEqual(value25, "groestlcoin");
+
+    auto value26 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLux));
+    assertStringsEqual(value24, "lux");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -352,4 +362,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value26 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
     assertStringsEqual(value26, "Groestlcoin");
+
+    auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
+    assertStringsEqual(value25, "Lux");
 }

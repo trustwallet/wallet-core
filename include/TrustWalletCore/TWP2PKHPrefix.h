@@ -21,6 +21,7 @@ enum TWP2PKHPrefix {
     TWP2PKHPrefixGroestlcoin = 0x24,
     TWP2PKHPrefixZcoin = 0x52,
     TWP2PKHPrefixZcashT = 0xB8,
+    TWP2PKHPrefixLux = 0x30,
 };
 
 TW_EXTERN_C_END

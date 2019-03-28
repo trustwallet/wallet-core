@@ -111,6 +111,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
+    case TWCoinTypeLux:
+        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixLux, TWP2SHPrefixLux});
     }
 }
 
@@ -149,6 +151,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeLitecoin:
     case TWCoinTypeGroestlcoin:
         return TWPurposeBIP84;
+    case TWCoinTypeLux:
     }
 }
 
@@ -178,6 +181,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeCosmos:
     case TWCoinTypeTheta:
+    case TWCoinTypeLux:
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
@@ -206,6 +210,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeDash:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeLux:
         return TWHDVersionXPUB;
 
     case TWCoinTypeDecred:
@@ -249,6 +254,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeDash:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeLux:
         return TWHDVersionXPRV;
 
     case TWCoinTypeDecred:
@@ -307,6 +313,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeTheta:
+    case TWCoinTypeLux:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
     case TWCoinTypeNEO:
@@ -348,6 +355,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeLitecoin:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeLux:
     case TWCoinTypeRipple:
         return PublicKeyType::secp256k1;
 
@@ -453,6 +461,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
+    case TWCoinTypeLux:
+        return Bitcoin::Address(publicKey, TWP2PKHPrefixLux).string();
     }
 }
 
