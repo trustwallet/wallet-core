@@ -49,6 +49,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "KIN"; break;
     case TWCoinTypeNULS: string = "NULS"; break;
+    case TWCoinTypeTheta: string = "THETA"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -69,6 +70,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeXDai:
     case TWCoinTypeAion:
     case TWCoinTypeCosmos:
+    case TWCoinTypeTheta:
         return 18;
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeBitcoin:
@@ -128,6 +130,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         url += "/txid/search/" + txId;
         break;
     case TWCoinTypeTomoChain:
+    case TWCoinTypeTheta:
         url += "/txs/" + txId;
         break;
     case TWCoinTypeTron:
@@ -192,6 +195,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNEO: return "https://neoscan.io";
     case TWCoinTypeKIN: return "https://kinexplorer.com";
     case TWCoinTypeNULS: return "https://nuls.world";
+    case TWCoinTypeTheta: return "https://explorer.thetatoken.org";
     default: return "";
     }
 }
@@ -229,6 +233,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeNEO: string = "neo"; break;
     case TWCoinTypeKIN: string = "kin"; break;
     case TWCoinTypeNULS: string = "nuls"; break;
+    case TWCoinTypeTheta: string = "theta"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -267,6 +272,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "Kin"; break;
     case TWCoinTypeNULS: string = "NULS"; break;
+    case TWCoinTypeTheta: string = "Theta"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

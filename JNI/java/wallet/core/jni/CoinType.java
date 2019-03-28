@@ -39,7 +39,8 @@ public enum CoinType {
     WANCHAIN (5718350),
     XDAI (700),
     ZCASH (133),
-    ZCOIN (136);
+    ZCOIN (136),
+    THETA (500);
 
     private final int value;
     CoinType(int value) {
@@ -78,6 +79,7 @@ public enum CoinType {
             case 700: return CoinType.XDAI;
             case 133: return CoinType.ZCASH;
             case 136: return CoinType.ZCOIN;
+            case 500: return CoinType.THETA;
             default: return null;
         }
     }
