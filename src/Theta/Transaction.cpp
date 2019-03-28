@@ -30,8 +30,7 @@ Data encode(const TxInput& input) noexcept {
 
 Data encode(const std::vector<TxInput>& inputs) noexcept {
     auto encoded = Data();
-    for (const auto& input : inputs)
-    {
+    for (const auto& input : inputs) {
         append(encoded, encode(input));
     }
     return RLP::encodeList(encoded);
@@ -46,14 +45,15 @@ Data encode(const TxOutput& output) noexcept {
 
 Data encode(const std::vector<TxOutput>& outputs) noexcept {
     auto encoded = Data();
-    for (const auto& output : outputs)
-    {
+    for (const auto& output : outputs) {
         append(encoded, encode(output));
     }
     return RLP::encodeList(encoded);
 }
 
-Transaction::Transaction(const Ethereum::Address& from, const Ethereum::Address& to, const uint256_t& thetaAmount, const uint256_t& tfuelAmount, uint64_t sequence, const uint256_t& feeAmount/* = 1000000000000*/) {
+Transaction::Transaction(const Ethereum::Address& from, const Ethereum::Address& to,
+                         const uint256_t& thetaAmount, const uint256_t& tfuelAmount,
+                         uint64_t sequence, const uint256_t& feeAmount /* = 1000000000000*/) {
     auto fee = Coins(0, feeAmount);
     auto coinsInput = Coins(thetaAmount, tfuelAmount + feeAmount);
     auto coinsOutput = Coins(thetaAmount, tfuelAmount);
@@ -78,11 +78,9 @@ Data Transaction::encode() const noexcept {
 }
 
 bool Transaction::setSignature(const Ethereum::Address& address, const Data& signature) noexcept {
-    for (auto i = 0; i < inputs.size(); i++)
-    {
+    for (auto i = 0; i < inputs.size(); i++) {
         auto& input = inputs[i];
-        if (input.address == address)
-        {
+        if (input.address == address) {
             input.signature = signature;
             return true;
         }

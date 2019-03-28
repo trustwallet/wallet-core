@@ -9,66 +9,59 @@
 #include <string>
 #include <vector>
 
-#include "../Ethereum/Address.h"
 #include "Coin.h"
 #include "../Data.h"
+#include "../Ethereum/Address.h"
 
 namespace TW {
 namespace Theta {
 
 class TxInput {
-public:
+  public:
     Ethereum::Address address;
     Coins coins;
     uint64_t sequence;
     Data signature;
 
     TxInput() = default;
-    TxInput(const Ethereum::Address &address, const Coins& coins, uint64_t sequence)
-        : address(address)
-        , coins(coins)
-        , sequence(sequence)
-    {}
-    TxInput(const Ethereum::Address &address, const Coins& coins, uint64_t sequence, const std::vector<uint8_t>& signature)
-        : address(address)
-        , coins(coins)
-        , sequence(sequence)
-        , signature(signature)
-    {}
+    TxInput(const Ethereum::Address& address, const Coins& coins, uint64_t sequence)
+        : address(address), coins(coins), sequence(sequence) {}
+    TxInput(const Ethereum::Address& address, const Coins& coins, uint64_t sequence,
+            const std::vector<uint8_t>& signature)
+        : address(address), coins(coins), sequence(sequence), signature(signature) {}
 };
 
 class TxOutput {
-public:
+  public:
     Ethereum::Address address;
     Coins coins;
 
     TxOutput() = default;
-    TxOutput(const Ethereum::Address &address, const Coins& coins)
-        : address(address)
-        , coins(coins)
-    {}
+    TxOutput(const Ethereum::Address& address, const Coins& coins)
+        : address(address), coins(coins) {}
 };
 
 class Transaction {
-public:
+  public:
     Coins fee;
     std::vector<TxInput> inputs;
     std::vector<TxOutput> outputs;
 
     Transaction() = default;
-    Transaction(const Coins& fee, const std::vector<TxInput>& inputs, const std::vector<TxOutput>& outputs)
-        : fee(fee)
-        , inputs(inputs)
-        , outputs(outputs)
-    {}
+    Transaction(const Coins& fee, const std::vector<TxInput>& inputs,
+                const std::vector<TxOutput>& outputs)
+        : fee(fee), inputs(inputs), outputs(outputs) {}
 
-    Transaction(const Ethereum::Address& from, const Ethereum::Address& to, const uint256_t& thetaAmount, const uint256_t& tfuelAmount, uint64_t sequence, const uint256_t& feeAmount = 1000000000000);
+    Transaction(const Ethereum::Address& from, const Ethereum::Address& to,
+                const uint256_t& thetaAmount, const uint256_t& tfuelAmount, uint64_t sequence,
+                const uint256_t& feeAmount = 1000000000000);
 
-    /// Encodes the transaction 
+    /// Encodes the transaction
     Data encode() const noexcept;
 
     /// Sets signature
     bool setSignature(const Ethereum::Address& address, const Data& signature) noexcept;
 };
 
-}} // namespace
+} // namespace Theta
+} // namespace TW

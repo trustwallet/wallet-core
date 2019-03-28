@@ -12,12 +12,14 @@ namespace TW {
 namespace Theta {
 
 class Coins {
-public:
+  public:
     uint256_t thetaWei;
     uint256_t tfuelWei;
 
     Coins() = default;
-    Coins(const uint256_t& thetaWei, const uint256_t& tfuelWei) : thetaWei(thetaWei), tfuelWei(tfuelWei) {}
+    Coins(const uint256_t& thetaWei, const uint256_t& tfuelWei)
+        : thetaWei(thetaWei), tfuelWei(tfuelWei) {}
 };
 
-}} // namespace
+} // namespace Theta
+} // namespace TW

@@ -18,7 +18,7 @@ TW_Theta_Proto_SigningOutput TWVeChainSignerSign(TW_Theta_Proto_SigningInput dat
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
-    auto pkFrom = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));    
+    auto pkFrom = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto from = Ethereum::Address(pkFrom.getPublicKey(PublicKeyType::secp256k1Extended));
 
     auto transaction = Transaction(
@@ -27,8 +27,7 @@ TW_Theta_Proto_SigningOutput TWVeChainSignerSign(TW_Theta_Proto_SigningInput dat
         /* thetaAmount: */ load(input.theta_amount()),
         /* tfuelAmount: */ load(input.tfuel_amount()),
         /* sequence: */ input.sequence(),
-        /* feeAmount: */ load(input.fee())
-    );
+        /* feeAmount: */ load(input.fee()));
 
     auto signer = Signer(input.chain_id());
     auto signature = signer.sign(pkFrom, transaction);
@@ -39,7 +38,8 @@ TW_Theta_Proto_SigningOutput TWVeChainSignerSign(TW_Theta_Proto_SigningInput dat
     auto encoded = transaction.encode();
     protoOutput.set_encoded(encoded.data(), encoded.size());
     protoOutput.set_signature(signature.data(), signature.size());
-    
+
     auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+                                 serialized.size());
 }
