@@ -37,8 +37,10 @@ else
 fi
 
 # Generate Proto interface file
+pushd protobuf-plugin
 cmake -H. -Bbuild
 make -Cbuild protoc-gen-int
+popd
 "$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=build/protobuf-plugin/protoc-gen-int --int_out include/TrustWalletCore src/proto/*.proto
 
 # Generate Xcode project

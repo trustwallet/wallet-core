@@ -5,10 +5,16 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 
-include_directories(${CMAKE_SOURCE_DIR}/build/local/include)
-link_directories(${CMAKE_SOURCE_DIR}/build/local/lib)
+if ("$ENV{PREFIX}" STREQUAL "")
+    set(PREFIX "${CMAKE_SOURCE_DIR}/../build/local")
+else()
+    set(PREFIX "$ENV{PREFIX}")
+endif()
 
-find_library(Protobuf REQUIRED PATH ${CMAKE_SOURCE_DIR}/build/local/lib/pkgconfig NO_DEFAULT_PATH)
+include_directories(${PREFIX}/include)
+link_directories(${PREFIX}/lib)
+
+find_library(Protobuf REQUIRED PATH ${PREFIX}/lib/pkgconfig NO_DEFAULT_PATH)
 include_directories(${Protobuf_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
