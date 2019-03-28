@@ -12,7 +12,7 @@ class ZcoinTests: XCTestCase {
 
     func testValidAddresses() {
         XCTAssertTrue(zcoin.validate(address: "a4YtT82mWWxHZhLmdx7e5aroW92dqJoRs3"))
-        XCTAssertTrue(zcoin.validate(address: "SUyEeNMKdGtgRorDZhqXepubf5AuvEjXK1"))
+        XCTAssertTrue(zcoin.validate(address: "4CFa4fnAQvFz4VpikGNzQ9XfCDXMmdk6sh"))
     }
 
     func testInvalidAddresses() {
