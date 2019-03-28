@@ -19,14 +19,24 @@ public final class Cosmos {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes from_address = 1;</code>
+     * <code>string from_address = 1;</code>
      */
-    com.google.protobuf.ByteString getFromAddress();
+    java.lang.String getFromAddress();
+    /**
+     * <code>string from_address = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getFromAddressBytes();
 
     /**
-     * <code>bytes to_address = 2;</code>
+     * <code>string to_address = 2;</code>
      */
-    com.google.protobuf.ByteString getToAddress();
+    java.lang.String getToAddress();
+    /**
+     * <code>string to_address = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getToAddressBytes();
 
     /**
      * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
@@ -69,8 +79,8 @@ public final class Cosmos {
       super(builder);
     }
     private SendTokensMessage() {
-      fromAddress_ = com.google.protobuf.ByteString.EMPTY;
-      toAddress_ = com.google.protobuf.ByteString.EMPTY;
+      fromAddress_ = "";
+      toAddress_ = "";
       amount_ = java.util.Collections.emptyList();
     }
 
@@ -99,13 +109,15 @@ public final class Cosmos {
               done = true;
               break;
             case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              fromAddress_ = input.readBytes();
+              fromAddress_ = s;
               break;
             }
             case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              toAddress_ = input.readBytes();
+              toAddress_ = s;
               break;
             }
             case 26: {
@@ -766,21 +778,71 @@ public final class Cosmos {
 
     private int bitField0_;
     public static final int FROM_ADDRESS_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString fromAddress_;
+    private volatile java.lang.Object fromAddress_;
     /**
-     * <code>bytes from_address = 1;</code>
+     * <code>string from_address = 1;</code>
      */
-    public com.google.protobuf.ByteString getFromAddress() {
-      return fromAddress_;
+    public java.lang.String getFromAddress() {
+      java.lang.Object ref = fromAddress_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        fromAddress_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string from_address = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getFromAddressBytes() {
+      java.lang.Object ref = fromAddress_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        fromAddress_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int TO_ADDRESS_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString toAddress_;
+    private volatile java.lang.Object toAddress_;
     /**
-     * <code>bytes to_address = 2;</code>
+     * <code>string to_address = 2;</code>
      */
-    public com.google.protobuf.ByteString getToAddress() {
-      return toAddress_;
+    public java.lang.String getToAddress() {
+      java.lang.Object ref = toAddress_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        toAddress_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string to_address = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getToAddressBytes() {
+      java.lang.Object ref = toAddress_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        toAddress_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     public static final int AMOUNT_FIELD_NUMBER = 3;
@@ -832,11 +894,11 @@ public final class Cosmos {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!fromAddress_.isEmpty()) {
-        output.writeBytes(1, fromAddress_);
+      if (!getFromAddressBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, fromAddress_);
       }
-      if (!toAddress_.isEmpty()) {
-        output.writeBytes(2, toAddress_);
+      if (!getToAddressBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, toAddress_);
       }
       for (int i = 0; i < amount_.size(); i++) {
         output.writeMessage(3, amount_.get(i));
@@ -850,13 +912,11 @@ public final class Cosmos {
       if (size != -1) return size;
 
       size = 0;
-      if (!fromAddress_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, fromAddress_);
+      if (!getFromAddressBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, fromAddress_);
       }
-      if (!toAddress_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, toAddress_);
+      if (!getToAddressBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, toAddress_);
       }
       for (int i = 0; i < amount_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -1040,9 +1100,9 @@ public final class Cosmos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        fromAddress_ = com.google.protobuf.ByteString.EMPTY;
+        fromAddress_ = "";
 
-        toAddress_ = com.google.protobuf.ByteString.EMPTY;
+        toAddress_ = "";
 
         if (amountBuilder_ == null) {
           amount_ = java.util.Collections.emptyList();
@@ -1138,11 +1198,13 @@ public final class Cosmos {
 
       public Builder mergeFrom(wallet.core.jni.proto.Cosmos.SendTokensMessage other) {
         if (other == wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance()) return this;
-        if (other.getFromAddress() != com.google.protobuf.ByteString.EMPTY) {
-          setFromAddress(other.getFromAddress());
+        if (!other.getFromAddress().isEmpty()) {
+          fromAddress_ = other.fromAddress_;
+          onChanged();
         }
-        if (other.getToAddress() != com.google.protobuf.ByteString.EMPTY) {
-          setToAddress(other.getToAddress());
+        if (!other.getToAddress().isEmpty()) {
+          toAddress_ = other.toAddress_;
+          onChanged();
         }
         if (amountBuilder_ == null) {
           if (!other.amount_.isEmpty()) {
@@ -1200,17 +1262,43 @@ public final class Cosmos {
       }
       private int bitField0_;
 
-      private com.google.protobuf.ByteString fromAddress_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object fromAddress_ = "";
       /**
-       * <code>bytes from_address = 1;</code>
+       * <code>string from_address = 1;</code>
        */
-      public com.google.protobuf.ByteString getFromAddress() {
-        return fromAddress_;
+      public java.lang.String getFromAddress() {
+        java.lang.Object ref = fromAddress_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          fromAddress_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes from_address = 1;</code>
+       * <code>string from_address = 1;</code>
        */
-      public Builder setFromAddress(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getFromAddressBytes() {
+        java.lang.Object ref = fromAddress_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          fromAddress_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string from_address = 1;</code>
+       */
+      public Builder setFromAddress(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1220,7 +1308,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>bytes from_address = 1;</code>
+       * <code>string from_address = 1;</code>
        */
       public Builder clearFromAddress() {
         
@@ -1228,18 +1316,58 @@ public final class Cosmos {
         onChanged();
         return this;
       }
-
-      private com.google.protobuf.ByteString toAddress_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes to_address = 2;</code>
+       * <code>string from_address = 1;</code>
        */
-      public com.google.protobuf.ByteString getToAddress() {
-        return toAddress_;
+      public Builder setFromAddressBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        fromAddress_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object toAddress_ = "";
+      /**
+       * <code>string to_address = 2;</code>
+       */
+      public java.lang.String getToAddress() {
+        java.lang.Object ref = toAddress_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          toAddress_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes to_address = 2;</code>
+       * <code>string to_address = 2;</code>
        */
-      public Builder setToAddress(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getToAddressBytes() {
+        java.lang.Object ref = toAddress_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          toAddress_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string to_address = 2;</code>
+       */
+      public Builder setToAddress(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
@@ -1249,11 +1377,25 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>bytes to_address = 2;</code>
+       * <code>string to_address = 2;</code>
        */
       public Builder clearToAddress() {
         
         toAddress_ = getDefaultInstance().getToAddress();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string to_address = 2;</code>
+       */
+      public Builder setToAddressBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        toAddress_ = value;
         onChanged();
         return this;
       }
@@ -2746,8 +2888,8 @@ public final class Cosmos {
   static {
     java.lang.String[] descriptorData = {
       "\n\014Cosmos.proto\022\017TW.Cosmos.Proto\"\237\001\n\021Send" +
-      "TokensMessage\022\024\n\014from_address\030\001 \001(\014\022\022\n\nt" +
-      "o_address\030\002 \001(\014\0228\n\006amount\030\003 \003(\0132(.TW.Cos" +
+      "TokensMessage\022\024\n\014from_address\030\001 \001(\t\022\022\n\nt" +
+      "o_address\030\002 \001(\t\0228\n\006amount\030\003 \003(\0132(.TW.Cos" +
       "mos.Proto.SendTokensMessage.Token\032&\n\005Tok" +
       "en\022\r\n\005denom\030\001 \001(\t\022\016\n\006amount\030\002 \001(\003\"\265\001\n\014Si" +
       "gningInput\022\026\n\016account_number\030\001 \001(\004\022\020\n\010ch" +

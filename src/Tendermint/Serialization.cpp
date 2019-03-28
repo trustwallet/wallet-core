@@ -12,27 +12,37 @@
 using json = nlohmann::json;
 
 json messageJSON(const TW::Cosmos::Proto::SigningInput& input) {
-    json j;
+    json jsonMsg;
     
     if (input.has_message()) {
-        j["from_address"] = input.message().from_address();
-        j["to_address"] = input.message().to_address();
-        //j["amount"] = json::array({input.message().amount()});
+        json jsonCoins = json::array();
+        for (auto& coin : input.message().amount()) {
+            json jsonCoin;
+            jsonCoin["amount"] = std::to_string(coin.amount());
+            jsonCoin["denom"] = coin.denom();
+            jsonCoins.push_back(jsonCoin);
+        }
+
+        jsonMsg["amount"] = jsonCoins;
+        jsonMsg["from_address"] = input.message().from_address();
+        jsonMsg["to_address"] = input.message().to_address();
     }
     
-    json wrapper;
-    j["type"] = "cosmos-sdk/MsgSend";
-    j["value"] = j;
+    json jsonMsgWrapper;
+    jsonMsgWrapper["type"] = "cosmos-sdk/MsgSend";
+    jsonMsgWrapper["value"] = jsonMsg;
 
-    return wrapper;
+    return jsonMsgWrapper;
 }
 
 json TW::Cosmos::signatureJSON(const TW::Cosmos::Proto::SigningInput& input) {
-    json j;
-    j["account_number"] = std::to_string(input.account_number());
-    j["chain_id"] = input.chain_id();
-    j["memo"] = input.memo();
-    j["msgs"] = json::array({messageJSON(input)});
-    j["sequence"] = std::to_string(input.sequence());
-    return j;
+    json jsonTx;
+    
+    jsonTx["account_number"] = std::to_string(input.account_number());
+    jsonTx["chain_id"] = input.chain_id();
+    jsonTx["memo"] = input.memo();
+    jsonTx["msgs"] = json::array({messageJSON(input)});
+    jsonTx["sequence"] = std::to_string(input.sequence());
+    
+    return jsonTx;
 }

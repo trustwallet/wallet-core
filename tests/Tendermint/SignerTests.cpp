@@ -24,12 +24,12 @@ TEST(CosmosSigner, SignTx) {
     input.set_memo("");
     input.set_sequence(0);
 
-    auto fromAddress = parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21");
-    auto toAddress = parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9");
+    auto fromAddress = TW::Tendermint::Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
+    auto toAddress = TW::Tendermint::Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
 
     auto message = Proto::SendTokensMessage();
-    message.set_from_address(fromAddress.data(), fromAddress.size());
-    message.set_to_address(toAddress.data(), toAddress.size());
+    message.set_from_address(fromAddress.string());
+    message.set_to_address(toAddress.string());
     auto amount = message.add_amount();
     amount->set_denom("atom");
     amount->set_amount(10);
@@ -42,7 +42,7 @@ TEST(CosmosSigner, SignTx) {
     auto signer = Cosmos::Signer(std::move(input));
     auto signature = signer.sign();
 
-    ASSERT_EQ(hex(signature.begin(), signature.end()), "229f4a6102d33899ad212532778bd0e97a51863698f5df81314a6c0a70bd61ac3d8d73a7faeb2fc8b78a17fb45def0207594bd7e880914a694eac10c653edd53");
+    ASSERT_EQ(hex(signature.begin(), signature.end()), "761fbe8bb5f8a05026baacf360cf4163dad6bbcb5daeb877edf73ad934664f1e27cbf986370e530aa201b868b7a1308b932e2df060bfda88044b01c2b1bedb63");
 }
 
 }}

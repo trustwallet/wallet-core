@@ -10,8 +10,8 @@ message SendTokensMessage {
         int64 amount = 2;
     }
 
-    bytes from_address = 1;
-    bytes to_address = 2;
+    string from_address = 1;
+    string to_address = 2;
     repeated Token amount = 3;
 }
 

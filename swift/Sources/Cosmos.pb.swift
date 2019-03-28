@@ -25,9 +25,9 @@ public struct TW_Cosmos_Proto_SendTokensMessage {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var fromAddress: Data = SwiftProtobuf.Internal.emptyData
+  public var fromAddress: String = String()
 
-  public var toAddress: Data = SwiftProtobuf.Internal.emptyData
+  public var toAddress: String = String()
 
   public var amount: [TW_Cosmos_Proto_SendTokensMessage.Token] = []
 
@@ -128,8 +128,8 @@ extension TW_Cosmos_Proto_SendTokensMessage: SwiftProtobuf.Message, SwiftProtobu
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self.fromAddress)
-      case 2: try decoder.decodeSingularBytesField(value: &self.toAddress)
+      case 1: try decoder.decodeSingularStringField(value: &self.fromAddress)
+      case 2: try decoder.decodeSingularStringField(value: &self.toAddress)
       case 3: try decoder.decodeRepeatedMessageField(value: &self.amount)
       default: break
       }
@@ -138,10 +138,10 @@ extension TW_Cosmos_Proto_SendTokensMessage: SwiftProtobuf.Message, SwiftProtobu
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     if !self.fromAddress.isEmpty {
-      try visitor.visitSingularBytesField(value: self.fromAddress, fieldNumber: 1)
+      try visitor.visitSingularStringField(value: self.fromAddress, fieldNumber: 1)
     }
     if !self.toAddress.isEmpty {
-      try visitor.visitSingularBytesField(value: self.toAddress, fieldNumber: 2)
+      try visitor.visitSingularStringField(value: self.toAddress, fieldNumber: 2)
     }
     if !self.amount.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.amount, fieldNumber: 3)
