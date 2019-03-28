@@ -57,6 +57,7 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeXDai:
+    case TWCoinTypeTheta:
         return Ethereum::Address(data).string();
     case TWCoinTypeWanChain:
         return Wanchain::Address(data).string();
@@ -134,6 +135,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeXDai:
+    case TWCoinTypeTheta:
         return Ethereum::Address::isValid(string);
     case TWCoinTypeWanChain:
         return Wanchain::Address::isValid(string);
@@ -203,6 +205,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
+    case TWCoinTypeTheta:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -234,6 +237,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeCosmos:
+    case TWCoinTypeTheta:
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
@@ -286,6 +290,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
+    case TWCoinTypeTheta:
         return TWHDVersionNone;
     }
 }
@@ -325,6 +330,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
+    case TWCoinTypeTheta:
         return TWHDVersionNone;
     }
 }
@@ -354,6 +360,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeTheta:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
     case TWCoinTypeNEO:
@@ -409,6 +416,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeICON:
     case TWCoinTypeTron:
+    case TWCoinTypeTheta:
         return PublicKeyType::secp256k1Extended;
 
     case TWCoinTypeNEO:
@@ -458,6 +466,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeXDai:
+    case TWCoinTypeTheta:
         return Ethereum::Address(publicKey).string();
     case TWCoinTypeWanChain:
         return Wanchain::Address(publicKey).string();
