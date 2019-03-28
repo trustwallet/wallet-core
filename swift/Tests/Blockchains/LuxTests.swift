@@ -7,12 +7,12 @@
 import XCTest
 import TrustWalletCore
 
-class ZcoinTests: XCTestCase {
-    let zcoin = CoinType.zcoin
+class LuxTests: XCTestCase {
+    let lux = CoinType.lux
 
     func testValidAddresses() {
-        XCTAssertTrue(zcoin.validate(address: "a4YtT82mWWxHZhLmdx7e5aroW92dqJoRs3"))
-        XCTAssertTrue(zcoin.validate(address: "SUyEeNMKdGtgRorDZhqXepubf5AuvEjXK1"))
+        XCTAssertTrue(lux.validate(address: "LfvXBsfiAfyJTy6YY7YS5MmcFt7TEgJfjb"))
+        XCTAssertTrue(lux.validate(address: "4CFa4fnAQvFz4VpikGNzQ9XfCDXMmdk6sh"))
     }
 
     func testInvalidAddresses() {

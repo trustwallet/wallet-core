@@ -75,6 +75,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("GBL3MT2ICHHM5OJ2QJ44CAHGDK6MLPINVXBKOKLHGBWQDVRWTWQ7U2EA", address)
                 case .decred:
                     XCTAssertEqual("DsidJiDGceqHTyqiejABy1ZQ3FX4SiWZkYG", address)
+                case .zcoin:
+                    XCTAssertEqual("LfvXBsfiAfyJTy6YY7YS5MmcFt7TEgJfjb", address)
                 }
             }
         }
