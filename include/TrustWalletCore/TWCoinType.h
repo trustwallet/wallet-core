@@ -53,6 +53,7 @@ enum TWCoinType {
     TWCoinTypeXDai = 700,
     TWCoinTypeZcash = 133,
     TWCoinTypeZcoin = 136,
+    TWCoinTypeQtum = 2301,
 };
 
 /// Returns the purpose for a coin type.
