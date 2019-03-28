@@ -23,7 +23,7 @@ class LuxTests: XCTestCase {
             "Xm1iDLBP5tdxTxc6t7uJBCVjC4L2A5vB2J",
             "TKjdnbJxP4yHeLTHZ86DGnFFY6QhTjuBv2",
             ] {
-            XCTAssertFalse(zcoin.validate(address: addr))
+            XCTAssertFalse(lux.validate(address: addr))
         }
     }
 }
