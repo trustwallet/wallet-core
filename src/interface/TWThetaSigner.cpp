@@ -14,7 +14,7 @@
 using namespace TW;
 using namespace TW::Theta;
 
-TW_Theta_Proto_SigningOutput TWVeChainSignerSign(TW_Theta_Proto_SigningInput data) {
+TW_Theta_Proto_SigningOutput TWThetaSignerSign(TW_Theta_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
