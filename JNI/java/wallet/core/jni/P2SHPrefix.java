@@ -16,7 +16,8 @@ public enum P2SHPrefix {
     DASH ((byte) 0x10),
     DECRED ((byte) 0x1a),
     ZCOIN ((byte) 0x07),
-    ZCASHT ((byte) 0xBD);
+    ZCASHT ((byte) 0xBD),
+    LUX ((byte) 0x3F);
 
     private final byte value;
     P2SHPrefix(byte value) {
@@ -32,6 +33,7 @@ public enum P2SHPrefix {
             case (byte) 0x1a: return P2SHPrefix.DECRED;
             case (byte) 0x07: return P2SHPrefix.ZCOIN;
             case (byte) 0xBD: return P2SHPrefix.ZCASHT;
+            case (byte) 0x3F: return P2SHPrefix.LUX;
             default: return null;
         }
     }

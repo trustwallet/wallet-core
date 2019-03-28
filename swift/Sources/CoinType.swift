@@ -38,6 +38,7 @@ public enum CoinType: UInt32, CaseIterable {
     case zcash = 133
     case zcoin = 136
     case theta = 500
+    case lux = 3003
 
     public var purpose: Purpose {
         return Purpose(rawValue: TWCoinTypePurpose(TWCoinType(rawValue: rawValue)).rawValue)!
