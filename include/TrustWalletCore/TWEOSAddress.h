@@ -4,15 +4,11 @@
 #include "TWData.h"
 #include "TWString.h"
 
+#include "TWEOSAddressType.h"
+
 TW_EXTERN_C_BEGIN
 
 struct TWPublicKey;
-
-TW_EXPORT_ENUM(uint32_t)
-enum TWEOSAddressType {
-    TWEOSAddressTypeLegacy = 0,
-    TWEOSAddressTypeModernK1 = 1,
-};
 
 /// Represents a EOS address.
 TW_EXPORT_CLASS
@@ -32,11 +28,11 @@ struct TWEOSAddress *_Nullable TWEOSAddressCreateWithString(TWString *_Nonnull s
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWEOSAddress *_Nonnull TWEOSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, TWEOSAddressType type);
+struct TWEOSAddress *_Nonnull TWEOSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWEOSAddressType type);
 
 /// Creates an address from a key hash.
 TW_EXPORT_STATIC_METHOD
-struct TWEOSAddress *_Nullable TWEOSAddressCreateWithKeyHash(TWData *_Nonnull keyHash, TWEOSAddressType type);
+struct TWEOSAddress *_Nullable TWEOSAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWEOSAddressType type);
 
 TW_EXPORT_METHOD
 void TWEOSAddressDelete(struct TWEOSAddress *_Nonnull address);
