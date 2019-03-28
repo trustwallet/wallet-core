@@ -11,7 +11,7 @@
 set -e
 
 ROOT="$PWD"
-PREFIX="$ROOT/build/local"
+PREFIX="${PREFIX:-$ROOT/build/local}"
 PATH="$PREFIX/bin":$PATH
 PROTOC="$PREFIX/bin/protoc"
 
