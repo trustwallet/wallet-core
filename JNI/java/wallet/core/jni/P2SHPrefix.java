@@ -17,7 +17,7 @@ public enum P2SHPrefix {
     DECRED ((byte) 0x1a),
     ZCOIN ((byte) 0x07),
     ZCASHT ((byte) 0xBD),
-    ZCOIN ((byte) 0x3F);
+    LUX ((byte) 0x3F);
 
     private final byte value;
     P2SHPrefix(byte value) {
