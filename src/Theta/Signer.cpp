@@ -6,7 +6,6 @@
 
 #include "Signer.h"
 
-#include "../HexCoding.h"
 #include "../Ethereum/RLP.h"
 #include "../Hash.h"
 
@@ -39,7 +38,6 @@ Data Signer::dataForSign(const Transaction& transaction) noexcept {
 
 Data Signer::sign(const PrivateKey& privateKey, const Transaction& transaction) noexcept {
     auto encoded = dataForSign(transaction);
-    std::cerr << hex(encoded) << std::endl;
     auto hash = Hash::keccak256(encoded);
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return signature;
