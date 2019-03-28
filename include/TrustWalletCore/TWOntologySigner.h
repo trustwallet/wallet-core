@@ -6,13 +6,15 @@
 
 #pragma once
 
+#include "TWBase.h"
 #include "TWData.h"
 #include "TWOntologyProto.h"
 
-typedef TWData *_Nonnull TW_Ontology_Proto_SigningInput;
-typedef TWData *_Nonnull TW_Ontology_Proto_SigningOutput;
-
 TW_EXTERN_C_BEGIN
+
+/// Helper class to sign Ontology transactions.
+TW_EXPORT_CLASS
+struct TWOntologySigner;
 
 TW_EXPORT_STATIC_METHOD
 TW_Ontology_Proto_SigningOutput TWOntologySignerSign(TW_Ontology_Proto_SigningInput data);
