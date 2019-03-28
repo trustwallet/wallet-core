@@ -13,7 +13,7 @@ using namespace TW;
 using namespace TW::Theta;
 using RLP = Ethereum::RLP;
 
-Data Signer::dataForSign(const Transaction& transaction) noexcept {
+Data Signer::encode(const Transaction& transaction) noexcept {
     const uint64_t nonce = 0;
     const uint256_t gasPrice = 0;
     const uint64_t gasLimit = 0;
@@ -37,7 +37,7 @@ Data Signer::dataForSign(const Transaction& transaction) noexcept {
 }
 
 Data Signer::sign(const PrivateKey& privateKey, const Transaction& transaction) noexcept {
-    auto encoded = dataForSign(transaction);
+    auto encoded = encode(transaction);
     auto hash = Hash::keccak256(encoded);
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return signature;

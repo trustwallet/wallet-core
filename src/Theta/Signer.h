@@ -28,7 +28,7 @@ public:
     Data sign(const PrivateKey& privateKey, const Transaction& transaction) noexcept;
 
 private:
-    Data dataForSign(const Transaction& transaction) noexcept;
+    Data encode(const Transaction& transaction) noexcept;
 };
 
 }} // namespace
