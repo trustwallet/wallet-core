@@ -8,6 +8,9 @@
 
 #include "../Bravo/Address.h"
 
+#define TWSteemMainnetPrefix "STM"
+#define TWSteemTestnetPrefix "TST"
+
 using namespace TW::Bravo;
 
 // Steem address class is similar to Bravo. 

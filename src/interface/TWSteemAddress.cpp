@@ -19,22 +19,20 @@
 using namespace TW;
 using namespace TW::Bravo;
 
-const std::vector<std::string> prefixes = { "STM", "TST" };
-
 bool TWSteemAddressEqual(struct TWSteemAddress *_Nonnull lhs, struct TWSteemAddress *_Nonnull rhs) {
 	return lhs->impl == rhs->impl;
 }
 
 bool TWSteemAddressIsValidString(TWString *_Nonnull string) {
 	auto s = reinterpret_cast<const std::string *>(string);
-	return Address::isValid(*s, prefixes);
+	return Address::isValid(*s, { TWSteemMainnetPrefix, TWSteemTestnetPrefix });
 }
 
 struct TWSteemAddress *_Nullable TWSteemAddressCreateWithString(TWString *_Nonnull string) {
 	auto s = reinterpret_cast<const std::string*>(string);
 
 	try {
-		return new TWSteemAddress{ Address(*s, prefixes) };
+		return new TWSteemAddress{ Address(*s, { TWSteemMainnetPrefix, TWSteemTestnetPrefix }) };
 	}
 	catch (...) {
 		return nullptr;
@@ -42,13 +40,13 @@ struct TWSteemAddress *_Nullable TWSteemAddressCreateWithString(TWString *_Nonnu
 }
 
 struct TWSteemAddress *_Nonnull TWSteemAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, TWSteemAddressType type) {
-	return new TWSteemAddress{ Address(publicKey->impl, Address::prefixes[type]) };
+		return new TWSteemAddress{ Address(publicKey->impl, (type == TWSteemAddressType::TWSteemAddressTypeMainNet)? TWSteemMainnetPrefix : TWSteemTestnetPrefix) };
 }
 
 struct TWSteemAddress *_Nullable TWSteemAddressCreateWithKeyHash(TWData *_Nonnull keyHash, TWSteemAddressType type) {
 	auto d = reinterpret_cast<const Data *>(keyHash);
 	try {
-		return new TWSteemAddress{ Address(*d, Address::prefixes[type]) };
+		return new TWSteemAddress{ Address(*d, (type == TWSteemAddressType::TWSteemAddressTypeMainNet) ? TWSteemMainnetPrefix : TWSteemTestnetPrefix) };
 	}
 	catch (...) {
 		return nullptr;
