@@ -72,7 +72,7 @@ json Transaction::serialize() const noexcept {
     obj["delay_sec"] = delaySeconds;
     obj["context_free_actions"] = encodeCollection(contextFreeActions);
     obj["actions"] = encodeCollection(actions);
-    obj["transaction_extensions"] = encodeCollection(extensions);
+    obj["transaction_extensions"] = encodeCollection(transactionExtensions);
     obj["signatures"] = sigs;
     obj["context_free_data"] = cfdJSON;
 

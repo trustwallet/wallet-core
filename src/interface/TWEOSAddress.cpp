@@ -10,9 +10,27 @@
 #include <vector>
 
 using namespace TW;
-using namespace TW::Bravo;
+using namespace TW::EOS;
 
-const std::vector<std::string> prefixes = {"EOS", "PUB_K1_"};
+Address::Type translateType(TWEOSAddressType type) {
+    Address::Type t;
+    switch (type)
+    {
+        case TWEOSAddressTypeLegacy:
+            t = Address::Type::Legacy;
+            break;
+
+        case TWEOSAddressTypeModernK1:
+            t = Address::Type::ModernK1;
+            break;
+
+        case TWEOSAddressTypeModernR1:
+            t = Address::Type::ModernR1;
+            break;
+    }
+
+    return t;
+}
 
 bool TWEOSAddressEqual(struct TWEOSAddress *_Nonnull lhs, struct TWEOSAddress *_Nonnull rhs) {
    return lhs->impl == rhs->impl;
@@ -20,27 +38,27 @@ bool TWEOSAddressEqual(struct TWEOSAddress *_Nonnull lhs, struct TWEOSAddress *_
 
 bool TWEOSAddressIsValidString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string *>(string);
-    return Address::isValid(*s, prefixes);
+    return Address::isValid(*s);
 }
 
 struct TWEOSAddress *_Nullable TWEOSAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
 
     try {
-        return new TWEOSAddress{ Address(*s, prefixes) };
+        return new TWEOSAddress{ Address(*s) };
     } catch (...) {
         return nullptr;
     }
 }
 
 struct TWEOSAddress *_Nonnull TWEOSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, TWEOSAddressType type) {
-    return new TWEOSAddress{ Address(publicKey->impl, Address::prefixes[type]) };
+    return new TWEOSAddress{ Address(publicKey->impl, translateType(type)) };
 }
 
 struct TWEOSAddress *_Nullable TWEOSAddressCreateWithKeyHash(TWData *_Nonnull keyHash, TWEOSAddressType type) {
     auto d = reinterpret_cast<const Data *>(keyHash);
     try {
-        return new TWEOSAddress{ Address(*d, Address::prefixes[type]) };
+        return new TWEOSAddress{ Address(*d, translateType(type)) };
     } catch (...) {
         return nullptr;
     }
