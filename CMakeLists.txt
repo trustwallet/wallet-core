@@ -5,6 +5,7 @@ project(TrustWalletCore)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
 if ("$ENV{PREFIX}" STREQUAL "")
     set(PREFIX "${CMAKE_SOURCE_DIR}/build/local")
@@ -49,8 +50,14 @@ else()
 
     target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 endif()
-set_property(TARGET TrustWalletCore PROPERTY CXX_STANDARD 17)
 target_compile_options(TrustWalletCore PRIVATE "-Wall")
+
+set_target_properties(TrustWalletCore
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+        COMPILE_FLAGS "${WARNING_FLAGS}"
+)
 
 # Define headers for this library. PUBLIC headers are used for compiling the
 # library, and will be added to consumers' build paths.
