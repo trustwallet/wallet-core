@@ -11,8 +11,7 @@ class LuxTests: XCTestCase {
     let lux = CoinType.lux
 
     func testValidAddresses() {
-        XCTAssertTrue(lux.validate(address: "LfvXBsfiAfyJTy6YY7YS5MmcFt7TEgJfjb"))
-        XCTAssertTrue(lux.validate(address: "4CFa4fnAQvFz4VpikGNzQ9XfCDXMmdk6sh"))
+        XCTAssertTrue(lux.validate(address: "LcWJv3djruGY4uh7xVPZyKxqJJUTdrzqL7"))
     }
 
     func testInvalidAddresses() {
