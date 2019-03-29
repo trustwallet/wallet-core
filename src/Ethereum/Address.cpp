@@ -17,15 +17,18 @@
 using namespace TW::Ethereum;
 
 bool Address::isValid(const std::string& string) {
+    if (string.size() != 42 || string[0] != '0' || string[1] != 'x') {
+        return false;
+    }
     const auto data = parse_hex(string);
     return Address::isValid(data);
 }
 
 Address::Address(const std::string& string) {
-    const auto data = parse_hex(string);
-    if (!isValid(data)) {
+    if (!isValid(string)) {
         throw std::invalid_argument("Invalid address data");
     }
+    const auto data = parse_hex(string);
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
