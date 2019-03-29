@@ -120,9 +120,6 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
-    case TWCoinTypeLux:
-        url += "/#/tx/" + txId;
-        break;
     case TWCoinTypeKIN:
         url += "/tx/" + txId;
         break;
@@ -159,6 +156,9 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeBinance: break;
     case TWCoinTypeCosmos:
         url += "/blocks/1/transactions/" + txId;
+        break;
+    case TWCoinTypeLux:
+        url += "/#/tx/" + txId;
         break;
     default: break;
     }
