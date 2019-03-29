@@ -16,6 +16,7 @@ using namespace TW::Ethereum;
 TEST(EthereumAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_FALSE(Address::isValid("aaeb60f3e94c9b9a09f33669435e7ef1beaed"));
+    ASSERT_FALSE(Address::isValid("fB6916095ca1df60bB79Ce92cE3Ea74c37c5d359"));
 }
 
 TEST(EthereumAddress, EIP55) {
