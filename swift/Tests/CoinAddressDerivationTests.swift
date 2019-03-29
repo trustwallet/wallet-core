@@ -80,7 +80,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .groestlcoin:
                     XCTAssertEqual("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
                 case .lux:
-                    XCTAssertEqual("LfvXBsfiAfyJTy6YY7YS5MmcFt7TEgJfjb", address)
+                    XCTAssertEqual("LcWJv3djruGY4uh7xVPZyKxqJJUTdrzqL7", address)
                 }
             }
         }

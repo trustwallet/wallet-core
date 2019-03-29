@@ -133,7 +133,7 @@ class HDWalletTests: XCTestCase {
         let key = wallet.getKeyForCoin(coin: lux)
         let address = lux.deriveAddress(privateKey: key)
 
-        XCTAssertEqual("LfvXBsfiAfyJTy6YY7YS5MmcFt7TEgJfjb", address)
+        XCTAssertEqual("LcWJv3djruGY4uh7xVPZyKxqJJUTdrzqL7", address)
     }
 
     func testDeriveBinanceChain() {
