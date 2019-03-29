@@ -123,6 +123,8 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
     case TWCoinTypeLux:
+        url += "/#/tx/" + txId;
+        break;
     case TWCoinTypeKIN:
         url += "/tx/" + txId;
         break;
