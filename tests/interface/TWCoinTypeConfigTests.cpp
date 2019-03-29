@@ -82,6 +82,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value24 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTheta));
     assertStringsEqual(value24, "THETA");
+
+    auto value24 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLUX));
+    assertStringsEqual(value24, "LUX");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -111,6 +114,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKIN), 5);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLux), 8);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -193,6 +197,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value27 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTheta, txId));
     assertStringsEqual(value27, "https://explorer.thetatoken.org/txs/123");
+
+    auto value27 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
+    assertStringsEqual(value27, "https://explorer.poswallet.io/#/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -264,6 +271,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value24 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTheta));
     assertStringsEqual(value24, "theta");
+
+    auto value24 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLux));
+    assertStringsEqual(value24, "lux");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -338,4 +348,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value25 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTheta));
     assertStringsEqual(value25, "Theta");
+
+    auto value25 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
+    assertStringsEqual(value25, "Lux");
 }
