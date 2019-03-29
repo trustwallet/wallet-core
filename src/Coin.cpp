@@ -175,6 +175,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
+    
     case TWCoinTypeLux:
         return Bitcoin::Address::isValid(string, {TWP2PKHPrefixLux, TWP2SHPrefixLux});
     }
@@ -210,11 +211,11 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
+    case TWCoinTypeLux:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
         return TWPurposeBIP84;
-    case TWCoinTypeLux:
     }
 }
 
