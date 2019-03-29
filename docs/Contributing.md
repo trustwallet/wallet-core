@@ -130,6 +130,10 @@ Also check out the [Adding Support for a New Blockchain](https://github.com/Trus
 
 Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html) for C++. We use `clang-format` to ensure a consistent code sytle. **Do not** reformat files that you didn't modify, or the header files in the `include` folder. You can install a clang-format extension for your IDE.
 
+## Docker
+
+Wallet core provides a Dockerfile that sets up an Ubuntu container with the necessary depedencies. To build the docker image run `docker build .` in the root folder. To run a pre-built image run `docker run -it albinance/wallet-core /bin/bash`. Use `docker push` if you want to upload your own image to Docker Hub.
+
 ## Releasing
 
 Before releasing please update the version numbers in `android/gradle.properties` and `TrustWalletCore.podspec` and commit this change. Then create a new git tag for that number and push (replace 0.0.0 with the actual version number):
