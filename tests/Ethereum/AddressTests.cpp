@@ -57,6 +57,5 @@ TEST(EthereumAddress, FromPrivateKey) {
 
 TEST(EthereumAddress, IsValid) {
     ASSERT_FALSE(Address::isValid("abc"));
-    ASSERT_TRUE(Address::isValid("5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"));
     ASSERT_TRUE(Address::isValid("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"));
 }
