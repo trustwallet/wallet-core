@@ -66,7 +66,6 @@ TEST(StoredKey, ReadMyEtherWallet) {
     ASSERT_NO_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/myetherwallet.uu"));
 }
 
-
 TEST(StoredKey, InvalidPassword) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
