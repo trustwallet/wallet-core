@@ -66,6 +66,7 @@ TEST(StoredKey, ReadMyEtherWallet) {
     ASSERT_NO_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/myetherwallet.uu"));
 }
 
+
 TEST(StoredKey, InvalidPassword) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
@@ -112,6 +113,12 @@ TEST(StoredKey, MissingAddress) {
 
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0x04De84ec355BAe81b51cD53Fdc8AA30A61872C95");
     EXPECT_EQ(key.account(TWCoinTypeBitcoin, nullptr)->address, "bc1qe938ncm8fhdqg27xmxd7lq02jz9xh0x48r22lc");
+}
+
+TEST(StoredKey, EtherWalletAddressNo0x) {
+    auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/ethereum-wallet-address-no-0x.json");
+    key.fixAddresses("15748c4e3dca6ae2110535576ab0c398cb79d985707c68ee6c9f9df9d421dd53");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
 }
 
 }} // namespace
