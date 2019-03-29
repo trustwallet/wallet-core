@@ -12,20 +12,20 @@
 using namespace TW;
 using namespace TW::EOS;
 
-Address::Type translateType(TWEOSAddressType type) {
-    Address::Type t;
+Type translateType(TWEOSAddressType type) {
+    Type t;
     switch (type)
     {
         case TWEOSAddressTypeLegacy:
-            t = Address::Type::Legacy;
+            t = Type::Legacy;
             break;
 
         case TWEOSAddressTypeModernK1:
-            t = Address::Type::ModernK1;
+            t = Type::ModernK1;
             break;
 
         case TWEOSAddressTypeModernR1:
-            t = Address::Type::ModernR1;
+            t = Type::ModernR1;
             break;
     }
 

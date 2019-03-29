@@ -41,7 +41,7 @@ TEST(EOSAddress, FromPrivateKey) {
                                 "e6b783120a21cb234d8e15077ce186c47261d1043781ab8b16b84f2acd377668",
                                 "bb96c0a4a6ec9c93ccc0b2cbad6b0e8110b9ca4731aef9c6937b99552a319b03" };
 
-    Address::Type privTypes[] { Address::Type::Legacy, Address::Type::Legacy, Address::Type::ModernR1, Address::Type::ModernR1 };
+    Type privTypes[] { Type::Legacy, Type::Legacy, Type::ModernR1, Type::ModernR1 };
 
     std::string pubArray[] {   "EOS6TFKUKVvtvjRq9T4fV9pdxNUuJke92nyb4rzSFtZfdR5ssmVuY",
                                 "EOS5YtaCcbPJ3BknNBTDezE9eJoGNnAVuUwT8bnxhSRS5dqRvyfxr",
@@ -50,7 +50,7 @@ TEST(EOSAddress, FromPrivateKey) {
 
     for (int i = 0; i < 4; i++) { 
         const auto privateKey = PrivateKey(parse_hex(privArray[i]));
-        const auto publicKey = PublicKey(privateKey.getPublicKey(privTypes[i] == Address::Type::Legacy ? PublicKeyType::secp256k1 : PublicKeyType::nist256p1));
+        const auto publicKey = PublicKey(privateKey.getPublicKey(privTypes[i] == Type::Legacy ? PublicKeyType::secp256k1 : PublicKeyType::nist256p1));
         const auto address = Address(publicKey, privTypes[i]);
    
         ASSERT_EQ(address.string(), pubArray[i]);

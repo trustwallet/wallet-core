@@ -13,7 +13,7 @@ bool Address::isValid(const std::string& string) {
 
 /// Determines whether the given byte array is a valid keyBuffer
 /// Verifies the buffer's size and it's checksum bytes
-bool Address::isValid(const uint8_t *buffer, size_t size, EOS::Address::Type type) {
+bool Address::isValid(const uint8_t *buffer, size_t size, EOS::Type type) {
     // last Address::ChecksumSize bytes are a checksum
     uint32_t checksum = decode32LE(buffer + PublicKeyDataSize);
 
@@ -25,7 +25,7 @@ bool Address::isValid(const uint8_t *buffer, size_t size, EOS::Address::Type typ
 /// Creates a checksum of PublicKeyDataSize bytes at the buffer
 /// IMPORTANT: THERE ARE NO SIZE CHECKS. THE BUFFER IS ASSUMED
 ///             TO HAVE AT LEAST PublicKeyDataSize bytes.
-uint32_t Address::createChecksum(const uint8_t *buffer, Address::Type type) {
+uint32_t Address::createChecksum(const uint8_t *buffer, Type type) {
     // create our own checksum and compare the two
     uint8_t hash[RIPEMD160_DIGEST_LENGTH];
     RIPEMD160_CTX ctx;
@@ -40,11 +40,11 @@ uint32_t Address::createChecksum(const uint8_t *buffer, Address::Type type) {
         break;
 
     case Type::ModernK1:
-        ripemd160_Update(&ctx, (const uint8_t *) Modern::K1::subPrefix, Modern::K1::subPrefixSize);
+        ripemd160_Update(&ctx, (const uint8_t *) Modern::K1::prefix.c_str(), Modern::K1::prefix.size());
         break;
 
     case Type::ModernR1:
-        ripemd160_Update(&ctx, (const uint8_t *) Modern::R1::subPrefix, Modern::R1::subPrefixSize);
+        ripemd160_Update(&ctx, (const uint8_t *) Modern::R1::prefix.c_str(), Modern::R1::prefix.size());
         break;
     }
 
@@ -62,17 +62,17 @@ bool Address::extractKeyData(const std::string& string, Address *address) {
     Type type;
     size_t prefixSize;
     // std::cout << "Checking prefix for " + string + ".\n";
-    // std::cout << "Prefix: " + string.substr(0, Legacy::prefixSize) + "\n";
+    // std::cout << "Prefix: " + string.substr(0, Legacy::prefix.size()) + "\n";
     // std::cout << "Legacy Prefix: " + Legacy::prefix + " (" << sizeof(Legacy::prefix) << "\n";
-    if (string.substr(0, Legacy::prefixSize) == Legacy::prefix) {
+    if (string.substr(0, Legacy::prefix.size()) == Legacy::prefix) {
         type = Type::Legacy;
-        prefixSize = Legacy::prefixSize;
-    } else if (string.substr(0, Modern::R1::fullPrefixSize) == Modern::R1::fullPrefix) {
+        prefixSize = Legacy::prefix.size();
+    } else if (string.substr(0, Modern::R1::fullPubPrefix.size()) == Modern::R1::fullPubPrefix) {
         type = Type::ModernR1;
-        prefixSize = Modern::R1::fullPrefixSize;
-    } else if (string.substr(0, Modern::K1::fullPrefixSize) == Modern::K1::fullPrefix) {
+        prefixSize = Modern::R1::fullPubPrefix.size();
+    } else if (string.substr(0, Modern::K1::fullPubPrefix.size()) == Modern::K1::fullPubPrefix) {
         type = Type::ModernK1;
-        prefixSize = Modern::K1::fullPrefixSize;
+        prefixSize = Modern::K1::fullPubPrefix.size();
     } else {
         return false;
     }
@@ -111,7 +111,7 @@ Address::Address(const std::string& string) {
 }
 
 /// Initializes a EOS address from raw bytes
-Address::Address(const Data& data, Address::Type type) : type(type) {
+Address::Address(const Data& data, Type type) : type(type) {
     if (!isValid(data.data(), data.size(), type)) {
         throw std::invalid_argument("Invalid byte size!");
     }
@@ -120,7 +120,7 @@ Address::Address(const Data& data, Address::Type type) : type(type) {
 }
 
 /// Initializes a EOS address from a public key.
-Address::Address(const PublicKey& publicKey, Address::Type type) : type(type) {
+Address::Address(const PublicKey& publicKey, Type type) : type(type) {
     assert(PublicKeyDataSize == TW::PublicKey::secp256k1Size);
 
     // copy the raw, compressed key data
@@ -140,11 +140,9 @@ Address::Address(const PublicKey& publicKey, Address::Type type) : type(type) {
 
 /// Returns a string representation of the EOS address.
 std::string Address::string() const {
-    std::string prefix = prefixForType(type);
-
     size_t b58Size = Base58Size;
     char b58[b58Size];
     b58enc(b58, &b58Size, keyData, KeyDataSize);
 
-    return prefix + std::string(b58);
+    return prefix() + std::string(b58);
 }

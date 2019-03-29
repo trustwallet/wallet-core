@@ -6,6 +6,7 @@
 #include "Action.h"
 #include "../Data.h"
 #include "../PrivateKey.h"
+#include "Prefixes.h"
 
 #include <set>
 #include <array>
@@ -16,11 +17,15 @@ namespace EOS {
     class Signature: Bravo::Serializable
     {
     private:
-        static const unsigned long DataSize = 65;
+        const Data data;
+        const Type type;
+
+        static const size_t DataSize = 65;
+        static const size_t ChecksumSize = 4;
 
     public:
-        Signature(Data sig);
-        const Data data;
+        Signature(Data sig, Type type);
+        virtual ~Signature() { }
         void serialize(Data& os) const noexcept;
         std::string string() const noexcept;
     };
@@ -29,6 +34,7 @@ namespace EOS {
     public:
         uint16_t type;
         Data buffer;
+        virtual ~Extensions() { }
         void serialize(Data& os) const noexcept;
         nlohmann::json serialize() const noexcept;
     };

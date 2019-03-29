@@ -15,6 +15,7 @@ namespace EOS {
         Name actor, permission;
 
         PermissionLevel(const Name& actor, const Name& permission) : actor(actor), permission(permission) { }
+        virtual ~PermissionLevel() { }
 
         void serialize(Data& o) const;
         nlohmann::json serialize() const noexcept;
@@ -25,6 +26,8 @@ namespace EOS {
         Name account, name;
         std::vector<PermissionLevel> authorization;
         Data data;
+
+        virtual ~Action() { }
 
         void serialize(Data& o) const;
         nlohmann::json serialize() const noexcept;
