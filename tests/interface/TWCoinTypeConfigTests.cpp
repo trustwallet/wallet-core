@@ -83,7 +83,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value24 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTheta));
     assertStringsEqual(value24, "THETA");
 
-    auto value25 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLUX));
+    auto value25 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLux));
     assertStringsEqual(value25, "LUX");
 }
 
