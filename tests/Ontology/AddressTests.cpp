@@ -4,10 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "PublicKey.h"
 #include "HexCoding.h"
-#include "Ontology/Signer.h"
+#include "PublicKey.h"
+
 #include "Ontology/Address.h"
+#include "Ontology/Signer.h"
 
 #include <gtest/gtest.h>
 
@@ -22,7 +23,8 @@ TEST(OntologyAddress, validation) {
 }
 
 TEST(OntologyAddress, fromPubKey) {
-    auto address = Address(PublicKey(parse_hex("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486")));
+    auto address = Address(
+        PublicKey(parse_hex("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486")));
     EXPECT_EQ("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5", address.string());
 }
 
@@ -38,7 +40,8 @@ TEST(OntologyAddress, fromMultiPubKeys) {
     auto signer1 = Signer("4646464646464646464646464646464646464646464646464646464646464646");
     auto signer2 = Signer("4646464646464646464646464646464646464646464646464646464646464652");
     auto signer3 = Signer("4646464646464646464646464646464646464646464646464646464646464658");
-    std::vector<Data> pubKeys{signer1.getPublicKey().bytes, signer2.getPublicKey().bytes, signer3.getPublicKey().bytes};
+    std::vector<Data> pubKeys{signer1.getPublicKey().bytes, signer2.getPublicKey().bytes,
+                              signer3.getPublicKey().bytes};
     uint8_t m = 2;
     auto multiAddress = Address(m, pubKeys);
     EXPECT_EQ("AYGWgijVZnrUa2tRoCcydsHUXR1111DgdW", multiAddress.string());

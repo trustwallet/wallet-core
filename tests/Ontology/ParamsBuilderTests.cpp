@@ -11,8 +11,6 @@
 #include "Ontology/Ont.h"
 #include "Ontology/ParamsBuilder.h"
 
-#include <unordered_map>
-
 #include <gtest/gtest.h>
 
 using namespace TW;
