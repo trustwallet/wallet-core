@@ -40,8 +40,8 @@ TEST(OntologyOnt, queryBalance) {
 }
 
 TEST(OntologyOnt, transfer) {
-    auto signer1 = Signer("4646464646464646464646464646464646464646464646464646464646464646");
-    auto signer2 = Signer("4646464646464646464646464646464646464646464646464646464646464652");
+    auto signer1 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
+    auto signer2 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
     auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     uint64_t amount = 1;
     uint64_t gasPrice = 500;

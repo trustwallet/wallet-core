@@ -27,7 +27,6 @@ public class StellarAddress {
     }
 
     static native long nativeCreateWithString(String string);
-    static native long nativeCreateWithData(byte[] data);
     static native long nativeCreateWithPublicKey(PublicKey publicKey);
     static native void nativeDelete(long handle);
 
@@ -38,15 +37,6 @@ public class StellarAddress {
 
     public StellarAddress(String string) {
         nativeHandle = nativeCreateWithString(string);
-        if (nativeHandle == 0) {
-            throw new InvalidParameterException();
-        }
-
-        StellarAddressPhantomReference.register(this, nativeHandle);
-    }
-
-    public StellarAddress(byte[] data) {
-        nativeHandle = nativeCreateWithData(data);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();
         }

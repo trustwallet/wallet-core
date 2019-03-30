@@ -10,21 +10,21 @@
 import Foundation
 
 public final class OntologySigner {
-    
-    public static func encode(input: TWOntologySigningInput) -> TWOntologySigningOutput {
+
+    public static func sign(input: TW_Ontology_Proto_SigningInput) -> TW_Ontology_Proto_SigningOutput {
         let inputData = TWDataCreateWithNSData(try! input.serializedData())
         defer {
             TWDataDelete(inputData)
         }
         let resultData = TWDataNSData(TWOntologySignerSign(inputData))
-        return try! TWOntologySigningOutput(serializedData: resultData)
+        return try! TW_Ontology_Proto_SigningOutput(serializedData: resultData)
     }
-    
+
     let rawValue: OpaquePointer
-    
+
     init(rawValue: OpaquePointer) {
         self.rawValue = rawValue
     }
-    
-    
+
+
 }

@@ -35,9 +35,9 @@ TEST(OntologyAddress, fromString) {
 }
 
 TEST(OntologyAddress, fromMultiPubKeys) {
-    auto signer1 = Signer("4646464646464646464646464646464646464646464646464646464646464646");
-    auto signer2 = Signer("4646464646464646464646464646464646464646464646464646464646464652");
-    auto signer3 = Signer("4646464646464646464646464646464646464646464646464646464646464658");
+    auto signer1 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
+    auto signer2 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
+    auto signer3 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464658")));
     std::vector<Data> pubKeys{signer1.getPublicKey().bytes, signer2.getPublicKey().bytes, signer3.getPublicKey().bytes};
     uint8_t m = 2;
     auto multiAddress = Address(m, pubKeys);

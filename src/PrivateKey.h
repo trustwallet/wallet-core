@@ -54,11 +54,11 @@ class PrivateKey {
     /// Initializes a private key with a static array of bytes.
     PrivateKey(std::array<uint8_t, size>&& array) : bytes(array) {}
 
-    PrivateKey(const PrivateKey& other) = delete;
-    PrivateKey& operator=(const PrivateKey& other) = delete;
+    PrivateKey(const PrivateKey& other) = default;
+    PrivateKey& operator=(const PrivateKey& other) = default;
 
-    PrivateKey(PrivateKey&& other) = delete;
-    PrivateKey& operator=(PrivateKey&& other) = delete;
+    PrivateKey(PrivateKey&& other) = default;
+    PrivateKey& operator=(PrivateKey&& other) = default;
 
     virtual ~PrivateKey();
 
