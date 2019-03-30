@@ -48,8 +48,8 @@ bool Bech32Address::isValid(const std::string& string, const std::string& hrp) {
     return true;
 }
 
-Bech32Address::Bech32Address(const PublicKey& publicKey, int witver, const std::string& hrp)
-    : hrp(hrp), witnessVersion(witver), witnessProgram() {
+Bech32Address::Bech32Address(const PublicKey& publicKey, int witver, std::string hrp)
+    : hrp(std::move(hrp)), witnessVersion(witver), witnessProgram() {
     if (publicKey.type() != PublicKeyType::secp256k1) {
         throw std::invalid_argument("Bech32Addressneeds a compressed SECP256k1 public key.");
     }

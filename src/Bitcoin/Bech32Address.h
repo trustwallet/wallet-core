@@ -35,16 +35,11 @@ class Bech32Address {
 
     /// Initializes a Bech32 address with a human-readable part, a witness
     /// version, and a witness program.
-    Bech32Address(const std::string& hrp, int witver, const std::vector<uint8_t>& witprog)
-        : hrp(hrp), witnessVersion(witver), witnessProgram(witprog) {}
-
-    /// Initializes a Bech32 address with a human-readable part, a witness
-    /// version, and a witness program.
-    Bech32Address(const std::string& hrp, int witver, std::vector<uint8_t>&& witprog)
-        : hrp(hrp), witnessVersion(witver), witnessProgram(witprog) {}
+    Bech32Address(std::string hrp, int witver, std::vector<uint8_t> witprog)
+        : hrp(std::move(hrp)), witnessVersion(witver), witnessProgram(std::move(witprog)) {}
 
     /// Initializes a Bech32 address with a public key and a HRP prefix.
-    Bech32Address(const PublicKey& publicKey, int witver, const std::string& hrp);
+    Bech32Address(const PublicKey& publicKey, int witver, std::string hrp);
 
     /// Decodes a SegWit address.
     ///

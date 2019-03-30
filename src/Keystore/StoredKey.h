@@ -38,7 +38,7 @@ struct StoredKey {
     std::vector<Account> accounts;
 
     /// Initializes a `StoredKey` with a type and an encrypted payload.
-    StoredKey(StoredKeyType type, const EncryptionParameters& payload);
+    StoredKey(StoredKeyType type, EncryptionParameters payload);
 
     /// Initializes a `StoredKey` with a type, an encryption password, and
     /// unencrypted data.

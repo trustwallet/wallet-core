@@ -23,7 +23,7 @@ class Function {
 
     Function() = default;
     Function(std::string name, std::tuple<Params...> parameters)
-        : name(name), parameters(parameters) {}
+        : name(std::move(name)), parameters(std::move(parameters)) {}
 };
 
 template <typename... Params>
