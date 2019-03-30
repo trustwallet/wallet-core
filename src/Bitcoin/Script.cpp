@@ -289,8 +289,7 @@ Script Script::buildForAddress(const std::string& string) {
         auto address = Zcash::TAddress(string);
         auto data = std::vector<uint8_t>();
         data.reserve(Address::size - 2);
-        std::copy(address.bytes + 2, address.bytes + Zcash::TAddress::size,
-                  std::back_inserter(data));
+        std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
         return buildPayToPublicKeyHash(data);
     }
     return {};

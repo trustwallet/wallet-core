@@ -38,8 +38,7 @@ bool Address::isValid(const std::string& stringPadded) {
 
     // Check if valid Base32
     auto hash = std::array<uint8_t, Address::size>();
-    if (base32_decode(string.data() + 4, 32, hash.data(), hash.size(), BASE32_ALPHABET_NIMIQ) ==
-        NULL)
+    if (base32_decode(string.data() + 4, 32, hash.data(), hash.size(), BASE32_ALPHABET_NIMIQ) == nullptr)
         return false;
 
     // Calculate checksum
