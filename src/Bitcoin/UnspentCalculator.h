@@ -11,8 +11,8 @@
 
 namespace TW::Bitcoin {
 
-typedef std::function<int64_t(size_t, size_t, int64_t)> FeeCalculator;
-typedef std::function<int64_t(int64_t)> SingleInputFeeCalculator;
+using FeeCalculator = std::function<int64_t(size_t, size_t, int64_t)>;
+using SingleInputFeeCalculator = std::function<int64_t(int64_t)>;
 
 class UnspentCalculator {
   public:

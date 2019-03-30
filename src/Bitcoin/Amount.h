@@ -13,7 +13,7 @@
 namespace TW::Bitcoin {
 
 /// Amount in satoshis (can be negative)
-typedef int64_t Amount;
+using Amount = int64_t;
 
 /// One bitcoin in satoshis
 static const Amount coin = 100000000;
