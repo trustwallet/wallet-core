@@ -7,7 +7,10 @@
 #pragma once
 
 #include "../../Data.h"
+#include "../../uint256.h"
+#include "Numbers.h"
 
+#include <string>
 #include <tuple>
 #include <type_traits>
 
