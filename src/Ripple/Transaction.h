@@ -38,7 +38,6 @@ class Transaction {
     Data pub_key;
     Data signature;
 
-    Transaction() = default;
     Transaction(int64_t amount, int64_t fee, int64_t flags, int32_t sequence,
                 int32_t last_ledger_sequence, Address account, Address destination,
                 int64_t destination_tag)

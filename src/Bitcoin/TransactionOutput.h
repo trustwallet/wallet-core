@@ -26,7 +26,7 @@ struct TransactionOutput {
     TransactionOutput() = default;
 
     /// Initializes a transaction output with a value and a script.
-    TransactionOutput(Amount value, const Script& script) : value(value), script(script) {}
+    TransactionOutput(Amount value, Script script) : value(value), script(std::move(script)) {}
 
     /// Encodes the output into the provided buffer.
     void encode(std::vector<uint8_t>& data) const;

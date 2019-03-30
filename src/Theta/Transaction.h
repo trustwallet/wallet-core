@@ -22,12 +22,10 @@ class TxInput {
     uint64_t sequence;
     Data signature;
 
-    TxInput() = default;
-    TxInput(const Ethereum::Address& address, const Coins& coins, uint64_t sequence)
-        : address(address), coins(coins), sequence(sequence) {}
-    TxInput(const Ethereum::Address& address, const Coins& coins, uint64_t sequence,
-            const std::vector<uint8_t>& signature)
-        : address(address), coins(coins), sequence(sequence), signature(signature) {}
+    TxInput(Ethereum::Address address, Coins coins, uint64_t sequence)
+        : address(std::move(address)), coins(std::move(coins)), sequence(sequence) {}
+    TxInput(Ethereum::Address address, Coins coins, uint64_t sequence, Data signature)
+        : address(std::move(address)), coins(std::move(coins)), sequence(sequence), signature(std::move(signature)) {}
 };
 
 class TxOutput {
@@ -35,9 +33,8 @@ class TxOutput {
     Ethereum::Address address;
     Coins coins;
 
-    TxOutput() = default;
-    TxOutput(const Ethereum::Address& address, const Coins& coins)
-        : address(address), coins(coins) {}
+    TxOutput(Ethereum::Address address, Coins coins)
+        : address(std::move(address)), coins(std::move(coins)) {}
 };
 
 class Transaction {
@@ -47,13 +44,12 @@ class Transaction {
     std::vector<TxOutput> outputs;
 
     Transaction() = default;
-    Transaction(const Coins& fee, const std::vector<TxInput>& inputs,
-                const std::vector<TxOutput>& outputs)
-        : fee(fee), inputs(inputs), outputs(outputs) {}
+    Transaction(Coins fee, std::vector<TxInput> inputs, std::vector<TxOutput> outputs)
+        : fee(std::move(fee)), inputs(std::move(inputs)), outputs(std::move(outputs)) {}
 
-    Transaction(const Ethereum::Address& from, const Ethereum::Address& to,
-                const uint256_t& thetaAmount, const uint256_t& tfuelAmount, uint64_t sequence,
-                const uint256_t& feeAmount = 1000000000000);
+    Transaction(Ethereum::Address from, Ethereum::Address to,
+                uint256_t thetaAmount, uint256_t tfuelAmount, uint64_t sequence,
+                uint256_t feeAmount = 1000000000000);
 
     /// Encodes the transaction
     Data encode() const noexcept;

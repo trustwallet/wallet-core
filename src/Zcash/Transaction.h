@@ -19,21 +19,16 @@ namespace TW::Zcash {
 /// Only supports Sapling transparent transaction right now
 /// See also https://github.com/zcash/zips/blob/master/zip-0243.rst
 struct Transaction {
-    uint32_t version;
-    uint32_t versionGroupId;
-    uint32_t lockTime;
-    uint32_t expiryHeight;
-    uint64_t valueBalance;
+    uint32_t version = 0x80000004;
+    uint32_t versionGroupId = 0x892F2085;
+    uint32_t lockTime = 0;
+    uint32_t expiryHeight = 0;
+    uint64_t valueBalance = 0;
 
     std::vector<Bitcoin::TransactionInput> inputs;
     std::vector<Bitcoin::TransactionOutput> outputs;
 
-    Transaction()
-        : version(0x80000004)
-        , versionGroupId(0x892F2085)
-        , lockTime()
-        , expiryHeight()
-        , valueBalance() {}
+    Transaction() = default;
 
     Transaction(uint32_t version, uint32_t versionGroupId, uint32_t lockTime, uint32_t expiryHeight,
                 uint64_t valueBalance)

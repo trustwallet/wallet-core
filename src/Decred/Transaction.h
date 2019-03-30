@@ -21,10 +21,10 @@ enum class SerializeType : uint16_t { full, noWitness, onlyWitness };
 
 struct Transaction {
     /// Serialization format
-    SerializeType serializeType;
+    SerializeType serializeType = SerializeType::full;
 
     /// Transaction data format version
-    uint16_t version;
+    uint16_t version = 1;
 
     /// A list of 1 or more transaction inputs or sources for coins
     std::vector<TransactionInput> inputs;
@@ -34,19 +34,15 @@ struct Transaction {
 
     /// The time when a transaction can be spent (usually zero, in which case it
     /// has no effect).
-    uint32_t lockTime;
+    uint32_t lockTime = 0;
 
     /// The block height at which the transaction expires and is no longer
     /// valid.
-    uint32_t expiry;
+    uint32_t expiry = 0;
 
     Transaction()
-        : serializeType(SerializeType::full)
-        , version(1)
-        , inputs()
-        , outputs()
-        , lockTime()
-        , expiry(0) {}
+        : inputs()
+        , outputs() {}
 
     /// Whether the transaction is empty.
     bool empty() const { return inputs.empty() && outputs.empty(); }

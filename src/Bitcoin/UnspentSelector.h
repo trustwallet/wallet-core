@@ -30,7 +30,7 @@ class UnspentSelector {
     UnspentCalculator calculator;
 
     UnspentSelector() : calculator(UnspentCalculator()) {}
-    explicit UnspentSelector(const UnspentCalculator& calculator) : calculator(calculator) {}
+    explicit UnspentSelector(UnspentCalculator calculator) : calculator(std::move(calculator)) {}
 
   public:
     template <typename T>

@@ -24,9 +24,9 @@ class UnspentCalculator {
     UnspentCalculator()
         : calculate(UnspentCalculator::calculateFee)
         , calculateSingleInput(UnspentCalculator::calculateSingleInputFee) {}
-    UnspentCalculator(const FeeCalculator& calculateFee,
-                      const SingleInputFeeCalculator& calculateSingleInputFee)
-        : calculate(calculateFee), calculateSingleInput(calculateSingleInputFee) {}
+    UnspentCalculator(FeeCalculator calculateFee,
+                      SingleInputFeeCalculator calculateSingleInputFee)
+        : calculate(std::move(calculateFee)), calculateSingleInput(std::move(calculateSingleInputFee)) {}
 
   private:
     static int64_t calculateFee(size_t inputs, size_t outputs = 2, int64_t byteFee = 1);
