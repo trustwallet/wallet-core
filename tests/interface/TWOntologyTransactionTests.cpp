@@ -66,3 +66,32 @@ TEST(TWOntologySignerSign, OngTransfer) {
     EXPECT_EQ(452, rawTx.find("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486"));
     EXPECT_EQ(656, rawTx.find("03d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1ee"));
 }
+
+TEST(TWOntologySignerSign, OngWithdraw) {
+    // tx on polaris test net.
+    // https://explorer.ont.io/transaction/433cb7ed4dec32d55be0db104aaa7ade4c7dbe0f62ef94f7b17829f7ac7cd75b/testnet
+    auto input = Ontology::Proto::SigningInput();
+    input.set_contract("ONG");
+    input.set_method("withdraw");
+    input.set_owner_private_key("4646464646464646464646464646464646464646464646464646464646464646");
+    input.set_payer_private_key("4646464646464646464646464646464646464646464646464646464646464652");
+    input.set_to_address("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
+    input.set_amount(1);
+    input.set_gas_price(500);
+    input.set_gas_limit(20000);
+    auto data = OngTxBuilder::withdraw(input);
+    std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
+    auto protoOutput = Proto::SigningOutput();
+    protoOutput.ParseFromString(serialized);
+    auto rawTx = hex(protoOutput.encoded());
+    EXPECT_EQ(776, rawTx.length());
+    EXPECT_EQ(0, rawTx.find("00d1"));
+    EXPECT_EQ(12, rawTx.find("f401000000000000"));
+    EXPECT_EQ(28, rawTx.find("204e000000000000"));
+    EXPECT_EQ(44, rawTx.find("57e9d1a61f9aafa798b6c7fbeae35639681d7df6"));
+    EXPECT_EQ(61, rawTx.find("8b"));
+    EXPECT_EQ(86, rawTx.find("00c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc81400000000000000000000000000000000000000016a7cc814fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc8516a7cc86c"));
+    EXPECT_EQ(246, rawTx.find("0c7472616e7366657246726f6d"));
+    EXPECT_EQ(504, rawTx.find("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486"));
+    EXPECT_EQ(708, rawTx.find("03d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1ee"));
+}
