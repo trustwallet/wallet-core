@@ -19,9 +19,6 @@ JNIEXPORT
 jlong JNICALL Java_wallet_core_jni_StellarAddress_nativeCreateWithString(JNIEnv *env, jclass thisClass, jstring string);
 
 JNIEXPORT
-jlong JNICALL Java_wallet_core_jni_StellarAddress_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data);
-
-JNIEXPORT
 jlong JNICALL Java_wallet_core_jni_StellarAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey);
 
 JNIEXPORT
