@@ -21,7 +21,7 @@ class TAddress {
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    uint8_t bytes[size];
+    std::array<uint8_t, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
     template <typename T>

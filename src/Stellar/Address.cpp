@@ -19,15 +19,15 @@ using namespace TW::Stellar;
 
 bool Address::isValid(const std::string& string) {
     bool valid = false;
-    uint8_t decoded[rawSize];
+    std::array<uint8_t, rawSize> decoded;
 
     if (string.length() != size) {
         return false;
     }
 
     // Check that it decodes correctly
-    uint8_t* ret = base32_decode(string.data(), size, decoded, sizeof(decoded), BASE32_ALPHABET_RFC4648);
-    valid = (ret != NULL);
+    uint8_t* ret = base32_decode(string.data(), size, decoded.data(), sizeof(decoded), BASE32_ALPHABET_RFC4648);
+    valid = (ret != nullptr);
 
     // ... and that version byte is 0x30
     if (valid && TWStellarVersionByte(decoded[0]) != TWStellarVersionByte::TWStellarVersionByteAccountID) {
@@ -35,13 +35,13 @@ bool Address::isValid(const std::string& string) {
     }
 
     // ... and that checksums match
-    uint16_t checksum_expected = Crc::crc16(decoded, 33);
+    uint16_t checksum_expected = Crc::crc16(decoded.data(), 33);
     uint16_t checksum_actual = (decoded[34] << 8) | decoded[33]; // unsigned short (little endian)
     if (valid && checksum_expected != checksum_actual) {
         valid = false;
     }
 
-    memzero(decoded, sizeof(decoded));
+    memzero(decoded.data(), sizeof(decoded));
     return valid;
 }
 
@@ -51,10 +51,10 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address data");
     }
 
-    uint8_t decoded[rawSize];
-    base32_decode(string.data(), size, decoded, sizeof(decoded), BASE32_ALPHABET_RFC4648);
-    std::copy(decoded + 1, decoded + 33, bytes.begin());
-    memzero(decoded, sizeof(decoded));
+    std::array<uint8_t, rawSize> decoded;
+    base32_decode(string.data(), size, decoded.data(), sizeof(decoded), BASE32_ALPHABET_RFC4648);
+    std::copy(decoded.begin() + 1, decoded.end(), bytes.begin());
+    memzero(decoded.data(), sizeof(decoded));
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
@@ -70,21 +70,21 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    char out[56 + 1];
+    std::array<char, 56 + 1> out;
     // version + key bytes + checksum
-    uint8_t keylen = 1 + 32 + 2;
-    uint8_t bytes_full[keylen];
+    constexpr uint8_t keylen = 1 + 32 + 2;
+    std::array<uint8_t, keylen> bytes_full;
     bytes_full[0] = 6 << 3; // 'G'
 
-    std::copy(bytes.begin(), bytes.end(), bytes_full + 1);
+    std::copy(bytes.begin(), bytes.end(), bytes_full.begin() + 1);
 
     // Last two bytes are the checksum
-    uint16_t checksum = Crc::crc16(bytes_full, 33);
+    uint16_t checksum = Crc::crc16(bytes_full.data(), 33);
     bytes_full[keylen - 2] = checksum & 0x00ff;
     bytes_full[keylen - 1] = (checksum >> 8) & 0x00ff;
 
-    base32_encode(bytes_full, keylen, out, sizeof(out), BASE32_ALPHABET_RFC4648);
+    base32_encode(bytes_full.data(), keylen, out.data(), sizeof(out), BASE32_ALPHABET_RFC4648);
 
     // Public key will always be 56 characters
-    return std::string(out);
+    return std::string(out.data());
 }

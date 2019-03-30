@@ -42,22 +42,22 @@ TAddress::TAddress(const std::string& string) {
         throw std::invalid_argument("Invalid address data");
     }
 
-    std::copy(decoded.begin(), decoded.end(), bytes);
+    std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
 TAddress::TAddress(const std::vector<uint8_t>& data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address key data");
     }
-    std::copy(data.begin(), data.end(), bytes);
+    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 TAddress::TAddress(const PublicKey& publicKey, uint8_t prefix) {
     bytes[0] = 0x1c;
     bytes[1] = prefix;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes + 2);
+    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 2);
 }
 
 std::string TAddress::string() const {
-    return Base58::bitcoin.encodeCheck(bytes, bytes + TAddress::size);
+    return Base58::bitcoin.encodeCheck(bytes.data(), bytes.data() + TAddress::size);
 }
