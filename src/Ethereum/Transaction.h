@@ -7,14 +7,12 @@
 #pragma once
 
 #include "Address.h"
-#include <boost/multiprecision/cpp_int.hpp>
+#include "../uint256.h"
 
 namespace TW::Ethereum {
 
 class Transaction {
   public:
-    typedef boost::multiprecision::uint256_t uint256_t;
-
     uint256_t nonce;
     uint256_t gasPrice;
     uint256_t gasLimit;
