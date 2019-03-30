@@ -15,7 +15,7 @@ namespace TW::Aion {
 
 class Transaction {
   public:
-    typedef boost::multiprecision::uint128_t uint128_t;
+    using uint128_t = boost::multiprecision::uint128_t;
 
     uint128_t nonce;
     uint128_t gasPrice;

@@ -6,13 +6,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bech32Address.h"
-
 #include "../Bech32.h"
+
 #include <TrezorCrypto/ecdsa.h>
 #include <TrustWalletCore/TWHRP.h>
 
 using namespace TW::Bitcoin;
-typedef std::vector<uint8_t> Data;
 
 bool Bech32Address::isValid(const std::string& string) {
     auto dec = Bech32::decode(string);

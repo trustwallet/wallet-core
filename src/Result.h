@@ -39,7 +39,7 @@ struct Result {
     static_assert(!std::is_same<E, void>::value, "void error type is not allowed");
     static constexpr size_t Size = sizeof(T) > sizeof(E) ? sizeof(T) : sizeof(E);
     static constexpr size_t Align = sizeof(T) > sizeof(E) ? alignof(T) : alignof(E);
-    typedef typename std::aligned_storage<Size, Align>::type Storage;
+    using Storage = typename std::aligned_storage<Size, Align>::type;
 
     /// Wether the operation succeeded.
     bool success_;
