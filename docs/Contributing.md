@@ -25,7 +25,7 @@ Keep this in mind when adding to the library:
 
 * Install Xcode
 * Install Xcode command line tools: `xcode-select --install`
-* Install CMake, boost, protobuf: `brew install cmake ninja boost autoconf automake libtool xcodegen`
+* Install other tools: `brew install cmake ninja boost autoconf automake libtool xcodegen clang-format`
 * Install [Android Studio](https://developer.android.com/studio/index.html)
 * Install the [Android NDK](https://developer.android.com/ndk/guides/)
 
@@ -121,8 +121,18 @@ When implementing a new blockchain make sure you go through this checklist:
     - [ ] Address interface (if necessary).
     - [ ] Signing interface.
 - [ ] Validate generated code in Android an iOS projects. Write integration tests for each.
+- [ ] Add a coin icon to "Supported Blockchains" section in `README.md`
+    - [ ] Upload coin icon to [TrustWallet/tokens](https://github.com/TrustWallet/tokens) if necessary
 
 Also check out the [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain) document.
+
+## Code Style
+
+Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html) for C++. We use `clang-format` to ensure a consistent code sytle. **Do not** reformat files that you didn't modify, or the header files in the `include` folder. You can install a clang-format extension for your IDE.
+
+## Docker
+
+Wallet core provides a Dockerfile that sets up an Ubuntu container with the necessary depedencies. To build the docker image run `docker build .` in the root folder. To run a pre-built image run `docker run -it albinance/wallet-core /bin/bash`. Use `docker push` if you want to upload your own image to Docker Hub.
 
 ## Releasing
 

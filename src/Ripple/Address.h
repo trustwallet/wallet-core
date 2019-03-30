@@ -15,15 +15,16 @@ namespace TW {
 namespace Ripple {
 
 class Address {
-public:
+  public:
     /// Number of bytes in an address.
     static const size_t size = 21;
 
-    /// Address data consisting of a prefix byte followed by the public key hash.
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
     std::array<byte, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid Ripple address.
-    template<typename T>
+    template <typename T>
     static bool isValid(const T& data) {
         return data.size() == size;
     }
@@ -32,13 +33,13 @@ public:
     static bool isValid(const std::string& string);
 
     /// Initializes a Ripple address with a string representation.
-    Address(const std::string& string);
+    explicit Address(const std::string& string);
 
     /// Initializes a Ripple address with a collection of bytes.
-    Address(const std::vector<uint8_t>& data);
+    explicit Address(const std::vector<uint8_t>& data);
 
     /// Initializes a Ripple address with a public key.
-    Address(const PublicKey& publicKey);
+    explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
@@ -48,7 +49,8 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-}} // namespace
+} // namespace Ripple
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWRippleAddress {

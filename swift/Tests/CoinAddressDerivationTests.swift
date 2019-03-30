@@ -58,7 +58,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .veChain:
                     XCTAssertEqual("0x1a553275dF34195eAf23942CB7328AcF9d48c160", address)
                 case .wanChain:
-                    XCTAssertEqual("0xD5ca90b928279FE5D06144136a25DeD90127aC15", address)
+                    XCTAssertEqual("0xd5CA90B928279fe5d06144136A25dEd90127Ac15", address)
                 case .xdai:
                     XCTAssertEqual("0x364d0551599B97EAf997bc06c8c40Aaf73124402", address)
                 case .zcash:
@@ -75,6 +75,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("GBL3MT2ICHHM5OJ2QJ44CAHGDK6MLPINVXBKOKLHGBWQDVRWTWQ7U2EA", address)
                 case .decred:
                     XCTAssertEqual("DsidJiDGceqHTyqiejABy1ZQ3FX4SiWZkYG", address)
+                case .theta:
+                    XCTAssertEqual("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
                 }
             }
         }

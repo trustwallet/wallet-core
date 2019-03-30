@@ -114,7 +114,7 @@ class KeyStoreTests: XCTestCase {
         let key = StoredKey.importPrivateKey(privateKey: privateKeyData, password: "password", coin: .ethereum)
         let json = key.exportJSON()!
 
-        let wallet = try keyStore.import(json: json, password: "password", newPassword: "newPassword", coin: .ethereum)
+        let wallet = try keyStore.import(json: json, password: "password", newPassword: "newPassword", coins: [.ethereum])
         let storedData = wallet.key.decryptPrivateKey(password: "newPassword")
 
         XCTAssertNotNil(keyStore.keyWallet)
@@ -139,7 +139,7 @@ class KeyStoreTests: XCTestCase {
 
     func testImportWallet() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = try keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coin: .ethereum)
+        let wallet = try keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coins: [.ethereum])
         let storedData = wallet.key.decryptMnemonic(password: "newPassword")
 
         XCTAssertNotNil(storedData)
@@ -149,7 +149,7 @@ class KeyStoreTests: XCTestCase {
 
     func testExportMnemonic() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = try keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coin: .ethereum)
+        let wallet = try keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coins: [.ethereum])
         let exported = try keyStore.exportMnemonic(wallet: wallet, password: "newPassword")
 
         XCTAssertEqual(mnemonic, exported)
@@ -177,7 +177,7 @@ class KeyStoreTests: XCTestCase {
 
     func testDeriveActiveAccounts() {
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
-        let wallet = try! keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coin: .ethereum)
+        let wallet = try! keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coins: [.ethereum])
         let coins = CoinType.allCases
         let accounts = try! keyStore.addAccounts(wallet: wallet, coins: coins, password: "newPassword")
 

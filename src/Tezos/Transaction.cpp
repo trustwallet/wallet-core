@@ -4,12 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Transaction.h"
 #include "Address.h"
 #include "Forging.h"
-#include "Transaction.h"
 
-#include "../PublicKey.h"
 #include "../HexCoding.h"
+#include "../PublicKey.h"
 #include <variant>
 
 using namespace std;
@@ -24,7 +24,7 @@ Data Transaction::forge() {
     auto forgedStorageLimit = forgeZarith(storage_limit);
 
     if (kind == operationtype::REVEAL) {
-        if(auto publicKey = std::get_if<PublicKey>(&destination_or_public_key)) {
+        if (auto publicKey = std::get_if<PublicKey>(&destination_or_public_key)) {
             forged.push_back(0x07);
             append(forged, forgedSource);
             append(forged, forgedFee);
@@ -34,7 +34,7 @@ Data Transaction::forge() {
             append(forged, forgePublicKey(*publicKey));
             return forged;
         } else {
-            throw std::invalid_argument( "Invalid publicKey" );
+            throw std::invalid_argument("Invalid publicKey");
         }
     }
     auto forgedAmount = forgeZarith(amount);
@@ -50,6 +50,6 @@ Data Transaction::forge() {
         append(forged, forgeBool(false));
         return forged;
     } else {
-        throw std::invalid_argument( "Invalid destination" );
+        throw std::invalid_argument("Invalid destination");
     }
 }

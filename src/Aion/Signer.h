@@ -7,9 +7,9 @@
 #pragma once
 
 #include "Transaction.h"
-#include "../PrivateKey.h"
 #include "../Data.h"
 #include "../Hash.h"
+#include "../PrivateKey.h"
 
 #include <cstdint>
 #include <tuple>
@@ -20,15 +20,15 @@ namespace Aion {
 
 /// Helper class that performs Aion transaction signing.
 class Signer {
-public:
-    
+  public:
     Signer() = delete;
-    
+
     /// Signs the given transaction.
     static void sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
 };
 
-}} // namespace
+} // namespace Aion
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWAionSigner {

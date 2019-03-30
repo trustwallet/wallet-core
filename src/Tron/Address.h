@@ -16,18 +16,19 @@ namespace TW {
 namespace Tron {
 
 class Address {
-public:
+  public:
     /// Number of bytes in an address.
     static const size_t size = 21;
 
     /// Address prefix.
     static const byte prefix = 0x41;
 
-    /// Address data consisting of a prefix byte followed by the public key hash.
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
     std::array<byte, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
-    template<typename T>
+    template <typename T>
     static bool isValid(const T& data) {
         return data.size() == size;
     }
@@ -36,13 +37,13 @@ public:
     static bool isValid(const std::string& string);
 
     /// Initializes a  address with a string representation.
-    Address(const std::string& string);
+    explicit Address(const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
-    Address(const Data& data);
+    explicit Address(const Data& data);
 
     /// Initializes a  address with a public key and a prefix.
-    Address(const PublicKey& publicKey);
+    explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
@@ -52,4 +53,10 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-}} // namespace
+} // namespace Tron
+} // namespace TW
+
+/// Wrapper for C interface.
+struct TWTronAddress {
+    TW::Tron::Address impl;
+};

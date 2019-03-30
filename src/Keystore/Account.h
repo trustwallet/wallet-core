@@ -16,7 +16,7 @@ namespace Keystore {
 
 /// Account for a particular coin within a wallet.
 class Account {
-public:
+  public:
     /// Account public address
     std::string address;
 
@@ -27,12 +27,11 @@ public:
     std::string extendedPublicKey;
 
     /// Coin this account is for.
-    TWCoinType coin() const {
-        return derivationPath.coin();
-    }
+    TWCoinType coin() const { return derivationPath.coin(); }
 
     Account() = default;
-    Account(std::string address, DerivationPath derivationPath, const std::string& extendedPublicKey = "")
+    Account(std::string address, DerivationPath derivationPath,
+            const std::string& extendedPublicKey = "")
         : address(address), derivationPath(derivationPath), extendedPublicKey(extendedPublicKey) {}
 
     /// Initializes `Account` with a JSON object.
@@ -42,7 +41,8 @@ public:
     nlohmann::json json() const;
 };
 
-}} // namespace
+} // namespace Keystore
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWAccount {

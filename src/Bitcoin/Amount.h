@@ -27,4 +27,5 @@ inline bool isValidAmount(const Amount& amount) {
     return (amount >= 0 && amount <= maxAmount);
 }
 
-}} // namespace
+} // namespace Bitcoin
+} // namespace TW

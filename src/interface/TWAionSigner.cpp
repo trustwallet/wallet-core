@@ -19,7 +19,7 @@ TW_Aion_Proto_SigningOutput TWAionSignerSign(TW_Aion_Proto_SigningInput data) {
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
     typedef boost::multiprecision::uint128_t uint128_t;
-    
+
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction(
         /* nonce: */ static_cast<uint128_t>(load(input.nonce())),
@@ -35,7 +35,7 @@ TW_Aion_Proto_SigningOutput TWAionSignerSign(TW_Aion_Proto_SigningInput data) {
     auto encoded = transaction.encode();
     protoOutput.set_encoded(encoded.data(), encoded.size());
     protoOutput.set_signature(transaction.signature.data(), transaction.signature.size());
-    
+
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

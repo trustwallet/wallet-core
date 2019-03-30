@@ -6,10 +6,10 @@
 
 #include "Transaction.h"
 
+#include "Signer.h"
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 #include "../PublicKey.h"
-#include "Signer.h"
 
 using namespace TW;
 using namespace TW::Nimiq;

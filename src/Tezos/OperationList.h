@@ -8,17 +8,18 @@ namespace TW {
 namespace Tezos {
 
 class OperationList {
-public:
+  public:
     std::string branch;
-    std::vector< Transaction > operation_list;
+    std::vector<Transaction> operation_list;
     OperationList(const std::string& string);
-    void add_operation(Transaction transaction);
+    void addOperation(const Transaction& transaction);
     /// Returns a string representation of the operations.
     Data forge() const;
     Data forgeBranch() const;
 };
 
-}} // namespace
+} // namespace Tezos
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWTezosOperationList {

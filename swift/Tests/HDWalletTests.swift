@@ -41,7 +41,7 @@ class HDWalletTests: XCTestCase {
         let key = wallet.getKeyForCoin(coin: wanChain)
         let address = wanChain.deriveAddress(privateKey: key)
 
-        XCTAssertEqual(address, "0x4DDa26870B4b3fa3FbA32222159359038f588318")
+        XCTAssertEqual(address, "0x4ddA26870b4B3FA3fBa32222159359038F588318")
     }
 
     func testDeriveBitcoin() {

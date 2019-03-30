@@ -6,9 +6,9 @@
 
 #include "Address.h"
 
+#include "Tezos/BinaryCoding.h"
 #include "../Base58.h"
 #include "../Hash.h"
-#include "Tezos/BinaryCoding.h"
 
 using namespace TW::NEO;
 

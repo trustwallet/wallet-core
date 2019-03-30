@@ -33,6 +33,7 @@ public class PublicKey {
     public static native PublicKey recover(byte[] signature, byte[] message);
     public native boolean isCompressed();
     public native PublicKey compressed();
+    public native PublicKey uncompressed();
     public native byte[] data();
     public native String description();
     public native boolean verify(byte[] signature, byte[] message);
