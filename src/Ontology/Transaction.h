@@ -7,6 +7,7 @@
 #pragma once
 
 #include "SigData.h"
+#include "../PublicKey.h"
 
 #include <string>
 

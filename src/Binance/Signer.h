@@ -8,7 +8,7 @@
 
 #include "../proto/Binance.pb.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
 namespace TW::Binance {

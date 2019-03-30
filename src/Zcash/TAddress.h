@@ -8,7 +8,8 @@
 
 #include "../PublicKey.h"
 
-#include <stdint.h>
+#include <array>
+#include <cstdint>
 #include <string>
 
 namespace TW::Zcash {

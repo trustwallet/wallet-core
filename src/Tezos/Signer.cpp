@@ -4,14 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <string>
-
 #include "OperationList.h"
 #include "Signer.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
 #include <TrustWalletCore/TWCurve.h>
+
+#include <string>
 
 using namespace TW;
 using namespace TW::Tezos;

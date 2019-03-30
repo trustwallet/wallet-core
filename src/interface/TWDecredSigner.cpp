@@ -4,17 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <algorithm>
-#include <TrustWalletCore/TWDecredSigner.h>
 #include "../Bitcoin/TransactionBuilder.h"
-#include "../Decred/Signer.h"
-
 #include "../Data.h"
+#include "../Decred/Signer.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "../proto/Common.pb.h"
 #include "../proto/Bitcoin.pb.h"
+#include "../proto/Common.pb.h"
 #include "../proto/Decred.pb.h"
+
+#include <TrustWalletCore/TWDecredSigner.h>
+#include <algorithm>
 
 using namespace TW;
 using namespace TW::Decred;

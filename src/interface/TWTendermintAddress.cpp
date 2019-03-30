@@ -4,18 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWTendermintAddress.h>
-
-#include "../Tendermint/Address.h"
 #include "../Bech32.h"
-
-#include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPublicKey.h>
-#include <TrustWalletCore/TWHRP.h>
+#include "../Tendermint/Address.h"
 
 #include <TrezorCrypto/ecdsa.h>
-#include <string.h>
-#include <memory>
+#include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWHRP.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWTendermintAddress.h>
 
 using namespace TW;
 using namespace TW::Tendermint;

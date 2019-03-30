@@ -6,8 +6,8 @@
 
 #include <TrustWalletCore/TWOntologySigner.h>
 
-#include "../Ontology/OntTxBuilder.h"
 #include "../Ontology/OngTxBuilder.h"
+#include "../Ontology/OntTxBuilder.h"
 
 using namespace TW;
 using namespace TW::Ontology;

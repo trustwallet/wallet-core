@@ -9,7 +9,7 @@
 #include "../PublicKey.h"
 
 #include <array>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
