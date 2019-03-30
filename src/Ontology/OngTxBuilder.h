@@ -24,6 +24,8 @@ class OngTxBuilder {
 
     static TW_Ontology_Proto_SigningOutput transfer(const Ontology::Proto::SigningInput& input);
 
+    static TW_Ontology_Proto_SigningOutput withdraw(const Ontology::Proto::SigningInput& input);
+
     static TW_Ontology_Proto_SigningOutput build(const Ontology::Proto::SigningInput& input);
 };
 
