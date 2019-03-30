@@ -23,12 +23,12 @@ namespace Aion {
 struct RLP {
     static Data encodeLong(boost::multiprecision::uint128_t l) noexcept {
         if ((l & 0x00000000FFFFFFFFL) == l) {
-            return Ethereum::RLP::encode(l);
+            return Ethereum::RLP::encode(static_cast<uint256_t>(l));
         }
         Data result(9);
         result[0] = 0x80 + 8;
         for (int i = 8; i > 0; i--) {
-            result[i] = (byte)l & 0xFF;
+            result[i] = (byte)(l & 0xFF);
             l >>= 8;
         }
         return result;

@@ -3,7 +3,7 @@
 set -e
 
 ROOT="$PWD"
-PREFIX="$ROOT/build/local"
+PREFIX="${PREFIX:-$ROOT/build/local}"
 
 # Setup up folders
 export PATH="$PREFIX/bin":$PATH

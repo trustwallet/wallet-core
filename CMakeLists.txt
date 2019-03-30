@@ -6,8 +6,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 
-include_directories(${CMAKE_SOURCE_DIR}/build/local/include)
-link_directories(${CMAKE_SOURCE_DIR}/build/local/lib)
+if ("$ENV{PREFIX}" STREQUAL "")
+    set(PREFIX "${CMAKE_SOURCE_DIR}/build/local")
+else()
+    set(PREFIX "$ENV{PREFIX}")
+endif()
+
+include_directories(${PREFIX}/include)
+link_directories(${PREFIX}/lib)
 
 add_subdirectory(trezor-crypto)
 
@@ -59,7 +65,6 @@ target_include_directories(TrustWalletCore
 )
 
 if(NOT ANDROID AND NOT IOS_PLATFORM)
-    add_subdirectory(protobuf-plugin)
     add_subdirectory(tests)
 endif()
 

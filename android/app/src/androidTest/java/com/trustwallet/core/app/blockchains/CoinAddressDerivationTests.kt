@@ -4,7 +4,33 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.HDWallet
 import wallet.core.jni.CoinType
-import wallet.core.jni.CoinType.*
+import wallet.core.jni.CoinType.BINANCE
+import wallet.core.jni.CoinType.BITCOIN
+import wallet.core.jni.CoinType.BITCOINCASH
+import wallet.core.jni.CoinType.CALLISTO
+import wallet.core.jni.CoinType.DASH
+import wallet.core.jni.CoinType.ETHEREUM
+import wallet.core.jni.CoinType.ETHEREUMCLASSIC
+import wallet.core.jni.CoinType.GO
+import wallet.core.jni.CoinType.ICON
+import wallet.core.jni.CoinType.LITECOIN
+import wallet.core.jni.CoinType.ONTOLOGY
+import wallet.core.jni.CoinType.POA
+import wallet.core.jni.CoinType.RIPPLE
+import wallet.core.jni.CoinType.TEZOS
+import wallet.core.jni.CoinType.THUNDERTOKEN
+import wallet.core.jni.CoinType.TOMOCHAIN
+import wallet.core.jni.CoinType.TRON
+import wallet.core.jni.CoinType.VECHAIN
+import wallet.core.jni.CoinType.WANCHAIN
+import wallet.core.jni.CoinType.XDAI
+import wallet.core.jni.CoinType.ZCASH
+import wallet.core.jni.CoinType.ZCOIN
+import wallet.core.jni.CoinType.NIMIQ
+import wallet.core.jni.CoinType.STELLAR
+import wallet.core.jni.CoinType.AION
+import wallet.core.jni.CoinType.NEO
+import wallet.core.jni.CoinType.THETA
 
 class CoinAddressDerivationTests {
 
@@ -48,6 +74,7 @@ class CoinAddressDerivationTests {
                     STELLAR -> assertEquals("GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P", address)
                     AION -> assertEquals("0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e", address)
                     NEO -> assertEquals("AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF", address)
+                    THETA -> assertEquals("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
                 }
             }
         }

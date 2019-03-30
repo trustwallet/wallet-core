@@ -12,10 +12,12 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
 # Install all required packages
 RUN apt-get install -y \
+    autoconf \
     git \
     libcurl4-openssl-dev \
     libicu-dev \
     libssl-dev \
+    libtool \
     ninja-build \
     nodejs \
     pkg-config \
