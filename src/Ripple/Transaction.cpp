@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Transaction.h"
 #include "BinaryCoding.h"
+#include "Transaction.h"
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 

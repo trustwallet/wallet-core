@@ -10,7 +10,7 @@
 #include "../Data.h"
 #include "../uint256.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 

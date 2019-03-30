@@ -8,8 +8,8 @@
 #include "ParamsBuilder.h"
 #include "Transaction.h"
 
-#include "../HexCoding.h"
 #include "../Hash.h"
+#include "../HexCoding.h"
 
 #include <string>
 

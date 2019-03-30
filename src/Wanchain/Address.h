@@ -8,8 +8,9 @@
 
 #include "../Ethereum/Address.h"
 #include "../PublicKey.h"
+
 #include <array>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
 namespace TW::Wanchain {

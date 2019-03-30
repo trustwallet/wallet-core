@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "../PrivateKey.h"
+#include "../proto/Stellar.pb.h"
+#include "../Stellar/Address.h"
+#include "../Stellar/Signer.h"
+
 #include <TrustWalletCore/TWStellarSigner.h>
 #include <TrustWalletCore/TWPrivateKey.h>
-#include <PrivateKey.h>
-
-#include "../Stellar/Signer.h"
-#include "../Stellar/Address.h"
-#include "../proto/Stellar.pb.h"
 
 using namespace TW;
 using namespace TW::Stellar;

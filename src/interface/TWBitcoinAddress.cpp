@@ -4,13 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWBitcoinAddress.h>
-
 #include "../Base58.h"
 #include "../Bitcoin/Address.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWBitcoinAddress.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <cstring>
 
