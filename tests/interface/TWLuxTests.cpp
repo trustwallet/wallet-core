@@ -60,9 +60,9 @@ TEST(Lux, DeriveFromXpub) {
 TEST(Lux, LockScripts) {
     auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("LcWJv3djruGY4uh7xVPZyKxqJJUTdrzqL7").get()));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
-    assertHexEqual(scriptData2, "76a9142a10f88e30768d2712665c279922b9621ce58bc788ac");
+    assertHexEqual(scriptData2, "76a914bd92088bb7e82d611a9b94fbb74a0908152b784f88ac");
 
     auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("SfZ3YWaVKwMgfvgUGg6AE3jXY5HEf4g1XU").get()));
     auto scriptData3 = WRAPD(TWBitcoinScriptData(script3.get()));
-    assertHexEqual(scriptData3, "a914f010b17a9189e0f2737d71ae9790359eb5bbc13787");
+    assertHexEqual(scriptData3, "a914c84a999d5df4a6a8e06908c5e35a9cb1260d834587");
 }
