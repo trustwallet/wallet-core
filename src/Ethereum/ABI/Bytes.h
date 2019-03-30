@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include "../../Data.h"
+#include "../../uint256.h"
+#include "Numbers.h"
+
 namespace TW::Ethereum {
 
 // dynamic bytes

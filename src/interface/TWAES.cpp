@@ -41,7 +41,7 @@ TWData *_Nullable TWAESCBCDecrypt(TWData *_Nonnull key, TWData *_Nonnull data, T
     }
 
     TWData *result = TWDataCreateWithSize(TWDataSize(data));
-    for (auto i = 0; i < TWDataSize(data); i += 16) {
+    for (std::size_t i = 0; i < TWDataSize(data); i += 16) {
         aes_cbc_decrypt(TWDataBytes(data) + i, TWDataBytes(result) + i, 16, TWDataBytes(iv), &ctx);
     }
 

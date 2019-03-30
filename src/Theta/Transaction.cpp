@@ -78,8 +78,7 @@ Data Transaction::encode() const noexcept {
 }
 
 bool Transaction::setSignature(const Ethereum::Address& address, const Data& signature) noexcept {
-    for (auto i = 0; i < inputs.size(); i++) {
-        auto& input = inputs[i];
+    for (auto& input : inputs) {
         if (input.address == address) {
             input.signature = signature;
             return true;
