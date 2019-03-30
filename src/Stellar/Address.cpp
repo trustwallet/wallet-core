@@ -4,15 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "../HexCoding.h"
 #include "Address.h"
+#include "Crc.h"
 
 #include <TrezorCrypto/base32.h>
 #include <TrezorCrypto/memzero.h>
 #include <TrustWalletCore/TWStellarVersionByte.h>
 
-#include "Crc.h"
-#include "Data.h"
-#include <HexCoding.h>
+#include <array>
 #include <cassert>
 
 using namespace TW::Stellar;
@@ -26,7 +26,7 @@ bool Address::isValid(const std::string& string) {
     }
 
     // Check that it decodes correctly
-    uint8_t* ret = base32_decode(string.data(), size, decoded.data(), sizeof(decoded), BASE32_ALPHABET_RFC4648);
+    uint8_t* ret = base32_decode(string.data(), size, decoded.data(), decoded.size(), BASE32_ALPHABET_RFC4648);
     valid = (ret != nullptr);
 
     // ... and that version byte is 0x30
@@ -41,7 +41,7 @@ bool Address::isValid(const std::string& string) {
         valid = false;
     }
 
-    memzero(decoded.data(), sizeof(decoded));
+    memzero(decoded.data(), decoded.size());
     return valid;
 }
 
@@ -52,16 +52,9 @@ Address::Address(const std::string& string) {
     }
 
     std::array<uint8_t, rawSize> decoded;
-    base32_decode(string.data(), size, decoded.data(), sizeof(decoded), BASE32_ALPHABET_RFC4648);
-    std::copy(decoded.begin() + 1, decoded.end(), bytes.begin());
-    memzero(decoded.data(), sizeof(decoded));
-}
-
-Address::Address(const std::vector<uint8_t>& data) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address key data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
+    base32_decode(string.data(), size, decoded.data(), decoded.size(), BASE32_ALPHABET_RFC4648);
+    std::copy(decoded.begin() + 1, decoded.begin() + 1 + bytes.size(), bytes.begin());
+    memzero(decoded.data(), decoded.size());
 }
 
 Address::Address(const PublicKey& publicKey) {
@@ -70,7 +63,7 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    std::array<char, 56 + 1> out;
+    std::array<char, 56 + 1> out = {0};
     // version + key bytes + checksum
     constexpr uint8_t keylen = 1 + 32 + 2;
     std::array<uint8_t, keylen> bytes_full;
@@ -83,8 +76,8 @@ std::string Address::string() const {
     bytes_full[keylen - 2] = checksum & 0x00ff;
     bytes_full[keylen - 1] = (checksum >> 8) & 0x00ff;
 
-    base32_encode(bytes_full.data(), keylen, out.data(), sizeof(out), BASE32_ALPHABET_RFC4648);
+    base32_encode(bytes_full.data(), keylen, out.data(), out.size(), BASE32_ALPHABET_RFC4648);
 
-    // Public key will always be 56 characters
+    out[out.size() - 1] = 0;
     return std::string(out.data());
 }

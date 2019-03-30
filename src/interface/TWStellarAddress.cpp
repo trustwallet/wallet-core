@@ -27,11 +27,6 @@ struct TWStellarAddress *_Nullable TWStellarAddressCreateWithString(TWString *_N
     return new TWStellarAddress{ std::move(address) };
 }
 
-struct TWStellarAddress *_Nullable TWStellarAddressCreateWithData(TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWStellarAddress{ Address(*d) };
-}
-
 struct TWStellarAddress *_Nonnull TWStellarAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
     return new TWStellarAddress{ Address(publicKey->impl) };
 }

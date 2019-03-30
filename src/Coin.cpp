@@ -87,10 +87,6 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
     case TWCoinTypeZcash:
         return Zcash::TAddress(data).string();
 
-    case TWCoinTypeStellar:
-    case TWCoinTypeKIN:
-        return Stellar::Address(data).string();
-
     case TWCoinTypeTezos:
         return Tezos::Address(data).string();
     case TWCoinTypeNEO:
@@ -100,6 +96,8 @@ std::string TW::loadAddress(TWCoinType coin, const Data& data) {
         return NULS::Address(data).string();
 
     case TWCoinTypeDecred:
+    case TWCoinTypeKIN:
+    case TWCoinTypeStellar:
         return "";
     }
 }
