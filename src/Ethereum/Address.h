@@ -12,8 +12,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 class Address {
   public:
@@ -47,8 +46,7 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Ethereum
-} // namespace TW
+} // namespace TW::Ethereum
 
 /// Wrapper for C interface.
 struct TWEthereumAddress {

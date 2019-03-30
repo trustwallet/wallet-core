@@ -14,8 +14,7 @@
 
 #include <algorithm>
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
@@ -91,5 +90,4 @@ struct TransactionBuilder {
     }
 };
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred

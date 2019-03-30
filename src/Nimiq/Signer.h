@@ -11,8 +11,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
-namespace TW {
-namespace Nimiq {
+namespace TW::Nimiq {
 
 /// Helper class that performs Nimiq transaction signing.
 class Signer {
@@ -30,8 +29,7 @@ class Signer {
     }
 };
 
-} // namespace Nimiq
-} // namespace TW
+} // namespace TW::Nimiq
 
 /// Wrapper for C interface.
 struct TWNimiqSigner {

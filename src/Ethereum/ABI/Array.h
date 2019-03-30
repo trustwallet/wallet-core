@@ -8,8 +8,7 @@
 
 #include <numeric>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 template <typename T>
 bool is_dynamic(std::vector<T>) {
@@ -56,5 +55,4 @@ std::string type_string(const std::vector<T>& array) {
     return type_string(array[0]) + "[]";
 }
 
-} // namespace Ethereum
-} // namespace TW
+} // namespace TW::Ethereum

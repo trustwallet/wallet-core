@@ -13,8 +13,7 @@
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
 
-namespace TW {
-namespace Base64 {
+namespace TW::Base64 {
 
 inline Data decode(const std::string& val) {
     using namespace boost::archive::iterators;
@@ -30,5 +29,4 @@ inline std::string encode(const Data& val) {
     return encoded.append((3 - val.size() % 3) % 3, '=');
 }
 
-} // namespace Base64
-} // namespace TW
+} // namespace TW::Base64

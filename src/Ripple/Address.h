@@ -11,8 +11,7 @@
 
 #include <string>
 
-namespace TW {
-namespace Ripple {
+namespace TW::Ripple {
 
 class Address {
   public:
@@ -49,8 +48,7 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Ripple
-} // namespace TW
+} // namespace TW::Ripple
 
 /// Wrapper for C interface.
 struct TWRippleAddress {

@@ -11,8 +11,7 @@
 #include "../proto/VeChain.pb.h"
 #include "../uint256.h"
 
-namespace TW {
-namespace VeChain {
+namespace TW::VeChain {
 
 class Clause {
   public:
@@ -30,5 +29,4 @@ class Clause {
                  Data(proto.data().begin(), proto.data().end())) {}
 };
 
-} // namespace VeChain
-} // namespace TW
+} // namespace TW::VeChain

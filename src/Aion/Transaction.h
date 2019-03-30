@@ -11,8 +11,7 @@
 
 #include <boost/multiprecision/cpp_int.hpp>
 
-namespace TW {
-namespace Aion {
+namespace TW::Aion {
 
 class Transaction {
   public:
@@ -43,5 +42,4 @@ class Transaction {
     Data encode() const noexcept;
 };
 
-} // namespace Aion
-} // namespace TW
+} // namespace TW::Aion

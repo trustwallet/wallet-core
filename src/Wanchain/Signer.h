@@ -17,8 +17,7 @@
 #include <tuple>
 #include <vector>
 
-namespace TW {
-namespace Wanchain {
+namespace TW::Wanchain {
 
 /// Helper class that performs Wanchain transaction signing.
 class Signer {
@@ -39,8 +38,7 @@ class Signer {
     Data hash(const Ethereum::Transaction& transaction) const noexcept;
 };
 
-} // namespace Wanchain
-} // namespace TW
+} // namespace TW::Wanchain
 
 /// Wrapper for C interface.
 struct TWWanchainSigner {

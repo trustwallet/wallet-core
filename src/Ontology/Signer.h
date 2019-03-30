@@ -15,8 +15,7 @@
 #include <vector>
 
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class Signer {
   private:
@@ -39,8 +38,7 @@ class Signer {
 
     void addSign(Transaction& tx) const;
 };
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology
 
 /// Wrapper for C interface.
 struct TWOntologyAccount {

@@ -13,8 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 class Script {
   public:
@@ -110,8 +109,7 @@ inline bool operator!=(const Script& lhs, const Script& rhs) {
     return !(lhs == rhs);
 }
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
 struct TWBitcoinScript {

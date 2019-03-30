@@ -16,8 +16,7 @@
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class Asset {
   protected:
@@ -33,5 +32,4 @@ class Asset {
     virtual Transaction transfer(const Signer& from, const Address& to, uint64_t amount,
                                  const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) = 0;
 };
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology

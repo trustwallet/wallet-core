@@ -15,8 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Aion {
+namespace TW::Aion {
 
 /// Aion's RLP encoging for long numbers
 /// https://github.com/aionnetwork/aion/issues/680
@@ -35,5 +34,4 @@ struct RLP {
     }
 };
 
-} // namespace Aion
-} // namespace TW
+} // namespace TW::Aion

@@ -8,8 +8,7 @@
 
 #include "../uint256.h"
 
-namespace TW {
-namespace Theta {
+namespace TW::Theta {
 
 class Coins {
   public:
@@ -21,5 +20,4 @@ class Coins {
         : thetaWei(thetaWei), tfuelWei(tfuelWei) {}
 };
 
-} // namespace Theta
-} // namespace TW
+} // namespace TW::Theta

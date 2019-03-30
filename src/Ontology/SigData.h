@@ -8,8 +8,7 @@
 
 #include "../Data.h"
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class SigData {
   private:
@@ -28,5 +27,4 @@ class SigData {
     std::vector<uint8_t> serialize();
 };
 
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology

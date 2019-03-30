@@ -12,8 +12,7 @@
 #include <algorithm>
 #include <array>
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 /// OutPoint defines a Decred data type that is used to track previous
 /// transaction outputs.
@@ -63,5 +62,4 @@ class OutPoint {
     friend bool operator!=(const OutPoint& a, const OutPoint& b) { return !(a == b); }
 };
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred

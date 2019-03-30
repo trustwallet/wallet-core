@@ -11,8 +11,7 @@
 #include <stdint.h>
 #include <string>
 
-namespace TW {
-namespace Zcash {
+namespace TW::Zcash {
 
 class TAddress {
   public:
@@ -52,8 +51,7 @@ class TAddress {
     TAddress() = default;
 };
 
-} // namespace Zcash
-} // namespace TW
+} // namespace TW::Zcash
 
 /// Wrapper for C interface.
 struct TWZcashTAddress {

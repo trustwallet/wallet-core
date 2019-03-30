@@ -9,8 +9,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace VeChain {
+namespace TW::VeChain {
 
 using boost::multiprecision::uint256_t;
 
@@ -32,4 +31,4 @@ TEST(Signer, Sign) {
     ASSERT_EQ(hex(signature), "3181b1094150f8e4f51f370b805cc9c5b107504145b9e316e846d5e5dbeedb5c1c2b5d217f197a105983dfaad6a198414d5731c7447493cb6b5169907d73dbe101");
 }
 
-}} // namespace
+} // namespace TW::VeChain

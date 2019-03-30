@@ -12,8 +12,7 @@
 #include <array>
 #include <string>
 
-namespace TW {
-namespace Tron {
+namespace TW::Tron {
 
 class Address {
   public:
@@ -53,8 +52,7 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Tron
-} // namespace TW
+} // namespace TW::Tron
 
 /// Wrapper for C interface.
 struct TWTronAddress {

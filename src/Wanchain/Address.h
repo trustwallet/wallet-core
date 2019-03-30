@@ -12,8 +12,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace TW {
-namespace Wanchain {
+namespace TW::Wanchain {
 class Address : public Ethereum::Address {
   public:
     using Ethereum::Address::Address;
@@ -21,8 +20,7 @@ class Address : public Ethereum::Address {
     /// Returns a string representation of the address.
     std::string string() const;
 };
-} // namespace Wanchain
-} // namespace TW
+} // namespace TW::Wanchain
 
 /// Wrapper for C interface.
 struct TWWanchainAddress {

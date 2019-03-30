@@ -11,8 +11,7 @@
 
 #include <memory>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Bitcoin transaction output.
 struct TransactionOutput {
@@ -33,8 +32,7 @@ struct TransactionOutput {
     void encode(std::vector<uint8_t>& data) const;
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
 struct TWBitcoinTransactionOutput {

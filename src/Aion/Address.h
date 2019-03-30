@@ -12,8 +12,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace TW {
-namespace Aion {
+namespace TW::Aion {
 
 class Address {
   public:
@@ -48,8 +47,7 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Aion
-} // namespace TW
+} // namespace TW::Aion
 
 /// Wrapper for C interface.
 struct TWAionAddress {

@@ -12,8 +12,7 @@
 #include <gtest/gtest.h>
 #include <TrustWalletCore/TWHDWallet.h>
 
-namespace TW {
-namespace Tendermint {
+namespace TW::Tendermint {
 
 TEST(Address, Valid) {
     ASSERT_TRUE(Address::isValid("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2"));
@@ -42,4 +41,5 @@ TEST(Address, FromKeyHashCosmos) {
     auto address = Address("cosmos", publicKey);
     ASSERT_EQ(address.string(), "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
 }
-}} // namespace
+
+} // namespace TW::Tendermint
