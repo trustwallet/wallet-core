@@ -12,6 +12,7 @@ class LuxTests: XCTestCase {
 
     func testValidAddresses() {
         XCTAssertTrue(lux.validate(address: "LcWJv3djruGY4uh7xVPZyKxqJJUTdrzqL7"))
+        XCTAssertTrue(lux.validate(address: "SfZ3YWaVKwMgfvgUGg6AE3jXY5HEf4g1XU"))
     }
 
     func testInvalidAddresses() {
