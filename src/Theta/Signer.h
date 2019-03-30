@@ -22,7 +22,7 @@ class Signer {
     Signer() = default;
     /// Initializes a signer with a chain identifier which could be `mainnet`, `testnet` or
     /// `privatenet`
-    explicit Signer(const std::string& chainID) : chainID(chainID) {}
+    explicit Signer(std::string chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction
     Data sign(const PrivateKey& privateKey, const Transaction& transaction) noexcept;

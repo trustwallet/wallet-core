@@ -25,7 +25,7 @@ class Signer {
     boost::multiprecision::uint256_t chainID;
 
     /// Initializes a signer with a chain identifier.
-    Signer(const boost::multiprecision::uint256_t& chainID) : chainID(chainID) {}
+    Signer(boost::multiprecision::uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept;

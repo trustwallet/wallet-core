@@ -17,10 +17,10 @@
 namespace TW {
 
 struct DerivationPathIndex {
-    uint32_t value;
-    bool hardened;
+    uint32_t value = 0;
+    bool hardened = true;
 
-    DerivationPathIndex() : value(), hardened(true) {}
+    DerivationPathIndex() = default;
     DerivationPathIndex(uint32_t value, bool hardened = true) : value(value), hardened(hardened) {}
 
     /// The derivation index.
@@ -67,7 +67,7 @@ struct DerivationPath {
 
     DerivationPath() = default;
     explicit DerivationPath(std::initializer_list<DerivationPathIndex> l) : indices(l) {}
-    explicit DerivationPath(std::vector<DerivationPathIndex> indices) : indices(indices) {}
+    explicit DerivationPath(std::vector<DerivationPathIndex> indices) : indices(std::move(indices)) {}
 
     /// Creates a `DerivationPath` by BIP44 components.
     DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change,

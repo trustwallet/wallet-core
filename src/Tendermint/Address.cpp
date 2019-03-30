@@ -49,7 +49,7 @@ bool Address::isValid(const std::string& addr, const std::string& hrp) {
     return true;
 }
 
-Address::Address(const std::string& hrp, const PublicKey& publicKey) : hrp(hrp), keyHash() {
+Address::Address(std::string hrp, const PublicKey& publicKey) : hrp(std::move(hrp)), keyHash() {
     keyHash.resize(20);
     ecdsa_get_pubkeyhash(publicKey.compressed().bytes.data(), HASHER_SHA2_RIPEMD, keyHash.data());
 }

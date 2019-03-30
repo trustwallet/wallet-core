@@ -31,10 +31,9 @@ class Transaction {
     std::variant<Address, PublicKey> destination_or_public_key;
     operationtype kind;
 
-    Transaction() = default;
     Transaction(Address source, int64_t fee, int64_t counter, int64_t gas_limit,
                 int64_t storage_limit, int64_t amount,
-                const std::variant<Address, PublicKey>& destination_or_public_key,
+                std::variant<Address, PublicKey> destination_or_public_key,
                 operationtype kind)
         : source(source)
         , fee(fee)
@@ -42,7 +41,7 @@ class Transaction {
         , gas_limit(gas_limit)
         , storage_limit(storage_limit)
         , amount(amount)
-        , destination_or_public_key(destination_or_public_key)
+        , destination_or_public_key(std::move(destination_or_public_key))
         , kind(kind) {}
 
   public:

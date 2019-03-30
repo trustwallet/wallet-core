@@ -25,15 +25,13 @@ class Transaction {
     uint256_t r = uint256_t();
     uint256_t s = uint256_t();
 
-    Transaction() = default;
-    Transaction(const uint256_t& nonce, const uint256_t& gasPrice, const uint256_t& gasLimit,
-                const Address& to, const uint256_t& amount, const std::vector<uint8_t>& payload)
-        : nonce(nonce)
-        , gasPrice(gasPrice)
-        , gasLimit(gasLimit)
-        , to(to)
-        , amount(amount)
-        , payload(payload) {}
+    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, Data payload)
+        : nonce(std::move(nonce))
+        , gasPrice(std::move(gasPrice))
+        , gasLimit(std::move(gasLimit))
+        , to(std::move(to))
+        , amount(std::move(amount))
+        , payload(std::move(payload)){}
 };
 
 } // namespace TW::Ethereum

@@ -16,8 +16,8 @@ class Coins {
     uint256_t tfuelWei;
 
     Coins() = default;
-    Coins(const uint256_t& thetaWei, const uint256_t& tfuelWei)
-        : thetaWei(thetaWei), tfuelWei(tfuelWei) {}
+    Coins(uint256_t thetaWei, uint256_t tfuelWei)
+        : thetaWei(std::move(thetaWei)), tfuelWei(std::move(tfuelWei)) {}
 };
 
 } // namespace TW::Theta
