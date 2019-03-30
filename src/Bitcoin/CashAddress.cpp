@@ -9,6 +9,7 @@
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
 
+#include <array>
 #include <cassert>
 #include <cstring>
 
@@ -18,6 +19,7 @@ using namespace TW::Bitcoin;
 static const std::string cashHRP = "bitcoincash";
 
 static constexpr size_t maxHRPSize = 20;
+static constexpr size_t maxDataSize = 104;
 
 bool CashAddress::isValid(const std::string& string) {
     auto withPrefix = string;
@@ -25,13 +27,13 @@ bool CashAddress::isValid(const std::string& string) {
         withPrefix = cashHRP + ":" + string;
     }
 
-    std::array<char, maxHRPSize + 1> hrp;
-    std::array<uint8_t, maxHRPSize> data;
+    std::array<char, maxHRPSize + 1> hrp = {0};
+    std::array<uint8_t, maxDataSize> data;
     size_t dataLen;
     if (cash_decode(hrp.data(), data.data(), &dataLen, withPrefix.c_str()) == 0 || dataLen != CashAddress::size) {
         return false;
     }
-    if (std::strcmp(hrp.data(), cashHRP.c_str()) != 0) {
+    if (std::strncmp(hrp.data(), cashHRP.c_str(), std::min(cashHRP.size(), maxHRPSize)) != 0) {
         return false;
     }
     return true;
@@ -44,13 +46,13 @@ CashAddress::CashAddress(const std::string& string) {
     }
 
     std::array<char, maxHRPSize + 1> hrp;
-    std::array<uint8_t, maxHRPSize> data;
+    std::array<uint8_t, maxDataSize> data;
     size_t dataLen;
     auto success = cash_decode(hrp.data(), data.data(), &dataLen, withPrefix.c_str()) != 0;
-    if (!success || std::strcmp(hrp.data(), cashHRP.c_str()) != 0 || dataLen != CashAddress::size) {
+    if (!success || std::strncmp(hrp.data(), cashHRP.c_str(), std::min(cashHRP.size(), maxHRPSize)) != 0 || dataLen != CashAddress::size) {
         throw std::invalid_argument("Invalid address string");
     }
-    std::copy(data.begin(), data.end(), bytes.begin());
+    std::copy(data.begin(), data.begin() + dataLen, bytes.begin());
 }
 
 CashAddress::CashAddress(const std::vector<uint8_t>& data) {
