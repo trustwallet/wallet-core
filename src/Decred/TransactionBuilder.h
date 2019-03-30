@@ -69,11 +69,11 @@ struct TransactionBuilder {
         }
 
         Transaction tx;
-        tx.outputs.push_back(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
+        tx.outputs.emplace_back(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
 
         if (plan.change > 0) {
             auto lockingScriptChange = Bitcoin::Script::buildForAddress(changeAddress);
-            tx.outputs.push_back(
+            tx.outputs.emplace_back(
                 TransactionOutput(plan.change, /* version: */ 0, lockingScriptChange));
         }
 

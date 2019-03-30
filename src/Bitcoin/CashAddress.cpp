@@ -17,8 +17,7 @@ using namespace TW::Bitcoin;
 /// Cash address human-readable part
 static const std::string cashHRP = "bitcoincash";
 
-static const size_t maxHRPSize = 20;
-static const size_t maxDataSize = 104;
+static constexpr size_t maxHRPSize = 20;
 
 bool CashAddress::isValid(const std::string& string) {
     auto withPrefix = string;
