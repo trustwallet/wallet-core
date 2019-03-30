@@ -48,7 +48,7 @@ class CashAddress {
     Address legacyAddress() const;
 };
 
-static inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
+inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
