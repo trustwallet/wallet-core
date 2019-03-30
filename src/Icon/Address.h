@@ -11,7 +11,7 @@
 #include <TrustWalletCore/TWIconAddressType.h>
 
 #include <array>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
 namespace TW::Icon {

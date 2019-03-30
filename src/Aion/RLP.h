@@ -11,7 +11,7 @@
 #include "Ethereum/RLP.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 

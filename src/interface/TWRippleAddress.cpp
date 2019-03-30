@@ -4,16 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWRippleAddress.h>
-
 #include "../Ripple/Address.h"
-
-#include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPublicKey.h>
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/ripple/base58.h>
-#include <string.h>
+#include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWRippleAddress.h>
+
 #include <memory>
 
 using namespace TW;

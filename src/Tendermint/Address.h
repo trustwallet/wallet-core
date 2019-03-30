@@ -9,7 +9,7 @@
 #include "../Data.h"
 #include "../PublicKey.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 namespace TW::Tendermint {

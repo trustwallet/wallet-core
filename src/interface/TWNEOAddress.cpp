@@ -4,14 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWNEOAddress.h>
-
 #include "../NEO/Address.h"
 
+#include <TrustWalletCore/TWNEOAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
-
-#include <string.h>
-#include <memory>
 
 using namespace TW;
 using namespace TW::NEO;
