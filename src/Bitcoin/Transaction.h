@@ -13,8 +13,7 @@
 #include <TrustWalletCore/TWBitcoin.h>
 #include <vector>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 struct Transaction {
     /// Transaction data format version (note, this is signed)
@@ -76,8 +75,7 @@ struct Transaction {
                                               uint32_t hashType) const;
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
 struct TWBitcoinTransaction {

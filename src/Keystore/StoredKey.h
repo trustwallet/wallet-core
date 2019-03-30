@@ -17,8 +17,7 @@
 #include <optional>
 #include <string>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 /// An stored key can be either a private key or a mnemonic phrase for a HD
 /// wallet.
@@ -93,8 +92,7 @@ struct StoredKey {
     void fixAddresses(const std::string& password);
 };
 
-} // namespace Keystore
-} // namespace TW
+} // namespace TW::Keystore
 
 /// Wrapper for C interface.
 struct TWStoredKey {

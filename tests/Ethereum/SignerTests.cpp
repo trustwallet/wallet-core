@@ -11,8 +11,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 using boost::multiprecision::uint256_t;
 
@@ -58,4 +57,4 @@ TEST(Signer, Sign) {
     ASSERT_EQ(transaction.s, uint256_t("46948507304638947509940763649030358759909902576025900602547168820602576006531"));
 }
 
-}} // namespace
+} // namespace TW::Ethereum

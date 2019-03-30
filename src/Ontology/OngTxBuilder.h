@@ -12,8 +12,7 @@
 
 #include <TrustWalletCore/TWOntologyProto.h>
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class OngTxBuilder {
 
@@ -70,5 +69,4 @@ class OngTxBuilder {
     }
 };
 
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology

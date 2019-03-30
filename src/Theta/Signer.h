@@ -12,8 +12,7 @@
 #include "../Data.h"
 #include "../PrivateKey.h"
 
-namespace TW {
-namespace Theta {
+namespace TW::Theta {
 
 /// Helper class that performs Theta transaction signing
 class Signer {
@@ -32,8 +31,7 @@ class Signer {
     Data encode(const Transaction& transaction) noexcept;
 };
 
-} // namespace Theta
-} // namespace TW
+} // namespace TW::Theta
 
 /// Wrapper for C interface.
 struct TWThetaSigner {

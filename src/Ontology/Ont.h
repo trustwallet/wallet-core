@@ -9,8 +9,7 @@
 #include "Asset.h"
 #include "../Data.h"
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class Ont : public Asset {
   private:
@@ -30,5 +29,4 @@ class Ont : public Asset {
                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) override;
 };
 
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology

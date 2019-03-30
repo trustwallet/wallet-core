@@ -16,8 +16,7 @@
 #include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Binance {
+namespace TW::Binance {
 
 TEST(BinanceSigner, Sign) {
     auto input = Proto::SigningInput();
@@ -204,4 +203,4 @@ TEST(BinanceSigner, BuildSend2) {
     );
 }
 
-}} // namespace
+} // namespace TW::Binance

@@ -8,8 +8,7 @@
 
 #include "Address.h"
 
-namespace TW {
-namespace Nimiq {
+namespace TW::Nimiq {
 
 class Transaction {
   public:
@@ -36,8 +35,7 @@ class Transaction {
     std::vector<uint8_t> getPreImage() const;
 };
 
-} // namespace Nimiq
-} // namespace TW
+} // namespace TW::Nimiq
 
 /// Wrapper for C interface.
 struct TWNimiqTransaction {

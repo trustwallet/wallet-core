@@ -12,8 +12,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Nimiq {
+namespace TW::Nimiq {
 
 TEST(NimiqSigner, DerivePublicKey) {
     const PrivateKey privateKey(parse_hex("e3cc33575834add098f8487123cd4bca543ee859b3e8cfe624e7e6a97202b756"));
@@ -38,9 +37,9 @@ TEST(NimiqSigner, Sign) {
 
     Signer signer;
     signer.sign(privateKey, tx);
-    
+
     ASSERT_EQ(hex(tx.signature),
         "74dc7f6e0ab58a0bf52cc6e8801b0cca132dd4229d9a3e3a3d2f90e4d8f045d981b771bf5fc3851a98f3c617b1a943228f963e910e061808a721cfa0e3cad50b");
 }
 
-}} // namespace
+} // namespace TW::Nimiq

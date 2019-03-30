@@ -10,8 +10,7 @@
 #include "../Data.h"
 #include "../proto/Ripple.pb.h"
 
-namespace TW {
-namespace Ripple {
+namespace TW::Ripple {
 
 enum class FieldType: int {
     int16   = 1,
@@ -62,5 +61,4 @@ class Transaction {
     static Data serializeAddress(Address address);
 };
 
-} // namespace Ripple
-} // namespace TW
+} // namespace TW::Ripple

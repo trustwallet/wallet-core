@@ -158,7 +158,7 @@ static const auto coin = "coin";
 
 namespace UppercaseCodingKeys {
 static const auto crypto = "Crypto";
-}
+} // namespace UppercaseCodingKeys
 
 namespace TypeString {
 static const auto privateKey = "private-key";

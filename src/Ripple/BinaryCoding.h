@@ -10,8 +10,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace TW {
-namespace Ripple {
+namespace TW::Ripple {
 
 enum class FieldType;
 
@@ -48,5 +47,4 @@ static inline void encodeBytes(std::vector<uint8_t> bytes, std::vector<uint8_t>&
     data.insert(data.end(), bytes.begin(), bytes.end());
 }
 
-} // namespace Ripple
-} // namespace TW
+} // namespace TW::Ripple

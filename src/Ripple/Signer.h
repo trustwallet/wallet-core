@@ -11,8 +11,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
-namespace TW {
-namespace Ripple {
+namespace TW::Ripple {
 
 /// Helper class that performs Ripple transaction signing.
 class Signer {
@@ -21,8 +20,7 @@ class Signer {
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 };
 
-} // namespace Ripple
-} // namespace TW
+} // namespace TW::Ripple
 
 /// Wrapper for C interface.
 struct TWRippleSigner {

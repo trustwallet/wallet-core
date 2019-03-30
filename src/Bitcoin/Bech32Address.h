@@ -11,8 +11,7 @@
 #include <stdint.h>
 #include <string>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 class Bech32Address {
   public:
@@ -70,8 +69,7 @@ class Bech32Address {
     Bech32Address() = default;
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
 struct TWBech32Address {

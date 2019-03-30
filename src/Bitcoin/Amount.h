@@ -10,8 +10,7 @@
 
 #include <stdint.h>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Amount in satoshis (can be negative)
 typedef int64_t Amount;
@@ -27,5 +26,4 @@ inline bool isValidAmount(const Amount& amount) {
     return (amount >= 0 && amount <= maxAmount);
 }
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin

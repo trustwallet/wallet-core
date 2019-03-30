@@ -12,8 +12,7 @@
 
 #include <string>
 
-namespace TW {
-namespace Tezos {
+namespace TW::Tezos {
 
 /// Helper class that performs Tezos transaction signing.
 class Signer {
@@ -23,8 +22,7 @@ class Signer {
     Data signData(const PrivateKey& privateKey, Data data);
 };
 
-} // namespace Tezos
-} // namespace TW
+} // namespace TW::Tezos
 
 /// Wrapper for C interface.
 struct TWTezosSigner {

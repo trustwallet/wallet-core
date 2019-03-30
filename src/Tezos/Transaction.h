@@ -12,8 +12,7 @@
 #include <string>
 #include <variant>
 
-namespace TW {
-namespace Tezos {
+namespace TW::Tezos {
 
 enum class operationtype {
     REVEAL,
@@ -51,5 +50,4 @@ class Transaction {
     Data forge();
 };
 
-} // namespace Tezos
-} // namespace TW
+} // namespace TW::Tezos

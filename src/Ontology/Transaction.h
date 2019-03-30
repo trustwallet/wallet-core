@@ -10,8 +10,7 @@
 
 #include <string>
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class Transaction {
 
@@ -62,5 +61,4 @@ class Transaction {
     std::vector<uint8_t> serialize(const PublicKey& pk);
 };
 
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology

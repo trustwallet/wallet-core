@@ -22,8 +22,7 @@
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 /// Helper class that performs Decred transaction signing.
 class Signer {
@@ -79,8 +78,7 @@ class Signer {
     Data scriptForScriptHash(const Data& hash) const;
 };
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred
 
 /// Wrapper for C interface.
 struct TWDecredSigner {

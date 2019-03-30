@@ -14,8 +14,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace TW {
-namespace Icon {
+namespace TW::Icon {
 
 class Address {
   public:
@@ -52,8 +51,7 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Icon
-} // namespace TW
+} // namespace TW::Icon
 
 /// Wrapper for C interface.
 struct TWIconAddress {
