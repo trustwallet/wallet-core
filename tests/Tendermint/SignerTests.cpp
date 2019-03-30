@@ -27,22 +27,28 @@ TEST(CosmosSigner, SignTx) {
     auto fromAddress = TW::Tendermint::Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
     auto toAddress = TW::Tendermint::Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
 
-    auto message = Proto::SendTokensMessage();
+    auto message = Proto::SendCoinsMessage();
     message.set_from_address(fromAddress.string());
     message.set_to_address(toAddress.string());
-    auto amount = message.add_amount();
-    amount->set_denom("atom");
-    amount->set_amount(10);
-    
+    auto amountOfTx = message.add_amount();
+    amountOfTx->set_denom("atom");
+    amountOfTx->set_amount(10);
     *input.mutable_message() = message;
     
+    auto fee = Proto::Fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amount();
+    amountOfFee->set_denom("photino");
+    amountOfFee->set_amount(1);
+    *input.mutable_fee() = fee;
+
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto signer = Cosmos::Signer(std::move(input));
     auto signature = signer.sign();
 
-    ASSERT_EQ(hex(signature.begin(), signature.end()), "761fbe8bb5f8a05026baacf360cf4163dad6bbcb5daeb877edf73ad934664f1e27cbf986370e530aa201b868b7a1308b932e2df060bfda88044b01c2b1bedb63");
+    ASSERT_EQ(hex(signature.begin(), signature.end()), "99b32957712c6ac4b4542511ca745beca8fca7d1fc4c743447d1a8432d8f04fe73887f695a5fd8b0b8eb668c0a75d06a9821284a0f0fb4351a0d8008f1afdfb4");
 }
 
 }}

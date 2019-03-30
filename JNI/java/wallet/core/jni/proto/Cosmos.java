@@ -14,8 +14,1483 @@ public final class Cosmos {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
-  public interface SendTokensMessageOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:TW.Cosmos.Proto.SendTokensMessage)
+  public interface CoinOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:TW.Cosmos.Proto.Coin)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string denom = 1;</code>
+     */
+    java.lang.String getDenom();
+    /**
+     * <code>string denom = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getDenomBytes();
+
+    /**
+     * <code>int64 amount = 2;</code>
+     */
+    long getAmount();
+  }
+  /**
+   * <pre>
+   * Coin
+   * </pre>
+   *
+   * Protobuf type {@code TW.Cosmos.Proto.Coin}
+   */
+  public  static final class Coin extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:TW.Cosmos.Proto.Coin)
+      CoinOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Coin.newBuilder() to construct.
+    private Coin(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Coin() {
+      denom_ = "";
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Coin(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              denom_ = s;
+              break;
+            }
+            case 16: {
+
+              amount_ = input.readInt64();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Coin_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Coin_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              wallet.core.jni.proto.Cosmos.Coin.class, wallet.core.jni.proto.Cosmos.Coin.Builder.class);
+    }
+
+    public static final int DENOM_FIELD_NUMBER = 1;
+    private volatile java.lang.Object denom_;
+    /**
+     * <code>string denom = 1;</code>
+     */
+    public java.lang.String getDenom() {
+      java.lang.Object ref = denom_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        denom_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string denom = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDenomBytes() {
+      java.lang.Object ref = denom_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        denom_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int AMOUNT_FIELD_NUMBER = 2;
+    private long amount_;
+    /**
+     * <code>int64 amount = 2;</code>
+     */
+    public long getAmount() {
+      return amount_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!getDenomBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, denom_);
+      }
+      if (amount_ != 0L) {
+        output.writeInt64(2, amount_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!getDenomBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, denom_);
+      }
+      if (amount_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, amount_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof wallet.core.jni.proto.Cosmos.Coin)) {
+        return super.equals(obj);
+      }
+      wallet.core.jni.proto.Cosmos.Coin other = (wallet.core.jni.proto.Cosmos.Coin) obj;
+
+      if (!getDenom()
+          .equals(other.getDenom())) return false;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + DENOM_FIELD_NUMBER;
+      hash = (53 * hash) + getDenom().hashCode();
+      hash = (37 * hash) + AMOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getAmount());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Cosmos.Coin parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(wallet.core.jni.proto.Cosmos.Coin prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     * Coin
+     * </pre>
+     *
+     * Protobuf type {@code TW.Cosmos.Proto.Coin}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:TW.Cosmos.Proto.Coin)
+        wallet.core.jni.proto.Cosmos.CoinOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Coin_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Coin_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                wallet.core.jni.proto.Cosmos.Coin.class, wallet.core.jni.proto.Cosmos.Coin.Builder.class);
+      }
+
+      // Construct using wallet.core.jni.proto.Cosmos.Coin.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        denom_ = "";
+
+        amount_ = 0L;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Coin_descriptor;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Cosmos.Coin getDefaultInstanceForType() {
+        return wallet.core.jni.proto.Cosmos.Coin.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Cosmos.Coin build() {
+        wallet.core.jni.proto.Cosmos.Coin result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Cosmos.Coin buildPartial() {
+        wallet.core.jni.proto.Cosmos.Coin result = new wallet.core.jni.proto.Cosmos.Coin(this);
+        result.denom_ = denom_;
+        result.amount_ = amount_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof wallet.core.jni.proto.Cosmos.Coin) {
+          return mergeFrom((wallet.core.jni.proto.Cosmos.Coin)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(wallet.core.jni.proto.Cosmos.Coin other) {
+        if (other == wallet.core.jni.proto.Cosmos.Coin.getDefaultInstance()) return this;
+        if (!other.getDenom().isEmpty()) {
+          denom_ = other.denom_;
+          onChanged();
+        }
+        if (other.getAmount() != 0L) {
+          setAmount(other.getAmount());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        wallet.core.jni.proto.Cosmos.Coin parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (wallet.core.jni.proto.Cosmos.Coin) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private java.lang.Object denom_ = "";
+      /**
+       * <code>string denom = 1;</code>
+       */
+      public java.lang.String getDenom() {
+        java.lang.Object ref = denom_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          denom_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string denom = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDenomBytes() {
+        java.lang.Object ref = denom_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          denom_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string denom = 1;</code>
+       */
+      public Builder setDenom(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        denom_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string denom = 1;</code>
+       */
+      public Builder clearDenom() {
+        
+        denom_ = getDefaultInstance().getDenom();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string denom = 1;</code>
+       */
+      public Builder setDenomBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        denom_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long amount_ ;
+      /**
+       * <code>int64 amount = 2;</code>
+       */
+      public long getAmount() {
+        return amount_;
+      }
+      /**
+       * <code>int64 amount = 2;</code>
+       */
+      public Builder setAmount(long value) {
+        
+        amount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 amount = 2;</code>
+       */
+      public Builder clearAmount() {
+        
+        amount_ = 0L;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:TW.Cosmos.Proto.Coin)
+    }
+
+    // @@protoc_insertion_point(class_scope:TW.Cosmos.Proto.Coin)
+    private static final wallet.core.jni.proto.Cosmos.Coin DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.Cosmos.Coin();
+    }
+
+    public static wallet.core.jni.proto.Cosmos.Coin getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Coin>
+        PARSER = new com.google.protobuf.AbstractParser<Coin>() {
+      @java.lang.Override
+      public Coin parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Coin(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Coin> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Coin> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public wallet.core.jni.proto.Cosmos.Coin getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface FeeOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:TW.Cosmos.Proto.Fee)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    java.util.List<wallet.core.jni.proto.Cosmos.Coin> 
+        getAmountList();
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    wallet.core.jni.proto.Cosmos.Coin getAmount(int index);
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    int getAmountCount();
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    java.util.List<? extends wallet.core.jni.proto.Cosmos.CoinOrBuilder> 
+        getAmountOrBuilderList();
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    wallet.core.jni.proto.Cosmos.CoinOrBuilder getAmountOrBuilder(
+        int index);
+
+    /**
+     * <code>uint64 gas = 2;</code>
+     */
+    long getGas();
+  }
+  /**
+   * <pre>
+   * Fee
+   * </pre>
+   *
+   * Protobuf type {@code TW.Cosmos.Proto.Fee}
+   */
+  public  static final class Fee extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:TW.Cosmos.Proto.Fee)
+      FeeOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use Fee.newBuilder() to construct.
+    private Fee(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private Fee() {
+      amount_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private Fee(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                amount_ = new java.util.ArrayList<wallet.core.jni.proto.Cosmos.Coin>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              amount_.add(
+                  input.readMessage(wallet.core.jni.proto.Cosmos.Coin.parser(), extensionRegistry));
+              break;
+            }
+            case 16: {
+
+              gas_ = input.readUInt64();
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          amount_ = java.util.Collections.unmodifiableList(amount_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Fee_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Fee_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              wallet.core.jni.proto.Cosmos.Fee.class, wallet.core.jni.proto.Cosmos.Fee.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int AMOUNT_FIELD_NUMBER = 1;
+    private java.util.List<wallet.core.jni.proto.Cosmos.Coin> amount_;
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    public java.util.List<wallet.core.jni.proto.Cosmos.Coin> getAmountList() {
+      return amount_;
+    }
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    public java.util.List<? extends wallet.core.jni.proto.Cosmos.CoinOrBuilder> 
+        getAmountOrBuilderList() {
+      return amount_;
+    }
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    public int getAmountCount() {
+      return amount_.size();
+    }
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    public wallet.core.jni.proto.Cosmos.Coin getAmount(int index) {
+      return amount_.get(index);
+    }
+    /**
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+     */
+    public wallet.core.jni.proto.Cosmos.CoinOrBuilder getAmountOrBuilder(
+        int index) {
+      return amount_.get(index);
+    }
+
+    public static final int GAS_FIELD_NUMBER = 2;
+    private long gas_;
+    /**
+     * <code>uint64 gas = 2;</code>
+     */
+    public long getGas() {
+      return gas_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < amount_.size(); i++) {
+        output.writeMessage(1, amount_.get(i));
+      }
+      if (gas_ != 0L) {
+        output.writeUInt64(2, gas_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      for (int i = 0; i < amount_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(1, amount_.get(i));
+      }
+      if (gas_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(2, gas_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof wallet.core.jni.proto.Cosmos.Fee)) {
+        return super.equals(obj);
+      }
+      wallet.core.jni.proto.Cosmos.Fee other = (wallet.core.jni.proto.Cosmos.Fee) obj;
+
+      if (!getAmountList()
+          .equals(other.getAmountList())) return false;
+      if (getGas()
+          != other.getGas()) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getAmountCount() > 0) {
+        hash = (37 * hash) + AMOUNT_FIELD_NUMBER;
+        hash = (53 * hash) + getAmountList().hashCode();
+      }
+      hash = (37 * hash) + GAS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getGas());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.Cosmos.Fee parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(wallet.core.jni.proto.Cosmos.Fee prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * <pre>
+     * Fee
+     * </pre>
+     *
+     * Protobuf type {@code TW.Cosmos.Proto.Fee}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:TW.Cosmos.Proto.Fee)
+        wallet.core.jni.proto.Cosmos.FeeOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Fee_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Fee_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                wallet.core.jni.proto.Cosmos.Fee.class, wallet.core.jni.proto.Cosmos.Fee.Builder.class);
+      }
+
+      // Construct using wallet.core.jni.proto.Cosmos.Fee.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getAmountFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        if (amountBuilder_ == null) {
+          amount_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          amountBuilder_.clear();
+        }
+        gas_ = 0L;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_Fee_descriptor;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Cosmos.Fee getDefaultInstanceForType() {
+        return wallet.core.jni.proto.Cosmos.Fee.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Cosmos.Fee build() {
+        wallet.core.jni.proto.Cosmos.Fee result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.Cosmos.Fee buildPartial() {
+        wallet.core.jni.proto.Cosmos.Fee result = new wallet.core.jni.proto.Cosmos.Fee(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (amountBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            amount_ = java.util.Collections.unmodifiableList(amount_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.amount_ = amount_;
+        } else {
+          result.amount_ = amountBuilder_.build();
+        }
+        result.gas_ = gas_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof wallet.core.jni.proto.Cosmos.Fee) {
+          return mergeFrom((wallet.core.jni.proto.Cosmos.Fee)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(wallet.core.jni.proto.Cosmos.Fee other) {
+        if (other == wallet.core.jni.proto.Cosmos.Fee.getDefaultInstance()) return this;
+        if (amountBuilder_ == null) {
+          if (!other.amount_.isEmpty()) {
+            if (amount_.isEmpty()) {
+              amount_ = other.amount_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureAmountIsMutable();
+              amount_.addAll(other.amount_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.amount_.isEmpty()) {
+            if (amountBuilder_.isEmpty()) {
+              amountBuilder_.dispose();
+              amountBuilder_ = null;
+              amount_ = other.amount_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              amountBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getAmountFieldBuilder() : null;
+            } else {
+              amountBuilder_.addAllMessages(other.amount_);
+            }
+          }
+        }
+        if (other.getGas() != 0L) {
+          setGas(other.getGas());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        wallet.core.jni.proto.Cosmos.Fee parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (wallet.core.jni.proto.Cosmos.Fee) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.util.List<wallet.core.jni.proto.Cosmos.Coin> amount_ =
+        java.util.Collections.emptyList();
+      private void ensureAmountIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          amount_ = new java.util.ArrayList<wallet.core.jni.proto.Cosmos.Coin>(amount_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          wallet.core.jni.proto.Cosmos.Coin, wallet.core.jni.proto.Cosmos.Coin.Builder, wallet.core.jni.proto.Cosmos.CoinOrBuilder> amountBuilder_;
+
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public java.util.List<wallet.core.jni.proto.Cosmos.Coin> getAmountList() {
+        if (amountBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(amount_);
+        } else {
+          return amountBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public int getAmountCount() {
+        if (amountBuilder_ == null) {
+          return amount_.size();
+        } else {
+          return amountBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public wallet.core.jni.proto.Cosmos.Coin getAmount(int index) {
+        if (amountBuilder_ == null) {
+          return amount_.get(index);
+        } else {
+          return amountBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder setAmount(
+          int index, wallet.core.jni.proto.Cosmos.Coin value) {
+        if (amountBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAmountIsMutable();
+          amount_.set(index, value);
+          onChanged();
+        } else {
+          amountBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder setAmount(
+          int index, wallet.core.jni.proto.Cosmos.Coin.Builder builderForValue) {
+        if (amountBuilder_ == null) {
+          ensureAmountIsMutable();
+          amount_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          amountBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder addAmount(wallet.core.jni.proto.Cosmos.Coin value) {
+        if (amountBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAmountIsMutable();
+          amount_.add(value);
+          onChanged();
+        } else {
+          amountBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder addAmount(
+          int index, wallet.core.jni.proto.Cosmos.Coin value) {
+        if (amountBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAmountIsMutable();
+          amount_.add(index, value);
+          onChanged();
+        } else {
+          amountBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder addAmount(
+          wallet.core.jni.proto.Cosmos.Coin.Builder builderForValue) {
+        if (amountBuilder_ == null) {
+          ensureAmountIsMutable();
+          amount_.add(builderForValue.build());
+          onChanged();
+        } else {
+          amountBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder addAmount(
+          int index, wallet.core.jni.proto.Cosmos.Coin.Builder builderForValue) {
+        if (amountBuilder_ == null) {
+          ensureAmountIsMutable();
+          amount_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          amountBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder addAllAmount(
+          java.lang.Iterable<? extends wallet.core.jni.proto.Cosmos.Coin> values) {
+        if (amountBuilder_ == null) {
+          ensureAmountIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, amount_);
+          onChanged();
+        } else {
+          amountBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder clearAmount() {
+        if (amountBuilder_ == null) {
+          amount_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          amountBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public Builder removeAmount(int index) {
+        if (amountBuilder_ == null) {
+          ensureAmountIsMutable();
+          amount_.remove(index);
+          onChanged();
+        } else {
+          amountBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public wallet.core.jni.proto.Cosmos.Coin.Builder getAmountBuilder(
+          int index) {
+        return getAmountFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public wallet.core.jni.proto.Cosmos.CoinOrBuilder getAmountOrBuilder(
+          int index) {
+        if (amountBuilder_ == null) {
+          return amount_.get(index);  } else {
+          return amountBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public java.util.List<? extends wallet.core.jni.proto.Cosmos.CoinOrBuilder> 
+           getAmountOrBuilderList() {
+        if (amountBuilder_ != null) {
+          return amountBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(amount_);
+        }
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public wallet.core.jni.proto.Cosmos.Coin.Builder addAmountBuilder() {
+        return getAmountFieldBuilder().addBuilder(
+            wallet.core.jni.proto.Cosmos.Coin.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public wallet.core.jni.proto.Cosmos.Coin.Builder addAmountBuilder(
+          int index) {
+        return getAmountFieldBuilder().addBuilder(
+            index, wallet.core.jni.proto.Cosmos.Coin.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 1;</code>
+       */
+      public java.util.List<wallet.core.jni.proto.Cosmos.Coin.Builder> 
+           getAmountBuilderList() {
+        return getAmountFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          wallet.core.jni.proto.Cosmos.Coin, wallet.core.jni.proto.Cosmos.Coin.Builder, wallet.core.jni.proto.Cosmos.CoinOrBuilder> 
+          getAmountFieldBuilder() {
+        if (amountBuilder_ == null) {
+          amountBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              wallet.core.jni.proto.Cosmos.Coin, wallet.core.jni.proto.Cosmos.Coin.Builder, wallet.core.jni.proto.Cosmos.CoinOrBuilder>(
+                  amount_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          amount_ = null;
+        }
+        return amountBuilder_;
+      }
+
+      private long gas_ ;
+      /**
+       * <code>uint64 gas = 2;</code>
+       */
+      public long getGas() {
+        return gas_;
+      }
+      /**
+       * <code>uint64 gas = 2;</code>
+       */
+      public Builder setGas(long value) {
+        
+        gas_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 gas = 2;</code>
+       */
+      public Builder clearGas() {
+        
+        gas_ = 0L;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:TW.Cosmos.Proto.Fee)
+    }
+
+    // @@protoc_insertion_point(class_scope:TW.Cosmos.Proto.Fee)
+    private static final wallet.core.jni.proto.Cosmos.Fee DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.Cosmos.Fee();
+    }
+
+    public static wallet.core.jni.proto.Cosmos.Fee getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Fee>
+        PARSER = new com.google.protobuf.AbstractParser<Fee>() {
+      @java.lang.Override
+      public Fee parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Fee(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Fee> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Fee> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public wallet.core.jni.proto.Cosmos.Fee getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface SendCoinsMessageOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:TW.Cosmos.Proto.SendCoinsMessage)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -39,46 +1514,46 @@ public final class Cosmos {
         getToAddressBytes();
 
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
-    java.util.List<wallet.core.jni.proto.Cosmos.SendTokensMessage.Token> 
+    java.util.List<wallet.core.jni.proto.Cosmos.Coin> 
         getAmountList();
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
-    wallet.core.jni.proto.Cosmos.SendTokensMessage.Token getAmount(int index);
+    wallet.core.jni.proto.Cosmos.Coin getAmount(int index);
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
     int getAmountCount();
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
-    java.util.List<? extends wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder> 
+    java.util.List<? extends wallet.core.jni.proto.Cosmos.CoinOrBuilder> 
         getAmountOrBuilderList();
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
-    wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder getAmountOrBuilder(
+    wallet.core.jni.proto.Cosmos.CoinOrBuilder getAmountOrBuilder(
         int index);
   }
   /**
    * <pre>
-   * Message for sending tokens.
+   * Message for sending coins.
    * </pre>
    *
-   * Protobuf type {@code TW.Cosmos.Proto.SendTokensMessage}
+   * Protobuf type {@code TW.Cosmos.Proto.SendCoinsMessage}
    */
-  public  static final class SendTokensMessage extends
+  public  static final class SendCoinsMessage extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:TW.Cosmos.Proto.SendTokensMessage)
-      SendTokensMessageOrBuilder {
+      // @@protoc_insertion_point(message_implements:TW.Cosmos.Proto.SendCoinsMessage)
+      SendCoinsMessageOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use SendTokensMessage.newBuilder() to construct.
-    private SendTokensMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use SendCoinsMessage.newBuilder() to construct.
+    private SendCoinsMessage(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private SendTokensMessage() {
+    private SendCoinsMessage() {
       fromAddress_ = "";
       toAddress_ = "";
       amount_ = java.util.Collections.emptyList();
@@ -89,7 +1564,7 @@ public final class Cosmos {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private SendTokensMessage(
+    private SendCoinsMessage(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -122,11 +1597,11 @@ public final class Cosmos {
             }
             case 26: {
               if (!((mutable_bitField0_ & 0x00000004) != 0)) {
-                amount_ = new java.util.ArrayList<wallet.core.jni.proto.Cosmos.SendTokensMessage.Token>();
+                amount_ = new java.util.ArrayList<wallet.core.jni.proto.Cosmos.Coin>();
                 mutable_bitField0_ |= 0x00000004;
               }
               amount_.add(
-                  input.readMessage(wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.parser(), extensionRegistry));
+                  input.readMessage(wallet.core.jni.proto.Cosmos.Coin.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -153,627 +1628,15 @@ public final class Cosmos {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_descriptor;
+      return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendCoinsMessage_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_fieldAccessorTable
+      return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendCoinsMessage_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              wallet.core.jni.proto.Cosmos.SendTokensMessage.class, wallet.core.jni.proto.Cosmos.SendTokensMessage.Builder.class);
-    }
-
-    public interface TokenOrBuilder extends
-        // @@protoc_insertion_point(interface_extends:TW.Cosmos.Proto.SendTokensMessage.Token)
-        com.google.protobuf.MessageOrBuilder {
-
-      /**
-       * <code>string denom = 1;</code>
-       */
-      java.lang.String getDenom();
-      /**
-       * <code>string denom = 1;</code>
-       */
-      com.google.protobuf.ByteString
-          getDenomBytes();
-
-      /**
-       * <code>int64 amount = 2;</code>
-       */
-      long getAmount();
-    }
-    /**
-     * Protobuf type {@code TW.Cosmos.Proto.SendTokensMessage.Token}
-     */
-    public  static final class Token extends
-        com.google.protobuf.GeneratedMessageV3 implements
-        // @@protoc_insertion_point(message_implements:TW.Cosmos.Proto.SendTokensMessage.Token)
-        TokenOrBuilder {
-    private static final long serialVersionUID = 0L;
-      // Use Token.newBuilder() to construct.
-      private Token(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-        super(builder);
-      }
-      private Token() {
-        denom_ = "";
-      }
-
-      @java.lang.Override
-      public final com.google.protobuf.UnknownFieldSet
-      getUnknownFields() {
-        return this.unknownFields;
-      }
-      private Token(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        this();
-        if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
-        }
-        int mutable_bitField0_ = 0;
-        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-            com.google.protobuf.UnknownFieldSet.newBuilder();
-        try {
-          boolean done = false;
-          while (!done) {
-            int tag = input.readTag();
-            switch (tag) {
-              case 0:
-                done = true;
-                break;
-              case 10: {
-                java.lang.String s = input.readStringRequireUtf8();
-
-                denom_ = s;
-                break;
-              }
-              case 16: {
-
-                amount_ = input.readInt64();
-                break;
-              }
-              default: {
-                if (!parseUnknownField(
-                    input, unknownFields, extensionRegistry, tag)) {
-                  done = true;
-                }
-                break;
-              }
-            }
-          }
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          throw e.setUnfinishedMessage(this);
-        } catch (java.io.IOException e) {
-          throw new com.google.protobuf.InvalidProtocolBufferException(
-              e).setUnfinishedMessage(this);
-        } finally {
-          this.unknownFields = unknownFields.build();
-          makeExtensionsImmutable();
-        }
-      }
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.class, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder.class);
-      }
-
-      public static final int DENOM_FIELD_NUMBER = 1;
-      private volatile java.lang.Object denom_;
-      /**
-       * <code>string denom = 1;</code>
-       */
-      public java.lang.String getDenom() {
-        java.lang.Object ref = denom_;
-        if (ref instanceof java.lang.String) {
-          return (java.lang.String) ref;
-        } else {
-          com.google.protobuf.ByteString bs = 
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          denom_ = s;
-          return s;
-        }
-      }
-      /**
-       * <code>string denom = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getDenomBytes() {
-        java.lang.Object ref = denom_;
-        if (ref instanceof java.lang.String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          denom_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-
-      public static final int AMOUNT_FIELD_NUMBER = 2;
-      private long amount_;
-      /**
-       * <code>int64 amount = 2;</code>
-       */
-      public long getAmount() {
-        return amount_;
-      }
-
-      private byte memoizedIsInitialized = -1;
-      @java.lang.Override
-      public final boolean isInitialized() {
-        byte isInitialized = memoizedIsInitialized;
-        if (isInitialized == 1) return true;
-        if (isInitialized == 0) return false;
-
-        memoizedIsInitialized = 1;
-        return true;
-      }
-
-      @java.lang.Override
-      public void writeTo(com.google.protobuf.CodedOutputStream output)
-                          throws java.io.IOException {
-        if (!getDenomBytes().isEmpty()) {
-          com.google.protobuf.GeneratedMessageV3.writeString(output, 1, denom_);
-        }
-        if (amount_ != 0L) {
-          output.writeInt64(2, amount_);
-        }
-        unknownFields.writeTo(output);
-      }
-
-      @java.lang.Override
-      public int getSerializedSize() {
-        int size = memoizedSize;
-        if (size != -1) return size;
-
-        size = 0;
-        if (!getDenomBytes().isEmpty()) {
-          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, denom_);
-        }
-        if (amount_ != 0L) {
-          size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(2, amount_);
-        }
-        size += unknownFields.getSerializedSize();
-        memoizedSize = size;
-        return size;
-      }
-
-      @java.lang.Override
-      public boolean equals(final java.lang.Object obj) {
-        if (obj == this) {
-         return true;
-        }
-        if (!(obj instanceof wallet.core.jni.proto.Cosmos.SendTokensMessage.Token)) {
-          return super.equals(obj);
-        }
-        wallet.core.jni.proto.Cosmos.SendTokensMessage.Token other = (wallet.core.jni.proto.Cosmos.SendTokensMessage.Token) obj;
-
-        if (!getDenom()
-            .equals(other.getDenom())) return false;
-        if (getAmount()
-            != other.getAmount()) return false;
-        if (!unknownFields.equals(other.unknownFields)) return false;
-        return true;
-      }
-
-      @java.lang.Override
-      public int hashCode() {
-        if (memoizedHashCode != 0) {
-          return memoizedHashCode;
-        }
-        int hash = 41;
-        hash = (19 * hash) + getDescriptor().hashCode();
-        hash = (37 * hash) + DENOM_FIELD_NUMBER;
-        hash = (53 * hash) + getDenom().hashCode();
-        hash = (37 * hash) + AMOUNT_FIELD_NUMBER;
-        hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-            getAmount());
-        hash = (29 * hash) + unknownFields.hashCode();
-        memoizedHashCode = hash;
-        return hash;
-      }
-
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(
-          java.nio.ByteBuffer data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(
-          java.nio.ByteBuffer data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(
-          com.google.protobuf.ByteString data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(
-          com.google.protobuf.ByteString data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(byte[] data)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(
-          byte[] data,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return PARSER.parseFrom(data, extensionRegistry);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(java.io.InputStream input)
-          throws java.io.IOException {
-        return com.google.protobuf.GeneratedMessageV3
-            .parseWithIOException(PARSER, input);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(
-          java.io.InputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return com.google.protobuf.GeneratedMessageV3
-            .parseWithIOException(PARSER, input, extensionRegistry);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseDelimitedFrom(java.io.InputStream input)
-          throws java.io.IOException {
-        return com.google.protobuf.GeneratedMessageV3
-            .parseDelimitedWithIOException(PARSER, input);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseDelimitedFrom(
-          java.io.InputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return com.google.protobuf.GeneratedMessageV3
-            .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(
-          com.google.protobuf.CodedInputStream input)
-          throws java.io.IOException {
-        return com.google.protobuf.GeneratedMessageV3
-            .parseWithIOException(PARSER, input);
-      }
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parseFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        return com.google.protobuf.GeneratedMessageV3
-            .parseWithIOException(PARSER, input, extensionRegistry);
-      }
-
-      @java.lang.Override
-      public Builder newBuilderForType() { return newBuilder(); }
-      public static Builder newBuilder() {
-        return DEFAULT_INSTANCE.toBuilder();
-      }
-      public static Builder newBuilder(wallet.core.jni.proto.Cosmos.SendTokensMessage.Token prototype) {
-        return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-      }
-      @java.lang.Override
-      public Builder toBuilder() {
-        return this == DEFAULT_INSTANCE
-            ? new Builder() : new Builder().mergeFrom(this);
-      }
-
-      @java.lang.Override
-      protected Builder newBuilderForType(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        Builder builder = new Builder(parent);
-        return builder;
-      }
-      /**
-       * Protobuf type {@code TW.Cosmos.Proto.SendTokensMessage.Token}
-       */
-      public static final class Builder extends
-          com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-          // @@protoc_insertion_point(builder_implements:TW.Cosmos.Proto.SendTokensMessage.Token)
-          wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder {
-        public static final com.google.protobuf.Descriptors.Descriptor
-            getDescriptor() {
-          return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_descriptor;
-        }
-
-        @java.lang.Override
-        protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-            internalGetFieldAccessorTable() {
-          return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_fieldAccessorTable
-              .ensureFieldAccessorsInitialized(
-                  wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.class, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder.class);
-        }
-
-        // Construct using wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.newBuilder()
-        private Builder() {
-          maybeForceBuilderInitialization();
-        }
-
-        private Builder(
-            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-          super(parent);
-          maybeForceBuilderInitialization();
-        }
-        private void maybeForceBuilderInitialization() {
-          if (com.google.protobuf.GeneratedMessageV3
-                  .alwaysUseFieldBuilders) {
-          }
-        }
-        @java.lang.Override
-        public Builder clear() {
-          super.clear();
-          denom_ = "";
-
-          amount_ = 0L;
-
-          return this;
-        }
-
-        @java.lang.Override
-        public com.google.protobuf.Descriptors.Descriptor
-            getDescriptorForType() {
-          return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_descriptor;
-        }
-
-        @java.lang.Override
-        public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token getDefaultInstanceForType() {
-          return wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.getDefaultInstance();
-        }
-
-        @java.lang.Override
-        public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token build() {
-          wallet.core.jni.proto.Cosmos.SendTokensMessage.Token result = buildPartial();
-          if (!result.isInitialized()) {
-            throw newUninitializedMessageException(result);
-          }
-          return result;
-        }
-
-        @java.lang.Override
-        public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token buildPartial() {
-          wallet.core.jni.proto.Cosmos.SendTokensMessage.Token result = new wallet.core.jni.proto.Cosmos.SendTokensMessage.Token(this);
-          result.denom_ = denom_;
-          result.amount_ = amount_;
-          onBuilt();
-          return result;
-        }
-
-        @java.lang.Override
-        public Builder clone() {
-          return super.clone();
-        }
-        @java.lang.Override
-        public Builder setField(
-            com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.setField(field, value);
-        }
-        @java.lang.Override
-        public Builder clearField(
-            com.google.protobuf.Descriptors.FieldDescriptor field) {
-          return super.clearField(field);
-        }
-        @java.lang.Override
-        public Builder clearOneof(
-            com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-          return super.clearOneof(oneof);
-        }
-        @java.lang.Override
-        public Builder setRepeatedField(
-            com.google.protobuf.Descriptors.FieldDescriptor field,
-            int index, java.lang.Object value) {
-          return super.setRepeatedField(field, index, value);
-        }
-        @java.lang.Override
-        public Builder addRepeatedField(
-            com.google.protobuf.Descriptors.FieldDescriptor field,
-            java.lang.Object value) {
-          return super.addRepeatedField(field, value);
-        }
-        @java.lang.Override
-        public Builder mergeFrom(com.google.protobuf.Message other) {
-          if (other instanceof wallet.core.jni.proto.Cosmos.SendTokensMessage.Token) {
-            return mergeFrom((wallet.core.jni.proto.Cosmos.SendTokensMessage.Token)other);
-          } else {
-            super.mergeFrom(other);
-            return this;
-          }
-        }
-
-        public Builder mergeFrom(wallet.core.jni.proto.Cosmos.SendTokensMessage.Token other) {
-          if (other == wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.getDefaultInstance()) return this;
-          if (!other.getDenom().isEmpty()) {
-            denom_ = other.denom_;
-            onChanged();
-          }
-          if (other.getAmount() != 0L) {
-            setAmount(other.getAmount());
-          }
-          this.mergeUnknownFields(other.unknownFields);
-          onChanged();
-          return this;
-        }
-
-        @java.lang.Override
-        public final boolean isInitialized() {
-          return true;
-        }
-
-        @java.lang.Override
-        public Builder mergeFrom(
-            com.google.protobuf.CodedInputStream input,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws java.io.IOException {
-          wallet.core.jni.proto.Cosmos.SendTokensMessage.Token parsedMessage = null;
-          try {
-            parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-          } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-            parsedMessage = (wallet.core.jni.proto.Cosmos.SendTokensMessage.Token) e.getUnfinishedMessage();
-            throw e.unwrapIOException();
-          } finally {
-            if (parsedMessage != null) {
-              mergeFrom(parsedMessage);
-            }
-          }
-          return this;
-        }
-
-        private java.lang.Object denom_ = "";
-        /**
-         * <code>string denom = 1;</code>
-         */
-        public java.lang.String getDenom() {
-          java.lang.Object ref = denom_;
-          if (!(ref instanceof java.lang.String)) {
-            com.google.protobuf.ByteString bs =
-                (com.google.protobuf.ByteString) ref;
-            java.lang.String s = bs.toStringUtf8();
-            denom_ = s;
-            return s;
-          } else {
-            return (java.lang.String) ref;
-          }
-        }
-        /**
-         * <code>string denom = 1;</code>
-         */
-        public com.google.protobuf.ByteString
-            getDenomBytes() {
-          java.lang.Object ref = denom_;
-          if (ref instanceof String) {
-            com.google.protobuf.ByteString b = 
-                com.google.protobuf.ByteString.copyFromUtf8(
-                    (java.lang.String) ref);
-            denom_ = b;
-            return b;
-          } else {
-            return (com.google.protobuf.ByteString) ref;
-          }
-        }
-        /**
-         * <code>string denom = 1;</code>
-         */
-        public Builder setDenom(
-            java.lang.String value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  
-          denom_ = value;
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>string denom = 1;</code>
-         */
-        public Builder clearDenom() {
-          
-          denom_ = getDefaultInstance().getDenom();
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>string denom = 1;</code>
-         */
-        public Builder setDenomBytes(
-            com.google.protobuf.ByteString value) {
-          if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-          
-          denom_ = value;
-          onChanged();
-          return this;
-        }
-
-        private long amount_ ;
-        /**
-         * <code>int64 amount = 2;</code>
-         */
-        public long getAmount() {
-          return amount_;
-        }
-        /**
-         * <code>int64 amount = 2;</code>
-         */
-        public Builder setAmount(long value) {
-          
-          amount_ = value;
-          onChanged();
-          return this;
-        }
-        /**
-         * <code>int64 amount = 2;</code>
-         */
-        public Builder clearAmount() {
-          
-          amount_ = 0L;
-          onChanged();
-          return this;
-        }
-        @java.lang.Override
-        public final Builder setUnknownFields(
-            final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.setUnknownFields(unknownFields);
-        }
-
-        @java.lang.Override
-        public final Builder mergeUnknownFields(
-            final com.google.protobuf.UnknownFieldSet unknownFields) {
-          return super.mergeUnknownFields(unknownFields);
-        }
-
-
-        // @@protoc_insertion_point(builder_scope:TW.Cosmos.Proto.SendTokensMessage.Token)
-      }
-
-      // @@protoc_insertion_point(class_scope:TW.Cosmos.Proto.SendTokensMessage.Token)
-      private static final wallet.core.jni.proto.Cosmos.SendTokensMessage.Token DEFAULT_INSTANCE;
-      static {
-        DEFAULT_INSTANCE = new wallet.core.jni.proto.Cosmos.SendTokensMessage.Token();
-      }
-
-      public static wallet.core.jni.proto.Cosmos.SendTokensMessage.Token getDefaultInstance() {
-        return DEFAULT_INSTANCE;
-      }
-
-      private static final com.google.protobuf.Parser<Token>
-          PARSER = new com.google.protobuf.AbstractParser<Token>() {
-        @java.lang.Override
-        public Token parsePartialFrom(
-            com.google.protobuf.CodedInputStream input,
-            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-            throws com.google.protobuf.InvalidProtocolBufferException {
-          return new Token(input, extensionRegistry);
-        }
-      };
-
-      public static com.google.protobuf.Parser<Token> parser() {
-        return PARSER;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Parser<Token> getParserForType() {
-        return PARSER;
-      }
-
-      @java.lang.Override
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token getDefaultInstanceForType() {
-        return DEFAULT_INSTANCE;
-      }
-
+              wallet.core.jni.proto.Cosmos.SendCoinsMessage.class, wallet.core.jni.proto.Cosmos.SendCoinsMessage.Builder.class);
     }
 
     private int bitField0_;
@@ -846,36 +1709,36 @@ public final class Cosmos {
     }
 
     public static final int AMOUNT_FIELD_NUMBER = 3;
-    private java.util.List<wallet.core.jni.proto.Cosmos.SendTokensMessage.Token> amount_;
+    private java.util.List<wallet.core.jni.proto.Cosmos.Coin> amount_;
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
-    public java.util.List<wallet.core.jni.proto.Cosmos.SendTokensMessage.Token> getAmountList() {
+    public java.util.List<wallet.core.jni.proto.Cosmos.Coin> getAmountList() {
       return amount_;
     }
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
-    public java.util.List<? extends wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder> 
+    public java.util.List<? extends wallet.core.jni.proto.Cosmos.CoinOrBuilder> 
         getAmountOrBuilderList() {
       return amount_;
     }
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
     public int getAmountCount() {
       return amount_.size();
     }
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
-    public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token getAmount(int index) {
+    public wallet.core.jni.proto.Cosmos.Coin getAmount(int index) {
       return amount_.get(index);
     }
     /**
-     * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+     * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
      */
-    public wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder getAmountOrBuilder(
+    public wallet.core.jni.proto.Cosmos.CoinOrBuilder getAmountOrBuilder(
         int index) {
       return amount_.get(index);
     }
@@ -932,10 +1795,10 @@ public final class Cosmos {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof wallet.core.jni.proto.Cosmos.SendTokensMessage)) {
+      if (!(obj instanceof wallet.core.jni.proto.Cosmos.SendCoinsMessage)) {
         return super.equals(obj);
       }
-      wallet.core.jni.proto.Cosmos.SendTokensMessage other = (wallet.core.jni.proto.Cosmos.SendTokensMessage) obj;
+      wallet.core.jni.proto.Cosmos.SendCoinsMessage other = (wallet.core.jni.proto.Cosmos.SendCoinsMessage) obj;
 
       if (!getFromAddress()
           .equals(other.getFromAddress())) return false;
@@ -967,69 +1830,69 @@ public final class Cosmos {
       return hash;
     }
 
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(byte[] data)
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(java.io.InputStream input)
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseDelimitedFrom(java.io.InputStream input)
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseDelimitedFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage parseFrom(
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1042,7 +1905,7 @@ public final class Cosmos {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(wallet.core.jni.proto.Cosmos.SendTokensMessage prototype) {
+    public static Builder newBuilder(wallet.core.jni.proto.Cosmos.SendCoinsMessage prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -1059,29 +1922,29 @@ public final class Cosmos {
     }
     /**
      * <pre>
-     * Message for sending tokens.
+     * Message for sending coins.
      * </pre>
      *
-     * Protobuf type {@code TW.Cosmos.Proto.SendTokensMessage}
+     * Protobuf type {@code TW.Cosmos.Proto.SendCoinsMessage}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:TW.Cosmos.Proto.SendTokensMessage)
-        wallet.core.jni.proto.Cosmos.SendTokensMessageOrBuilder {
+        // @@protoc_insertion_point(builder_implements:TW.Cosmos.Proto.SendCoinsMessage)
+        wallet.core.jni.proto.Cosmos.SendCoinsMessageOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_descriptor;
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendCoinsMessage_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_fieldAccessorTable
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendCoinsMessage_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                wallet.core.jni.proto.Cosmos.SendTokensMessage.class, wallet.core.jni.proto.Cosmos.SendTokensMessage.Builder.class);
+                wallet.core.jni.proto.Cosmos.SendCoinsMessage.class, wallet.core.jni.proto.Cosmos.SendCoinsMessage.Builder.class);
       }
 
-      // Construct using wallet.core.jni.proto.Cosmos.SendTokensMessage.newBuilder()
+      // Construct using wallet.core.jni.proto.Cosmos.SendCoinsMessage.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1116,17 +1979,17 @@ public final class Cosmos {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendTokensMessage_descriptor;
+        return wallet.core.jni.proto.Cosmos.internal_static_TW_Cosmos_Proto_SendCoinsMessage_descriptor;
       }
 
       @java.lang.Override
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage getDefaultInstanceForType() {
-        return wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance();
+      public wallet.core.jni.proto.Cosmos.SendCoinsMessage getDefaultInstanceForType() {
+        return wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance();
       }
 
       @java.lang.Override
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage build() {
-        wallet.core.jni.proto.Cosmos.SendTokensMessage result = buildPartial();
+      public wallet.core.jni.proto.Cosmos.SendCoinsMessage build() {
+        wallet.core.jni.proto.Cosmos.SendCoinsMessage result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1134,8 +1997,8 @@ public final class Cosmos {
       }
 
       @java.lang.Override
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage buildPartial() {
-        wallet.core.jni.proto.Cosmos.SendTokensMessage result = new wallet.core.jni.proto.Cosmos.SendTokensMessage(this);
+      public wallet.core.jni.proto.Cosmos.SendCoinsMessage buildPartial() {
+        wallet.core.jni.proto.Cosmos.SendCoinsMessage result = new wallet.core.jni.proto.Cosmos.SendCoinsMessage(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         result.fromAddress_ = fromAddress_;
@@ -1188,16 +2051,16 @@ public final class Cosmos {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof wallet.core.jni.proto.Cosmos.SendTokensMessage) {
-          return mergeFrom((wallet.core.jni.proto.Cosmos.SendTokensMessage)other);
+        if (other instanceof wallet.core.jni.proto.Cosmos.SendCoinsMessage) {
+          return mergeFrom((wallet.core.jni.proto.Cosmos.SendCoinsMessage)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(wallet.core.jni.proto.Cosmos.SendTokensMessage other) {
-        if (other == wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance()) return this;
+      public Builder mergeFrom(wallet.core.jni.proto.Cosmos.SendCoinsMessage other) {
+        if (other == wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance()) return this;
         if (!other.getFromAddress().isEmpty()) {
           fromAddress_ = other.fromAddress_;
           onChanged();
@@ -1247,11 +2110,11 @@ public final class Cosmos {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        wallet.core.jni.proto.Cosmos.SendTokensMessage parsedMessage = null;
+        wallet.core.jni.proto.Cosmos.SendCoinsMessage parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (wallet.core.jni.proto.Cosmos.SendTokensMessage) e.getUnfinishedMessage();
+          parsedMessage = (wallet.core.jni.proto.Cosmos.SendCoinsMessage) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1400,22 +2263,22 @@ public final class Cosmos {
         return this;
       }
 
-      private java.util.List<wallet.core.jni.proto.Cosmos.SendTokensMessage.Token> amount_ =
+      private java.util.List<wallet.core.jni.proto.Cosmos.Coin> amount_ =
         java.util.Collections.emptyList();
       private void ensureAmountIsMutable() {
         if (!((bitField0_ & 0x00000004) != 0)) {
-          amount_ = new java.util.ArrayList<wallet.core.jni.proto.Cosmos.SendTokensMessage.Token>(amount_);
+          amount_ = new java.util.ArrayList<wallet.core.jni.proto.Cosmos.Coin>(amount_);
           bitField0_ |= 0x00000004;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          wallet.core.jni.proto.Cosmos.SendTokensMessage.Token, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder, wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder> amountBuilder_;
+          wallet.core.jni.proto.Cosmos.Coin, wallet.core.jni.proto.Cosmos.Coin.Builder, wallet.core.jni.proto.Cosmos.CoinOrBuilder> amountBuilder_;
 
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public java.util.List<wallet.core.jni.proto.Cosmos.SendTokensMessage.Token> getAmountList() {
+      public java.util.List<wallet.core.jni.proto.Cosmos.Coin> getAmountList() {
         if (amountBuilder_ == null) {
           return java.util.Collections.unmodifiableList(amount_);
         } else {
@@ -1423,7 +2286,7 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public int getAmountCount() {
         if (amountBuilder_ == null) {
@@ -1433,9 +2296,9 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token getAmount(int index) {
+      public wallet.core.jni.proto.Cosmos.Coin getAmount(int index) {
         if (amountBuilder_ == null) {
           return amount_.get(index);
         } else {
@@ -1443,10 +2306,10 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public Builder setAmount(
-          int index, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token value) {
+          int index, wallet.core.jni.proto.Cosmos.Coin value) {
         if (amountBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1460,10 +2323,10 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public Builder setAmount(
-          int index, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder builderForValue) {
+          int index, wallet.core.jni.proto.Cosmos.Coin.Builder builderForValue) {
         if (amountBuilder_ == null) {
           ensureAmountIsMutable();
           amount_.set(index, builderForValue.build());
@@ -1474,9 +2337,9 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public Builder addAmount(wallet.core.jni.proto.Cosmos.SendTokensMessage.Token value) {
+      public Builder addAmount(wallet.core.jni.proto.Cosmos.Coin value) {
         if (amountBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1490,10 +2353,10 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public Builder addAmount(
-          int index, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token value) {
+          int index, wallet.core.jni.proto.Cosmos.Coin value) {
         if (amountBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1507,10 +2370,10 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public Builder addAmount(
-          wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder builderForValue) {
+          wallet.core.jni.proto.Cosmos.Coin.Builder builderForValue) {
         if (amountBuilder_ == null) {
           ensureAmountIsMutable();
           amount_.add(builderForValue.build());
@@ -1521,10 +2384,10 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public Builder addAmount(
-          int index, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder builderForValue) {
+          int index, wallet.core.jni.proto.Cosmos.Coin.Builder builderForValue) {
         if (amountBuilder_ == null) {
           ensureAmountIsMutable();
           amount_.add(index, builderForValue.build());
@@ -1535,10 +2398,10 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public Builder addAllAmount(
-          java.lang.Iterable<? extends wallet.core.jni.proto.Cosmos.SendTokensMessage.Token> values) {
+          java.lang.Iterable<? extends wallet.core.jni.proto.Cosmos.Coin> values) {
         if (amountBuilder_ == null) {
           ensureAmountIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1550,7 +2413,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public Builder clearAmount() {
         if (amountBuilder_ == null) {
@@ -1563,7 +2426,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
       public Builder removeAmount(int index) {
         if (amountBuilder_ == null) {
@@ -1576,16 +2439,16 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder getAmountBuilder(
+      public wallet.core.jni.proto.Cosmos.Coin.Builder getAmountBuilder(
           int index) {
         return getAmountFieldBuilder().getBuilder(index);
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder getAmountOrBuilder(
+      public wallet.core.jni.proto.Cosmos.CoinOrBuilder getAmountOrBuilder(
           int index) {
         if (amountBuilder_ == null) {
           return amount_.get(index);  } else {
@@ -1593,9 +2456,9 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public java.util.List<? extends wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder> 
+      public java.util.List<? extends wallet.core.jni.proto.Cosmos.CoinOrBuilder> 
            getAmountOrBuilderList() {
         if (amountBuilder_ != null) {
           return amountBuilder_.getMessageOrBuilderList();
@@ -1604,33 +2467,33 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder addAmountBuilder() {
+      public wallet.core.jni.proto.Cosmos.Coin.Builder addAmountBuilder() {
         return getAmountFieldBuilder().addBuilder(
-            wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.getDefaultInstance());
+            wallet.core.jni.proto.Cosmos.Coin.getDefaultInstance());
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder addAmountBuilder(
+      public wallet.core.jni.proto.Cosmos.Coin.Builder addAmountBuilder(
           int index) {
         return getAmountFieldBuilder().addBuilder(
-            index, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.getDefaultInstance());
+            index, wallet.core.jni.proto.Cosmos.Coin.getDefaultInstance());
       }
       /**
-       * <code>repeated .TW.Cosmos.Proto.SendTokensMessage.Token amount = 3;</code>
+       * <code>repeated .TW.Cosmos.Proto.Coin amount = 3;</code>
        */
-      public java.util.List<wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder> 
+      public java.util.List<wallet.core.jni.proto.Cosmos.Coin.Builder> 
            getAmountBuilderList() {
         return getAmountFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          wallet.core.jni.proto.Cosmos.SendTokensMessage.Token, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder, wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder> 
+          wallet.core.jni.proto.Cosmos.Coin, wallet.core.jni.proto.Cosmos.Coin.Builder, wallet.core.jni.proto.Cosmos.CoinOrBuilder> 
           getAmountFieldBuilder() {
         if (amountBuilder_ == null) {
           amountBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              wallet.core.jni.proto.Cosmos.SendTokensMessage.Token, wallet.core.jni.proto.Cosmos.SendTokensMessage.Token.Builder, wallet.core.jni.proto.Cosmos.SendTokensMessage.TokenOrBuilder>(
+              wallet.core.jni.proto.Cosmos.Coin, wallet.core.jni.proto.Cosmos.Coin.Builder, wallet.core.jni.proto.Cosmos.CoinOrBuilder>(
                   amount_,
                   ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
@@ -1652,41 +2515,41 @@ public final class Cosmos {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:TW.Cosmos.Proto.SendTokensMessage)
+      // @@protoc_insertion_point(builder_scope:TW.Cosmos.Proto.SendCoinsMessage)
     }
 
-    // @@protoc_insertion_point(class_scope:TW.Cosmos.Proto.SendTokensMessage)
-    private static final wallet.core.jni.proto.Cosmos.SendTokensMessage DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:TW.Cosmos.Proto.SendCoinsMessage)
+    private static final wallet.core.jni.proto.Cosmos.SendCoinsMessage DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new wallet.core.jni.proto.Cosmos.SendTokensMessage();
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.Cosmos.SendCoinsMessage();
     }
 
-    public static wallet.core.jni.proto.Cosmos.SendTokensMessage getDefaultInstance() {
+    public static wallet.core.jni.proto.Cosmos.SendCoinsMessage getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<SendTokensMessage>
-        PARSER = new com.google.protobuf.AbstractParser<SendTokensMessage>() {
+    private static final com.google.protobuf.Parser<SendCoinsMessage>
+        PARSER = new com.google.protobuf.AbstractParser<SendCoinsMessage>() {
       @java.lang.Override
-      public SendTokensMessage parsePartialFrom(
+      public SendCoinsMessage parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new SendTokensMessage(input, extensionRegistry);
+        return new SendCoinsMessage(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<SendTokensMessage> parser() {
+    public static com.google.protobuf.Parser<SendCoinsMessage> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<SendTokensMessage> getParserForType() {
+    public com.google.protobuf.Parser<SendCoinsMessage> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public wallet.core.jni.proto.Cosmos.SendTokensMessage getDefaultInstanceForType() {
+    public wallet.core.jni.proto.Cosmos.SendCoinsMessage getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1712,37 +2575,50 @@ public final class Cosmos {
         getChainIdBytes();
 
     /**
-     * <code>string memo = 3;</code>
+     * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+     */
+    boolean hasFee();
+    /**
+     * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+     */
+    wallet.core.jni.proto.Cosmos.Fee getFee();
+    /**
+     * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+     */
+    wallet.core.jni.proto.Cosmos.FeeOrBuilder getFeeOrBuilder();
+
+    /**
+     * <code>string memo = 4;</code>
      */
     java.lang.String getMemo();
     /**
-     * <code>string memo = 3;</code>
+     * <code>string memo = 4;</code>
      */
     com.google.protobuf.ByteString
         getMemoBytes();
 
     /**
-     * <code>uint64 sequence = 4;</code>
+     * <code>uint64 sequence = 5;</code>
      */
     long getSequence();
 
     /**
-     * <code>bytes private_Key = 5;</code>
+     * <code>bytes private_Key = 6;</code>
      */
     com.google.protobuf.ByteString getPrivateKey();
 
     /**
-     * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+     * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
      */
     boolean hasMessage();
     /**
-     * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+     * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
      */
-    wallet.core.jni.proto.Cosmos.SendTokensMessage getMessage();
+    wallet.core.jni.proto.Cosmos.SendCoinsMessage getMessage();
     /**
-     * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+     * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
      */
-    wallet.core.jni.proto.Cosmos.SendTokensMessageOrBuilder getMessageOrBuilder();
+    wallet.core.jni.proto.Cosmos.SendCoinsMessageOrBuilder getMessageOrBuilder();
 
     public wallet.core.jni.proto.Cosmos.SigningInput.MessageOneofCase getMessageOneofCase();
   }
@@ -1804,33 +2680,46 @@ public final class Cosmos {
               break;
             }
             case 26: {
+              wallet.core.jni.proto.Cosmos.Fee.Builder subBuilder = null;
+              if (fee_ != null) {
+                subBuilder = fee_.toBuilder();
+              }
+              fee_ = input.readMessage(wallet.core.jni.proto.Cosmos.Fee.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(fee_);
+                fee_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 34: {
               java.lang.String s = input.readStringRequireUtf8();
 
               memo_ = s;
               break;
             }
-            case 32: {
+            case 40: {
 
               sequence_ = input.readUInt64();
               break;
             }
-            case 42: {
+            case 50: {
 
               privateKey_ = input.readBytes();
               break;
             }
-            case 50: {
-              wallet.core.jni.proto.Cosmos.SendTokensMessage.Builder subBuilder = null;
-              if (messageOneofCase_ == 6) {
-                subBuilder = ((wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_).toBuilder();
+            case 58: {
+              wallet.core.jni.proto.Cosmos.SendCoinsMessage.Builder subBuilder = null;
+              if (messageOneofCase_ == 7) {
+                subBuilder = ((wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_).toBuilder();
               }
               messageOneof_ =
-                  input.readMessage(wallet.core.jni.proto.Cosmos.SendTokensMessage.parser(), extensionRegistry);
+                  input.readMessage(wallet.core.jni.proto.Cosmos.SendCoinsMessage.parser(), extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom((wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_);
+                subBuilder.mergeFrom((wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_);
                 messageOneof_ = subBuilder.buildPartial();
               }
-              messageOneofCase_ = 6;
+              messageOneofCase_ = 7;
               break;
             }
             default: {
@@ -1869,7 +2758,7 @@ public final class Cosmos {
     private java.lang.Object messageOneof_;
     public enum MessageOneofCase
         implements com.google.protobuf.Internal.EnumLite {
-      MESSAGE(6),
+      MESSAGE(7),
       MESSAGEONEOF_NOT_SET(0);
       private final int value;
       private MessageOneofCase(int value) {
@@ -1885,7 +2774,7 @@ public final class Cosmos {
 
       public static MessageOneofCase forNumber(int value) {
         switch (value) {
-          case 6: return MESSAGE;
+          case 7: return MESSAGE;
           case 0: return MESSAGEONEOF_NOT_SET;
           default: return null;
         }
@@ -1944,10 +2833,31 @@ public final class Cosmos {
       }
     }
 
-    public static final int MEMO_FIELD_NUMBER = 3;
+    public static final int FEE_FIELD_NUMBER = 3;
+    private wallet.core.jni.proto.Cosmos.Fee fee_;
+    /**
+     * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+     */
+    public boolean hasFee() {
+      return fee_ != null;
+    }
+    /**
+     * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+     */
+    public wallet.core.jni.proto.Cosmos.Fee getFee() {
+      return fee_ == null ? wallet.core.jni.proto.Cosmos.Fee.getDefaultInstance() : fee_;
+    }
+    /**
+     * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+     */
+    public wallet.core.jni.proto.Cosmos.FeeOrBuilder getFeeOrBuilder() {
+      return getFee();
+    }
+
+    public static final int MEMO_FIELD_NUMBER = 4;
     private volatile java.lang.Object memo_;
     /**
-     * <code>string memo = 3;</code>
+     * <code>string memo = 4;</code>
      */
     public java.lang.String getMemo() {
       java.lang.Object ref = memo_;
@@ -1962,7 +2872,7 @@ public final class Cosmos {
       }
     }
     /**
-     * <code>string memo = 3;</code>
+     * <code>string memo = 4;</code>
      */
     public com.google.protobuf.ByteString
         getMemoBytes() {
@@ -1978,48 +2888,48 @@ public final class Cosmos {
       }
     }
 
-    public static final int SEQUENCE_FIELD_NUMBER = 4;
+    public static final int SEQUENCE_FIELD_NUMBER = 5;
     private long sequence_;
     /**
-     * <code>uint64 sequence = 4;</code>
+     * <code>uint64 sequence = 5;</code>
      */
     public long getSequence() {
       return sequence_;
     }
 
-    public static final int PRIVATE_KEY_FIELD_NUMBER = 5;
+    public static final int PRIVATE_KEY_FIELD_NUMBER = 6;
     private com.google.protobuf.ByteString privateKey_;
     /**
-     * <code>bytes private_Key = 5;</code>
+     * <code>bytes private_Key = 6;</code>
      */
     public com.google.protobuf.ByteString getPrivateKey() {
       return privateKey_;
     }
 
-    public static final int MESSAGE_FIELD_NUMBER = 6;
+    public static final int MESSAGE_FIELD_NUMBER = 7;
     /**
-     * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+     * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
      */
     public boolean hasMessage() {
-      return messageOneofCase_ == 6;
+      return messageOneofCase_ == 7;
     }
     /**
-     * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+     * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
      */
-    public wallet.core.jni.proto.Cosmos.SendTokensMessage getMessage() {
-      if (messageOneofCase_ == 6) {
-         return (wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_;
+    public wallet.core.jni.proto.Cosmos.SendCoinsMessage getMessage() {
+      if (messageOneofCase_ == 7) {
+         return (wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_;
       }
-      return wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance();
+      return wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance();
     }
     /**
-     * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+     * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
      */
-    public wallet.core.jni.proto.Cosmos.SendTokensMessageOrBuilder getMessageOrBuilder() {
-      if (messageOneofCase_ == 6) {
-         return (wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_;
+    public wallet.core.jni.proto.Cosmos.SendCoinsMessageOrBuilder getMessageOrBuilder() {
+      if (messageOneofCase_ == 7) {
+         return (wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_;
       }
-      return wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance();
+      return wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -2042,17 +2952,20 @@ public final class Cosmos {
       if (!getChainIdBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, chainId_);
       }
+      if (fee_ != null) {
+        output.writeMessage(3, getFee());
+      }
       if (!getMemoBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, memo_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 4, memo_);
       }
       if (sequence_ != 0L) {
-        output.writeUInt64(4, sequence_);
+        output.writeUInt64(5, sequence_);
       }
       if (!privateKey_.isEmpty()) {
-        output.writeBytes(5, privateKey_);
+        output.writeBytes(6, privateKey_);
       }
-      if (messageOneofCase_ == 6) {
-        output.writeMessage(6, (wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_);
+      if (messageOneofCase_ == 7) {
+        output.writeMessage(7, (wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_);
       }
       unknownFields.writeTo(output);
     }
@@ -2070,20 +2983,24 @@ public final class Cosmos {
       if (!getChainIdBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, chainId_);
       }
+      if (fee_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getFee());
+      }
       if (!getMemoBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, memo_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, memo_);
       }
       if (sequence_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(4, sequence_);
+          .computeUInt64Size(5, sequence_);
       }
       if (!privateKey_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, privateKey_);
+          .computeBytesSize(6, privateKey_);
       }
-      if (messageOneofCase_ == 6) {
+      if (messageOneofCase_ == 7) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, (wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_);
+          .computeMessageSize(7, (wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2104,6 +3021,11 @@ public final class Cosmos {
           != other.getAccountNumber()) return false;
       if (!getChainId()
           .equals(other.getChainId())) return false;
+      if (hasFee() != other.hasFee()) return false;
+      if (hasFee()) {
+        if (!getFee()
+            .equals(other.getFee())) return false;
+      }
       if (!getMemo()
           .equals(other.getMemo())) return false;
       if (getSequence()
@@ -2112,7 +3034,7 @@ public final class Cosmos {
           .equals(other.getPrivateKey())) return false;
       if (!getMessageOneofCase().equals(other.getMessageOneofCase())) return false;
       switch (messageOneofCase_) {
-        case 6:
+        case 7:
           if (!getMessage()
               .equals(other.getMessage())) return false;
           break;
@@ -2135,6 +3057,10 @@ public final class Cosmos {
           getAccountNumber());
       hash = (37 * hash) + CHAIN_ID_FIELD_NUMBER;
       hash = (53 * hash) + getChainId().hashCode();
+      if (hasFee()) {
+        hash = (37 * hash) + FEE_FIELD_NUMBER;
+        hash = (53 * hash) + getFee().hashCode();
+      }
       hash = (37 * hash) + MEMO_FIELD_NUMBER;
       hash = (53 * hash) + getMemo().hashCode();
       hash = (37 * hash) + SEQUENCE_FIELD_NUMBER;
@@ -2143,7 +3069,7 @@ public final class Cosmos {
       hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
       hash = (53 * hash) + getPrivateKey().hashCode();
       switch (messageOneofCase_) {
-        case 6:
+        case 7:
           hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
           hash = (53 * hash) + getMessage().hashCode();
           break;
@@ -2291,6 +3217,12 @@ public final class Cosmos {
 
         chainId_ = "";
 
+        if (feeBuilder_ == null) {
+          fee_ = null;
+        } else {
+          fee_ = null;
+          feeBuilder_ = null;
+        }
         memo_ = "";
 
         sequence_ = 0L;
@@ -2327,10 +3259,15 @@ public final class Cosmos {
         wallet.core.jni.proto.Cosmos.SigningInput result = new wallet.core.jni.proto.Cosmos.SigningInput(this);
         result.accountNumber_ = accountNumber_;
         result.chainId_ = chainId_;
+        if (feeBuilder_ == null) {
+          result.fee_ = fee_;
+        } else {
+          result.fee_ = feeBuilder_.build();
+        }
         result.memo_ = memo_;
         result.sequence_ = sequence_;
         result.privateKey_ = privateKey_;
-        if (messageOneofCase_ == 6) {
+        if (messageOneofCase_ == 7) {
           if (messageBuilder_ == null) {
             result.messageOneof_ = messageOneof_;
           } else {
@@ -2392,6 +3329,9 @@ public final class Cosmos {
         if (!other.getChainId().isEmpty()) {
           chainId_ = other.chainId_;
           onChanged();
+        }
+        if (other.hasFee()) {
+          mergeFee(other.getFee());
         }
         if (!other.getMemo().isEmpty()) {
           memo_ = other.memo_;
@@ -2551,9 +3491,126 @@ public final class Cosmos {
         return this;
       }
 
+      private wallet.core.jni.proto.Cosmos.Fee fee_;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          wallet.core.jni.proto.Cosmos.Fee, wallet.core.jni.proto.Cosmos.Fee.Builder, wallet.core.jni.proto.Cosmos.FeeOrBuilder> feeBuilder_;
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      public boolean hasFee() {
+        return feeBuilder_ != null || fee_ != null;
+      }
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      public wallet.core.jni.proto.Cosmos.Fee getFee() {
+        if (feeBuilder_ == null) {
+          return fee_ == null ? wallet.core.jni.proto.Cosmos.Fee.getDefaultInstance() : fee_;
+        } else {
+          return feeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      public Builder setFee(wallet.core.jni.proto.Cosmos.Fee value) {
+        if (feeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          fee_ = value;
+          onChanged();
+        } else {
+          feeBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      public Builder setFee(
+          wallet.core.jni.proto.Cosmos.Fee.Builder builderForValue) {
+        if (feeBuilder_ == null) {
+          fee_ = builderForValue.build();
+          onChanged();
+        } else {
+          feeBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      public Builder mergeFee(wallet.core.jni.proto.Cosmos.Fee value) {
+        if (feeBuilder_ == null) {
+          if (fee_ != null) {
+            fee_ =
+              wallet.core.jni.proto.Cosmos.Fee.newBuilder(fee_).mergeFrom(value).buildPartial();
+          } else {
+            fee_ = value;
+          }
+          onChanged();
+        } else {
+          feeBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      public Builder clearFee() {
+        if (feeBuilder_ == null) {
+          fee_ = null;
+          onChanged();
+        } else {
+          fee_ = null;
+          feeBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      public wallet.core.jni.proto.Cosmos.Fee.Builder getFeeBuilder() {
+        
+        onChanged();
+        return getFeeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      public wallet.core.jni.proto.Cosmos.FeeOrBuilder getFeeOrBuilder() {
+        if (feeBuilder_ != null) {
+          return feeBuilder_.getMessageOrBuilder();
+        } else {
+          return fee_ == null ?
+              wallet.core.jni.proto.Cosmos.Fee.getDefaultInstance() : fee_;
+        }
+      }
+      /**
+       * <code>.TW.Cosmos.Proto.Fee fee = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          wallet.core.jni.proto.Cosmos.Fee, wallet.core.jni.proto.Cosmos.Fee.Builder, wallet.core.jni.proto.Cosmos.FeeOrBuilder> 
+          getFeeFieldBuilder() {
+        if (feeBuilder_ == null) {
+          feeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              wallet.core.jni.proto.Cosmos.Fee, wallet.core.jni.proto.Cosmos.Fee.Builder, wallet.core.jni.proto.Cosmos.FeeOrBuilder>(
+                  getFee(),
+                  getParentForChildren(),
+                  isClean());
+          fee_ = null;
+        }
+        return feeBuilder_;
+      }
+
       private java.lang.Object memo_ = "";
       /**
-       * <code>string memo = 3;</code>
+       * <code>string memo = 4;</code>
        */
       public java.lang.String getMemo() {
         java.lang.Object ref = memo_;
@@ -2568,7 +3625,7 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>string memo = 3;</code>
+       * <code>string memo = 4;</code>
        */
       public com.google.protobuf.ByteString
           getMemoBytes() {
@@ -2584,7 +3641,7 @@ public final class Cosmos {
         }
       }
       /**
-       * <code>string memo = 3;</code>
+       * <code>string memo = 4;</code>
        */
       public Builder setMemo(
           java.lang.String value) {
@@ -2597,7 +3654,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>string memo = 3;</code>
+       * <code>string memo = 4;</code>
        */
       public Builder clearMemo() {
         
@@ -2606,7 +3663,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>string memo = 3;</code>
+       * <code>string memo = 4;</code>
        */
       public Builder setMemoBytes(
           com.google.protobuf.ByteString value) {
@@ -2622,13 +3679,13 @@ public final class Cosmos {
 
       private long sequence_ ;
       /**
-       * <code>uint64 sequence = 4;</code>
+       * <code>uint64 sequence = 5;</code>
        */
       public long getSequence() {
         return sequence_;
       }
       /**
-       * <code>uint64 sequence = 4;</code>
+       * <code>uint64 sequence = 5;</code>
        */
       public Builder setSequence(long value) {
         
@@ -2637,7 +3694,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>uint64 sequence = 4;</code>
+       * <code>uint64 sequence = 5;</code>
        */
       public Builder clearSequence() {
         
@@ -2648,13 +3705,13 @@ public final class Cosmos {
 
       private com.google.protobuf.ByteString privateKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes private_Key = 5;</code>
+       * <code>bytes private_Key = 6;</code>
        */
       public com.google.protobuf.ByteString getPrivateKey() {
         return privateKey_;
       }
       /**
-       * <code>bytes private_Key = 5;</code>
+       * <code>bytes private_Key = 6;</code>
        */
       public Builder setPrivateKey(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -2666,7 +3723,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>bytes private_Key = 5;</code>
+       * <code>bytes private_Key = 6;</code>
        */
       public Builder clearPrivateKey() {
         
@@ -2676,33 +3733,33 @@ public final class Cosmos {
       }
 
       private com.google.protobuf.SingleFieldBuilderV3<
-          wallet.core.jni.proto.Cosmos.SendTokensMessage, wallet.core.jni.proto.Cosmos.SendTokensMessage.Builder, wallet.core.jni.proto.Cosmos.SendTokensMessageOrBuilder> messageBuilder_;
+          wallet.core.jni.proto.Cosmos.SendCoinsMessage, wallet.core.jni.proto.Cosmos.SendCoinsMessage.Builder, wallet.core.jni.proto.Cosmos.SendCoinsMessageOrBuilder> messageBuilder_;
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
       public boolean hasMessage() {
-        return messageOneofCase_ == 6;
+        return messageOneofCase_ == 7;
       }
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage getMessage() {
+      public wallet.core.jni.proto.Cosmos.SendCoinsMessage getMessage() {
         if (messageBuilder_ == null) {
-          if (messageOneofCase_ == 6) {
-            return (wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_;
+          if (messageOneofCase_ == 7) {
+            return (wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_;
           }
-          return wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance();
+          return wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance();
         } else {
-          if (messageOneofCase_ == 6) {
+          if (messageOneofCase_ == 7) {
             return messageBuilder_.getMessage();
           }
-          return wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance();
+          return wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance();
         }
       }
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
-      public Builder setMessage(wallet.core.jni.proto.Cosmos.SendTokensMessage value) {
+      public Builder setMessage(wallet.core.jni.proto.Cosmos.SendCoinsMessage value) {
         if (messageBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2712,57 +3769,57 @@ public final class Cosmos {
         } else {
           messageBuilder_.setMessage(value);
         }
-        messageOneofCase_ = 6;
+        messageOneofCase_ = 7;
         return this;
       }
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
       public Builder setMessage(
-          wallet.core.jni.proto.Cosmos.SendTokensMessage.Builder builderForValue) {
+          wallet.core.jni.proto.Cosmos.SendCoinsMessage.Builder builderForValue) {
         if (messageBuilder_ == null) {
           messageOneof_ = builderForValue.build();
           onChanged();
         } else {
           messageBuilder_.setMessage(builderForValue.build());
         }
-        messageOneofCase_ = 6;
+        messageOneofCase_ = 7;
         return this;
       }
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
-      public Builder mergeMessage(wallet.core.jni.proto.Cosmos.SendTokensMessage value) {
+      public Builder mergeMessage(wallet.core.jni.proto.Cosmos.SendCoinsMessage value) {
         if (messageBuilder_ == null) {
-          if (messageOneofCase_ == 6 &&
-              messageOneof_ != wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance()) {
-            messageOneof_ = wallet.core.jni.proto.Cosmos.SendTokensMessage.newBuilder((wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_)
+          if (messageOneofCase_ == 7 &&
+              messageOneof_ != wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance()) {
+            messageOneof_ = wallet.core.jni.proto.Cosmos.SendCoinsMessage.newBuilder((wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_)
                 .mergeFrom(value).buildPartial();
           } else {
             messageOneof_ = value;
           }
           onChanged();
         } else {
-          if (messageOneofCase_ == 6) {
+          if (messageOneofCase_ == 7) {
             messageBuilder_.mergeFrom(value);
           }
           messageBuilder_.setMessage(value);
         }
-        messageOneofCase_ = 6;
+        messageOneofCase_ = 7;
         return this;
       }
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
       public Builder clearMessage() {
         if (messageBuilder_ == null) {
-          if (messageOneofCase_ == 6) {
+          if (messageOneofCase_ == 7) {
             messageOneofCase_ = 0;
             messageOneof_ = null;
             onChanged();
           }
         } else {
-          if (messageOneofCase_ == 6) {
+          if (messageOneofCase_ == 7) {
             messageOneofCase_ = 0;
             messageOneof_ = null;
           }
@@ -2771,42 +3828,42 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
-      public wallet.core.jni.proto.Cosmos.SendTokensMessage.Builder getMessageBuilder() {
+      public wallet.core.jni.proto.Cosmos.SendCoinsMessage.Builder getMessageBuilder() {
         return getMessageFieldBuilder().getBuilder();
       }
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
-      public wallet.core.jni.proto.Cosmos.SendTokensMessageOrBuilder getMessageOrBuilder() {
-        if ((messageOneofCase_ == 6) && (messageBuilder_ != null)) {
+      public wallet.core.jni.proto.Cosmos.SendCoinsMessageOrBuilder getMessageOrBuilder() {
+        if ((messageOneofCase_ == 7) && (messageBuilder_ != null)) {
           return messageBuilder_.getMessageOrBuilder();
         } else {
-          if (messageOneofCase_ == 6) {
-            return (wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_;
+          if (messageOneofCase_ == 7) {
+            return (wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_;
           }
-          return wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance();
+          return wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance();
         }
       }
       /**
-       * <code>.TW.Cosmos.Proto.SendTokensMessage message = 6;</code>
+       * <code>.TW.Cosmos.Proto.SendCoinsMessage message = 7;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          wallet.core.jni.proto.Cosmos.SendTokensMessage, wallet.core.jni.proto.Cosmos.SendTokensMessage.Builder, wallet.core.jni.proto.Cosmos.SendTokensMessageOrBuilder> 
+          wallet.core.jni.proto.Cosmos.SendCoinsMessage, wallet.core.jni.proto.Cosmos.SendCoinsMessage.Builder, wallet.core.jni.proto.Cosmos.SendCoinsMessageOrBuilder> 
           getMessageFieldBuilder() {
         if (messageBuilder_ == null) {
-          if (!(messageOneofCase_ == 6)) {
-            messageOneof_ = wallet.core.jni.proto.Cosmos.SendTokensMessage.getDefaultInstance();
+          if (!(messageOneofCase_ == 7)) {
+            messageOneof_ = wallet.core.jni.proto.Cosmos.SendCoinsMessage.getDefaultInstance();
           }
           messageBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-              wallet.core.jni.proto.Cosmos.SendTokensMessage, wallet.core.jni.proto.Cosmos.SendTokensMessage.Builder, wallet.core.jni.proto.Cosmos.SendTokensMessageOrBuilder>(
-                  (wallet.core.jni.proto.Cosmos.SendTokensMessage) messageOneof_,
+              wallet.core.jni.proto.Cosmos.SendCoinsMessage, wallet.core.jni.proto.Cosmos.SendCoinsMessage.Builder, wallet.core.jni.proto.Cosmos.SendCoinsMessageOrBuilder>(
+                  (wallet.core.jni.proto.Cosmos.SendCoinsMessage) messageOneof_,
                   getParentForChildren(),
                   isClean());
           messageOneof_ = null;
         }
-        messageOneofCase_ = 6;
+        messageOneofCase_ = 7;
         onChanged();;
         return messageBuilder_;
       }
@@ -2864,15 +3921,20 @@ public final class Cosmos {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_TW_Cosmos_Proto_SendTokensMessage_descriptor;
+    internal_static_TW_Cosmos_Proto_Coin_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_TW_Cosmos_Proto_SendTokensMessage_fieldAccessorTable;
+      internal_static_TW_Cosmos_Proto_Coin_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_descriptor;
+    internal_static_TW_Cosmos_Proto_Fee_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_fieldAccessorTable;
+      internal_static_TW_Cosmos_Proto_Fee_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_TW_Cosmos_Proto_SendCoinsMessage_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_TW_Cosmos_Proto_SendCoinsMessage_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_TW_Cosmos_Proto_SigningInput_descriptor;
   private static final 
@@ -2887,17 +3949,19 @@ public final class Cosmos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\014Cosmos.proto\022\017TW.Cosmos.Proto\"\237\001\n\021Send" +
-      "TokensMessage\022\024\n\014from_address\030\001 \001(\t\022\022\n\nt" +
-      "o_address\030\002 \001(\t\0228\n\006amount\030\003 \003(\0132(.TW.Cos" +
-      "mos.Proto.SendTokensMessage.Token\032&\n\005Tok" +
-      "en\022\r\n\005denom\030\001 \001(\t\022\016\n\006amount\030\002 \001(\003\"\265\001\n\014Si" +
-      "gningInput\022\026\n\016account_number\030\001 \001(\004\022\020\n\010ch" +
-      "ain_id\030\002 \001(\t\022\014\n\004memo\030\003 \001(\t\022\020\n\010sequence\030\004" +
-      " \001(\004\022\023\n\013private_Key\030\005 \001(\014\0225\n\007message\030\006 \001" +
-      "(\0132\".TW.Cosmos.Proto.SendTokensMessageH\000" +
-      "B\017\n\rmessage_oneofB\027\n\025wallet.core.jni.pro" +
-      "tob\006proto3"
+      "\n\014Cosmos.proto\022\017TW.Cosmos.Proto\"%\n\004Coin\022" +
+      "\r\n\005denom\030\001 \001(\t\022\016\n\006amount\030\002 \001(\003\"9\n\003Fee\022%\n" +
+      "\006amount\030\001 \003(\0132\025.TW.Cosmos.Proto.Coin\022\013\n\003" +
+      "gas\030\002 \001(\004\"c\n\020SendCoinsMessage\022\024\n\014from_ad" +
+      "dress\030\001 \001(\t\022\022\n\nto_address\030\002 \001(\t\022%\n\006amoun" +
+      "t\030\003 \003(\0132\025.TW.Cosmos.Proto.Coin\"\327\001\n\014Signi" +
+      "ngInput\022\026\n\016account_number\030\001 \001(\004\022\020\n\010chain" +
+      "_id\030\002 \001(\t\022!\n\003fee\030\003 \001(\0132\024.TW.Cosmos.Proto" +
+      ".Fee\022\014\n\004memo\030\004 \001(\t\022\020\n\010sequence\030\005 \001(\004\022\023\n\013" +
+      "private_Key\030\006 \001(\014\0224\n\007message\030\007 \001(\0132!.TW." +
+      "Cosmos.Proto.SendCoinsMessageH\000B\017\n\rmessa" +
+      "ge_oneofB\027\n\025wallet.core.jni.protob\006proto" +
+      "3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2911,24 +3975,30 @@ public final class Cosmos {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_TW_Cosmos_Proto_SendTokensMessage_descriptor =
+    internal_static_TW_Cosmos_Proto_Coin_descriptor =
       getDescriptor().getMessageTypes().get(0);
-    internal_static_TW_Cosmos_Proto_SendTokensMessage_fieldAccessorTable = new
+    internal_static_TW_Cosmos_Proto_Coin_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_TW_Cosmos_Proto_SendTokensMessage_descriptor,
-        new java.lang.String[] { "FromAddress", "ToAddress", "Amount", });
-    internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_descriptor =
-      internal_static_TW_Cosmos_Proto_SendTokensMessage_descriptor.getNestedTypes().get(0);
-    internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_TW_Cosmos_Proto_SendTokensMessage_Token_descriptor,
+        internal_static_TW_Cosmos_Proto_Coin_descriptor,
         new java.lang.String[] { "Denom", "Amount", });
-    internal_static_TW_Cosmos_Proto_SigningInput_descriptor =
+    internal_static_TW_Cosmos_Proto_Fee_descriptor =
       getDescriptor().getMessageTypes().get(1);
+    internal_static_TW_Cosmos_Proto_Fee_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_TW_Cosmos_Proto_Fee_descriptor,
+        new java.lang.String[] { "Amount", "Gas", });
+    internal_static_TW_Cosmos_Proto_SendCoinsMessage_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_TW_Cosmos_Proto_SendCoinsMessage_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_TW_Cosmos_Proto_SendCoinsMessage_descriptor,
+        new java.lang.String[] { "FromAddress", "ToAddress", "Amount", });
+    internal_static_TW_Cosmos_Proto_SigningInput_descriptor =
+      getDescriptor().getMessageTypes().get(3);
     internal_static_TW_Cosmos_Proto_SigningInput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_Cosmos_Proto_SigningInput_descriptor,
-        new java.lang.String[] { "AccountNumber", "ChainId", "Memo", "Sequence", "PrivateKey", "Message", "MessageOneof", });
+        new java.lang.String[] { "AccountNumber", "ChainId", "Fee", "Memo", "Sequence", "PrivateKey", "Message", "MessageOneof", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

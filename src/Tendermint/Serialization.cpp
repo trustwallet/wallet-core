@@ -11,6 +11,32 @@
 
 using json = nlohmann::json;
 
+json messageWrapperJSON(json& jsonMsg) {
+    json jsonMsgWrapper;
+
+    jsonMsgWrapper["type"] = "cosmos-sdk/MsgSend";
+    jsonMsgWrapper["value"] = jsonMsg;
+
+    return jsonMsgWrapper;
+}
+
+json feeJSON(const TW::Cosmos::Proto::Fee& fee) {
+    json jsonFee;
+
+    json jsonAmounts = json::array();
+    for (auto& amount : fee.amount()) {
+        json jsonAmount;
+        jsonAmount["amount"] = std::to_string(amount.amount());
+        jsonAmount["denom"] = amount.denom();
+        jsonAmounts.push_back(jsonAmount);
+    }
+
+    jsonFee["amount"] = jsonAmounts;
+    jsonFee["gas"] = std::to_string(fee.gas());
+
+    return jsonFee;
+}
+
 json messageJSON(const TW::Cosmos::Proto::SigningInput& input) {
     json jsonMsg;
     
@@ -27,12 +53,8 @@ json messageJSON(const TW::Cosmos::Proto::SigningInput& input) {
         jsonMsg["from_address"] = input.message().from_address();
         jsonMsg["to_address"] = input.message().to_address();
     }
-    
-    json jsonMsgWrapper;
-    jsonMsgWrapper["type"] = "cosmos-sdk/MsgSend";
-    jsonMsgWrapper["value"] = jsonMsg;
 
-    return jsonMsgWrapper;
+    return messageWrapperJSON(jsonMsg);;
 }
 
 json TW::Cosmos::signatureJSON(const TW::Cosmos::Proto::SigningInput& input) {
@@ -40,6 +62,7 @@ json TW::Cosmos::signatureJSON(const TW::Cosmos::Proto::SigningInput& input) {
     
     jsonTx["account_number"] = std::to_string(input.account_number());
     jsonTx["chain_id"] = input.chain_id();
+    jsonTx["fee"] = feeJSON(input.fee());
     jsonTx["memo"] = input.memo();
     jsonTx["msgs"] = json::array({messageJSON(input)});
     jsonTx["sequence"] = std::to_string(input.sequence());

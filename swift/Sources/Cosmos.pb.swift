@@ -19,8 +19,38 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-/// Message for sending tokens.
-public struct TW_Cosmos_Proto_SendTokensMessage {
+/// Coin
+public struct TW_Cosmos_Proto_Coin {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var denom: String = String()
+
+  public var amount: Int64 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+/// Fee
+public struct TW_Cosmos_Proto_Fee {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var amount: [TW_Cosmos_Proto_Coin] = []
+
+  public var gas: UInt64 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+/// Message for sending coins.
+public struct TW_Cosmos_Proto_SendCoinsMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -29,23 +59,9 @@ public struct TW_Cosmos_Proto_SendTokensMessage {
 
   public var toAddress: String = String()
 
-  public var amount: [TW_Cosmos_Proto_SendTokensMessage.Token] = []
+  public var amount: [TW_Cosmos_Proto_Coin] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public struct Token {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    public var denom: String = String()
-
-    public var amount: Int64 = 0
-
-    public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    public init() {}
-  }
 
   public init() {}
 }
@@ -65,6 +81,15 @@ public struct TW_Cosmos_Proto_SigningInput {
     get {return _storage._chainID}
     set {_uniqueStorage()._chainID = newValue}
   }
+
+  public var fee: TW_Cosmos_Proto_Fee {
+    get {return _storage._fee ?? TW_Cosmos_Proto_Fee()}
+    set {_uniqueStorage()._fee = newValue}
+  }
+  /// Returns true if `fee` has been explicitly set.
+  public var hasFee: Bool {return _storage._fee != nil}
+  /// Clears the value of `fee`. Subsequent reads from it will return its default value.
+  public mutating func clearFee() {_uniqueStorage()._fee = nil}
 
   public var memo: String {
     get {return _storage._memo}
@@ -86,10 +111,10 @@ public struct TW_Cosmos_Proto_SigningInput {
     set {_uniqueStorage()._messageOneof = newValue}
   }
 
-  public var message: TW_Cosmos_Proto_SendTokensMessage {
+  public var message: TW_Cosmos_Proto_SendCoinsMessage {
     get {
       if case .message(let v)? = _storage._messageOneof {return v}
-      return TW_Cosmos_Proto_SendTokensMessage()
+      return TW_Cosmos_Proto_SendCoinsMessage()
     }
     set {_uniqueStorage()._messageOneof = .message(newValue)}
   }
@@ -97,7 +122,7 @@ public struct TW_Cosmos_Proto_SigningInput {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_MessageOneof: Equatable {
-    case message(TW_Cosmos_Proto_SendTokensMessage)
+    case message(TW_Cosmos_Proto_SendCoinsMessage)
 
   #if !swift(>=4.1)
     public static func ==(lhs: TW_Cosmos_Proto_SigningInput.OneOf_MessageOneof, rhs: TW_Cosmos_Proto_SigningInput.OneOf_MessageOneof) -> Bool {
@@ -117,8 +142,78 @@ public struct TW_Cosmos_Proto_SigningInput {
 
 fileprivate let _protobuf_package = "TW.Cosmos.Proto"
 
-extension TW_Cosmos_Proto_SendTokensMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".SendTokensMessage"
+extension TW_Cosmos_Proto_Coin: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Coin"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "denom"),
+    2: .same(proto: "amount"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self.denom)
+      case 2: try decoder.decodeSingularInt64Field(value: &self.amount)
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.denom.isEmpty {
+      try visitor.visitSingularStringField(value: self.denom, fieldNumber: 1)
+    }
+    if self.amount != 0 {
+      try visitor.visitSingularInt64Field(value: self.amount, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: TW_Cosmos_Proto_Coin, rhs: TW_Cosmos_Proto_Coin) -> Bool {
+    if lhs.denom != rhs.denom {return false}
+    if lhs.amount != rhs.amount {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension TW_Cosmos_Proto_Fee: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Fee"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "amount"),
+    2: .same(proto: "gas"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeRepeatedMessageField(value: &self.amount)
+      case 2: try decoder.decodeSingularUInt64Field(value: &self.gas)
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.amount.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.amount, fieldNumber: 1)
+    }
+    if self.gas != 0 {
+      try visitor.visitSingularUInt64Field(value: self.gas, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: TW_Cosmos_Proto_Fee, rhs: TW_Cosmos_Proto_Fee) -> Bool {
+    if lhs.amount != rhs.amount {return false}
+    if lhs.gas != rhs.gas {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension TW_Cosmos_Proto_SendCoinsMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SendCoinsMessage"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "from_address"),
     2: .standard(proto: "to_address"),
@@ -149,44 +244,9 @@ extension TW_Cosmos_Proto_SendTokensMessage: SwiftProtobuf.Message, SwiftProtobu
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: TW_Cosmos_Proto_SendTokensMessage, rhs: TW_Cosmos_Proto_SendTokensMessage) -> Bool {
+  public static func ==(lhs: TW_Cosmos_Proto_SendCoinsMessage, rhs: TW_Cosmos_Proto_SendCoinsMessage) -> Bool {
     if lhs.fromAddress != rhs.fromAddress {return false}
     if lhs.toAddress != rhs.toAddress {return false}
-    if lhs.amount != rhs.amount {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
-extension TW_Cosmos_Proto_SendTokensMessage.Token: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = TW_Cosmos_Proto_SendTokensMessage.protoMessageName + ".Token"
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "denom"),
-    2: .same(proto: "amount"),
-  ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self.denom)
-      case 2: try decoder.decodeSingularInt64Field(value: &self.amount)
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.denom.isEmpty {
-      try visitor.visitSingularStringField(value: self.denom, fieldNumber: 1)
-    }
-    if self.amount != 0 {
-      try visitor.visitSingularInt64Field(value: self.amount, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: TW_Cosmos_Proto_SendTokensMessage.Token, rhs: TW_Cosmos_Proto_SendTokensMessage.Token) -> Bool {
-    if lhs.denom != rhs.denom {return false}
     if lhs.amount != rhs.amount {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -198,15 +258,17 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "account_number"),
     2: .standard(proto: "chain_id"),
-    3: .same(proto: "memo"),
-    4: .same(proto: "sequence"),
-    5: .standard(proto: "private_Key"),
-    6: .same(proto: "message"),
+    3: .same(proto: "fee"),
+    4: .same(proto: "memo"),
+    5: .same(proto: "sequence"),
+    6: .standard(proto: "private_Key"),
+    7: .same(proto: "message"),
   ]
 
   fileprivate class _StorageClass {
     var _accountNumber: UInt64 = 0
     var _chainID: String = String()
+    var _fee: TW_Cosmos_Proto_Fee? = nil
     var _memo: String = String()
     var _sequence: UInt64 = 0
     var _privateKey: Data = SwiftProtobuf.Internal.emptyData
@@ -219,6 +281,7 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
     init(copying source: _StorageClass) {
       _accountNumber = source._accountNumber
       _chainID = source._chainID
+      _fee = source._fee
       _memo = source._memo
       _sequence = source._sequence
       _privateKey = source._privateKey
@@ -240,11 +303,12 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
         switch fieldNumber {
         case 1: try decoder.decodeSingularUInt64Field(value: &_storage._accountNumber)
         case 2: try decoder.decodeSingularStringField(value: &_storage._chainID)
-        case 3: try decoder.decodeSingularStringField(value: &_storage._memo)
-        case 4: try decoder.decodeSingularUInt64Field(value: &_storage._sequence)
-        case 5: try decoder.decodeSingularBytesField(value: &_storage._privateKey)
-        case 6:
-          var v: TW_Cosmos_Proto_SendTokensMessage?
+        case 3: try decoder.decodeSingularMessageField(value: &_storage._fee)
+        case 4: try decoder.decodeSingularStringField(value: &_storage._memo)
+        case 5: try decoder.decodeSingularUInt64Field(value: &_storage._sequence)
+        case 6: try decoder.decodeSingularBytesField(value: &_storage._privateKey)
+        case 7:
+          var v: TW_Cosmos_Proto_SendCoinsMessage?
           if let current = _storage._messageOneof {
             try decoder.handleConflictingOneOf()
             if case .message(let m) = current {v = m}
@@ -265,17 +329,20 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
       if !_storage._chainID.isEmpty {
         try visitor.visitSingularStringField(value: _storage._chainID, fieldNumber: 2)
       }
+      if let v = _storage._fee {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      }
       if !_storage._memo.isEmpty {
-        try visitor.visitSingularStringField(value: _storage._memo, fieldNumber: 3)
+        try visitor.visitSingularStringField(value: _storage._memo, fieldNumber: 4)
       }
       if _storage._sequence != 0 {
-        try visitor.visitSingularUInt64Field(value: _storage._sequence, fieldNumber: 4)
+        try visitor.visitSingularUInt64Field(value: _storage._sequence, fieldNumber: 5)
       }
       if !_storage._privateKey.isEmpty {
-        try visitor.visitSingularBytesField(value: _storage._privateKey, fieldNumber: 5)
+        try visitor.visitSingularBytesField(value: _storage._privateKey, fieldNumber: 6)
       }
       if case .message(let v)? = _storage._messageOneof {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -288,6 +355,7 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
         let rhs_storage = _args.1
         if _storage._accountNumber != rhs_storage._accountNumber {return false}
         if _storage._chainID != rhs_storage._chainID {return false}
+        if _storage._fee != rhs_storage._fee {return false}
         if _storage._memo != rhs_storage._memo {return false}
         if _storage._sequence != rhs_storage._sequence {return false}
         if _storage._privateKey != rhs_storage._privateKey {return false}
