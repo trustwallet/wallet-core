@@ -7,9 +7,9 @@
 #include "Ong.h"
 #include "ParamsBuilder.h"
 
-#include <TrezorCrypto/rand.h>
+#include <list>
 
-#include <unordered_map>
+#include <TrezorCrypto/rand.h>
 
 using namespace TW;
 using namespace TW::Ontology;
@@ -34,14 +34,26 @@ Transaction Ong::balanceOf(const Address& address) {
 
 Transaction Ong::transfer(const Signer& from, const Address& to, uint64_t amount,
                           const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) {
-    std::unordered_map<std::string, boost::any> transferParam{
-        {"from", from.getAddress().data}, {"to", to.data}, {"amount", amount}};
+    std::list<boost::any> transferParam{from.getAddress().data, to.data, amount};
     std::vector<boost::any> args{transferParam};
     auto invokeCode =
         ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
     auto tx = Transaction(version, txType, random32(), gasPrice, gasLimit,
                           payer.getAddress().string(), invokeCode);
     from.sign(tx);
+    payer.addSign(tx);
+    return tx;
+}
+
+Transaction Ong::withdraw(const Signer& claimer, const Address& receiver, uint64_t amount,
+                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) {
+    auto ontContract = Address("AFmseVrdL9f9oyCzZefL9tG6UbvhUMqNMV");
+    std::list<boost::any> args{claimer.getAddress().data, ontContract.data, receiver.data, amount};
+    auto invokeCode =
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transferFrom", args);
+    auto tx = Transaction(version, txType, random32(), gasPrice, gasLimit,
+                          payer.getAddress().string(), invokeCode);
+    claimer.sign(tx);
     payer.addSign(tx);
     return tx;
 }

@@ -28,6 +28,9 @@ class Ong : public Asset {
 
     Transaction transfer(const Signer& from, const Address& to, uint64_t amount,
                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) override;
+
+    Transaction withdraw(const Signer& claimer, const Address& receiver, uint64_t amount,
+                         const Signer& payer, uint64_t gasPrice, uint64_t gasLimit);
 };
 
 } // namespace Ontology
