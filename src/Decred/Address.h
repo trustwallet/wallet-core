@@ -35,7 +35,7 @@ class Address {
     static std::array<byte, 4> checksum(const std::array<byte, 20>& keyhash);
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.keyhash == rhs.keyhash;
 }
 

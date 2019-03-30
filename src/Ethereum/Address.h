@@ -42,7 +42,7 @@ class Address {
     std::string string() const;
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 

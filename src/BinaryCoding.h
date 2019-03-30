@@ -13,18 +13,18 @@
 namespace TW {
 
 /// Encodes a 16-bit little-endian value into the provided buffer.
-static inline void encode16LE(uint16_t val, std::vector<uint8_t>& data) {
+inline void encode16LE(uint16_t val, std::vector<uint8_t>& data) {
     data.push_back(static_cast<uint8_t>(val));
     data.push_back(static_cast<uint8_t>(val >> 8));
 }
 
 /// Decodes a 16-bit little-endian value from the provided buffer.
-static inline uint16_t decode16LE(const uint8_t* _Nonnull src) {
+inline uint16_t decode16LE(const uint8_t* _Nonnull src) {
     return (uint16_t)(src[0]) | ((uint16_t)(src[1]) << 8);
 }
 
 /// Encodes a 32-bit little-endian value into the provided buffer.
-static inline void encode32LE(uint32_t val, std::vector<uint8_t>& data) {
+inline void encode32LE(uint32_t val, std::vector<uint8_t>& data) {
     data.push_back(static_cast<uint8_t>(val));
     data.push_back(static_cast<uint8_t>((val >> 8)));
     data.push_back(static_cast<uint8_t>((val >> 16)));
@@ -32,7 +32,7 @@ static inline void encode32LE(uint32_t val, std::vector<uint8_t>& data) {
 }
 
 /// Decodes a 32-bit little-endian value from the provided buffer.
-static inline uint32_t decode32LE(const uint8_t* _Nonnull src) {
+inline uint32_t decode32LE(const uint8_t* _Nonnull src) {
     // clang-format off
     return static_cast<uint32_t>(src[0])
         | (static_cast<uint32_t>(src[1]) << 8)
@@ -42,7 +42,7 @@ static inline uint32_t decode32LE(const uint8_t* _Nonnull src) {
 }
 
 /// Encodes a 64-bit little-endian value into the provided buffer.
-static inline void encode64LE(uint64_t val, std::vector<uint8_t>& data) {
+inline void encode64LE(uint64_t val, std::vector<uint8_t>& data) {
     data.push_back(static_cast<uint8_t>(val));
     data.push_back(static_cast<uint8_t>((val >> 8)));
     data.push_back(static_cast<uint8_t>((val >> 16)));
@@ -54,7 +54,7 @@ static inline void encode64LE(uint64_t val, std::vector<uint8_t>& data) {
 }
 
 /// Decodes a 64-bit little-endian value from the provided buffer.
-static inline uint64_t decode64LE(const uint8_t* _Nonnull src) {
+inline uint64_t decode64LE(const uint8_t* _Nonnull src) {
     // clang-format off
     return static_cast<uint64_t>(src[0])
         | (static_cast<uint64_t>(src[1]) << 8)
@@ -121,18 +121,18 @@ inline std::size_t encodeVarInt(std::size_t size, std::vector<uint8_t>& data) {
 }
 
 /// Encodes a 16-bit big-endian value into the provided buffer.
-static inline void encode16BE(uint16_t val, std::vector<uint8_t>& data) {
+inline void encode16BE(uint16_t val, std::vector<uint8_t>& data) {
     data.push_back(static_cast<uint8_t>(val >> 8));
     data.push_back(static_cast<uint8_t>(val));
 }
 
 /// Decodes a 16-bit big-endian value from the provided buffer.
-static inline uint16_t decode16BE(const uint8_t* _Nonnull src) {
+inline uint16_t decode16BE(const uint8_t* _Nonnull src) {
     return (uint16_t)(src[1]) | ((uint16_t)(src[0]) << 8);
 }
 
 /// Encodes a 32-bit big-endian value into the provided buffer.
-static inline void encode32BE(uint32_t val, std::vector<uint8_t>& data) {
+inline void encode32BE(uint32_t val, std::vector<uint8_t>& data) {
     data.push_back(static_cast<uint8_t>((val >> 24)));
     data.push_back(static_cast<uint8_t>((val >> 16)));
     data.push_back(static_cast<uint8_t>((val >> 8)));
@@ -140,7 +140,7 @@ static inline void encode32BE(uint32_t val, std::vector<uint8_t>& data) {
 }
 
 /// Decodes a 32-bit big-endian value from the provided buffer.
-static inline uint32_t decode32BE(const uint8_t* _Nonnull src) {
+inline uint32_t decode32BE(const uint8_t* _Nonnull src) {
     // clang-format off
     return static_cast<uint32_t>(src[3])
         | (static_cast<uint32_t>(src[2]) << 8)
@@ -150,7 +150,7 @@ static inline uint32_t decode32BE(const uint8_t* _Nonnull src) {
 }
 
 /// Encodes a 64-bit big-endian value into the provided buffer.
-static inline void encode64BE(uint64_t val, std::vector<uint8_t>& data) {
+inline void encode64BE(uint64_t val, std::vector<uint8_t>& data) {
     data.push_back(static_cast<uint8_t>((val >> 56)));
     data.push_back(static_cast<uint8_t>((val >> 48)));
     data.push_back(static_cast<uint8_t>((val >> 40)));
@@ -162,7 +162,7 @@ static inline void encode64BE(uint64_t val, std::vector<uint8_t>& data) {
 }
 
 /// Decodes a 64-bit big-endian value from the provided buffer.
-static inline uint64_t decode64BE(const uint8_t* _Nonnull src) {
+inline uint64_t decode64BE(const uint8_t* _Nonnull src) {
     // clang-format off
     return static_cast<uint64_t>(src[7])
         | (static_cast<uint64_t>(src[6]) << 8)
