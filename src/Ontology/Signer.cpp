@@ -4,9 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Signer.h"
 #include "HexCoding.h"
 #include "SigData.h"
-#include "Signer.h"
 
 #include "../Hash.h"
 
