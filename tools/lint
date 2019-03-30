@@ -1,7 +1,8 @@
 #!/bin/bash
 #
-# This script lints the C++ code with clang-tidy.
+# This script lints the files modified in the current branch with clang-tidy.
 
 set -e
 
-find src \( -name "*.cpp" -o -name "*.h" \) -not -path "./src/proto/*" -not -path "./src/Tron/Protobuf/*" -exec clang-tidy -quiet -p=build '{}' \;
+FILES=$(git diff --name-only HEAD $(git merge-base HEAD origin/master) | grep "\(\.cpp\|\.h\)$")
+clang-tidy -quiet -p=build $FILES

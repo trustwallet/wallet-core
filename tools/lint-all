@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# This script lints all of the C++ code with clang-tidy.
+
+set -e
+
+find src \( -name "*.cpp" -o -name "*.h" \) -not -path "./src/proto/*" -not -path "./src/Tron/Protobuf/*" -exec clang-tidy -quiet -p=build '{}' \;
