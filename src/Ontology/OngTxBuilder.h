@@ -40,8 +40,12 @@ class OngTxBuilder {
     }
 
     static TW_Ontology_Proto_SigningOutput transfer(const Ontology::Proto::SigningInput& input) {
-        auto payerAccount = Signer(input.payer_private_key());
-        auto fromAccount = Signer(input.owner_private_key());
+        auto payerPrivateKeyData = Data(input.payer_private_key().begin(), input.payer_private_key().end());
+        auto payerAccount = Signer(PrivateKey(payerPrivateKeyData));
+
+        auto ownerPrivateKeyData = Data(input.owner_private_key().begin(), input.owner_private_key().end());
+        auto fromAccount = Signer(PrivateKey(ownerPrivateKeyData));
+
         auto toAddress = Address(input.to_address());
         auto transaction = Ong().transfer(fromAccount, toAddress, input.amount(), payerAccount,
                                           input.gas_price(), input.gas_limit());

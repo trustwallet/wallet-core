@@ -14,7 +14,10 @@ typedef TWData *_Nonnull TW_Ontology_Proto_SigningOutput;
 
 TW_EXTERN_C_BEGIN
 
+TW_EXPORT_CLASS
+struct TWOntologySigner;
+
 TW_EXPORT_STATIC_METHOD
-TW_Ontology_Proto_SigningOutput TWOntologySignerSign(TW_Ontology_Proto_SigningInput data);
+TW_Ontology_Proto_SigningOutput TWOntologySignerSign(TW_Ontology_Proto_SigningInput input);
 
 TW_EXTERN_C_END
