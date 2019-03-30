@@ -12,8 +12,7 @@
 #include <map>
 #include <string>
 
-namespace TW {
-namespace Icon {
+namespace TW::Icon {
 
 class Signer {
   public:
@@ -34,5 +33,4 @@ class Signer {
     std::map<std::string, std::string> parameters() const noexcept;
 };
 
-} // namespace Icon
-} // namespace TW
+} // namespace TW::Icon

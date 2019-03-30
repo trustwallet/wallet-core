@@ -11,8 +11,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace TW {
-namespace Binance {
+namespace TW::Binance {
 
 /// Helper class that performs Binance transaction signing.
 class Signer {
@@ -43,8 +42,7 @@ class Signer {
                                    bool isPrefixLength) const;
 };
 
-} // namespace Binance
-} // namespace TW
+} // namespace TW::Binance
 
 /// Wrapper for C interface.
 struct TWBinanceSigner {

@@ -10,8 +10,7 @@
 #include "../Bitcoin/Script.h"
 #include "../Data.h"
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 /// Decred transaction output.
 struct TransactionOutput {
@@ -35,5 +34,4 @@ struct TransactionOutput {
     void encode(Data& data) const;
 };
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred

@@ -11,8 +11,7 @@
 #include <tuple>
 #include <type_traits>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 template <typename T, typename... Ts>
 auto head(std::tuple<T, Ts...> t) {
@@ -108,5 +107,4 @@ std::string type_string(const std::tuple<T...>& tuple) {
     return string;
 }
 
-} // namespace Ethereum
-} // namespace TW
+} // namespace TW::Ethereum

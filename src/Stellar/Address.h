@@ -11,8 +11,7 @@
 
 #include <string>
 
-namespace TW {
-namespace Stellar {
+namespace TW::Stellar {
 
 class Address {
   public:
@@ -53,8 +52,7 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Stellar
-} // namespace TW
+} // namespace TW::Stellar
 
 /// Wrapper for C interface.
 struct TWStellarAddress {

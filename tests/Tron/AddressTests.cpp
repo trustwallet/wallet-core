@@ -10,8 +10,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Tron {
+namespace TW::Tron {
 
 TEST(TronAddress, FromPrivateKey) {
     const auto privateKey =  PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
@@ -41,4 +40,4 @@ TEST(TronAddress, InitWithString) {
     ASSERT_EQ(address.string(), "TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
 }
 
-}} // namespace
+} // namespace TW::Tron

@@ -11,8 +11,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 /// Account for a particular coin within a wallet.
 class Account {
@@ -41,8 +40,7 @@ class Account {
     nlohmann::json json() const;
 };
 
-} // namespace Keystore
-} // namespace TW
+} // namespace TW::Keystore
 
 /// Wrapper for C interface.
 struct TWAccount {

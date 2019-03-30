@@ -8,8 +8,7 @@
 
 #include <cstdint>
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 static const uint8_t PUSH0{0x00};
 static const uint8_t PUSH_BYTE_33{0x21};
@@ -27,5 +26,4 @@ static const uint8_t FROM_ALT_STACK{0x6C};
 static const uint8_t SWAP{0x7C};
 static const uint8_t HAS_KEY{0xC8};
 
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology

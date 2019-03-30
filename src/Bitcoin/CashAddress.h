@@ -12,8 +12,7 @@
 #include <stdint.h>
 #include <string>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 class CashAddress {
   public:
@@ -53,5 +52,4 @@ static inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin

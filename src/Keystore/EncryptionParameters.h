@@ -13,8 +13,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 /// Errors thrown when decrypting a key.
 enum class DecryptionError {
@@ -73,5 +72,4 @@ struct EncryptionParameters {
     virtual ~EncryptionParameters();
 };
 
-} // namespace Keystore
-} // namespace TW
+} // namespace TW::Keystore

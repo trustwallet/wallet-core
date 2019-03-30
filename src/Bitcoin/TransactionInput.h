@@ -12,8 +12,7 @@
 
 #include <vector>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Bitcoin transaction input.
 class TransactionInput {
@@ -48,8 +47,7 @@ class TransactionInput {
     void encodeWitness(Data& data) const;
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
 struct TWBitcoinTransactionInput {

@@ -12,8 +12,7 @@
 #include <array>
 #include <string>
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 class Address {
   public:
@@ -40,8 +39,7 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.keyhash == rhs.keyhash;
 }
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred
 
 /// Wrapper for C interface.
 struct TWDecredAddress {

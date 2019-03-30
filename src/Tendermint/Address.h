@@ -12,8 +12,7 @@
 #include <stdint.h>
 #include <string>
 
-namespace TW {
-namespace Tendermint {
+namespace TW::Tendermint {
 
 class Address {
   public:
@@ -57,8 +56,7 @@ class Address {
     Address() = default;
 };
 
-} // namespace Tendermint
-} // namespace TW
+} // namespace TW::Tendermint
 
 /// Wrapper for C interface.
 struct TWTendermintAddress {

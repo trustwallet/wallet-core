@@ -14,8 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 /// Implementation of Ethereum's RLP encoding.
 ///
@@ -97,5 +96,4 @@ struct RLP {
     static Data putint(uint64_t i) noexcept;
 };
 
-} // namespace Ethereum
-} // namespace TW
+} // namespace TW::Ethereum

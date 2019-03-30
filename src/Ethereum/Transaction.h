@@ -9,8 +9,7 @@
 #include "Address.h"
 #include <boost/multiprecision/cpp_int.hpp>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 class Transaction {
   public:
@@ -39,5 +38,4 @@ class Transaction {
         , payload(payload) {}
 };
 
-} // namespace Ethereum
-} // namespace TW
+} // namespace TW::Ethereum

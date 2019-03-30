@@ -14,8 +14,7 @@
 
 #include <vector>
 
-namespace TW {
-namespace Zcash {
+namespace TW::Zcash {
 
 /// Only supports Sapling transparent transaction right now
 /// See also https://github.com/zcash/zips/blob/master/zip-0243.rst
@@ -68,5 +67,4 @@ struct Transaction {
     Bitcoin::Proto::Transaction proto() const;
 };
 
-} // namespace Zcash
-} // namespace TW
+} // namespace TW::Zcash

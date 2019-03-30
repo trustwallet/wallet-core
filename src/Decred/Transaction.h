@@ -15,8 +15,7 @@
 #include <TrustWalletCore/TWBitcoin.h>
 #include <vector>
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 enum class SerializeType : uint16_t { full, noWitness, onlyWitness };
 
@@ -76,5 +75,4 @@ struct Transaction {
     void encodeWitness(Data& data) const;
 };
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred

@@ -15,8 +15,7 @@
 #include <tuple>
 #include <vector>
 
-namespace TW {
-namespace Aion {
+namespace TW::Aion {
 
 /// Helper class that performs Aion transaction signing.
 class Signer {
@@ -27,8 +26,7 @@ class Signer {
     static void sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
 };
 
-} // namespace Aion
-} // namespace TW
+} // namespace TW::Aion
 
 /// Wrapper for C interface.
 struct TWAionSigner {

@@ -13,8 +13,7 @@
 #include <string>
 #include <tuple>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 template <typename... Params>
 class Function {
@@ -51,5 +50,4 @@ std::string type_string(const Function<Params...>& f) {
     return f.name + "(" + type_string(f.parameters) + ")";
 }
 
-} // namespace Ethereum
-} // namespace TW
+} // namespace TW::Ethereum

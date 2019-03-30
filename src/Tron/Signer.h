@@ -10,8 +10,7 @@
 #include "../PrivateKey.h"
 #include "../proto/Tron.pb.h"
 
-namespace TW {
-namespace Tron {
+namespace TW::Tron {
 
 /// Helper class that performs Tron transaction signing.
 class Signer {
@@ -22,8 +21,7 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
-} // namespace Tron
-} // namespace TW
+} // namespace TW::Tron
 
 /// Wrapper for C interface.
 struct TWTronSigner {

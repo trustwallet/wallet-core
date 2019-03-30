@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Bech32 {
+namespace TW::Bech32 {
 
 /// Encodes a Bech32 string.
 ///
@@ -48,5 +47,4 @@ inline bool convertBits(std::vector<uint8_t>& out, const std::vector<uint8_t>& i
     return true;
 }
 
-} // namespace Bech32
-} // namespace TW
+} // namespace TW::Bech32

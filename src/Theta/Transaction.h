@@ -13,8 +13,7 @@
 #include "../Data.h"
 #include "../Ethereum/Address.h"
 
-namespace TW {
-namespace Theta {
+namespace TW::Theta {
 
 class TxInput {
   public:
@@ -63,5 +62,4 @@ class Transaction {
     bool setSignature(const Ethereum::Address& address, const Data& signature) noexcept;
 };
 
-} // namespace Theta
-} // namespace TW
+} // namespace TW::Theta
