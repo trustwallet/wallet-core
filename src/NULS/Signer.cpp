@@ -39,19 +39,19 @@ static inline void encode48LE(uint64_t val, std::vector<uint8_t>& data)
 
 static inline void serializerRemark(std::string& remark, std::vector<uint8_t>& data)
 {
-    writeCompactSize(remark.length(), data);
+    encodeVarInt(remark.length(), data);
     std::copy(remark.begin(), remark.end(), std::back_inserter(data));
 }
 
 static inline void serializerInput(std::vector<Proto::TransactionInput>& inputs, std::vector<uint8_t>& data)
 {
-    writeCompactSize(inputs.size(), data);
+    encodeVarInt(inputs.size(), data);
     for (const auto& input : inputs) {
         Data owner = parse_hex(input.from_hash());
         // Input owner is txid and index
-        writeCompactSize((uint16_t) input.from_index(), owner);
+        encodeVarInt((uint16_t) input.from_index(), owner);
 
-        writeCompactSize(owner.size(), data);
+        encodeVarInt(owner.size(), data);
         std::copy(owner.begin(), owner.end(), std::back_inserter(data));
 
         encode64LE((uint64_t) input.amount(), data);
@@ -61,7 +61,7 @@ static inline void serializerInput(std::vector<Proto::TransactionInput>& inputs,
 
 static inline void serializerOutput(std::vector<Proto::TransactionOutput>& outputs, std::vector<uint8_t>& data)
 {
-    writeCompactSize(outputs.size(), data);
+    encodeVarInt(outputs.size(), data);
     for (const auto& output : outputs) {
         const auto& toAddress = output.to_address();
         if (!NULS::Address::isValid(toAddress)) {
@@ -69,7 +69,7 @@ static inline void serializerOutput(std::vector<Proto::TransactionOutput>& outpu
         }
 
         const auto& addr = NULS::Address(toAddress);
-        writeCompactSize(addr.bytes.size()-1, data);
+        encodeVarInt(addr.bytes.size()-1, data);
         std::copy(addr.bytes.begin(), addr.bytes.end()-1, std::back_inserter(data));
         encode64LE((uint64_t) output.amount(), data);
         encode48LE((uint64_t) output.lock_time(), data);
@@ -88,12 +88,12 @@ static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash
     PublicKey pubKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
 
     Data transactionSignature = Data();
-    writeCompactSize(pubKey.bytes.size(), transactionSignature);
+    encodeVarInt(pubKey.bytes.size(), transactionSignature);
     std::copy(pubKey.bytes.begin(), pubKey.bytes.end(), std::back_inserter(transactionSignature));
     auto signature = privateKey.signAsDER(txHash, TWCurve::TWCurveSECP256k1);
 
     transactionSignature.push_back(static_cast<uint8_t>(0x00));
-    writeCompactSize(signature.size(), transactionSignature);
+    encodeVarInt(signature.size(), transactionSignature);
 
     std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));
     return transactionSignature;
@@ -136,7 +136,7 @@ std::vector<uint8_t> Signer::sign(uint64_t timestamp) const
 
     auto transactionSignature = makeTransactionSignature(priv, txHash);
 
-    writeCompactSize(transactionSignature.size(), data);
+    encodeVarInt(transactionSignature.size(), data);
     std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(data));
 
     return data;

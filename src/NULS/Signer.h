@@ -9,8 +9,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace TW {
-namespace NULS {
+namespace TW::NULS {
 
 /// Helper class that performs NULS transaction signing.
 class Signer {
@@ -35,7 +34,6 @@ public:
     static uint64_t getFee(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize);
 };
 
-}
 } // namespace
 
 /// Wrapper for C interface.
