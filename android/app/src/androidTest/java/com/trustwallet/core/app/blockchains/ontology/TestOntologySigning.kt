@@ -2,15 +2,11 @@ package com.trustwallet.core.app.blockchains.ontology
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
+import com.trustwallet.core.app.utils.Extensions
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.OntologySigner
 import wallet.core.jni.proto.Ontology
-
-
-fun String.toByteString(): ByteString {
-    return ByteString.copyFrom(this, Charsets.UTF_8)
-}
 
 class TestOntologySigning {
     init {

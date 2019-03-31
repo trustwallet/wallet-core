@@ -11,3 +11,7 @@ fun String.toHexBytes(): ByteArray {
 fun String.toHexByteArray(): ByteArray {
     return  Numeric.hexStringToByteArray(this)
 }
+
+fun String.toByteString(): ByteString {
+    return ByteString.copyFrom(this, Charsets.UTF_8)
+}
