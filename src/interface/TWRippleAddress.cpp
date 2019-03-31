@@ -28,8 +28,12 @@ bool TWRippleAddressIsValidString(TWString *_Nonnull string) {
 
 struct TWRippleAddress *_Nullable TWRippleAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWRippleAddress{ std::move(address) };
+    try {
+        const auto address = Address(*s);
+        return new TWRippleAddress{ std::move(address) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull data) {

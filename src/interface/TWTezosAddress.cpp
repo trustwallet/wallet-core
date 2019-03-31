@@ -25,8 +25,12 @@ bool TWTezosAddressIsValidString(TWString *_Nonnull string) {
 
 struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWTezosAddress{ std::move(address) };
+    try {
+        const auto address = Address(*s);
+        return new TWTezosAddress{ std::move(address) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
