@@ -2,7 +2,7 @@ package com.trustwallet.core.app.blockchains.ontology
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
-import com.trustwallet.core.app.utils.Extensions
+import com.trustwallet.core.app.utils.toByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.OntologySigner
