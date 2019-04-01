@@ -27,11 +27,7 @@ class OntologyTests: XCTestCase {
             $0.queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"
         }
         
-<<<<<<< HEAD
-        let output = OntologySigner.sign(data: input)
-=======
         let output = OntologySigner.sign(input: input)
->>>>>>> upstream/master
         let result = output.encoded.hexString
         
         XCTAssertEqual(86, result.indexOf(stuff: "1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f661400000000000000000000000000000000000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b65"))
@@ -45,11 +41,7 @@ class OntologyTests: XCTestCase {
             $0.queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"
         }
         
-<<<<<<< HEAD
-        let output = OntologySigner.sign(data: input)
-=======
         let output = OntologySigner.sign(input: input)
->>>>>>> upstream/master
         let result = output.encoded.hexString
         
         XCTAssertEqual(0, result.indexOf(stuff: "00d1"))
@@ -69,11 +61,7 @@ class OntologyTests: XCTestCase {
             $0.payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".data(using: .utf8)!
         }
         
-<<<<<<< HEAD
-        let output = OntologySigner.sign(data: input)
-=======
         let output = OntologySigner.sign(input: input)
->>>>>>> upstream/master
         let result = output.encoded.hexString
         
         let verifyPosition1 = result.indexOf(stuff: "00d1")
@@ -105,11 +93,7 @@ class OntologyTests: XCTestCase {
             $0.payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".data(using: .utf8)!
         }
 
-<<<<<<< HEAD
-        let output = OntologySigner.sign(data: input)
-=======
         let output = OntologySigner.sign(input: input)
->>>>>>> upstream/master
         let result = output.encoded.hexString
 
         let verifyPosition1 = result.indexOf(stuff: "00d1")
