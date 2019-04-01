@@ -2603,7 +2603,7 @@ public final class Cosmos {
     long getSequence();
 
     /**
-     * <code>bytes private_Key = 6;</code>
+     * <code>bytes private_key = 6;</code>
      */
     com.google.protobuf.ByteString getPrivateKey();
 
@@ -2900,7 +2900,7 @@ public final class Cosmos {
     public static final int PRIVATE_KEY_FIELD_NUMBER = 6;
     private com.google.protobuf.ByteString privateKey_;
     /**
-     * <code>bytes private_Key = 6;</code>
+     * <code>bytes private_key = 6;</code>
      */
     public com.google.protobuf.ByteString getPrivateKey() {
       return privateKey_;
@@ -3705,13 +3705,13 @@ public final class Cosmos {
 
       private com.google.protobuf.ByteString privateKey_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes private_Key = 6;</code>
+       * <code>bytes private_key = 6;</code>
        */
       public com.google.protobuf.ByteString getPrivateKey() {
         return privateKey_;
       }
       /**
-       * <code>bytes private_Key = 6;</code>
+       * <code>bytes private_key = 6;</code>
        */
       public Builder setPrivateKey(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -3723,7 +3723,7 @@ public final class Cosmos {
         return this;
       }
       /**
-       * <code>bytes private_Key = 6;</code>
+       * <code>bytes private_key = 6;</code>
        */
       public Builder clearPrivateKey() {
         
@@ -5659,7 +5659,7 @@ public final class Cosmos {
       "ngInput\022\026\n\016account_number\030\001 \001(\004\022\020\n\010chain" +
       "_id\030\002 \001(\t\022!\n\003fee\030\003 \001(\0132\024.TW.Cosmos.Proto" +
       ".Fee\022\014\n\004memo\030\004 \001(\t\022\020\n\010sequence\030\005 \001(\004\022\023\n\013" +
-      "private_Key\030\006 \001(\014\0224\n\007message\030\007 \001(\0132!.TW." +
+      "private_key\030\006 \001(\014\0224\n\007message\030\007 \001(\0132!.TW." +
       "Cosmos.Proto.SendCoinsMessageH\000B\017\n\rmessa" +
       "ge_oneof\"2\n\tSignature\022\022\n\npublic_key\030\001 \001(" +
       "\014\022\021\n\tsignature\030\002 \001(\014\"\241\001\n\013Transaction\022!\n\003" +

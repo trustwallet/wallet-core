@@ -8,11 +8,13 @@
 
 #include "../Tendermint/Address.h"
 #include <TrustWalletCore/TWHRP.h>
+#include "../Base64.h"
 
 using json = nlohmann::json;
 
 const std::string AMINO_PREFIX_SEND_MESSAGE = "cosmos-sdk/MsgSend";
 const std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
+const std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
 json wrapperJSON(std::string type, json& jsonObj) {
     json jsonMsgWrapper;
@@ -99,6 +101,16 @@ json txJSON(const TW::Cosmos::Proto::SigningInput& input) {
     return jsonTx;  
 }
 
+json signatureJSON(const TW::Cosmos::Proto::Signature& signature) {
+    json jsonSignature;
+
+    jsonSignature["pub_key"]["type"] = AMINO_PREFIX_PUBLIC_KEY;
+    jsonSignature["pub_key"]["value"] = TW::Base64::encode(TW::Data(signature.public_key().begin(), signature.public_key().end()));
+    jsonSignature["signature"] = TW::Base64::encode(TW::Data(signature.signature().begin(), signature.signature().end()));
+
+    return jsonSignature;
+}
+
 json TW::Cosmos::signingJSON(const TW::Cosmos::Proto::SigningInput& input) {
     json jsonTx = txJSON(input);
     return wrapperJSON(AMINO_PREFIX_TRANSACTION, jsonTx);
@@ -110,7 +122,7 @@ json TW::Cosmos::transactionJSON(const TW::Cosmos::Proto::Transaction& transacti
     jsonTx["fee"] = feeJSON(transaction.fee());
     jsonTx["memo"] = transaction.memo();
     jsonTx["msg"] = json::array({messageJSON(transaction)});
-    jsonTx["signatures"] = json::array({});
+    jsonTx["signatures"] = json::array({signatureJSON(transaction.signature())});
     
     return wrapperJSON(AMINO_PREFIX_TRANSACTION, jsonTx);  
 }

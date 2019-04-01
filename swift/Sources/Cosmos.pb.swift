@@ -321,7 +321,7 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
     3: .same(proto: "fee"),
     4: .same(proto: "memo"),
     5: .same(proto: "sequence"),
-    6: .standard(proto: "private_Key"),
+    6: .standard(proto: "private_key"),
     7: .same(proto: "message"),
   ]
 

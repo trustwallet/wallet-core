@@ -30,7 +30,7 @@ message SigningInput {
     string memo = 4;
     uint64 sequence = 5; 
 
-    bytes private_Key = 6;
+    bytes private_key = 6;
 
     oneof message_oneof {
         SendCoinsMessage message = 7;
