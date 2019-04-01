@@ -11,8 +11,7 @@
 
 #include <string>
 
-namespace TW {
-namespace Tezos {
+namespace TW::Tezos {
 
 class Address {
   public:
@@ -42,12 +41,11 @@ class Address {
     Data forge() const;
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Tezos
-} // namespace TW
+} // namespace TW::Tezos
 
 /// Wrapper for C interface.
 struct TWTezosAddress {

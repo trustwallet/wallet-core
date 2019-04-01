@@ -8,11 +8,11 @@
 
 #include "../PublicKey.h"
 
-#include <stdint.h>
+#include <array>
+#include <cstdint>
 #include <string>
 
-namespace TW {
-namespace Zcash {
+namespace TW::Zcash {
 
 class TAddress {
   public:
@@ -21,7 +21,7 @@ class TAddress {
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
-    uint8_t bytes[size];
+    std::array<uint8_t, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
     template <typename T>
@@ -52,8 +52,7 @@ class TAddress {
     TAddress() = default;
 };
 
-} // namespace Zcash
-} // namespace TW
+} // namespace TW::Zcash
 
 /// Wrapper for C interface.
 struct TWZcashTAddress {

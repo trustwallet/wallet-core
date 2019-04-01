@@ -49,13 +49,13 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
 
 // Forge the given public key into a hex encoded string.
 Data forgePublicKey(PublicKey publicKey) {
-    uint8_t prefix[] = {13, 15, 37, 217};
-    auto data = Data(prefix, prefix + 4);
+    std::array<uint8_t, 4> prefix = {13, 15, 37, 217};
+    auto data = Data(prefix.begin(), prefix.end());
     auto bytes = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
     append(data, bytes);
 
     auto pk = Base58::bitcoin.encodeCheck(data);
-    auto decoded = base58ToHex(pk, 4, prefix);
+    auto decoded = base58ToHex(pk, 4, prefix.data());
     return parse_hex(decoded);
 }
 

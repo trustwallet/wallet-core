@@ -9,11 +9,10 @@
 #include "../PublicKey.h"
 
 #include <array>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
-namespace TW {
-namespace Aion {
+namespace TW::Aion {
 
 class Address {
   public:
@@ -44,12 +43,11 @@ class Address {
     std::string string() const;
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Aion
-} // namespace TW
+} // namespace TW::Aion
 
 /// Wrapper for C interface.
 struct TWAionAddress {

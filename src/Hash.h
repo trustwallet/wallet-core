@@ -8,8 +8,7 @@
 
 #include "Data.h"
 
-namespace TW {
-namespace Hash {
+namespace TW::Hash {
 
 /// Number of bytes in a SHA1 hash.
 static const size_t sha1Size = 20;
@@ -131,5 +130,4 @@ Data blake2b(const T& data, size_t size, const Data& personal) {
     return blake2b(begin, begin + data.size(), size, personal);
 }
 
-} // namespace Hash
-} // namespace TW
+} // namespace TW::Hash

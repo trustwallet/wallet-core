@@ -11,8 +11,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Wanchain {
+namespace TW::Wanchain {
 
 using boost::multiprecision::uint256_t;
 
@@ -42,4 +41,4 @@ TEST(Signer, Sign) {
     ASSERT_EQ(transaction.s, uint256_t("57615878674481745412864351256912693004505281517367788339541976444424345429095"));
 }
 
-}} // namespace
+} // namespace TW::Wanchain

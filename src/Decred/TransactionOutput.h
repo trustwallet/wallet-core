@@ -10,8 +10,7 @@
 #include "../Bitcoin/Script.h"
 #include "../Data.h"
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 /// Decred transaction output.
 struct TransactionOutput {
@@ -28,12 +27,11 @@ struct TransactionOutput {
     TransactionOutput() = default;
 
     /// Initializes a transaction output with a value and a script.
-    TransactionOutput(Bitcoin::Amount value, uint16_t version, const Bitcoin::Script& script)
-        : value(value), version(version), script(script) {}
+    TransactionOutput(Bitcoin::Amount value, uint16_t version, Bitcoin::Script script)
+        : value(value), version(version), script(std::move(script)) {}
 
     /// Encodes the output into the provided buffer.
     void encode(Data& data) const;
 };
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred

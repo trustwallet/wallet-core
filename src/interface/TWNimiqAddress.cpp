@@ -27,13 +27,21 @@ bool TWNimiqAddressIsValidString(TWString *_Nonnull string) {
 
 struct TWNimiqAddress *_Nullable TWNimiqAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWNimiqAddress{ std::move(address) };
+    try {
+        const auto address = Address(*s);
+        return new TWNimiqAddress{ std::move(address) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWNimiqAddress *_Nullable TWNimiqAddressCreateWithData(TWData *_Nonnull data) {
     auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWNimiqAddress{ Address(*d) };
+    try {
+        return new TWNimiqAddress{ Address(*d) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWNimiqAddress *_Nonnull TWNimiqAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {

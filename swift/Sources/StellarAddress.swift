@@ -48,17 +48,6 @@ public final class StellarAddress {
         self.rawValue = rawValue
     }
 
-    public init?(data: Data) {
-        let dataData = TWDataCreateWithNSData(data)
-        defer {
-            TWDataDelete(dataData)
-        }
-        guard let rawValue = TWStellarAddressCreateWithData(dataData) else {
-            return nil
-        }
-        self.rawValue = rawValue
-    }
-
     public init(publicKey: PublicKey) {
         rawValue = TWStellarAddressCreateWithPublicKey(publicKey.rawValue)
     }

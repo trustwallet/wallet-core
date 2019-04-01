@@ -4,18 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWBech32Address.h>
-
-#include "../Bitcoin/Bech32Address.h"
 #include "../Bech32.h"
-
-#include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPublicKey.h>
-#include <TrustWalletCore/TWHRP.h>
+#include "../Bitcoin/Bech32Address.h"
 
 #include <TrezorCrypto/ecdsa.h>
-#include <string.h>
-#include <memory>
+#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWHRP.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 using namespace TW;
 using namespace TW::Bitcoin;

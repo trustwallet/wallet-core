@@ -18,7 +18,7 @@ TW_Aion_Proto_SigningOutput TWAionSignerSign(TW_Aion_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
-    typedef boost::multiprecision::uint128_t uint128_t;
+    using boost::multiprecision::uint128_t;
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction(

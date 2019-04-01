@@ -4,8 +4,7 @@
 #include "proto/Tezos.pb.h"
 #include <string>
 
-namespace TW {
-namespace Tezos {
+namespace TW::Tezos {
 
 class OperationList {
   public:
@@ -18,8 +17,7 @@ class OperationList {
     Data forgeBranch() const;
 };
 
-} // namespace Tezos
-} // namespace TW
+} // namespace TW::Tezos
 
 /// Wrapper for C interface.
 struct TWTezosOperationList {

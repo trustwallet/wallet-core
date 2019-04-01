@@ -4,13 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWZcashTAddress.h>
-
 #include "../Base58.h"
 #include "../PublicKey.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWZcashTAddress.h>
 
 #include <cstring>
 #include <string>

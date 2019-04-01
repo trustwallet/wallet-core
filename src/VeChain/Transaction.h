@@ -12,8 +12,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace TW {
-namespace VeChain {
+namespace TW::VeChain {
 
 class Transaction {
   public:
@@ -60,5 +59,4 @@ class Transaction {
     Data encode() const noexcept;
 };
 
-} // namespace VeChain
-} // namespace TW
+} // namespace TW::VeChain

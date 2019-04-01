@@ -21,8 +21,7 @@
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Helper class that performs Bitcoin transaction signing.
 template <typename Transaction>
@@ -78,8 +77,7 @@ class TransactionSigner {
     Data scriptForScriptHash(const Data& hash) const;
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
 struct TWBitcoinTransactionSigner {

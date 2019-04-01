@@ -13,8 +13,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 /// Errors thrown when decrypting a key.
 enum class DecryptionError {
@@ -48,9 +47,11 @@ struct EncryptionParameters {
     EncryptionParameters() = default;
 
     /// Initializes `EncryptionParameters` with standard values.
-    EncryptionParameters(const Data& encrypted, const AESParameters& cipherParams,
-                         const ScryptParameters& kdfParams, const Data& mac)
-        : encrypted(encrypted), cipherParams(cipherParams), kdfParams(kdfParams), mac(mac) {}
+    EncryptionParameters(Data encrypted, AESParameters cipherParams, ScryptParameters kdfParams, Data mac)
+        : encrypted(std::move(encrypted))
+        , cipherParams(std::move(cipherParams))
+        , kdfParams(std::move(kdfParams))
+        , mac(std::move(mac)) {}
 
     /// Initializes `EncryptionParameters` by encrypting data with a password
     /// using standard values.
@@ -73,5 +74,4 @@ struct EncryptionParameters {
     virtual ~EncryptionParameters();
 };
 
-} // namespace Keystore
-} // namespace TW
+} // namespace TW::Keystore

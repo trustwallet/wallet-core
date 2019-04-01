@@ -11,8 +11,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 /// Account for a particular coin within a wallet.
 class Account {
@@ -30,9 +29,10 @@ class Account {
     TWCoinType coin() const { return derivationPath.coin(); }
 
     Account() = default;
-    Account(std::string address, DerivationPath derivationPath,
-            const std::string& extendedPublicKey = "")
-        : address(address), derivationPath(derivationPath), extendedPublicKey(extendedPublicKey) {}
+    Account(std::string address, DerivationPath derivationPath, std::string extendedPublicKey = "")
+        : address(std::move(address))
+        , derivationPath(std::move(derivationPath))
+        , extendedPublicKey(std::move(extendedPublicKey)) {}
 
     /// Initializes `Account` with a JSON object.
     Account(const nlohmann::json& json);
@@ -41,8 +41,7 @@ class Account {
     nlohmann::json json() const;
 };
 
-} // namespace Keystore
-} // namespace TW
+} // namespace TW::Keystore
 
 /// Wrapper for C interface.
 struct TWAccount {

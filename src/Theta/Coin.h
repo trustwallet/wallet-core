@@ -8,8 +8,7 @@
 
 #include "../uint256.h"
 
-namespace TW {
-namespace Theta {
+namespace TW::Theta {
 
 class Coins {
   public:
@@ -17,9 +16,8 @@ class Coins {
     uint256_t tfuelWei;
 
     Coins() = default;
-    Coins(const uint256_t& thetaWei, const uint256_t& tfuelWei)
-        : thetaWei(thetaWei), tfuelWei(tfuelWei) {}
+    Coins(uint256_t thetaWei, uint256_t tfuelWei)
+        : thetaWei(std::move(thetaWei)), tfuelWei(std::move(tfuelWei)) {}
 };
 
-} // namespace Theta
-} // namespace TW
+} // namespace TW::Theta

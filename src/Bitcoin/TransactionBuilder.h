@@ -13,8 +13,7 @@
 
 #include <algorithm>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
@@ -86,5 +85,4 @@ struct TransactionBuilder {
     }
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin

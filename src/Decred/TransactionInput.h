@@ -13,8 +13,7 @@
 #include <limits>
 #include <vector>
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 /// Decred transaction input.
 class TransactionInput {
@@ -42,5 +41,4 @@ class TransactionInput {
     void encodeWitness(Data& data) const;
 };
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred

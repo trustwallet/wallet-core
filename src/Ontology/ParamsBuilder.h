@@ -16,8 +16,7 @@
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class ParamsBuilder {
 
@@ -81,5 +80,4 @@ class ParamsBuilder {
                                                       const boost::any& params);
 };
 
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology

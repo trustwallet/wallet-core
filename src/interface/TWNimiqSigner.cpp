@@ -6,8 +6,8 @@
 
 #include <TrustWalletCore/TWNimiqSigner.h>
 
-#include "../PrivateKey.h"
 #include "../Nimiq/Signer.h"
+#include "../PrivateKey.h"
 #include "../proto/Nimiq.pb.h"
 
 using namespace TW;

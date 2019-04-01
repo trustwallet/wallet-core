@@ -17,8 +17,7 @@
 #include <tuple>
 #include <vector>
 
-namespace TW {
-namespace Wanchain {
+namespace TW::Wanchain {
 
 /// Helper class that performs Wanchain transaction signing.
 class Signer {
@@ -26,7 +25,7 @@ class Signer {
     boost::multiprecision::uint256_t chainID;
 
     /// Initializes a signer with a chain identifier.
-    Signer(const boost::multiprecision::uint256_t& chainID) : chainID(chainID) {}
+    Signer(boost::multiprecision::uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept;
@@ -39,8 +38,7 @@ class Signer {
     Data hash(const Ethereum::Transaction& transaction) const noexcept;
 };
 
-} // namespace Wanchain
-} // namespace TW
+} // namespace TW::Wanchain
 
 /// Wrapper for C interface.
 struct TWWanchainSigner {

@@ -24,13 +24,6 @@ jlong JNICALL Java_wallet_core_jni_StellarAddress_nativeCreateWithString(JNIEnv 
     return (jlong) instance;
 }
 
-jlong JNICALL Java_wallet_core_jni_StellarAddress_nativeCreateWithData(JNIEnv *env, jclass thisClass, jbyteArray data) {
-    TWData *dataData = TWDataCreateWithJByteArray(env, data);
-    struct TWStellarAddress *instance = TWStellarAddressCreateWithData(dataData);
-    TWDataDelete(dataData);
-    return (jlong) instance;
-}
-
 jlong JNICALL Java_wallet_core_jni_StellarAddress_nativeCreateWithPublicKey(JNIEnv *env, jclass thisClass, jobject publicKey) {
     jclass publicKeyClass = (*env)->GetObjectClass(env, publicKey);
     jfieldID publicKeyHandleFieldID = (*env)->GetFieldID(env, publicKeyClass, "nativeHandle", "J");

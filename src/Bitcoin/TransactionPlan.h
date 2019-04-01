@@ -9,8 +9,7 @@
 #include "Amount.h"
 #include "../proto/Bitcoin.pb.h"
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Describes a preliminary transaction plan.
 struct TransactionPlan {
@@ -49,5 +48,4 @@ struct TransactionPlan {
     }
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin
