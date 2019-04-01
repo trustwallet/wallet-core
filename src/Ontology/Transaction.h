@@ -6,13 +6,10 @@
 
 #pragma once
 
-#include "PublicKey.h"
 #include "SigData.h"
-<<<<<<< HEAD
-=======
+
 #include "../PublicKey.h"
 
->>>>>>> upstream/master
 #include <string>
 
 namespace TW::Ontology {

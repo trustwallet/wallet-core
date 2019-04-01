@@ -33,8 +33,8 @@ OngTxBuilder::balanceOf(const Ontology::Proto::SigningInput& input) {
 }
 
 TW_Ontology_Proto_SigningOutput OngTxBuilder::transfer(const Ontology::Proto::SigningInput& input) {
-    auto payer = Signer(input.payer_private_key());
-    auto owner = Signer(input.owner_private_key());
+    auto payer = Signer(PrivateKey(input.payer_private_key()));
+    auto owner = Signer(PrivateKey(input.owner_private_key()));
     auto toAddress = Address(input.to_address());
     auto transaction = Ong().transfer(owner, toAddress, input.amount(), payer, input.gas_price(),
                                       input.gas_limit());
@@ -47,8 +47,8 @@ TW_Ontology_Proto_SigningOutput OngTxBuilder::transfer(const Ontology::Proto::Si
 }
 
 TW_Ontology_Proto_SigningOutput OngTxBuilder::withdraw(const Ontology::Proto::SigningInput& input) {
-    auto payer = Signer(input.payer_private_key());
-    auto owner = Signer(input.owner_private_key());
+    auto payer = Signer(PrivateKey(input.payer_private_key()));
+    auto owner = Signer(PrivateKey(input.owner_private_key()));
     auto toAddress = Address(input.to_address());
     auto transaction = Ong().withdraw(owner, toAddress, input.amount(), payer, input.gas_price(),
                                       input.gas_limit());

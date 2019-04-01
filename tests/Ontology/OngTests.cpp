@@ -61,8 +61,8 @@ TEST(OntologyOng, transfer) {
 }
 
 TEST(OntologyOng, withdraw) {
-    auto signer1 = Signer("4646464646464646464646464646464646464646464646464646464646464646");
-    auto signer2 = Signer("4646464646464646464646464646464646464646464646464646464646464652");
+    auto signer1 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
+    auto signer2 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
     uint64_t amount = 1, gasPrice = 500, gasLimit = 20000;
     auto tx = Ong().withdraw(signer1, signer1.getAddress(), amount, signer2, gasPrice, gasLimit);
     auto rawTx = hex(tx.serialize());
