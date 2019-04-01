@@ -19,7 +19,8 @@ json PermissionLevel::serialize() const noexcept {
 void Action::serialize(Data& o) const {
     account.serialize(o);
     name.serialize(o);
-    encodeCollection(authorization);
+    encodeCollection(authorization, o);
+    Bravo::encodeVarInt32(data.size(), o);
     append(o, data);
 }
 

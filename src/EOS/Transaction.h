@@ -65,7 +65,8 @@ namespace EOS {
 
         void setReferenceBlock(const Data& referenceBlockId);
 
-        static const uint32_t ExpirySeconds = 60 * 10;
+        static const uint32_t ExpirySeconds = 30;
+        // static const uint32_t ExpirySeconds = 60 * 10;
     };
 }} // namespace
 

@@ -77,12 +77,12 @@ Transaction::Transaction(const std::string& referenceBlockId, uint32_t reference
 }
 
 void Transaction::setReferenceBlock(const Data& refBlockId) {
-    if (refBlockId.size() != Hash::ripemdSize) {
+    if (refBlockId.size() != Hash::sha256Size) {
         throw std::invalid_argument("Invalid Reference Block Id!");
     }
 
     refBlockNumber = decode16BE(refBlockId.data() + 2);
-    refBlockPrefix = decode32LE(refBlockId.data() + 4);
+    refBlockPrefix = decode32LE(refBlockId.data() + 8);
 }
 
 void Transaction::serialize(Data& os) const noexcept{
@@ -103,22 +103,26 @@ void Transaction::serialize(Data& os) const noexcept{
 json Transaction::serialize() const noexcept {
     using namespace Bravo;
 
+    // get a formatted date
     char formattedDate[20];
     time_t time = expiration;
     if (strftime(formattedDate, 19, "%FT%T", std::gmtime(&time)) != 19) {
         std::runtime_error("Error creating a formatted string!");
     }
 
+    // create a json array of signatures
     json sigs = json::array();
     for (const auto& sig : signatures) {
         sigs.push_back(sig.string());
     }
 
+    // create a json array of context-free data
     json cfdJSON = json::array();
     for (const auto& d : contextFreeData) {
         cfdJSON.push_back(hex(d));
     }
 
+    // add everything to the json object
     json obj;
     obj["ref_block_num"] = refBlockNumber;
     obj["ref_block_prefix"] = refBlockPrefix;
