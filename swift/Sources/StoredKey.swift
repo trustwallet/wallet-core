@@ -179,7 +179,7 @@ public final class StoredKey {
         return TWDataNSData(result)
     }
 
-    public func fixAddresses(password: String) -> Void {
+    public func fixAddresses(password: String) -> Bool {
         let passwordString = TWStringCreateWithNSString(password)
         defer {
             TWStringDelete(passwordString)

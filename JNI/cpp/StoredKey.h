@@ -70,7 +70,7 @@ JNIEXPORT
 jbyteArray JNICALL Java_wallet_core_jni_StoredKey_exportJSON(JNIEnv *env, jobject thisObject);
 
 JNIEXPORT
-void JNICALL Java_wallet_core_jni_StoredKey_fixAddresses(JNIEnv *env, jobject thisObject, jstring password);
+jboolean JNICALL Java_wallet_core_jni_StoredKey_fixAddresses(JNIEnv *env, jobject thisObject, jstring password);
 
 
 TW_EXTERN_C_END

@@ -297,16 +297,18 @@ jbyteArray JNICALL Java_wallet_core_jni_StoredKey_exportJSON(JNIEnv *env, jobjec
     return result;
 }
 
-void JNICALL Java_wallet_core_jni_StoredKey_fixAddresses(JNIEnv *env, jobject thisObject, jstring password) {
+jboolean JNICALL Java_wallet_core_jni_StoredKey_fixAddresses(JNIEnv *env, jobject thisObject, jstring password) {
     jclass thisClass = (*env)->GetObjectClass(env, thisObject);
     jfieldID handleFieldID = (*env)->GetFieldID(env, thisClass, "nativeHandle", "J");
     struct TWStoredKey *instance = (struct TWStoredKey *) (*env)->GetLongField(env, thisObject, handleFieldID);
 
     TWString *passwordString = TWStringCreateWithJString(env, password);
-    TWStoredKeyFixAddresses(instance, passwordString);
+    jboolean resultValue = (jboolean) TWStoredKeyFixAddresses(instance, passwordString);
 
     TWStringDelete(passwordString);
 
     (*env)->DeleteLocalRef(env, thisClass);
+
+    return resultValue;
 }
 
