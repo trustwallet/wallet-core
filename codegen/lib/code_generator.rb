@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'erb'
+require 'fileutils'
 require 'java_helper'
 require 'jni_helper'
 require 'swift_helper'
@@ -18,6 +19,7 @@ class CodeGenerator
 
   # Renders a template
   def render_template(header:, template:, output_subfolder:, extension:)
+    FileUtils.mkdir_p File.join(output_folder, output_subfolder)
     @entities.zip(files) do |entity, file|
       # Make current entity available to templates
       @entity = entity
@@ -36,7 +38,7 @@ class CodeGenerator
   end
 
   def render_swift
-    render_template(header: 'swift/header.erb', template: 'swift.erb', output_subfolder: 'swift/Sources', extension: 'swift')
+    render_template(header: 'swift/header.erb', template: 'swift.erb', output_subfolder: 'swift/Sources/Generated', extension: 'swift')
 
     framework_header = render('swift/TrustWalletCore.h.erb')
     framework_header_path = File.expand_path(File.join(output_folder, 'swift/Sources', 'TrustWalletCore.h'))
