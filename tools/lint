@@ -1,7 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 #
 # This script lints the files modified in the current branch with clang-tidy.
 
-set -e
+merge_base = `git merge-base HEAD origin/master`.strip
+changed_files = `git diff --name-only HEAD #{merge_base}`.strip.split(/\s/)
+files = changed_files.select { |f| File.extname(f) == '.cpp' || File.extname(f) == '.h' }
+if files.empty?
+  puts 'No files to lint'
+  exit 0
+end
 
-git diff --name-only HEAD $(git merge-base HEAD origin/master) | grep "\(\.cpp\|\.h\)$" | xargs clang-tidy -quiet -p=build
+puts "Linting #{files.count} files"
+system "clang-tidy -quiet -p=build #{files.join(' ')}"
+exit $?.exitstatus
