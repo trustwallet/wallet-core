@@ -26,6 +26,7 @@ public:
     ///
     /// \returns the transaction signature or an empty vector if there is an error.
     std::vector<uint8_t> sign() const;
+    std::string signInBase64() const;
 
     /// Builds the transaction.
     ///

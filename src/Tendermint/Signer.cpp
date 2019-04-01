@@ -9,6 +9,7 @@
 
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include "../Base64.h"
 #include "../PrivateKey.h"
 
 #include <google/protobuf/io/coded_stream.h>
@@ -25,8 +26,13 @@ std::vector<uint8_t> Signer::sign() const {
     return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
 }
 
+std::string Signer::signInBase64() const {
+    auto signature = sign();
+    return Base64::encode(Data(signature.begin(), signature.end()));
+}
+
 std::string Signer::signaturePreimage() const {
-    auto json = signingJSON(input);
+    auto json = transactionForSigningJSON(input);
     std::cout << "Signer::signaturePreimage()" << std::endl;
     std::cout << json.dump() << std::endl;
     return json.dump();
