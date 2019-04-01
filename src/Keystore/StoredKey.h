@@ -17,8 +17,7 @@
 #include <optional>
 #include <string>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 /// An stored key can be either a private key or a mnemonic phrase for a HD
 /// wallet.
@@ -39,7 +38,7 @@ struct StoredKey {
     std::vector<Account> accounts;
 
     /// Initializes a `StoredKey` with a type and an encrypted payload.
-    StoredKey(StoredKeyType type, const EncryptionParameters& payload);
+    StoredKey(StoredKeyType type, EncryptionParameters payload);
 
     /// Initializes a `StoredKey` with a type, an encryption password, and
     /// unencrypted data.
@@ -93,8 +92,7 @@ struct StoredKey {
     void fixAddresses(const std::string& password);
 };
 
-} // namespace Keystore
-} // namespace TW
+} // namespace TW::Keystore
 
 /// Wrapper for C interface.
 struct TWStoredKey {

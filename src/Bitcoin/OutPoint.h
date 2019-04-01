@@ -13,8 +13,7 @@
 #include <array>
 #include <cstring>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Bitcoin transaction out-point reference.
 class OutPoint {
@@ -55,5 +54,4 @@ class OutPoint {
     friend bool operator!=(const OutPoint& a, const OutPoint& b) { return !(a == b); }
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin

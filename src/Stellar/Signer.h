@@ -11,8 +11,7 @@
 #include "../PrivateKey.h"
 #include <proto/Stellar.pb.h>
 
-namespace TW {
-namespace Stellar {
+namespace TW::Stellar {
 /// Helper class that performs Ripple transaction signing.
 class Signer {
   public:
@@ -31,8 +30,7 @@ class Signer {
     void pad(Data& data) const;
 };
 
-} // namespace Stellar
-} // namespace TW
+} // namespace TW::Stellar
 
 /// Wrapper for C interface.
 struct TWStellarSigner {

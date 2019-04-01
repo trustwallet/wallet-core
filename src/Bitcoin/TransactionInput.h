@@ -12,8 +12,7 @@
 
 #include <vector>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Bitcoin transaction input.
 class TransactionInput {
@@ -33,13 +32,10 @@ class TransactionInput {
     /// Witness stack.
     std::vector<Data> scriptWitness;
 
-    /// Initializes an empty transaction input.
-    TransactionInput() = default;
-
     /// Initializes a transaction input with a previous output, a script and a
     /// sequence number.
-    TransactionInput(const OutPoint& previousOutput, const Script& script, uint32_t sequence)
-        : previousOutput(previousOutput), sequence(sequence), script(script) {}
+    TransactionInput(OutPoint previousOutput, Script script, uint32_t sequence)
+        : previousOutput(std::move(previousOutput)), sequence(sequence), script(std::move(script)) {}
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
@@ -48,8 +44,7 @@ class TransactionInput {
     void encodeWitness(Data& data) const;
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
 struct TWBitcoinTransactionInput {

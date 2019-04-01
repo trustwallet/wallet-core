@@ -12,8 +12,7 @@
 #include <nlohmann/json.hpp>
 #include <optional>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 enum class ScryptValidationError {
     desiredKeyLengthTooLarge,
@@ -68,7 +67,7 @@ struct ScryptParameters {
     ///
     /// @throws ScryptValidationError if the parameters are invalid.
     ScryptParameters(Data salt, uint32_t n, uint32_t r, uint32_t p, std::size_t desiredKeyLength)
-        : salt(salt), desiredKeyLength(desiredKeyLength), n(n), p(p), r(r) {
+        : salt(std::move(salt)), desiredKeyLength(desiredKeyLength), n(n), p(p), r(r) {
         auto error = validate();
         if (error) {
             throw *error;
@@ -87,5 +86,4 @@ struct ScryptParameters {
     nlohmann::json json() const;
 };
 
-} // namespace Keystore
-} // namespace TW
+} // namespace TW::Keystore

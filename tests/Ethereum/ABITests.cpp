@@ -9,8 +9,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 TEST(ABI, EncodeTrue) {
     Data encoded;
@@ -106,4 +105,4 @@ TEST(ABI, FunctionWithDynamicArgumentsCase2) {
     EXPECT_EQ(hex(encoded.begin() + 260, encoded.begin() + 292), "48656c6c6f2c20776f726c642100000000000000000000000000000000000000");
 }
 
-}} // namespace
+} // namespace TW::Ethereum

@@ -4,15 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWZcashTransactionSigner.h>
-
 #include "../Bitcoin/TransactionBuilder.h"
 #include "../Bitcoin/TransactionSigner.h"
+#include "../Data.h"
+#include "../proto/Bitcoin.pb.h"
+#include "../proto/Common.pb.h"
 #include "../Zcash/Transaction.h"
 
-#include "../Data.h"
-#include "../proto/Common.pb.h"
-#include "../proto/Bitcoin.pb.h"
+#include <TrustWalletCore/TWZcashTransactionSigner.h>
 
 using namespace TW;
 using namespace TW::Zcash;

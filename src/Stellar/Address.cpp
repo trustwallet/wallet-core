@@ -4,30 +4,30 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "../HexCoding.h"
 #include "Address.h"
+#include "Crc.h"
 
 #include <TrezorCrypto/base32.h>
 #include <TrezorCrypto/memzero.h>
 #include <TrustWalletCore/TWStellarVersionByte.h>
 
-#include "Crc.h"
-#include "Data.h"
-#include <HexCoding.h>
+#include <array>
 #include <cassert>
 
 using namespace TW::Stellar;
 
 bool Address::isValid(const std::string& string) {
     bool valid = false;
-    uint8_t decoded[rawSize];
+    std::array<uint8_t, rawSize> decoded;
 
     if (string.length() != size) {
         return false;
     }
 
     // Check that it decodes correctly
-    uint8_t* ret = base32_decode(string.data(), size, decoded, sizeof(decoded), BASE32_ALPHABET_RFC4648);
-    valid = (ret != NULL);
+    uint8_t* ret = base32_decode(string.data(), size, decoded.data(), decoded.size(), BASE32_ALPHABET_RFC4648);
+    valid = (ret != nullptr);
 
     // ... and that version byte is 0x30
     if (valid && TWStellarVersionByte(decoded[0]) != TWStellarVersionByte::TWStellarVersionByteAccountID) {
@@ -35,13 +35,13 @@ bool Address::isValid(const std::string& string) {
     }
 
     // ... and that checksums match
-    uint16_t checksum_expected = Crc::crc16(decoded, 33);
+    uint16_t checksum_expected = Crc::crc16(decoded.data(), 33);
     uint16_t checksum_actual = (decoded[34] << 8) | decoded[33]; // unsigned short (little endian)
     if (valid && checksum_expected != checksum_actual) {
         valid = false;
     }
 
-    memzero(decoded, sizeof(decoded));
+    memzero(decoded.data(), decoded.size());
     return valid;
 }
 
@@ -51,17 +51,10 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address data");
     }
 
-    uint8_t decoded[rawSize];
-    base32_decode(string.data(), size, decoded, sizeof(decoded), BASE32_ALPHABET_RFC4648);
-    std::copy(decoded + 1, decoded + 33, bytes.begin());
-    memzero(decoded, sizeof(decoded));
-}
-
-Address::Address(const std::vector<uint8_t>& data) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address key data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
+    std::array<uint8_t, rawSize> decoded;
+    base32_decode(string.data(), size, decoded.data(), decoded.size(), BASE32_ALPHABET_RFC4648);
+    std::copy(decoded.begin() + 1, decoded.begin() + 1 + bytes.size(), bytes.begin());
+    memzero(decoded.data(), decoded.size());
 }
 
 Address::Address(const PublicKey& publicKey) {
@@ -70,21 +63,21 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    char out[56 + 1];
+    std::array<char, 56 + 1> out = {0};
     // version + key bytes + checksum
-    uint8_t keylen = 1 + 32 + 2;
-    uint8_t bytes_full[keylen];
+    constexpr uint8_t keylen = 1 + 32 + 2;
+    std::array<uint8_t, keylen> bytes_full;
     bytes_full[0] = 6 << 3; // 'G'
 
-    std::copy(bytes.begin(), bytes.end(), bytes_full + 1);
+    std::copy(bytes.begin(), bytes.end(), bytes_full.begin() + 1);
 
     // Last two bytes are the checksum
-    uint16_t checksum = Crc::crc16(bytes_full, 33);
+    uint16_t checksum = Crc::crc16(bytes_full.data(), 33);
     bytes_full[keylen - 2] = checksum & 0x00ff;
     bytes_full[keylen - 1] = (checksum >> 8) & 0x00ff;
 
-    base32_encode(bytes_full, keylen, out, sizeof(out), BASE32_ALPHABET_RFC4648);
+    base32_encode(bytes_full.data(), keylen, out.data(), out.size(), BASE32_ALPHABET_RFC4648);
 
-    // Public key will always be 56 characters
-    return std::string(out);
+    out[out.size() - 1] = 0;
+    return std::string(out.data());
 }

@@ -12,8 +12,6 @@
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/secp256k1.h>
 
-#include <string.h>
-
 using TW::PublicKey;
 
 struct TWPublicKey *_Nullable TWPublicKeyCreateWithData(TWData *_Nonnull data) {

@@ -6,27 +6,25 @@
 
 #pragma once
 
+#include "../PrivateKey.h"
+
 #include "Address.h"
 #include "Transaction.h"
-#include "../PrivateKey.h"
 
 #include <array>
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class Signer {
   private:
     Data publicKey;
-    Data privateKey;
+    TW::PrivateKey privateKey;
     std::string address;
 
   public:
-    explicit Signer(const std::string& priKey);
-
-    explicit Signer(const Data& priKey);
+    explicit Signer(TW::PrivateKey priKey);
 
     PrivateKey getPrivateKey() const;
 
@@ -38,8 +36,7 @@ class Signer {
 
     void addSign(Transaction& tx) const;
 };
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology
 
 /// Wrapper for C interface.
 struct TWOntologySigner {

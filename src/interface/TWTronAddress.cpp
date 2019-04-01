@@ -24,8 +24,12 @@ bool TWTronAddressIsValidString(TWString* _Nonnull string) {
 
 struct TWTronAddress* _Nullable TWTronAddressCreateWithString(TWString* _Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWTronAddress{std::move(address)};
+    try {
+        const auto address = Address(*s);
+        return new TWTronAddress{std::move(address)};
+    } catch (std::exception& e) {
+        return nullptr;
+    }
 }
 
 struct TWTronAddress* _Nonnull TWTronAddressCreateWithPublicKey(

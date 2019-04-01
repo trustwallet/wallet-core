@@ -13,6 +13,11 @@ echo "#### Building... ####"
 cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
 make -Cbuild tests
 
+if [ -x "$(command -v clang-tidy)" ]; then
+    echo "#### Linting... ####"
+    tools/lint
+fi
+
 echo "#### Testing... ####"
 ROOT="`dirname \"$0\"`"
 TESTS_ROOT="`(cd \"$ROOT/tests\" && pwd)`"

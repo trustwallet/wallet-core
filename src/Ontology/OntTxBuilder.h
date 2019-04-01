@@ -12,8 +12,7 @@
 
 #include <TrustWalletCore/TWOntologyProto.h>
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class OntTxBuilder {
 
@@ -27,5 +26,4 @@ class OntTxBuilder {
     static TW_Ontology_Proto_SigningOutput build(const Ontology::Proto::SigningInput& input);
 };
 
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology

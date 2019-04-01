@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# This script lints the files modified in the current branch with clang-tidy.
+
+set -e
+
+git diff --name-only HEAD $(git merge-base HEAD origin/master) | grep "\(\.cpp\|\.h\)$" | xargs clang-tidy -quiet -p=build

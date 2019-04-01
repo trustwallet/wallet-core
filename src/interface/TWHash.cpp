@@ -4,97 +4,96 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWHash.h>
+#include "../Data.h"
 
+#include <TrustWalletCore/TWHash.h>
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
 
-#include <string.h>
-
+#include <array>
 
 TWData *_Nonnull TWHashSHA1(TWData *_Nonnull data) {
-    uint8_t resultBytes[TWHashSHA1Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    sha1_Raw(dataBytes, TWDataSize(data), resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashSHA1Length);
+    std::array<uint8_t, TWHashSHA1Length> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    sha1_Raw(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA1Length);
 }
 
 TWData *_Nonnull TWHashSHA256(TWData *_Nonnull data) {
-    uint8_t resultBytes[TWHashSHA256Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    sha256_Raw(dataBytes, TWDataSize(data), resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashSHA256Length);
+    std::array<uint8_t, TWHashSHA256Length> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    sha256_Raw(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA256Length);
 }
 
 TWData *_Nonnull TWHashSHA512(TWData *_Nonnull data) {
-    uint8_t resultBytes[TWHashSHA512Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    sha512_Raw(dataBytes, TWDataSize(data), resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashSHA512Length);
+    std::array<uint8_t, TWHashSHA512Length> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    sha512_Raw(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA512Length);
 }
 
 TWData *_Nonnull TWHashKeccak256(TWData *_Nonnull data) {
-    uint8_t resultBytes[TWHashSHA256Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    keccak_256(dataBytes, TWDataSize(data), resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashSHA256Length);
+    std::array<uint8_t, TWHashSHA256Length> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    keccak_256(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA256Length);
 }
 
 TWData *_Nonnull TWHashKeccak512(TWData *_Nonnull data) {
-    uint8_t resultBytes[TWHashSHA512Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    keccak_512(dataBytes, TWDataSize(data), resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashSHA512Length);
+    std::array<uint8_t, TWHashSHA512Length> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    keccak_512(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA512Length);
 }
 
 TWData *_Nonnull TWHashSHA3_256(TWData *_Nonnull data) {
-    uint8_t resultBytes[TWHashSHA256Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    sha3_256(dataBytes, TWDataSize(data), resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashSHA256Length);
+    std::array<uint8_t, TWHashSHA256Length> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    sha3_256(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA256Length);
 }
 
 TWData *_Nonnull TWHashSHA3_512(TWData *_Nonnull data) {
-    uint8_t resultBytes[TWHashSHA512Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    sha3_512(dataBytes, TWDataSize(data), resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashSHA512Length);
+    std::array<uint8_t, TWHashSHA512Length> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    sha3_512(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA512Length);
 }
 
 TWData *_Nonnull TWHashRIPEMD(TWData *_Nonnull data) {
-    uint8_t resultBytes[TWHashRipemdLength];
-    uint8_t *dataBytes = TWDataBytes(data);
-    ripemd160(dataBytes, TWDataSize(data), resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashRipemdLength);
+    std::array<uint8_t, TWHashRipemdLength> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    ripemd160(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashRipemdLength);
 }
 
 TWData *_Nonnull TWHashBlake2b(TWData *_Nonnull data, size_t outlen) {
-    uint8_t *resultBytes = (uint8_t *) malloc(outlen);
-    uint8_t *dataBytes = TWDataBytes(data);
-    blake2b(dataBytes, TWDataSize(data), resultBytes, outlen);
-    TWData *result = TWDataCreateWithBytes(resultBytes, outlen);
-    free(resultBytes);
+    auto resultBytes = TW::Data(outlen);
+    auto dataBytes = TWDataBytes(data);
+    blake2b(dataBytes, TWDataSize(data), resultBytes.data(), outlen);
+    auto result = TWDataCreateWithBytes(resultBytes.data(), outlen);
     return result;
 }
 
 TWData *_Nonnull TWHashSHA256RIPEMD(TWData *_Nonnull data) {
-    uint8_t round1[TWHashSHA256Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    sha256_Raw(dataBytes, TWDataSize(data), round1);
+    std::array<uint8_t, TWHashSHA256Length> round1;
+    auto dataBytes = TWDataBytes(data);
+    sha256_Raw(dataBytes, TWDataSize(data), round1.data());
 
-    uint8_t resultBytes[TWHashRipemdLength];
-    ripemd160(round1, TWHashSHA256Length, resultBytes);
-    return TWDataCreateWithBytes(resultBytes, TWHashRipemdLength);
+    std::array<uint8_t, TWHashRipemdLength> resultBytes;
+    ripemd160(round1.data(), TWHashSHA256Length, resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashRipemdLength);
 }
 
 TWData *_Nonnull TWHashSHA256SHA256(TWData *_Nonnull data) {
-    uint8_t round1[TWHashSHA256Length];
-    uint8_t *dataBytes = TWDataBytes(data);
-    sha256_Raw(dataBytes, TWDataSize(data), round1);
+    std::array<uint8_t, TWHashSHA256Length> round1;
+    auto dataBytes = TWDataBytes(data);
+    sha256_Raw(dataBytes, TWDataSize(data), round1.data());
 
-    uint8_t round2[TWHashSHA256Length];
-    sha256_Raw(round1, TWHashSHA256Length, round2);
-    return TWDataCreateWithBytes(round2, TWHashSHA256Length);
+    std::array<uint8_t, TWHashSHA256Length> round2;
+    sha256_Raw(round1.data(), TWHashSHA256Length, round2.data());
+    return TWDataCreateWithBytes(round2.data(), TWHashSHA256Length);
 }

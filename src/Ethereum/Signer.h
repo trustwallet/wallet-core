@@ -11,24 +11,22 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "../uint256.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
 #include <tuple>
 #include <vector>
 
-namespace TW {
-namespace Ethereum {
-
-typedef boost::multiprecision::uint256_t uint256_t;
+namespace TW::Ethereum {
 
 /// Helper class that performs Ethereum transaction signing.
 class Signer {
   public:
-    boost::multiprecision::uint256_t chainID;
+    uint256_t chainID;
 
     /// Initializes a signer with a chain identifier.
-    explicit Signer(const boost::multiprecision::uint256_t& chainID) : chainID(chainID) {}
+    explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
@@ -51,8 +49,7 @@ class Signer {
     Data hash(const Transaction& transaction) const noexcept;
 };
 
-} // namespace Ethereum
-} // namespace TW
+} // namespace TW::Ethereum
 
 /// Wrapper for C interface.
 struct TWEthereumSigner {

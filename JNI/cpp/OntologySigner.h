@@ -16,7 +16,7 @@
 TW_EXTERN_C_BEGIN
 
 JNIEXPORT
-jobject JNICALL Java_wallet_core_jni_OntologySigner_sign(JNIEnv *env, jclass thisClass, jobject data);
+jobject JNICALL Java_wallet_core_jni_OntologySigner_sign(JNIEnv *env, jclass thisClass, jobject input);
 
 
 TW_EXTERN_C_END

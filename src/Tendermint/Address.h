@@ -9,11 +9,10 @@
 #include "../Data.h"
 #include "../PublicKey.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
-namespace TW {
-namespace Tendermint {
+namespace TW::Tendermint {
 
 class Address {
   public:
@@ -33,13 +32,10 @@ class Address {
     static bool isValid(const std::string& string, const std::string& hrp);
 
     /// Initializes an address with a key hash.
-    Address(const std::string& hrp, const Data& keyHash) : hrp(hrp), keyHash(keyHash) {}
-
-    /// Initializes an address with a key hash.
-    Address(const std::string& hrp, Data&& keyHash) : hrp(hrp), keyHash(keyHash) {}
+    Address(std::string hrp, Data keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
 
     /// Initializes an address with a public key.
-    Address(const std::string& hrp, const PublicKey& publicKey);
+    Address(std::string hrp, const PublicKey& publicKey);
 
     /// Decodes an address.
     ///
@@ -57,8 +53,7 @@ class Address {
     Address() = default;
 };
 
-} // namespace Tendermint
-} // namespace TW
+} // namespace TW::Tendermint
 
 /// Wrapper for C interface.
 struct TWTendermintAddress {

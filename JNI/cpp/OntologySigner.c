@@ -16,19 +16,19 @@
 #include "TWJNI.h"
 #include "OntologySigner.h"
 
-jobject JNICALL Java_wallet_core_jni_OntologySigner_sign(JNIEnv *env, jclass thisClass, jobject data) {
-    jclass dataClass = (*env)->GetObjectClass(env, data);
-    jmethodID dataToByteArrayMethodID = (*env)->GetMethodID(env, dataClass, "toByteArray", "()[B");
-    jbyteArray dataByteArray = (*env)->CallObjectMethod(env, data, dataToByteArrayMethodID);
-    TWData *dataData = TWDataCreateWithJByteArray(env, dataByteArray);
-    jbyteArray resultData = TWDataJByteArray(TWOntologySignerSign(dataData), env);
+jobject JNICALL Java_wallet_core_jni_OntologySigner_sign(JNIEnv *env, jclass thisClass, jobject input) {
+    jclass inputClass = (*env)->GetObjectClass(env, input);
+    jmethodID inputToByteArrayMethodID = (*env)->GetMethodID(env, inputClass, "toByteArray", "()[B");
+    jbyteArray inputByteArray = (*env)->CallObjectMethod(env, input, inputToByteArrayMethodID);
+    TWData *inputData = TWDataCreateWithJByteArray(env, inputByteArray);
+    jbyteArray resultData = TWDataJByteArray(TWOntologySignerSign(inputData), env);
     jclass resultClass = (*env)->FindClass(env, "wallet/core/jni/proto/Ontology$SigningOutput");
     jmethodID parseFromMethodID = (*env)->GetStaticMethodID(env, resultClass, "parseFrom", "([B)Lwallet/core/jni/proto/Ontology$SigningOutput;");
     jobject result = (*env)->CallStaticObjectMethod(env, resultClass, parseFromMethodID, resultData);
 
     (*env)->DeleteLocalRef(env, resultClass);
-    (*env)->DeleteLocalRef(env, dataByteArray);
-    (*env)->DeleteLocalRef(env, dataClass);
+    (*env)->DeleteLocalRef(env, inputByteArray);
+    (*env)->DeleteLocalRef(env, inputClass);
 
     return result;
 }

@@ -14,8 +14,7 @@
 
 #include <algorithm>
 
-namespace TW {
-namespace Decred {
+namespace TW::Decred {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
@@ -70,11 +69,11 @@ struct TransactionBuilder {
         }
 
         Transaction tx;
-        tx.outputs.push_back(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
+        tx.outputs.emplace_back(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
 
         if (plan.change > 0) {
             auto lockingScriptChange = Bitcoin::Script::buildForAddress(changeAddress);
-            tx.outputs.push_back(
+            tx.outputs.emplace_back(
                 TransactionOutput(plan.change, /* version: */ 0, lockingScriptChange));
         }
 
@@ -91,5 +90,4 @@ struct TransactionBuilder {
     }
 };
 
-} // namespace Decred
-} // namespace TW
+} // namespace TW::Decred

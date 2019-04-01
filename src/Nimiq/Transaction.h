@@ -8,8 +8,7 @@
 
 #include "Address.h"
 
-namespace TW {
-namespace Nimiq {
+namespace TW::Nimiq {
 
 class Transaction {
   public:
@@ -26,7 +25,6 @@ class Transaction {
     // Sender signature
     std::array<uint8_t, 64> signature;
 
-    Transaction() = default;
     Transaction(const std::array<uint8_t, 32>& sender, const Address& dest, uint64_t amount,
                 uint64_t fee, uint32_t vsh)
         : sender_pub_key(sender), destination(dest), amount(amount), fee(fee), vsh(vsh) {}
@@ -36,8 +34,7 @@ class Transaction {
     std::vector<uint8_t> getPreImage() const;
 };
 
-} // namespace Nimiq
-} // namespace TW
+} // namespace TW::Nimiq
 
 /// Wrapper for C interface.
 struct TWNimiqTransaction {

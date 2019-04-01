@@ -11,8 +11,7 @@
 #include <array>
 #include <vector>
 
-namespace TW {
-namespace Ontology {
+namespace TW::Ontology {
 
 class Address {
 
@@ -44,12 +43,11 @@ class Address {
     std::string string() const;
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.data == rhs.data;
 }
 
-} // namespace Ontology
-} // namespace TW
+} // namespace TW::Ontology
 
 /// Wrapper for C interface.
 struct TWOntologyAddress {

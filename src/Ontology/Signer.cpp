@@ -15,22 +15,14 @@
 using namespace TW;
 using namespace TW::Ontology;
 
-Signer::Signer(const std::string& priKey) {
-    privateKey = parse_hex(priKey);
-    auto pubKey = PrivateKey(privateKey).getPublicKey(PublicKeyType::nist256p1);
-    publicKey = pubKey.bytes;
-    address = Address(pubKey).string();
-}
-
-Signer::Signer(const Data& priKey) {
-    privateKey = priKey;
-    auto pubKey = PrivateKey(privateKey).getPublicKey(PublicKeyType::nist256p1);
+Signer::Signer(TW::PrivateKey priKey) : privateKey(std::move(priKey)) {
+    auto pubKey = privateKey.getPublicKey(PublicKeyType::nist256p1);
     publicKey = pubKey.bytes;
     address = Address(pubKey).string();
 }
 
 PrivateKey Signer::getPrivateKey() const {
-    return PrivateKey(privateKey);
+    return privateKey;
 }
 
 PublicKey Signer::getPublicKey() const {

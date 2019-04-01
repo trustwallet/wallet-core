@@ -4,16 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWPrivateKey.h>
-
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/secp256k1.h>
-
-#include <string.h>
+#include <TrustWalletCore/TWPrivateKey.h>
 
 using namespace TW;
 

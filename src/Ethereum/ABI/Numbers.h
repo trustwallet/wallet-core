@@ -9,8 +9,7 @@
 #include "../../Data.h"
 #include "../../uint256.h"
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 static constexpr std::size_t encodedIntSize = 32;
 
@@ -144,5 +143,4 @@ std::string type_string(uint64_t value) {
     return "uint64";
 }
 
-} // namespace Ethereum
-} // namespace TW
+} // namespace TW::Ethereum

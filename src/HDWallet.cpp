@@ -21,6 +21,8 @@
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
 
+#include <array>
+
 using namespace TW;
 
 namespace {
@@ -36,10 +38,10 @@ bool HDWallet::isValid(const std::string& mnemonic) {
 
 HDWallet::HDWallet(int strength, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    char mnemonic_chars[HDWallet::maxMnemomincSize];
-    mnemonic_generate(strength, mnemonic_chars);
-    mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
-    mnemonic = mnemonic_chars;
+    std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
+    mnemonic_generate(strength, mnemonic_chars.data());
+    mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
+    mnemonic = mnemonic_chars.data();
 }
 
 HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
@@ -49,10 +51,10 @@ HDWallet::HDWallet(const std::string& mnemonic, const std::string& passphrase)
 
 HDWallet::HDWallet(const Data& data, const std::string& passphrase)
     : seed(), mnemonic(), passphrase(passphrase) {
-    char mnemonic_chars[maxMnemomincSize];
-    mnemonic_from_data(data.data(), data.size(), mnemonic_chars);
-    mnemonic_to_seed(mnemonic_chars, passphrase.c_str(), seed.data(), nullptr);
-    mnemonic = mnemonic_chars;
+    std::array<char, HDWallet::maxMnemomincSize> mnemonic_chars;
+    mnemonic_from_data(data.data(), data.size(), mnemonic_chars.data());
+    mnemonic_to_seed(mnemonic_chars.data(), passphrase.c_str(), seed.data(), nullptr);
+    mnemonic = mnemonic_chars.data();
 }
 
 HDWallet::~HDWallet() {
@@ -79,11 +81,11 @@ std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin,
     auto derivationPath =
         TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
     auto node = getNode(*this, curve, derivationPath);
-    char buffer[HDWallet::maxExtendedKeySize] = {0};
+    std::array<char, HDWallet::maxExtendedKeySize> buffer = {0};
     auto fingerprint = hdnode_fingerprint(&node);
     hdnode_private_ckd(&node, 0x80000000);
-    hdnode_serialize_private(&node, fingerprint, version, buffer, HDWallet::maxExtendedKeySize);
-    return buffer;
+    hdnode_serialize_private(&node, fingerprint, version, buffer.data(), HDWallet::maxExtendedKeySize);
+    return buffer.data();
 }
 
 std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin,
@@ -92,12 +94,12 @@ std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin,
     auto derivationPath =
         TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
     auto node = getNode(*this, curve, derivationPath);
-    char buffer[HDWallet::maxExtendedKeySize] = {0};
+    std::array<char, HDWallet::maxExtendedKeySize> buffer = {0};
     auto fingerprint = hdnode_fingerprint(&node);
     hdnode_private_ckd(&node, 0x80000000);
     hdnode_fill_public_key(&node);
-    hdnode_serialize_public(&node, fingerprint, version, buffer, maxExtendedKeySize);
-    return buffer;
+    hdnode_serialize_public(&node, fingerprint, version, buffer.data(), maxExtendedKeySize);
+    return buffer.data();
 }
 
 PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCurve curve,

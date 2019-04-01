@@ -5,12 +5,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Bech32 {
+namespace TW::Bech32 {
 
 /// Encodes a Bech32 string.
 ///
@@ -30,8 +29,7 @@ inline bool convertBits(std::vector<uint8_t>& out, const std::vector<uint8_t>& i
     int bits = 0;
     const int maxv = (1 << tobits) - 1;
     const int max_acc = (1 << (frombits + tobits - 1)) - 1;
-    for (size_t i = 0; i < in.size(); ++i) {
-        int value = in[i];
+    for (const auto& value : in) {
         acc = ((acc << frombits) | value) & max_acc;
         bits += frombits;
         while (bits >= tobits) {
@@ -48,5 +46,4 @@ inline bool convertBits(std::vector<uint8_t>& out, const std::vector<uint8_t>& i
     return true;
 }
 
-} // namespace Bech32
-} // namespace TW
+} // namespace TW::Bech32

@@ -12,8 +12,7 @@
 
 extern std::string TESTS_ROOT;
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 TEST(StoredKey, LoadNonexistent) {
     ASSERT_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/nonexistent.json"), std::invalid_argument);
@@ -120,4 +119,4 @@ TEST(StoredKey, EtherWalletAddressNo0x) {
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
 }
 
-}} // namespace
+} // namespace TW::Keystore

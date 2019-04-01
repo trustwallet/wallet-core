@@ -11,8 +11,7 @@
 #include "../proto/VeChain.pb.h"
 #include "../uint256.h"
 
-namespace TW {
-namespace VeChain {
+namespace TW::VeChain {
 
 class Clause {
   public:
@@ -20,9 +19,8 @@ class Clause {
     uint256_t value;
     Data data;
 
-    Clause() = default;
-    Clause(const Ethereum::Address& to, const uint256_t& value, Data data = {})
-        : to(to), value(value), data(data) {}
+    Clause(Ethereum::Address to, uint256_t value, Data data = {})
+        : to(std::move(to)), value(std::move(value)), data(std::move(data)) {}
 
     /// Decodes from a proto representation.
     Clause(const Proto::Clause& proto)
@@ -30,5 +28,4 @@ class Clause {
                  Data(proto.data().begin(), proto.data().end())) {}
 };
 
-} // namespace VeChain
-} // namespace TW
+} // namespace TW::VeChain

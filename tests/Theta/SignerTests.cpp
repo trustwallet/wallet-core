@@ -9,8 +9,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Theta {
+namespace TW::Theta {
 
 using boost::multiprecision::uint256_t;
 
@@ -34,5 +33,4 @@ TEST(Signer, Sign) {
               "1255140b4a8abd3ec6c20a14");
 }
 
-} // namespace Theta
-} // namespace TW
+} // namespace TW::Theta

@@ -26,7 +26,7 @@ public class OntologySigner {
     }
 
 
-    public static native wallet.core.jni.proto.Ontology.SigningOutput sign(wallet.core.jni.proto.Ontology.SigningInput data);
+    public static native wallet.core.jni.proto.Ontology.SigningOutput sign(wallet.core.jni.proto.Ontology.SigningInput input);
 
 }
 

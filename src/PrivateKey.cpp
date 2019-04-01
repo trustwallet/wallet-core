@@ -50,7 +50,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     case TWCurveSECP256k1: {
         result.resize(65);
         success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data(),
-                                    result.data() + 64, NULL) == 0;
+                                    result.data() + 64, nullptr) == 0;
     } break;
     case TWCurveEd25519: {
         result.resize(64);
@@ -61,7 +61,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     case TWCurveNIST256p1: {
         result.resize(65);
         success = ecdsa_sign_digest(&nist256p1, bytes.data(), digest.data(), result.data(),
-                                    result.data() + 64, NULL) == 0;
+                                    result.data() + 64, nullptr) == 0;
     } break;
     }
 
@@ -74,15 +74,15 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
 Data PrivateKey::signAsDER(const Data& digest, TWCurve curve) const {
     Data sig(64);
     bool success =
-        ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), sig.data(), NULL, NULL) == 0;
+        ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), sig.data(), nullptr, nullptr) == 0;
     if (!success) {
         return {};
     }
 
-    uint8_t resultBytes[72];
-    size_t size = ecdsa_sig_to_der(sig.data(), resultBytes);
+    std::array<uint8_t, 72> resultBytes;
+    size_t size = ecdsa_sig_to_der(sig.data(), resultBytes.data());
 
     auto result = Data{};
-    std::copy(resultBytes, resultBytes + size, std::back_inserter(result));
+    std::copy(resultBytes.begin(), resultBytes.begin() + size, std::back_inserter(result));
     return result;
 }

@@ -9,12 +9,11 @@
 #include "../PublicKey.h"
 
 #include <array>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Nimiq {
+namespace TW::Nimiq {
 
 class Address {
   public:
@@ -47,12 +46,11 @@ class Address {
     int getChecksum() const;
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Nimiq
-} // namespace TW
+} // namespace TW::Nimiq
 
 /// Wrapper for C interface.
 struct TWNimiqAddress {

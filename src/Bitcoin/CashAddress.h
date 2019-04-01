@@ -9,11 +9,10 @@
 #include "Address.h"
 #include "../PublicKey.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 class CashAddress {
   public:
@@ -49,9 +48,8 @@ class CashAddress {
     Address legacyAddress() const;
 };
 
-static inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
+inline bool operator==(const CashAddress& lhs, const CashAddress& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin

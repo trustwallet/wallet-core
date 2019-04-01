@@ -11,12 +11,21 @@ import Foundation
 
 public final class OntologySigner {
 
+<<<<<<< HEAD
     public static func sign(data: TW_Ontology_Proto_SigningInput) -> TW_Ontology_Proto_SigningOutput {
         let dataData = TWDataCreateWithNSData(try! data.serializedData())
+=======
+    public static func sign(input: TW_Ontology_Proto_SigningInput) -> TW_Ontology_Proto_SigningOutput {
+        let inputData = TWDataCreateWithNSData(try! input.serializedData())
+>>>>>>> upstream/master
         defer {
             TWDataDelete(dataData)
         }
+<<<<<<< HEAD
         let resultData = TWDataNSData(TWOntologySignerSign(dataData))
+=======
+        let resultData = TWDataNSData(TWOntologySignerSign(inputData))
+>>>>>>> upstream/master
         return try! TW_Ontology_Proto_SigningOutput(serializedData: resultData)
     }
 

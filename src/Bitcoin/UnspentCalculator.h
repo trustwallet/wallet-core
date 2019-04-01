@@ -9,11 +9,10 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include <functional>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
-typedef std::function<int64_t(size_t, size_t, int64_t)> FeeCalculator;
-typedef std::function<int64_t(int64_t)> SingleInputFeeCalculator;
+using FeeCalculator = std::function<int64_t(size_t, size_t, int64_t)>;
+using SingleInputFeeCalculator = std::function<int64_t(int64_t)>;
 
 class UnspentCalculator {
   public:
@@ -25,14 +24,13 @@ class UnspentCalculator {
     UnspentCalculator()
         : calculate(UnspentCalculator::calculateFee)
         , calculateSingleInput(UnspentCalculator::calculateSingleInputFee) {}
-    UnspentCalculator(const FeeCalculator& calculateFee,
-                      const SingleInputFeeCalculator& calculateSingleInputFee)
-        : calculate(calculateFee), calculateSingleInput(calculateSingleInputFee) {}
+    UnspentCalculator(FeeCalculator calculateFee,
+                      SingleInputFeeCalculator calculateSingleInputFee)
+        : calculate(std::move(calculateFee)), calculateSingleInput(std::move(calculateSingleInputFee)) {}
 
   private:
     static int64_t calculateFee(size_t inputs, size_t outputs = 2, int64_t byteFee = 1);
     static int64_t calculateSingleInputFee(int64_t byteFee);
 };
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin

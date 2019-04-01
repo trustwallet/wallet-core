@@ -12,8 +12,7 @@
 #include <array>
 #include <string>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 class Address {
   public:
@@ -50,9 +49,8 @@ class Address {
     std::string string() const;
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace Bitcoin
-} // namespace TW
+} // namespace TW::Bitcoin

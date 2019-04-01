@@ -18,11 +18,13 @@ using namespace TW::Ontology;
 TEST(TWOntologySignerSign, OntTransfer) {
     // tx on polaris test net.
     // https://explorer.ont.io/transaction/4a672ce813d3fac9042e9472cf9b470f8a5e59a2deb41fd7b23a1f7479a155d5/testnet
+    auto ownerPrivateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    auto payerPrivateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464652");
     auto input = Ontology::Proto::SigningInput();
     input.set_contract("ONT");
     input.set_method("transfer");
-    input.set_owner_private_key("4646464646464646464646464646464646464646464646464646464646464646");
-    input.set_payer_private_key("4646464646464646464646464646464646464646464646464646464646464652");
+    input.set_owner_private_key(ownerPrivateKey.data(), ownerPrivateKey.size());
+    input.set_payer_private_key(payerPrivateKey.data(), payerPrivateKey.size());
     input.set_to_address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     input.set_amount(1);
     input.set_gas_price(500);
@@ -44,11 +46,13 @@ TEST(TWOntologySignerSign, OntTransfer) {
 TEST(TWOntologySignerSign, OngTransfer) {
     // tx on polaris test net.
     // https://explorer.ont.io/transaction/8a1e59396dcb72d9095088f50d1023294bf9c7b79ba693bd641578f748cbd4e6/testnet
+    auto ownerPrivateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
+    auto payerPrivateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464652");
     auto input = Ontology::Proto::SigningInput();
     input.set_contract("ONG");
     input.set_method("transfer");
-    input.set_owner_private_key("4646464646464646464646464646464646464646464646464646464646464646");
-    input.set_payer_private_key("4646464646464646464646464646464646464646464646464646464646464652");
+    input.set_owner_private_key(ownerPrivateKey.data(), ownerPrivateKey.size());
+    input.set_payer_private_key(payerPrivateKey.data(), payerPrivateKey.size());
     input.set_to_address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     input.set_amount(1);
     input.set_gas_price(500);
