@@ -56,6 +56,7 @@ ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 RUN git clone https://github.com/TrustWallet/wallet-core.git \
     && cd wallet-core \
+    && export PREFIX=/usr/local \
     && tools/install-dependencies
 
 CMD ["/bin/bash"]
