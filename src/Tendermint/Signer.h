@@ -27,8 +27,14 @@ public:
     /// \returns the transaction signature or an empty vector if there is an error.
     std::vector<uint8_t> sign() const;
 
+    /// Builds the transaction.
+    ///
+    /// \returns the transaction.
+    std::vector<uint8_t> build() const;
+
 private:
     std::string signaturePreimage() const;
+    std::vector<uint8_t> buildTransaction(std::vector<uint8_t>& signature) const;
 };
 
 }} // namespace

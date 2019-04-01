@@ -26,8 +26,33 @@ std::vector<uint8_t> Signer::sign() const {
 }
 
 std::string Signer::signaturePreimage() const {
-    auto json = signatureJSON(input);
+    auto json = signingJSON(input);
     std::cout << "Signer::signaturePreimage()" << std::endl;
     std::cout << json.dump() << std::endl;
     return json.dump();
+}
+
+std::vector<uint8_t> Signer::buildTransaction(std::vector<uint8_t>& signature) const {    
+    auto sig = Cosmos::Proto::Signature();
+    sig.set_signature(signature.data(), signature.size());
+    auto privateKey = PrivateKey(input.private_key());
+    auto publicKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
+    sig.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+
+    auto transaction = Cosmos::Proto::Transaction();
+    *transaction.mutable_fee() = input.fee();
+    transaction.set_memo(input.memo());
+    *transaction.mutable_message() = input.message();
+    *transaction.mutable_signature() = sig;
+
+    auto jsonTx = transactionJSON(transaction);
+    std::cout << "Signer::buildTransaction()" << std::endl;
+    std::cout << jsonTx.dump() << std::endl;
+
+    return std::vector<uint8_t>();
+}
+
+std::vector<uint8_t> Signer::build() const {
+    auto signature = sign();
+    return buildTransaction(signature);
 }

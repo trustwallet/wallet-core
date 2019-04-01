@@ -53,8 +53,7 @@ json messageJSON(const TW::Cosmos::Proto::SigningInput& input) {
     if (input.has_message()) {
         json jsonCoins = json::array();
         for (auto& coin : input.message().amount()) {
-            jsonCoins.push_back(
-                amountJSON(std::to_string(coin.amount()), coin.denom()));
+            jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
         }
 
         jsonMsg["amount"] = jsonCoins;
@@ -65,17 +64,53 @@ json messageJSON(const TW::Cosmos::Proto::SigningInput& input) {
     return wrapperJSON(AMINO_PREFIX_SEND_MESSAGE, jsonMsg);
 }
 
+json messageJSON(const TW::Cosmos::Proto::Transaction& transaction) {
+    json jsonMsg;
+
+    json jsonCoins = json::array();
+    for (auto& coin : transaction.message().amount()) {
+        jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
+    }
+
+    jsonMsg["amount"] = jsonCoins;
+    jsonMsg["from_address"] = transaction.message().from_address();
+    jsonMsg["to_address"] = transaction.message().to_address();
+
+    return wrapperJSON(AMINO_PREFIX_SEND_MESSAGE, jsonMsg);
+}
+
+json messageJSON(json& coins, std::string from_address, std::string to_address) {
+    json jsonMsg;
+
+    jsonMsg["amount"] = coins;
+    jsonMsg["from_address"] = from_address;
+    jsonMsg["to_address"] = to_address;
+
+    return wrapperJSON(AMINO_PREFIX_SEND_MESSAGE, jsonMsg);
+}
+
 json txJSON(const TW::Cosmos::Proto::SigningInput& input) {
     json jsonTx;
     
-    jsonTx["memo"] = input.memo();
     jsonTx["fee"] = feeJSON(input.fee());
+    jsonTx["memo"] = input.memo();
     jsonTx["msg"] = json::array({messageJSON(input)});
     
     return jsonTx;  
 }
 
-json TW::Cosmos::signatureJSON(const TW::Cosmos::Proto::SigningInput& input) {
+json TW::Cosmos::signingJSON(const TW::Cosmos::Proto::SigningInput& input) {
     json jsonTx = txJSON(input);
     return wrapperJSON(AMINO_PREFIX_TRANSACTION, jsonTx);
+}
+
+json TW::Cosmos::transactionJSON(const TW::Cosmos::Proto::Transaction& transaction) {
+    json jsonTx;
+    
+    jsonTx["fee"] = feeJSON(transaction.fee());
+    jsonTx["memo"] = transaction.memo();
+    jsonTx["msg"] = json::array({messageJSON(transaction)});
+    jsonTx["signatures"] = json::array({});
+    
+    return wrapperJSON(AMINO_PREFIX_TRANSACTION, jsonTx);  
 }

@@ -36,3 +36,17 @@ message SigningInput {
         SendCoinsMessage message = 7;
     }
 }
+
+// Signature
+message Signature {
+    bytes public_key = 1;
+    bytes signature = 2;
+}
+
+// Transaction
+message Transaction {
+    Fee fee = 1;
+    string memo = 2;
+    SendCoinsMessage message = 3;
+    Signature signature = 4;
+}

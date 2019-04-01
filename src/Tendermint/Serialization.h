@@ -12,6 +12,7 @@
 namespace TW {
 namespace Cosmos {
 
-nlohmann::json signatureJSON(const Proto::SigningInput& input);
+nlohmann::json signingJSON(const Proto::SigningInput& input);
+nlohmann::json transactionJSON(const Proto::Transaction& transaction);
 
 }} // namespace

@@ -47,6 +47,7 @@ TEST(CosmosSigner, SignTx) {
 
     auto signer = Cosmos::Signer(std::move(input));
     auto signature = signer.sign();
+    auto tx = signer.build();
 
     ASSERT_EQ(hex(signature.begin(), signature.end()), "99b32957712c6ac4b4542511ca745beca8fca7d1fc4c743447d1a8432d8f04fe73887f695a5fd8b0b8eb668c0a75d06a9821284a0f0fb4351a0d8008f1afdfb4");
 }

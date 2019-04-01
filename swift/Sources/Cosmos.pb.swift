@@ -138,6 +138,66 @@ public struct TW_Cosmos_Proto_SigningInput {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
+/// Signature
+public struct TW_Cosmos_Proto_Signature {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var publicKey: Data = SwiftProtobuf.Internal.emptyData
+
+  public var signature: Data = SwiftProtobuf.Internal.emptyData
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+/// Transaction
+public struct TW_Cosmos_Proto_Transaction {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var fee: TW_Cosmos_Proto_Fee {
+    get {return _storage._fee ?? TW_Cosmos_Proto_Fee()}
+    set {_uniqueStorage()._fee = newValue}
+  }
+  /// Returns true if `fee` has been explicitly set.
+  public var hasFee: Bool {return _storage._fee != nil}
+  /// Clears the value of `fee`. Subsequent reads from it will return its default value.
+  public mutating func clearFee() {_uniqueStorage()._fee = nil}
+
+  public var memo: String {
+    get {return _storage._memo}
+    set {_uniqueStorage()._memo = newValue}
+  }
+
+  public var message: TW_Cosmos_Proto_SendCoinsMessage {
+    get {return _storage._message ?? TW_Cosmos_Proto_SendCoinsMessage()}
+    set {_uniqueStorage()._message = newValue}
+  }
+  /// Returns true if `message` has been explicitly set.
+  public var hasMessage: Bool {return _storage._message != nil}
+  /// Clears the value of `message`. Subsequent reads from it will return its default value.
+  public mutating func clearMessage() {_uniqueStorage()._message = nil}
+
+  public var signature: TW_Cosmos_Proto_Signature {
+    get {return _storage._signature ?? TW_Cosmos_Proto_Signature()}
+    set {_uniqueStorage()._signature = newValue}
+  }
+  /// Returns true if `signature` has been explicitly set.
+  public var hasSignature: Bool {return _storage._signature != nil}
+  /// Clears the value of `signature`. Subsequent reads from it will return its default value.
+  public mutating func clearSignature() {_uniqueStorage()._signature = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "TW.Cosmos.Proto"
@@ -360,6 +420,126 @@ extension TW_Cosmos_Proto_SigningInput: SwiftProtobuf.Message, SwiftProtobuf._Me
         if _storage._sequence != rhs_storage._sequence {return false}
         if _storage._privateKey != rhs_storage._privateKey {return false}
         if _storage._messageOneof != rhs_storage._messageOneof {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension TW_Cosmos_Proto_Signature: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Signature"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "public_key"),
+    2: .same(proto: "signature"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self.publicKey)
+      case 2: try decoder.decodeSingularBytesField(value: &self.signature)
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.publicKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.publicKey, fieldNumber: 1)
+    }
+    if !self.signature.isEmpty {
+      try visitor.visitSingularBytesField(value: self.signature, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: TW_Cosmos_Proto_Signature, rhs: TW_Cosmos_Proto_Signature) -> Bool {
+    if lhs.publicKey != rhs.publicKey {return false}
+    if lhs.signature != rhs.signature {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension TW_Cosmos_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Transaction"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "fee"),
+    2: .same(proto: "memo"),
+    3: .same(proto: "message"),
+    4: .same(proto: "signature"),
+  ]
+
+  fileprivate class _StorageClass {
+    var _fee: TW_Cosmos_Proto_Fee? = nil
+    var _memo: String = String()
+    var _message: TW_Cosmos_Proto_SendCoinsMessage? = nil
+    var _signature: TW_Cosmos_Proto_Signature? = nil
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _fee = source._fee
+      _memo = source._memo
+      _message = source._message
+      _signature = source._signature
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        switch fieldNumber {
+        case 1: try decoder.decodeSingularMessageField(value: &_storage._fee)
+        case 2: try decoder.decodeSingularStringField(value: &_storage._memo)
+        case 3: try decoder.decodeSingularMessageField(value: &_storage._message)
+        case 4: try decoder.decodeSingularMessageField(value: &_storage._signature)
+        default: break
+        }
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if let v = _storage._fee {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+      }
+      if !_storage._memo.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._memo, fieldNumber: 2)
+      }
+      if let v = _storage._message {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      }
+      if let v = _storage._signature {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+      }
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: TW_Cosmos_Proto_Transaction, rhs: TW_Cosmos_Proto_Transaction) -> Bool {
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._fee != rhs_storage._fee {return false}
+        if _storage._memo != rhs_storage._memo {return false}
+        if _storage._message != rhs_storage._message {return false}
+        if _storage._signature != rhs_storage._signature {return false}
         return true
       }
       if !storagesAreEqual {return false}

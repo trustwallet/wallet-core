@@ -12,3 +12,5 @@ typedef TWData *_Nonnull TW_Cosmos_Proto_Coin;
 typedef TWData *_Nonnull TW_Cosmos_Proto_Fee;
 typedef TWData *_Nonnull TW_Cosmos_Proto_SendCoinsMessage;
 typedef TWData *_Nonnull TW_Cosmos_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Cosmos_Proto_Signature;
+typedef TWData *_Nonnull TW_Cosmos_Proto_Transaction;
