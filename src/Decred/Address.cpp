@@ -20,7 +20,7 @@ static const auto addressDataSize = keyhashSize + 6;
 
 bool Address::isValid(const std::string& string) noexcept {
     const auto data = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
-    if (data.size() != addressDataSize) {
+    if (data.size() != keyhashSize + 2) {
         return false;
     }
 
@@ -29,11 +29,11 @@ bool Address::isValid(const std::string& string) noexcept {
 
 Address::Address(const std::string& string) {
     const auto data = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
-    if (data.size() != addressDataSize) {
+    if (data.size() != keyhashSize + 2) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    std::copy(data.begin() + 2, data.end() - 4, keyhash.begin());
+    std::copy(data.begin() + 2, data.end(), keyhash.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
