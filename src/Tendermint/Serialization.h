@@ -9,10 +9,9 @@
 #include "../proto/Cosmos.pb.h"
 #include <nlohmann/json.hpp>
 
-namespace TW {
-namespace Cosmos {
+namespace TW::Cosmos {
 
 nlohmann::json transactionForSigningJSON(const Proto::SigningInput& input);
 nlohmann::json transactionJSON(const Proto::Transaction& transaction);
 
-}} // namespace
+} // namespace

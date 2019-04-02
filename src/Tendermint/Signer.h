@@ -7,12 +7,13 @@
 #pragma once
 
 #include "../proto/Cosmos.pb.h"
-
+#include <nlohmann/json.hpp>
 #include <stdint.h>
 #include <vector>
 
-namespace TW {
-namespace Cosmos {
+using json = nlohmann::json;
+
+namespace TW::Cosmos {
 
 /// Helper class that performs Cosmos transaction signing.
 class Signer {
@@ -31,14 +32,14 @@ public:
     /// Builds the transaction.
     ///
     /// \returns the transaction.
-    std::vector<uint8_t> build() const;
+    std::string buildTransaction() const;
 
 private:
     std::string signaturePreimage() const;
-    std::vector<uint8_t> buildTransaction(std::vector<uint8_t>& signature) const;
+    json buildTransactionJson(std::vector<uint8_t>& signature) const;
 };
 
-}} // namespace
+} // namespace
 
 /// Wrapper for C interface.
 struct TWCosmosSigner {

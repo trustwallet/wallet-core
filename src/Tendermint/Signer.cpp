@@ -32,13 +32,10 @@ std::string Signer::signInBase64() const {
 }
 
 std::string Signer::signaturePreimage() const {
-    auto json = transactionForSigningJSON(input);
-    std::cout << "Signer::signaturePreimage()" << std::endl;
-    std::cout << json.dump() << std::endl;
-    return json.dump();
+    return transactionForSigningJSON(input).dump();
 }
 
-std::vector<uint8_t> Signer::buildTransaction(std::vector<uint8_t>& signature) const {    
+json Signer::buildTransactionJson(std::vector<uint8_t>& signature) const {    
     auto sig = Cosmos::Proto::Signature();
     sig.set_signature(signature.data(), signature.size());
     auto privateKey = PrivateKey(input.private_key());
@@ -51,14 +48,10 @@ std::vector<uint8_t> Signer::buildTransaction(std::vector<uint8_t>& signature) c
     *transaction.mutable_message() = input.message();
     *transaction.mutable_signature() = sig;
 
-    auto jsonTx = transactionJSON(transaction);
-    std::cout << "Signer::buildTransaction()" << std::endl;
-    std::cout << jsonTx.dump() << std::endl;
-
-    return std::vector<uint8_t>();
+    return transactionJSON(transaction);
 }
 
-std::vector<uint8_t> Signer::build() const {
+std::string Signer::buildTransaction() const {    
     auto signature = sign();
-    return buildTransaction(signature);
+    return buildTransactionJson(signature).dump();
 }
