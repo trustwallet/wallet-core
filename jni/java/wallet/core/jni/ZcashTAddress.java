@@ -31,7 +31,6 @@ public class ZcashTAddress {
     public static native boolean isValid(byte[] data);
     public static native boolean isValidString(String string);
     public native String description();
-    public native byte[] data();
 
     public ZcashTAddress(String string) {
         bytes = initWithString(string);

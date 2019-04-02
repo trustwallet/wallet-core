@@ -15,11 +15,7 @@ extension EthereumAddress: Address, Hashable {
         return description
     }
 
-    public var data: Data {
-        return keyHash
-    }
-
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(data)
+        hasher.combine(keyHash)
     }
 }

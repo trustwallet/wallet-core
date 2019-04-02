@@ -6,8 +6,4 @@
 
 import Foundation
 
-extension TendermintAddress: Address, Equatable {
-    public var data: Data {
-        return keyHash
-    }
-}
+extension TendermintAddress: Address, Equatable {}

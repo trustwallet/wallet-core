@@ -26,7 +26,6 @@ public class OntologyAddress {
         return instance;
     }
 
-    static native long nativeCreateWithData(byte[] data);
     static native long nativeCreateWithString(String string);
     static native long nativeCreateWithPublicKey(PublicKey publicKey);
     static native void nativeDelete(long handle);
@@ -35,15 +34,6 @@ public class OntologyAddress {
     public static native boolean isValidString(String string);
     public native String description();
     public native byte[] keyHash();
-
-    public OntologyAddress(byte[] data) {
-        nativeHandle = nativeCreateWithData(data);
-        if (nativeHandle == 0) {
-            throw new InvalidParameterException();
-        }
-
-        OntologyAddressPhantomReference.register(this, nativeHandle);
-    }
 
     public OntologyAddress(String string) {
         nativeHandle = nativeCreateWithString(string);

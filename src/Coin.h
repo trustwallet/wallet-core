@@ -20,12 +20,6 @@
 
 namespace TW {
 
-/// Loads an address of a particular coin from raw data.
-///
-/// This is deprecated and here for backwards compatibility only. Addresses
-/// should always be stored and transfered in their encoded string format.
-std::string loadAddress(TWCoinType coin, const Data& data);
-
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);
 

@@ -30,10 +30,6 @@ bool TWAionAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWAionAddress *_Nullable TWAionAddressCreateWithString(TWString *_Nonnull string);
 
-/// Creates an address from a raw data representaion.
-TW_EXPORT_STATIC_METHOD
-struct TWAionAddress *_Nullable TWAionAddressCreateWithData(TWData *_Nonnull data);
-
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWAionAddress *_Nonnull TWAionAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
@@ -44,9 +40,5 @@ void TWAionAddressDelete(struct TWAionAddress *_Nonnull address);
 /// Returns the address string representation.
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWAionAddressDescription(struct TWAionAddress *_Nonnull address);
-
-/// Returns address data.
-TW_EXPORT_PROPERTY
-TWData *_Nonnull TWAionAddressData(struct TWAionAddress *_Nonnull address);
 
 TW_EXTERN_C_END

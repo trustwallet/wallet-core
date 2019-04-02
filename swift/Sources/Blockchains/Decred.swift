@@ -6,8 +6,4 @@
 
 import Foundation
 
-extension DecredAddress: Address {
-    public var data: Data {
-        fatalError("Data representation not supported")
-    }
-}
+extension DecredAddress: Address {}

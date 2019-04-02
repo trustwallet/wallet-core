@@ -8,8 +8,4 @@ import Foundation
 
 public typealias TWRippleSigningInput = TW_Ripple_Proto_SigningInput
 
-extension RippleAddress: Address {
-    public var data: Data {
-        return keyHash
-    }
-}
+extension RippleAddress: Address {}

@@ -36,11 +36,6 @@ struct TWRippleAddress *_Nullable TWRippleAddressCreateWithString(TWString *_Non
     }
 }
 
-struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWRippleAddress{ Address(*d) };
-}
-
 struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
     return new TWRippleAddress{ Address(publicKey->impl) };
 }

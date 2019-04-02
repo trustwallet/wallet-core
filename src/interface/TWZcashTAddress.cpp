@@ -71,7 +71,3 @@ TWString *_Nonnull TWZcashTAddressDescription(struct TWZcashTAddress address) {
     const auto str = TW::Base58::bitcoin.encodeCheck(address.bytes, address.bytes + TWZcashTAddressSize);
     return TWStringCreateWithUTF8Bytes(str.data());
 }
-
-TWData *_Nonnull TWZcashTAddressData(struct TWZcashTAddress address) {
-    return TWDataCreateWithBytes(address.bytes, TWZcashTAddressSize);
-}
