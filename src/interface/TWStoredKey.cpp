@@ -171,7 +171,12 @@ TWData *_Nullable TWStoredKeyExportJSON(struct TWStoredKey *_Nonnull key) {
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(json.data()), json.size());
 }
 
-void TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password) {
+bool TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password) {
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
-    key->impl.fixAddresses(passwordString);
+    try {
+        key->impl.fixAddresses(passwordString);
+        return true;
+    } catch (...) {
+        return false;
+    }
 }

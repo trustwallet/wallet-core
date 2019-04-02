@@ -71,6 +71,12 @@ TEST(StoredKey, InvalidPassword) {
     ASSERT_THROW(key.payload.decrypt("password"), DecryptionError);
 }
 
+TEST(StoredKey, EmptyAccounts) {
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/empty-accounts.json");
+
+    ASSERT_NO_THROW(key.payload.decrypt("testpassword"));
+}
+
 TEST(StoredKey, Decrypt) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
     const auto privateKey = key.payload.decrypt("testpassword");

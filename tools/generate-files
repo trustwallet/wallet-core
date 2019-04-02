@@ -15,11 +15,14 @@ PREFIX="${PREFIX:-$ROOT/build/local}"
 PATH="$PREFIX/bin":$PATH
 PROTOC="$PREFIX/bin/protoc"
 
+# Generate interface code
+codegen/bin/codegen
+
 # Generate Java, C++ and Swift Protobuf files
 if [ -x "$(command -v protoc-gen-swift)" ]; then
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=JNI/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
+    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources/Generated --swift_opt=Visibility=Public src/proto/*.proto
 else
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=JNI/java src/proto/*.proto
+    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java src/proto/*.proto
 fi
 
 # Generate internal Protobuf files
