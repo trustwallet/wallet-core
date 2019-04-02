@@ -11,6 +11,7 @@
 #include "../HexCoding.h"
 #include "../Base64.h"
 #include "../PrivateKey.h"
+#include "../Data.h"
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -35,7 +36,7 @@ std::string Signer::signaturePreimage() const {
     return transactionForSigningJSON(input).dump();
 }
 
-json Signer::buildTransactionJson(std::vector<uint8_t>& signature) const {    
+json Signer::buildTransactionJson(const Data& signature) const {    
     auto sig = Cosmos::Proto::Signature();
     sig.set_signature(signature.data(), signature.size());
     auto privateKey = PrivateKey(input.private_key());

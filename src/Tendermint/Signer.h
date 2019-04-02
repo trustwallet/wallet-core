@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../proto/Cosmos.pb.h"
+#include "../Data.h"
 #include <nlohmann/json.hpp>
 #include <stdint.h>
 #include <vector>
@@ -36,7 +37,7 @@ public:
 
 private:
     std::string signaturePreimage() const;
-    json buildTransactionJson(std::vector<uint8_t>& signature) const;
+    json buildTransactionJson(const Data& signature) const;
 };
 
 } // namespace
