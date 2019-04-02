@@ -52,7 +52,41 @@ TEST(CosmosSigner, SignTx) {
 
     auto tx = signer.buildTransaction();
 
-    ASSERT_EQ("{\"type\":\"auth/StdTx\",\"value\":{\"fee\":{\"amount\":[{\"amount\":\"1\",\"denom\":\"photino\"}],\"gas\":\"200000\"},\"memo\":\"\",\"msg\":[{\"type\":\"cosmos-sdk/MsgSend\",\"value\":{\"amount\":[{\"amount\":\"1\",\"denom\":\"muon\"}],\"from_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"to_address\":\"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"KEx6ex0DZJ9XG013PJGa6INpBeV6SsAOkItx4ezb9NdVSwJohWqXKrcpM4bhJZuqweoBSoxW3agJrQPHSQAgAQ==\"}]}}", tx);
+    ASSERT_EQ(
+        "{"
+            "\"type\":\"auth/StdTx\","
+            "\"value\":{"
+                "\"fee\":{"
+                    "\"amount\":["
+                                    "{\"amount\":\"1\",\"denom\":\"photino\"}"
+                                "],"
+                    "\"gas\":\"200000\""
+                "},"
+                "\"memo\":\"\","
+                "\"msg\":["
+                        "{"
+                            "\"type\":\"cosmos-sdk/MsgSend\","
+                            "\"value\":{"
+                                "\"amount\":["
+                                                "{\"amount\":\"1\",\"denom\":\"muon\"}"
+                                            "],"
+                                "\"from_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\","
+                                "\"to_address\":\"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573\""
+                            "}"
+                        "}"
+                    "],"
+                "\"signatures\":["
+                                    "{"
+                                        "\"pub_key\":{"
+                                            "\"type\":\"tendermint/PubKeySecp256k1\","
+                                            "\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\""
+                                        "},"
+                                        "\"signature\":\"KEx6ex0DZJ9XG013PJGa6INpBeV6SsAOkItx4ezb9NdVSwJohWqXKrcpM4bhJZuqweoBSoxW3agJrQPHSQAgAQ==\""
+                                    "}"
+                                "]"
+            "}"
+        "}", 
+        tx);
 }
 
 }
