@@ -115,9 +115,9 @@ PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCurv
 namespace {
 
 uint32_t fingerprint(HDNode *node, Hash::Hasher hasher) {
-	hdnode_fill_public_key(node);
+    hdnode_fill_public_key(node);
     auto digest = hasher(node->public_key, node->public_key + 33);
-	return ((uint32_t) digest[0] << 24) + (digest[1] << 16) + (digest[2] << 8) + digest[3];
+    return ((uint32_t) digest[0] << 24) + (digest[1] << 16) + (digest[2] << 8) + digest[3];
 }
 
 std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher) {
@@ -126,43 +126,43 @@ std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version
 
     encode32BE(version, node_data);
     node_data.push_back(node->depth);
-	encode32BE(fingerprint, node_data);
-	encode32BE(node->child_num, node_data);
+    encode32BE(fingerprint, node_data);
+    encode32BE(node->child_num, node_data);
     node_data.insert(node_data.end(), node->chain_code, node->chain_code + 32);
-	if (use_public) {
+    if (use_public) {
         node_data.insert(node_data.end(), node->public_key, node->public_key + 33);
-	} else {
+    } else {
         node_data.push_back(0);
         node_data.insert(node_data.end(), node->private_key, node->private_key + 32);
-	}
+    }
 
     return Base58::bitcoin.encodeCheck(node_data, hasher);
 }
 
 bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, uint32_t version_public, uint32_t version_private, HDNode *node) {
-	memset(node, 0, sizeof(HDNode));
-	node->curve = get_curve_by_name(curveName(curve));
+    memset(node, 0, sizeof(HDNode));
+    node->curve = get_curve_by_name(curveName(curve));
 
     const auto node_data = Base58::bitcoin.decodeCheck(extended, hasher);
     if (node_data.size() != 78) {
         return false;
     }
 
-	uint32_t version = decode32BE(node_data.data());
-	if (version == version_public) {
+    uint32_t version = decode32BE(node_data.data());
+    if (version == version_public) {
         std::copy(node_data.begin() + 45, node_data.begin() + 45 + 33, node->public_key);
-	} else if (version == version_private) { // private node
-		if (node_data[45]) { // invalid data
-			return false;
-		}
+    } else if (version == version_private) { // private node
+        if (node_data[45]) { // invalid data
+            return false;
+        }
         std::copy(node_data.begin() + 46, node_data.begin() + 46 + 32, node->private_key);
-	} else {
-		return false; // invalid version
-	}
-	node->depth = node_data[4];
-	node->child_num = decode32BE(node_data.data() + 9);
+    } else {
+        return false; // invalid version
+    }
+    node->depth = node_data[4];
+    node->child_num = decode32BE(node_data.data() + 9);
     std::copy(node_data.begin() + 13, node_data.begin() + 13 + 32, node->chain_code);
-	return true;
+    return true;
 }
 
 HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath) {
