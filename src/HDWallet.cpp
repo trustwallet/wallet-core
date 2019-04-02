@@ -7,6 +7,7 @@
 #include "HDWallet.h"
 
 #include "Base58.h"
+#include "BinaryCoding.h"
 #include "Bitcoin/Bech32Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Coin.h"
@@ -26,6 +27,10 @@
 using namespace TW;
 
 namespace {
+
+uint32_t fingerprint(HDNode *node, Hash::Hasher hasher);
+std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher);
+bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, uint32_t version_public, uint32_t version_private, HDNode *node);
 HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath);
 HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 
@@ -75,42 +80,31 @@ std::string HDWallet::deriveAddress(TWCoinType coin) const {
     return TW::deriveAddress(coin, getKey(derivationPath));
 }
 
-std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin,
-                                            TWHDVersion version) const {
+std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
     const auto curve = TWCoinTypeCurve(coin);
-    auto derivationPath =
-        TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
+    auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
     auto node = getNode(*this, curve, derivationPath);
-    std::array<char, HDWallet::maxExtendedKeySize> buffer = {0};
-    auto fingerprint = hdnode_fingerprint(&node);
+    auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
     hdnode_private_ckd(&node, 0x80000000);
-    hdnode_serialize_private(&node, fingerprint, version, buffer.data(), HDWallet::maxExtendedKeySize);
-    return buffer.data();
+    return serialize(&node, fingerprintValue, version, false, base58Hasher(coin));
 }
 
-std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin,
-                                           TWHDVersion version) const {
+std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {
     const auto curve = TWCoinTypeCurve(coin);
-    auto derivationPath =
-        TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
+    auto derivationPath = TW::DerivationPath({DerivationPathIndex(purpose, true), DerivationPathIndex(coin, true)});
     auto node = getNode(*this, curve, derivationPath);
-    std::array<char, HDWallet::maxExtendedKeySize> buffer = {0};
-    auto fingerprint = hdnode_fingerprint(&node);
+    auto fingerprintValue = fingerprint(&node, publicKeyHasher(coin));
     hdnode_private_ckd(&node, 0x80000000);
     hdnode_fill_public_key(&node);
-    hdnode_serialize_public(&node, fingerprint, version, buffer.data(), maxExtendedKeySize);
-    return buffer.data();
+    return serialize(&node, fingerprintValue, version, true, base58Hasher(coin));
 }
 
-PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCurve curve,
+PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCurve curve, Hash::Hasher hasher,
                                              enum TWHDVersion versionPublic,
                                              enum TWHDVersion versionPrivate, uint32_t change,
                                              uint32_t address) {
     auto node = HDNode{};
-    uint32_t fingerprint = 0;
-
-    hdnode_deserialize(extended.c_str(), versionPublic, versionPrivate, curveName(curve), &node,
-                       &fingerprint);
+    deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node);
     hdnode_public_ckd(&node, change);
     hdnode_public_ckd(&node, address);
     hdnode_fill_public_key(&node);
@@ -119,6 +113,58 @@ PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCurv
 }
 
 namespace {
+
+uint32_t fingerprint(HDNode *node, Hash::Hasher hasher) {
+	hdnode_fill_public_key(node);
+    auto digest = hasher(node->public_key, node->public_key + 33);
+	return ((uint32_t) digest[0] << 24) + (digest[1] << 16) + (digest[2] << 8) + digest[3];
+}
+
+std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher) {
+    Data node_data;
+    node_data.reserve(78);
+
+    encode32BE(version, node_data);
+    node_data.push_back(node->depth);
+	encode32BE(fingerprint, node_data);
+	encode32BE(node->child_num, node_data);
+    node_data.insert(node_data.end(), node->chain_code, node->chain_code + 32);
+	if (use_public) {
+        node_data.insert(node_data.end(), node->public_key, node->public_key + 33);
+	} else {
+        node_data.push_back(0);
+        node_data.insert(node_data.end(), node->private_key, node->private_key + 32);
+	}
+
+    return Base58::bitcoin.encodeCheck(node_data, hasher);
+}
+
+bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, uint32_t version_public, uint32_t version_private, HDNode *node) {
+	memset(node, 0, sizeof(HDNode));
+	node->curve = get_curve_by_name(curveName(curve));
+
+    const auto node_data = Base58::bitcoin.decodeCheck(extended, hasher);
+    if (node_data.size() != 78) {
+        return false;
+    }
+
+	uint32_t version = decode32BE(node_data.data());
+	if (version == version_public) {
+        std::copy(node_data.begin() + 45, node_data.begin() + 45 + 33, node->public_key);
+	} else if (version == version_private) { // private node
+		if (node_data[45]) { // invalid data
+			return false;
+		}
+        std::copy(node_data.begin() + 46, node_data.begin() + 46 + 32, node->private_key);
+	} else {
+		return false; // invalid version
+	}
+	node->depth = node_data[4];
+	node->child_num = decode32BE(node_data.data() + 9);
+    std::copy(node_data.begin() + 13, node_data.begin() + 13 + 32, node->chain_code);
+	return true;
+}
+
 HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath) {
     auto node = getMasterNode(wallet, curve);
     for (auto& index : derivationPath.indices) {

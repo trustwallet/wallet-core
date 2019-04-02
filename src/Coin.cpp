@@ -440,4 +440,81 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     }
 }
 
+Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
+    switch (coin) {
+    case TWCoinTypeAion:
+    case TWCoinTypeBinance:
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeCallisto:
+    case TWCoinTypeCosmos:
+    case TWCoinTypeDash:
+    case TWCoinTypeEthereum:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypeICON:
+    case TWCoinTypeKIN:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeNEO:
+    case TWCoinTypeNimiq:
+    case TWCoinTypeOntology:
+    case TWCoinTypePoa:
+    case TWCoinTypeRipple:
+    case TWCoinTypeStellar:
+    case TWCoinTypeTezos:
+    case TWCoinTypeTheta:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeTron:
+    case TWCoinTypeVeChain:
+    case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
+    case TWCoinTypeZcash:
+    case TWCoinTypeZcoin:
+        return Hash::sha256ripemd;
+
+    case TWCoinTypeDecred:
+        return Hash::blake256ripemd;
+    }
+}
+
+/// Hasher to use for base 58 checksums.
+Hash::Hasher TW::base58Hasher(TWCoinType coin) {
+    switch (coin) {
+    case TWCoinTypeAion:
+    case TWCoinTypeBinance:
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeCallisto:
+    case TWCoinTypeCosmos:
+    case TWCoinTypeDash:
+    case TWCoinTypeEthereum:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypeICON:
+    case TWCoinTypeKIN:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeNEO:
+    case TWCoinTypeNimiq:
+    case TWCoinTypeOntology:
+    case TWCoinTypePoa:
+    case TWCoinTypeRipple:
+    case TWCoinTypeStellar:
+    case TWCoinTypeTezos:
+    case TWCoinTypeTheta:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeTron:
+    case TWCoinTypeVeChain:
+    case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
+    case TWCoinTypeZcash:
+    case TWCoinTypeZcoin:
+        return Hash::sha256d;
+
+    case TWCoinTypeDecred:
+        return Hash::blake256d;
+    }
+}
+
 #pragma clang diagnostic pop

@@ -160,6 +160,11 @@ inline Data blake256d(const byte* begin, const byte* end) {
     return blake256(blake256(begin, end));
 }
 
+/// Computes the ripemd hash of the Blake256 hash.
+inline Data blake256ripemd(const byte* begin, const byte* end) {
+    return ripemd(blake256(begin, end));
+}
+
 /// Computes the Groestl512 hash of the Groestl512 hash.
 inline Data groestl512d(const byte* begin, const byte* end) {
     return groestl512(groestl512(begin, end));
