@@ -16,9 +16,9 @@ using namespace TW::Cosmos::Proto;
 
 using json = nlohmann::json;
 
-const std::string AMINO_PREFIX_SEND_MESSAGE = "cosmos-sdk/MsgSend";
-const std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
-const std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
+const static std::string AMINO_PREFIX_SEND_MESSAGE = "cosmos-sdk/MsgSend";
+const static std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
+const static std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
 json wrapperJSON(std::string type, json& jsonObj) {
     json jsonMsgWrapper;
