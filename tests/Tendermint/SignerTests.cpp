@@ -19,8 +19,8 @@ namespace Cosmos {
 
 TEST(CosmosSigner, SignTx) {
     auto input = Proto::SigningInput();
-    input.set_account_number(0);
-    input.set_chain_id("mychainid");
+    input.set_account_number(1037);
+    input.set_chain_id("test-chain-id");
     input.set_memo("");
     input.set_sequence(0);
 
@@ -31,8 +31,8 @@ TEST(CosmosSigner, SignTx) {
     message.set_from_address(fromAddress.string());
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amount();
-    amountOfTx->set_denom("atom");
-    amountOfTx->set_amount(10);
+    amountOfTx->set_denom("muon");
+    amountOfTx->set_amount(1);
     *input.mutable_message() = message;
     
     auto fee = Proto::Fee();
@@ -48,9 +48,12 @@ TEST(CosmosSigner, SignTx) {
     auto signer = Cosmos::Signer(std::move(input));
     auto signature = signer.sign();
     auto signatureInBase64 = signer.signInBase64();
+
+    ASSERT_EQ("KEx6ex0DZJ9XG013PJGa6INpBeV6SsAOkItx4ezb9NdVSwJohWqXKrcpM4bhJZuqweoBSoxW3agJrQPHSQAgAQ==", signatureInBase64);
+
     auto tx = signer.build();
 
-    ASSERT_EQ("0GPN/ENzBu5nAtGtvNjRwGfg0YhKENBQO2pCIb+gYJg9fPUBrikAnKtK2cJ4S7Qrtp7AOw1lUbByETgyWo513A==", signatureInBase64);
+    ASSERT_EQ("", tx);
 }
 
 }}

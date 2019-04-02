@@ -101,11 +101,14 @@ json signatureJSON(const Signature& signature) {
 json TW::Cosmos::transactionForSigningJSON(const SigningInput& input) {
     json jsonTx;
     
+    jsonTx["account_number"] = std::to_string(input.account_number());
+    jsonTx["chain_id"] = input.chain_id();
     jsonTx["fee"] = feeJSON(input.fee());
     jsonTx["memo"] = input.memo();
-    jsonTx["msg"] = json::array({messageJSON(input)});
-    
-    return wrapperJSON(AMINO_PREFIX_TRANSACTION, jsonTx);
+    jsonTx["msgs"] = json::array({messageJSON(input)});
+    jsonTx["sequence"] = std::to_string(input.sequence());
+
+    return jsonTx;
 }
 
 json TW::Cosmos::transactionJSON(const Transaction& transaction) {
