@@ -10,8 +10,4 @@ extension Bech32Address: Address, Equatable {
     public static func isValid(data: Data) -> Bool {
         return data.count >= 2 && data.count <= 40
     }
-
-    public var data: Data {
-        return witnessProgram
-    }
 }

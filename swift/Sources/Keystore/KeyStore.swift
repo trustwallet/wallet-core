@@ -245,7 +245,7 @@ public final class KeyStore {
     // MARK: Helpers
 
     private func makeAccountURL(for address: Address) -> URL {
-        return keyDirectory.appendingPathComponent(generateFileName(identifier: address.data.hexString))
+        return keyDirectory.appendingPathComponent(generateFileName(identifier: address.description))
     }
 
     private func makeAccountURL() -> URL {

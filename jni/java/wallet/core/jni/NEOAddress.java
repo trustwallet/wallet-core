@@ -27,7 +27,6 @@ public class NEOAddress {
     }
 
     static native long nativeCreateWithString(String string);
-    static native long nativeCreateWithData(byte[] data);
     static native long nativeCreateWithPublicKey(PublicKey publicKey);
     static native void nativeDelete(long handle);
 
@@ -38,15 +37,6 @@ public class NEOAddress {
 
     public NEOAddress(String string) {
         nativeHandle = nativeCreateWithString(string);
-        if (nativeHandle == 0) {
-            throw new InvalidParameterException();
-        }
-
-        NEOAddressPhantomReference.register(this, nativeHandle);
-    }
-
-    public NEOAddress(byte[] data) {
-        nativeHandle = nativeCreateWithData(data);
         if (nativeHandle == 0) {
             throw new InvalidParameterException();
         }
