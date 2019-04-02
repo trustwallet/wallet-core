@@ -19,16 +19,8 @@ static const auto keyhashSize = Hash::ripemdSize;
 static const auto addressDataSize = keyhashSize + 6;
 
 bool Address::isValid(const std::string& string) noexcept {
-    const auto data = Base58::bitcoin.decode(string);
-    if (data.size() != addressDataSize) {
-        return false;
-    }
-
-    auto keyhash = std::array<byte, 20>();
-    std::copy(data.begin() + 2, data.end() - 4, keyhash.begin());
-
-    const auto expectedChecksum = checksum(keyhash);
-    if (!std::equal(expectedChecksum.begin(), expectedChecksum.end(), data.end() - 4)) {
+    const auto data = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
+    if (data.size() != keyhashSize + 2) {
         return false;
     }
 
@@ -36,17 +28,12 @@ bool Address::isValid(const std::string& string) noexcept {
 }
 
 Address::Address(const std::string& string) {
-    const auto data = Base58::bitcoin.decode(string);
-    if (data.size() != addressDataSize) {
+    const auto data = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
+    if (data.size() != keyhashSize + 2) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    std::copy(data.begin() + 2, data.end() - 4, keyhash.begin());
-
-    const auto expectedChecksum = checksum(keyhash);
-    if (!std::equal(expectedChecksum.begin(), expectedChecksum.end(), data.end() - 4)) {
-        throw std::invalid_argument("Invalid address string");
-    }
+    std::copy(data.begin() + 2, data.end(), keyhash.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
@@ -58,15 +45,12 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    const auto checksum = this->checksum(keyhash);
-
     auto addressPreimage = Data();
     addressPreimage.reserve(addressDataSize);
     addressPreimage.insert(addressPreimage.end(), prefix.begin(), prefix.end());
     addressPreimage.insert(addressPreimage.end(), keyhash.begin(), keyhash.end());
-    addressPreimage.insert(addressPreimage.end(), checksum.begin(), checksum.begin() + 4);
 
-    return Base58::bitcoin.encode(addressPreimage);
+    return Base58::bitcoin.encodeCheck(addressPreimage, Hash::blake256d);
 }
 
 std::array<byte, 4> Address::checksum(const std::array<byte, 20>& keyhash) {

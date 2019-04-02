@@ -8,7 +8,12 @@
 
 #include "Data.h"
 
+#include <functional>
+
 namespace TW::Hash {
+
+/// Hashing function.
+using Hasher = std::function<Data(const byte*, const byte*)>;
 
 /// Number of bytes in a SHA1 hash.
 static const size_t sha1Size = 20;
@@ -53,6 +58,9 @@ Data blake256(const byte* begin, const byte* end);
 Data blake2b(const byte* begin, const byte* end, size_t size);
 
 Data blake2b(const byte* begin, const byte* end, size_t size, const Data& personal);
+
+/// Computed the Groestl 512 hash.
+Data groestl512(const byte* begin, const byte* end);
 
 /// Computes the SHA1 hash.
 template <typename T>
@@ -128,6 +136,33 @@ template <typename T>
 Data blake2b(const T& data, size_t size, const Data& personal) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
     return blake2b(begin, begin + data.size(), size, personal);
+}
+
+/// Computes the Groestl512 hash.
+template <typename T>
+Data groestl512(const T& data) {
+    const auto begin = reinterpret_cast<const byte*>(data.data());
+    return groestl512(begin, begin + data.size());
+}
+
+/// Computes the SHA256 hash of the SHA256 hash.
+inline Data sha256d(const byte* begin, const byte* end) {
+    return sha256(sha256(begin, end));
+}
+
+/// Computes the ripemd hash of the SHA256 hash.
+inline Data sha256ripemd(const byte* begin, const byte* end) {
+    return ripemd(sha256(begin, end));
+}
+
+/// Computes the Blake256 hash of the Blake256 hash.
+inline Data blake256d(const byte* begin, const byte* end) {
+    return blake256(blake256(begin, end));
+}
+
+/// Computes the Groestl512 hash of the Groestl512 hash.
+inline Data groestl512d(const byte* begin, const byte* end) {
+    return groestl512(groestl512(begin, end));
 }
 
 } // namespace TW::Hash
