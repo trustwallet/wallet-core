@@ -15,6 +15,7 @@ lib/protobuf
 .idea/
 
 # Generated files
-jni/
+jni/cpp/generated
+jni/java
 swift/Sources/Generated
 swift/TrustWalletCore.xcodeproj

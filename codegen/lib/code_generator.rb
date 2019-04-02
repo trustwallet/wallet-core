@@ -50,11 +50,11 @@ class CodeGenerator
   end
 
   def render_jni_h
-    render_template(header: 'jni/header.erb', template: 'jni_h.erb', output_subfolder: 'jni/cpp', extension: 'h')
+    render_template(header: 'jni/header.erb', template: 'jni_h.erb', output_subfolder: 'jni/cpp/generated', extension: 'h')
   end
 
   def render_jni_c
-    render_template(header: 'jni/header.erb', template: 'jni_c.erb', output_subfolder: 'jni/cpp', extension: 'c')
+    render_template(header: 'jni/header.erb', template: 'jni_c.erb', output_subfolder: 'jni/cpp/generated', extension: 'c')
   end
 
   def render(file, locals = {})
