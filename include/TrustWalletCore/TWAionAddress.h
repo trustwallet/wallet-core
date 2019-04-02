@@ -41,8 +41,4 @@ void TWAionAddressDelete(struct TWAionAddress *_Nonnull address);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWAionAddressDescription(struct TWAionAddress *_Nonnull address);
 
-/// Returns address data.
-TW_EXPORT_PROPERTY
-TWData *_Nonnull TWAionAddressData(struct TWAionAddress *_Nonnull address);
-
 TW_EXTERN_C_END

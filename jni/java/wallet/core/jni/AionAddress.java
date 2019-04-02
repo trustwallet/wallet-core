@@ -33,7 +33,6 @@ public class AionAddress {
     public static native boolean equals(AionAddress lhs, AionAddress rhs);
     public static native boolean isValidString(String string);
     public native String description();
-    public native byte[] data();
 
     public AionAddress(String string) {
         nativeHandle = nativeCreateWithString(string);

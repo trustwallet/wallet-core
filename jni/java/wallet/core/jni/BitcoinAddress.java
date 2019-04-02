@@ -31,7 +31,6 @@ public class BitcoinAddress {
     public static native boolean isValid(byte[] data);
     public static native boolean isValidString(String string);
     public native String description();
-    public native byte[] data();
 
     public BitcoinAddress(String string) {
         bytes = initWithString(string);

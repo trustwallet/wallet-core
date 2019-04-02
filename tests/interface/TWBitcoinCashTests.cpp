@@ -134,9 +134,6 @@ TEST(BitcoinCash, ValidAddress) {
     auto address = TWBitcoinCashAddress();
     TWBitcoinCashAddressInitWithString(&address, STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4").get());
 
-    auto data = WRAPD(TWBitcoinCashAddressData(address));
-    ASSERT_TRUE(TWBitcoinCashAddressIsValid(data.get()));
-
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4").get()));
     ASSERT_FALSE(TWBitcoinScriptSize(script.get()) == 0);
 }

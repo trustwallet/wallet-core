@@ -31,7 +31,6 @@ public class BitcoinCashAddress {
     public static native boolean isValid(byte[] data);
     public static native boolean isValidString(String string);
     public native String description();
-    public native byte[] data();
     public native BitcoinAddress legacyAddress();
 
     public BitcoinCashAddress(String string) {

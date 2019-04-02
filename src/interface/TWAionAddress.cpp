@@ -47,7 +47,3 @@ TWString *_Nonnull TWAionAddressDescription(struct TWAionAddress *_Nonnull addre
     const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
-
-TWData *_Nonnull TWAionAddressData(struct TWAionAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), address->impl.bytes.size());
-}
