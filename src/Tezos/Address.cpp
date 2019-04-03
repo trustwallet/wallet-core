@@ -24,12 +24,18 @@ bool Address::isValid(const std::string& string) {
     }
 
     // verify prefix
-    std::array<byte, 3> prefix{6, 161, 159};
-    if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
-        return false;
+    std::array<byte, 3> tz1Prefix{6, 161, 159};
+    std::array<byte, 3> tz2Prefix{6, 161, 161};
+    std::array<byte, 3> tz3Prefix{6, 161, 164};
+    std::array<byte, 3> kt1Prefix{2, 90, 121};
+    if (std::equal(tz1Prefix.begin(), tz1Prefix.end(), decoded.begin()) ||
+        std::equal(tz2Prefix.begin(), tz2Prefix.end(), decoded.begin()) ||
+        std::equal(tz3Prefix.begin(), tz3Prefix.end(), decoded.begin()) ||
+        std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 Address::Address(const std::string& string) {

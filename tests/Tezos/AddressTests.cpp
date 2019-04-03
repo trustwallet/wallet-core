@@ -60,8 +60,17 @@ TEST(TezosAddress, isInvalid) {
 }
 
 TEST(TezosAddress, isValid) {
-    auto address = "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM";
-    ASSERT_TRUE(Address::isValid(address));
+    std::array<std::string, 4> validAddresses {        
+        "tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt",
+        "tz2PdGc7U5tiyqPgTSgqCDct94qd6ovQwP6u",
+        "tz3VEZ4k6a4Wx42iyev6i2aVAptTRLEAivNN",
+        "KT1VsSxSXUkgw6zkBGgUuDXXuJs9ToPqkrCg"  
+    };
+
+    for (std::string address : validAddresses) {
+      std::cout << address << std::endl;
+      ASSERT_TRUE(Address::isValid(address));
+    }
 }
 
 TEST(TezosAddress, string) {
