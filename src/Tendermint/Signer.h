@@ -12,8 +12,6 @@
 #include <stdint.h>
 #include <vector>
 
-using json = nlohmann::json;
-
 namespace TW::Cosmos {
 
 /// Helper class that performs Cosmos transaction signing.
@@ -37,7 +35,7 @@ public:
 
 private:
     std::string signaturePreimage() const;
-    json buildTransactionJson(const Data& signature) const;
+    nlohmann::json buildTransactionJson(const Data& signature) const;
 };
 
 } // namespace

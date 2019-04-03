@@ -20,6 +20,8 @@
 using namespace TW;
 using namespace TW::Cosmos;
 
+using json = nlohmann::json;
+
 std::vector<uint8_t> Signer::sign() const {
     auto key = PrivateKey(input.private_key());
     auto hash = Hash::sha256(signaturePreimage());
