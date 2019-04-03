@@ -16,11 +16,11 @@ using namespace TW::Decred;
 
 static const std::array<byte, 2> prefix = {0x07, 0x3f};
 static const auto keyhashSize = Hash::ripemdSize;
-static const auto addressDataSize = keyhashSize + 6;
+static const auto addressDataSize = keyhashSize + 2;
 
 bool Address::isValid(const std::string& string) noexcept {
     const auto data = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
-    if (data.size() != keyhashSize + 2) {
+    if (data.size() != addressDataSize) {
         return false;
     }
 
@@ -29,7 +29,7 @@ bool Address::isValid(const std::string& string) noexcept {
 
 Address::Address(const std::string& string) {
     const auto data = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
-    if (data.size() != keyhashSize + 2) {
+    if (data.size() != addressDataSize) {
         throw std::invalid_argument("Invalid address string");
     }
 
@@ -51,14 +51,4 @@ std::string Address::string() const {
     addressPreimage.insert(addressPreimage.end(), keyhash.begin(), keyhash.end());
 
     return Base58::bitcoin.encodeCheck(addressPreimage, Hash::blake256d);
-}
-
-std::array<byte, 4> Address::checksum(const std::array<byte, 20>& keyhash) {
-    auto preimage = Data();
-    preimage.reserve(prefix.size() + keyhash.size());
-    preimage.insert(preimage.end(), prefix.begin(), prefix.end());
-    preimage.insert(preimage.end(), keyhash.begin(), keyhash.end());
-
-    const auto hash = Hash::blake256(Hash::blake256(preimage));
-    return {hash[0], hash[1], hash[2], hash[3]};
 }
