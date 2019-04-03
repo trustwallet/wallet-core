@@ -31,7 +31,7 @@ void Signature::serialize(Data& os) const noexcept {
 
 std::string Signature::string() const noexcept {
     const auto& prefix = sigPrefixForType(type);
-    const auto& subPrefix = type == Type::ModernK1 ? Modern::K1::prefix : Modern::R1::prefix;
+    const auto& subPrefix = type == Type::ModernR1 ? Modern::R1::prefix : Modern::K1::prefix;
 
     Data buffer(data);
 
@@ -60,15 +60,14 @@ std::string Signature::string() const noexcept {
     return prefix + std::string(b58);
 }
 
-void Extensions::serialize(Data& os) const noexcept {
+void Extension::serialize(Data& os) const noexcept {
     encode16LE(type, os);
     Bravo::encodeVarInt32(buffer.size(), os);
     append(os, buffer);
 }
 
-json Extensions::serialize() const noexcept {
-    // TODO: research and implement
-    return json::object();
+json Extension::serialize() const noexcept {
+    return json::array({type, hex(buffer)});
 }
 
 Transaction::Transaction(const std::string& referenceBlockId, uint32_t referenceBlockTime) {

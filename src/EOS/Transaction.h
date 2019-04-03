@@ -16,25 +16,28 @@ namespace EOS {
 
     class Signature: Bravo::Serializable
     {
-    private:
-        const Data data;
-        const Type type;
+    public:
+        Data data;
+        Type type;
 
         static const size_t DataSize = 65;
         static const size_t ChecksumSize = 4;
 
-    public:
         Signature(Data sig, Type type);
         virtual ~Signature() { }
         void serialize(Data& os) const noexcept;
         std::string string() const noexcept;
+
+        Signature& operator=(const Signature& other) { data = other.data; type = other.type; return *this; }
     };
 
-    class Extensions: Bravo::Serializable {
+    class Extension: Bravo::Serializable {
     public:
         uint16_t type;
         Data buffer;
-        virtual ~Extensions() { }
+
+        Extension(uint16_t type, Data buffer) : type(type), buffer(buffer) { }
+        virtual ~Extension() { }
         void serialize(Data& os) const noexcept;
         nlohmann::json serialize() const noexcept;
     };
@@ -58,7 +61,7 @@ namespace EOS {
 
         std::vector<Action> actions;
         std::vector<Action> contextFreeActions;
-        std::vector<Extensions> transactionExtensions;
+        std::vector<Extension> transactionExtensions;
         std::vector<Signature> signatures;
 
         std::vector<Data> contextFreeData;

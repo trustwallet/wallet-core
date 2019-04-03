@@ -35,7 +35,7 @@ namespace EOS {
 
     class TransferAction: public Action {
     public:
-        TransferAction(const std::string& currency, const std::string& from, const std::string& to, const std::string& assetString, const std::string& memo);
+        TransferAction(const std::string& currency, const std::string& actor, const std::string& from, const std::string& to, const std::string& assetString, const std::string& memo);
     private:
         void setData(const std::string& from, const std::string& to, const std::string& assetString, const std::string& memo);
     };
