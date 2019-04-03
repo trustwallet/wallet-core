@@ -28,9 +28,9 @@ TEST(Ripple, ExtendedKeys) {
 
 TEST(Ripple, DerivePubkeyFromXpub) {
     auto xpub = STRING("xpub6D9oDY4gqFBtsFEonh5GTDiUm6nmij373YWzmYdshcnM4AFzdhUf55iZD33vNU2ZqfQJU5wiCJUgisMt2RHKDzhi1PbZfh5Y2NiiYJAQqUn");
-    auto pubKey0 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 0);
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto pubKey6 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 6);
+    auto pubKey0 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeRipple, TWHDVersionXPUB, TWHDVersionXPRV, 0, 0);
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeRipple, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
+    auto pubKey6 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeRipple, TWHDVersionXPUB, TWHDVersionXPRV, 0, 6);
 
     auto address0 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeRipple, pubKey0));
     auto address2 = TWRippleAddressCreateWithPublicKey(pubKey2);
