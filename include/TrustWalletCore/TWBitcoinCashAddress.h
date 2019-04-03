@@ -51,10 +51,6 @@ void TWBitcoinCashAddressInitWithPublicKey(struct TWBitcoinCashAddress *_Nonnull
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWBitcoinCashAddressDescription(struct TWBitcoinCashAddress address);
 
-/// Returns the address data.
-TW_EXPORT_PROPERTY
-TWData *_Nonnull TWBitcoinCashAddressData(struct TWBitcoinCashAddress address);
-
 /// Returns the legacy bitcoin address.
 TW_EXPORT_PROPERTY
 struct TWBitcoinAddress TWBitcoinCashAddressLegacyAddress(struct TWBitcoinCashAddress address);

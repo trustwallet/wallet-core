@@ -8,3 +8,9 @@ import Foundation
 
 public typealias TWOntologySigningInput = TW_Ontology_Proto_SigningInput
 public typealias TWOntologySigningOutput = TW_Ontology_Proto_SigningOutput
+
+extension OntologyAddress: Address, Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(keyHash)
+    }
+}

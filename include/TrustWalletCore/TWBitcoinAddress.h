@@ -49,8 +49,4 @@ void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address);
 
-/// Returns the address data.
-TW_EXPORT_PROPERTY
-TWData *_Nonnull TWBitcoinAddressData(struct TWBitcoinAddress address);
-
 TW_EXTERN_C_END

@@ -35,11 +35,6 @@ struct TWAionAddress *_Nullable TWAionAddressCreateWithString(TWString *_Nonnull
     return new TWAionAddress{ Address(*s) };
 }
 
-struct TWAionAddress *_Nullable TWAionAddressCreateWithData(TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWAionAddress{ Address(*d) };
-}
-
 struct TWAionAddress *_Nonnull TWAionAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
     return new TWAionAddress{ Address(publicKey->impl) };
 }
@@ -51,8 +46,4 @@ void TWAionAddressDelete(struct TWAionAddress *_Nonnull address) {
 TWString *_Nonnull TWAionAddressDescription(struct TWAionAddress *_Nonnull address) {
     const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
-}
-
-TWData *_Nonnull TWAionAddressData(struct TWAionAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), address->impl.bytes.size());
 }

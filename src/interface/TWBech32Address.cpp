@@ -35,11 +35,6 @@ struct TWBech32Address *_Nullable TWBech32AddressCreateWithString(TWString *_Non
     return new TWBech32Address{ std::move(dec.first) };
 }
 
-struct TWBech32Address *_Nullable TWBech32AddressCreateWithData(enum TWHRP hrp, TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWBech32Address{ Bech32Address(stringForHRP(hrp), 0, *d) };
-}
-
 struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey) {
     const auto address = Bech32Address(publicKey->impl, 0, stringForHRP(hrp));
     return new TWBech32Address{ std::move(address) };

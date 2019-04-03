@@ -12,7 +12,7 @@ extension BitcoinAddress: Address, Equatable {
     }
 
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(data)
+        hasher.combine(description)
     }
 
     /// Creates a legacy Bitcoin address for segwit redeem script.
