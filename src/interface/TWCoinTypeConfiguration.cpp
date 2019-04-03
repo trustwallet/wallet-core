@@ -67,7 +67,6 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeAion:
-    case TWCoinTypeCosmos:
     case TWCoinTypeTheta:
         return 18;
     case TWCoinTypeBitcoinCash:
@@ -85,6 +84,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeRipple:
     case TWCoinTypeTezos:
     case TWCoinTypeTron:
+    case TWCoinTypeCosmos:
         return 6;
     case TWCoinTypeNimiq:
     case TWCoinTypeKIN:
