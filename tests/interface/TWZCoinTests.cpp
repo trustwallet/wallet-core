@@ -42,8 +42,8 @@ TEST(ZCoin, ExtendedKeys) {
 
 TEST(Zcoin, DeriveFromXpub) {
     auto xpub = STRING("xpub6Cb8Q6pDeS8PdKNbDv9Hvq4WpJXL3JvKvmHHwR1wD2H543hiCUE1f1tB5AXE6yg13k7xZ6PzEXMNUFHXk6kkx4RYte8VB1i4tCX9rwQVR4a");
-    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
-    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
+    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZcoin, TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
+    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZcoin, TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
 
     TWBitcoinAddress address3;
     TWBitcoinAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixZcoin);
