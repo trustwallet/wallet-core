@@ -29,7 +29,6 @@ TEST(Decred, ExtendedKeys) {
 TEST(Decred, DerivePubkeyFromDpub) {
     auto dpub = STRING("dpubZFUmm9oh5zmQkR2Tr2AXS4tCkTWg4B27SpCPFkapZrrAqgU1EwgEFgrmi6EnLGXhak86yDHhXPxFAnGU58W5S4e8NCKG1ASUVaxwRqqNdfP");
     auto pubKey0 = TWHDWalletGetPublicKeyFromExtended(dpub.get(), TWCoinTypeDecred, TWHDVersionDPUB, TWHDVersionDPRV, 0, 0);
-
     auto address0 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeDecred, pubKey0));
 
     assertStringsEqual(address0, "DsksmLD2wDoA8g8QfFvm99ASg8KsZL8eJFd");
