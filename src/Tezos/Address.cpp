@@ -17,6 +17,12 @@
 using namespace TW;
 using namespace TW::Tezos;
 
+/// Address prefixes.
+const std::array<byte, 3> tz1Prefix{6, 161, 159};
+const std::array<byte, 3> tz2Prefix{6, 161, 161};
+const std::array<byte, 3> tz3Prefix{6, 161, 164};
+const std::array<byte, 3> kt1Prefix{2, 90, 121};
+
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
     if (decoded.size() != Address::size) {
@@ -24,10 +30,6 @@ bool Address::isValid(const std::string& string) {
     }
 
     // verify prefix
-    std::array<byte, 3> tz1Prefix{6, 161, 159};
-    std::array<byte, 3> tz2Prefix{6, 161, 161};
-    std::array<byte, 3> tz3Prefix{6, 161, 164};
-    std::array<byte, 3> kt1Prefix{2, 90, 121};
     if (std::equal(tz1Prefix.begin(), tz1Prefix.end(), decoded.begin()) ||
         std::equal(tz2Prefix.begin(), tz2Prefix.end(), decoded.begin()) ||
         std::equal(tz3Prefix.begin(), tz3Prefix.end(), decoded.begin()) ||
@@ -76,13 +78,12 @@ Data Address::forge() const {
     std::string s = string();
 
     if (s[0] == 'K') {
-        std::array<byte, 3> prefix = {2, 90, 121};
         const auto decoded = Base58::bitcoin.decodeCheck(s);
-        if (decoded.size() != 23 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        if (decoded.size() != 23 || !std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
             throw std::invalid_argument("Invalid Address For forge");
         }
         data.push_back(0x01);
-        data.insert(data.end(), decoded.begin() + prefix.size(), decoded.end());
+        data.insert(data.end(), decoded.begin() + kt1Prefix.size(), decoded.end());
         data.push_back(0x00);
         return data;
     }
