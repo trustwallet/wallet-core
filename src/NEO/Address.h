@@ -14,7 +14,7 @@
 
 namespace TW::NEO {
 
-class Address : public TW::Base58Address {
+class Address : public TW::Base58Address<21> {
   public:
     /// NEO address version is 23
     /// https://github.com/neo-project/neo/blob/427a3cd08f61a33e98856e4b4312b8147708105a/neo/protocol.json#L4
@@ -24,10 +24,10 @@ class Address : public TW::Base58Address {
     static bool isValid(const std::string& string);
 
     /// Initializes a NEO address with a string representation.
-    explicit Address(const std::string& string) : TW::Base58Address(string) {}
+    explicit Address(const std::string& string) : TW::Base58Address<21>(string) {}
 
     /// Initializes a NEO address with a collection of bytes.
-    explicit Address(const Data& data) : TW::Base58Address(data) {}
+    explicit Address(const Data& data) : TW::Base58Address<21>(data) {}
 
     /// Initializes a NEO address with a public key.
     explicit Address(const PublicKey& publicKey);

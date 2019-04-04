@@ -15,7 +15,7 @@
 
 namespace TW::Tron {
 
-class Address : public TW::Base58Address {
+class Address : public TW::Base58Address<21> {
   public:
     /// Address prefix.
     static const byte prefix = 0x41;
@@ -24,10 +24,10 @@ class Address : public TW::Base58Address {
     static bool isValid(const std::string& string);
 
     /// Initializes an address with a string representation.
-    explicit Address(const std::string& string) : TW::Base58Address(string) {}
+    explicit Address(const std::string& string) : TW::Base58Address<21>(string) {}
 
     /// Initializes an address with a collection of bytes.
-    explicit Address(const Data& data) : TW::Base58Address(data) {}
+    explicit Address(const Data& data) : TW::Base58Address<21>(data) {}
 
     /// Initializes a  address with a public key and a prefix.
     explicit Address(const PublicKey& publicKey);

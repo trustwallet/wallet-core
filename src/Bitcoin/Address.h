@@ -14,16 +14,16 @@
 
 namespace TW::Bitcoin {
 
-class Address : public TW::Base58Address {
+class Address : public TW::Base58Address<21> {
   public:
     /// Initializes a  address with a string representation.
-    explicit Address(const std::string& string) : TW::Base58Address(string) {}
+    explicit Address(const std::string& string) : TW::Base58Address<21>(string) {}
 
     /// Initializes a  address with a collection of bytes.
-    explicit Address(const Data& data) : TW::Base58Address(data) {}
+    explicit Address(const Data& data) : TW::Base58Address<21>(data) {}
 
     /// Initializes a  address with a public key and a prefix.
-    Address(const PublicKey& publicKey, byte prefix) : TW::Base58Address(publicKey, prefix) {}
+    Address(const PublicKey& publicKey, byte prefix) : TW::Base58Address<21>(publicKey, {prefix}) {}
 };
 
 } // namespace TW::Bitcoin

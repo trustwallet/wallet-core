@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Base58.h"
 #include "Data.h"
 #include "PublicKey.h"
 
@@ -14,10 +15,11 @@
 
 namespace TW {
 
+template <std::size_t S>
 class Base58Address {
   public:
     /// Number of bytes in an address.
-    static const size_t size = 21;
+    static const size_t size = S;
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
@@ -30,28 +32,66 @@ class Base58Address {
     }
 
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string);
+    static bool isValid(const std::string& string) {
+        const auto decoded = Base58::bitcoin.decodeCheck(string);
+        if (decoded.size() != Base58Address::size) {
+            return false;
+        }
+        return true;
+    }
 
     /// Determines whether a string makes a valid address, and the prefix is
     /// within the valid set.
-    static bool isValid(const std::string& string, const Data& validPrefixes);
+    static bool isValid(const std::string& string, const std::vector<Data>& validPrefixes) {
+        const auto decoded = Base58::bitcoin.decodeCheck(string);
+        if (decoded.size() != Base58Address::size) {
+            return false;
+        }
+        for (const auto& prefix : validPrefixes) {
+            if (has_prefix(decoded, prefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     Base58Address() = default;
 
     /// Initializes a  address with a string representation.
-    explicit Base58Address(const std::string& string);
+    explicit Base58Address(const std::string& string) {
+        const auto decoded = Base58::bitcoin.decodeCheck(string);
+        if (decoded.size() != Base58Address::size) {
+            throw std::invalid_argument("Invalid address string");
+        }
+
+        std::copy(decoded.begin(), decoded.end(), bytes.begin());
+    }
 
     /// Initializes a  address with a collection of bytes.
-    explicit Base58Address(const Data& data);
+    explicit Base58Address(const Data& data) {
+        if (!isValid(data)) {
+            throw std::invalid_argument("Invalid address key data");
+        }
+        std::copy(data.begin(), data.end(), bytes.begin());
+        }
 
     /// Initializes a  address with a public key and a prefix.
-    Base58Address(const PublicKey& publicKey, byte prefix);
+    Base58Address(const PublicKey& publicKey, const Data& prefix) {
+        if (publicKey.type() != PublicKeyType::secp256k1) {
+            throw std::invalid_argument("Bitcoin::Address needs a compressed SECP256k1 public key.");
+        }
+        const auto data = publicKey.hash(prefix, Hash::sha256ripemd);
+        std::copy(data.begin(), data.end(), bytes.begin());
+    }
 
     /// Returns a string representation of the address.
-    std::string string() const;
+    std::string string() const {
+        return Base58::bitcoin.encodeCheck(bytes);
+    }
 };
 
-inline bool operator==(const Base58Address& lhs, const Base58Address& rhs) {
+template <std::size_t S>
+inline bool operator==(const Base58Address<S>& lhs, const Base58Address<S>& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
