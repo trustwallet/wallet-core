@@ -6,27 +6,5 @@
 
 import Foundation
 
-public class Cosmos: Blockchain {
-
-    public override init(purpose: Purpose = .bip44) {
-        super.init(purpose: purpose)
-    }
-
-    public let hrp: HRP = .cosmos
-
-    override public var coinType: CoinType {
-        return .cosmos
-    }
-
-    override public func address(for publicKey: PublicKey) -> Address {
-        return TendermintAddress(hrp: hrp, publicKey: publicKey.compressed)!
-    }
-
-    override open func address(string: String) -> Address? {
-        return TendermintAddress(string: string)
-    }
-
-    override open func address(data: Data) -> Address? {
-        return TendermintAddress(hrp: hrp, keyHash: data)
-    }
-}
+public typealias TWCosmosSigningInput = TW_Cosmos_Proto_SigningInput
+public typealias TWCosmosSendCoinsMessage = TW_Cosmos_Proto_SendCoinsMessage
