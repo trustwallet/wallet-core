@@ -52,8 +52,9 @@ bool PublicKey::verify(const std::vector<uint8_t>& signature,
     }
 }
 
-Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher) const {
-    const auto hash = hasher(bytes.data(), bytes.data() + bytes.size());
+Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte) const {
+    const auto offset = std::size_t(skipTypeByte ? 1 : 0);
+    const auto hash = hasher(bytes.data() + offset, bytes.data() + bytes.size());
 
     auto result = Data();
     result.reserve(prefix.size() + hash.size());

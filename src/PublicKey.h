@@ -99,7 +99,7 @@ class PublicKey {
     ///
     /// The public key hash is computed by applying the hasher to the public key
     /// bytes and then prepending the prefix.
-    Data hash(const Data& prefix, Hash::Hasher hasher = Hash::sha256ripemd) const;
+    Data hash(const Data& prefix, Hash::Hasher hasher = Hash::sha256ripemd, bool skipTypeByte = false) const;
 };
 
 inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {
