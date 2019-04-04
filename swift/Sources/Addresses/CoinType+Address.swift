@@ -1,0 +1,102 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+import Foundation
+
+public extension CoinType {
+    /// Converts a string to an address for this coin type.
+    func address(string: String) -> Address? {
+        switch self {
+        case .binance, .cosmos:
+            if let addr = TendermintAddress(string: string), addr.hrp == hrp { return addr }
+        case .bitcoin, .litecoin:
+            if let addr = Bech32Address(string: string), addr.hrp == hrp {
+                return addr
+            } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
+        case .bitcoinCash:
+            if let addr = BitcoinCashAddress(string: string) {
+                return addr
+            } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
+        case .dash, .zcoin:
+            if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
+        case .callisto,
+             .ethereum,
+             .ethereumClassic,
+             .go,
+             .poa,
+             .theta,
+             .thunderToken,
+             .tomoChain,
+             .veChain,
+             .xdai:
+            return EthereumAddress(string: string)
+        case .wanChain:
+            return WanchainAddress(string: string)
+        case .icon:
+            return IconAddress(string: string)
+        case .ontology:
+            return OntologyAddress(string: string)
+        case .ripple:
+            return RippleAddress(string: string)
+        case .tezos:
+            return TezosAddress(string: string)
+        case .tron:
+            return TronAddress(string: string)
+        case .zcash:
+            return ZcashTAddress(string: string)
+        case .nimiq:
+            return NimiqAddress(string: string)
+        case .stellar, .kin:
+            return StellarAddress(string: string)
+        case .aion:
+            return AionAddress(string: string)
+        case .neo:
+            return NEOAddress(string: string)
+        case .decred:
+            return DecredAddress(string: string)
+        case .groestlcoin:
+            return GroestlcoinAddress(string: string)
+        }
+        return .none
+    }
+
+    /// Set of valid prefixes for this coin type.
+    var prefixSet: Set<UInt8> {
+        switch self {
+        case .bitcoin,
+             .bitcoinCash:
+            return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.bitcoin.rawValue])
+        case .litecoin:
+            return Set([P2SHPrefix.litecoin.rawValue, P2PKHPrefix.litecoin.rawValue])
+        case .dash:
+            return Set([P2SHPrefix.dash.rawValue, P2PKHPrefix.dash.rawValue])
+        case .zcoin:
+            return Set([P2SHPrefix.zcoin.rawValue, P2PKHPrefix.zcoin.rawValue])
+        case .zcash:
+            return Set([P2SHPrefix.zcashT.rawValue, P2PKHPrefix.zcashT.rawValue])
+        default:
+            return Set()
+        }
+    }
+
+    /// HRP for this coin type.
+    var hrp: HRP {
+        switch self {
+        case .bitcoin:
+            return .bitcoin
+        case .bitcoinCash:
+            return .bitcoinCash
+        case .binance:
+            return .binanceTest
+        case .cosmos:
+            return .cosmos
+        case .litecoin:
+            return .litecoin
+        default:
+            return HRP.unknown
+        }
+    }
+}
