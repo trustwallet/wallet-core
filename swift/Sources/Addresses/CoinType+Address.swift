@@ -27,6 +27,7 @@ public extension CoinType {
              .ethereumClassic,
              .go,
              .poa,
+             .theta,
              .thunderToken,
              .tomoChain,
              .veChain,
@@ -58,8 +59,6 @@ public extension CoinType {
             return DecredAddress(string: string)
         case .groestlcoin:
             return GroestlcoinAddress(string: string)
-        case .theta:
-            fatalError()
         }
         return .none
     }
