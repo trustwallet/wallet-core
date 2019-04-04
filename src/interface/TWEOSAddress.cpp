@@ -12,24 +12,18 @@
 using namespace TW;
 using namespace TW::EOS;
 
-Type translateType(TWEOSAddressType type) {
-    Type t;
+Type translateType(TWEOSKeyType type) {
     switch (type)
     {
-        case TWEOSAddressTypeLegacy:
-            t = Type::Legacy;
-            break;
+        case TWEOSKeyTypeLegacy:
+            return Type::Legacy;
 
-        case TWEOSAddressTypeModernK1:
-            t = Type::ModernK1;
-            break;
+        case TWEOSKeyTypeModernK1:
+            return Type::ModernK1;
 
-        case TWEOSAddressTypeModernR1:
-            t = Type::ModernR1;
-            break;
+        case TWEOSKeyTypeModernR1:
+            return Type::ModernR1;
     }
-
-    return t;
 }
 
 bool TWEOSAddressEqual(struct TWEOSAddress *_Nonnull lhs, struct TWEOSAddress *_Nonnull rhs) {
@@ -51,11 +45,11 @@ struct TWEOSAddress *_Nullable TWEOSAddressCreateWithString(TWString *_Nonnull s
     }
 }
 
-struct TWEOSAddress *_Nonnull TWEOSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, TWEOSAddressType type) {
+struct TWEOSAddress *_Nonnull TWEOSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWEOSKeyType type) {
     return new TWEOSAddress{ Address(publicKey->impl, translateType(type)) };
 }
 
-struct TWEOSAddress *_Nullable TWEOSAddressCreateWithKeyHash(TWData *_Nonnull keyHash, TWEOSAddressType type) {
+struct TWEOSAddress *_Nullable TWEOSAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWEOSKeyType type) {
     auto d = reinterpret_cast<const Data *>(keyHash);
     try {
         return new TWEOSAddress{ Address(*d, translateType(type)) };

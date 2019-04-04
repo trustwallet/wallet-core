@@ -27,8 +27,6 @@ namespace EOS {
         virtual ~Signature() { }
         void serialize(Data& os) const noexcept;
         std::string string() const noexcept;
-
-        Signature& operator=(const Signature& other) { data = other.data; type = other.type; return *this; }
     };
 
     class Extension: Bravo::Serializable {

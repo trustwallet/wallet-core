@@ -4,7 +4,7 @@
 #include "TWData.h"
 #include "TWString.h"
 
-#include "TWEOSAddressType.h"
+#include "TWEOSKeyType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -28,11 +28,11 @@ struct TWEOSAddress *_Nullable TWEOSAddressCreateWithString(TWString *_Nonnull s
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWEOSAddress *_Nonnull TWEOSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWEOSAddressType type);
+struct TWEOSAddress *_Nonnull TWEOSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWEOSKeyType type);
 
 /// Creates an address from a key hash.
 TW_EXPORT_STATIC_METHOD
-struct TWEOSAddress *_Nullable TWEOSAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWEOSAddressType type);
+struct TWEOSAddress *_Nullable TWEOSAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWEOSKeyType type);
 
 TW_EXPORT_METHOD
 void TWEOSAddressDelete(struct TWEOSAddress *_Nonnull address);

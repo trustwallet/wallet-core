@@ -17,7 +17,7 @@ TW_EXPORT_METHOD
 void TWEOSTransactionAddAction(struct TWEOSTransaction *_Nonnull transaction, struct TWEOSAction *_Nonnull action);
 
 TW_EXPORT_METHOD
-void TWEOSTransactionAddContextFreeAction(struct TWEOSTransaction *_Nonnull transaction, struct TWEOSAction *_Nonnull action);
+void TWEOSTransactionAddContextFreeAction(struct TWEOSTransaction *_Nonnull transaction, struct TWEOSAction *_Nonnull action, TWData *_Nonnull data);
 
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWEOSTransactionDescription(struct TWEOSTransaction *_Nonnull transaction);

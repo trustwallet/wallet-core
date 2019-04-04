@@ -5,7 +5,7 @@
 using namespace TW::EOS;
 using json = nlohmann::json;
 
-PackedTransaction::PackedTransaction(const Transaction& transaction, CompressionType type) : compression(type) {
+PackedTransaction::PackedTransaction(const Transaction& transaction, CompressionType type) noexcept : compression(type) {
     transaction.serialize(packedTrx);
     for (const Data& d : transaction.contextFreeData) {
         append(packedCFD, d);
