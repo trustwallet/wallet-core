@@ -115,12 +115,6 @@ json Transaction::serialize() const noexcept {
         sigs.push_back(sig.string());
     }
 
-    // create a json array of context-free data
-    json cfdJSON = json::array();
-    for (const auto& d : contextFreeData) {
-        cfdJSON.push_back(hex(d));
-    }
-
     // add everything to the json object
     json obj;
     obj["ref_block_num"] = refBlockNumber;
@@ -133,7 +127,7 @@ json Transaction::serialize() const noexcept {
     obj["actions"] = encodeCollection(actions);
     obj["transaction_extensions"] = encodeCollection(transactionExtensions);
     obj["signatures"] = sigs;
-    obj["context_free_data"] = cfdJSON;
+    obj["context_free_data"] = hex(contextFreeData);
 
     return obj;
 }

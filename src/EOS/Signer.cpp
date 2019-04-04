@@ -63,14 +63,7 @@ TW::Data Signer::hash(const Transaction& transaction) const noexcept {
 
     Data cfdHash;
     if (transaction.contextFreeData.size()) {
-        // convert the vect<Data> to contiguous Data
-        Data cfd;
-        for (const auto& d : transaction.contextFreeData) {
-            append(cfd, d);
-        }
-
-        // hash that
-        cfdHash = Hash::sha256(cfd);
+        cfdHash = Hash::sha256(transaction.contextFreeData);
     } else {
         cfdHash.assign(Hash::sha256Size, 0);
     }

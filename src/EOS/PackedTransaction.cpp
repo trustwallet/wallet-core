@@ -7,8 +7,12 @@ using json = nlohmann::json;
 
 PackedTransaction::PackedTransaction(const Transaction& transaction, CompressionType type) noexcept : compression(type) {
     transaction.serialize(packedTrx);
-    for (const Data& d : transaction.contextFreeData) {
-        append(packedCFD, d);
+    const Data& cfd = transaction.contextFreeData;
+
+    if (cfd.size()) {
+        packedCFD.push_back(1);
+        packedCFD.push_back(cfd.size());
+        append(packedCFD, cfd);
     }
 
     signatures = transaction.signatures;

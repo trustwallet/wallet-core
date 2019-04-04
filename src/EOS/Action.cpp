@@ -34,14 +34,13 @@ json Action::serialize() const noexcept {
 }
 
 TransferAction::TransferAction( const std::string& currency,
-                                const std::string& actor,
                                 const std::string& from, 
                                 const std::string& to, 
                                 const std::string& assetString, 
                                 const std::string& memo) {
     account = Name(currency);
     name = Name("transfer");
-    authorization.push_back(PermissionLevel(Name(actor), Name("active")));
+    authorization.push_back(PermissionLevel(Name(from), Name("active")));
 
     setData(from, to, assetString, memo);
 }

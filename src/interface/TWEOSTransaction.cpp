@@ -23,7 +23,7 @@ void TWEOSTransactionAddAction(struct TWEOSTransaction *_Nonnull transaction, st
 void TWEOSTransactionAddContextFreeAction(struct TWEOSTransaction *_Nonnull transaction, struct TWEOSAction *_Nonnull action, TWData *_Nonnull data) {
     auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
     transaction->impl.contextFreeActions.push_back(action->impl);
-    transaction->impl.contextFreeData.push_back(*d);
+    append(transaction->impl.contextFreeData, *d);
 }
 
 TWString *_Nonnull TWEOSTransactionDescription(struct TWEOSTransaction *_Nonnull transaction) {

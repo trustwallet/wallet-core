@@ -34,7 +34,7 @@ TEST(EOSTransaction, Serialization) {
     auto chainId = parse_hex("cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f");
 
     Transaction tx {referenceBlockId, referenceBlockTime};
-    tx.actions.push_back(TransferAction("token", "token", "token", "eosio", "20.0000 TKN", "my first transfer"));
+    tx.actions.push_back(TransferAction("token", "eosio", "token", "20.1234 TKN", "my first transfer"));
 
     Data buf;
     tx.serialize(buf);
@@ -43,19 +43,19 @@ TEST(EOSTransaction, Serialization) {
 
     ASSERT_EQ(
         hex(buf),
-        "1e04a25cdc46a452d92c00000000010000000080a920cd000000572d3ccdcd010000000080a920cd00000000a8ed3232320000000080a920cd0000000000ea3055400d03000000000004544b4e00000000116d79206669727374207472616e7366657200"
+        "1e04a25cdc46a452d92c00000000010000000080a920cd000000572d3ccdcd010000000000ea305500000000a8ed3232320000000000ea30550000000080a920cd121203000000000004544b4e00000000116d79206669727374207472616e7366657200"
     );
 
     ASSERT_EQ(
         hex(signer.hash(tx)),
-        "1e61e7e99c340ac2936a659b507e71a7db2b5b34c7b67e5d7d4d0ab05a3cff2b"
+        "5de974bb90b940b462688609735a1dd522fa853aba765c30d14bedd27d719dd1"
     );
 
     referenceBlockId = "000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144";
     referenceBlockTime = 1554209118;
 
     Transaction tx2 {referenceBlockId, referenceBlockTime};
-    tx2.actions.push_back(TransferAction("token", "token", "token", "eosio", "30.0000 TKN", "my second transfer"));
+    tx2.actions.push_back(TransferAction("token", "token", "eosio", "30.0000 TKN", "my second transfer"));
 
     buf.clear();
     tx2.serialize(buf);

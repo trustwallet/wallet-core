@@ -62,7 +62,7 @@ namespace EOS {
         std::vector<Extension> transactionExtensions;
         std::vector<Signature> signatures;
 
-        std::vector<Data> contextFreeData;
+        Data contextFreeData;
 
         void setReferenceBlock(const Data& referenceBlockId);
 
