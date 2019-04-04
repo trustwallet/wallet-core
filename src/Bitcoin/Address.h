@@ -40,10 +40,10 @@ class Address {
     explicit Address(const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
-    explicit Address(const std::vector<uint8_t>& data);
+    explicit Address(const Data& data);
 
     /// Initializes a  address with a public key and a prefix.
-    Address(const PublicKey& publicKey, uint8_t prefix);
+    Address(const PublicKey& publicKey, byte prefix);
 
     /// Returns a string representation of the address.
     std::string string() const;

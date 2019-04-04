@@ -7,9 +7,6 @@
 #include "Address.h"
 
 #include "../Base58.h"
-#include <TrezorCrypto/ecdsa.h>
-
-#include <cassert>
 
 using namespace TW::Bitcoin;
 
@@ -52,8 +49,8 @@ Address::Address(const PublicKey& publicKey, uint8_t prefix) {
     if (publicKey.type() != PublicKeyType::secp256k1) {
         throw std::invalid_argument("Bitcoin::Address needs a compressed SECP256k1 public key.");
     }
-    bytes[0] = prefix;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
+    const auto data = publicKey.hash({prefix}, Hash::sha256ripemd);
+    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 std::string Address::string() const {
