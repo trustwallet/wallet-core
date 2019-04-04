@@ -57,7 +57,7 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t i
     } else if (TWSignatureHashTypeIsSingle(hashType) && index < outputs.size()) {
         auto outputData = std::vector<uint8_t>{};
         outputs[index].encode(outputData);
-        auto hashOutputs = TW::Hash::sha256(TW::Hash::sha256(outputData));
+        auto hashOutputs = TW::Hash::hash(hasher, outputData);
         copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
     } else {
         fill_n(back_inserter(data), 32, 0);
@@ -78,7 +78,7 @@ std::vector<uint8_t> Transaction::getPrevoutHash() const {
         auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(input.previousOutput);
         outpoint.encode(data);
     }
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
+    auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
 
@@ -87,7 +87,7 @@ std::vector<uint8_t> Transaction::getSequenceHash() const {
     for (auto& input : inputs) {
         encode32LE(input.sequence, data);
     }
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
+    auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
 
@@ -96,7 +96,7 @@ std::vector<uint8_t> Transaction::getOutputsHash() const {
     for (auto& output : outputs) {
         output.encode(data);
     }
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
+    auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
 
@@ -144,7 +144,7 @@ std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Script& script
                                                             uint32_t hashType,
                                                             uint64_t amount) const {
     auto preimage = getPreImage(scriptCode, index, hashType, amount);
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(preimage));
+    auto hash = TW::Hash::hash(hasher, preimage);
     return hash;
 }
 
@@ -183,7 +183,7 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     // Sighash type
     encode32LE(hashType, data);
 
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
+    auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
 

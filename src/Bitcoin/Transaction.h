@@ -9,6 +9,7 @@
 #include "Script.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
+#include "../Hash.h"
 
 #include <TrustWalletCore/TWBitcoin.h>
 #include <vector>
@@ -37,10 +38,12 @@ struct Transaction {
     /// A list of 1 or more transaction outputs or destinations for coins
     std::vector<TransactionOutput> outputs;
 
+    TW::Hash::Hasher hasher = TW::Hash::sha256d;
+
     Transaction() = default;
 
-    Transaction(int32_t version, uint32_t lockTime)
-        : version(version), lockTime(lockTime), inputs(), outputs() {}
+    Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
+        : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
 
     /// Whether the transaction is empty.
     bool empty() const { return inputs.empty() && outputs.empty(); }
