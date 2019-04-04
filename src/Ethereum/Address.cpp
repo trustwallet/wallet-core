@@ -11,8 +11,6 @@
 
 #include <TrezorCrypto/sha3.h>
 
-#include <cassert>
-
 using namespace TW::Ethereum;
 
 bool Address::isValid(const std::string& string) {
