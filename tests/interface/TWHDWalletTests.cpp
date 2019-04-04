@@ -169,8 +169,8 @@ TEST(HDWallet, ExtendedKeys) {
 
 TEST(HDWallet, PublicKeyFromX) {
     auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
-    auto xpubAddr2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto xpubAddr9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
+    auto xpubAddr2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoin, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
+    auto xpubAddr9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoin, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
 
     auto data2 = WRAPD(TWPublicKeyData(xpubAddr2));
     auto data9 = WRAPD(TWPublicKeyData(xpubAddr9));
@@ -181,7 +181,7 @@ TEST(HDWallet, PublicKeyFromX) {
 
 TEST(HDWallet, EthereumPublicKeyFromX) {
     auto xpub = STRING("xpub6CgsJHxgtmeQv2LukVviMJQyMRJAjzE8MgABvkoKJSryYcg3q48EGYT1G6GvoQePUQb7gMeMXumRJBJkNUt5A67FNoE64jCphpKNzmGEswr");
-    auto pubKey1 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 1);
+    auto pubKey1 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeEthereum, TWHDVersionXPUB, TWHDVersionXPRV, 0, 1);
     auto uncompressed = TWPublicKeyUncompressed(pubKey1);
     auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeEthereum, uncompressed));
 
@@ -190,8 +190,8 @@ TEST(HDWallet, EthereumPublicKeyFromX) {
 
 TEST(HDWallet, PublicKeyFromY) {
     auto ypub = STRING("ypub6Ww3ibxVfGzLrAH1PNcjyAWenMTbbAosGNB6VvmSEgytSER9azLDWCxoJwW7Ke7icmizBMXrzBx9979FfaHxHcrArf3zbeJJJUZPf663zsP");
-    auto ypubAddr3 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), TWCurveSECP256k1, TWHDVersionYPUB, TWHDVersionYPRV, 0, 3);
-    auto ypubAddr10 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), TWCurveSECP256k1, TWHDVersionYPUB, TWHDVersionYPRV, 0, 10);
+    auto ypubAddr3 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), TWCoinTypeBitcoin, TWHDVersionYPUB, TWHDVersionYPRV, 0, 3);
+    auto ypubAddr10 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), TWCoinTypeBitcoin, TWHDVersionYPUB, TWHDVersionYPRV, 0, 10);
 
     auto data3 = WRAPD(TWPublicKeyData(ypubAddr3));
     auto data10 = WRAPD(TWPublicKeyData(ypubAddr10));
@@ -202,8 +202,8 @@ TEST(HDWallet, PublicKeyFromY) {
 
 TEST(HDWallet, PublicKeyFromZ) {
     auto zpub = STRING("zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs");
-    auto zpubAddr4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCurveSECP256k1, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
-    auto zpubAddr11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCurveSECP256k1, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
+    auto zpubAddr4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeBitcoin, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
+    auto zpubAddr11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeBitcoin, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
 
     auto data4 = WRAPD(TWPublicKeyData(zpubAddr4));
     auto data11 = WRAPD(TWPublicKeyData(zpubAddr11));

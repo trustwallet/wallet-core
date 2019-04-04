@@ -9,34 +9,41 @@
 #include "../Data.h"
 #include "../PublicKey.h"
 
+#include <array>
 #include <string>
 
-namespace TW::NEO {
+namespace TW::Groestlcoin {
 
 class Address {
   public:
     /// Number of bytes in an address.
     static const size_t size = 21;
 
-    /// NEO address version is 23
-    /// https://github.com/neo-project/neo/blob/427a3cd08f61a33e98856e4b4312b8147708105a/neo/protocol.json#L4
-    static const byte version = 0x17;
-
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
     std::array<byte, size> bytes;
 
-    /// Determines whether a string makes a valid NEO address.
+    /// Determines whether a collection of bytes makes a valid  address.
+    template <typename T>
+    static bool isValid(const T& data) {
+        return data.size() == size;
+    }
+
+    /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    /// Initializes a NEO address with a string representation.
+    /// Determines whether a string makes a valid address, and the prefix is
+    /// within the valid set.
+    static bool isValid(const std::string& string, const std::vector<byte>& validPrefixes);
+
+    /// Initializes a  address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes a NEO address with a collection of bytes.
-    explicit Address(const Data& data);
+    /// Initializes a  address with a collection of bytes.
+    explicit Address(const std::vector<uint8_t>& data);
 
-    /// Initializes a NEO address with a public key.
-    explicit Address(const PublicKey& publicKey);
+    /// Initializes a  address with a public key and a prefix.
+    Address(const PublicKey& publicKey, uint8_t prefix);
 
     /// Returns a string representation of the address.
     std::string string() const;
@@ -46,9 +53,9 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
 
-} // namespace TW::NEO
+} // namespace TW::Groestlcoin
 
 /// Wrapper for C interface.
-struct TWNEOAddress {
-    TW::NEO::Address impl;
+struct TWGroestlcoinAddress {
+    TW::Groestlcoin::Address impl;
 };

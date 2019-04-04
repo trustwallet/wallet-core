@@ -11,8 +11,6 @@
 
 #include <TrezorCrypto/sha3.h>
 
-#include <cassert>
-
 using namespace TW::Ethereum;
 
 bool Address::isValid(const std::string& string) {
@@ -42,9 +40,8 @@ Address::Address(const PublicKey& publicKey) {
     if (publicKey.type() != PublicKeyType::secp256k1Extended) {
         throw std::invalid_argument("Ethereum::Address needs an extended SECP256k1 public key.");
     }
-    auto hash = std::array<uint8_t, Hash::sha256Size>();
-    keccak_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
-    std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
+    const auto data = publicKey.hash({}, static_cast<Data(*)(const byte*, const byte*)>(Hash::keccak256), true);
+    std::copy(data.end() - Address::size, data.end(), bytes.begin());
 }
 
 std::string Address::string() const {

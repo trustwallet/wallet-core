@@ -18,8 +18,17 @@ public extension HDWallet {
         let xprvVersion: HDVersion
         switch path.purpose {
         case .bip44:
-            xpubVersion = path.coinType == .litecoin ? .ltub: .xpub
-            xprvVersion = path.coinType == .litecoin ? .ltpv: .xprv
+            switch path.coinType {
+            case .litecoin:
+                xpubVersion = .ltub
+                xprvVersion = .ltpv
+            case .decred:
+                xpubVersion = .dpub
+                xprvVersion = .dprv
+            default:
+                xpubVersion = .xpub
+                xprvVersion = .xprv
+            }
         case .bip49:
             xpubVersion = path.coinType == .litecoin ? .mtub: .ypub
             xprvVersion = path.coinType == .litecoin ? .mtpv: .yprv
@@ -27,7 +36,7 @@ public extension HDWallet {
             xpubVersion = .zpub
             xprvVersion = .zprv
         }
-        return HDWallet.getPublicKeyFromExtended(extended: extended, curve: path.coinType.curve, versionPublic: xpubVersion, versionPrivate: xprvVersion, change: path.change, address: path.address)
+        return HDWallet.getPublicKeyFromExtended(extended: extended, coin: path.coinType, versionPublic: xpubVersion, versionPrivate: xprvVersion, change: path.change, address: path.address)
     }
 }
 

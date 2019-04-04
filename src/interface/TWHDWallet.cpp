@@ -63,7 +63,9 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *wallet, TWP
     return new std::string(wallet->impl.getExtendedPublicKey(purpose, coin, version));
 }
 
-TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, TWCurve curve, TWHDVersion versionPublic, TWHDVersion versionPrivate, uint32_t change, uint32_t address) {
-    auto publicKey = HDWallet::getPublicKeyFromExtended(*reinterpret_cast<const std::string*>(extended), curve, Hash::sha256d, versionPublic, versionPrivate, change, address);
+TWPublicKey *TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, TWCoinType coin, TWHDVersion versionPublic, TWHDVersion versionPrivate, uint32_t change, uint32_t address) {
+    auto hasher = TW::base58Hasher(coin);
+    auto curve = TW::curve(coin);
+    auto publicKey = HDWallet::getPublicKeyFromExtended(*reinterpret_cast<const std::string*>(extended), curve, hasher, versionPublic, versionPrivate, change, address);
     return new TWPublicKey{ PublicKey(publicKey) };
 }

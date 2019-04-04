@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+#include "Hash.h"
 
 #include <array>
 #include <vector>
@@ -93,6 +94,12 @@ class PublicKey {
 
     /// Verifies a signature for the provided message.
     bool verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const;
+
+    /// Computes the public key hash.
+    ///
+    /// The public key hash is computed by applying the hasher to the public key
+    /// bytes and then prepending the prefix.
+    Data hash(const Data& prefix, Hash::Hasher hasher = Hash::sha256ripemd, bool skipTypeByte = false) const;
 };
 
 inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {

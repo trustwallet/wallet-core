@@ -7,19 +7,23 @@
 #include "Address.h"
 
 #include "../Base58.h"
+#include <TrezorCrypto/ecdsa.h>
 
-using namespace TW::Bitcoin;
+#include <cassert>
+
+using namespace TW::Groestlcoin;
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::groestl512d);
     if (decoded.size() != Address::size) {
         return false;
     }
     return true;
+    // return isValid(string, std::vector<byte>{36, 5});
 }
 
 bool Address::isValid(const std::string& string, const std::vector<byte>& validPrefixes) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::groestl512d);
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -30,7 +34,7 @@ bool Address::isValid(const std::string& string, const std::vector<byte>& validP
 }
 
 Address::Address(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::groestl512d);
     if (decoded.size() != Address::size) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -47,12 +51,12 @@ Address::Address(const std::vector<uint8_t>& data) {
 
 Address::Address(const PublicKey& publicKey, uint8_t prefix) {
     if (publicKey.type() != PublicKeyType::secp256k1) {
-        throw std::invalid_argument("Bitcoin::Address needs a compressed SECP256k1 public key.");
+        throw std::invalid_argument("Groestlcoin::Address needs a compressed SECP256k1 public key.");
     }
-    const auto data = publicKey.hash({prefix}, Hash::sha256ripemd);
-    std::copy(data.begin(), data.end(), bytes.begin());
+    bytes[0] = prefix;
+    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.data() + 1);
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encodeCheck(bytes);
+    return Base58::bitcoin.encodeCheck(bytes, Hash::groestl512d);
 }
