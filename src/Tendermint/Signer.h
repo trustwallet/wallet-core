@@ -32,6 +32,7 @@ public:
     ///
     /// \returns the transaction.
     std::string buildTransaction() const;
+    std::vector<uint8_t> build() const;
 
 private:
     std::string signaturePreimage() const;

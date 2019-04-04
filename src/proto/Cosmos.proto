@@ -22,6 +22,20 @@ message SendCoinsMessage {
     repeated Coin amount = 3;
 }
 
+// Signature
+message Signature {
+    bytes public_key = 1;
+    bytes signature = 2;
+}
+
+// Transaction
+message Transaction {
+    Fee fee = 1;
+    string memo = 2;
+    SendCoinsMessage message = 3;
+    Signature signature = 4;
+}
+
 // Input data necessary to create a signed order.
 message SigningInput {
     uint64 account_number = 1;
@@ -37,16 +51,8 @@ message SigningInput {
     }
 }
 
-// Signature
-message Signature {
-    bytes public_key = 1;
-    bytes signature = 2;
-}
-
-// Transaction
-message Transaction {
-    Fee fee = 1;
-    string memo = 2;
-    SendCoinsMessage message = 3;
-    Signature signature = 4;
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
 }

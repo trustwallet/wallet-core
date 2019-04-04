@@ -58,3 +58,9 @@ std::string Signer::buildTransaction() const {
     auto signature = sign();
     return buildTransactionJson(signature).dump();
 }
+
+std::vector<uint8_t> Signer::build() const {
+    auto signature = sign();
+    auto txJson = buildTransactionJson(signature);
+    return json::to_cbor(txJson);
+}
