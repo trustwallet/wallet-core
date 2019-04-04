@@ -49,6 +49,10 @@ void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address);
 
+/// Returns the address prefix.
+TW_EXPORT_PROPERTY
+uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress address);
+
 /// Returns the keyhash data.
 TW_EXPORT_PROPERTY
 TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress address);

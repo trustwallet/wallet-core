@@ -59,6 +59,11 @@ TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) 
     return TWStringCreateWithUTF8Bytes(str.data());
 }
 
+TW_EXPORT_PROPERTY
+uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress address) {
+    return address.bytes[0];
+}
+
 TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress address) {
-    return TWDataCreateWithBytes(address.bytes + 1, Address::size);
+    return TWDataCreateWithBytes(address.bytes + 1, Address::size - 1);
 }
