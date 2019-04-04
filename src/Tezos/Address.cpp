@@ -40,22 +40,6 @@ bool Address::isValid(const std::string& string) {
     return false;
 }
 
-Address::Address(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
-    if (decoded.size() != Address::size) {
-        throw std::invalid_argument("Invalid address string");
-    }
-    std::copy(decoded.begin(), decoded.end(), bytes.begin());
-}
-
-Address::Address(const std::vector<uint8_t>& data) {
-    // TODO: isValid(bytes)
-    if (data.size() != size) {
-        throw std::invalid_argument("Invalid address data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
-}
-
 Address::Address(const PublicKey& publicKey) {
     auto publicKeySize = publicKey.ed25519Size;
 
@@ -67,10 +51,6 @@ Address::Address(const PublicKey& publicKey) {
     if (addressData.size() != Address::size)
         throw std::invalid_argument("Invalid address key data");
     std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
-}
-
-std::string Address::string() const {
-    return Base58::bitcoin.encodeCheck(bytes);
 }
 
 Data Address::forge() const {
