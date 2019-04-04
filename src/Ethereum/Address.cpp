@@ -9,8 +9,6 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrezorCrypto/sha3.h>
-
 using namespace TW::Ethereum;
 
 bool Address::isValid(const std::string& string) {
