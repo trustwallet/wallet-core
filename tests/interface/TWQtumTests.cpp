@@ -105,3 +105,17 @@ TEST(Qtum, LockScripts) {
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "a9146b85b3dac9340f36b9d32bbacf2ffcb0851ef17987");
 }
+
+/*
+HD scheme that is used in qtum desktop wallet is "<MASTER KEY>/<COIN>/<INTERNAL>":
+m/88'/0'
+m/88'/1'
+The trust wallet use different approach "<MASTER KEY>/<PURPOSE>/<COIN>":
+m/44'/2301'
+m/49'/2301'
+m/84'/2301'
+The master key is used to derive the other keys, so the wallet should work but will not be compatible with qtum desktop wallet.
+The rules for creating send/receive Qtum transactions are the same as Bitcoin.
+The script address prefix for Qtum is not unique, it is the same as Litecoin.
+The default addresses in Qtum are the legacy addresses.
+*/
