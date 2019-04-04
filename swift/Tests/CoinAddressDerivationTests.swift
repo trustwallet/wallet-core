@@ -77,6 +77,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("DsidJiDGceqHTyqiejABy1ZQ3FX4SiWZkYG", address)
                 case .theta:
                     XCTAssertEqual("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
+                case .groestlcoin:
+                    XCTAssertEqual("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
                 }
             }
         }
