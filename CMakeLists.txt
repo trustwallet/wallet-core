@@ -35,6 +35,12 @@ include(ExternalProject)
 # Dependencies
 include(cmake/Protobuf.cmake)
 
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
+    set(CMAKE_EXE_LINKER_FLAGS "-fprofile-arcs -ftest-coverage")
+endif()
+
 # Source files
 if(${ANDROID})
     message("Configuring for JNI")
@@ -56,7 +62,6 @@ set_target_properties(TrustWalletCore
     PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
-        COMPILE_FLAGS "${WARNING_FLAGS}"
 )
 
 # Define headers for this library. PUBLIC headers are used for compiling the

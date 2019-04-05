@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# This script captures test code coverage information.
+
+set -e
+
+lcov --capture --directory . --output-file coverage.info
+lcov --remove coverage.info '/usr/*' --output-file coverage.info
+lcov --remove coverage.info '/Applications/*' --output-file coverage.info
+lcov --remove coverage.info '*/build/*' --output-file coverage.info
+lcov --remove coverage.info '*.pb.cc' --output-file coverage.info
+lcov --remove coverage.info '*.pb.h' --output-file coverage.info
+lcov --remove coverage.info '*/tests/*' --output-file coverage.info
+bash <(curl -s https://codecov.io/bash) -f coverage.info -t 1faef852-b196-4697-885b-0ff22a625181 || echo "Codecov did not collect coverage reports"
+
+# Generate HTML report
+if [[ "$1" == "html" ]]; then
+    genhtml --output-directory coverage \
+        --demangle-cpp --num-spaces 4 --sort \
+        --title "Trust Wallet Core Test Coverage" \
+        --function-coverage --branch-coverage --legend \
+        coverage.info
+fi
