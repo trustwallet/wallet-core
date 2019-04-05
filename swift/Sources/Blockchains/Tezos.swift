@@ -6,6 +6,4 @@
 
 import Foundation
 
-public typealias TWTezosSigningInput = TW_Tezos_Proto_SigningInput
-
 extension TezosAddress: Address {}

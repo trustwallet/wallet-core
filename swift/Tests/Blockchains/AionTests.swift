@@ -17,7 +17,7 @@ class AionTests: XCTestCase {
     }
     
     func testSigner() {
-        let input = TWAionSigningInput.with {
+        let input = AionSigningInput.with {
             $0.nonce = Data(hexString: "09")!
             $0.gasPrice = Data(hexString: "04a817c800")!
             $0.gasLimit = Data(hexString: "5208")!
