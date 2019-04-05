@@ -6,9 +6,6 @@
 
 import Foundation
 
-public typealias TWIconSigningInput = TW_Icon_Proto_SigningInput
-public typealias TWIconSigningOutput = TW_Icon_Proto_SigningOutput
-
 extension IconAddress: Address, Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(keyHash)

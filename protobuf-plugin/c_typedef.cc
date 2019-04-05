@@ -7,6 +7,7 @@
 
 using namespace google::protobuf;
 
+/// Generates C typdefs for Protobuf types.
 class Generator : public  compiler::CodeGenerator {
     std::string GetOutputFilename(const std::string& proto_file) const {
         int index = proto_file.find_last_of(".");
@@ -16,7 +17,7 @@ class Generator : public  compiler::CodeGenerator {
     bool Generate(const FileDescriptor* file, const std::string& parameter, compiler::GeneratorContext* generator_context, string* error) const {
         std::unique_ptr<io::ZeroCopyOutputStream> output(generator_context->Open(GetOutputFilename(file->name())));
         io::Printer printer(output.get(), '$');
-        
+
         printer.Print(
             "// Copyright © 2017-2019 Trust Wallet.\n"
             "//\n"

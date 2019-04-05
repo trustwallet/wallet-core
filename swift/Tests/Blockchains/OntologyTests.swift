@@ -21,7 +21,7 @@ class OntologyTests: XCTestCase {
     
     func testSignOngBalanceOf() {
         
-        let input = TWOntologySigningInput.with {
+        let input = OntologySigningInput.with {
             $0.contract = "ONG"
             $0.method = "balanceOf"
             $0.queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"
@@ -35,7 +35,7 @@ class OntologyTests: XCTestCase {
     
     func testSignOntBalanceOf() {
         
-        let input = TWOntologySigningInput.with {
+        let input = OntologySigningInput.with {
             $0.contract = "ONT"
             $0.method = "balanceOf"
             $0.queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"
@@ -50,7 +50,7 @@ class OntologyTests: XCTestCase {
     
     func testSignOntTransfer() {
         
-        let input = TWOntologySigningInput.with {
+        let input = OntologySigningInput.with {
             $0.contract = "ONT"
             $0.method = "transfer"
             $0.ownerPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!
@@ -82,7 +82,7 @@ class OntologyTests: XCTestCase {
 
     func testSignOngTransfer() {
 
-        let input = TWOntologySigningInput.with {
+        let input = OntologySigningInput.with {
             $0.contract = "ONG"
             $0.method = "transfer"
             $0.ownerPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!
