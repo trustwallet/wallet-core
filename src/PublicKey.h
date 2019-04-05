@@ -10,6 +10,7 @@
 #include "Hash.h"
 
 #include <array>
+#include <cassert>
 #include <stdexcept>
 #include <vector>
 
