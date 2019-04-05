@@ -1,9 +1,8 @@
+// Copyright © 2017-2019 Trust Wallet.
 //
-//  CosmosSignerTests.swift
-//  TrustWalletCoreTests
-//
-//  Created by Nan Jiang on 4/4/19.
-//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
 import XCTest
 import TrustWalletCore
