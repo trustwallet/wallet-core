@@ -18,7 +18,7 @@ struct TWNULSSigner;
 
 /// Make a transaction plan
 TW_EXPORT_STATIC_METHOD
-TW_NULS_Proto_TransactionPlan TWNULSMakePlan(TW_NULS_Proto_TransactionPurpose purpose);
+TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose purpose);
 
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD

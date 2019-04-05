@@ -14,7 +14,7 @@
 using namespace TW;
 using namespace TW::NULS;
 
-TW_NULS_Proto_TransactionPlan TWNULSMakePlan(TW_NULS_Proto_TransactionPurpose data)
+TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose data)
 {
     Proto::TransactionPurpose purpose;
     purpose.ParseFromArray(TWDataBytes(data), TWDataSize(data));

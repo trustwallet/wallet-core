@@ -22,11 +22,13 @@ public enum CoinType {
     ETHEREUM (60),
     ETHEREUMCLASSIC (61),
     GO (6060),
+    GROESTLCOIN (17),
     ICON (74),
     KIN (2017),
     LITECOIN (2),
     NEO (888),
     NIMIQ (242),
+    NULS (8964),
     ONTOLOGY (1024),
     POA (178),
     RIPPLE (144),
@@ -61,11 +63,13 @@ public enum CoinType {
             case 60: return CoinType.ETHEREUM;
             case 61: return CoinType.ETHEREUMCLASSIC;
             case 6060: return CoinType.GO;
+            case 17: return CoinType.GROESTLCOIN;
             case 74: return CoinType.ICON;
             case 2017: return CoinType.KIN;
             case 2: return CoinType.LITECOIN;
             case 888: return CoinType.NEO;
             case 242: return CoinType.NIMIQ;
+            case 8964: return CoinType.NULS;
             case 1024: return CoinType.ONTOLOGY;
             case 178: return CoinType.POA;
             case 144: return CoinType.RIPPLE;

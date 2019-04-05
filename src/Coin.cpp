@@ -28,6 +28,7 @@
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
+#include <NULS/Address.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic fatal "-Wswitch"
@@ -111,6 +112,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
+
+    case TWCoinTypeNULS:
+        return NULS::Address::isValid(string);
     }
 }
 
@@ -144,6 +148,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeLitecoin:
@@ -178,6 +183,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeCosmos:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
@@ -234,6 +240,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
         return TWHDVersionNone;
     }
 }
@@ -276,6 +283,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
         return TWHDVersionNone;
     }
 }
@@ -307,6 +315,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
     case TWCoinTypeNEO:
@@ -349,6 +358,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeRipple:
+    case TWCoinTypeNULS:
         return PublicKeyType::secp256k1;
 
     case TWCoinTypeCallisto:
@@ -454,6 +464,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
+
+    case TWCoinTypeNULS:
+        return NULS::Address(publicKey).string();
     }
 }
 
@@ -489,6 +502,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeNULS:
         return Hash::sha256ripemd;
 
     case TWCoinTypeDecred:
@@ -528,6 +542,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeNULS:
         return Hash::sha256d;
 
     case TWCoinTypeDecred:
