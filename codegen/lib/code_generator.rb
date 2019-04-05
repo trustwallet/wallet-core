@@ -5,6 +5,7 @@ require 'fileutils'
 require 'java_helper'
 require 'jni_helper'
 require 'swift_helper'
+require 'js_helper'
 
 # Code generation
 class CodeGenerator
@@ -55,6 +56,10 @@ class CodeGenerator
 
   def render_jni_c
     render_template(header: 'jni/header.erb', template: 'jni_c.erb', output_subfolder: 'jni/cpp/generated', extension: 'c')
+  end
+
+  def render_js
+    render_template(header: 'js/header.erb', template: 'js.erb', output_subfolder: 'js/src/js/generated', extension: 'ts')
   end
 
   def render(file, locals = {})

@@ -20,6 +20,7 @@ options.swift = true
 options.java = true
 options.jni_h = true
 options.jni_c = true
+options.javascript = true
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: codegen [options]'
@@ -41,6 +42,9 @@ OptionParser.new do |opts|
   end
   opts.on('-c', '--jnic', "Generate JNI code. Default: #{options.jni_c}") do |v|
     options.jni_c = v
+  end
+  opts.on('-t', '--ts', "Generate JavaScript code. Default: #{options.javascript}") do |v|
+    options.javascript = v
   end
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
@@ -72,4 +76,7 @@ if options.jni_h
 end
 if options.jni_c
   generator.render_jni_c
+end
+if options.javascript
+  generator.render_js
 end
