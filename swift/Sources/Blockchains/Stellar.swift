@@ -6,11 +6,4 @@
 
 import Foundation
 
-public typealias TWStellarMemoId = TW_Stellar_Proto_MemoId
-public typealias TWStellarMemoHash = TW_Stellar_Proto_MemoHash
-public typealias TWStellarMemoText = TW_Stellar_Proto_MemoText
-public typealias TWStellarMemoVoid = TW_Stellar_Proto_MemoVoid
-public typealias TWStellarSigningInput = TW_Stellar_Proto_SigningInput
-public typealias TWStellarSigningOutput = TW_Stellar_Proto_SigningOutput
-
 extension StellarAddress: Address {}

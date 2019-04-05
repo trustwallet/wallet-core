@@ -6,7 +6,4 @@
 
 import Foundation
 
-public typealias TWAionSigningInput = TW_Aion_Proto_SigningInput
-public typealias TWAionSigningOutput = TW_Aion_Proto_SigningOutput
-
 extension AionAddress: Address {}

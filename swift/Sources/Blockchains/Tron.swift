@@ -6,11 +6,4 @@
 
 import Foundation
 
-public typealias TWTronSigningInput = TW_Tron_Proto_SigningInput
-public typealias TWTronSigningOutput = TW_Tron_Proto_SigningOutput
-public typealias TWTronTransaction = TW_Tron_Proto_Transaction
-public typealias TWTronTransferContract = TW_Tron_Proto_TransferContract
-public typealias TWTronTransferAssetContract = TW_Tron_Proto_TransferAssetContract
-public typealias TWTronBlockHeader = TW_Tron_Proto_BlockHeader
-
 extension TronAddress: Address {}

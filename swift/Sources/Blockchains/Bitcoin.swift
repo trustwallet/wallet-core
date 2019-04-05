@@ -6,12 +6,6 @@
 
 import Foundation
 
-public typealias TWBitcoinSigningInput = TW_Bitcoin_Proto_SigningInput
-public typealias TWBitcoinSigningOutput = TW_Bitcoin_Proto_SigningOutput
-public typealias TWBitcoinUnspentTransaction = TW_Bitcoin_Proto_UnspentTransaction
-public typealias TWBitcoinTransactionPlan = TW_Bitcoin_Proto_TransactionPlan
-public typealias TWBitcoinOutPoint = TW_Bitcoin_Proto_OutPoint
-
 public extension HDWallet {
     static func derive(from extended: String, at path: DerivationPath) -> PublicKey? {
         let xpubVersion: HDVersion

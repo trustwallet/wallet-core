@@ -13,7 +13,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
     }
 
     func testSignP2WSH() throws {
-        var input = TWBitcoinSigningInput.with {
+        var input = BitcoinSigningInput.with {
             $0.hashType = TWSignatureHashTypeAll
             $0.amount = 1000
             $0.byteFee = 1
@@ -27,7 +27,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         input.scripts["593128f9f90e38b706c18623151e37d2da05c229"] = Data(hexString: "2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac")!
 
         let p2sh = BitcoinScript.buildPayToWitnessScriptHash(scriptHash: Data(hexString: "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db")!)
-        let utxo0 = TWBitcoinUnspentTransaction.with {
+        let utxo0 = BitcoinUnspentTransaction.with {
             $0.script = p2sh.data
             $0.amount = 1226
             $0.outPoint.hash = Data(hexString: "0001000000000000000000000000000000000000000000000000000000000000")!
@@ -47,7 +47,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         XCTAssertTrue(result.success, "Error signing: \(result.error)")
         XCTAssertEqual(result.objects.count, 1)
 
-        let output = try TWBitcoinSigningOutput(unpackingAny: result.objects[0])
+        let output = try BitcoinSigningOutput(unpackingAny: result.objects[0])
         let signedTx = output.transaction
         XCTAssertEqual(signedTx.version, 1)
 
