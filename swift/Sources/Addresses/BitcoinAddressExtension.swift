@@ -6,7 +6,7 @@
 
 import Foundation
 
-extension BitcoinAddress: Address, Equatable {
+extension BitcoinAddress: Equatable {
     public var base58String: String {
         return description
     }
