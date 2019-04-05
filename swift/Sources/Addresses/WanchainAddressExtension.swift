@@ -7,8 +7,4 @@
 import Foundation
 
 /// Wanchain address.
-extension WanchainAddress: Address {
-    public var data: Data {
-        return keyHash
-    }
-}
+extension WanchainAddress: Address {}

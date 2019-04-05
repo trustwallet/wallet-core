@@ -54,14 +54,22 @@ TEST(TezosAddress, isInvalid) {
       "1tzeZwq8b5cvE2bPKokatLkVMzkxz24zAAAAA"  // Invalid prefix, invalid checksum
     };
 
-    for (std::string address : invalidAddresses) {
+    for (auto& address : invalidAddresses) {
         ASSERT_FALSE(Address::isValid(address));
     }
 }
 
 TEST(TezosAddress, isValid) {
-    auto address = "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM";
-    ASSERT_TRUE(Address::isValid(address));
+    std::array<std::string, 4> validAddresses {        
+        "tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt",
+        "tz2PdGc7U5tiyqPgTSgqCDct94qd6ovQwP6u",
+        "tz3VEZ4k6a4Wx42iyev6i2aVAptTRLEAivNN",
+        "KT1VsSxSXUkgw6zkBGgUuDXXuJs9ToPqkrCg"  
+    };
+
+    for (auto &address : validAddresses) {
+      ASSERT_TRUE(Address::isValid(address));
+    }
 }
 
 TEST(TezosAddress, string) {

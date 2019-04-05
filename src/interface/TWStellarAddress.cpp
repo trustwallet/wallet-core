@@ -23,8 +23,12 @@ bool TWStellarAddressIsValidString(TWString *_Nonnull string) {
 
 struct TWStellarAddress *_Nullable TWStellarAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWStellarAddress{ std::move(address) };
+    try {
+        const auto address = Address(*s);
+        return new TWStellarAddress{ std::move(address) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWStellarAddress *_Nonnull TWStellarAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {

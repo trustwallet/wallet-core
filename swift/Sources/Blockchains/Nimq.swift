@@ -9,8 +9,4 @@ import Foundation
 public typealias TWNimiqSigningInput = TW_Nimiq_Proto_SigningInput
 public typealias TWNimiqSigningOutput = TW_Nimiq_Proto_SigningOutput
 
-extension NimiqAddress: Address {
-    public var data: Data {
-        return keyHash
-    }
-}
+extension NimiqAddress: Address {}

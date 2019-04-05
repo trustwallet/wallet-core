@@ -31,6 +31,7 @@ enum TWCoinType {
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
     TWCoinTypeGo = 6060,
+    TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
     TWCoinTypeKIN = 2017,
     TWCoinTypeLitecoin = 2,

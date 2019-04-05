@@ -51,8 +51,4 @@ bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, 
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWZcashTAddressDescription(struct TWZcashTAddress address);
 
-/// Returns the address data.
-TW_EXPORT_PROPERTY
-TWData *_Nonnull TWZcashTAddressData(struct TWZcashTAddress address);
-
 TW_EXTERN_C_END

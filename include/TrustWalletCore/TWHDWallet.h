@@ -73,6 +73,6 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wa
 
 /// Computes the public key from an exteded public key representation.
 TW_EXPORT_STATIC_METHOD
-struct TWPublicKey *_Nonnull TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCurve curve, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);
+struct TWPublicKey *_Nonnull TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);
 
 TW_EXTERN_C_END

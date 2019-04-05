@@ -29,6 +29,10 @@ enum TWHDVersion {
     TWHDVersionLTPV = 0x019d9cfe,
     TWHDVersionMTUB = 0x01b26ef6,
     TWHDVersionMTPV = 0x01b26792,
+
+    // Decred
+    TWHDVersionDPUB = 0x2fda926,
+    TWHDVersionDPRV = 0x2fda4e8,
 };
 
 TW_EXTERN_C_END

@@ -8,4 +8,5 @@ Pods/
 
 # Generated files
 cpp.xcconfig
-
+*.xcodeproj
+*.xcworkspace

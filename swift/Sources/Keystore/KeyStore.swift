@@ -242,10 +242,21 @@ public final class KeyStore {
         try FileManager.default.removeItem(at: wallet.keyURL)
     }
 
+    /// Removes all wallets.
+    public func destroy() throws {
+        wallets.removeAll(keepingCapacity: false)
+
+        let fileManager = FileManager.default
+        let accountURLs = try fileManager.contentsOfDirectory(at: keyDirectory, includingPropertiesForKeys: [], options: [.skipsHiddenFiles])
+        for url in accountURLs {
+            try? fileManager.removeItem(at: url)
+        }
+    }
+
     // MARK: Helpers
 
     private func makeAccountURL(for address: Address) -> URL {
-        return keyDirectory.appendingPathComponent(generateFileName(identifier: address.data.hexString))
+        return keyDirectory.appendingPathComponent(generateFileName(identifier: address.description))
     }
 
     private func makeAccountURL() -> URL {

@@ -199,7 +199,7 @@ StoredKey::StoredKey(const nlohmann::json& json) {
         }
     }
 
-    if (accounts.empty() && json[CodingKeys::address].is_string()) {
+    if (accounts.empty() && json.count(CodingKeys::address) != 0 && json[CodingKeys::address].is_string()) {
         TWCoinType coin = TWCoinTypeEthereum;
         if (json.count(CodingKeys::coin) != 0) {
             coin = json[CodingKeys::coin].get<TWCoinType>();

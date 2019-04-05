@@ -6,8 +6,4 @@
 
 import Foundation
 
-extension NEOAddress: Address {
-    public var data: Data {
-        return keyHash
-    }
-}
+extension NEOAddress: Address {}

@@ -18,4 +18,10 @@ inline void append(Data& data, const Data& suffix) {
     data.insert(data.end(), suffix.begin(), suffix.end());
 }
 
+/// Determines if a byte array has a specific prefix.
+template <typename T>
+inline bool has_prefix(const Data& data, T& prefix) {
+    return std::equal(prefix.begin(), prefix.end(), data.begin(), data.begin() + std::min(data.size(), prefix.size()));
+}
+
 } // namespace TW

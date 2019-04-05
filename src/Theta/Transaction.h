@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "Coin.h"
+#include "Coins.h"
 #include "../Data.h"
 #include "../Ethereum/Address.h"
 

@@ -15,7 +15,6 @@ using namespace TW::Keystore;
 
 namespace CodingKeys {
 static const auto address = "address";
-static const auto addressData = "addressData";
 static const auto derivationPath = "derivationPath";
 static const auto extendedPublicKey = "extendedPublicKey";
 static const auto indices = "indices";
@@ -36,15 +35,8 @@ Account::Account(const nlohmann::json& json) {
 
     if (json.count(CodingKeys::address) != 0 && json[CodingKeys::address].is_string()) {
         address = json[CodingKeys::address].get<std::string>();
-    } else if (json.count(CodingKeys::addressData) != 0 &&
-               json[CodingKeys::addressData].is_string()) {
-        try {
-            const auto addressData =
-                Base64::decode(json[CodingKeys::addressData].get<std::string>());
-            address = loadAddress(derivationPath.coin(), addressData);
-        } catch (std::exception) {
-            address = "";
-        }
+    } else {
+        address = "";
     }
 
     if (json.count(CodingKeys::extendedPublicKey) > 0 &&
