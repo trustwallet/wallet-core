@@ -13,6 +13,7 @@ lib/json
 lib/protobuf
 
 .idea/
+.vscode/
 
 # Generated files
 jni/cpp/generated

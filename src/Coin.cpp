@@ -388,7 +388,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     switch (coin) {
     case TWCoinTypeBinance:
         return Tendermint::Address(HRP_BINANCE_TEST, publicKey).string();
-
     case TWCoinTypeCosmos:
         return Tendermint::Address(HRP_COSMOS, publicKey).string();
 
