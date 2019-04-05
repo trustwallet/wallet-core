@@ -45,17 +45,17 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeBitcoin:
         return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) ||
-               Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress::isValid(string) ||
-               Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
     case TWCoinTypeCosmos:
         return Tendermint::Address::isValid(string, HRP_COSMOS);
 
     case TWCoinTypeDash:
-        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixDash, TWP2SHPrefixDash});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDash}, {TWP2SHPrefixDash}});
 
     case TWCoinTypeDecred:
         return Decred::Address::isValid(string);
@@ -82,7 +82,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeLitecoin:
         return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) ||
-               Bitcoin::Address::isValid(string, {TWP2PKHPrefixLitecoin, TWP2SHPrefixLitecoin});
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLitecoin}});
 
     case TWCoinTypeOntology:
         return Ontology::Address::isValid(string);
@@ -104,10 +104,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Tron::Address::isValid(string);
 
     case TWCoinTypeZcoin:
-        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixZcoin, TWP2SHPrefixZcoin});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixZcoin}, {TWP2SHPrefixZcoin}});
 
     case TWCoinTypeZcash:
-        return Zcash::TAddress::isValid(string, {TWP2PKHPrefixZcashT, TWP2SHPrefixZcashT});
+        return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);

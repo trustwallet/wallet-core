@@ -58,3 +58,12 @@ TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) 
     const auto str = TW::Base58::bitcoin.encodeCheck(address.bytes, address.bytes + Address::size);
     return TWStringCreateWithUTF8Bytes(str.data());
 }
+
+TW_EXPORT_PROPERTY
+uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress address) {
+    return address.bytes[0];
+}
+
+TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress address) {
+    return TWDataCreateWithBytes(address.bytes + 1, Address::size - 1);
+}

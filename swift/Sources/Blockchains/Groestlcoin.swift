@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Address.h"
+import Foundation
 
-#include "../Base58.h"
-
-using namespace TW::Bitcoin;
+extension GroestlcoinAddress: Address {}
