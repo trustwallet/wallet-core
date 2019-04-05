@@ -206,7 +206,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNEO: return "https://neoscan.io";
     case TWCoinTypeKIN: return "https://kinexplorer.com";
     case TWCoinTypeTheta: return "https://explorer.thetatoken.org";
-    case TWCoinTypeQtum: return "https://explorer.qtum.org";
+    case TWCoinTypeQtum: return "https://qtum.info";
     default: return "";
     }
 }

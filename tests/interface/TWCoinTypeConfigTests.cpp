@@ -206,7 +206,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value28, "https://blockbook.groestlcoin.org/tx/123");
 
     auto value29 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
-    assertStringsEqual(value29, "https://explorer.qtum.org/tx/123");
+    assertStringsEqual(value29, "https://qtum.info/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
