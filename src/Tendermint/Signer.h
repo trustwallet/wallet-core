@@ -36,7 +36,7 @@ public:
 
 private:
     std::string signaturePreimage() const;
-    nlohmann::json buildTransactionJson(const Data& signature) const;
+    nlohmann::json buildTransactionJSON(const Data& signature) const;
 };
 
 } // namespace

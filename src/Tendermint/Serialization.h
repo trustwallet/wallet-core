@@ -11,7 +11,7 @@
 
 namespace TW::Cosmos {
 
-nlohmann::json transactionForSigningJSON(const Proto::SigningInput& input);
+nlohmann::json signaturePreimageJSON(const Proto::SigningInput& input);
 nlohmann::json transactionJSON(const Proto::Transaction& transaction);
 
 } // namespace

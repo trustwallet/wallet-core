@@ -98,7 +98,7 @@ json signatureJSON(const Signature& signature) {
     return jsonSignature;
 }
 
-json TW::Cosmos::transactionForSigningJSON(const SigningInput& input) {
+json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
     json jsonTx;
     
     jsonTx["account_number"] = std::to_string(input.account_number());

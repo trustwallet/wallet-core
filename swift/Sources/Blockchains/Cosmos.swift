@@ -7,4 +7,6 @@
 import Foundation
 
 public typealias TWCosmosSigningInput = TW_Cosmos_Proto_SigningInput
+public typealias TWCosmosSigningOutput = TW_Cosmos_Proto_SigningOutput
 public typealias TWCosmosSendCoinsMessage = TW_Cosmos_Proto_SendCoinsMessage
+public typealias TWCosmosCoin = TW_Cosmos_Proto_Coin
