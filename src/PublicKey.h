@@ -10,6 +10,7 @@
 #include "Hash.h"
 
 #include <array>
+#include <stdexcept>
 #include <vector>
 
 namespace TW {
@@ -76,9 +77,13 @@ class PublicKey {
     }
 
     /// Initializes a public key with a collection of bytes.
+    ///
+    /// @throws std::invalid_argument if the data is not a valid public key.
     template <typename T>
     explicit PublicKey(const T& data) {
-        assert(isValid(data));
+        if (!isValid(data)) {
+            throw std::invalid_argument("Invalid public key data");
+        }
         bytes.reserve(data.size());
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
     }
