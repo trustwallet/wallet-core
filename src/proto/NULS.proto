@@ -19,6 +19,22 @@ message TransactionOutput {
 }
 
 message Transaction {
+    string from_address = 2;
+    string to_address = 3;
+    int64 amount = 4;
+
+    /// UTF-8 encode strings
+    string remark = 5;
+
+    int64 timestamp = 6;
+
+    /// Unspent input list
+    repeated TransactionInput inputs = 7;
+    /// Output list
+    repeated TransactionOutput outputs = 8;
+}
+
+message TransactionPurpose {
     bytes private_key = 1;
     string from_address = 2;
     string to_address = 3;
@@ -27,10 +43,29 @@ message Transaction {
     /// UTF-8 encode strings
     string remark = 5;
 
+    int64 timestamp = 6;
+
     /// Unspent input list
-    repeated TransactionInput inputs = 6;
-    /// Output list
-    repeated TransactionOutput outputs = 7;
+    repeated TransactionInput utxos = 7;
+}
+
+message TransactionPlan {
+    bytes private_key = 1;
+    string from_address = 2;
+    string to_address = 3;
+    int64 amount = 4;
+
+    /// UTF-8 encode strings
+    string remark = 5;
+
+    int64 timestamp = 6;
+    int64 fee = 7;
+    int64 change = 8;
+    int64 available_amount = 9;
+
+    /// Selected Unspent input list
+    repeated TransactionInput inputs = 10;
+    repeated TransactionOutput outputs = 11;
 }
 
 message SigningOutput {

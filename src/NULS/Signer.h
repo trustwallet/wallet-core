@@ -15,23 +15,13 @@ namespace TW::NULS {
 class Signer {
 public:
     Proto::Transaction tx;
-
-    Signer(Proto::Transaction tx)
-            :tx(tx) { };
+    Proto::TransactionPlan plan;
+    Signer(Proto::TransactionPlan& plan);
 
     /// Signs the transaction.
     ///
     /// \returns the transaction signature or an empty vector if there is an error.
-    std::vector<uint8_t> sign(uint64_t timestamp) const;
-
-    /**
-     * Calculate transaction need fee
-     * @param inputCount  how much input records
-     * @param outputCount how much outout records
-     * @param remarkSize  UTF-8 encode remark string length. Empty is 0
-     * @return needed fee
-     */
-    static uint64_t getFee(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize);
+    std::vector<uint8_t> sign() const;
 };
 
 } // namespace

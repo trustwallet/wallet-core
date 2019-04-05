@@ -11,4 +11,6 @@
 typedef TWData *_Nonnull TW_NULS_Proto_TransactionInput;
 typedef TWData *_Nonnull TW_NULS_Proto_TransactionOutput;
 typedef TWData *_Nonnull TW_NULS_Proto_Transaction;
+typedef TWData *_Nonnull TW_NULS_Proto_TransactionPurpose;
+typedef TWData *_Nonnull TW_NULS_Proto_TransactionPlan;
 typedef TWData *_Nonnull TW_NULS_Proto_SigningOutput;

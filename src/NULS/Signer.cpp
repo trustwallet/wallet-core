@@ -15,17 +15,6 @@
 using namespace TW;
 using namespace TW::NULS;
 
-static const uint64_t MIN_PRICE_PRE_1024_BYTES = 100000;
-
-static inline uint64_t calculateFee(uint64_t size)
-{
-    uint64_t fee = (size/1024)*MIN_PRICE_PRE_1024_BYTES;
-    if (size % 1024 > 0) {
-        fee += MIN_PRICE_PRE_1024_BYTES;
-    }
-    return fee;
-}
-
 /// Encodes a 48-bit little-endian value into the provided buffer.
 static inline void encode48LE(uint64_t val, std::vector<uint8_t>& data)
 {
@@ -99,9 +88,21 @@ static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash
     return transactionSignature;
 }
 
-std::vector<uint8_t> Signer::sign(uint64_t timestamp) const
+Signer::Signer(Proto::TransactionPlan& plan)
+        :plan(plan)
 {
-    if (tx.private_key().empty()) {
+    tx.set_amount(plan.amount());
+    tx.set_from_address(plan.from_address());
+    tx.set_to_address(plan.to_address());
+    tx.set_remark(plan.remark());
+    tx.set_timestamp(plan.timestamp());
+    *tx.mutable_inputs() = *plan.mutable_inputs();
+    *tx.mutable_outputs() = *plan.mutable_outputs();
+}
+
+std::vector<uint8_t> Signer::sign() const
+{
+    if (plan.private_key().empty()) {
         throw std::invalid_argument("Must have private key string");
     }
     else if (tx.inputs_size()==0) {
@@ -110,13 +111,13 @@ std::vector<uint8_t> Signer::sign(uint64_t timestamp) const
     else if (tx.outputs_size()==0) {
         throw std::invalid_argument("There must be at least one output, something is missed");
     }
-    auto priv = Address::importHexPrivateKey(tx.private_key());
+    auto priv = Address::importHexPrivateKey(plan.private_key());
 
     auto data = Data();
     // Transaction Type
     encode16LE(2, data);
     // Timestamp
-    encode48LE(timestamp, data);
+    encode48LE(tx.timestamp(), data);
     // Remark
     std::string remark = tx.remark();
     serializerRemark(remark, data);
@@ -140,10 +141,4 @@ std::vector<uint8_t> Signer::sign(uint64_t timestamp) const
     std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(data));
 
     return data;
-}
-
-uint64_t Signer::getFee(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize)
-{
-    uint64_t size = 124+50*inputCount+38*outputCount+remarkSize;
-    return calculateFee(size);
 }

@@ -62,6 +62,33 @@ public struct TW_NULS_Proto_Transaction {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  public var fromAddress: String = String()
+
+  public var toAddress: String = String()
+
+  public var amount: Int64 = 0
+
+  //// UTF-8 encode strings
+  public var remark: String = String()
+
+  public var timestamp: Int64 = 0
+
+  //// Unspent input list
+  public var inputs: [TW_NULS_Proto_TransactionInput] = []
+
+  //// Output list
+  public var outputs: [TW_NULS_Proto_TransactionOutput] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct TW_NULS_Proto_TransactionPurpose {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
   public var privateKey: Data = SwiftProtobuf.Internal.emptyData
 
   public var fromAddress: String = String()
@@ -73,10 +100,43 @@ public struct TW_NULS_Proto_Transaction {
   //// UTF-8 encode strings
   public var remark: String = String()
 
+  public var timestamp: Int64 = 0
+
   //// Unspent input list
+  public var utxos: [TW_NULS_Proto_TransactionInput] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct TW_NULS_Proto_TransactionPlan {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var privateKey: Data = SwiftProtobuf.Internal.emptyData
+
+  public var fromAddress: String = String()
+
+  public var toAddress: String = String()
+
+  public var amount: Int64 = 0
+
+  //// UTF-8 encode strings
+  public var remark: String = String()
+
+  public var timestamp: Int64 = 0
+
+  public var fee: Int64 = 0
+
+  public var change: Int64 = 0
+
+  public var availableAmount: Int64 = 0
+
+  //// Selected Unspent input list
   public var inputs: [TW_NULS_Proto_TransactionInput] = []
 
-  //// Output list
   public var outputs: [TW_NULS_Proto_TransactionOutput] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -203,13 +263,78 @@ extension TW_NULS_Proto_TransactionOutput: SwiftProtobuf.Message, SwiftProtobuf.
 extension TW_NULS_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Transaction"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    2: .standard(proto: "from_address"),
+    3: .standard(proto: "to_address"),
+    4: .same(proto: "amount"),
+    5: .same(proto: "remark"),
+    6: .same(proto: "timestamp"),
+    7: .same(proto: "inputs"),
+    8: .same(proto: "outputs"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 2: try decoder.decodeSingularStringField(value: &self.fromAddress)
+      case 3: try decoder.decodeSingularStringField(value: &self.toAddress)
+      case 4: try decoder.decodeSingularInt64Field(value: &self.amount)
+      case 5: try decoder.decodeSingularStringField(value: &self.remark)
+      case 6: try decoder.decodeSingularInt64Field(value: &self.timestamp)
+      case 7: try decoder.decodeRepeatedMessageField(value: &self.inputs)
+      case 8: try decoder.decodeRepeatedMessageField(value: &self.outputs)
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.fromAddress.isEmpty {
+      try visitor.visitSingularStringField(value: self.fromAddress, fieldNumber: 2)
+    }
+    if !self.toAddress.isEmpty {
+      try visitor.visitSingularStringField(value: self.toAddress, fieldNumber: 3)
+    }
+    if self.amount != 0 {
+      try visitor.visitSingularInt64Field(value: self.amount, fieldNumber: 4)
+    }
+    if !self.remark.isEmpty {
+      try visitor.visitSingularStringField(value: self.remark, fieldNumber: 5)
+    }
+    if self.timestamp != 0 {
+      try visitor.visitSingularInt64Field(value: self.timestamp, fieldNumber: 6)
+    }
+    if !self.inputs.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.inputs, fieldNumber: 7)
+    }
+    if !self.outputs.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.outputs, fieldNumber: 8)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: TW_NULS_Proto_Transaction, rhs: TW_NULS_Proto_Transaction) -> Bool {
+    if lhs.fromAddress != rhs.fromAddress {return false}
+    if lhs.toAddress != rhs.toAddress {return false}
+    if lhs.amount != rhs.amount {return false}
+    if lhs.remark != rhs.remark {return false}
+    if lhs.timestamp != rhs.timestamp {return false}
+    if lhs.inputs != rhs.inputs {return false}
+    if lhs.outputs != rhs.outputs {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension TW_NULS_Proto_TransactionPurpose: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TransactionPurpose"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "private_key"),
     2: .standard(proto: "from_address"),
     3: .standard(proto: "to_address"),
     4: .same(proto: "amount"),
     5: .same(proto: "remark"),
-    6: .same(proto: "inputs"),
-    7: .same(proto: "outputs"),
+    6: .same(proto: "timestamp"),
+    7: .same(proto: "utxos"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -220,8 +345,8 @@ extension TW_NULS_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._Messa
       case 3: try decoder.decodeSingularStringField(value: &self.toAddress)
       case 4: try decoder.decodeSingularInt64Field(value: &self.amount)
       case 5: try decoder.decodeSingularStringField(value: &self.remark)
-      case 6: try decoder.decodeRepeatedMessageField(value: &self.inputs)
-      case 7: try decoder.decodeRepeatedMessageField(value: &self.outputs)
+      case 6: try decoder.decodeSingularInt64Field(value: &self.timestamp)
+      case 7: try decoder.decodeRepeatedMessageField(value: &self.utxos)
       default: break
       }
     }
@@ -243,21 +368,110 @@ extension TW_NULS_Proto_Transaction: SwiftProtobuf.Message, SwiftProtobuf._Messa
     if !self.remark.isEmpty {
       try visitor.visitSingularStringField(value: self.remark, fieldNumber: 5)
     }
-    if !self.inputs.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.inputs, fieldNumber: 6)
+    if self.timestamp != 0 {
+      try visitor.visitSingularInt64Field(value: self.timestamp, fieldNumber: 6)
     }
-    if !self.outputs.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.outputs, fieldNumber: 7)
+    if !self.utxos.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.utxos, fieldNumber: 7)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: TW_NULS_Proto_Transaction, rhs: TW_NULS_Proto_Transaction) -> Bool {
+  public static func ==(lhs: TW_NULS_Proto_TransactionPurpose, rhs: TW_NULS_Proto_TransactionPurpose) -> Bool {
     if lhs.privateKey != rhs.privateKey {return false}
     if lhs.fromAddress != rhs.fromAddress {return false}
     if lhs.toAddress != rhs.toAddress {return false}
     if lhs.amount != rhs.amount {return false}
     if lhs.remark != rhs.remark {return false}
+    if lhs.timestamp != rhs.timestamp {return false}
+    if lhs.utxos != rhs.utxos {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension TW_NULS_Proto_TransactionPlan: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".TransactionPlan"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "private_key"),
+    2: .standard(proto: "from_address"),
+    3: .standard(proto: "to_address"),
+    4: .same(proto: "amount"),
+    5: .same(proto: "remark"),
+    6: .same(proto: "timestamp"),
+    7: .same(proto: "fee"),
+    8: .same(proto: "change"),
+    9: .standard(proto: "available_amount"),
+    10: .same(proto: "inputs"),
+    11: .same(proto: "outputs"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self.privateKey)
+      case 2: try decoder.decodeSingularStringField(value: &self.fromAddress)
+      case 3: try decoder.decodeSingularStringField(value: &self.toAddress)
+      case 4: try decoder.decodeSingularInt64Field(value: &self.amount)
+      case 5: try decoder.decodeSingularStringField(value: &self.remark)
+      case 6: try decoder.decodeSingularInt64Field(value: &self.timestamp)
+      case 7: try decoder.decodeSingularInt64Field(value: &self.fee)
+      case 8: try decoder.decodeSingularInt64Field(value: &self.change)
+      case 9: try decoder.decodeSingularInt64Field(value: &self.availableAmount)
+      case 10: try decoder.decodeRepeatedMessageField(value: &self.inputs)
+      case 11: try decoder.decodeRepeatedMessageField(value: &self.outputs)
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.privateKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.privateKey, fieldNumber: 1)
+    }
+    if !self.fromAddress.isEmpty {
+      try visitor.visitSingularStringField(value: self.fromAddress, fieldNumber: 2)
+    }
+    if !self.toAddress.isEmpty {
+      try visitor.visitSingularStringField(value: self.toAddress, fieldNumber: 3)
+    }
+    if self.amount != 0 {
+      try visitor.visitSingularInt64Field(value: self.amount, fieldNumber: 4)
+    }
+    if !self.remark.isEmpty {
+      try visitor.visitSingularStringField(value: self.remark, fieldNumber: 5)
+    }
+    if self.timestamp != 0 {
+      try visitor.visitSingularInt64Field(value: self.timestamp, fieldNumber: 6)
+    }
+    if self.fee != 0 {
+      try visitor.visitSingularInt64Field(value: self.fee, fieldNumber: 7)
+    }
+    if self.change != 0 {
+      try visitor.visitSingularInt64Field(value: self.change, fieldNumber: 8)
+    }
+    if self.availableAmount != 0 {
+      try visitor.visitSingularInt64Field(value: self.availableAmount, fieldNumber: 9)
+    }
+    if !self.inputs.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.inputs, fieldNumber: 10)
+    }
+    if !self.outputs.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.outputs, fieldNumber: 11)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: TW_NULS_Proto_TransactionPlan, rhs: TW_NULS_Proto_TransactionPlan) -> Bool {
+    if lhs.privateKey != rhs.privateKey {return false}
+    if lhs.fromAddress != rhs.fromAddress {return false}
+    if lhs.toAddress != rhs.toAddress {return false}
+    if lhs.amount != rhs.amount {return false}
+    if lhs.remark != rhs.remark {return false}
+    if lhs.timestamp != rhs.timestamp {return false}
+    if lhs.fee != rhs.fee {return false}
+    if lhs.change != rhs.change {return false}
+    if lhs.availableAmount != rhs.availableAmount {return false}
     if lhs.inputs != rhs.inputs {return false}
     if lhs.outputs != rhs.outputs {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

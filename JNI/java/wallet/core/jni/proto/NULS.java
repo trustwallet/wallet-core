@@ -1630,11 +1630,6 @@ public final class NULS {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes private_key = 1;</code>
-     */
-    com.google.protobuf.ByteString getPrivateKey();
-
-    /**
      * <code>string from_address = 2;</code>
      */
     java.lang.String getFromAddress();
@@ -1678,11 +1673,16 @@ public final class NULS {
         getRemarkBytes();
 
     /**
+     * <code>int64 timestamp = 6;</code>
+     */
+    long getTimestamp();
+
+    /**
      * <pre>
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     java.util.List<wallet.core.jni.proto.NULS.TransactionInput> 
         getInputsList();
@@ -1691,7 +1691,7 @@ public final class NULS {
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     wallet.core.jni.proto.NULS.TransactionInput getInputs(int index);
     /**
@@ -1699,7 +1699,7 @@ public final class NULS {
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     int getInputsCount();
     /**
@@ -1707,7 +1707,7 @@ public final class NULS {
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
         getInputsOrBuilderList();
@@ -1716,7 +1716,7 @@ public final class NULS {
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     wallet.core.jni.proto.NULS.TransactionInputOrBuilder getInputsOrBuilder(
         int index);
@@ -1726,7 +1726,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> 
         getOutputsList();
@@ -1735,7 +1735,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     wallet.core.jni.proto.NULS.TransactionOutput getOutputs(int index);
     /**
@@ -1743,7 +1743,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     int getOutputsCount();
     /**
@@ -1751,7 +1751,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     java.util.List<? extends wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> 
         getOutputsOrBuilderList();
@@ -1760,7 +1760,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     wallet.core.jni.proto.NULS.TransactionOutputOrBuilder getOutputsOrBuilder(
         int index);
@@ -1778,7 +1778,6 @@ public final class NULS {
       super(builder);
     }
     private Transaction() {
-      privateKey_ = com.google.protobuf.ByteString.EMPTY;
       fromAddress_ = "";
       toAddress_ = "";
       remark_ = "";
@@ -1810,11 +1809,6 @@ public final class NULS {
             case 0:
               done = true;
               break;
-            case 10: {
-
-              privateKey_ = input.readBytes();
-              break;
-            }
             case 18: {
               java.lang.String s = input.readStringRequireUtf8();
 
@@ -1838,7 +1832,12 @@ public final class NULS {
               remark_ = s;
               break;
             }
-            case 50: {
+            case 48: {
+
+              timestamp_ = input.readInt64();
+              break;
+            }
+            case 58: {
               if (!((mutable_bitField0_ & 0x00000020) != 0)) {
                 inputs_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionInput>();
                 mutable_bitField0_ |= 0x00000020;
@@ -1847,7 +1846,7 @@ public final class NULS {
                   input.readMessage(wallet.core.jni.proto.NULS.TransactionInput.parser(), extensionRegistry));
               break;
             }
-            case 58: {
+            case 66: {
               if (!((mutable_bitField0_ & 0x00000040) != 0)) {
                 outputs_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionOutput>();
                 mutable_bitField0_ |= 0x00000040;
@@ -1895,15 +1894,6 @@ public final class NULS {
     }
 
     private int bitField0_;
-    public static final int PRIVATE_KEY_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString privateKey_;
-    /**
-     * <code>bytes private_key = 1;</code>
-     */
-    public com.google.protobuf.ByteString getPrivateKey() {
-      return privateKey_;
-    }
-
     public static final int FROM_ADDRESS_FIELD_NUMBER = 2;
     private volatile java.lang.Object fromAddress_;
     /**
@@ -2023,14 +2013,23 @@ public final class NULS {
       }
     }
 
-    public static final int INPUTS_FIELD_NUMBER = 6;
+    public static final int TIMESTAMP_FIELD_NUMBER = 6;
+    private long timestamp_;
+    /**
+     * <code>int64 timestamp = 6;</code>
+     */
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    public static final int INPUTS_FIELD_NUMBER = 7;
     private java.util.List<wallet.core.jni.proto.NULS.TransactionInput> inputs_;
     /**
      * <pre>
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     public java.util.List<wallet.core.jni.proto.NULS.TransactionInput> getInputsList() {
       return inputs_;
@@ -2040,7 +2039,7 @@ public final class NULS {
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
         getInputsOrBuilderList() {
@@ -2051,7 +2050,7 @@ public final class NULS {
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     public int getInputsCount() {
       return inputs_.size();
@@ -2061,7 +2060,7 @@ public final class NULS {
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     public wallet.core.jni.proto.NULS.TransactionInput getInputs(int index) {
       return inputs_.get(index);
@@ -2071,21 +2070,21 @@ public final class NULS {
      *&#47; Unspent input list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
      */
     public wallet.core.jni.proto.NULS.TransactionInputOrBuilder getInputsOrBuilder(
         int index) {
       return inputs_.get(index);
     }
 
-    public static final int OUTPUTS_FIELD_NUMBER = 7;
+    public static final int OUTPUTS_FIELD_NUMBER = 8;
     private java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> outputs_;
     /**
      * <pre>
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     public java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> getOutputsList() {
       return outputs_;
@@ -2095,7 +2094,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> 
         getOutputsOrBuilderList() {
@@ -2106,7 +2105,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     public int getOutputsCount() {
       return outputs_.size();
@@ -2116,7 +2115,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     public wallet.core.jni.proto.NULS.TransactionOutput getOutputs(int index) {
       return outputs_.get(index);
@@ -2126,7 +2125,7 @@ public final class NULS {
      *&#47; Output list
      * </pre>
      *
-     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
      */
     public wallet.core.jni.proto.NULS.TransactionOutputOrBuilder getOutputsOrBuilder(
         int index) {
@@ -2147,9 +2146,6 @@ public final class NULS {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!privateKey_.isEmpty()) {
-        output.writeBytes(1, privateKey_);
-      }
       if (!getFromAddressBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, fromAddress_);
       }
@@ -2162,11 +2158,14 @@ public final class NULS {
       if (!getRemarkBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 5, remark_);
       }
+      if (timestamp_ != 0L) {
+        output.writeInt64(6, timestamp_);
+      }
       for (int i = 0; i < inputs_.size(); i++) {
-        output.writeMessage(6, inputs_.get(i));
+        output.writeMessage(7, inputs_.get(i));
       }
       for (int i = 0; i < outputs_.size(); i++) {
-        output.writeMessage(7, outputs_.get(i));
+        output.writeMessage(8, outputs_.get(i));
       }
       unknownFields.writeTo(output);
     }
@@ -2177,10 +2176,6 @@ public final class NULS {
       if (size != -1) return size;
 
       size = 0;
-      if (!privateKey_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, privateKey_);
-      }
       if (!getFromAddressBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, fromAddress_);
       }
@@ -2194,13 +2189,17 @@ public final class NULS {
       if (!getRemarkBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, remark_);
       }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(6, timestamp_);
+      }
       for (int i = 0; i < inputs_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(6, inputs_.get(i));
+          .computeMessageSize(7, inputs_.get(i));
       }
       for (int i = 0; i < outputs_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(7, outputs_.get(i));
+          .computeMessageSize(8, outputs_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -2217,8 +2216,6 @@ public final class NULS {
       }
       wallet.core.jni.proto.NULS.Transaction other = (wallet.core.jni.proto.NULS.Transaction) obj;
 
-      if (!getPrivateKey()
-          .equals(other.getPrivateKey())) return false;
       if (!getFromAddress()
           .equals(other.getFromAddress())) return false;
       if (!getToAddress()
@@ -2227,6 +2224,8 @@ public final class NULS {
           != other.getAmount()) return false;
       if (!getRemark()
           .equals(other.getRemark())) return false;
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
       if (!getInputsList()
           .equals(other.getInputsList())) return false;
       if (!getOutputsList()
@@ -2242,8 +2241,6 @@ public final class NULS {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
-      hash = (53 * hash) + getPrivateKey().hashCode();
       hash = (37 * hash) + FROM_ADDRESS_FIELD_NUMBER;
       hash = (53 * hash) + getFromAddress().hashCode();
       hash = (37 * hash) + TO_ADDRESS_FIELD_NUMBER;
@@ -2253,6 +2250,9 @@ public final class NULS {
           getAmount());
       hash = (37 * hash) + REMARK_FIELD_NUMBER;
       hash = (53 * hash) + getRemark().hashCode();
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
       if (getInputsCount() > 0) {
         hash = (37 * hash) + INPUTS_FIELD_NUMBER;
         hash = (53 * hash) + getInputsList().hashCode();
@@ -2396,8 +2396,6 @@ public final class NULS {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        privateKey_ = com.google.protobuf.ByteString.EMPTY;
-
         fromAddress_ = "";
 
         toAddress_ = "";
@@ -2405,6 +2403,8 @@ public final class NULS {
         amount_ = 0L;
 
         remark_ = "";
+
+        timestamp_ = 0L;
 
         if (inputsBuilder_ == null) {
           inputs_ = java.util.Collections.emptyList();
@@ -2446,11 +2446,11 @@ public final class NULS {
         wallet.core.jni.proto.NULS.Transaction result = new wallet.core.jni.proto.NULS.Transaction(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
-        result.privateKey_ = privateKey_;
         result.fromAddress_ = fromAddress_;
         result.toAddress_ = toAddress_;
         result.amount_ = amount_;
         result.remark_ = remark_;
+        result.timestamp_ = timestamp_;
         if (inputsBuilder_ == null) {
           if (((bitField0_ & 0x00000020) != 0)) {
             inputs_ = java.util.Collections.unmodifiableList(inputs_);
@@ -2518,9 +2518,6 @@ public final class NULS {
 
       public Builder mergeFrom(wallet.core.jni.proto.NULS.Transaction other) {
         if (other == wallet.core.jni.proto.NULS.Transaction.getDefaultInstance()) return this;
-        if (other.getPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
-          setPrivateKey(other.getPrivateKey());
-        }
         if (!other.getFromAddress().isEmpty()) {
           fromAddress_ = other.fromAddress_;
           onChanged();
@@ -2535,6 +2532,9 @@ public final class NULS {
         if (!other.getRemark().isEmpty()) {
           remark_ = other.remark_;
           onChanged();
+        }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
         }
         if (inputsBuilder_ == null) {
           if (!other.inputs_.isEmpty()) {
@@ -2608,6 +2608,1824 @@ public final class NULS {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
           parsedMessage = (wallet.core.jni.proto.NULS.Transaction) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object fromAddress_ = "";
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public java.lang.String getFromAddress() {
+        java.lang.Object ref = fromAddress_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          fromAddress_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getFromAddressBytes() {
+        java.lang.Object ref = fromAddress_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          fromAddress_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public Builder setFromAddress(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        fromAddress_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public Builder clearFromAddress() {
+        
+        fromAddress_ = getDefaultInstance().getFromAddress();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public Builder setFromAddressBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        fromAddress_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object toAddress_ = "";
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public java.lang.String getToAddress() {
+        java.lang.Object ref = toAddress_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          toAddress_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getToAddressBytes() {
+        java.lang.Object ref = toAddress_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          toAddress_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public Builder setToAddress(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        toAddress_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public Builder clearToAddress() {
+        
+        toAddress_ = getDefaultInstance().getToAddress();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public Builder setToAddressBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        toAddress_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long amount_ ;
+      /**
+       * <code>int64 amount = 4;</code>
+       */
+      public long getAmount() {
+        return amount_;
+      }
+      /**
+       * <code>int64 amount = 4;</code>
+       */
+      public Builder setAmount(long value) {
+        
+        amount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 amount = 4;</code>
+       */
+      public Builder clearAmount() {
+        
+        amount_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object remark_ = "";
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public java.lang.String getRemark() {
+        java.lang.Object ref = remark_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          remark_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getRemarkBytes() {
+        java.lang.Object ref = remark_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          remark_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public Builder setRemark(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        remark_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public Builder clearRemark() {
+        
+        remark_ = getDefaultInstance().getRemark();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public Builder setRemarkBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        remark_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long timestamp_ ;
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public Builder setTimestamp(long value) {
+        
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public Builder clearTimestamp() {
+        
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<wallet.core.jni.proto.NULS.TransactionInput> inputs_ =
+        java.util.Collections.emptyList();
+      private void ensureInputsIsMutable() {
+        if (!((bitField0_ & 0x00000020) != 0)) {
+          inputs_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionInput>(inputs_);
+          bitField0_ |= 0x00000020;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          wallet.core.jni.proto.NULS.TransactionInput, wallet.core.jni.proto.NULS.TransactionInput.Builder, wallet.core.jni.proto.NULS.TransactionInputOrBuilder> inputsBuilder_;
+
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public java.util.List<wallet.core.jni.proto.NULS.TransactionInput> getInputsList() {
+        if (inputsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(inputs_);
+        } else {
+          return inputsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public int getInputsCount() {
+        if (inputsBuilder_ == null) {
+          return inputs_.size();
+        } else {
+          return inputsBuilder_.getCount();
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInput getInputs(int index) {
+        if (inputsBuilder_ == null) {
+          return inputs_.get(index);
+        } else {
+          return inputsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder setInputs(
+          int index, wallet.core.jni.proto.NULS.TransactionInput value) {
+        if (inputsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureInputsIsMutable();
+          inputs_.set(index, value);
+          onChanged();
+        } else {
+          inputsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder setInputs(
+          int index, wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
+        if (inputsBuilder_ == null) {
+          ensureInputsIsMutable();
+          inputs_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          inputsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder addInputs(wallet.core.jni.proto.NULS.TransactionInput value) {
+        if (inputsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureInputsIsMutable();
+          inputs_.add(value);
+          onChanged();
+        } else {
+          inputsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder addInputs(
+          int index, wallet.core.jni.proto.NULS.TransactionInput value) {
+        if (inputsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureInputsIsMutable();
+          inputs_.add(index, value);
+          onChanged();
+        } else {
+          inputsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder addInputs(
+          wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
+        if (inputsBuilder_ == null) {
+          ensureInputsIsMutable();
+          inputs_.add(builderForValue.build());
+          onChanged();
+        } else {
+          inputsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder addInputs(
+          int index, wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
+        if (inputsBuilder_ == null) {
+          ensureInputsIsMutable();
+          inputs_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          inputsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder addAllInputs(
+          java.lang.Iterable<? extends wallet.core.jni.proto.NULS.TransactionInput> values) {
+        if (inputsBuilder_ == null) {
+          ensureInputsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, inputs_);
+          onChanged();
+        } else {
+          inputsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder clearInputs() {
+        if (inputsBuilder_ == null) {
+          inputs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000020);
+          onChanged();
+        } else {
+          inputsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public Builder removeInputs(int index) {
+        if (inputsBuilder_ == null) {
+          ensureInputsIsMutable();
+          inputs_.remove(index);
+          onChanged();
+        } else {
+          inputsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInput.Builder getInputsBuilder(
+          int index) {
+        return getInputsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInputOrBuilder getInputsOrBuilder(
+          int index) {
+        if (inputsBuilder_ == null) {
+          return inputs_.get(index);  } else {
+          return inputsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
+           getInputsOrBuilderList() {
+        if (inputsBuilder_ != null) {
+          return inputsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(inputs_);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInput.Builder addInputsBuilder() {
+        return getInputsFieldBuilder().addBuilder(
+            wallet.core.jni.proto.NULS.TransactionInput.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInput.Builder addInputsBuilder(
+          int index) {
+        return getInputsFieldBuilder().addBuilder(
+            index, wallet.core.jni.proto.NULS.TransactionInput.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 7;</code>
+       */
+      public java.util.List<wallet.core.jni.proto.NULS.TransactionInput.Builder> 
+           getInputsBuilderList() {
+        return getInputsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          wallet.core.jni.proto.NULS.TransactionInput, wallet.core.jni.proto.NULS.TransactionInput.Builder, wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
+          getInputsFieldBuilder() {
+        if (inputsBuilder_ == null) {
+          inputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              wallet.core.jni.proto.NULS.TransactionInput, wallet.core.jni.proto.NULS.TransactionInput.Builder, wallet.core.jni.proto.NULS.TransactionInputOrBuilder>(
+                  inputs_,
+                  ((bitField0_ & 0x00000020) != 0),
+                  getParentForChildren(),
+                  isClean());
+          inputs_ = null;
+        }
+        return inputsBuilder_;
+      }
+
+      private java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> outputs_ =
+        java.util.Collections.emptyList();
+      private void ensureOutputsIsMutable() {
+        if (!((bitField0_ & 0x00000040) != 0)) {
+          outputs_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionOutput>(outputs_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          wallet.core.jni.proto.NULS.TransactionOutput, wallet.core.jni.proto.NULS.TransactionOutput.Builder, wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> outputsBuilder_;
+
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> getOutputsList() {
+        if (outputsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(outputs_);
+        } else {
+          return outputsBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public int getOutputsCount() {
+        if (outputsBuilder_ == null) {
+          return outputs_.size();
+        } else {
+          return outputsBuilder_.getCount();
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionOutput getOutputs(int index) {
+        if (outputsBuilder_ == null) {
+          return outputs_.get(index);
+        } else {
+          return outputsBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder setOutputs(
+          int index, wallet.core.jni.proto.NULS.TransactionOutput value) {
+        if (outputsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOutputsIsMutable();
+          outputs_.set(index, value);
+          onChanged();
+        } else {
+          outputsBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder setOutputs(
+          int index, wallet.core.jni.proto.NULS.TransactionOutput.Builder builderForValue) {
+        if (outputsBuilder_ == null) {
+          ensureOutputsIsMutable();
+          outputs_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          outputsBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder addOutputs(wallet.core.jni.proto.NULS.TransactionOutput value) {
+        if (outputsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOutputsIsMutable();
+          outputs_.add(value);
+          onChanged();
+        } else {
+          outputsBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder addOutputs(
+          int index, wallet.core.jni.proto.NULS.TransactionOutput value) {
+        if (outputsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOutputsIsMutable();
+          outputs_.add(index, value);
+          onChanged();
+        } else {
+          outputsBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder addOutputs(
+          wallet.core.jni.proto.NULS.TransactionOutput.Builder builderForValue) {
+        if (outputsBuilder_ == null) {
+          ensureOutputsIsMutable();
+          outputs_.add(builderForValue.build());
+          onChanged();
+        } else {
+          outputsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder addOutputs(
+          int index, wallet.core.jni.proto.NULS.TransactionOutput.Builder builderForValue) {
+        if (outputsBuilder_ == null) {
+          ensureOutputsIsMutable();
+          outputs_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          outputsBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder addAllOutputs(
+          java.lang.Iterable<? extends wallet.core.jni.proto.NULS.TransactionOutput> values) {
+        if (outputsBuilder_ == null) {
+          ensureOutputsIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, outputs_);
+          onChanged();
+        } else {
+          outputsBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder clearOutputs() {
+        if (outputsBuilder_ == null) {
+          outputs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+          onChanged();
+        } else {
+          outputsBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public Builder removeOutputs(int index) {
+        if (outputsBuilder_ == null) {
+          ensureOutputsIsMutable();
+          outputs_.remove(index);
+          onChanged();
+        } else {
+          outputsBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionOutput.Builder getOutputsBuilder(
+          int index) {
+        return getOutputsFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionOutputOrBuilder getOutputsOrBuilder(
+          int index) {
+        if (outputsBuilder_ == null) {
+          return outputs_.get(index);  } else {
+          return outputsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> 
+           getOutputsOrBuilderList() {
+        if (outputsBuilder_ != null) {
+          return outputsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(outputs_);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionOutput.Builder addOutputsBuilder() {
+        return getOutputsFieldBuilder().addBuilder(
+            wallet.core.jni.proto.NULS.TransactionOutput.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionOutput.Builder addOutputsBuilder(
+          int index) {
+        return getOutputsFieldBuilder().addBuilder(
+            index, wallet.core.jni.proto.NULS.TransactionOutput.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       *&#47; Output list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 8;</code>
+       */
+      public java.util.List<wallet.core.jni.proto.NULS.TransactionOutput.Builder> 
+           getOutputsBuilderList() {
+        return getOutputsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          wallet.core.jni.proto.NULS.TransactionOutput, wallet.core.jni.proto.NULS.TransactionOutput.Builder, wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> 
+          getOutputsFieldBuilder() {
+        if (outputsBuilder_ == null) {
+          outputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              wallet.core.jni.proto.NULS.TransactionOutput, wallet.core.jni.proto.NULS.TransactionOutput.Builder, wallet.core.jni.proto.NULS.TransactionOutputOrBuilder>(
+                  outputs_,
+                  ((bitField0_ & 0x00000040) != 0),
+                  getParentForChildren(),
+                  isClean());
+          outputs_ = null;
+        }
+        return outputsBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:TW.NULS.Proto.Transaction)
+    }
+
+    // @@protoc_insertion_point(class_scope:TW.NULS.Proto.Transaction)
+    private static final wallet.core.jni.proto.NULS.Transaction DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.NULS.Transaction();
+    }
+
+    public static wallet.core.jni.proto.NULS.Transaction getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<Transaction>
+        PARSER = new com.google.protobuf.AbstractParser<Transaction>() {
+      @java.lang.Override
+      public Transaction parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Transaction(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<Transaction> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Transaction> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public wallet.core.jni.proto.NULS.Transaction getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface TransactionPurposeOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:TW.NULS.Proto.TransactionPurpose)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes private_key = 1;</code>
+     */
+    com.google.protobuf.ByteString getPrivateKey();
+
+    /**
+     * <code>string from_address = 2;</code>
+     */
+    java.lang.String getFromAddress();
+    /**
+     * <code>string from_address = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getFromAddressBytes();
+
+    /**
+     * <code>string to_address = 3;</code>
+     */
+    java.lang.String getToAddress();
+    /**
+     * <code>string to_address = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getToAddressBytes();
+
+    /**
+     * <code>int64 amount = 4;</code>
+     */
+    long getAmount();
+
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    java.lang.String getRemark();
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getRemarkBytes();
+
+    /**
+     * <code>int64 timestamp = 6;</code>
+     */
+    long getTimestamp();
+
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    java.util.List<wallet.core.jni.proto.NULS.TransactionInput> 
+        getUtxosList();
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    wallet.core.jni.proto.NULS.TransactionInput getUtxos(int index);
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    int getUtxosCount();
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
+        getUtxosOrBuilderList();
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    wallet.core.jni.proto.NULS.TransactionInputOrBuilder getUtxosOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code TW.NULS.Proto.TransactionPurpose}
+   */
+  public  static final class TransactionPurpose extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:TW.NULS.Proto.TransactionPurpose)
+      TransactionPurposeOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TransactionPurpose.newBuilder() to construct.
+    private TransactionPurpose(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TransactionPurpose() {
+      privateKey_ = com.google.protobuf.ByteString.EMPTY;
+      fromAddress_ = "";
+      toAddress_ = "";
+      remark_ = "";
+      utxos_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TransactionPurpose(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              privateKey_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              fromAddress_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              toAddress_ = s;
+              break;
+            }
+            case 32: {
+
+              amount_ = input.readInt64();
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              remark_ = s;
+              break;
+            }
+            case 48: {
+
+              timestamp_ = input.readInt64();
+              break;
+            }
+            case 58: {
+              if (!((mutable_bitField0_ & 0x00000040) != 0)) {
+                utxos_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionInput>();
+                mutable_bitField0_ |= 0x00000040;
+              }
+              utxos_.add(
+                  input.readMessage(wallet.core.jni.proto.NULS.TransactionInput.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000040) != 0)) {
+          utxos_ = java.util.Collections.unmodifiableList(utxos_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPurpose_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPurpose_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              wallet.core.jni.proto.NULS.TransactionPurpose.class, wallet.core.jni.proto.NULS.TransactionPurpose.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int PRIVATE_KEY_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString privateKey_;
+    /**
+     * <code>bytes private_key = 1;</code>
+     */
+    public com.google.protobuf.ByteString getPrivateKey() {
+      return privateKey_;
+    }
+
+    public static final int FROM_ADDRESS_FIELD_NUMBER = 2;
+    private volatile java.lang.Object fromAddress_;
+    /**
+     * <code>string from_address = 2;</code>
+     */
+    public java.lang.String getFromAddress() {
+      java.lang.Object ref = fromAddress_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        fromAddress_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string from_address = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getFromAddressBytes() {
+      java.lang.Object ref = fromAddress_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        fromAddress_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TO_ADDRESS_FIELD_NUMBER = 3;
+    private volatile java.lang.Object toAddress_;
+    /**
+     * <code>string to_address = 3;</code>
+     */
+    public java.lang.String getToAddress() {
+      java.lang.Object ref = toAddress_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        toAddress_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string to_address = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getToAddressBytes() {
+      java.lang.Object ref = toAddress_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        toAddress_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int AMOUNT_FIELD_NUMBER = 4;
+    private long amount_;
+    /**
+     * <code>int64 amount = 4;</code>
+     */
+    public long getAmount() {
+      return amount_;
+    }
+
+    public static final int REMARK_FIELD_NUMBER = 5;
+    private volatile java.lang.Object remark_;
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    public java.lang.String getRemark() {
+      java.lang.Object ref = remark_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        remark_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getRemarkBytes() {
+      java.lang.Object ref = remark_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        remark_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 6;
+    private long timestamp_;
+    /**
+     * <code>int64 timestamp = 6;</code>
+     */
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    public static final int UTXOS_FIELD_NUMBER = 7;
+    private java.util.List<wallet.core.jni.proto.NULS.TransactionInput> utxos_;
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    public java.util.List<wallet.core.jni.proto.NULS.TransactionInput> getUtxosList() {
+      return utxos_;
+    }
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
+        getUtxosOrBuilderList() {
+      return utxos_;
+    }
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    public int getUtxosCount() {
+      return utxos_.size();
+    }
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    public wallet.core.jni.proto.NULS.TransactionInput getUtxos(int index) {
+      return utxos_.get(index);
+    }
+    /**
+     * <pre>
+     *&#47; Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+     */
+    public wallet.core.jni.proto.NULS.TransactionInputOrBuilder getUtxosOrBuilder(
+        int index) {
+      return utxos_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!privateKey_.isEmpty()) {
+        output.writeBytes(1, privateKey_);
+      }
+      if (!getFromAddressBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, fromAddress_);
+      }
+      if (!getToAddressBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, toAddress_);
+      }
+      if (amount_ != 0L) {
+        output.writeInt64(4, amount_);
+      }
+      if (!getRemarkBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, remark_);
+      }
+      if (timestamp_ != 0L) {
+        output.writeInt64(6, timestamp_);
+      }
+      for (int i = 0; i < utxos_.size(); i++) {
+        output.writeMessage(7, utxos_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!privateKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, privateKey_);
+      }
+      if (!getFromAddressBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, fromAddress_);
+      }
+      if (!getToAddressBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, toAddress_);
+      }
+      if (amount_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(4, amount_);
+      }
+      if (!getRemarkBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, remark_);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(6, timestamp_);
+      }
+      for (int i = 0; i < utxos_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, utxos_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof wallet.core.jni.proto.NULS.TransactionPurpose)) {
+        return super.equals(obj);
+      }
+      wallet.core.jni.proto.NULS.TransactionPurpose other = (wallet.core.jni.proto.NULS.TransactionPurpose) obj;
+
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (!getFromAddress()
+          .equals(other.getFromAddress())) return false;
+      if (!getToAddress()
+          .equals(other.getToAddress())) return false;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (!getRemark()
+          .equals(other.getRemark())) return false;
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
+      if (!getUtxosList()
+          .equals(other.getUtxosList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getPrivateKey().hashCode();
+      hash = (37 * hash) + FROM_ADDRESS_FIELD_NUMBER;
+      hash = (53 * hash) + getFromAddress().hashCode();
+      hash = (37 * hash) + TO_ADDRESS_FIELD_NUMBER;
+      hash = (53 * hash) + getToAddress().hashCode();
+      hash = (37 * hash) + AMOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getAmount());
+      hash = (37 * hash) + REMARK_FIELD_NUMBER;
+      hash = (53 * hash) + getRemark().hashCode();
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
+      if (getUtxosCount() > 0) {
+        hash = (37 * hash) + UTXOS_FIELD_NUMBER;
+        hash = (53 * hash) + getUtxosList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPurpose parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(wallet.core.jni.proto.NULS.TransactionPurpose prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code TW.NULS.Proto.TransactionPurpose}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:TW.NULS.Proto.TransactionPurpose)
+        wallet.core.jni.proto.NULS.TransactionPurposeOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPurpose_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPurpose_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                wallet.core.jni.proto.NULS.TransactionPurpose.class, wallet.core.jni.proto.NULS.TransactionPurpose.Builder.class);
+      }
+
+      // Construct using wallet.core.jni.proto.NULS.TransactionPurpose.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getUtxosFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        privateKey_ = com.google.protobuf.ByteString.EMPTY;
+
+        fromAddress_ = "";
+
+        toAddress_ = "";
+
+        amount_ = 0L;
+
+        remark_ = "";
+
+        timestamp_ = 0L;
+
+        if (utxosBuilder_ == null) {
+          utxos_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+        } else {
+          utxosBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPurpose_descriptor;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.NULS.TransactionPurpose getDefaultInstanceForType() {
+        return wallet.core.jni.proto.NULS.TransactionPurpose.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.NULS.TransactionPurpose build() {
+        wallet.core.jni.proto.NULS.TransactionPurpose result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.NULS.TransactionPurpose buildPartial() {
+        wallet.core.jni.proto.NULS.TransactionPurpose result = new wallet.core.jni.proto.NULS.TransactionPurpose(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        result.privateKey_ = privateKey_;
+        result.fromAddress_ = fromAddress_;
+        result.toAddress_ = toAddress_;
+        result.amount_ = amount_;
+        result.remark_ = remark_;
+        result.timestamp_ = timestamp_;
+        if (utxosBuilder_ == null) {
+          if (((bitField0_ & 0x00000040) != 0)) {
+            utxos_ = java.util.Collections.unmodifiableList(utxos_);
+            bitField0_ = (bitField0_ & ~0x00000040);
+          }
+          result.utxos_ = utxos_;
+        } else {
+          result.utxos_ = utxosBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof wallet.core.jni.proto.NULS.TransactionPurpose) {
+          return mergeFrom((wallet.core.jni.proto.NULS.TransactionPurpose)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(wallet.core.jni.proto.NULS.TransactionPurpose other) {
+        if (other == wallet.core.jni.proto.NULS.TransactionPurpose.getDefaultInstance()) return this;
+        if (other.getPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
+          setPrivateKey(other.getPrivateKey());
+        }
+        if (!other.getFromAddress().isEmpty()) {
+          fromAddress_ = other.fromAddress_;
+          onChanged();
+        }
+        if (!other.getToAddress().isEmpty()) {
+          toAddress_ = other.toAddress_;
+          onChanged();
+        }
+        if (other.getAmount() != 0L) {
+          setAmount(other.getAmount());
+        }
+        if (!other.getRemark().isEmpty()) {
+          remark_ = other.remark_;
+          onChanged();
+        }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
+        }
+        if (utxosBuilder_ == null) {
+          if (!other.utxos_.isEmpty()) {
+            if (utxos_.isEmpty()) {
+              utxos_ = other.utxos_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+            } else {
+              ensureUtxosIsMutable();
+              utxos_.addAll(other.utxos_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.utxos_.isEmpty()) {
+            if (utxosBuilder_.isEmpty()) {
+              utxosBuilder_.dispose();
+              utxosBuilder_ = null;
+              utxos_ = other.utxos_;
+              bitField0_ = (bitField0_ & ~0x00000040);
+              utxosBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getUtxosFieldBuilder() : null;
+            } else {
+              utxosBuilder_.addAllMessages(other.utxos_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        wallet.core.jni.proto.NULS.TransactionPurpose parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (wallet.core.jni.proto.NULS.TransactionPurpose) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -2900,12 +4718,1889 @@ public final class NULS {
         return this;
       }
 
+      private long timestamp_ ;
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public Builder setTimestamp(long value) {
+        
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public Builder clearTimestamp() {
+        
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<wallet.core.jni.proto.NULS.TransactionInput> utxos_ =
+        java.util.Collections.emptyList();
+      private void ensureUtxosIsMutable() {
+        if (!((bitField0_ & 0x00000040) != 0)) {
+          utxos_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionInput>(utxos_);
+          bitField0_ |= 0x00000040;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          wallet.core.jni.proto.NULS.TransactionInput, wallet.core.jni.proto.NULS.TransactionInput.Builder, wallet.core.jni.proto.NULS.TransactionInputOrBuilder> utxosBuilder_;
+
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public java.util.List<wallet.core.jni.proto.NULS.TransactionInput> getUtxosList() {
+        if (utxosBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(utxos_);
+        } else {
+          return utxosBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public int getUtxosCount() {
+        if (utxosBuilder_ == null) {
+          return utxos_.size();
+        } else {
+          return utxosBuilder_.getCount();
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInput getUtxos(int index) {
+        if (utxosBuilder_ == null) {
+          return utxos_.get(index);
+        } else {
+          return utxosBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder setUtxos(
+          int index, wallet.core.jni.proto.NULS.TransactionInput value) {
+        if (utxosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUtxosIsMutable();
+          utxos_.set(index, value);
+          onChanged();
+        } else {
+          utxosBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder setUtxos(
+          int index, wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
+        if (utxosBuilder_ == null) {
+          ensureUtxosIsMutable();
+          utxos_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          utxosBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder addUtxos(wallet.core.jni.proto.NULS.TransactionInput value) {
+        if (utxosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUtxosIsMutable();
+          utxos_.add(value);
+          onChanged();
+        } else {
+          utxosBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder addUtxos(
+          int index, wallet.core.jni.proto.NULS.TransactionInput value) {
+        if (utxosBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUtxosIsMutable();
+          utxos_.add(index, value);
+          onChanged();
+        } else {
+          utxosBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder addUtxos(
+          wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
+        if (utxosBuilder_ == null) {
+          ensureUtxosIsMutable();
+          utxos_.add(builderForValue.build());
+          onChanged();
+        } else {
+          utxosBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder addUtxos(
+          int index, wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
+        if (utxosBuilder_ == null) {
+          ensureUtxosIsMutable();
+          utxos_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          utxosBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder addAllUtxos(
+          java.lang.Iterable<? extends wallet.core.jni.proto.NULS.TransactionInput> values) {
+        if (utxosBuilder_ == null) {
+          ensureUtxosIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, utxos_);
+          onChanged();
+        } else {
+          utxosBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder clearUtxos() {
+        if (utxosBuilder_ == null) {
+          utxos_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000040);
+          onChanged();
+        } else {
+          utxosBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public Builder removeUtxos(int index) {
+        if (utxosBuilder_ == null) {
+          ensureUtxosIsMutable();
+          utxos_.remove(index);
+          onChanged();
+        } else {
+          utxosBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInput.Builder getUtxosBuilder(
+          int index) {
+        return getUtxosFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInputOrBuilder getUtxosOrBuilder(
+          int index) {
+        if (utxosBuilder_ == null) {
+          return utxos_.get(index);  } else {
+          return utxosBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
+           getUtxosOrBuilderList() {
+        if (utxosBuilder_ != null) {
+          return utxosBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(utxos_);
+        }
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInput.Builder addUtxosBuilder() {
+        return getUtxosFieldBuilder().addBuilder(
+            wallet.core.jni.proto.NULS.TransactionInput.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public wallet.core.jni.proto.NULS.TransactionInput.Builder addUtxosBuilder(
+          int index) {
+        return getUtxosFieldBuilder().addBuilder(
+            index, wallet.core.jni.proto.NULS.TransactionInput.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       *&#47; Unspent input list
+       * </pre>
+       *
+       * <code>repeated .TW.NULS.Proto.TransactionInput utxos = 7;</code>
+       */
+      public java.util.List<wallet.core.jni.proto.NULS.TransactionInput.Builder> 
+           getUtxosBuilderList() {
+        return getUtxosFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          wallet.core.jni.proto.NULS.TransactionInput, wallet.core.jni.proto.NULS.TransactionInput.Builder, wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
+          getUtxosFieldBuilder() {
+        if (utxosBuilder_ == null) {
+          utxosBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              wallet.core.jni.proto.NULS.TransactionInput, wallet.core.jni.proto.NULS.TransactionInput.Builder, wallet.core.jni.proto.NULS.TransactionInputOrBuilder>(
+                  utxos_,
+                  ((bitField0_ & 0x00000040) != 0),
+                  getParentForChildren(),
+                  isClean());
+          utxos_ = null;
+        }
+        return utxosBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:TW.NULS.Proto.TransactionPurpose)
+    }
+
+    // @@protoc_insertion_point(class_scope:TW.NULS.Proto.TransactionPurpose)
+    private static final wallet.core.jni.proto.NULS.TransactionPurpose DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.NULS.TransactionPurpose();
+    }
+
+    public static wallet.core.jni.proto.NULS.TransactionPurpose getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<TransactionPurpose>
+        PARSER = new com.google.protobuf.AbstractParser<TransactionPurpose>() {
+      @java.lang.Override
+      public TransactionPurpose parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TransactionPurpose(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<TransactionPurpose> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<TransactionPurpose> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public wallet.core.jni.proto.NULS.TransactionPurpose getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface TransactionPlanOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:TW.NULS.Proto.TransactionPlan)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes private_key = 1;</code>
+     */
+    com.google.protobuf.ByteString getPrivateKey();
+
+    /**
+     * <code>string from_address = 2;</code>
+     */
+    java.lang.String getFromAddress();
+    /**
+     * <code>string from_address = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getFromAddressBytes();
+
+    /**
+     * <code>string to_address = 3;</code>
+     */
+    java.lang.String getToAddress();
+    /**
+     * <code>string to_address = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getToAddressBytes();
+
+    /**
+     * <code>int64 amount = 4;</code>
+     */
+    long getAmount();
+
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    java.lang.String getRemark();
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    com.google.protobuf.ByteString
+        getRemarkBytes();
+
+    /**
+     * <code>int64 timestamp = 6;</code>
+     */
+    long getTimestamp();
+
+    /**
+     * <code>int64 fee = 7;</code>
+     */
+    long getFee();
+
+    /**
+     * <code>int64 change = 8;</code>
+     */
+    long getChange();
+
+    /**
+     * <code>int64 available_amount = 9;</code>
+     */
+    long getAvailableAmount();
+
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    java.util.List<wallet.core.jni.proto.NULS.TransactionInput> 
+        getInputsList();
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    wallet.core.jni.proto.NULS.TransactionInput getInputs(int index);
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    int getInputsCount();
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
+        getInputsOrBuilderList();
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    wallet.core.jni.proto.NULS.TransactionInputOrBuilder getInputsOrBuilder(
+        int index);
+
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> 
+        getOutputsList();
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    wallet.core.jni.proto.NULS.TransactionOutput getOutputs(int index);
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    int getOutputsCount();
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    java.util.List<? extends wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> 
+        getOutputsOrBuilderList();
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    wallet.core.jni.proto.NULS.TransactionOutputOrBuilder getOutputsOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code TW.NULS.Proto.TransactionPlan}
+   */
+  public  static final class TransactionPlan extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:TW.NULS.Proto.TransactionPlan)
+      TransactionPlanOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use TransactionPlan.newBuilder() to construct.
+    private TransactionPlan(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private TransactionPlan() {
+      privateKey_ = com.google.protobuf.ByteString.EMPTY;
+      fromAddress_ = "";
+      toAddress_ = "";
+      remark_ = "";
+      inputs_ = java.util.Collections.emptyList();
+      outputs_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private TransactionPlan(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              privateKey_ = input.readBytes();
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              fromAddress_ = s;
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              toAddress_ = s;
+              break;
+            }
+            case 32: {
+
+              amount_ = input.readInt64();
+              break;
+            }
+            case 42: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              remark_ = s;
+              break;
+            }
+            case 48: {
+
+              timestamp_ = input.readInt64();
+              break;
+            }
+            case 56: {
+
+              fee_ = input.readInt64();
+              break;
+            }
+            case 64: {
+
+              change_ = input.readInt64();
+              break;
+            }
+            case 72: {
+
+              availableAmount_ = input.readInt64();
+              break;
+            }
+            case 82: {
+              if (!((mutable_bitField0_ & 0x00000200) != 0)) {
+                inputs_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionInput>();
+                mutable_bitField0_ |= 0x00000200;
+              }
+              inputs_.add(
+                  input.readMessage(wallet.core.jni.proto.NULS.TransactionInput.parser(), extensionRegistry));
+              break;
+            }
+            case 90: {
+              if (!((mutable_bitField0_ & 0x00000400) != 0)) {
+                outputs_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionOutput>();
+                mutable_bitField0_ |= 0x00000400;
+              }
+              outputs_.add(
+                  input.readMessage(wallet.core.jni.proto.NULS.TransactionOutput.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000200) != 0)) {
+          inputs_ = java.util.Collections.unmodifiableList(inputs_);
+        }
+        if (((mutable_bitField0_ & 0x00000400) != 0)) {
+          outputs_ = java.util.Collections.unmodifiableList(outputs_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPlan_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPlan_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              wallet.core.jni.proto.NULS.TransactionPlan.class, wallet.core.jni.proto.NULS.TransactionPlan.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int PRIVATE_KEY_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString privateKey_;
+    /**
+     * <code>bytes private_key = 1;</code>
+     */
+    public com.google.protobuf.ByteString getPrivateKey() {
+      return privateKey_;
+    }
+
+    public static final int FROM_ADDRESS_FIELD_NUMBER = 2;
+    private volatile java.lang.Object fromAddress_;
+    /**
+     * <code>string from_address = 2;</code>
+     */
+    public java.lang.String getFromAddress() {
+      java.lang.Object ref = fromAddress_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        fromAddress_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string from_address = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getFromAddressBytes() {
+      java.lang.Object ref = fromAddress_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        fromAddress_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TO_ADDRESS_FIELD_NUMBER = 3;
+    private volatile java.lang.Object toAddress_;
+    /**
+     * <code>string to_address = 3;</code>
+     */
+    public java.lang.String getToAddress() {
+      java.lang.Object ref = toAddress_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        toAddress_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string to_address = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getToAddressBytes() {
+      java.lang.Object ref = toAddress_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        toAddress_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int AMOUNT_FIELD_NUMBER = 4;
+    private long amount_;
+    /**
+     * <code>int64 amount = 4;</code>
+     */
+    public long getAmount() {
+      return amount_;
+    }
+
+    public static final int REMARK_FIELD_NUMBER = 5;
+    private volatile java.lang.Object remark_;
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    public java.lang.String getRemark() {
+      java.lang.Object ref = remark_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        remark_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     *&#47; UTF-8 encode strings
+     * </pre>
+     *
+     * <code>string remark = 5;</code>
+     */
+    public com.google.protobuf.ByteString
+        getRemarkBytes() {
+      java.lang.Object ref = remark_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        remark_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int TIMESTAMP_FIELD_NUMBER = 6;
+    private long timestamp_;
+    /**
+     * <code>int64 timestamp = 6;</code>
+     */
+    public long getTimestamp() {
+      return timestamp_;
+    }
+
+    public static final int FEE_FIELD_NUMBER = 7;
+    private long fee_;
+    /**
+     * <code>int64 fee = 7;</code>
+     */
+    public long getFee() {
+      return fee_;
+    }
+
+    public static final int CHANGE_FIELD_NUMBER = 8;
+    private long change_;
+    /**
+     * <code>int64 change = 8;</code>
+     */
+    public long getChange() {
+      return change_;
+    }
+
+    public static final int AVAILABLE_AMOUNT_FIELD_NUMBER = 9;
+    private long availableAmount_;
+    /**
+     * <code>int64 available_amount = 9;</code>
+     */
+    public long getAvailableAmount() {
+      return availableAmount_;
+    }
+
+    public static final int INPUTS_FIELD_NUMBER = 10;
+    private java.util.List<wallet.core.jni.proto.NULS.TransactionInput> inputs_;
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    public java.util.List<wallet.core.jni.proto.NULS.TransactionInput> getInputsList() {
+      return inputs_;
+    }
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
+        getInputsOrBuilderList() {
+      return inputs_;
+    }
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    public int getInputsCount() {
+      return inputs_.size();
+    }
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    public wallet.core.jni.proto.NULS.TransactionInput getInputs(int index) {
+      return inputs_.get(index);
+    }
+    /**
+     * <pre>
+     *&#47; Selected Unspent input list
+     * </pre>
+     *
+     * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
+     */
+    public wallet.core.jni.proto.NULS.TransactionInputOrBuilder getInputsOrBuilder(
+        int index) {
+      return inputs_.get(index);
+    }
+
+    public static final int OUTPUTS_FIELD_NUMBER = 11;
+    private java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> outputs_;
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    public java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> getOutputsList() {
+      return outputs_;
+    }
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> 
+        getOutputsOrBuilderList() {
+      return outputs_;
+    }
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    public int getOutputsCount() {
+      return outputs_.size();
+    }
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    public wallet.core.jni.proto.NULS.TransactionOutput getOutputs(int index) {
+      return outputs_.get(index);
+    }
+    /**
+     * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
+     */
+    public wallet.core.jni.proto.NULS.TransactionOutputOrBuilder getOutputsOrBuilder(
+        int index) {
+      return outputs_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!privateKey_.isEmpty()) {
+        output.writeBytes(1, privateKey_);
+      }
+      if (!getFromAddressBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, fromAddress_);
+      }
+      if (!getToAddressBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, toAddress_);
+      }
+      if (amount_ != 0L) {
+        output.writeInt64(4, amount_);
+      }
+      if (!getRemarkBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 5, remark_);
+      }
+      if (timestamp_ != 0L) {
+        output.writeInt64(6, timestamp_);
+      }
+      if (fee_ != 0L) {
+        output.writeInt64(7, fee_);
+      }
+      if (change_ != 0L) {
+        output.writeInt64(8, change_);
+      }
+      if (availableAmount_ != 0L) {
+        output.writeInt64(9, availableAmount_);
+      }
+      for (int i = 0; i < inputs_.size(); i++) {
+        output.writeMessage(10, inputs_.get(i));
+      }
+      for (int i = 0; i < outputs_.size(); i++) {
+        output.writeMessage(11, outputs_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!privateKey_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, privateKey_);
+      }
+      if (!getFromAddressBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, fromAddress_);
+      }
+      if (!getToAddressBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, toAddress_);
+      }
+      if (amount_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(4, amount_);
+      }
+      if (!getRemarkBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, remark_);
+      }
+      if (timestamp_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(6, timestamp_);
+      }
+      if (fee_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(7, fee_);
+      }
+      if (change_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(8, change_);
+      }
+      if (availableAmount_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(9, availableAmount_);
+      }
+      for (int i = 0; i < inputs_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(10, inputs_.get(i));
+      }
+      for (int i = 0; i < outputs_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(11, outputs_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof wallet.core.jni.proto.NULS.TransactionPlan)) {
+        return super.equals(obj);
+      }
+      wallet.core.jni.proto.NULS.TransactionPlan other = (wallet.core.jni.proto.NULS.TransactionPlan) obj;
+
+      if (!getPrivateKey()
+          .equals(other.getPrivateKey())) return false;
+      if (!getFromAddress()
+          .equals(other.getFromAddress())) return false;
+      if (!getToAddress()
+          .equals(other.getToAddress())) return false;
+      if (getAmount()
+          != other.getAmount()) return false;
+      if (!getRemark()
+          .equals(other.getRemark())) return false;
+      if (getTimestamp()
+          != other.getTimestamp()) return false;
+      if (getFee()
+          != other.getFee()) return false;
+      if (getChange()
+          != other.getChange()) return false;
+      if (getAvailableAmount()
+          != other.getAvailableAmount()) return false;
+      if (!getInputsList()
+          .equals(other.getInputsList())) return false;
+      if (!getOutputsList()
+          .equals(other.getOutputsList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + PRIVATE_KEY_FIELD_NUMBER;
+      hash = (53 * hash) + getPrivateKey().hashCode();
+      hash = (37 * hash) + FROM_ADDRESS_FIELD_NUMBER;
+      hash = (53 * hash) + getFromAddress().hashCode();
+      hash = (37 * hash) + TO_ADDRESS_FIELD_NUMBER;
+      hash = (53 * hash) + getToAddress().hashCode();
+      hash = (37 * hash) + AMOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getAmount());
+      hash = (37 * hash) + REMARK_FIELD_NUMBER;
+      hash = (53 * hash) + getRemark().hashCode();
+      hash = (37 * hash) + TIMESTAMP_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getTimestamp());
+      hash = (37 * hash) + FEE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getFee());
+      hash = (37 * hash) + CHANGE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getChange());
+      hash = (37 * hash) + AVAILABLE_AMOUNT_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getAvailableAmount());
+      if (getInputsCount() > 0) {
+        hash = (37 * hash) + INPUTS_FIELD_NUMBER;
+        hash = (53 * hash) + getInputsList().hashCode();
+      }
+      if (getOutputsCount() > 0) {
+        hash = (37 * hash) + OUTPUTS_FIELD_NUMBER;
+        hash = (53 * hash) + getOutputsList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static wallet.core.jni.proto.NULS.TransactionPlan parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(wallet.core.jni.proto.NULS.TransactionPlan prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code TW.NULS.Proto.TransactionPlan}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:TW.NULS.Proto.TransactionPlan)
+        wallet.core.jni.proto.NULS.TransactionPlanOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPlan_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPlan_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                wallet.core.jni.proto.NULS.TransactionPlan.class, wallet.core.jni.proto.NULS.TransactionPlan.Builder.class);
+      }
+
+      // Construct using wallet.core.jni.proto.NULS.TransactionPlan.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getInputsFieldBuilder();
+          getOutputsFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        privateKey_ = com.google.protobuf.ByteString.EMPTY;
+
+        fromAddress_ = "";
+
+        toAddress_ = "";
+
+        amount_ = 0L;
+
+        remark_ = "";
+
+        timestamp_ = 0L;
+
+        fee_ = 0L;
+
+        change_ = 0L;
+
+        availableAmount_ = 0L;
+
+        if (inputsBuilder_ == null) {
+          inputs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000200);
+        } else {
+          inputsBuilder_.clear();
+        }
+        if (outputsBuilder_ == null) {
+          outputs_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000400);
+        } else {
+          outputsBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return wallet.core.jni.proto.NULS.internal_static_TW_NULS_Proto_TransactionPlan_descriptor;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.NULS.TransactionPlan getDefaultInstanceForType() {
+        return wallet.core.jni.proto.NULS.TransactionPlan.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.NULS.TransactionPlan build() {
+        wallet.core.jni.proto.NULS.TransactionPlan result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public wallet.core.jni.proto.NULS.TransactionPlan buildPartial() {
+        wallet.core.jni.proto.NULS.TransactionPlan result = new wallet.core.jni.proto.NULS.TransactionPlan(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        result.privateKey_ = privateKey_;
+        result.fromAddress_ = fromAddress_;
+        result.toAddress_ = toAddress_;
+        result.amount_ = amount_;
+        result.remark_ = remark_;
+        result.timestamp_ = timestamp_;
+        result.fee_ = fee_;
+        result.change_ = change_;
+        result.availableAmount_ = availableAmount_;
+        if (inputsBuilder_ == null) {
+          if (((bitField0_ & 0x00000200) != 0)) {
+            inputs_ = java.util.Collections.unmodifiableList(inputs_);
+            bitField0_ = (bitField0_ & ~0x00000200);
+          }
+          result.inputs_ = inputs_;
+        } else {
+          result.inputs_ = inputsBuilder_.build();
+        }
+        if (outputsBuilder_ == null) {
+          if (((bitField0_ & 0x00000400) != 0)) {
+            outputs_ = java.util.Collections.unmodifiableList(outputs_);
+            bitField0_ = (bitField0_ & ~0x00000400);
+          }
+          result.outputs_ = outputs_;
+        } else {
+          result.outputs_ = outputsBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof wallet.core.jni.proto.NULS.TransactionPlan) {
+          return mergeFrom((wallet.core.jni.proto.NULS.TransactionPlan)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(wallet.core.jni.proto.NULS.TransactionPlan other) {
+        if (other == wallet.core.jni.proto.NULS.TransactionPlan.getDefaultInstance()) return this;
+        if (other.getPrivateKey() != com.google.protobuf.ByteString.EMPTY) {
+          setPrivateKey(other.getPrivateKey());
+        }
+        if (!other.getFromAddress().isEmpty()) {
+          fromAddress_ = other.fromAddress_;
+          onChanged();
+        }
+        if (!other.getToAddress().isEmpty()) {
+          toAddress_ = other.toAddress_;
+          onChanged();
+        }
+        if (other.getAmount() != 0L) {
+          setAmount(other.getAmount());
+        }
+        if (!other.getRemark().isEmpty()) {
+          remark_ = other.remark_;
+          onChanged();
+        }
+        if (other.getTimestamp() != 0L) {
+          setTimestamp(other.getTimestamp());
+        }
+        if (other.getFee() != 0L) {
+          setFee(other.getFee());
+        }
+        if (other.getChange() != 0L) {
+          setChange(other.getChange());
+        }
+        if (other.getAvailableAmount() != 0L) {
+          setAvailableAmount(other.getAvailableAmount());
+        }
+        if (inputsBuilder_ == null) {
+          if (!other.inputs_.isEmpty()) {
+            if (inputs_.isEmpty()) {
+              inputs_ = other.inputs_;
+              bitField0_ = (bitField0_ & ~0x00000200);
+            } else {
+              ensureInputsIsMutable();
+              inputs_.addAll(other.inputs_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.inputs_.isEmpty()) {
+            if (inputsBuilder_.isEmpty()) {
+              inputsBuilder_.dispose();
+              inputsBuilder_ = null;
+              inputs_ = other.inputs_;
+              bitField0_ = (bitField0_ & ~0x00000200);
+              inputsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getInputsFieldBuilder() : null;
+            } else {
+              inputsBuilder_.addAllMessages(other.inputs_);
+            }
+          }
+        }
+        if (outputsBuilder_ == null) {
+          if (!other.outputs_.isEmpty()) {
+            if (outputs_.isEmpty()) {
+              outputs_ = other.outputs_;
+              bitField0_ = (bitField0_ & ~0x00000400);
+            } else {
+              ensureOutputsIsMutable();
+              outputs_.addAll(other.outputs_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.outputs_.isEmpty()) {
+            if (outputsBuilder_.isEmpty()) {
+              outputsBuilder_.dispose();
+              outputsBuilder_ = null;
+              outputs_ = other.outputs_;
+              bitField0_ = (bitField0_ & ~0x00000400);
+              outputsBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getOutputsFieldBuilder() : null;
+            } else {
+              outputsBuilder_.addAllMessages(other.outputs_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        wallet.core.jni.proto.NULS.TransactionPlan parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (wallet.core.jni.proto.NULS.TransactionPlan) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private com.google.protobuf.ByteString privateKey_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes private_key = 1;</code>
+       */
+      public com.google.protobuf.ByteString getPrivateKey() {
+        return privateKey_;
+      }
+      /**
+       * <code>bytes private_key = 1;</code>
+       */
+      public Builder setPrivateKey(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        privateKey_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes private_key = 1;</code>
+       */
+      public Builder clearPrivateKey() {
+        
+        privateKey_ = getDefaultInstance().getPrivateKey();
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object fromAddress_ = "";
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public java.lang.String getFromAddress() {
+        java.lang.Object ref = fromAddress_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          fromAddress_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getFromAddressBytes() {
+        java.lang.Object ref = fromAddress_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          fromAddress_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public Builder setFromAddress(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        fromAddress_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public Builder clearFromAddress() {
+        
+        fromAddress_ = getDefaultInstance().getFromAddress();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string from_address = 2;</code>
+       */
+      public Builder setFromAddressBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        fromAddress_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object toAddress_ = "";
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public java.lang.String getToAddress() {
+        java.lang.Object ref = toAddress_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          toAddress_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getToAddressBytes() {
+        java.lang.Object ref = toAddress_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          toAddress_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public Builder setToAddress(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        toAddress_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public Builder clearToAddress() {
+        
+        toAddress_ = getDefaultInstance().getToAddress();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string to_address = 3;</code>
+       */
+      public Builder setToAddressBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        toAddress_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long amount_ ;
+      /**
+       * <code>int64 amount = 4;</code>
+       */
+      public long getAmount() {
+        return amount_;
+      }
+      /**
+       * <code>int64 amount = 4;</code>
+       */
+      public Builder setAmount(long value) {
+        
+        amount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 amount = 4;</code>
+       */
+      public Builder clearAmount() {
+        
+        amount_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object remark_ = "";
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public java.lang.String getRemark() {
+        java.lang.Object ref = remark_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          remark_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public com.google.protobuf.ByteString
+          getRemarkBytes() {
+        java.lang.Object ref = remark_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          remark_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public Builder setRemark(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        remark_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public Builder clearRemark() {
+        
+        remark_ = getDefaultInstance().getRemark();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       *&#47; UTF-8 encode strings
+       * </pre>
+       *
+       * <code>string remark = 5;</code>
+       */
+      public Builder setRemarkBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        remark_ = value;
+        onChanged();
+        return this;
+      }
+
+      private long timestamp_ ;
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public long getTimestamp() {
+        return timestamp_;
+      }
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public Builder setTimestamp(long value) {
+        
+        timestamp_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 timestamp = 6;</code>
+       */
+      public Builder clearTimestamp() {
+        
+        timestamp_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long fee_ ;
+      /**
+       * <code>int64 fee = 7;</code>
+       */
+      public long getFee() {
+        return fee_;
+      }
+      /**
+       * <code>int64 fee = 7;</code>
+       */
+      public Builder setFee(long value) {
+        
+        fee_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 fee = 7;</code>
+       */
+      public Builder clearFee() {
+        
+        fee_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long change_ ;
+      /**
+       * <code>int64 change = 8;</code>
+       */
+      public long getChange() {
+        return change_;
+      }
+      /**
+       * <code>int64 change = 8;</code>
+       */
+      public Builder setChange(long value) {
+        
+        change_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 change = 8;</code>
+       */
+      public Builder clearChange() {
+        
+        change_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long availableAmount_ ;
+      /**
+       * <code>int64 available_amount = 9;</code>
+       */
+      public long getAvailableAmount() {
+        return availableAmount_;
+      }
+      /**
+       * <code>int64 available_amount = 9;</code>
+       */
+      public Builder setAvailableAmount(long value) {
+        
+        availableAmount_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 available_amount = 9;</code>
+       */
+      public Builder clearAvailableAmount() {
+        
+        availableAmount_ = 0L;
+        onChanged();
+        return this;
+      }
+
       private java.util.List<wallet.core.jni.proto.NULS.TransactionInput> inputs_ =
         java.util.Collections.emptyList();
       private void ensureInputsIsMutable() {
-        if (!((bitField0_ & 0x00000020) != 0)) {
+        if (!((bitField0_ & 0x00000200) != 0)) {
           inputs_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionInput>(inputs_);
-          bitField0_ |= 0x00000020;
+          bitField0_ |= 0x00000200;
          }
       }
 
@@ -2914,10 +6609,10 @@ public final class NULS {
 
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public java.util.List<wallet.core.jni.proto.NULS.TransactionInput> getInputsList() {
         if (inputsBuilder_ == null) {
@@ -2928,10 +6623,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public int getInputsCount() {
         if (inputsBuilder_ == null) {
@@ -2942,10 +6637,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionInput getInputs(int index) {
         if (inputsBuilder_ == null) {
@@ -2956,10 +6651,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder setInputs(
           int index, wallet.core.jni.proto.NULS.TransactionInput value) {
@@ -2977,10 +6672,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder setInputs(
           int index, wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
@@ -2995,10 +6690,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder addInputs(wallet.core.jni.proto.NULS.TransactionInput value) {
         if (inputsBuilder_ == null) {
@@ -3015,10 +6710,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder addInputs(
           int index, wallet.core.jni.proto.NULS.TransactionInput value) {
@@ -3036,10 +6731,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder addInputs(
           wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
@@ -3054,10 +6749,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder addInputs(
           int index, wallet.core.jni.proto.NULS.TransactionInput.Builder builderForValue) {
@@ -3072,10 +6767,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder addAllInputs(
           java.lang.Iterable<? extends wallet.core.jni.proto.NULS.TransactionInput> values) {
@@ -3091,15 +6786,15 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder clearInputs() {
         if (inputsBuilder_ == null) {
           inputs_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
+          bitField0_ = (bitField0_ & ~0x00000200);
           onChanged();
         } else {
           inputsBuilder_.clear();
@@ -3108,10 +6803,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public Builder removeInputs(int index) {
         if (inputsBuilder_ == null) {
@@ -3125,10 +6820,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionInput.Builder getInputsBuilder(
           int index) {
@@ -3136,10 +6831,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionInputOrBuilder getInputsOrBuilder(
           int index) {
@@ -3150,10 +6845,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionInputOrBuilder> 
            getInputsOrBuilderList() {
@@ -3165,10 +6860,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionInput.Builder addInputsBuilder() {
         return getInputsFieldBuilder().addBuilder(
@@ -3176,10 +6871,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionInput.Builder addInputsBuilder(
           int index) {
@@ -3188,10 +6883,10 @@ public final class NULS {
       }
       /**
        * <pre>
-       *&#47; Unspent input list
+       *&#47; Selected Unspent input list
        * </pre>
        *
-       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 6;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionInput inputs = 10;</code>
        */
       public java.util.List<wallet.core.jni.proto.NULS.TransactionInput.Builder> 
            getInputsBuilderList() {
@@ -3204,7 +6899,7 @@ public final class NULS {
           inputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               wallet.core.jni.proto.NULS.TransactionInput, wallet.core.jni.proto.NULS.TransactionInput.Builder, wallet.core.jni.proto.NULS.TransactionInputOrBuilder>(
                   inputs_,
-                  ((bitField0_ & 0x00000020) != 0),
+                  ((bitField0_ & 0x00000200) != 0),
                   getParentForChildren(),
                   isClean());
           inputs_ = null;
@@ -3215,9 +6910,9 @@ public final class NULS {
       private java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> outputs_ =
         java.util.Collections.emptyList();
       private void ensureOutputsIsMutable() {
-        if (!((bitField0_ & 0x00000040) != 0)) {
+        if (!((bitField0_ & 0x00000400) != 0)) {
           outputs_ = new java.util.ArrayList<wallet.core.jni.proto.NULS.TransactionOutput>(outputs_);
-          bitField0_ |= 0x00000040;
+          bitField0_ |= 0x00000400;
          }
       }
 
@@ -3225,11 +6920,7 @@ public final class NULS {
           wallet.core.jni.proto.NULS.TransactionOutput, wallet.core.jni.proto.NULS.TransactionOutput.Builder, wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> outputsBuilder_;
 
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public java.util.List<wallet.core.jni.proto.NULS.TransactionOutput> getOutputsList() {
         if (outputsBuilder_ == null) {
@@ -3239,11 +6930,7 @@ public final class NULS {
         }
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public int getOutputsCount() {
         if (outputsBuilder_ == null) {
@@ -3253,11 +6940,7 @@ public final class NULS {
         }
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionOutput getOutputs(int index) {
         if (outputsBuilder_ == null) {
@@ -3267,11 +6950,7 @@ public final class NULS {
         }
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder setOutputs(
           int index, wallet.core.jni.proto.NULS.TransactionOutput value) {
@@ -3288,11 +6967,7 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder setOutputs(
           int index, wallet.core.jni.proto.NULS.TransactionOutput.Builder builderForValue) {
@@ -3306,11 +6981,7 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder addOutputs(wallet.core.jni.proto.NULS.TransactionOutput value) {
         if (outputsBuilder_ == null) {
@@ -3326,11 +6997,7 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder addOutputs(
           int index, wallet.core.jni.proto.NULS.TransactionOutput value) {
@@ -3347,11 +7014,7 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder addOutputs(
           wallet.core.jni.proto.NULS.TransactionOutput.Builder builderForValue) {
@@ -3365,11 +7028,7 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder addOutputs(
           int index, wallet.core.jni.proto.NULS.TransactionOutput.Builder builderForValue) {
@@ -3383,11 +7042,7 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder addAllOutputs(
           java.lang.Iterable<? extends wallet.core.jni.proto.NULS.TransactionOutput> values) {
@@ -3402,16 +7057,12 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder clearOutputs() {
         if (outputsBuilder_ == null) {
           outputs_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
+          bitField0_ = (bitField0_ & ~0x00000400);
           onChanged();
         } else {
           outputsBuilder_.clear();
@@ -3419,11 +7070,7 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public Builder removeOutputs(int index) {
         if (outputsBuilder_ == null) {
@@ -3436,22 +7083,14 @@ public final class NULS {
         return this;
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionOutput.Builder getOutputsBuilder(
           int index) {
         return getOutputsFieldBuilder().getBuilder(index);
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionOutputOrBuilder getOutputsOrBuilder(
           int index) {
@@ -3461,11 +7100,7 @@ public final class NULS {
         }
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public java.util.List<? extends wallet.core.jni.proto.NULS.TransactionOutputOrBuilder> 
            getOutputsOrBuilderList() {
@@ -3476,22 +7111,14 @@ public final class NULS {
         }
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionOutput.Builder addOutputsBuilder() {
         return getOutputsFieldBuilder().addBuilder(
             wallet.core.jni.proto.NULS.TransactionOutput.getDefaultInstance());
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public wallet.core.jni.proto.NULS.TransactionOutput.Builder addOutputsBuilder(
           int index) {
@@ -3499,11 +7126,7 @@ public final class NULS {
             index, wallet.core.jni.proto.NULS.TransactionOutput.getDefaultInstance());
       }
       /**
-       * <pre>
-       *&#47; Output list
-       * </pre>
-       *
-       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 7;</code>
+       * <code>repeated .TW.NULS.Proto.TransactionOutput outputs = 11;</code>
        */
       public java.util.List<wallet.core.jni.proto.NULS.TransactionOutput.Builder> 
            getOutputsBuilderList() {
@@ -3516,7 +7139,7 @@ public final class NULS {
           outputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               wallet.core.jni.proto.NULS.TransactionOutput, wallet.core.jni.proto.NULS.TransactionOutput.Builder, wallet.core.jni.proto.NULS.TransactionOutputOrBuilder>(
                   outputs_,
-                  ((bitField0_ & 0x00000040) != 0),
+                  ((bitField0_ & 0x00000400) != 0),
                   getParentForChildren(),
                   isClean());
           outputs_ = null;
@@ -3536,41 +7159,41 @@ public final class NULS {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:TW.NULS.Proto.Transaction)
+      // @@protoc_insertion_point(builder_scope:TW.NULS.Proto.TransactionPlan)
     }
 
-    // @@protoc_insertion_point(class_scope:TW.NULS.Proto.Transaction)
-    private static final wallet.core.jni.proto.NULS.Transaction DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:TW.NULS.Proto.TransactionPlan)
+    private static final wallet.core.jni.proto.NULS.TransactionPlan DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new wallet.core.jni.proto.NULS.Transaction();
+      DEFAULT_INSTANCE = new wallet.core.jni.proto.NULS.TransactionPlan();
     }
 
-    public static wallet.core.jni.proto.NULS.Transaction getDefaultInstance() {
+    public static wallet.core.jni.proto.NULS.TransactionPlan getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<Transaction>
-        PARSER = new com.google.protobuf.AbstractParser<Transaction>() {
+    private static final com.google.protobuf.Parser<TransactionPlan>
+        PARSER = new com.google.protobuf.AbstractParser<TransactionPlan>() {
       @java.lang.Override
-      public Transaction parsePartialFrom(
+      public TransactionPlan parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Transaction(input, extensionRegistry);
+        return new TransactionPlan(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<Transaction> parser() {
+    public static com.google.protobuf.Parser<TransactionPlan> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<Transaction> getParserForType() {
+    public com.google.protobuf.Parser<TransactionPlan> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public wallet.core.jni.proto.NULS.Transaction getDefaultInstanceForType() {
+    public wallet.core.jni.proto.NULS.TransactionPlan getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -4070,6 +7693,16 @@ public final class NULS {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_TW_NULS_Proto_Transaction_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_TW_NULS_Proto_TransactionPurpose_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_TW_NULS_Proto_TransactionPurpose_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_TW_NULS_Proto_TransactionPlan_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_TW_NULS_Proto_TransactionPlan_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_TW_NULS_Proto_SigningOutput_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -4088,14 +7721,26 @@ public final class NULS {
       "\030\002 \001(\005\022\016\n\006amount\030\003 \001(\003\022\021\n\tlock_time\030\004 \001(" +
       "\003\022\017\n\007address\030\005 \001(\t\"Y\n\021TransactionOutput\022" +
       "\022\n\nto_address\030\001 \001(\t\022\016\n\006amount\030\002 \001(\003\022\021\n\tl" +
-      "ock_time\030\003 \001(\003\022\r\n\005index\030\004 \001(\005\"\320\001\n\013Transa" +
-      "ction\022\023\n\013private_key\030\001 \001(\014\022\024\n\014from_addre" +
-      "ss\030\002 \001(\t\022\022\n\nto_address\030\003 \001(\t\022\016\n\006amount\030\004" +
-      " \001(\003\022\016\n\006remark\030\005 \001(\t\022/\n\006inputs\030\006 \003(\0132\037.T" +
-      "W.NULS.Proto.TransactionInput\0221\n\007outputs" +
-      "\030\007 \003(\0132 .TW.NULS.Proto.TransactionOutput" +
-      "\" \n\rSigningOutput\022\017\n\007encoded\030\001 \001(\014B\027\n\025wa" +
-      "llet.core.jni.protob\006proto3"
+      "ock_time\030\003 \001(\003\022\r\n\005index\030\004 \001(\005\"\316\001\n\013Transa" +
+      "ction\022\024\n\014from_address\030\002 \001(\t\022\022\n\nto_addres" +
+      "s\030\003 \001(\t\022\016\n\006amount\030\004 \001(\003\022\016\n\006remark\030\005 \001(\t\022" +
+      "\021\n\ttimestamp\030\006 \001(\003\022/\n\006inputs\030\007 \003(\0132\037.TW." +
+      "NULS.Proto.TransactionInput\0221\n\007outputs\030\010" +
+      " \003(\0132 .TW.NULS.Proto.TransactionOutput\"\266" +
+      "\001\n\022TransactionPurpose\022\023\n\013private_key\030\001 \001" +
+      "(\014\022\024\n\014from_address\030\002 \001(\t\022\022\n\nto_address\030\003" +
+      " \001(\t\022\016\n\006amount\030\004 \001(\003\022\016\n\006remark\030\005 \001(\t\022\021\n\t" +
+      "timestamp\030\006 \001(\003\022.\n\005utxos\030\007 \003(\0132\037.TW.NULS" +
+      ".Proto.TransactionInput\"\236\002\n\017TransactionP" +
+      "lan\022\023\n\013private_key\030\001 \001(\014\022\024\n\014from_address" +
+      "\030\002 \001(\t\022\022\n\nto_address\030\003 \001(\t\022\016\n\006amount\030\004 \001" +
+      "(\003\022\016\n\006remark\030\005 \001(\t\022\021\n\ttimestamp\030\006 \001(\003\022\013\n" +
+      "\003fee\030\007 \001(\003\022\016\n\006change\030\010 \001(\003\022\030\n\020available_" +
+      "amount\030\t \001(\003\022/\n\006inputs\030\n \003(\0132\037.TW.NULS.P" +
+      "roto.TransactionInput\0221\n\007outputs\030\013 \003(\0132 " +
+      ".TW.NULS.Proto.TransactionOutput\" \n\rSign" +
+      "ingOutput\022\017\n\007encoded\030\001 \001(\014B\027\n\025wallet.cor" +
+      "e.jni.protob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4126,9 +7771,21 @@ public final class NULS {
     internal_static_TW_NULS_Proto_Transaction_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_NULS_Proto_Transaction_descriptor,
-        new java.lang.String[] { "PrivateKey", "FromAddress", "ToAddress", "Amount", "Remark", "Inputs", "Outputs", });
-    internal_static_TW_NULS_Proto_SigningOutput_descriptor =
+        new java.lang.String[] { "FromAddress", "ToAddress", "Amount", "Remark", "Timestamp", "Inputs", "Outputs", });
+    internal_static_TW_NULS_Proto_TransactionPurpose_descriptor =
       getDescriptor().getMessageTypes().get(3);
+    internal_static_TW_NULS_Proto_TransactionPurpose_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_TW_NULS_Proto_TransactionPurpose_descriptor,
+        new java.lang.String[] { "PrivateKey", "FromAddress", "ToAddress", "Amount", "Remark", "Timestamp", "Utxos", });
+    internal_static_TW_NULS_Proto_TransactionPlan_descriptor =
+      getDescriptor().getMessageTypes().get(4);
+    internal_static_TW_NULS_Proto_TransactionPlan_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_TW_NULS_Proto_TransactionPlan_descriptor,
+        new java.lang.String[] { "PrivateKey", "FromAddress", "ToAddress", "Amount", "Remark", "Timestamp", "Fee", "Change", "AvailableAmount", "Inputs", "Outputs", });
+    internal_static_TW_NULS_Proto_SigningOutput_descriptor =
+      getDescriptor().getMessageTypes().get(5);
     internal_static_TW_NULS_Proto_SigningOutput_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TW_NULS_Proto_SigningOutput_descriptor,

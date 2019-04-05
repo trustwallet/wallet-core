@@ -8,27 +8,31 @@
 
 #include "../PrivateKey.h"
 #include "../NULS/Signer.h"
+#include "../NULS/TransactionBuilder.h"
 #include "../proto/NULS.pb.h"
-
-#include <sys/time.h>
-
-int64_t getCurrentTime()
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec*1000+tv.tv_usec/1000;
-}
 
 using namespace TW;
 using namespace TW::NULS;
 
-TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_Transaction data)
+TW_NULS_Proto_TransactionPlan TWNULSMakePlan(TW_NULS_Proto_TransactionPurpose data)
 {
-    Proto::Transaction tx;
-    tx.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    Proto::TransactionPurpose purpose;
+    purpose.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
-    const auto signer = Signer(tx);
-    const auto output = signer.sign(getCurrentTime());
+    auto plan = TransactionBuilder::plan(purpose);
+    std::vector<uint8_t> serializeData(plan.ByteSize());
+    plan.SerializeToArray(serializeData.data(), plan.ByteSize());;
+
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serializeData.data()), serializeData.size());
+}
+
+TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_TransactionPlan data)
+{
+    Proto::TransactionPlan plan;
+    plan.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+
+    const auto signer = Signer(plan);
+    const auto output = signer.sign();
 
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(output.data()), output.size());
 }
