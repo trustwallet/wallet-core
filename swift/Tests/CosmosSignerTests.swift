@@ -13,9 +13,10 @@ class CosmosSignerTests: XCTestCase {
     func testSigningTransaction() {
         let privateKey = PrivateKey(data: Data(hexString: "80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005")!)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+        let fromAddress = TendermintAddress(hrp: .cosmos, publicKey: publicKey)!.description
 
         var sendCoinsMessage = TW_Cosmos_Proto_SendCoinsMessage()
-        sendCoinsMessage.fromAddress = TendermintAddress(hrp: .cosmos, publicKey: publicKey)!.keyHash.hexString
+        sendCoinsMessage.fromAddress = fromAddress
         sendCoinsMessage.toAddress = "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"
         var coin = TW_Cosmos_Proto_Coin()
         coin.amount = 1
