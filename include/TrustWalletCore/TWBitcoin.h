@@ -16,6 +16,13 @@ static const uint32_t TWSignatureHashTypeSingle = 0x03;
 static const uint32_t TWSignatureHashTypeFork = 0x40;
 static const uint32_t TWSignatureHashTypeAnyoneCanPay = 0x80;
 
+enum TWBitcoinSignatureVersion {
+    BASE,
+    WITNESS_V0
+};
+
+TW_EXTERN_C_END
+
 inline bool TWSignatureHashTypeIsSingle(uint32_t type) {
     return (type & 0x1f) == TWSignatureHashTypeSingle;
 }
@@ -23,10 +30,3 @@ inline bool TWSignatureHashTypeIsSingle(uint32_t type) {
 inline bool TWSignatureHashTypeIsNone(uint32_t type) {
     return (type & 0x1f) == TWSignatureHashTypeNone;
 }
-
-enum TWBitcoinSignatureVersion {
-    BASE,
-    WITNESS_V0
-};
-
-TW_EXTERN_C_END
