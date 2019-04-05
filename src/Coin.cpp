@@ -29,6 +29,7 @@
 #include "NULS/Address.h"
 #include "Bravo/Address.h"
 #include "Steem/Address.h"
+#include "EOS/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -88,6 +89,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeXDai:
     case TWCoinTypeTheta:
         return Ethereum::Address::isValid(string);
+
+    case TWCoinTypeEOS:
+        return EOS::Address::isValid(string);
+
     case TWCoinTypeWanchain:
         return Wanchain::Address::isValid(string);
     case TWCoinTypeICON:
@@ -196,6 +201,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeXDai:
     case TWCoinTypeTheta:
         return Ethereum::Address(publicKey).string();
+    
+    case TWCoinTypeEOS:
+        return EOS::Address(publicKey).string();
+
     case TWCoinTypeWanchain:
         return Wanchain::Address(publicKey).string();
     case TWCoinTypeICON:

@@ -46,8 +46,13 @@ TransferAction::TransferAction( const std::string& currency,
 }
 
 void TransferAction::setData(const std::string& from, const std::string& to, const std::string& assetString, const std::string& memo) {
+    const auto& asset = Bravo::Asset::fromString(assetString);
+    if (asset.amount <= 0) {
+        throw std::invalid_argument("Amount in a transfer action must be greater than zero.");
+    }
+
     Name(from).serialize(data);
     Name(to).serialize(data);
-    Bravo::Asset::fromString(assetString).serialize(data);
+    asset.serialize(data);
     Bravo::encodeString(memo, data);
 }
