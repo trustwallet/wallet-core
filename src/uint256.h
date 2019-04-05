@@ -7,7 +7,9 @@
 #pragma once
 
 #include "Data.h"
+
 #include <boost/multiprecision/cpp_int.hpp>
+#include <iterator>
 
 namespace TW {
 
