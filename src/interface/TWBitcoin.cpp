@@ -4,9 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-public extension PublicKey {
-    /// Returns the ripemd160 hash of the sha2 hash of the compressed public key data.
-    var bitcoinKeyHash: Data {
-        return Hash.sha256RIPEMD(data: compressed.data)
-    }
+#include <TrustWalletCore/TWBitcoin.h>
+
+bool TWSignatureHashTypeIsSingle(uint32_t type) {
+    return (type & 0x1f) == TWSignatureHashTypeSingle;
+}
+
+bool TWSignatureHashTypeIsNone(uint32_t type) {
+    return (type & 0x1f) == TWSignatureHashTypeNone;
 }
