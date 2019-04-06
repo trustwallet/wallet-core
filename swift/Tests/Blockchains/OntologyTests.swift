@@ -9,11 +9,10 @@ import XCTest
 
 extension String {
     public func indexOf<T>(stuff: T) -> Int where T: StringProtocol {
-        let r = range(of: stuff)
-        guard let rr = r else {
+        guard let r = range(of: stuff) else {
             return -1
         }
-        return rr.lowerBound.encodedOffset
+        return r.lowerBound.utf16Offset(in: self)
     }
 }
 
