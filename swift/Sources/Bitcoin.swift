@@ -33,5 +33,3 @@ public extension HDWallet {
         return HDWallet.getPublicKeyFromExtended(extended: extended, coin: path.coinType, versionPublic: xpubVersion, versionPrivate: xprvVersion, change: path.change, address: path.address)
     }
 }
-
-extension ZcashTAddress: Address {}
