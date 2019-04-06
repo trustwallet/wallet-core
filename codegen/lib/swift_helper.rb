@@ -89,4 +89,13 @@ module SwiftHelper
       end
     end
   end
+
+  # Returns the protocols a given entity should conform to.
+  def self.protocol(entity)
+    if entity.name.end_with?('Address')
+      ['Address']
+    else
+      []
+    end
+  end
 end
