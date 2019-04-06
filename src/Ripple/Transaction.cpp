@@ -23,14 +23,14 @@ Data Transaction::serialize() const {
     encode16BE(uint16_t(TransactionType::payment), data);
     /// "flags"
     encodeType(FieldType::int32, 2, data);
-    encode32BE(flags, data);
+    encode32BE(static_cast<uint32_t>(flags), data);
     /// "sequence"
     encodeType(FieldType::int32, 4, data);
     encode32BE(sequence, data);
     /// "destinationTag"
     if (destination_tag > 0) {
         encodeType(FieldType::int32, 14, data);
-        encode32BE(destination_tag, data);
+        encode32BE(static_cast<uint32_t>(destination_tag), data);
     }
     /// "lastLedgerSequence"
     if (last_ledger_sequence > 0) {

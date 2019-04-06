@@ -16,7 +16,7 @@ using namespace TW::Theta;
 
 TW_Theta_Proto_SigningOutput TWThetaSignerSign(TW_Theta_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto pkFrom = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto from = Ethereum::Address(pkFrom.getPublicKey(PublicKeyType::secp256k1Extended));

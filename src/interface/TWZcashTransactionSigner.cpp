@@ -18,15 +18,15 @@ using namespace TW::Zcash;
 
 struct TWZcashTransactionSigner *_Nonnull TWZcashTransactionSignerCreate(TW_Bitcoin_Proto_SigningInput data) {
     Bitcoin::Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     return new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction>(std::move(input)) };
 }
 
 struct TWZcashTransactionSigner *_Nonnull TWZcashTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
     Bitcoin::Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     Bitcoin::Proto::TransactionPlan plan;
-    plan.ParseFromArray(TWDataBytes(planData), TWDataSize(planData));
+    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
     return new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction>(std::move(input), std::move(plan)) };
 }
 

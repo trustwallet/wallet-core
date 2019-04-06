@@ -157,7 +157,7 @@ std::string Base58::encode(const byte* begin, const byte* end) const {
     }
 
     // Allocate enough space in big-endian base58 representation.
-    int base58Size = (end - begin) * 138 / 100 + 1; // log(256) / log(58), rounded up.
+    auto base58Size = (end - begin) * 138 / 100 + 1; // log(256) / log(58), rounded up.
     Data b58(base58Size);
 
     while (begin != end) {

@@ -237,7 +237,7 @@ Data TransactionSigner<Transaction>::pushAll(const std::vector<Data>& results) {
             encode16LE(result.size(), data);
         } else {
             data.push_back(OP_PUSHDATA4);
-            encode32LE(result.size(), data);
+            encode32LE(static_cast<uint32_t>(result.size()), data);
         }
         std::copy(begin(result), end(result), back_inserter(data));
     }

@@ -17,7 +17,7 @@ using namespace TW::Tezos;
 
 TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto operationList = OperationList(input.operation_list().branch());
     for (auto& operationProto : input.operation_list().operations()) {
