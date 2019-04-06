@@ -174,7 +174,7 @@ bool Script::getScriptOp(size_t& index, uint8_t& opcode, std::vector<uint8_t>& o
     }
 
     // Immediate operand
-    auto size = 0;
+    size_t size = 0;
     if (opcode < OP_PUSHDATA1) {
         size = static_cast<size_t>(opcode);
     } else if (opcode == OP_PUSHDATA1) {

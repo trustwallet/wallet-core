@@ -203,7 +203,7 @@ public final class KeyStore {
     ///   - password: current password
     ///   - newPassword: new password
     public func update(wallet: Wallet, password: String, newPassword: String) throws {
-        guard let index = wallets.index(of: wallet) else {
+        guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")
         }
 
@@ -227,7 +227,7 @@ public final class KeyStore {
 
     /// Deletes an account including its key if the password is correct.
     public func delete(wallet: Wallet, password: String) throws {
-        guard let index = wallets.index(of: wallet) else {
+        guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")
         }
 
