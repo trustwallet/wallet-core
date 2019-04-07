@@ -107,7 +107,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeNEO:
         url += "/transaction/" + txId;
         break;
-    casse TWCoinTypeViacoin:
+    case TWCoinTypeViacoin:
     case TWCoinTypeEthereum:
     case TWCoinTypeDash:
     case TWCoinTypeCallisto:

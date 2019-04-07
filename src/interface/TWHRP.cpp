@@ -28,7 +28,6 @@ enum TWHRP hrpForString(const char *_Nonnull string) {
         return TWHRPLitecoin;
     } else if (strcmp(string, HRP_VIACOIN) == 0) {
         return TWHRPViacoin;
-    } else if (strcmp(string, HRP_BITCOINCASH) == 0) {
     } else if (std::strcmp(string, HRP_BITCOINCASH) == 0) {
         return TWHRPBitcoinCash;
     } else if (std::strcmp(string, HRP_BINANCE) == 0) {
