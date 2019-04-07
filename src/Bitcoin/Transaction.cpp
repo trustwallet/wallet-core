@@ -15,7 +15,7 @@
 
 using namespace TW::Bitcoin;
 
-std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, int index,
+std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t index,
                                               uint32_t hashType, uint64_t amount) const {
     assert(index < inputs.size());
 

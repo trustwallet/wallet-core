@@ -17,8 +17,29 @@ include_directories(${Protobuf_INCLUDE_DIRS})
 # Test executable
 file(GLOB_RECURSE test_sources *.cpp **/*.cpp)
 add_executable(tests ${test_sources})
-target_compile_features(tests PRIVATE cxx_std_17)
-target_link_libraries(tests gtest_main TrustWalletCore protobuf Boost::boost)
+target_link_libraries(tests gtest_main TrezorCrypto TrustWalletCore protobuf Boost::boost)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_compile_options(tests PRIVATE "-Wall")
+
+set_target_properties(tests
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+)
+
+option(CODE_COVERAGE "Enable coverage reporting" OFF)
+if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    # Add required flags (GCC & LLVM/Clang)
+    target_compile_options(tests INTERFACE
+        -O0        # no optimization
+        -g         # generate debug info
+        --coverage # sets all required flags
+    )
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+        target_link_options(tests INTERFACE --coverage)
+    else()
+        target_link_libraries(tests INTERFACE --coverage)
+    endif()
+endif()
 
 add_test(NAME example_test COMMAND tests)

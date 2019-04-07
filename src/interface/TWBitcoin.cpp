@@ -4,6 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-import Foundation
+#include <TrustWalletCore/TWBitcoin.h>
 
-public typealias TWEthereumSigningInput = TW_Ethereum_Proto_SigningInput
+bool TWSignatureHashTypeIsSingle(uint32_t type) {
+    return (type & 0x1f) == TWSignatureHashTypeSingle;
+}
+
+bool TWSignatureHashTypeIsNone(uint32_t type) {
+    return (type & 0x1f) == TWSignatureHashTypeNone;
+}

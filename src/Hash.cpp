@@ -61,7 +61,7 @@ Data Hash::sha3_512(const byte* begin, const byte* end) {
 
 Data Hash::ripemd(const byte* begin, const byte* end) {
     Data result(ripemdSize);
-    ::ripemd160(begin, end - begin, result.data());
+    ::ripemd160(begin, static_cast<uint32_t>(end - begin), result.data());
     return result;
 }
 
@@ -73,13 +73,13 @@ Data Hash::blake256(const byte* begin, const byte* end) {
 
 Data Hash::blake2b(const byte* begin, const byte* end, size_t size) {
     Data result(size);
-    ::blake2b(begin, end - begin, result.data(), size);
+    ::blake2b(begin, static_cast<uint32_t>(end - begin), result.data(), size);
     return result;
 }
 
 Data Hash::blake2b(const byte* begin, const byte* end, size_t size, const Data& personal) {
     Data result(size);
-    ::blake2b_Personal(begin, end - begin, personal.data(), personal.size(), result.data(), size);
+    ::blake2b_Personal(begin, static_cast<uint32_t>(end - begin), personal.data(), personal.size(), result.data(), size);
     return result;
 }
 

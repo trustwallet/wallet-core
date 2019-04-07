@@ -20,12 +20,12 @@ TWData *_Nullable TWKeyDerivationScrypt(TWString *_Nonnull password, TWData *_No
 
 TWData *_Nonnull TWKeyDerivationPBKDF2_256(TWString *_Nonnull password, TWData *_Nonnull salt,  uint32_t iterations, size_t keyLength) {
     uint8_t result[keyLength];
-    pbkdf2_hmac_sha256((const uint8_t *) TWStringUTF8Bytes(password), TWStringSize(password), TWDataBytes(salt), TWDataSize(salt), iterations, result, keyLength);
+    pbkdf2_hmac_sha256((const uint8_t *) TWStringUTF8Bytes(password), static_cast<int>(TWStringSize(password)), TWDataBytes(salt), static_cast<int>(TWDataSize(salt)), iterations, result, static_cast<int>(keyLength));
     return TWDataCreateWithBytes(result, keyLength);
 }
 
 TWData *_Nonnull TWKeyDerivationPBKDF2_512(TWString *_Nonnull password, TWData *_Nonnull salt,  uint32_t iterations, size_t keyLength) {
     uint8_t result[keyLength];
-    pbkdf2_hmac_sha512((const uint8_t *) TWStringUTF8Bytes(password), TWStringSize(password), TWDataBytes(salt), TWDataSize(salt), iterations, result, keyLength);
+    pbkdf2_hmac_sha512((const uint8_t *) TWStringUTF8Bytes(password), static_cast<int>(TWStringSize(password)), TWDataBytes(salt), static_cast<int>(TWDataSize(salt)), iterations, result, static_cast<int>(keyLength));
     return TWDataCreateWithBytes(result, keyLength);
 }
