@@ -6,28 +6,28 @@
 
 #include <TrustWalletCore/TWNULSSigner.h>
 
-#include "../PrivateKey.h"
 #include "../NULS/Signer.h"
 #include "../NULS/TransactionBuilder.h"
+#include "../PrivateKey.h"
 #include "../proto/NULS.pb.h"
 
 using namespace TW;
 using namespace TW::NULS;
 
-TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose data)
-{
+TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose data) {
     Proto::TransactionPurpose purpose;
     purpose.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
     auto plan = TransactionBuilder::plan(purpose);
     std::vector<uint8_t> serializeData(plan.ByteSize());
-    plan.SerializeToArray(serializeData.data(), plan.ByteSize());;
+    plan.SerializeToArray(serializeData.data(), plan.ByteSize());
+    ;
 
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serializeData.data()), serializeData.size());
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serializeData.data()),
+                                 serializeData.size());
 }
 
-TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_TransactionPlan data)
-{
+TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_TransactionPlan data) {
     Proto::TransactionPlan plan;
     plan.ParseFromArray(TWDataBytes(data), TWDataSize(data));
 
