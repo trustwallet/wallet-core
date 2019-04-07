@@ -21,7 +21,6 @@ TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose 
     auto plan = TransactionBuilder::plan(purpose);
     std::vector<uint8_t> serializeData(plan.ByteSize());
     plan.SerializeToArray(serializeData.data(), plan.ByteSize());
-    ;
 
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serializeData.data()),
                                  serializeData.size());
