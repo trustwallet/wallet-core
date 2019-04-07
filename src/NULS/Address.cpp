@@ -13,28 +13,26 @@
 
 using namespace TW::NULS;
 
-bool Address::isValid(const std::string& string)
-{
+bool Address::isValid(const std::string& string) {
     if (string.empty()) {
         return false;
     }
 
     Data decoded = TW::Base58::bitcoin.decode(string);
-    if (decoded.size()!=Address::addressSize) {
+    if (decoded.size() != Address::addressSize) {
         return false;
     }
 
     // Check Xor
     uint8_t checkSum = 0x00;
-    for (int i = 0; i<23; ++i) {
+    for (int i = 0; i < 23; ++i) {
         checkSum ^= decoded[i];
     }
 
-    return decoded[23]==checkSum;
+    return decoded[23] == checkSum;
 }
 
-Address::Address(const std::string& string)
-{
+Address::Address(const std::string& string) {
     if (!isValid(string)) {
         return;
     }
@@ -43,51 +41,45 @@ Address::Address(const std::string& string)
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
-Address::Address(const TW::PublicKey& publicKey)
-{
+Address::Address(const TW::PublicKey& publicKey) {
     // Main-Net chainID
     bytes[0] = 0x04;
     bytes[1] = 0x23;
     // Address Type
     bytes[2] = 0x01;
 
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.begin()+3);
+    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.begin() + 3);
 
     // Calc chechsum
     uint8_t checkSum = 0x00;
-    for (int i = 0; i<23; ++i) {
+    for (int i = 0; i < 23; ++i) {
         checkSum ^= bytes[i];
     }
     bytes[23] = checkSum;
 }
 
-Address::Address(const std::vector<uint8_t>& data)
-{
-    if (data.size()!=Address::addressSize) {
+Address::Address(const std::vector<uint8_t>& data) {
+    if (data.size() != Address::addressSize) {
         throw std::invalid_argument("Invalid address data");
     }
 
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-std::string Address::string() const
-{
+std::string Address::string() const {
     return TW::Base58::bitcoin.encode(bytes.begin(), bytes.end());
 }
 
-uint16_t Address::chainID() const
-{
+uint16_t Address::chainID() const {
     return decode16LE(bytes.data());
 }
 
-uint8_t Address::type() const
-{
+uint8_t Address::type() const {
     return bytes[2];
 }
 
-bool Address::isValid() const
-{
-    if (chainID()!=MainNetID) {
+bool Address::isValid() const {
+    if (chainID() != MainNetID) {
         return false;
     }
     if (type() != 0x01 && type() != 0x02) {
@@ -95,34 +87,30 @@ bool Address::isValid() const
     }
 
     uint8_t checkSum = 0x00;
-    for (int i = 0; i<23; ++i) {
+    for (int i = 0; i < 23; ++i) {
         checkSum ^= bytes[i];
     }
 
-    return bytes[23]==checkSum;
+    return bytes[23] == checkSum;
 }
 
-TW::PrivateKey Address::importHexPrivateKey(std::string hexPrivateKey)
-{
+TW::PrivateKey Address::importHexPrivateKey(std::string hexPrivateKey) {
     Data privKey = parse_hex(hexPrivateKey);
     Data data = Data();
     switch (privKey.size()) {
     case 31: {
         data.push_back(static_cast<uint8_t>(0x00));
         std::copy(privKey.begin(), privKey.end(), std::back_inserter(data));
-    }
-        break;
+    } break;
     case 32: {
         std::copy(privKey.begin(), privKey.end(), std::back_inserter(data));
-    }
-        break;
+    } break;
     case 33: {
-        if (privKey[0]!=0x00) {
+        if (privKey[0] != 0x00) {
             throw std::invalid_argument("Invalid private key");
         }
-        std::copy(privKey.begin()+1, privKey.end(), std::back_inserter(data));
-    }
-        break;
+        std::copy(privKey.begin() + 1, privKey.end(), std::back_inserter(data));
+    } break;
     default: {
         throw std::invalid_argument("Invalid private key");
     }

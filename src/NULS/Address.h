@@ -12,7 +12,7 @@
 namespace TW::NULS {
 
 class Address {
-public:
+  public:
     /// Number of bytes in an address.
     static const size_t addressSize = 24;
 
@@ -48,14 +48,13 @@ public:
     uint8_t type() const;
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs)
-{
-    return lhs.bytes==rhs.bytes;
+static inline bool operator==(const Address& lhs, const Address& rhs) {
+    return lhs.bytes == rhs.bytes;
 }
 
-} // namespace
+} // namespace TW::NULS
 
 /// Wrapper for C interface.
 struct TWNULSAddress {
-  TW::NULS::Address impl;
+    TW::NULS::Address impl;
 };

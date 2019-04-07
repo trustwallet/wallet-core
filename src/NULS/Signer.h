@@ -13,7 +13,7 @@ namespace TW::NULS {
 
 /// Helper class that performs NULS transaction signing.
 class Signer {
-public:
+  public:
     Proto::Transaction tx;
     Proto::TransactionPlan plan;
     Signer(Proto::TransactionPlan& plan);
@@ -24,9 +24,9 @@ public:
     std::vector<uint8_t> sign() const;
 };
 
-} // namespace
+} // namespace TW::NULS
 
 /// Wrapper for C interface.
 struct TWNULSSigner {
-  TW::NULS::Signer impl;
+    TW::NULS::Signer impl;
 };
