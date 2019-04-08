@@ -121,7 +121,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeQtum:
         return Bitcoin::Bech32Address::isValid(string, HRP_QTUM) ||
-               Bitcoin::Address::isValid(string, {TWP2PKHPrefixQtum, TWP2SHPrefixQtum});
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixQtum}, {TWP2SHPrefixQtum}});
     }
 }
 

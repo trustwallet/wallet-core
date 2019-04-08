@@ -70,8 +70,8 @@ TEST(Qtum, ExtendedKeys) {
 
 TEST(Qtum, DeriveFromXpub) {
     auto xpub = STRING("xpub6CAkJZPecMDxRXEXZpDwyxcQ6CGie8GdovuJhsGwc2gFbLxdGr1PyqBXmsL7aYds1wfY2rB3YMVZiEE3CB3Lkj6KGoq1rEJ1wuaGkMDBf1m");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
+    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
 
     TWBitcoinAddress address2;
     TWBitcoinAddressInitWithPublicKey(&address2, pubKey2, TWP2PKHPrefixQtum);
@@ -87,8 +87,8 @@ TEST(Qtum, DeriveFromXpub) {
 
 TEST(Qtum, DeriveFromZpub) {
     auto zpub = STRING("zpub6rJJqJZcpaC7DrdsYiprLfUfvtaf11ZZWmrmYeWMkdZTx6tgfQLiBZuisraogskwBRLMGWfXoCyWRrXSypwPdNV2UWJXm5bDVQvBXvrzz9d");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCurveSECP256k1, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCurveSECP256k1, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
 
     auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, pubKey4));
     auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));
