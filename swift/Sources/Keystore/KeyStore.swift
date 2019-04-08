@@ -203,7 +203,7 @@ public final class KeyStore {
     ///   - password: current password
     ///   - newPassword: new password
     public func update(wallet: Wallet, password: String, newPassword: String) throws {
-        guard let index = wallets.index(of: wallet) else {
+        guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")
         }
 
@@ -227,7 +227,7 @@ public final class KeyStore {
 
     /// Deletes an account including its key if the password is correct.
     public func delete(wallet: Wallet, password: String) throws {
-        guard let index = wallets.index(of: wallet) else {
+        guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")
         }
 
@@ -242,10 +242,21 @@ public final class KeyStore {
         try FileManager.default.removeItem(at: wallet.keyURL)
     }
 
+    /// Removes all wallets.
+    public func destroy() throws {
+        wallets.removeAll(keepingCapacity: false)
+
+        let fileManager = FileManager.default
+        let accountURLs = try fileManager.contentsOfDirectory(at: keyDirectory, includingPropertiesForKeys: [], options: [.skipsHiddenFiles])
+        for url in accountURLs {
+            try? fileManager.removeItem(at: url)
+        }
+    }
+
     // MARK: Helpers
 
     private func makeAccountURL(for address: Address) -> URL {
-        return keyDirectory.appendingPathComponent(generateFileName(identifier: address.data.hexString))
+        return keyDirectory.appendingPathComponent(generateFileName(identifier: address.description))
     }
 
     private func makeAccountURL() -> URL {

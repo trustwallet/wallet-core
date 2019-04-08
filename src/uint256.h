@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+
 #include <boost/multiprecision/cpp_int.hpp>
 
 namespace TW {
@@ -17,7 +18,7 @@ using uint256_t = boost::multiprecision::uint256_t;
 /// Loads a `uint256_t` from a collection of bytes.
 inline uint256_t load(const Data& data) {
     using boost::multiprecision::cpp_int;
-    if (std::empty(data)) {
+    if (data.empty()) {
         return uint256_t(0);
     }
     uint256_t result;
@@ -29,7 +30,7 @@ inline uint256_t load(const Data& data) {
 /// std::string).
 inline uint256_t load(const std::string& data) {
     using boost::multiprecision::cpp_int;
-    if (std::empty(data)) {
+    if (data.empty()) {
         return uint256_t(0);
     }
     uint256_t result;

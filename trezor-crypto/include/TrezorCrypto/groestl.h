@@ -38,6 +38,11 @@
 
 #include <stddef.h>
 
+#if defined(__cplusplus)
+extern "C"
+{
+#endif
+
 /**
  * This structure is a context for Groestl-384 and Groestl-512 computations:
  * it contains the intermediate values and some data from the last
@@ -91,5 +96,9 @@ void groestl512_Final(void *cc, void *dst);
 
 /* Calculate double Groestl-512 hash and truncate it to 256-bits. */
 void groestl512_DoubleTrunc(void *cc, void *dst);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif

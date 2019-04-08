@@ -72,7 +72,7 @@ class BitcoinAddressTests: XCTestCase {
         XCTAssertEqual(address.description, expect)
 
         let addressFromString = Bech32Address(string: expect)
-        XCTAssertEqual(address, addressFromString)
+        XCTAssertEqual(address.description, addressFromString?.description)
     }
 
     func testInvalidBech32Addresses() {

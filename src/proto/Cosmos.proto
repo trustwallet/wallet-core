@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package TW.Cosmos.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Coin
+message Coin {
+    string denom = 1;
+    int64 amount = 2;
+}
+
+// Fee
+message Fee {
+    repeated Coin amount = 1;
+    uint64 gas = 2;
+}
+
+// Message for sending coins.
+message SendCoinsMessage {
+    string from_address = 1;
+    string to_address = 2;
+    repeated Coin amount = 3;
+}
+
+// Signature
+message Signature {
+    bytes public_key = 1;
+    bytes signature = 2;
+}
+
+// Transaction
+message Transaction {
+    Fee fee = 1;
+    string memo = 2;
+    SendCoinsMessage message = 3;
+    Signature signature = 4;
+}
+
+// Input data necessary to create a signed order.
+message SigningInput {
+    uint64 account_number = 1;
+    string chain_id = 2;
+    Fee fee = 3;
+    string memo = 4;
+    uint64 sequence = 5; 
+
+    bytes private_key = 6;
+
+    oneof message_oneof {
+        SendCoinsMessage message = 7;
+    }
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+}

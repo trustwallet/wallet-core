@@ -15,7 +15,7 @@ using namespace TW::Icon;
 
 TW_Icon_Proto_SigningOutput TWIconSignerSign(TW_Icon_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     const auto signer = Signer(input);
     const auto output = signer.sign();

@@ -35,15 +35,6 @@ struct TWNimiqAddress *_Nullable TWNimiqAddressCreateWithString(TWString *_Nonnu
     }
 }
 
-struct TWNimiqAddress *_Nullable TWNimiqAddressCreateWithData(TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    try {
-        return new TWNimiqAddress{ Address(*d) };
-    } catch (...) {
-        return nullptr;
-    }
-}
-
 struct TWNimiqAddress *_Nonnull TWNimiqAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
     return new TWNimiqAddress{ Address(publicKey->impl) };
 }

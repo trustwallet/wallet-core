@@ -7,8 +7,11 @@
 #pragma once
 
 #include "Data.h"
+#include "Hash.h"
 
 #include <array>
+#include <cassert>
+#include <stdexcept>
 #include <vector>
 
 namespace TW {
@@ -75,9 +78,13 @@ class PublicKey {
     }
 
     /// Initializes a public key with a collection of bytes.
+    ///
+    /// @throws std::invalid_argument if the data is not a valid public key.
     template <typename T>
     explicit PublicKey(const T& data) {
-        assert(isValid(data));
+        if (!isValid(data)) {
+            throw std::invalid_argument("Invalid public key data");
+        }
         bytes.reserve(data.size());
         std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
     }
@@ -93,6 +100,12 @@ class PublicKey {
 
     /// Verifies a signature for the provided message.
     bool verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const;
+
+    /// Computes the public key hash.
+    ///
+    /// The public key hash is computed by applying the hasher to the public key
+    /// bytes and then prepending the prefix.
+    Data hash(const Data& prefix, Hash::Hasher hasher = Hash::sha256ripemd, bool skipTypeByte = false) const;
 };
 
 inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {

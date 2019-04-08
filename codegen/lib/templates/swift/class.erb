@@ -1,6 +1,7 @@
 import Foundation
 
-public final class <%= entity.name %> {
+<% protocols = SwiftHelper.protocol(entity) -%>
+public final class <%= entity.name %><% unless protocols.empty? %>: <%= protocols.join(', ') %><% end %> {
 <%# Static properties -%>
 <% entity.static_properties.each do |property| -%>
     public static var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {

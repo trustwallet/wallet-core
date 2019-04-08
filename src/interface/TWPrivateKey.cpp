@@ -12,13 +12,19 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
+#include <exception>
+
 using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate() {
-    std::array<uint8_t, PrivateKey::size> bytes;
+    std::array<uint8_t, PrivateKey::size> bytes = {0};
     random_buffer(bytes.data(), PrivateKey::size);
     if (!PrivateKey::isValid(bytes)) {
-        abort();
+        // Under no circumstance return an invalid private key. We'd rather
+        // crash. This also captures cases where the random generator fails
+        // since we initialize the array to zeros, which is an invalid private
+        // key.
+        std::terminate();
     }
 
     return new TWPrivateKey{ PrivateKey(std::move(bytes)) };

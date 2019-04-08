@@ -66,14 +66,14 @@ TWData *_Nonnull TWHashSHA3_512(TWData *_Nonnull data) {
 TWData *_Nonnull TWHashRIPEMD(TWData *_Nonnull data) {
     std::array<uint8_t, TWHashRipemdLength> resultBytes;
     auto dataBytes = TWDataBytes(data);
-    ripemd160(dataBytes, TWDataSize(data), resultBytes.data());
+    ripemd160(dataBytes, static_cast<uint32_t>(TWDataSize(data)), resultBytes.data());
     return TWDataCreateWithBytes(resultBytes.data(), TWHashRipemdLength);
 }
 
 TWData *_Nonnull TWHashBlake2b(TWData *_Nonnull data, size_t outlen) {
     auto resultBytes = TW::Data(outlen);
     auto dataBytes = TWDataBytes(data);
-    blake2b(dataBytes, TWDataSize(data), resultBytes.data(), outlen);
+    blake2b(dataBytes, static_cast<uint32_t>(TWDataSize(data)), resultBytes.data(), outlen);
     auto result = TWDataCreateWithBytes(resultBytes.data(), outlen);
     return result;
 }

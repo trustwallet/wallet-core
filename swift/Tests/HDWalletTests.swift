@@ -200,6 +200,15 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("NQ77 XYYH YUNC V52U 5ADV 5JAY QXMD 2F9C Q440", address.description)
     }
 
+    func testDeriveDecred() {
+        let wallet = HDWallet.test
+        let coin = CoinType.decred
+        let key = wallet.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("DsksmLD2wDoA8g8QfFvm99ASg8KsZL8eJFd", address.description)
+    }
+
     func testSignHash() {
         let eth = CoinType.ethereum
         let wallet = HDWallet.test

@@ -11,7 +11,7 @@ class PrivateKeyTests: XCTestCase {
     func testCreateNew() {
         let privateKey = PrivateKey()
 
-        XCTAssertEqual(privateKey.data.count, PrivateKey.size)
+        XCTAssertEqual(privateKey.data.count, TWPrivateKeySize)
         XCTAssertTrue(PrivateKey.isValid(data: privateKey.data))
     }
 
