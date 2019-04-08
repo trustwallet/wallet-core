@@ -100,12 +100,6 @@ TEST(Qtum, DeriveFromZpub) {
     assertStringsEqual(address11String, "qc1qrlk0ajg6khu2unsdppggs3pgpxxvdeymky58af");
 }
 
-TEST(Qtum, LockScripts) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("MHhghmmCTASDnuwpgsPUNJVPTFaj61GzaG").get()));
-    auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
-    assertHexEqual(scriptData, "a9146b85b3dac9340f36b9d32bbacf2ffcb0851ef17987");
-}
-
 /*
 HD scheme that is used in qtum desktop wallet is "<MASTER KEY>/<COIN>/<INTERNAL>":
 m/88'/0'
@@ -116,6 +110,5 @@ m/49'/2301'
 m/84'/2301'
 The master key is used to derive the other keys, so the wallet should work but will not be compatible with qtum desktop wallet.
 The rules for creating send/receive Qtum transactions are the same as Bitcoin.
-The script address prefix for Qtum is not unique, it is the same as Litecoin.
 The default addresses in Qtum are the legacy addresses.
 */

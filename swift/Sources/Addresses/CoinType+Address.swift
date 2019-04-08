@@ -84,7 +84,7 @@ public extension CoinType {
         case .zcash:
             return Set([P2SHPrefix.zcashT.rawValue, P2PKHPrefix.zcashT.rawValue])
         case .qtum:
-            return Set([P2SHPrefix.qtum.rawValue, P2PKHPrefix.qtum.rawValue])
+            return Set([P2PKHPrefix.qtum.rawValue])
         default:
             return Set()
         }
