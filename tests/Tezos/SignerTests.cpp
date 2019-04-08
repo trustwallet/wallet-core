@@ -7,7 +7,6 @@
 #include "Tezos/BinaryCoding.h"
 #include "Tezos/OperationList.h"
 #include "Tezos/Signer.h"
-#include "Tezos/Transaction.h"
 #include "PrivateKey.h"
 #include "HexCoding.h"
 
@@ -31,29 +30,37 @@ TEST(TezosSigner, SignString) {
 
 TEST(TezosSigner, SignOperationList) {
     auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
-    auto op_list = OperationList(branch);
-    auto tx1 = Transaction(
-        Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
-        1272,
-        30738,
-        10100,
-        257,
-        1,
-        parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
-        operationtype::REVEAL
-    );
-    op_list.addOperation(tx1);
-    auto tx2 = Transaction(
-        Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
-        1272,
-        30739,
-        10100,
-        257,
-        1,
-        Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
-        operationtype::TRANSACTION
-    );
-    op_list.addOperation(tx2);
+    auto op_list = TW::Tezos::OperationList(branch);
+    
+    auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
+    transactionOperationData -> set_amount(1);
+    transactionOperationData -> set_destination("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+
+    auto transactionOperation = TW::Tezos::Proto::Operation();
+    transactionOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    transactionOperation.set_fee(1272);
+    transactionOperation.set_counter(30739);
+    transactionOperation.set_gas_limit(10100);
+    transactionOperation.set_storage_limit(257);
+    transactionOperation.set_kind(TW::Tezos::Proto::Operation::TRANSACTION);
+    transactionOperation.set_allocated_transaction_operation_data(transactionOperationData);
+    
+    PublicKey publicKey = parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
+    
+    auto revealOperationData = new TW::Tezos::Proto::RevealOperationData();
+    revealOperationData -> set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+
+    auto revealOperation = TW::Tezos::Proto::Operation();
+    revealOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    revealOperation.set_fee(1272);
+    revealOperation.set_counter(30738);
+    revealOperation.set_gas_limit(10100);
+    revealOperation.set_storage_limit(257);
+    revealOperation.set_kind(TW::Tezos::Proto::Operation::REVEAL);
+    revealOperation.set_allocated_reveal_operation_data(revealOperationData);
+    
+    op_list.addOperation(revealOperation);
+    op_list.addOperation(transactionOperation);
 
     std::string expectedForgedBytesToSign = hex(op_list.forge());
     std::string expectedSignature = "d924cb3e56c4b9f55e50735e461899a2f616a26bfb0aa05d0b356b66f517b023df330ad3621f0bf39d518131a1becd6a7b2e226ed291483af3682535d1f4530f";
