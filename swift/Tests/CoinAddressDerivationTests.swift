@@ -83,6 +83,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
                 case .viacoin:
                     XCTAssertEqual("via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc", address)
+                case .qtum:
+                    XCTAssertEqual("QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF", address)
                 }
             }
         }
