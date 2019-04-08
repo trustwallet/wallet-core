@@ -27,13 +27,6 @@ class TezosTests: XCTestCase {
         XCTAssertEqual(address.description, "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT")
     }
 
-//  public func testPublicKey() {
-//    
-//    auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
-//    auto publicKey = privateKey.getPublicKey(PublicKeyType::ed25519);
-//
-//  }
-
     public func testSigning() {
         let privateKeyData = Data(hexString: "c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8")!
         let privateKey = PrivateKey(data: privateKeyData)!
@@ -69,8 +62,7 @@ class TezosTests: XCTestCase {
         transactionOperation.kind = .transaction
         transactionOperation.transactionOperationData = transactionOperationData
 
-        operationList.operations = [revealOperation]
-//        operationList.operations = [ revealOperation, transactionOperation ]
+        operationList.operations = [ revealOperation, transactionOperation ]
 
         let privateKeyBytes: [UInt8] = [
             46, 137, 5, 129, 155, 135, 35, 254, 44, 29, 22, 24, 96, 229, 238, 24, 48, 49, 141, 191, 73, 168, 59, 212,

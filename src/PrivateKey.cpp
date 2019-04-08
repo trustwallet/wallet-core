@@ -7,7 +7,6 @@
 #include "PrivateKey.h"
 
 #include "PublicKey.h"
-#include "HexCoding.h"
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/nist256p1.h>

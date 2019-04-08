@@ -8,7 +8,6 @@
 
 #include "Data.h"
 #include "Hash.h"
-#include "HexCoding.h"
 
 #include <array>
 #include <cassert>
