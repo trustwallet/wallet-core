@@ -62,6 +62,13 @@ Data blake2b(const byte* begin, const byte* end, size_t size, const Data& person
 /// Computed the Groestl 512 hash.
 Data groestl512(const byte* begin, const byte* end);
 
+/// Computes requested hash for data.
+template <typename T>
+Data hash(Hasher hasher, const T& data) {
+    const auto begin = reinterpret_cast<const byte*>(data.data());
+    return hasher(begin, begin + data.size());
+}
+
 /// Computes the SHA1 hash.
 template <typename T>
 Data sha1(const T& data) {

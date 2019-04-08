@@ -19,9 +19,9 @@ namespace TW::Cosmos {
 TEST(CosmosSigner, SignTx) {
     auto input = Proto::SigningInput();
     input.set_account_number(1037);
-    input.set_chain_id("test-chain-id");
+    input.set_chain_id("gaia-13002");
     input.set_memo("");
-    input.set_sequence(0);
+    input.set_sequence(2);
 
     auto fromAddress = TW::Tendermint::Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
     auto toAddress = TW::Tendermint::Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
@@ -37,7 +37,7 @@ TEST(CosmosSigner, SignTx) {
     auto fee = Proto::Fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amount();
-    amountOfFee->set_denom("photino");
+    amountOfFee->set_denom("muon");
     amountOfFee->set_amount(1);
     *input.mutable_fee() = fee;
 
@@ -48,7 +48,7 @@ TEST(CosmosSigner, SignTx) {
     auto signature = signer.sign();
     auto signatureInBase64 = signer.signInBase64();
 
-    ASSERT_EQ("KEx6ex0DZJ9XG013PJGa6INpBeV6SsAOkItx4ezb9NdVSwJohWqXKrcpM4bhJZuqweoBSoxW3agJrQPHSQAgAQ==", signatureInBase64);
+    ASSERT_EQ("UCnIs7gl7opPxYlrhQGqs25ySPIkPgivO1/ROPNUf451/c5QdrFX5unbXSwfjvW9H80c21JYzNrNnqHuGUCSUw==", signatureInBase64);
 
     auto txInJsonString = signer.buildTransaction();
 
@@ -58,7 +58,7 @@ TEST(CosmosSigner, SignTx) {
             "\"value\":{"
                 "\"fee\":{"
                     "\"amount\":["
-                                    "{\"amount\":\"1\",\"denom\":\"photino\"}"
+                                    "{\"amount\":\"1\",\"denom\":\"muon\"}"
                                 "],"
                     "\"gas\":\"200000\""
                 "},"
@@ -81,7 +81,7 @@ TEST(CosmosSigner, SignTx) {
                                             "\"type\":\"tendermint/PubKeySecp256k1\","
                                             "\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\""
                                         "},"
-                                        "\"signature\":\"KEx6ex0DZJ9XG013PJGa6INpBeV6SsAOkItx4ezb9NdVSwJohWqXKrcpM4bhJZuqweoBSoxW3agJrQPHSQAgAQ==\""
+                                        "\"signature\":\"UCnIs7gl7opPxYlrhQGqs25ySPIkPgivO1/ROPNUf451/c5QdrFX5unbXSwfjvW9H80c21JYzNrNnqHuGUCSUw==\""
                                     "}"
                                 "]"
             "}"
@@ -90,7 +90,9 @@ TEST(CosmosSigner, SignTx) {
 
         auto txInBytes = signer.build();
 
-        ASSERT_EQ("a264747970656a617574682f53746454786576616c7565a463666565a266616d6f756e7481a266616d6f756e7461316564656e6f6d6770686f74696e6f6367617366323030303030646d656d6f60636d736781a2647479706572636f736d6f732d73646b2f4d736753656e646576616c7565a366616d6f756e7481a266616d6f756e7461316564656e6f6d646d756f6e6c66726f6d5f61646472657373782d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b7967783065706836646430326a746f5f61646472657373782d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537336a7369676e61747572657381a2677075625f6b6579a26474797065781a74656e6465726d696e742f5075624b6579536563703235366b316576616c7565782c416c636f6273507a66544e56653775714141736e6445724a416a71706c6e79756461474230662b522b703346697369676e617475726578584b457836657830445a4a395847303133504a476136494e70426556365373414f6b49747834657a62394e645653774a6f685771584b7263704d3462684a5a757177656f42536f78573361674a725150485351416741513d3d", hex(txInBytes));
+        ASSERT_EQ("a264747970656a617574682f53746454786576616c7565a463666565a266616d6f756e7481a266616d6f756e7461316564656e6f6d646d756f6e6367617366323030303030646d656d6f60636d736781a2647479706572636f736d6f732d73646b2f4d736753656e646576616c7565a366616d6f756e7481a266616d6f756e7461316564656e6f6d646d756f6e6c66726f6d5f61646472657373782d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b7967783065706836646430326a746f5f61646472657373782d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537336a7369676e61747572657381a2677075625f6b6579a26474797065781a74656e6465726d696e742f5075624b6579536563703235366b316576616c7565782c416c636f6273507a66544e56653775714141736e6445724a416a71706c6e79756461474230662b522b703346697369676e6174757265785855436e497337676c376f705078596c7268514771733235795350496b506769764f312f524f504e55663435312f6335516472465835756e62585377666a7657394838306332314a597a4e724e6e7148754755435355773d3d", hex(txInBytes));
+
+        // the sample tx on testnet https://hubble.figment.network/chains/gaia-13002/blocks/269400/transactions/92D3D8CCE20C164409F91844A08A7FB7A3B700A3CC555C4B1CF51D44777F60F9?format=json
 }
 
 }
