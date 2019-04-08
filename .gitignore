@@ -16,3 +16,5 @@ lib/protobuf
 
 # Generated files
 swift/TrustWalletCore.xcodeproj
+
+cmake-build-debug/
