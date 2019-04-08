@@ -9,10 +9,10 @@ namespace TW::Tezos {
 class OperationList {
   public:
     std::string branch;
-    std::vector<Transaction> operation_list;
+    std::vector<TW::Tezos::Proto::Operation> operation_list;
     OperationList(const std::string& string);
-    void addOperation(const Transaction& transaction);
-    /// Returns a string representation of the operations.
+    void addOperation(const TW::Tezos::Proto::Operation& transaction);
+    /// Returns a data representation of the operations.
     Data forge() const;
     Data forgeBranch() const;
 };

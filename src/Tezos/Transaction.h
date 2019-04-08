@@ -16,7 +16,9 @@ namespace TW::Tezos {
 
 enum class operationtype {
     REVEAL,
-    TRANSACTION
+    TRANSACTION,
+    ORIGINATION,
+    DELEGATION
 };
 
 class Transaction {

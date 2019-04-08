@@ -5,10 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "BinaryCoding.h"
+#include "Forging.h"
 #include "HexCoding.h"
 #include "OperationList.h"
 #include "Transaction.h"
 #include "../Base58.h"
+#include "../proto/Tezos.pb.h"
 
 using namespace TW;
 using namespace TW::Tezos;
@@ -17,8 +19,8 @@ OperationList::OperationList(const std::string& str) {
     branch = str;
 }
 
-void OperationList::addOperation(const Transaction& transaction) {
-    operation_list.push_back(transaction);
+void OperationList::addOperation(const TW::Tezos::Proto::Operation& operation) {
+    operation_list.push_back(operation);
 }
 
 // Forge the given branch to a hex encoded string.
@@ -37,7 +39,7 @@ Data OperationList::forge() const {
     auto forged = forgeBranch();
 
     for (auto operation : operation_list) {
-        append(forged, operation.forge());
+        append(forged, forgeOperation(operation));
     }
     return forged;
 }

@@ -62,6 +62,26 @@ TEST(TezosOperationList, ForgeOperationList_RevealOnly) {
       ASSERT_EQ(op_list.forge(), parse_hex(expected));
 }
 
+TEST(TezosOperationList, ForgeOperationList_OriginationOnly) {
+    auto branch = "BMNXfoGjvVKCxNiDTmA3iaKnk72aFrSa76UUGFBmy8ZD9KAiyQr";
+    auto op_list = OperationList(branch);
+
+    auto tx1 = Transaction(
+        Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
+        1272,
+        30738,
+        10100,
+        257,
+        1,
+        parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
+        operationtype::ORIGINATION
+      );
+
+      op_list.addOperation(tx1);
+      auto expected = "da8a78d40c54729c4d35318c0ce7ac5f1c77776785e1f5d93d19f870891c9ae309000081faa75f741ef614b0e35fcc8c90dfa3b0b95721850a8ff101904e81020081faa75f741ef614b0e35fcc8c90dfa3b0b9572100ffff0000";
+      ASSERT_EQ(op_list.forge(), parse_hex(expected));
+}
+
 TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
     auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
     auto op_list = OperationList(branch);
