@@ -39,6 +39,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://poa.network/xdai" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/700.png" width="32" /></a>
 <a href="https://decred.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/42.png" width="32" /></a>
 <a href="https://www.thetatoken.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/500.png" width="32" /></a>
+<a href="https://ont.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1024.png" width="32" /></a>
 <a href="https://www.groestlcoin.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/17.png" width="32" /></a>
 <a href="https://cosmos.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" /></a>
 # Usage
