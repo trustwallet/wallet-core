@@ -14,6 +14,7 @@ import wallet.core.jni.CoinType.ETHEREUMCLASSIC
 import wallet.core.jni.CoinType.GO
 import wallet.core.jni.CoinType.ICON
 import wallet.core.jni.CoinType.LITECOIN
+import wallet.core.jni.CoinType.ONTOLOGY
 import wallet.core.jni.CoinType.POA
 import wallet.core.jni.CoinType.RIPPLE
 import wallet.core.jni.CoinType.TEZOS
@@ -57,6 +58,7 @@ class CoinAddressDerivationTests {
                     GO ->  assertEquals("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
                     ICON -> assertEquals("hx18b380b53c23dc4ee9f6666bc20d1be02f3fe106", address)
                     LITECOIN -> assertEquals("ltc1qhd8fxxp2dx3vsmpac43z6ev0kllm4n53t5sk0u", address)
+                    ONTOLOGY -> assertEquals("AHKTnybvnWo3TeY8uvNXekvYxMrXogUjeT", address)
                     POA -> assertEquals("0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9", address)
                     RIPPLE -> assertEquals("rPwE3gChNKtZ1mhH3Ko8YFGqKmGRWLWXV3", address)
                     TEZOS -> assertEquals("tz1acnY9VbMagps26Kj3RfoGRWD9nYG5qaRX", address)

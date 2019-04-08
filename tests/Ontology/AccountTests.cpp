@@ -7,15 +7,13 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+
 #include "Ontology/Signer.h"
 
 #include <gtest/gtest.h>
 
-#include <iostream>
-
 using namespace TW;
 using namespace TW::Ontology;
-
 
 TEST(OntologyAccount, validity) {
     auto hexPrvKey = "4646464646464646464646464646464646464646464646464646464646464646";
