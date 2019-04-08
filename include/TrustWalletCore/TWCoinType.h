@@ -38,6 +38,7 @@ enum TWCoinType {
     TWCoinTypeNEO = 888,
     TWCoinTypeNimiq = 242,
     TWCoinTypeOntology = 1024,
+    TWCoinTypeViacoin = 14,
     TWCoinTypePoa = 178,
     TWCoinTypeRipple = 144,
     TWCoinTypeStellar = 148,
