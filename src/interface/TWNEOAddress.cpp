@@ -32,15 +32,6 @@ struct TWNEOAddress *_Nullable TWNEOAddressCreateWithString(TWString *_Nonnull s
     }
 }
 
-struct TWNEOAddress *_Nullable TWNEOAddressCreateWithData(TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    try {
-        return new TWNEOAddress{ Address(*d) };
-    } catch (...) {
-        return nullptr;
-    }
-}
-
 struct TWNEOAddress *_Nonnull TWNEOAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
     return new TWNEOAddress{ Address(publicKey->impl) };
 }

@@ -13,8 +13,13 @@ lib/json
 lib/protobuf
 
 .idea/
+.vscode/
 
 # Generated files
-swift/TrustWalletCore.xcodeproj
+jni/cpp/generated
+jni/java
+swift/Sources/Generated
 
-cmake-build-debug/
+# Code coverage files
+coverage.info
+coverage/

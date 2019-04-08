@@ -9,6 +9,7 @@
 #include "Script.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
+#include "../Hash.h"
 
 #include <TrustWalletCore/TWBitcoin.h>
 #include <vector>
@@ -37,16 +38,18 @@ struct Transaction {
     /// A list of 1 or more transaction outputs or destinations for coins
     std::vector<TransactionOutput> outputs;
 
+    TW::Hash::Hasher hasher = TW::Hash::sha256d;
+
     Transaction() = default;
 
-    Transaction(int32_t version, uint32_t lockTime)
-        : version(version), lockTime(lockTime), inputs(), outputs() {}
+    Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
+        : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
 
     /// Whether the transaction is empty.
     bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    std::vector<uint8_t> getPreImage(const Script& scriptCode, int index, uint32_t hashType,
+    std::vector<uint8_t> getPreImage(const Script& scriptCode, size_t index, uint32_t hashType,
                                      uint64_t amount) const;
     std::vector<uint8_t> getPrevoutHash() const;
     std::vector<uint8_t> getSequenceHash() const;

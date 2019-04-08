@@ -51,3 +51,14 @@ bool PublicKey::verify(const std::vector<uint8_t>& signature,
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     }
 }
+
+Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte) const {
+    const auto offset = std::size_t(skipTypeByte ? 1 : 0);
+    const auto hash = hasher(bytes.data() + offset, bytes.data() + bytes.size());
+
+    auto result = Data();
+    result.reserve(prefix.size() + hash.size());
+    append(result, prefix);
+    append(result, hash);
+    return result;
+}

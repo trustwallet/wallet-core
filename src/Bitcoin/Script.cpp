@@ -12,6 +12,7 @@
 
 #include "../BinaryCoding.h"
 #include "../Decred/Address.h"
+#include "../Groestlcoin/Address.h"
 #include "../Hash.h"
 #include "../PublicKey.h"
 #include "../Zcash/TAddress.h"
@@ -173,7 +174,7 @@ bool Script::getScriptOp(size_t& index, uint8_t& opcode, std::vector<uint8_t>& o
     }
 
     // Immediate operand
-    auto size = 0;
+    size_t size = 0;
     if (opcode < OP_PUSHDATA1) {
         size = static_cast<size_t>(opcode);
     } else if (opcode == OP_PUSHDATA1) {
@@ -285,6 +286,17 @@ Script Script::buildForAddress(const std::string& string) {
     } else if (Decred::Address::isValid(string)) {
         auto address = Decred::Address(string);
         return buildPayToPublicKeyHash(Data(address.keyhash.begin(), address.keyhash.end()));
+    } else if (Groestlcoin::Address::isValid(string)) {
+        auto address = Groestlcoin::Address(string);
+        auto data = std::vector<uint8_t>();
+        data.reserve(Address::size - 1);
+        std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
+        if (address.bytes[0] == TWP2PKHPrefixGroestlcoin) {
+            return buildPayToPublicKeyHash(data);
+        }
+        if (address.bytes[0] == TWP2SHPrefixGroestlcoin) {
+            return buildPayToScriptHash(data);
+        }
     } else if (Zcash::TAddress::isValid(string)) {
         auto address = Zcash::TAddress(string);
         auto data = std::vector<uint8_t>();

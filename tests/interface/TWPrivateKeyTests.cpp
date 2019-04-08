@@ -23,6 +23,14 @@ TEST(PrivateKeyTests, CreateInvalid) {
     ASSERT_EQ(privateKey.get(), nullptr);
 }
 
+TEST(PrivateKeyTests, AllZeros) {
+    auto bytes = TW::Data(32);
+    auto data = WRAPD(TWDataCreateWithBytes(bytes.data(), bytes.size()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(data.get()));
+
+    ASSERT_EQ(privateKey.get(), nullptr);
+}
+
 TEST(PrivateKeyTests, IsValid) {
     uint8_t bytes[] = {0xaf, 0xee, 0xfc, 0xa7, 0x4d, 0x9a, 0x32, 0x5c, 0xf1, 0xd6, 0xb6, 0x91, 0x1d, 0x61, 0xa6, 0x5c, 0x32, 0xaf, 0xa8, 0xe0, 0x2b, 0xd5, 0xe7, 0x8e, 0x2e, 0x4a, 0xc2, 0x91, 0x0b, 0xab, 0x45, 0xf5};
     auto data = WRAPD(TWDataCreateWithBytes(bytes, 32));

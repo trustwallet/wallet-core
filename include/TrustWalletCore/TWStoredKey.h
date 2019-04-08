@@ -93,7 +93,8 @@ TWData *_Nullable TWStoredKeyExportJSON(struct TWStoredKey *_Nonnull key);
 /// Fills in empty and invalid addresses.
 ///
 /// This method needs the encryption password to re-derive addresses from private keys.
+/// @returns `false` if the password is incorrect.
 TW_EXPORT_METHOD
-void TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password);
+bool TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password);
 
 TW_EXTERN_C_END

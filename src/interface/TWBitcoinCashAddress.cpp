@@ -66,10 +66,6 @@ TWString *_Nonnull TWBitcoinCashAddressDescription(struct TWBitcoinCashAddress a
     return TWStringCreateWithUTF8Bytes(result);
 }
 
-TWData *_Nonnull TWBitcoinCashAddressData(struct TWBitcoinCashAddress address) {
-    return TWDataCreateWithBytes(address.bytes, dataSize);
-}
-
 TWBitcoinAddress TWBitcoinCashAddressLegacyAddress(struct TWBitcoinCashAddress address) {
     auto result = TWBitcoinAddress();
     size_t outlen = 0;

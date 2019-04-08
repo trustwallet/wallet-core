@@ -16,7 +16,7 @@ using namespace TW::Aion;
 
 TW_Aion_Proto_SigningOutput TWAionSignerSign(TW_Aion_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     using boost::multiprecision::uint128_t;
 

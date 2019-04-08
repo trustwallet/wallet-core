@@ -14,6 +14,7 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../Zcash/Transaction.h"
+#include "../Groestlcoin/Transaction.h"
 
 using namespace TW;
 using namespace TW::Bitcoin;
@@ -237,7 +238,7 @@ Data TransactionSigner<Transaction>::pushAll(const std::vector<Data>& results) {
             encode16LE(result.size(), data);
         } else {
             data.push_back(OP_PUSHDATA4);
-            encode32LE(result.size(), data);
+            encode32LE(static_cast<uint32_t>(result.size()), data);
         }
         std::copy(begin(result), end(result), back_inserter(data));
     }
@@ -270,3 +271,4 @@ Data TransactionSigner<Transaction>::scriptForScriptHash(const Data& hash) const
 // Explicitly instantiate a Signers for compatible transactions.
 template class TW::Bitcoin::TransactionSigner<Bitcoin::Transaction>;
 template class TW::Bitcoin::TransactionSigner<Zcash::Transaction>;
+template class TW::Bitcoin::TransactionSigner<Groestlcoin::Transaction>;

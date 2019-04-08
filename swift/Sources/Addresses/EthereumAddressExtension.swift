@@ -7,7 +7,7 @@
 import Foundation
 
 /// Ethereum address.
-extension EthereumAddress: Address, Hashable {
+extension EthereumAddress: Hashable {
     public static let size = 20
 
     /// EIP55 representation of the address.
@@ -15,11 +15,7 @@ extension EthereumAddress: Address, Hashable {
         return description
     }
 
-    public var data: Data {
-        return keyHash
-    }
-
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(data)
+        hasher.combine(keyHash)
     }
 }

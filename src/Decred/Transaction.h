@@ -48,7 +48,7 @@ struct Transaction {
     bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    Data computeSignatureHash(const Bitcoin::Script& scriptCode, int index,
+    Data computeSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
                               uint32_t hashType) const;
 
     /// Generates the transaction hash.
