@@ -17,8 +17,7 @@ using namespace TW;
 using namespace TW::Ontology;
 
 TEST(OntologyOnt, decimals) {
-    auto address = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
-    auto tx = Ont().decimals(address);
+    auto tx = Ont().decimals();
     auto serializedTx = hex(tx.serialize());
     EXPECT_EQ(0, serializedTx.find("00d1"));
     EXPECT_EQ(12, serializedTx.find(
@@ -26,7 +25,6 @@ TEST(OntologyOnt, decimals) {
     EXPECT_EQ(85,
               serializedTx.find("c1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b708646563696d616c73"));
     EXPECT_EQ(146, serializedTx.find("140000000000000000000000000000000000000001"));
-    EXPECT_EQ(188, serializedTx.find("0068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"));
 }
 
 TEST(OntologyOnt, queryBalance) {
@@ -43,8 +41,10 @@ TEST(OntologyOnt, queryBalance) {
 }
 
 TEST(OntologyOnt, transfer) {
-    auto signer1 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
-    auto signer2 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
+    auto signer1 = Signer(
+        PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
+    auto signer2 = Signer(
+        PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
     auto toAddress = Address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
     uint64_t amount = 1;
     uint64_t gasPrice = 500;

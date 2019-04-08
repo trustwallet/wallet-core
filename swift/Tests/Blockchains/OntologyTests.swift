@@ -52,12 +52,12 @@ class OntologyTests: XCTestCase {
         let input = OntologySigningInput.with {
             $0.contract = "ONT"
             $0.method = "transfer"
-            $0.ownerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464646".data(using: .utf8)!
+            $0.ownerPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!
             $0.toAddress = "Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn"
             $0.amount = 1
             $0.gasPrice = 500
             $0.gasLimit = 20000
-            $0.payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".data(using: .utf8)!
+            $0.payerPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464652")!
         }
         
         let output = OntologySigner.sign(input: input)
@@ -84,12 +84,12 @@ class OntologyTests: XCTestCase {
         let input = OntologySigningInput.with {
             $0.contract = "ONG"
             $0.method = "transfer"
-            $0.ownerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464646".data(using: .utf8)!
+            $0.ownerPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!
             $0.toAddress = "Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn"
             $0.amount = 1
             $0.gasPrice = 500
             $0.gasLimit = 20000
-            $0.payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".data(using: .utf8)!
+            $0.payerPrivateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464652")!
         }
 
         let output = OntologySigner.sign(input: input)

@@ -1,8 +1,7 @@
 package com.trustwallet.core.app.blockchains.ontology
 
-import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
-import com.trustwallet.core.app.utils.toByteString
+import com.trustwallet.core.app.utils.toHexBytesInByteString
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.OntologySigner
@@ -56,12 +55,12 @@ class TestOntologySigning {
         val input = signerBuilder.apply {
             contract = "ONT"
             method = "transfer"
-            ownerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464646".toByteString()
+            ownerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464646".toHexBytesInByteString()
             toAddress = "Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn"
             amount = 1
             gasPrice = 500
             gasLimit = 20000
-            payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".toByteString()
+            payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".toHexBytesInByteString()
         }.build()
 
         val result = OntologySigner.sign(input).encoded.toByteArray()
@@ -90,12 +89,12 @@ class TestOntologySigning {
         val input = signerBuilder.apply {
             contract = "ONG"
             method = "transfer"
-            ownerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464646".toByteString()
+            ownerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464646".toHexBytesInByteString()
             toAddress = "Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn"
             amount = 1
             gasPrice = 500
             gasLimit = 20000
-            payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".toByteString()
+            payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".toHexBytesInByteString()
         }.build()
 
         val result = OntologySigner.sign(input).encoded.toByteArray()

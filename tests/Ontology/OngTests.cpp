@@ -15,15 +15,13 @@ using namespace TW;
 using namespace TW::Ontology;
 
 TEST(OntologyOng, decimals) {
-    auto address = Address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
-    auto tx = Ong().decimals(address);
+    auto tx = Ong().decimals();
     auto rawTx = hex(tx.serialize());
     EXPECT_EQ(0, rawTx.find("00d1"));
     EXPECT_EQ(12, rawTx.find(
                       "0000000000000000000000000000000000000000000000000000000000000000000000004"));
     EXPECT_EQ(85, rawTx.find("c1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b708646563696d616c73"));
     EXPECT_EQ(146, rawTx.find("140000000000000000000000000000000000000002"));
-    EXPECT_EQ(188, rawTx.find("0068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"));
 }
 
 TEST(OntologyOng, balanceOf) {

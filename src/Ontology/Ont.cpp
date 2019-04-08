@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Ont.h"
+#include "Data.h"
 #include "ParamsBuilder.h"
 
 #include <TrezorCrypto/rand.h>
@@ -14,10 +15,10 @@
 using namespace TW;
 using namespace TW::Ontology;
 
-Transaction Ont::decimals(const Address& address) {
+Transaction Ont::decimals() {
     auto builder = ParamsBuilder();
     auto invokeCode =
-        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "decimals", address.data);
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "decimals", Data());
     auto tx = Transaction((uint8_t)0, txType, random32(), (uint64_t)0, (uint64_t)0,
                           (std::string) "", invokeCode);
     return tx;

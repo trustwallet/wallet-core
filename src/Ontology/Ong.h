@@ -21,7 +21,7 @@ class Ong : public Asset {
   public:
     Data contractAddress() override { return ongContract; }
 
-    Transaction decimals(const Address& address) override;
+    Transaction decimals() override;
 
     Transaction balanceOf(const Address& address) override;
 

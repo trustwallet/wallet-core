@@ -9,9 +9,8 @@
 using namespace TW;
 using namespace TW::Ontology;
 
-TW_Ontology_Proto_SigningOutput OntTxBuilder::decimals(const Ontology::Proto::SigningInput& input) {
-    auto queryAddress = Address(input.query_address());
-    auto transaction = Ont().balanceOf(queryAddress);
+TW_Ontology_Proto_SigningOutput OntTxBuilder::decimals() {
+    auto transaction = Ont().decimals();
     auto encoded = transaction.serialize();
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_encoded(encoded.data(), encoded.size());
@@ -55,7 +54,7 @@ TW_Ontology_Proto_SigningOutput OntTxBuilder::build(const Ontology::Proto::Signi
         return OntTxBuilder::balanceOf(input);
     }
     if (method == "decimals") {
-        return OntTxBuilder::decimals(input);
+        return OntTxBuilder::decimals();
     }
     Data nullData;
     return TWDataCreateWithBytes(nullData.data(), nullData.size());

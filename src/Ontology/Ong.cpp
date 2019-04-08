@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Ong.h"
+#include "Data.h"
 #include "ParamsBuilder.h"
 
 #include <list>
@@ -14,10 +15,10 @@
 using namespace TW;
 using namespace TW::Ontology;
 
-Transaction Ong::decimals(const Address& address) {
+Transaction Ong::decimals() {
     auto builder = ParamsBuilder();
     auto invokeCode =
-        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "decimals", address.data);
+        ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "decimals", Data());
     auto tx = Transaction(version, txType, random32(), (uint64_t)0, (uint64_t)0, (std::string) "",
                           invokeCode);
     return tx;
