@@ -118,6 +118,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
+
+    case TWCoinTypeQtum:
+        return Bitcoin::Bech32Address::isValid(string, HRP_QTUM) ||
+               Bitcoin::Address::isValid(string, {TWP2PKHPrefixQtum, TWP2SHPrefixQtum});
     }
 }
 
@@ -152,6 +156,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
+    case TWCoinTypeQtum:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeViacoin:
@@ -189,6 +194,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeCosmos:
     case TWCoinTypeTheta:
+    case TWCoinTypeQtum:
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
@@ -218,6 +224,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeDash:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeQtum:
         return TWHDVersionXPUB;
 
     case TWCoinTypeDecred:
@@ -265,6 +272,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeDash:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeQtum:
         return TWHDVersionXPRV;
 
     case TWCoinTypeDecred:
@@ -329,6 +337,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeTheta:
+    case TWCoinTypeQtum:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
     case TWCoinTypeNEO:
@@ -373,6 +382,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeRipple:
+    case TWCoinTypeQtum:
         return PublicKeyType::secp256k1;
 
     case TWCoinTypeCallisto:
@@ -483,6 +493,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
+
+    case TWCoinTypeQtum:
+        return Bitcoin::Address(publicKey, TWP2PKHPrefixQtum).string();
     }
 }
 
@@ -520,6 +533,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeQtum:
         return Hash::sha256ripemd;
 
     case TWCoinTypeDecred:
@@ -561,6 +575,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeQtum:
         return Hash::sha256d;
 
     case TWCoinTypeDecred:
