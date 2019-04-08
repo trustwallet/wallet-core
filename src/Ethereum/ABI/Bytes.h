@@ -6,8 +6,11 @@
 
 #pragma once
 
-namespace TW {
-namespace Ethereum {
+#include "../../Data.h"
+#include "../../uint256.h"
+#include "Numbers.h"
+
+namespace TW::Ethereum {
 
 // dynamic bytes
 
@@ -76,4 +79,4 @@ std::string type_string(const std::string& data) {
     return "string";
 }
 
-}} // namespace
+} // namespace TW::Ethereum

@@ -6,47 +6,34 @@
 
 #pragma once
 
+#include "../Base58Address.h"
 #include "../Data.h"
 #include "../PublicKey.h"
 
 #include <string>
 
-namespace TW {
-namespace NEO {
+namespace TW::NEO {
 
-class Address {
-public:
-    /// Number of bytes in an address.
-    static const size_t size = 21;
-
+class Address : public TW::Base58Address<21> {
+  public:
     /// NEO address version is 23
     /// https://github.com/neo-project/neo/blob/427a3cd08f61a33e98856e4b4312b8147708105a/neo/protocol.json#L4
     static const byte version = 0x17;
-
-    /// Address data consisting of a prefix byte followed by the public key hash.
-    std::array<byte, size> bytes;
 
     /// Determines whether a string makes a valid NEO address.
     static bool isValid(const std::string& string);
 
     /// Initializes a NEO address with a string representation.
-    Address(const std::string& string);
+    explicit Address(const std::string& string) : TW::Base58Address<21>(string) {}
 
     /// Initializes a NEO address with a collection of bytes.
-    Address(const std::vector<uint8_t>& data);
+    explicit Address(const Data& data) : TW::Base58Address<21>(data) {}
 
     /// Initializes a NEO address with a public key.
-    Address(const PublicKey& publicKey);
-
-    /// Returns a string representation of the address.
-    std::string string() const;
+    explicit Address(const PublicKey& publicKey);
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
-}
-
-}} // namespace
+} // namespace TW::NEO
 
 /// Wrapper for C interface.
 struct TWNEOAddress {

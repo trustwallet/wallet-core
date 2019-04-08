@@ -9,7 +9,7 @@ import XCTest
 
 class DashAddressTests: XCTestCase {
     func testAddress() {
-        let privateKey = PrivateKey(wif: "XDoxFwfxsEZDd15uNyj8vt64c3GLxcFjTefnUz7gckvAJeYSFaRz")!
+        let privateKey = PrivateKey(data: Data(hexString: "4b45e94800b9a2c3a45296f8de718bf9577cbe444773c39508d7f957355c759c")!)!
         let address = CoinType.dash.deriveAddress(privateKey: privateKey)
 
         XCTAssertEqual(address, "Xw7HTXGY3TFeA3ZsVuMRrYh96GtwWb4hQb")

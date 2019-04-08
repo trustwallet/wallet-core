@@ -6,7 +6,7 @@
 
 import Foundation
 
-extension BitcoinCashAddress: Address, Equatable {
+extension BitcoinCashAddress: Equatable {
 
     /// Version bytes
     ///

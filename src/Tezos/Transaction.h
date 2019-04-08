@@ -12,8 +12,7 @@
 #include <string>
 #include <variant>
 
-namespace TW {
-namespace Tezos {
+namespace TW::Tezos {
 
 enum class operationtype {
     REVEAL,
@@ -22,7 +21,7 @@ enum class operationtype {
 
 class Transaction {
 
-public:
+  public:
     Address source;
     int64_t fee;
     int64_t counter;
@@ -32,23 +31,22 @@ public:
     std::variant<Address, PublicKey> destination_or_public_key;
     operationtype kind;
 
-    Transaction() = default;
     Transaction(Address source, int64_t fee, int64_t counter, int64_t gas_limit,
-        int64_t storage_limit, int64_t amount, std::variant<Address,
-        PublicKey> destination_or_public_key, operationtype kind)
-    : source(source)
-    , fee(fee)
-    , counter(counter)
-    , gas_limit(gas_limit)
-    , storage_limit(storage_limit)
-    , amount(amount)
-    , destination_or_public_key(destination_or_public_key)
-    , kind(kind)
-    {}
+                int64_t storage_limit, int64_t amount,
+                std::variant<Address, PublicKey> destination_or_public_key,
+                operationtype kind)
+        : source(source)
+        , fee(fee)
+        , counter(counter)
+        , gas_limit(gas_limit)
+        , storage_limit(storage_limit)
+        , amount(amount)
+        , destination_or_public_key(std::move(destination_or_public_key))
+        , kind(kind) {}
 
-public:
+  public:
     /// serialize transaction
     Data forge();
 };
 
-}} // namespace
+} // namespace TW::Tezos

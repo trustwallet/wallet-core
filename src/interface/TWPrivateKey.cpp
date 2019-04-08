@@ -4,24 +4,27 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWPrivateKey.h>
-
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/secp256k1.h>
+#include <TrustWalletCore/TWPrivateKey.h>
 
-#include <string.h>
+#include <exception>
 
 using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate() {
-    std::array<uint8_t, PrivateKey::size> bytes;
+    std::array<uint8_t, PrivateKey::size> bytes = {0};
     random_buffer(bytes.data(), PrivateKey::size);
     if (!PrivateKey::isValid(bytes)) {
-        abort();
+        // Under no circumstance return an invalid private key. We'd rather
+        // crash. This also captures cases where the random generator fails
+        // since we initialize the array to zeros, which is an invalid private
+        // key.
+        std::terminate();
     }
 
     return new TWPrivateKey{ PrivateKey(std::move(bytes)) };

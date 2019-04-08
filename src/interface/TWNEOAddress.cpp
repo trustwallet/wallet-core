@@ -4,14 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWNEOAddress.h>
-
 #include "../NEO/Address.h"
 
+#include <TrustWalletCore/TWNEOAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
-
-#include <string.h>
-#include <memory>
 
 using namespace TW;
 using namespace TW::NEO;
@@ -31,15 +27,6 @@ struct TWNEOAddress *_Nullable TWNEOAddressCreateWithString(TWString *_Nonnull s
     try {
         const auto address = Address(*s);
         return new TWNEOAddress{ std::move(address) };
-    } catch (...) {
-        return nullptr;
-    }
-}
-
-struct TWNEOAddress *_Nullable TWNEOAddressCreateWithData(TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    try {
-        return new TWNEOAddress{ Address(*d) };
     } catch (...) {
         return nullptr;
     }

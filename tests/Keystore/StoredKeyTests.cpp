@@ -12,8 +12,7 @@
 
 extern std::string TESTS_ROOT;
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 TEST(StoredKey, LoadNonexistent) {
     ASSERT_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/nonexistent.json"), std::invalid_argument);
@@ -36,10 +35,10 @@ TEST(StoredKey, LoadLegacyMnemonic) {
 
     EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeEthereum);
     EXPECT_EQ(key.accounts[0].derivationPath.string(), "m/44'/60'/0'/0/0");
-    EXPECT_EQ(key.accounts[0].address, "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89");
+    EXPECT_EQ(key.accounts[0].address, "");
     EXPECT_EQ(key.accounts[1].coin(), TWCoinTypeBitcoin);
     EXPECT_EQ(key.accounts[1].derivationPath.string(), "m/84'/0'/0'/0/0");
-    EXPECT_EQ(key.accounts[1].address, "bc1q2ddhp55sq2l4xnqhpdv0xazg02v9dr7uu8c2p2");
+    EXPECT_EQ(key.accounts[1].address, "");
     EXPECT_EQ(key.accounts[1].extendedPublicKey, "zpub6r97AegwVxVbJeuDAWP5KQgX5y4Q6KyFUrsFQRn8yzSXrnmpwg1ZKHSWwECR1Kiqgr4h93WN5kdS48KC6hVFniuZHqVFXjULZZkCwurqyPn");
 }
 
@@ -70,6 +69,12 @@ TEST(StoredKey, InvalidPassword) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
     ASSERT_THROW(key.payload.decrypt("password"), DecryptionError);
+}
+
+TEST(StoredKey, EmptyAccounts) {
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/empty-accounts.json");
+
+    ASSERT_NO_THROW(key.payload.decrypt("testpassword"));
 }
 
 TEST(StoredKey, Decrypt) {
@@ -110,8 +115,14 @@ TEST(StoredKey, MissingAddress) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
     key.fixAddresses("password");
 
-    EXPECT_EQ(key.account(TWCoinTypeEthereum, "").address, "0x04De84ec355BAe81b51cD53Fdc8AA30A61872C95");
-    EXPECT_EQ(key.account(TWCoinTypeBitcoin, "").address, "bc1qe938ncm8fhdqg27xmxd7lq02jz9xh0x48r22lc");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0x04De84ec355BAe81b51cD53Fdc8AA30A61872C95");
+    EXPECT_EQ(key.account(TWCoinTypeBitcoin, nullptr)->address, "bc1qe938ncm8fhdqg27xmxd7lq02jz9xh0x48r22lc");
 }
 
-}} // namespace
+TEST(StoredKey, EtherWalletAddressNo0x) {
+    auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/ethereum-wallet-address-no-0x.json");
+    key.fixAddresses("15748c4e3dca6ae2110535576ab0c398cb79d985707c68ee6c9f9df9d421dd53");
+    EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
+}
+
+} // namespace TW::Keystore

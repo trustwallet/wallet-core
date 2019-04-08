@@ -4,13 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWBitcoinAddress.h>
-
 #include "../Base58.h"
 #include "../Bitcoin/Address.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWBitcoinAddress.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <cstring>
 
@@ -60,6 +59,11 @@ TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) 
     return TWStringCreateWithUTF8Bytes(str.data());
 }
 
-TWData *_Nonnull TWBitcoinAddressData(struct TWBitcoinAddress address) {
-    return TWDataCreateWithBytes(address.bytes, Address::size);
+TW_EXPORT_PROPERTY
+uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress address) {
+    return address.bytes[0];
+}
+
+TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress address) {
+    return TWDataCreateWithBytes(address.bytes + 1, Address::size - 1);
 }

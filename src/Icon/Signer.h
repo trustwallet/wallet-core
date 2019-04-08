@@ -6,17 +6,16 @@
 
 #pragma once
 
-#include "../proto/Icon.pb.h"
 #include "../Data.h"
+#include "../proto/Icon.pb.h"
 
 #include <map>
 #include <string>
 
-namespace TW {
-namespace Icon {
+namespace TW::Icon {
 
 class Signer {
-public:
+  public:
     const Proto::SigningInput& input;
 
     Signer(const Proto::SigningInput& input) : input(input) {}
@@ -30,8 +29,8 @@ public:
     /// Encodes a signed transaction as JSON.
     std::string encode(const Data& signature) const noexcept;
 
-private:
+  private:
     std::map<std::string, std::string> parameters() const noexcept;
 };
 
-}} // namespace
+} // namespace TW::Icon

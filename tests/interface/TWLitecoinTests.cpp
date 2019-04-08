@@ -76,8 +76,8 @@ TEST(Litecoin, ExtendedKeys) {
 
 TEST(Litecoin, DeriveFromLtub) {
     auto xpub = STRING("Ltub2Ye6FtTv7U4zzHDL6iMfcE3cj5BHJjkBXQj1deZEAgSBrHB5oM191hYTF8BC34r7vRDGng59yfP6FH4m3nttc3TLDg944G8QK7d5NnygCRu");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionLTUB, TWHDVersionLTPV, 0, 2);
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionLTUB, TWHDVersionLTPV, 0, 9);
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeLitecoin, TWHDVersionLTUB, TWHDVersionLTPV, 0, 2);
+    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeLitecoin, TWHDVersionLTUB, TWHDVersionLTPV, 0, 9);
 
     TWBitcoinAddress address2;
     TWBitcoinAddressInitWithPublicKey(&address2, pubKey2, TWP2PKHPrefixLitecoin);
@@ -93,8 +93,8 @@ TEST(Litecoin, DeriveFromLtub) {
 
 TEST(Litecoin, DeriveFromZpub) {
     auto zpub = STRING("zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCurveSECP256k1, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCurveSECP256k1, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeLitecoin, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeLitecoin, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
 
     auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPLitecoin, pubKey4));
     auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));

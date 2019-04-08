@@ -18,9 +18,9 @@ void TransactionInput::encode(Data& data) const {
 }
 
 void TransactionInput::encodeWitness(Data& data) const {
-    writeCompactSize(scriptWitness.size(), data);
+    encodeVarInt(scriptWitness.size(), data);
     for (auto& item : scriptWitness) {
-        writeCompactSize(item.size(), data);
+        encodeVarInt(item.size(), data);
         std::copy(std::begin(item), std::end(item), std::back_inserter(data));
     }
 }

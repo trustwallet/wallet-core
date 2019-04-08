@@ -36,10 +36,25 @@ public final class Wallet: Hashable {
     /// - Returns: the account
     /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
     public func getAccount(password: String, coin: CoinType) throws -> Account {
-        guard let account = key.accountForCoin(coin: coin, password: password) else {
+        let wallet = key.wallet(password: password)
+        guard let account = key.accountForCoin(coin: coin, wallet: wallet) else {
             throw KeyStore.Error.invalidPassword
         }
         return account
+    }
+
+    /// Returns the accounts for a specific coins.
+    ///
+    /// - Parameters:
+    ///   - password: wallet encryption password
+    ///   - coins: coins to add accounts for
+    /// - Returns: the added accounts
+    /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
+    public func getAccounts(password: String, coins: [CoinType]) throws -> [Account] {
+        guard let wallet = key.wallet(password: password) else {
+            throw KeyStore.Error.invalidPassword
+        }
+        return coins.compactMap({ key.accountForCoin(coin: $0, wallet: wallet) })
     }
 
     /// Returns the private key for a specific coin.

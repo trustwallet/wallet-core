@@ -17,7 +17,7 @@ using namespace TW::Tezos;
 
 TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto operationList = OperationList(input.operation_list().branch());
     for (auto& operationProto : input.operation_list().operations()) {
@@ -32,7 +32,7 @@ TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data)
                                          0,
                                          publicKey,
                                          operationtype::REVEAL);
-            operationList.add_operation(operation);
+            operationList.addOperation(operation);
         } else {
             auto source = Address(operationProto.source());
             auto destination = Address(operationProto.transaction_operation_data().destination());
@@ -44,7 +44,7 @@ TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data)
                                          operationProto.transaction_operation_data().amount(),
                                          destination,
                                          operationtype::TRANSACTION);
-            operationList.add_operation(operation);
+            operationList.addOperation(operation);
         }
     }
 

@@ -5,17 +5,16 @@
 // file LICENSE at the root of the source code distribution tree.
 #pragma once
 
-#include <proto/Stellar.pb.h>
+#include "Address.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include "Address.h"
+#include <proto/Stellar.pb.h>
 
-namespace TW {
-namespace Stellar {
+namespace TW::Stellar {
 /// Helper class that performs Ripple transaction signing.
 class Signer {
-public:
+  public:
     const Proto::SigningInput& input;
 
     Signer(const Proto::SigningInput& input) : input(input) {}
@@ -25,13 +24,13 @@ public:
 
     Data encode(const Proto::SigningInput& input) const;
 
-private:
-    void encodeAddress(Address address, Data& data) const;
+  private:
+    void encodeAddress(const Address& address, Data& data) const;
 
     void pad(Data& data) const;
 };
 
-}} // namespace
+} // namespace TW::Stellar
 
 /// Wrapper for C interface.
 struct TWStellarSigner {

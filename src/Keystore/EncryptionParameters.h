@@ -13,8 +13,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 /// Errors thrown when decrypting a key.
 enum class DecryptionError {
@@ -49,13 +48,13 @@ struct EncryptionParameters {
 
     /// Initializes `EncryptionParameters` with standard values.
     EncryptionParameters(Data encrypted, AESParameters cipherParams, ScryptParameters kdfParams, Data mac)
-        : encrypted(encrypted)
-        , cipherParams(cipherParams)
-        , kdfParams(kdfParams)
-        , mac(mac)
-    {}
+        : encrypted(std::move(encrypted))
+        , cipherParams(std::move(cipherParams))
+        , kdfParams(std::move(kdfParams))
+        , mac(std::move(mac)) {}
 
-    /// Initializes `EncryptionParameters` by encrypting data with a password using standard values.
+    /// Initializes `EncryptionParameters` by encrypting data with a password
+    /// using standard values.
     EncryptionParameters(const std::string& password, Data data);
 
     /// Initializes `EncryptionParameters` with a JSON object.
@@ -67,7 +66,12 @@ struct EncryptionParameters {
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
 
+    EncryptionParameters(const EncryptionParameters& other) = default;
+    EncryptionParameters(EncryptionParameters&& other) = default;
+    EncryptionParameters& operator=(const EncryptionParameters& other) = default;
+    EncryptionParameters& operator=(EncryptionParameters&& other) = default;
+
     virtual ~EncryptionParameters();
 };
 
-}} // namespace
+} // namespace TW::Keystore

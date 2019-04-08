@@ -7,15 +7,12 @@
 #pragma once
 
 #include "Address.h"
-#include <boost/multiprecision/cpp_int.hpp>
+#include "../uint256.h"
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 class Transaction {
-public:
-    typedef boost::multiprecision::uint256_t uint256_t;
-
+  public:
     uint256_t nonce;
     uint256_t gasPrice;
     uint256_t gasLimit;
@@ -28,15 +25,13 @@ public:
     uint256_t r = uint256_t();
     uint256_t s = uint256_t();
 
-    Transaction() = default;
-    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, const std::vector<uint8_t>& payload)
-        : nonce(nonce)
-        , gasPrice(gasPrice)
-        , gasLimit(gasLimit)
-        , to(to)
-        , amount(amount)
-        , payload(payload)
-        {}
+    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, Data payload)
+        : nonce(std::move(nonce))
+        , gasPrice(std::move(gasPrice))
+        , gasLimit(std::move(gasLimit))
+        , to(std::move(to))
+        , amount(std::move(amount))
+        , payload(std::move(payload)){}
 };
 
-}} // namespace
+} // namespace TW::Ethereum

@@ -31,10 +31,6 @@ bool TWBech32AddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWBech32Address *_Nullable TWBech32AddressCreateWithString(TWString *_Nonnull string);
 
-/// Creates an address from a raw data representaion.
-TW_EXPORT_STATIC_METHOD
-struct TWBech32Address *_Nullable TWBech32AddressCreateWithData(enum TWHRP hrp, TWData *_Nonnull data);
-
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey);

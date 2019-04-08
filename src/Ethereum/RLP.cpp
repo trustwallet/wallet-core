@@ -12,9 +12,8 @@
 
 using namespace TW;
 using namespace TW::Ethereum;
-using boost::multiprecision::uint256_t;
 
-Data RLP::encode(uint256_t value) noexcept {
+Data RLP::encode(const uint256_t& value) noexcept {
     using boost::multiprecision::cpp_int;
 
     Data bytes;
@@ -27,14 +26,14 @@ Data RLP::encode(uint256_t value) noexcept {
     return encode(bytes);
 }
 
-Data RLP::encodeList(Data encoded) noexcept {
+Data RLP::encodeList(const Data& encoded) noexcept {
     auto result = encodeHeader(encoded.size(), 0xc0, 0xf7);
     result.reserve(result.size() + encoded.size());
     result.insert(result.end(), encoded.begin(), encoded.end());
     return result;
 }
 
-Data RLP::encode(Transaction transaction) noexcept {
+Data RLP::encode(const Transaction& transaction) noexcept {
     auto encoded = Data();
     append(encoded, encode(transaction.nonce));
     append(encoded, encode(transaction.gasPrice));
@@ -48,7 +47,7 @@ Data RLP::encode(Transaction transaction) noexcept {
     return encodeList(encoded);
 }
 
-Data RLP::encode(Data data) noexcept {
+Data RLP::encode(const Data& data) noexcept {
     if (data.size() == 1 && data[0] <= 0x7f) {
         // Fits in single byte, no header
         return data;
@@ -74,8 +73,9 @@ Data RLP::encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexce
 }
 
 Data RLP::putint(uint64_t i) noexcept {
+    // clang-format off
     if (i < (1l << 8))
-        return { static_cast<uint8_t>(i) };
+        return {static_cast<uint8_t>(i)};
     if (i < (1l << 16))
         return {
             static_cast<uint8_t>(i >> 8),
@@ -121,7 +121,7 @@ Data RLP::putint(uint64_t i) noexcept {
             static_cast<uint8_t>(i >> 8),
             static_cast<uint8_t>(i),
         };
-    
+
     return {
         static_cast<uint8_t>(i >> 56),
         static_cast<uint8_t>(i >> 48),
@@ -132,4 +132,5 @@ Data RLP::putint(uint64_t i) noexcept {
         static_cast<uint8_t>(i >> 8),
         static_cast<uint8_t>(i),
     };
+    // clang-format on
 }

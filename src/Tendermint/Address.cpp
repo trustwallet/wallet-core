@@ -9,8 +9,8 @@
 
 #include "../Bech32.h"
 
-#include <TrustWalletCore/TWHRP.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWHRP.h>
 
 using namespace TW::Tendermint;
 
@@ -21,7 +21,8 @@ bool Address::isValid(const std::string& addr) {
     }
 
     Data conv;
-    auto success = Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
+    auto success =
+        Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
     if (!success || conv.size() < 2 || conv.size() > 40) {
         return false;
     }
@@ -39,7 +40,8 @@ bool Address::isValid(const std::string& addr, const std::string& hrp) {
     }
 
     Data conv;
-    auto success = Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
+    auto success =
+        Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
     if (!success || conv.size() < 2 || conv.size() > 40) {
         return false;
     }
@@ -47,7 +49,7 @@ bool Address::isValid(const std::string& addr, const std::string& hrp) {
     return true;
 }
 
-Address::Address(const std::string& hrp, const PublicKey& publicKey) : hrp(hrp), keyHash() {
+Address::Address(std::string hrp, const PublicKey& publicKey) : hrp(std::move(hrp)), keyHash() {
     keyHash.resize(20);
     ecdsa_get_pubkeyhash(publicKey.compressed().bytes.data(), HASHER_SHA2_RIPEMD, keyHash.data());
 }
@@ -59,7 +61,8 @@ std::pair<Address, bool> Address::decode(const std::string& addr) {
     }
 
     Data conv;
-    auto success = Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
+    auto success =
+        Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
     if (!success || conv.size() < 2 || conv.size() > 40) {
         return std::make_pair(Address(), false);
     }

@@ -6,21 +6,25 @@
 
 #include "Coin.h"
 
-#include "Bitcoin/Address.h"
-#include "Bitcoin/CashAddress.h"
-#include "Bitcoin/Bech32Address.h"
-#include "Ethereum/Address.h"
-#include "Icon/Address.h"
-#include "Nimiq/Address.h"
 #include "Aion/Address.h"
+#include "Bitcoin/Address.h"
+#include "Bitcoin/Bech32Address.h"
+#include "Bitcoin/CashAddress.h"
+#include "Decred/Address.h"
+#include "Ethereum/Address.h"
+#include "Groestlcoin/Address.h"
+#include "Icon/Address.h"
+#include "NEO/Address.h"
+#include "Nimiq/Address.h"
+#include "Ontology/Address.h"
 #include "Ripple/Address.h"
+#include "Stellar/Address.h"
 #include "Tendermint/Address.h"
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
+#include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
-#include "Stellar/Address.h"
-#include "Ontology/Address.h"
-#include "NEO/Address.h"
+
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
@@ -30,91 +34,35 @@
 
 using namespace TW;
 
-std::string TW::loadAddress(TWCoinType coin, const Data& data) {
-    switch (coin) {
-    case TWCoinTypeAion:
-        return Aion::Address(data).string();
-
-    case TWCoinTypeBinance:
-        return Tendermint::Address(HRP_BINANCE, data).string();
-    case TWCoinTypeCosmos:
-        return Tendermint::Address(HRP_COSMOS, data).string();
-    case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address(HRP_BITCOIN, 0, data).string();
-
-    case TWCoinTypeBitcoinCash:
-        return Bitcoin::CashAddress(data).string();
-
-    case TWCoinTypeCallisto:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeGo:
-    case TWCoinTypePoa:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-        return Ethereum::Address(data).string();
-
-    case TWCoinTypeICON:
-        return Icon::Address(data, TWIconAddressTypeAddress).string();
-
-    case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address(HRP_LITECOIN, 0, data).string();
-
-    case TWCoinTypeViacoin:
-        return Bitcoin::Bech32Address(HRP_VIACOIN, 0, data).string();
-
-    case TWCoinTypeOntology:
-        return Ontology::Address(data).string();
-
-    case TWCoinTypeNimiq:
-        return Nimiq::Address(data).string();
-
-    case TWCoinTypeRipple:
-        return Ripple::Address(data).string();
-
-    case TWCoinTypeTron:
-        return Tron::Address(data).string();
-
-    case TWCoinTypeDash:
-    case TWCoinTypeZcoin:
-        return Bitcoin::Address(data).string();
-
-    case TWCoinTypeZcash:
-        return Zcash::TAddress(data).string();
-
-    case TWCoinTypeStellar:
-    case TWCoinTypeKIN:
-        return Stellar::Address(data).string();
-
-    case TWCoinTypeTezos:
-        return Tezos::Address(data).string();
-    case TWCoinTypeNEO:
-        return NEO::Address(data).string();
-    }
-}
-
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     switch (coin) {
     case TWCoinTypeAion:
         return Aion::Address::isValid(string);
 
     case TWCoinTypeBinance:
-        return Tendermint::Address::isValid(string, HRP_BINANCE) || Tendermint::Address::isValid(string, HRP_BINANCE_TEST);
+        return Tendermint::Address::isValid(string, HRP_BINANCE) ||
+               Tendermint::Address::isValid(string, HRP_BINANCE_TEST);
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
+        return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) ||
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
     case TWCoinTypeBitcoinCash:
-        return Bitcoin::CashAddress::isValid(string) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixBitcoin, TWP2SHPrefixBitcoin});
+        return Bitcoin::CashAddress::isValid(string) ||
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
     case TWCoinTypeCosmos:
         return Tendermint::Address::isValid(string, HRP_COSMOS);
 
     case TWCoinTypeDash:
-        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixDash, TWP2SHPrefixDash});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDash}, {TWP2SHPrefixDash}});
+
+    case TWCoinTypeDecred:
+        return Decred::Address::isValid(string);
+
+    case TWCoinTypeGroestlcoin:
+        return Bitcoin::Bech32Address::isValid(string, HRP_GROESTLCOIN) ||
+               Groestlcoin::Address::isValid(string, {TWP2PKHPrefixGroestlcoin, TWP2SHPrefixGroestlcoin});
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -124,15 +72,17 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
+    case TWCoinTypeTheta:
         return Ethereum::Address::isValid(string);
-
+    case TWCoinTypeWanChain:
+        return Wanchain::Address::isValid(string);
     case TWCoinTypeICON:
         return Icon::Address::isValid(string);
 
     case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixLitecoin, TWP2SHPrefixLitecoin});
+        return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) ||
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLitecoin}});
 
     case TWCoinTypeViacoin:
         return Bitcoin::Bech32Address::isValid(string, HRP_VIACOIN) || Bitcoin::Address::isValid(string, {TWP2PKHPrefixViacoin, TWP2SHPrefixViacoin});
@@ -157,10 +107,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Tron::Address::isValid(string);
 
     case TWCoinTypeZcoin:
-        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixZcoin, TWP2SHPrefixZcoin});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixZcoin}, {TWP2SHPrefixZcoin}});
 
     case TWCoinTypeZcash:
-        return Zcash::TAddress::isValid(string, {TWP2PKHPrefixZcashT, TWP2SHPrefixZcashT});
+        return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
@@ -168,13 +118,14 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 }
 
 TWPurpose TW::purpose(TWCoinType coin) {
-    switch(coin) {
+    switch (coin) {
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -195,24 +146,28 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
+    case TWCoinTypeTheta:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeGroestlcoin:
         return TWPurposeBIP84;
     }
 }
 
 TWCurve TW::curve(TWCoinType coin) {
-    switch(coin) {
+    switch (coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCallisto:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
+    case TWCoinTypeGroestlcoin:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
@@ -227,10 +182,11 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeCosmos:
+    case TWCoinTypeTheta:
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
-            return TWCurveNIST256p1;
+        return TWCurveNIST256p1;
 
     case TWCoinTypeAion:
     case TWCoinTypeNimiq:
@@ -245,10 +201,11 @@ TWCurve TW::curve(TWCoinType coin) {
 }
 
 TWHDVersion TW::xpubVersion(TWCoinType coin) {
-    switch(coin) {
+    switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeGroestlcoin:
         return TWHDVersionZPUB;
 
     case TWCoinTypeBitcoinCash:
@@ -257,6 +214,9 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeZcoin:
         return TWHDVersionXPUB;
 
+    case TWCoinTypeDecred:
+        return TWHDVersionDPUB;
+
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
     case TWCoinTypeCosmos:
@@ -279,15 +239,17 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
+    case TWCoinTypeTheta:
         return TWHDVersionNone;
     }
 }
 
 TWHDVersion TW::xprvVersion(TWCoinType coin) {
-    switch(coin) {
+    switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeGroestlcoin:
         return TWHDVersionZPRV;
 
     case TWCoinTypeBitcoinCash:
@@ -296,6 +258,8 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeZcoin:
         return TWHDVersionXPRV;
 
+    case TWCoinTypeDecred:
+        return TWHDVersionDPRV;
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
     case TWCoinTypeCosmos:
@@ -318,6 +282,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
+    case TWCoinTypeTheta:
         return TWHDVersionNone;
     }
 }
@@ -330,9 +295,11 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
+    case TWCoinTypeGroestlcoin:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
@@ -347,6 +314,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeTheta:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
     case TWCoinTypeNEO:
@@ -383,6 +351,8 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
+    case TWCoinTypeGroestlcoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeZcash:
@@ -402,6 +372,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeICON:
     case TWCoinTypeTron:
+    case TWCoinTypeTheta:
         return PublicKeyType::secp256k1Extended;
 
     case TWCoinTypeNEO:
@@ -426,7 +397,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     switch (coin) {
     case TWCoinTypeBinance:
         return Tendermint::Address(HRP_BINANCE_TEST, publicKey).string();
-
     case TWCoinTypeCosmos:
         return Tendermint::Address(HRP_COSMOS, publicKey).string();
 
@@ -439,6 +409,12 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeDash:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixDash).string();
 
+    case TWCoinTypeDecred:
+        return Decred::Address(publicKey).string();
+
+    case TWCoinTypeGroestlcoin:
+        return Bitcoin::Bech32Address(publicKey, 0, HRP_GROESTLCOIN).string();
+
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
@@ -447,10 +423,11 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
+    case TWCoinTypeTheta:
         return Ethereum::Address(publicKey).string();
-
+    case TWCoinTypeWanChain:
+        return Wanchain::Address(publicKey).string();
     case TWCoinTypeICON:
         return Icon::Address(publicKey, TWIconAddressTypeAddress).string();
 
@@ -487,6 +464,87 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
+    }
+}
+
+Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
+    switch (coin) {
+    case TWCoinTypeAion:
+    case TWCoinTypeBinance:
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeCallisto:
+    case TWCoinTypeCosmos:
+    case TWCoinTypeDash:
+    case TWCoinTypeEthereum:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypeGroestlcoin:
+    case TWCoinTypeICON:
+    case TWCoinTypeKIN:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeNEO:
+    case TWCoinTypeNimiq:
+    case TWCoinTypeOntology:
+    case TWCoinTypePoa:
+    case TWCoinTypeRipple:
+    case TWCoinTypeStellar:
+    case TWCoinTypeTezos:
+    case TWCoinTypeTheta:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeTron:
+    case TWCoinTypeVeChain:
+    case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
+    case TWCoinTypeZcash:
+    case TWCoinTypeZcoin:
+        return Hash::sha256ripemd;
+
+    case TWCoinTypeDecred:
+        return Hash::blake256ripemd;
+    }
+}
+
+/// Hasher to use for base 58 checksums.
+Hash::Hasher TW::base58Hasher(TWCoinType coin) {
+    switch (coin) {
+    case TWCoinTypeAion:
+    case TWCoinTypeBinance:
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeCallisto:
+    case TWCoinTypeCosmos:
+    case TWCoinTypeDash:
+    case TWCoinTypeEthereum:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypeICON:
+    case TWCoinTypeKIN:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeNEO:
+    case TWCoinTypeNimiq:
+    case TWCoinTypeOntology:
+    case TWCoinTypePoa:
+    case TWCoinTypeRipple:
+    case TWCoinTypeStellar:
+    case TWCoinTypeTezos:
+    case TWCoinTypeTheta:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeTron:
+    case TWCoinTypeVeChain:
+    case TWCoinTypeWanChain:
+    case TWCoinTypeXDai:
+    case TWCoinTypeZcash:
+    case TWCoinTypeZcoin:
+        return Hash::sha256d;
+
+    case TWCoinTypeDecred:
+        return Hash::blake256d;
+
+    case TWCoinTypeGroestlcoin:
+        return Hash::groestl512d;
     }
 }
 

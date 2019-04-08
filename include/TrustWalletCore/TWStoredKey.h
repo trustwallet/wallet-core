@@ -60,7 +60,7 @@ struct TWAccount *_Nullable TWStoredKeyAccount(struct TWStoredKey *_Nonnull key,
 
 /// Returns the account for a specific coin, creating it if necessary.
 TW_EXPORT_METHOD
-struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, TWString *_Nonnull password);
+struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, struct TWHDWallet *_Nullable wallet);
 
 /// Adds a new account.
 TW_EXPORT_METHOD
@@ -93,7 +93,8 @@ TWData *_Nullable TWStoredKeyExportJSON(struct TWStoredKey *_Nonnull key);
 /// Fills in empty and invalid addresses.
 ///
 /// This method needs the encryption password to re-derive addresses from private keys.
+/// @returns `false` if the password is incorrect.
 TW_EXPORT_METHOD
-void TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password);
+bool TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password);
 
 TW_EXTERN_C_END

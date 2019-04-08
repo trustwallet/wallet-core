@@ -70,8 +70,8 @@ TEST(BitcoinCash, ExtendedKeys) {
 
 TEST(BitcoinCash, DeriveFromXPub) {
     auto xpub = STRING("xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCurveSECP256k1, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
+    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
 
     TWBitcoinCashAddress address2;
     TWBitcoinCashAddressInitWithPublicKey(&address2, pubKey2);
@@ -133,9 +133,6 @@ TEST(BitcoinCash, SignTransaction) {
 TEST(BitcoinCash, ValidAddress) {
     auto address = TWBitcoinCashAddress();
     TWBitcoinCashAddressInitWithString(&address, STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4").get());
-
-    auto data = WRAPD(TWBitcoinCashAddressData(address));
-    ASSERT_TRUE(TWBitcoinCashAddressIsValid(data.get()));
 
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4").get()));
     ASSERT_FALSE(TWBitcoinScriptSize(script.get()) == 0);

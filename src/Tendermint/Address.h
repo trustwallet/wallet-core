@@ -9,14 +9,13 @@
 #include "../Data.h"
 #include "../PublicKey.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
-namespace TW {
-namespace Tendermint {
+namespace TW::Tendermint {
 
 class Address {
-public:
+  public:
     /// Human-readable part.
     ///
     /// \see https://github.com/satoshilabs/slips/blob/master/slip-0173.md
@@ -28,17 +27,15 @@ public:
     /// Determines whether a string makes a valid Tendermint address.
     static bool isValid(const std::string& string);
 
-    /// Determines whether a string makes a valid Tendermint address, and the HRP matches.
+    /// Determines whether a string makes a valid Tendermint address, and the
+    /// HRP matches.
     static bool isValid(const std::string& string, const std::string& hrp);
 
     /// Initializes an address with a key hash.
-    Address(const std::string& hrp, const Data& keyHash) : hrp(hrp), keyHash(keyHash) {}
-
-    /// Initializes an address with a key hash.
-    Address(const std::string& hrp, Data&& keyHash) : hrp(hrp), keyHash(keyHash) {}
+    Address(std::string hrp, Data keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
 
     /// Initializes an address with a public key.
-    Address(const std::string& hrp, const PublicKey& publicKey);
+    Address(std::string hrp, const PublicKey& publicKey);
 
     /// Decodes an address.
     ///
@@ -50,15 +47,13 @@ public:
     /// \returns encoded address string, or empty string on failure.
     std::string string() const;
 
-    bool operator==(const Address& rhs) const {
-        return hrp == rhs.hrp && keyHash == rhs.keyHash;
-    }
+    bool operator==(const Address& rhs) const { return hrp == rhs.hrp && keyHash == rhs.keyHash; }
 
-private:
+  private:
     Address() = default;
 };
 
-}} // namespace
+} // namespace TW::Tendermint
 
 /// Wrapper for C interface.
 struct TWTendermintAddress {

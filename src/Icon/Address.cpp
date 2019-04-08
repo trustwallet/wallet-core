@@ -22,7 +22,8 @@ bool Address::isValid(const std::string& string) {
     if (string.size() != Address::size * 2 + 2) {
         return false;
     }
-    if (!std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin()) && !std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
+    if (!std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin()) &&
+        !std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
         return false;
     }
     return true;
@@ -39,7 +40,6 @@ Address::Address(const std::string& string) {
         type = TWIconAddressTypeContract;
     } else {
         throw std::invalid_argument("Invalid address prefix");
-        type = TWIconAddressTypeAddress;
     }
 
     const auto data = parse_hex(string.begin() + 2, string.end());

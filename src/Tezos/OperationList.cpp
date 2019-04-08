@@ -4,10 +4,9 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "OperationList.h"
-
 #include "BinaryCoding.h"
 #include "HexCoding.h"
+#include "OperationList.h"
 #include "Transaction.h"
 #include "../Base58.h"
 
@@ -18,7 +17,7 @@ OperationList::OperationList(const std::string& str) {
     branch = str;
 }
 
-void OperationList::add_operation(Transaction transaction) {
+void OperationList::addOperation(const Transaction& transaction) {
     operation_list.push_back(transaction);
 }
 

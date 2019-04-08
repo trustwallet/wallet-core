@@ -19,6 +19,7 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWFoundationString.h>
 
 #include <TrustWalletCore/TWBitcoin.h>
+#include <TrustWalletCore/TWBitcoinOpCodes.h>
 
 #include <TrustWalletCore/TWAES.h>
 #include <TrustWalletCore/TWAccount.h>
@@ -33,10 +34,15 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWBitcoinTransactionSigner.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
+#include <TrustWalletCore/TWCosmosSigner.h>
 #include <TrustWalletCore/TWCurve.h>
+#include <TrustWalletCore/TWDecredAddress.h>
+#include <TrustWalletCore/TWDecredSigner.h>
 #include <TrustWalletCore/TWEthereumAddress.h>
 #include <TrustWalletCore/TWEthereumChainID.h>
 #include <TrustWalletCore/TWEthereumSigner.h>
+#include <TrustWalletCore/TWGroestlcoinAddress.h>
+#include <TrustWalletCore/TWGroestlcoinTransactionSigner.h>
 #include <TrustWalletCore/TWHDVersion.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
@@ -49,6 +55,7 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWNimiqAddress.h>
 #include <TrustWalletCore/TWNimiqSigner.h>
 #include <TrustWalletCore/TWOntologyAddress.h>
+#include <TrustWalletCore/TWOntologySigner.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
@@ -65,8 +72,11 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWTendermintAddress.h>
 #include <TrustWalletCore/TWTezosAddress.h>
 #include <TrustWalletCore/TWTezosSigner.h>
+#include <TrustWalletCore/TWThetaSigner.h>
+#include <TrustWalletCore/TWTronAddress.h>
 #include <TrustWalletCore/TWTronSigner.h>
 #include <TrustWalletCore/TWVeChainSigner.h>
+#include <TrustWalletCore/TWWanchainAddress.h>
 #include <TrustWalletCore/TWWanchainSigner.h>
 #include <TrustWalletCore/TWZcashTAddress.h>
 #include <TrustWalletCore/TWZcashTransactionSigner.h>

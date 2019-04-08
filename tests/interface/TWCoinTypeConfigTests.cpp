@@ -26,6 +26,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value5 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDash));
     assertStringsEqual(value5, "DASH");
 
+    auto decred = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDecred));
+    assertStringsEqual(decred, "DCR");
+
     auto value6 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereumClassic));
     assertStringsEqual(value6, "ETC");
 
@@ -64,7 +67,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value19 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
     assertStringsEqual(value19, "XLM");
-  
+
     auto value20 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
     assertStringsEqual(value20, "xDAI");
 
@@ -76,6 +79,13 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value23 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCosmos));
     assertStringsEqual(value23, "ATOM");
+
+    auto value24 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTheta));
+    assertStringsEqual(value24, "THETA");
+
+    auto value25 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
+    assertStringsEqual(value25, "GRS");
+
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -84,8 +94,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinCash), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCallisto), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDash), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGo), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePoa), 18);
@@ -102,7 +114,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKIN), 5);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -120,7 +133,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value4, "https://explorer2.callisto.network/tx/123");
 
     auto value5 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDash, txId));
-    assertStringsEqual(value5, "https://live.blockcypher.com/dash/tx/123");
+    assertStringsEqual(value5, "https://blockchair.com/dash/transaction/123");
 
     auto value6 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereumClassic, txId));
     assertStringsEqual(value6, "https://gastracker.io/tx/123");
@@ -170,7 +183,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value22 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
     assertStringsEqual(value22, "https://stellarscan.io/transaction/123");
-  
+
     auto value23 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId));
     assertStringsEqual(value23, "https://blockscout.com/poa/dai/tx/123");
 
@@ -182,6 +195,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value26 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
     assertStringsEqual(value26, "https://hubble.figment.network/chains/cosmoshub-1/blocks/1/transactions/123");
+
+    auto value27 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTheta, txId));
+    assertStringsEqual(value27, "https://explorer.thetatoken.org/txs/123");
+
+    auto value28 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
+    assertStringsEqual(value28, "https://blockbook.groestlcoin.org/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -250,6 +269,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value23 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
     assertStringsEqual(value23, "cosmos");
+
+    auto value24 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTheta));
+    assertStringsEqual(value24, "theta");
+
+    auto value25 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
+    assertStringsEqual(value25, "groestlcoin");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -309,7 +334,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value20 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
     assertStringsEqual(value20, "xDai");
-    
+
     auto value21 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
     assertStringsEqual(value21, "Aion");
 
@@ -321,4 +346,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value24 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
     assertStringsEqual(value24, "Cosmos");
+
+    auto value25 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTheta));
+    assertStringsEqual(value25, "Theta");
+
+    auto value26 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
+    assertStringsEqual(value26, "Groestlcoin");
 }

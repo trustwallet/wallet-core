@@ -29,6 +29,7 @@ import wallet.core.jni.CoinType.NIMIQ
 import wallet.core.jni.CoinType.STELLAR
 import wallet.core.jni.CoinType.AION
 import wallet.core.jni.CoinType.NEO
+import wallet.core.jni.CoinType.THETA
 
 class CoinAddressDerivationTests {
 
@@ -63,7 +64,7 @@ class CoinAddressDerivationTests {
                     TOMOCHAIN -> assertEquals("0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424", address)
                     TRON -> assertEquals("TQ5NMqJjhpQGK7YJbESKtNCo86PJ89ujio", address)
                     VECHAIN -> assertEquals("0x1a553275dF34195eAf23942CB7328AcF9d48c160", address)
-                    WANCHAIN -> assertEquals("0xD5ca90b928279FE5D06144136a25DeD90127aC15", address)
+                    WANCHAIN -> assertEquals("0xd5CA90B928279fe5d06144136A25dEd90127Ac15", address)
                     XDAI -> assertEquals("0x364d0551599B97EAf997bc06c8c40Aaf73124402", address)
                     ZCASH -> assertEquals("t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy", address)
                     ZCOIN ->  assertEquals("aEd5XFChyXobvEics2ppAqgK3Bgusjxtik", address)
@@ -71,6 +72,7 @@ class CoinAddressDerivationTests {
                     STELLAR -> assertEquals("GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P", address)
                     AION -> assertEquals("0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e", address)
                     NEO -> assertEquals("AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF", address)
+                    THETA -> assertEquals("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
                 }
             }
         }

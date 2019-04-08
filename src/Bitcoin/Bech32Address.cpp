@@ -6,13 +6,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bech32Address.h"
-
 #include "../Bech32.h"
-#include <TrustWalletCore/TWHRP.h>
+
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWHRP.h>
 
 using namespace TW::Bitcoin;
-typedef std::vector<uint8_t> Data;
 
 bool Bech32Address::isValid(const std::string& string) {
     auto dec = Bech32::decode(string);
@@ -22,8 +21,8 @@ bool Bech32Address::isValid(const std::string& string) {
 
     Data conv;
     if (!Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin() + 1, dec.second.end())) ||
-        conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 || (dec.second[0] == 0 &&
-        conv.size() != 20 && conv.size() != 32)) {
+        conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 ||
+        (dec.second[0] == 0 && conv.size() != 20 && conv.size() != 32)) {
         return false;
     }
 
@@ -41,17 +40,22 @@ bool Bech32Address::isValid(const std::string& string, const std::string& hrp) {
 
     Data conv;
     if (!Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin() + 1, dec.second.end())) ||
-        conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 || (dec.second[0] == 0 &&
-        conv.size() != 20 && conv.size() != 32)) {
+        conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 ||
+        (dec.second[0] == 0 && conv.size() != 20 && conv.size() != 32)) {
         return false;
     }
 
     return true;
 }
 
-Bech32Address::Bech32Address(const PublicKey& publicKey, int witver, const std::string& hrp) : hrp(hrp), witnessVersion(witver), witnessProgram() {
+Bech32Address::Bech32Address(const PublicKey& publicKey, int witver, std::string hrp)
+    : hrp(std::move(hrp)), witnessVersion(witver), witnessProgram() {
+    if (publicKey.type() != PublicKeyType::secp256k1) {
+        throw std::invalid_argument("Bech32Addressneeds a compressed SECP256k1 public key.");
+    }
     witnessProgram.resize(20);
-    ecdsa_get_pubkeyhash(publicKey.compressed().bytes.data(), HASHER_SHA2_RIPEMD, witnessProgram.data());
+    ecdsa_get_pubkeyhash(publicKey.compressed().bytes.data(), HASHER_SHA2_RIPEMD,
+                         witnessProgram.data());
 }
 
 std::pair<Bech32Address, bool> Bech32Address::decode(const std::string& addr) {
@@ -62,8 +66,8 @@ std::pair<Bech32Address, bool> Bech32Address::decode(const std::string& addr) {
 
     Data conv;
     if (!Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin() + 1, dec.second.end())) ||
-        conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 || (dec.second[0] == 0 &&
-        conv.size() != 20 && conv.size() != 32)) {
+        conv.size() < 2 || conv.size() > 40 || dec.second[0] > 16 ||
+        (dec.second[0] == 0 && conv.size() != 20 && conv.size() != 32)) {
         return std::make_pair(Bech32Address(), false);
     }
 
@@ -81,11 +85,12 @@ std::string Bech32Address::string() const {
     return result;
 }
 
-std::pair<Bech32Address, bool> Bech32Address::fromRaw(const std::string& hrp, const std::vector<uint8_t>& data) {
+std::pair<Bech32Address, bool> Bech32Address::fromRaw(const std::string& hrp,
+                                                      const std::vector<uint8_t>& data) {
     Data conv;
     if (!Bech32::convertBits<5, 8, false>(conv, Data(data.begin() + 1, data.end())) ||
-        conv.size() < 2 || conv.size() > 40 || data[0] > 16 || (data[0] == 0 &&
-        conv.size() != 20 && conv.size() != 32)) {
+        conv.size() < 2 || conv.size() > 40 || data[0] > 16 ||
+        (data[0] == 0 && conv.size() != 20 && conv.size() != 32)) {
         return std::make_pair(Bech32Address(), false);
     }
 

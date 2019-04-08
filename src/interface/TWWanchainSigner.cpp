@@ -15,7 +15,7 @@ using namespace TW::Wanchain;
 
 TW_Ethereum_Proto_SigningOutput TWWanchainSignerSign(TW_Ethereum_Proto_SigningInput data) {
     Ethereum::Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Ethereum::Transaction(

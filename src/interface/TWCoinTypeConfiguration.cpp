@@ -5,8 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
-#include <stdio.h>
-#include <string.h>
+
 #include <string>
 
 #pragma clang diagnostic push
@@ -24,8 +23,10 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeBitcoinCash:  string = "BCH"; break;
     case TWCoinTypeCallisto:  string = "CLO"; break;
     case TWCoinTypeDash:  string = "DASH"; break;
+    case TWCoinTypeDecred: string = "DCR"; break;
     case TWCoinTypeEthereumClassic:  string = "ETC"; break;
     case TWCoinTypeGo:  string =  "GO"; break;
+    case TWCoinTypeGroestlcoin: string = "GRS"; break;
     case TWCoinTypeICON:  string =  "ICX"; break;
     case TWCoinTypeLitecoin: string = "LTC"; break;
     case TWCoinTypeViacoin: string = "VIA"; break;
@@ -48,6 +49,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeCosmos: string = "ATOM"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "KIN"; break;
+    case TWCoinTypeTheta: string = "THETA"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -67,11 +69,13 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeAion:
-    case TWCoinTypeCosmos:
+    case TWCoinTypeTheta:
         return 18;
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeBitcoin:
     case TWCoinTypeDash:
+    case TWCoinTypeDecred:
+    case TWCoinTypeGroestlcoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeBinance:
@@ -84,6 +88,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeRipple:
     case TWCoinTypeTezos:
     case TWCoinTypeTron:
+    case TWCoinTypeCosmos:
         return 6;
     case TWCoinTypeNimiq:
     case TWCoinTypeKIN:
@@ -101,6 +106,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     switch (type) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeDash:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
     case TWCoinTypeStellar:
@@ -109,10 +115,11 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         break;
     case TWCoinTypeViacoin:
     case TWCoinTypeEthereum:
-    case TWCoinTypeDash:
+    case TWCoinTypeDecred:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
+    case TWCoinTypeGroestlcoin:
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
@@ -126,6 +133,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         url += "/txid/search/" + txId;
         break;
     case TWCoinTypeTomoChain:
+    case TWCoinTypeTheta:
         url += "/txs/" + txId;
         break;
     case TWCoinTypeTron:
@@ -163,9 +171,11 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeBitcoin: return "https://blockchair.com/bitcoin";
     case TWCoinTypeBitcoinCash: return "https://blockchair.com/bitcoin-cash";
     case TWCoinTypeCallisto: return "https://explorer2.callisto.network";
-    case TWCoinTypeDash: return "https://live.blockcypher.com/dash";
+    case TWCoinTypeDash: return "https://blockchair.com/dash";
+    case TWCoinTypeDecred: return "https://mainnet.decred.org";
     case TWCoinTypeEthereumClassic: return "https://gastracker.io";
     case TWCoinTypeGo: return "https://explorer.gochain.io";
+    case TWCoinTypeGroestlcoin: return "https://blockbook.groestlcoin.org";
     case TWCoinTypeICON: return "https://tracker.icon.foundation";
     case TWCoinTypeLitecoin: return "https://blockchair.com/litecoin";
     case TWCoinTypeViacoin: return "https://explorer.viacoin.org";
@@ -188,6 +198,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeCosmos: return "https://hubble.figment.network/chains/cosmoshub-1";
     case TWCoinTypeNEO: return "https://neoscan.io";
     case TWCoinTypeKIN: return "https://kinexplorer.com";
+    case TWCoinTypeTheta: return "https://explorer.thetatoken.org";
     default: return "";
     }
 }
@@ -200,8 +211,10 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeBitcoinCash:  string = "bitcoincash"; break;
     case TWCoinTypeCallisto:  string = "callisto"; break;
     case TWCoinTypeDash:  string = "dash"; break;
+    case TWCoinTypeDecred: string = "decred"; break;
     case TWCoinTypeEthereumClassic:  string = "classic"; break;
     case TWCoinTypeGo:  string =  "gochain"; break;
+    case TWCoinTypeGroestlcoin: string = "groestlcoin"; break;
     case TWCoinTypeICON:  string =  "icon"; break;
     case TWCoinTypeLitecoin: string = "litecoin"; break;
     case TWCoinTypeViacoin: string = "viacoin"; break;
@@ -224,6 +237,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeCosmos: string = "cosmos"; break;
     case TWCoinTypeNEO: string = "neo"; break;
     case TWCoinTypeKIN: string = "kin"; break;
+    case TWCoinTypeTheta: string = "theta"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -237,8 +251,10 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeBitcoinCash:  string = "Bitcoin Cash"; break;
     case TWCoinTypeCallisto:  string = "Callisto"; break;
     case TWCoinTypeDash:  string = "Dash"; break;
+    case TWCoinTypeDecred: string = "Decred"; break;
     case TWCoinTypeEthereumClassic:  string = "Ethereum Classic"; break;
     case TWCoinTypeGo:  string =  "GoChain"; break;
+    case TWCoinTypeGroestlcoin: string =  "Groestlcoin"; break;
     case TWCoinTypeICON:  string =  "ICON"; break;
     case TWCoinTypeLitecoin: string = "Litecoin"; break;
     case TWCoinTypeViacoin: string = "Viacoin"; break;
@@ -261,6 +277,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeCosmos: string = "Cosmos"; break;
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "Kin"; break;
+    case TWCoinTypeTheta: string = "Theta"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

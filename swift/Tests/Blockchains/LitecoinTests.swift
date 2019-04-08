@@ -9,18 +9,18 @@ import XCTest
 
 class LitecoinTests: XCTestCase {
     func testAddress() {
-        let privateKey1 = PrivateKey(wif: "T8VERgAiBcUnRXmWxgVzp6AaH1hKwPQQQeghi3n9ZY6nF59GuTJf")!
+        let privateKey1 = PrivateKey(data: Data(hexString: "a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730")!)!
         let publicKey1 = privateKey1.getPublicKeySecp256k1(compressed: true)
 
         let legacyAddress = BitcoinAddress(publicKey: publicKey1, prefix: P2PKHPrefix.litecoin.rawValue)
         XCTAssertEqual(BitcoinAddress(string: "LV7LV7Z4bWDEjYkfx9dQo6k6RjGbXsg6hS")!.description, legacyAddress.description)
 
-        let privateKey2 = PrivateKey(wif: "TBKynom8diHvD7TzpURLY2EHP6MbR7iYiaD6fGPiTB5pHbxSNXgH")!
+        let privateKey2 = PrivateKey(data: Data(hexString: "f6ee7e6c9bd2f4dc8f0db0dc4679de06c998afc42d825edf7966dd4488b0aa1f")!)!
         let publicKey2 = privateKey2.getPublicKeySecp256k1(compressed: true)
         let compatibleAddress = BitcoinAddress.compatibleAddress(publicKey: publicKey2, prefix: P2SHPrefix.litecoin.rawValue)
         XCTAssertEqual(BitcoinAddress(string: "M8eTgzhoFTErAjkGa6cyBomcHfxAprbDgD")!.description, compatibleAddress.description)
 
-        let privateKey3 = PrivateKey(wif: "T5w6v6RpidKc8JMMcRDi6f6xTaEVV52LG2W73mCVesA4ZGWef2xA")!
+        let privateKey3 = PrivateKey(data: Data(hexString: "55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625")!)!
         let publicKey3 = privateKey3.getPublicKeySecp256k1(compressed: true)
         let bech32Address = Bech32Address(hrp: .litecoin, publicKey: publicKey3)
         XCTAssertEqual(Bech32Address(string: "ltc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asjnaxwu")!.description, bech32Address.description)

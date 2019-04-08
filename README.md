@@ -2,9 +2,11 @@
 
 Trust Wallet Core is a cross-platform library that implements low-level cryptographic wallet functionality for all supported blockchains. Most of the code is C++ with a set of strict exported C interfaces. The library provides idiomatic interfaces for all supported languages (currently Swift for iOS and Java for Android).
 
-[![Build status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20iOS)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=13)
-[![Build status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20Android)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=11)
+[![iOS status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20iOS)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=13)
+[![Android status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20Android)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=11)
+[![Linux status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20Linux)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=24)
 
+![Codecov](https://codecov.io/gh/TrustWallet/wallet-core/branch/master/graph/badge.svg)
 ![GitHub](https://img.shields.io/github/license/TrustWallet/wallet-core.svg)
 ![Maven Central](https://img.shields.io/maven-central/v/com.trustwallet.walletcore/walletcore.svg)
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
@@ -31,10 +33,15 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://tezos.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1729.png" width="32" /></a>
 <a href="https://aion.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/425.png" width="32" /></a>
 <a href="https://www.stellar.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/148.png" width="32" /></a>
-<a href="https://poa.network/xdai" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/700.png" width="32" /></a>
 <a href="https://thundercore.com" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1001.png" width="32" /></a>
 <a href="https://kinecosystem.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2017.png" width="32" /></a>
 
+<a href="https://poa.network/xdai" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/700.png" width="32" /></a>
+<a href="https://decred.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/42.png" width="32" /></a>
+<a href="https://www.thetatoken.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/500.png" width="32" /></a>
+<a href="https://ont.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1024.png" width="32" /></a>
+<a href="https://www.groestlcoin.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/17.png" width="32" /></a>
+<a href="https://cosmos.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" /></a>
 # Usage
 
 If you want to use wallet core in your project follow these instructions.

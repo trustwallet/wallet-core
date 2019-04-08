@@ -35,7 +35,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionOnly) {
         operationtype::TRANSACTION
     );
 
-    op_list.add_operation(tx1);
+    op_list.addOperation(tx1);
 
     auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0108000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
 
@@ -57,7 +57,7 @@ TEST(TezosOperationList, ForgeOperationList_RevealOnly) {
         operationtype::REVEAL
       );
 
-      op_list.add_operation(tx1);
+      op_list.addOperation(tx1);
       auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0107000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
       ASSERT_EQ(op_list.forge(), parse_hex(expected));
 }
@@ -75,7 +75,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
         parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A"),
         operationtype::REVEAL
     );
-    op_list.add_operation(tx1);
+    op_list.addOperation(tx1);
     auto tx2 = Transaction(
         Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
         1272,
@@ -86,7 +86,7 @@ TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
         Address("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"),
         operationtype::TRANSACTION
     );
-    op_list.add_operation(tx2);
+    op_list.addOperation(tx2);
 
     auto expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0107000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b9572100";
     ASSERT_EQ(op_list.forge(), parse_hex(expected));

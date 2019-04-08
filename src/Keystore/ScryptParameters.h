@@ -12,8 +12,7 @@
 #include <nlohmann/json.hpp>
 #include <optional>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 enum class ScryptValidationError {
     desiredKeyLengthTooLarge,
@@ -24,20 +23,20 @@ enum class ScryptValidationError {
 
 /// Scrypt function parameters.
 struct ScryptParameters {
-    /// The N parameter of Scrypt encryption algorithm, using 256MB memory and taking approximately 1s CPU time on a
-    /// modern processor.
+    /// The N parameter of Scrypt encryption algorithm, using 256MB memory and
+    /// taking approximately 1s CPU time on a modern processor.
     static const uint32_t standardN = 1 << 18;
 
-    /// The P parameter of Scrypt encryption algorithm, using 256MB memory and taking approximately 1s CPU time on a
-    /// modern processor.
+    /// The P parameter of Scrypt encryption algorithm, using 256MB memory and
+    /// taking approximately 1s CPU time on a modern processor.
     static const uint32_t standardP = 1;
 
-    /// The N parameter of Scrypt encryption algorithm, using 4MB memory and taking approximately 100ms CPU time on a
-    /// modern processor.
+    /// The N parameter of Scrypt encryption algorithm, using 4MB memory and
+    /// taking approximately 100ms CPU time on a modern processor.
     static const uint32_t lightN = 1 << 12;
 
-    /// The P parameter of Scrypt encryption algorithm, using 4MB memory and taking approximately 100ms CPU time on a
-    /// modern processor.
+    /// The P parameter of Scrypt encryption algorithm, using 4MB memory and
+    /// taking approximately 100ms CPU time on a modern processor.
     static const uint32_t lightP = 6;
 
     /// Default `R` parameter of Scrypt encryption algorithm.
@@ -68,12 +67,7 @@ struct ScryptParameters {
     ///
     /// @throws ScryptValidationError if the parameters are invalid.
     ScryptParameters(Data salt, uint32_t n, uint32_t r, uint32_t p, std::size_t desiredKeyLength)
-        : salt(salt)
-        , desiredKeyLength(desiredKeyLength)
-        , n(n)
-        , p(p)
-        , r(r)
-    {
+        : salt(std::move(salt)), desiredKeyLength(desiredKeyLength), n(n), p(p), r(r) {
         auto error = validate();
         if (error) {
             throw *error;
@@ -92,4 +86,4 @@ struct ScryptParameters {
     nlohmann::json json() const;
 };
 
-}} // namespace
+} // namespace TW::Keystore

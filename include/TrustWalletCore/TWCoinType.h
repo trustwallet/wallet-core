@@ -20,20 +20,28 @@ TW_EXTERN_C_BEGIN
 /// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 TW_EXPORT_ENUM(uint32_t)
 enum TWCoinType {
+    TWCoinTypeAion = 425,
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
     TWCoinTypeCallisto = 820,
+    TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
+    TWCoinTypeDecred = 42,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
     TWCoinTypeGo = 6060,
+    TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
+    TWCoinTypeKIN = 2017,
     TWCoinTypeLitecoin = 2,
     TWCoinTypeViacoin = 14,
+    TWCoinTypeNEO = 888,
+    TWCoinTypeNimiq = 242,
     TWCoinTypeOntology = 1024,
     TWCoinTypePoa = 178,
     TWCoinTypeRipple = 144,
+    TWCoinTypeStellar = 148,
     TWCoinTypeTezos = 1729,
     TWCoinTypeThunderToken = 1001,
     TWCoinTypeTomoChain = 889,
@@ -43,12 +51,7 @@ enum TWCoinType {
     TWCoinTypeXDai = 700,
     TWCoinTypeZcash = 133,
     TWCoinTypeZcoin = 136,
-    TWCoinTypeNimiq = 242,
-    TWCoinTypeStellar = 148,
-    TWCoinTypeAion = 425,
-    TWCoinTypeCosmos = 118,
-    TWCoinTypeNEO = 888,
-    TWCoinTypeKIN = 2017,
+    TWCoinTypeTheta = 500,
 };
 
 /// Returns the purpose for a coin type.

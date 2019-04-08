@@ -14,44 +14,36 @@
 
 #include <vector>
 
-namespace TW {
-namespace Zcash {
+namespace TW::Zcash {
 
 /// Only supports Sapling transparent transaction right now
 /// See also https://github.com/zcash/zips/blob/master/zip-0243.rst
 struct Transaction {
-    uint32_t version;
-    uint32_t versionGroupId;
-    uint32_t lockTime;
-    uint32_t expiryHeight;
-    uint64_t valueBalance;
+    uint32_t version = 0x80000004;
+    uint32_t versionGroupId = 0x892F2085;
+    uint32_t lockTime = 0;
+    uint32_t expiryHeight = 0;
+    uint64_t valueBalance = 0;
 
     std::vector<Bitcoin::TransactionInput> inputs;
     std::vector<Bitcoin::TransactionOutput> outputs;
 
-    Transaction()
-        : version(0x80000004)
-        , versionGroupId(0x892F2085)
-        , lockTime()
-        , expiryHeight()
-        , valueBalance()
-        {}
+    Transaction() = default;
 
-    Transaction(uint32_t version, uint32_t versionGroupId, uint32_t lockTime, uint32_t expiryHeight, uint64_t valueBalance)
+    Transaction(uint32_t version, uint32_t versionGroupId, uint32_t lockTime, uint32_t expiryHeight,
+                uint64_t valueBalance)
         : version(version)
         , versionGroupId(versionGroupId)
         , lockTime(lockTime)
         , expiryHeight(expiryHeight)
-        , valueBalance(valueBalance)
-        {}
+        , valueBalance(valueBalance) {}
 
     /// Whether the transaction is empty.
-    bool empty() const {
-        return inputs.empty() && outputs.empty();
-    }
+    bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    Data getPreImage(const Bitcoin::Script& scriptCode, int index, uint32_t hashType, uint64_t amount) const;
+    Data getPreImage(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType,
+                     uint64_t amount) const;
     Data getPrevoutHash() const;
     Data getSequenceHash() const;
     Data getOutputsHash() const;
@@ -63,10 +55,11 @@ struct Transaction {
     /// Encodes the rawtx into the provided buffer.
     void encode(Data& data) const;
 
-    Data getSignatureHash(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType, uint64_t amount, TWBitcoinSignatureVersion version) const;
+    Data getSignatureHash(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType,
+                          uint64_t amount, TWBitcoinSignatureVersion version) const;
 
     /// Converts to Protobuf model
     Bitcoin::Proto::Transaction proto() const;
 };
 
-}} // namespace
+} // namespace TW::Zcash

@@ -9,14 +9,13 @@
 #include "../PublicKey.h"
 
 #include <array>
-#include <stdint.h>
+#include <cstdint>
 #include <vector>
 
-namespace TW {
-namespace Aion {
+namespace TW::Aion {
 
 class Address {
-public:
+  public:
     /// Number of bytes in Aion address.
     static const size_t size = 32;
 
@@ -32,23 +31,23 @@ public:
     static bool isValid(const std::string& string);
 
     /// Initializes an address with a string representation.
-    Address(const std::string& string);
+    explicit Address(const std::string& string);
 
     /// Initializes an address with a collection of bytes.
-    Address(const std::vector<uint8_t>& data);
+    explicit Address(const std::vector<uint8_t>& data);
 
     /// Initializes an address with a public key.
-    Address(const PublicKey& publicKey);
+    explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }
-    
-}} // namespace
+
+} // namespace TW::Aion
 
 /// Wrapper for C interface.
 struct TWAionAddress {

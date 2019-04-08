@@ -95,10 +95,13 @@ struct TWAccount *_Nullable TWStoredKeyAccount(struct TWStoredKey *_Nonnull key,
     return new TWAccount{ key->impl.accounts[index] };
 }
 
-struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, TWString *_Nonnull password) {
-    auto& s = *reinterpret_cast<const std::string*>(password);
+struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, struct TWHDWallet *_Nullable wallet) {
     try {
-       return new TWAccount{ key->impl.account(coin, s) };
+        const auto account = key->impl.account(coin, (wallet ? &wallet->impl : nullptr));
+        if (account == nullptr) {
+            return nullptr;
+        }
+       return new TWAccount{ *account };
     } catch (std::exception) {
         return nullptr;
     }
@@ -168,7 +171,12 @@ TWData *_Nullable TWStoredKeyExportJSON(struct TWStoredKey *_Nonnull key) {
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(json.data()), json.size());
 }
 
-void TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password) {
+bool TWStoredKeyFixAddresses(struct TWStoredKey *_Nonnull key, TWString *_Nonnull password) {
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
-    key->impl.fixAddresses(passwordString);
+    try {
+        key->impl.fixAddresses(passwordString);
+        return true;
+    } catch (...) {
+        return false;
+    }
 }

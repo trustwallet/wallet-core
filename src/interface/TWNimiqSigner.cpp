@@ -6,8 +6,8 @@
 
 #include <TrustWalletCore/TWNimiqSigner.h>
 
-#include "../PrivateKey.h"
 #include "../Nimiq/Signer.h"
+#include "../PrivateKey.h"
 #include "../proto/Nimiq.pb.h"
 
 using namespace TW;
@@ -15,7 +15,7 @@ using namespace TW::Nimiq;
 
 TW_Nimiq_Proto_SigningOutput TWNimiqSignerSign(TW_Nimiq_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto pubkey = key.getPublicKey(TW::PublicKeyType::ed25519);

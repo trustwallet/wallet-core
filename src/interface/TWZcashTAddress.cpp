@@ -4,13 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWZcashTAddress.h>
-
 #include "../Base58.h"
 #include "../PublicKey.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWZcashTAddress.h>
 
 #include <cstring>
 #include <string>
@@ -71,8 +70,4 @@ bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, 
 TWString *_Nonnull TWZcashTAddressDescription(struct TWZcashTAddress address) {
     const auto str = TW::Base58::bitcoin.encodeCheck(address.bytes, address.bytes + TWZcashTAddressSize);
     return TWStringCreateWithUTF8Bytes(str.data());
-}
-
-TWData *_Nonnull TWZcashTAddressData(struct TWZcashTAddress address) {
-    return TWDataCreateWithBytes(address.bytes, TWZcashTAddressSize);
 }

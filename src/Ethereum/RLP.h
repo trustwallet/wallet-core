@@ -7,35 +7,27 @@
 #pragma once
 
 #include "Transaction.h"
+#include "../Data.h"
+#include "../uint256.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 /// Implementation of Ethereum's RLP encoding.
 ///
 /// - SeeAlso: https://github.com/ethereum/wiki/wiki/RLP
 struct RLP {
-    typedef std::vector<uint8_t> Data;
-    typedef std::string String;
-    typedef boost::multiprecision::uint256_t uint256_t;
-
     /// Encodes a string;
-    static Data encode(String string) noexcept {
+    static Data encode(const std::string& string) noexcept {
         return encode(Data(string.begin(), string.end()));
     }
 
-    static Data encode(uint8_t number) noexcept {
-        return encode(uint256_t(number));
-    }
+    static Data encode(uint8_t number) noexcept { return encode(uint256_t(number)); }
 
-    static Data encode(uint16_t number) noexcept {
-        return encode(uint256_t(number));
-    }
+    static Data encode(uint16_t number) noexcept { return encode(uint256_t(number)); }
 
     static Data encode(int32_t number) noexcept {
         if (number < 0) {
@@ -44,9 +36,7 @@ struct RLP {
         return encode(static_cast<uint32_t>(number));
     }
 
-    static Data encode(uint32_t number) noexcept {
-        return encode(uint256_t(number));
-    }
+    static Data encode(uint32_t number) noexcept { return encode(uint256_t(number)); }
 
     static Data encode(int64_t number) noexcept {
         if (number < 0) {
@@ -55,23 +45,21 @@ struct RLP {
         return encode(static_cast<uint64_t>(number));
     }
 
-    static Data encode(uint64_t number) noexcept {
-        return encode(uint256_t(number));
-    }
+    static Data encode(uint64_t number) noexcept { return encode(uint256_t(number)); }
 
-    static Data encode(uint256_t number) noexcept;
+    static Data encode(const uint256_t& number) noexcept;
 
     /// Encodes a transaction.
-    static Data encode(Transaction transaction) noexcept;
+    static Data encode(const Transaction& transaction) noexcept;
 
     /// Wraps encoded data as a list.
-    static Data encodeList(Data encoded) noexcept;
+    static Data encodeList(const Data& encoded) noexcept;
 
     /// Encodes a block of data.
-    static Data encode(Data data) noexcept;
+    static Data encode(const Data& data) noexcept;
 
     /// Encodes a static array.
-    template<std::size_t N>
+    template <std::size_t N>
     static Data encode(const std::array<uint8_t, N>& data) noexcept {
         if (N == 1 && data[0] <= 0x7f) {
             // Fits in single byte, no header
@@ -84,7 +72,7 @@ struct RLP {
     }
 
     /// Encodes a list of elements.
-    template<typename T>
+    template <typename T>
     static Data encodeList(T elements) noexcept {
         auto encodedData = Data();
         for (const auto& el : elements) {
@@ -103,8 +91,9 @@ struct RLP {
     /// Encodes a list header.
     static Data encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexcept;
 
-    /// Returns the representation of an integer using the least number of bytes needed.
+    /// Returns the representation of an integer using the least number of bytes
+    /// needed.
     static Data putint(uint64_t i) noexcept;
 };
 
-}} // namespace
+} // namespace TW::Ethereum

@@ -4,21 +4,20 @@
 #include "proto/Tezos.pb.h"
 #include <string>
 
-namespace TW {
-namespace Tezos {
+namespace TW::Tezos {
 
 class OperationList {
-public:
+  public:
     std::string branch;
-    std::vector< Transaction > operation_list;
+    std::vector<Transaction> operation_list;
     OperationList(const std::string& string);
-    void add_operation(Transaction transaction);
+    void addOperation(const Transaction& transaction);
     /// Returns a string representation of the operations.
     Data forge() const;
     Data forgeBranch() const;
 };
 
-}} // namespace
+} // namespace TW::Tezos
 
 /// Wrapper for C interface.
 struct TWTezosOperationList {
