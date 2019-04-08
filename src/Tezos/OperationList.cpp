@@ -13,17 +13,18 @@
 
 using namespace TW;
 using namespace TW::Tezos;
+using namespace TW::Tezos::Proto;
 
-OperationList::OperationList(const std::string& str) {
+TW::Tezos::OperationList::OperationList(const std::string& str) {
     branch = str;
 }
 
-void OperationList::addOperation(const TW::Tezos::Proto::Operation& operation) {
+void TW::Tezos::OperationList::addOperation(const Operation& operation) {
     operation_list.push_back(operation);
 }
 
 // Forge the given branch to a hex encoded string.
-Data OperationList::forgeBranch() const {
+Data TW::Tezos::OperationList::forgeBranch() const {
     std::array<byte, 2> prefix = {1, 52};
     const auto decoded = Base58::bitcoin.decodeCheck(branch);
     if (decoded.size() != 34 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
@@ -34,7 +35,7 @@ Data OperationList::forgeBranch() const {
     return forged;
 }
 
-Data OperationList::forge() const {
+Data TW::Tezos::OperationList::forge() const {
     auto forged = forgeBranch();
 
     for (auto operation : operation_list) {

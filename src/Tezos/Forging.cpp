@@ -71,7 +71,7 @@ Data forgeZarith(uint64_t input) {
 }
 
 // Forge the given operation.
-Data forgeOperation(const TW::Tezos::Proto::Operation& operation) {
+Data forgeOperation(const Operation& operation) {
   auto forged = Data();
   auto source = Address(operation.source());
   auto forgedSource = source.forge();
