@@ -8,7 +8,6 @@
 #include "Forging.h"
 #include "HexCoding.h"
 #include "OperationList.h"
-#include "Transaction.h"
 #include "../Base58.h"
 #include "../proto/Tezos.pb.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Transaction.h"
+#include "../Data.h"
 #include "proto/Tezos.pb.h"
 #include <string>
 
