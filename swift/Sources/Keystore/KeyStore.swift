@@ -11,12 +11,25 @@ public final class KeyStore {
     /// The key file directory.
     public let keyDirectory: URL
 
+    /// The watches file URL.
+    public let watchesFile: URL?
+
     /// List of wallets.
     public private(set) var wallets = [Wallet]()
 
+    /// List of accounts being watched
+    public var watches = [Watch]()
+
     /// Creates a `KeyStore` for the given directory.
-    public init(keyDirectory: URL) throws {
+    public init(keyDirectory: URL, watchesFile: URL? = nil) throws {
         self.keyDirectory = keyDirectory
+        self.watchesFile = watchesFile
+
+        if let url = watchesFile {
+            let data = try Data(contentsOf: url)
+            watches = try JSONDecoder().decode([Watch].self, from: data)
+        }
+
         try load()
     }
 
@@ -33,6 +46,13 @@ public final class KeyStore {
             let wallet = Wallet(keyURL: url, key: key)
             wallets.append(wallet)
         }
+    }
+
+    @discardableResult
+    public func watch(coin: CoinType, address: String, xpub: String?) -> Watch {
+        let watch = Watch(coin: coin, address: address, xpub: xpub)
+        watches.append(watch)
+        return watch
     }
 
     /// Creates a new wallet. HD default by default
@@ -265,6 +285,10 @@ public final class KeyStore {
 
     private func save(wallet: Wallet) throws {
         _ = wallet.key.store(path: wallet.keyURL.path)
+        if let url = watchesFile {
+            let data = try JSONEncoder().encode(watches)
+            try data.write(to: url)
+        }
     }
 
     /// Generates a unique file name for an address.
