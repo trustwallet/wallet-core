@@ -15,6 +15,7 @@
 #include "../PrivateKey.h"
 #include "../Result.h"
 #include "../Zcash/Transaction.h"
+#include "../Groestlcoin/Transaction.h"
 #include "../proto/Bitcoin.pb.h"
 
 #include <memory>
@@ -87,4 +88,9 @@ struct TWBitcoinTransactionSigner {
 /// Wrapper for Zcash C interface.
 struct TWZcashTransactionSigner {
     TW::Bitcoin::TransactionSigner<TW::Zcash::Transaction> impl;
+};
+
+/// Wrapper for Groestlcoin C interface.
+struct TWGroestlcoinTransactionSigner {
+    TW::Bitcoin::TransactionSigner<TW::Groestlcoin::Transaction> impl;
 };

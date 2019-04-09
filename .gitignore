@@ -23,3 +23,5 @@ swift/Sources/Generated
 # Code coverage files
 coverage.info
 coverage/
+
+cmake-build-debug/

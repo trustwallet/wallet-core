@@ -21,7 +21,7 @@ class Ont : public Asset {
   public:
     Data contractAddress() override { return ontContract; }
 
-    Transaction decimals(const Address& address) override;
+    Transaction decimals() override;
 
     Transaction balanceOf(const Address& address) override;
 

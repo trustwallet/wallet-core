@@ -12,7 +12,7 @@
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/nist256p1.h>
 
-#include <unordered_map>
+#include <list>
 
 using namespace TW;
 using namespace TW::Ontology;
@@ -33,12 +33,12 @@ void ParamsBuilder::buildNeoVmParam(ParamsBuilder& builder, const boost::any& pa
         }
         builder.push(static_cast<uint8_t>(paramVec.size()));
         builder.pushBack(PACK);
-    } else if (param.type() == typeid(std::unordered_map<std::string, boost::any>)) {
+    } else if (param.type() == typeid(std::list<boost::any>)) {
         builder.pushBack(PUSH0);
         builder.pushBack(NEW_STRUCT);
         builder.pushBack(TO_ALT_STACK);
-        for (auto const& p : boost::any_cast<std::unordered_map<std::string, boost::any>>(param)) {
-            ParamsBuilder::buildNeoVmParam(builder, p.second);
+        for (auto const& p : boost::any_cast<std::list<boost::any>>(param)) {
+            ParamsBuilder::buildNeoVmParam(builder, p);
             builder.pushBack(DUP_FROM_ALT_STACK);
             builder.pushBack(SWAP);
             builder.pushBack(HAS_KEY);

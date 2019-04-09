@@ -14,38 +14,15 @@
 
 using namespace TW;
 using namespace TW::Tezos;
+using namespace TW::Tezos::Proto;
 
 TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto operationList = OperationList(input.operation_list().branch());
-    for (auto& operationProto : input.operation_list().operations()) {
-        if (operationProto.has_reveal_operation_data()) {
-            auto source = Address(operationProto.source());
-            auto publicKey = PublicKey(operationProto.reveal_operation_data().public_key());
-            auto operation = Transaction(source,
-                                         operationProto.fee(),
-                                         operationProto.counter(),
-                                         operationProto.gas_limit(),
-                                         operationProto.storage_limit(),
-                                         0,
-                                         publicKey,
-                                         operationtype::REVEAL);
-            operationList.addOperation(operation);
-        } else {
-            auto source = Address(operationProto.source());
-            auto destination = Address(operationProto.transaction_operation_data().destination());
-            auto operation = Transaction(source,
-                                         operationProto.fee(),
-                                         operationProto.counter(),
-                                         operationProto.gas_limit(),
-                                         operationProto.storage_limit(),
-                                         operationProto.transaction_operation_data().amount(),
-                                         destination,
-                                         operationtype::TRANSACTION);
-            operationList.addOperation(operation);
-        }
+    auto operationList = TW::Tezos::OperationList(input.operation_list().branch());
+    for (TW::Tezos::Proto::Operation operation : input.operation_list().operations()) {
+      operationList.addOperation(operation);
     }
 
     auto signer = Signer();

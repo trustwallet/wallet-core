@@ -4,12 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Tezos/BinaryCoding.h"
 #include "Tezos/Address.h"
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "PrivateKey.h"
 #include "Tezos/Forging.h"
+#include "proto/Tezos.pb.h"
 
 #include <TrustWalletCore/TWCoinType.h>
 
@@ -100,13 +102,54 @@ TEST(Forging, forge_tz3) {
     ASSERT_EQ(output, parse_hex(expected));
 }
 
-TEST(Forgin, ForgePublicKey) {
-  auto expected = "00311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
+TEST(Forging, ForgePublicKey) {
+    auto expected = "00311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
   
-  auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
-  auto publicKey = privateKey.getPublicKey(PublicKeyType::ed25519);
-  auto output = forgePublicKey(publicKey);
+    auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
+    auto publicKey = privateKey.getPublicKey(PublicKeyType::ed25519);
+    auto output = forgePublicKey(publicKey);
   
-  ASSERT_EQ(output, parse_hex(expected));
+    ASSERT_EQ(output, parse_hex(expected));
 }
 
+
+TEST(TezosTransaction, forgeTransaction) {	
+    auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
+    transactionOperationData -> set_amount(1);
+    transactionOperationData -> set_destination("tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt");
+
+    auto transactionOperation = TW::Tezos::Proto::Operation();
+    transactionOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    transactionOperation.set_fee(1272);
+    transactionOperation.set_counter(30738);
+    transactionOperation.set_gas_limit(10100);
+    transactionOperation.set_storage_limit(257);
+    transactionOperation.set_kind(TW::Tezos::Proto::Operation::TRANSACTION);
+    transactionOperation.set_allocated_transaction_operation_data(transactionOperationData);
+
+    auto expected = "08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";	
+    auto serialized = forgeOperation(transactionOperation);
+
+    ASSERT_EQ(serialized, parse_hex(expected));	
+}	
+
+TEST(TezosTransaction, forgeReveal) {
+    PublicKey publicKey = parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
+  
+    auto revealOperationData = new TW::Tezos::Proto::RevealOperationData();
+    revealOperationData -> set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+
+    auto revealOperation = TW::Tezos::Proto::Operation();
+    revealOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    revealOperation.set_fee(1272);
+    revealOperation.set_counter(30738);
+    revealOperation.set_gas_limit(10100);
+    revealOperation.set_storage_limit(257);
+    revealOperation.set_kind(TW::Tezos::Proto::Operation::REVEAL);
+    revealOperation.set_allocated_reveal_operation_data(revealOperationData);
+   
+    auto expected = "07000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
+    auto serialized = forgeOperation(revealOperation);
+
+    ASSERT_EQ(serialized, parse_hex(expected));
+}
