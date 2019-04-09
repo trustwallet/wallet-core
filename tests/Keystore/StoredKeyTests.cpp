@@ -46,6 +46,7 @@ TEST(StoredKey, ReadWallet) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
     EXPECT_EQ(key.id, "e13b209c-3b2f-4327-bab0-3bef2e51630d");
+    EXPECT_EQ(key.name, "Test Account");
 
     const auto header = key.payload;
 
