@@ -28,24 +28,27 @@ struct StoredKey {
     /// Type of key stored.
     StoredKeyType type;
 
-    /// Encrypted payload.
-    EncryptionParameters payload;
-
     /// Unique identifier.
     std::optional<std::string> id;
+
+    /// Name.
+    std::string name;
+
+    /// Encrypted payload.
+    EncryptionParameters payload;
 
     /// Active accounts.
     std::vector<Account> accounts;
 
     /// Initializes a `StoredKey` with a type and an encrypted payload.
-    StoredKey(StoredKeyType type, EncryptionParameters payload);
+    StoredKey(StoredKeyType type, std::string name, EncryptionParameters payload);
 
     /// Initializes a `StoredKey` with a type, an encryption password, and
     /// unencrypted data.
     ///
     /// This contstructor will encrypt the provided data with default encryption
     /// parameters.
-    StoredKey(StoredKeyType type, const std::string& password, Data data);
+    StoredKey(StoredKeyType type, std::string name, const std::string& password, Data data);
 
     /// Returns the HDWallet for this key.
     ///

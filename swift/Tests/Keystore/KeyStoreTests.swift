@@ -73,7 +73,7 @@ class KeyStoreTests: XCTestCase {
     func testCreateHDWallet() throws {
         let coins = [CoinType.ethereum]
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let newWallet = try keyStore.createWallet(password: "password", coins: coins)
+        let newWallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
         XCTAssertEqual(newWallet.accounts.count, 1)
         XCTAssertEqual(keyStore.wallets.count, 4)
@@ -118,10 +118,10 @@ class KeyStoreTests: XCTestCase {
     func testImportKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let privateKeyData = Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!
-        let key = StoredKey.importPrivateKey(privateKey: privateKeyData, password: "password", coin: .ethereum)
+        let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "name", password: "password", coin: .ethereum)
         let json = key.exportJSON()!
 
-        let wallet = try keyStore.import(json: json, password: "password", newPassword: "newPassword", coins: [.ethereum])
+        let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.ethereum])
         let storedData = wallet.key.decryptPrivateKey(password: "newPassword")
 
         XCTAssertNotNil(keyStore.keyWallet)
@@ -133,7 +133,7 @@ class KeyStoreTests: XCTestCase {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let privateKey = PrivateKey(data: Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!)!
 
-        let wallet = try keyStore.import(privateKey: privateKey, password: "password", coin: .ethereum)
+        let wallet = try keyStore.import(privateKey: privateKey, name: "name", password: "password", coin: .ethereum)
         let storedData = wallet.key.decryptPrivateKey(password: "password")
         XCTAssertNotNil(storedData)
         XCTAssertNotNil(PrivateKey(data: storedData!))
@@ -146,7 +146,7 @@ class KeyStoreTests: XCTestCase {
 
     func testImportWallet() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = try keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coins: [.ethereum])
+        let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum])
         let storedData = wallet.key.decryptMnemonic(password: "newPassword")
 
         XCTAssertNotNil(storedData)
@@ -156,7 +156,7 @@ class KeyStoreTests: XCTestCase {
 
     func testExportMnemonic() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = try keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coins: [.ethereum])
+        let wallet = try keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum])
         let exported = try keyStore.exportMnemonic(wallet: wallet, password: "newPassword")
 
         XCTAssertEqual(mnemonic, exported)
@@ -184,7 +184,7 @@ class KeyStoreTests: XCTestCase {
 
     func testDeriveActiveAccounts() {
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
-        let wallet = try! keyStore.import(mnemonic: mnemonic, encryptPassword: "newPassword", coins: [.ethereum])
+        let wallet = try! keyStore.import(mnemonic: mnemonic, name: "name", encryptPassword: "newPassword", coins: [.ethereum])
         let coins = CoinType.allCases
         let accounts = try! keyStore.addAccounts(wallet: wallet, coins: coins, password: "newPassword")
 
@@ -216,8 +216,10 @@ class KeyStoreTests: XCTestCase {
         try fileManager.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
 
         let keyStore = try KeyStore(keyDirectory: dir)
-        try keyStore.watch([Watch(coin: .ethereum, address: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b", xpub: nil)])
-        let wallet = try keyStore.createWallet(password: "", coins: [.ethereum, .bitcoin])
+        try keyStore.watch([
+            Watch(coin: .ethereum, name: "name", address: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b", xpub: nil)
+        ])
+        let wallet = try keyStore.createWallet(name: "", password: "", coins: [.ethereum, .bitcoin])
 
         XCTAssertTrue(fileManager.fileExists(atPath: dir.appendingPathComponent("watches.json").path))
         XCTAssertTrue(fileManager.fileExists(atPath: wallet.keyURL.path))
