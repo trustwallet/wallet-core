@@ -32,22 +32,6 @@ bool Address::isValid(const std::string& string, const std::vector<byte>& validP
     return true;
 }
 
-Address::Address(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::sha256d);
-    if (decoded.size() != Address::size) {
-        throw std::invalid_argument("Invalid address string");
-    }
-
-    std::copy(decoded.begin(), decoded.end(), bytes.begin());
-}
-
-Address::Address(const std::vector<uint8_t>& data) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address key data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
-}
-
 Address::Address(const PublicKey& publicKey, uint8_t prefix) {
     if (publicKey.type() != PublicKeyType::secp256k1) {
         throw std::invalid_argument("Iocoin::Address needs a compressed SECP256k1 public key.");
