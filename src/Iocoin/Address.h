@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Base58Address.h"
 #include "../Data.h"
 #include "../PublicKey.h"
 
@@ -14,14 +15,8 @@
 
 namespace TW::Iocoin {
 
-class Address : TW::Base58Address<21> {
+class Address : public TW::Base58Address<21> {
   public:
-    /// Number of bytes in an address.
-    //XXXX static const size_t size = 21;
-
-    /// Address data consisting of a prefix byte followed by the public key
-    /// hash.
-    //XXXX std::array<byte, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
     template <typename T>
@@ -37,10 +32,7 @@ class Address : TW::Base58Address<21> {
     static bool isValid(const std::string& string, const std::vector<byte>& validPrefixes);
 
     /// Initializes a  address with a string representation.
-    //XXXX explicit Address(const std::string& string);
-
-    /// Initializes a  address with a collection of bytes.
-    //XXXX explicit Address(const std::vector<uint8_t>& data);
+    explicit Address(const std::string& string) : TW::Base58Address<21>(string) {}
 
     /// Initializes a  address with a public key and a prefix.
     Address(const PublicKey& publicKey, uint8_t prefix);
@@ -48,13 +40,7 @@ class Address : TW::Base58Address<21> {
     /// Returns a string representation of the address.
     std::string string() const;
 };
-
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
 }
-
-} // namespace TW::Iocoin
-
 /// Wrapper for C interface.
 struct TWIocoinAddress {
     TW::Iocoin::Address impl;
