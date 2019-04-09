@@ -7,7 +7,7 @@
 import Foundation
 
 /// An account watch.
-public struct Watch: Codable {
+public struct Watch: Codable, Equatable {
     /// Coin type.
     public var coin: CoinType
 

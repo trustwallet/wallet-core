@@ -64,7 +64,7 @@ public final class KeyStore {
 
     /// Stop watching an account.
     public func removeWatch(_ watch: Watch) throws {
-        guard let index = watches.firstIndex(where: { $0.address == watch.address && $0.coin == watch.coin }) else {
+        guard let index = watches.firstIndex(of: watch) else {
             return
         }
         watches.remove(at: index)
