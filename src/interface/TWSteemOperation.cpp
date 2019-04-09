@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWSteemOperation.h>
+#include <boost/lexical_cast.hpp>
 
 #include "../Steem/Operation.h"
 #include "../Bravo/Operation.h"
@@ -15,16 +16,25 @@
 using namespace TW;
 using namespace TW::Bravo;
 
-struct TWSteemOperation *_Nullable TWSteemOperationNewTransferOperation(TWString *_Nonnull recipient, TWString *_Nonnull sender, uint64_t amount, bool isTestNet, TWString *_Nonnull memo) {
-	if (amount > static_cast<uint64_t>(INT64_MAX) || amount == 0) {
-		return nullptr;
-	}
+struct TWSteemOperation *_Nullable TWSteemOperationNewTransferOperation(TWString *_Nonnull recipient, TWString *_Nonnull sender, TWString *_Nonnull amount, bool isTestNet, TWString *_Nonnull memo) {
+    int64_t amt;
+    try {
+        // ensure the amount is in range of Int64
+        double dblAmt = boost::lexical_cast<double>(amount);
+        if (dblAmt > static_cast<double>(INT64_MAX) || dblAmt < static_cast<double>(INT64_MIN) ) {
+            return nullptr;
+        }
+
+        amt = static_cast<int64_t>(dblAmt * Asset::precision);
+    } catch (...) {
+        return nullptr;
+    }
 
 	auto to = reinterpret_cast<const std::string *>(recipient);
 	auto from = reinterpret_cast<const std::string *>(sender);
 	auto note = reinterpret_cast<const std::string *>(memo);
 	try {
-		Asset asset {static_cast<int64_t>(amount), Asset::decimals, "STEEM"};
+		Asset asset {static_cast<int64_t>(amt), Asset::decimals, isTestNet ? Steem::TestNetAssetSymbol : Steem::MainNetAssetSymbol};
 		auto transOp = new TransferOperation(*to, *from, asset, *note);
 		return new TWSteemOperation{ std::unique_ptr<Operation>(transOp) };
 	}

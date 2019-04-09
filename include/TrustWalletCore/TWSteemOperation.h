@@ -10,7 +10,7 @@ TW_EXPORT_CLASS
 struct TWSteemOperation;
 
 TW_EXPORT_STATIC_METHOD
-struct TWSteemOperation *_Nullable TWSteemOperationNewTransferOperation(TWString *_Nonnull recipient, TWString *_Nonnull sender, uint64_t amount, bool isTestNet, TWString *_Nonnull memo);
+struct TWSteemOperation *_Nullable TWSteemOperationNewTransferOperation(TWString *_Nonnull recipient, TWString *_Nonnull sender, TWString *_Nonnull amount, bool isTestNet, TWString *_Nonnull memo);
 
 TW_EXPORT_METHOD
 void TWSteemOperationDelete(struct TWSteemOperation *_Nonnull operation);

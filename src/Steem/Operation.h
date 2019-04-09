@@ -8,7 +8,11 @@
 
 #include "../Bravo/Operation.h"
 
-using namespace TW::Bravo;
+namespace TW {
+namespace Steem {
+    const std::string MainNetAssetSymbol = "STEEM";
+    const std::string TestNetAssetSymbol = "TESTS";
+}}
 
 // Steem transfer operation is similar to Bravo. 
 // Just creating TWSteemOperation struct for C interface 
