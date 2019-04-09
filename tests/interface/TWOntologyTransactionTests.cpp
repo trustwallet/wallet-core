@@ -195,7 +195,8 @@ TEST(TWOntologySignerSign, OngWithdraw) {
     EXPECT_EQ(12, rawTx.find("f401000000000000"));
     EXPECT_EQ(28, rawTx.find("204e000000000000"));
     EXPECT_EQ(44, rawTx.find("57e9d1a61f9aafa798b6c7fbeae35639681d7df6"));
-    EXPECT_EQ(61, rawTx.find("8b"));
+    EXPECT_EQ(rawTx[61], '8');
+    EXPECT_EQ(rawTx[62], 'b');
     EXPECT_EQ(
         86, rawTx.find(
                 "00c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc81400000000000000000000000000"
