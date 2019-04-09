@@ -86,7 +86,7 @@ TEST(StoredKey, Decrypt) {
 
 TEST(StoredKey, CreateWallet) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
-    const auto key = StoredKey(StoredKeyType::privateKey, "password", privateKey);
+    const auto key = StoredKey(StoredKeyType::privateKey, "name", "password", privateKey);
     const auto decrypted = key.payload.decrypt("password");
 
     EXPECT_EQ(hex(decrypted), hex(privateKey));

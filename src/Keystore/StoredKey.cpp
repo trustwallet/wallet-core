@@ -24,14 +24,14 @@
 using namespace TW;
 using namespace TW::Keystore;
 
-StoredKey::StoredKey(StoredKeyType type, EncryptionParameters payload)
-    : type(type), payload(std::move(payload)), id(), accounts() {
+StoredKey::StoredKey(StoredKeyType type, std::string name, EncryptionParameters payload)
+    : type(type), id(), name(std::move(name)), payload(std::move(payload)), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }
 
-StoredKey::StoredKey(StoredKeyType type, const std::string& password, Data data)
-    : type(type), payload(password, data), id(), accounts() {
+StoredKey::StoredKey(StoredKeyType type, std::string name, const std::string& password, Data data)
+    : type(type), id(), name(std::move(name)), payload(password, data), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }
@@ -144,6 +144,7 @@ void StoredKey::fixAddresses(const std::string& password) {
 namespace CodingKeys {
 static const auto address = "address";
 static const auto type = "type";
+static const auto name = "name";
 static const auto id = "id";
 static const auto crypto = "crypto";
 static const auto activeAccounts = "activeAccounts";
@@ -166,6 +167,10 @@ StoredKey::StoredKey(const nlohmann::json& json) {
         type = StoredKeyType::mnemonicPhrase;
     } else {
         type = StoredKeyType::privateKey;
+    }
+
+    if (json.count(CodingKeys::name) != 0) {
+        name = json[CodingKeys::name].get<std::string>();
     }
 
     if (json.count(CodingKeys::id) != 0) {
@@ -215,6 +220,7 @@ nlohmann::json StoredKey::json() const {
         j[CodingKeys::id] = *id;
     }
 
+    j[CodingKeys::name] = name;
     j[CodingKeys::crypto] = payload.json();
 
     nlohmann::json accountsJSON = nlohmann::json::array();
