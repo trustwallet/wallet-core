@@ -62,6 +62,17 @@ public final class KeyStore {
         try data.write(to: watchesFile)
     }
 
+    /// Stop watching an account.
+    public func removeWatch(_ watch: Watch) throws {
+        guard let index = watches.firstIndex(where: { $0.address == watch.address && $0.coin == watch.coin }) else {
+            return
+        }
+        watches.remove(at: index)
+
+        let data = try JSONEncoder().encode(watches)
+        try data.write(to: watchesFile)
+    }
+
     /// Creates a new wallet. HD default by default
     public func createWallet(password: String, coins: [CoinType]) throws -> Wallet {
         let key = StoredKey(password: password)
