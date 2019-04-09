@@ -56,11 +56,18 @@ class KeyStoreTests: XCTestCase {
 
         try? fileManager.removeItem(at: bitcoinWalletDestination)
         try? fileManager.copyItem(at: bitcoinWalletURL, to: bitcoinWalletDestination)
+
+        let watchesURL = Bundle(for: type(of: self)).url(forResource: "watches", withExtension: "json")!
+        let watchesDestination = keyDirectory.appendingPathComponent("watches.json")
+
+        try? fileManager.removeItem(at: watchesDestination)
+        try? fileManager.copyItem(at: watchesURL, to: watchesDestination)
     }
 
     func testLoadKeyStore() {
         let keyStore = try! KeyStore(keyDirectory: keyDirectory)
         XCTAssertEqual(keyStore.wallets.count, 3)
+        XCTAssertEqual(keyStore.watches.count, 1)
     }
 
     func testCreateHDWallet() throws {
@@ -200,5 +207,19 @@ class KeyStoreTests: XCTestCase {
         }
 
         XCTAssertEqual(coins.count, wallet.accounts.count)
+    }
+
+    func testSave() throws {
+        let fileManager = FileManager.default
+        let dir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("keystore")
+        try? fileManager.removeItem(at: dir)
+        try fileManager.createDirectory(at: dir, withIntermediateDirectories: true, attributes: nil)
+
+        let keyStore = try KeyStore(keyDirectory: dir)
+        try keyStore.watch([Watch(coin: .ethereum, address: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b", xpub: nil)])
+        let wallet = try keyStore.createWallet(password: "", coins: [.ethereum, .bitcoin])
+
+        XCTAssertTrue(fileManager.fileExists(atPath: dir.appendingPathComponent("watches.json").path))
+        XCTAssertTrue(fileManager.fileExists(atPath: wallet.keyURL.path))
     }
 }

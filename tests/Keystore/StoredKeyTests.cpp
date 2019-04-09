@@ -104,13 +104,6 @@ TEST(StoredKey, DecodingBitcoinAddress) {
     EXPECT_EQ(key.accounts[0].address, "3PWazDi9n1Hfyq9gXFxDxzADNL8RNYyK2y");
 }
 
-TEST(StoredKey, WatchAddress) {
-    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/watch.json");
-
-    EXPECT_EQ(key.accounts[0].address, "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b");
-    EXPECT_EQ(key.accounts[0].derivationPath.string(), "m/44'/60'/0'/0/0");
-}
-
 TEST(StoredKey, MissingAddress) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
     key.fixAddresses("password");

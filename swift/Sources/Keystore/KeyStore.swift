@@ -8,15 +8,25 @@ import Foundation
 
 /// Manages directories of key and wallet files and presents them as accounts.
 public final class KeyStore {
+    static let watchesFileName = "watches.json"
+
     /// The key file directory.
     public let keyDirectory: URL
+
+    /// The watches file URL.
+    public let watchesFile: URL
 
     /// List of wallets.
     public private(set) var wallets = [Wallet]()
 
+    /// List of accounts being watched
+    public var watches = [Watch]()
+
     /// Creates a `KeyStore` for the given directory.
     public init(keyDirectory: URL) throws {
         self.keyDirectory = keyDirectory
+        self.watchesFile = keyDirectory.appendingPathComponent(KeyStore.watchesFileName)
+
         try load()
     }
 
@@ -24,8 +34,17 @@ public final class KeyStore {
         let fileManager = FileManager.default
         try? fileManager.createDirectory(at: keyDirectory, withIntermediateDirectories: true, attributes: nil)
 
+        if fileManager.fileExists(atPath: watchesFile.path) {
+            let data = try Data(contentsOf: watchesFile)
+            watches = try JSONDecoder().decode([Watch].self, from: data)
+        }
+
         let accountURLs = try fileManager.contentsOfDirectory(at: keyDirectory, includingPropertiesForKeys: [], options: [.skipsHiddenFiles])
         for url in accountURLs {
+            if url.lastPathComponent == KeyStore.watchesFileName {
+                // Skip watches file
+                continue
+            }
             guard let key = StoredKey.load(path: url.path) else {
                 // Ignore invalid keys
                 continue
@@ -33,6 +52,25 @@ public final class KeyStore {
             let wallet = Wallet(keyURL: url, key: key)
             wallets.append(wallet)
         }
+    }
+
+    /// Watches a list of accounts.
+    public func watch(_ watches: [Watch]) throws {
+        self.watches.append(contentsOf: watches)
+
+        let data = try JSONEncoder().encode(watches)
+        try data.write(to: watchesFile)
+    }
+
+    /// Stop watching an account.
+    public func removeWatch(_ watch: Watch) throws {
+        guard let index = watches.firstIndex(of: watch) else {
+            return
+        }
+        watches.remove(at: index)
+
+        let data = try JSONEncoder().encode(watches)
+        try data.write(to: watchesFile)
     }
 
     /// Creates a new wallet. HD default by default
