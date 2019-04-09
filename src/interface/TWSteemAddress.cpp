@@ -25,28 +25,28 @@ bool TWSteemAddressEqual(struct TWSteemAddress *_Nonnull lhs, struct TWSteemAddr
 
 bool TWSteemAddressIsValidString(TWString *_Nonnull string) {
 	auto s = reinterpret_cast<const std::string *>(string);
-	return Address::isValid(*s, { TWSteemMainnetPrefix, TWSteemTestnetPrefix });
+	return Address::isValid(*s, { TW::Steem::MainnetPrefix, TW::Steem::TestnetPrefix });
 }
 
 struct TWSteemAddress *_Nullable TWSteemAddressCreateWithString(TWString *_Nonnull string) {
 	auto s = reinterpret_cast<const std::string*>(string);
 
 	try {
-		return new TWSteemAddress{ Address(*s, { TWSteemMainnetPrefix, TWSteemTestnetPrefix }) };
+		return new TWSteemAddress{ Address(*s, { TW::Steem::MainnetPrefix, TW::Steem::TestnetPrefix }) };
 	}
 	catch (...) {
 		return nullptr;
 	}
 }
 
-struct TWSteemAddress *_Nonnull TWSteemAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, TWSteemAddressType type) {
-		return new TWSteemAddress{ Address(publicKey->impl, (type == TWSteemAddressType::TWSteemAddressTypeMainNet)? TWSteemMainnetPrefix : TWSteemTestnetPrefix) };
+struct TWSteemAddress *_Nonnull TWSteemAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWSteemAddressType type) {
+		return new TWSteemAddress{ Address(publicKey->impl, (type == TWSteemAddressType::TWSteemAddressTypeMainNet)? TW::Steem::MainnetPrefix : TW::Steem::TestnetPrefix) };
 }
 
-struct TWSteemAddress *_Nullable TWSteemAddressCreateWithKeyHash(TWData *_Nonnull keyHash, TWSteemAddressType type) {
+struct TWSteemAddress *_Nullable TWSteemAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWSteemAddressType type) {
 	auto d = reinterpret_cast<const Data *>(keyHash);
 	try {
-		return new TWSteemAddress{ Address(*d, (type == TWSteemAddressType::TWSteemAddressTypeMainNet) ? TWSteemMainnetPrefix : TWSteemTestnetPrefix) };
+		return new TWSteemAddress{ Address(*d, (type == TWSteemAddressType::TWSteemAddressTypeMainNet) ? TW::Steem::MainnetPrefix : TW::Steem::TestnetPrefix) };
 	}
 	catch (...) {
 		return nullptr;

@@ -22,7 +22,7 @@ struct TWSteemSigner *_Nullable TWSteemSignerCreate(TWData *_Nonnull chainID) {
 }
 
 void TWSteemSignerSign(struct TWSteemSigner *_Nonnull signer, struct TWPrivateKey *_Nonnull privateKey, struct TWSteemTransaction *_Nonnull transaction) {
-	signer->impl.sign(privateKey->impl, transaction->impl, TW::Steem::is_canonical);
+	signer->impl.sign(privateKey->impl, transaction->impl, nullptr);
 }
 
 void TWSteemSignerDelete(TWSteemSigner *_Nonnull signer) {

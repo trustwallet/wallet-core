@@ -8,10 +8,11 @@
 
 #include "../Bravo/Address.h"
 
-#define TWSteemMainnetPrefix "STM"
-#define TWSteemTestnetPrefix "TST"
-
-using namespace TW::Bravo;
+namespace TW {
+namespace Steem {
+    const std::string MainnetPrefix = "STM";
+    const std::string TestnetPrefix = "TST";
+}}
 
 // Steem address class is similar to Bravo. 
 // Just creating TWSteemAddress struct for C interface 

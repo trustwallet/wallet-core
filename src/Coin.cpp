@@ -113,7 +113,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Ripple::Address::isValid(string);
 
 	case TWCoinTypeSteem:
-		return Bravo::Address::isValid(string, { TWSteemMainnetPrefix, TWSteemTestnetPrefix });
+		return Bravo::Address::isValid(string, { TW::Steem::MainnetPrefix, TW::Steem::TestnetPrefix });
 
     case TWCoinTypeStellar:
     case TWCoinTypeKin:
@@ -219,7 +219,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Ripple::Address(publicKey).string();
 
 	case TWCoinTypeSteem:
-		return Bravo::Address(publicKey, TWSteemMainnetPrefix).string();
+		return Bravo::Address(publicKey, TW::Steem::MainnetPrefix).string();
 
     case TWCoinTypeTezos:
         return Tezos::Address(publicKey).string();

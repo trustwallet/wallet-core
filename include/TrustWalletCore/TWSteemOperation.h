@@ -1,9 +1,3 @@
-// Copyright © 2017-2019 Trust Wallet.
-//
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
-
 #pragma once
 
 #include "TWBase.h"
@@ -27,7 +21,7 @@ size_t TWSteemOperationMaxMemoSize();
 TW_EXPORT_STATIC_PROPERTY
 size_t TWSteemOperationMaxAccountNameSize();
 
-// No. of decimals used in bravo assets.
+// No. of decimals used in steem assets.
 // The amount you pass should be (actual_amount * (10^^assetDecimals))
 TW_EXPORT_STATIC_PROPERTY
 size_t TWSteemOperationAssetDecimals();
