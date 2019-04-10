@@ -64,7 +64,7 @@ public extension CoinType {
                 return GroestlcoinAddress(string: string)
             }
         case .iost:
-            return IOSTAddress(string: string)
+            return IOSTAccount(string: string)
         }
         return .none
     }

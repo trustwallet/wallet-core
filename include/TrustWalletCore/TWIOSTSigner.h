@@ -12,7 +12,7 @@
 
 TW_EXTERN_C_BEGIN
 
-/// Helper class to sign Wanchain transactions.
+/// Helper class to sign IOST transactions.
 TW_EXPORT_CLASS
 struct TWIOSTSigner;
 

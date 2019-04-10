@@ -1,4 +1,5 @@
 #include "Signer.h"
+#include "Account.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include <boost/endian/conversion.hpp>
@@ -112,16 +113,15 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) const noexce
         action->set_data(data);
     } 
 
-    auto keyBytesPtr = input.account().active_key().begin();
-    auto privateKey = PrivateKey(Data(keyBytesPtr, keyBytesPtr + PrivateKey::size));
-    auto pubkey = privateKey.getPublicKey(PublicKeyType::ed25519).bytes;
+    Account acc(input.account());
+    auto pubkey = acc.publicActiveKey();
     std::string pubkeyStr(pubkey.begin(), pubkey.end() - 1);
 
     t.add_publisher_sigs();
     auto sig = t.mutable_publisher_sigs(0);
     sig->set_algorithm(Proto::Algorithm::ED25519);
     sig->set_public_key(pubkeyStr);
-    auto signature = privateKey.sign(Hash::sha3_256(encodeTransaction(t)), TWCurveEd25519);
+    auto signature = acc.sign(Hash::sha3_256(encodeTransaction(t)), TWCurveEd25519);
     std::string signatureStr(signature.begin(), signature.end());
     sig->set_signature(signatureStr);
 
