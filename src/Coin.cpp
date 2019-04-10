@@ -483,6 +483,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeICON:
     case TWCoinTypeKIN:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeLux:
     case TWCoinTypeNEO:
     case TWCoinTypeNimiq:
     case TWCoinTypeOntology:
@@ -522,6 +523,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeICON:
     case TWCoinTypeKIN:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeLux:
     case TWCoinTypeNEO:
     case TWCoinTypeNimiq:
     case TWCoinTypeOntology:
