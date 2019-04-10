@@ -36,6 +36,13 @@ TEST(Coin, ValidateAddressLitecoin) {
     EXPECT_FALSE(validateAddress(TWCoinTypeLitecoin, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
 }
 
+TEST(Coin, ValidateAddressViacoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeViacoin, "via1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z09y9mn2"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeViacoin, "Vw6bJFaF5Hyiveko7dpqRjVvcTAsjz7eYa"));
+
+    EXPECT_FALSE(validateAddress(TWCoinTypeViacoin, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
+}
+
 TEST(Coin, ValidateAddressBitcoinCash) {
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh"));
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
@@ -89,6 +96,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeGroestlcoin, privateKey), "grs1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0jsaf3d");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeICON, privateKey), "hx4728fc65c31728f0d3538b8783b5394b31a136b9");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeLitecoin, privateKey), "ltc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tamvsu");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeViacoin, privateKey), "via1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z09y9mn2");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNimiq, privateKey), "NQ74 D40G N3M0 9EJD ET56 UPLR 02VC X6DU 8G1E");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeOntology, privateKey), "AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypePoa, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
