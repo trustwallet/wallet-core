@@ -14,3 +14,4 @@ typedef TWData *_Nonnull TW_Tezos_Proto_OperationList;
 typedef TWData *_Nonnull TW_Tezos_Proto_Operation;
 typedef TWData *_Nonnull TW_Tezos_Proto_TransactionOperationData;
 typedef TWData *_Nonnull TW_Tezos_Proto_RevealOperationData;
+typedef TWData *_Nonnull TW_Tezos_Proto_OriginationOperationData;
