@@ -113,7 +113,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return NEO::Address::isValid(string);
     
     case TWCoinTypeLux:
-        return Bitcoin::Address::isValid(string, {TWP2PKHPrefixLux, TWP2SHPrefixLux});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLux}, {TWP2SHPrefixLux}});
     }
 }
 
