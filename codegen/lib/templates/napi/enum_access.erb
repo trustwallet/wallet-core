@@ -1,0 +1,4 @@
+<% param = locals[:param] -%>
+<% name = param.name -%>
+<% type = param.type -%>
+    TW<%= type.name %> <%= name %>Value = (TW<%= type.name %>)((int) info[<%= locals[:index] %>].As<Number>());

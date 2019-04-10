@@ -11,12 +11,20 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "long": "^4.0.0",
-    "protobufjs": "^6.8.8"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/TrustWallet/wallet-core.git"
+  },
+  "dependencies": {
+    "chai": "^4.2.0",
+    "long": "^4.0.0",
+    "mocha": "^6.1.1",
+    "node-addon-api": "^1.6.3",
+    "node-gyp": "^3.8.0",
+    "protobufjs": "^6.8.8"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6"
   }
 }

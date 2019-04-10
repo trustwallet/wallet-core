@@ -1,0 +1,95 @@
+#include <napi.h>
+#include <string.h>
+
+<% require 'set' -%>
+<%  includes = SortedSet.new([entity.name]) -%>
+<%  entity.static_methods.each do |method| -%>
+<%    includes << method.return_type.name if method.return_type.is_struct || method.return_type.is_class -%>
+<%    method.parameters.each do |param| -%>
+<%      includes << param.type.name if param.type.is_struct || param.type.is_class -%>
+<%    end -%>
+<%  end -%>
+<%  includes.each do |include| -%>
+#include <TrustWalletCore/TW<%= include %>.h>
+<%  end -%>
+
+#include "../TWNapi.h"
+#include "<%= entity.name %>.h"
+
+using namespace Napi;
+
+<%# Constructors -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Create') -%>
+External<TW<%= entity.name %>> <%= NapiHelper.function_name(entity: entity, function: method) %>(const CallbackInfo& info) {
+    Env env = info.Env();
+<%=   render('napi/parameter_access.erb', { method: method }) -%>
+    struct TW<%= entity.name %> *instance = TW<%= entity.name %><%= method.name %>(<%= NapiHelper.arguments(method.parameters).join(', ') %>);
+<%=   render('napi/parameter_release.erb', { method: method }) -%>
+    return External<TW<%= entity.name %>>::New(env, instance, [](Env _env, void* data) {
+        TW<%= entity.name %>Delete((TW<%= entity.name %> *) data);
+    });
+}
+
+<%  end -%>
+<%# Destructors -%>
+<%  entity.methods.each do |method| -%>
+<%    next unless method.name.start_with?('Delete') -%>
+void <%= NapiHelper.function_name(entity: entity, function: method) %>(const CallbackInfo& info) {
+    TW<%= entity.name %>Delete(info[0].As<External<TW<%= entity.name %>>>().Data());
+}
+
+<%  end -%>
+<%# Initializers -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next unless method.name.start_with?('Init') -%>
+Value <%= NapiHelper.function_name(entity: entity, function: method) %>(const CallbackInfo& info) {
+    Env env = info.Env();
+<%=   render('napi/parameter_access.erb', { method: method }) -%>
+    struct TW<%= entity.name %>* instance = (struct TW<%= entity.name %>*) malloc(sizeof(struct TW<%= entity.name %>));
+<%  if method.return_type.name != :void -%>
+    bool result = TW<%= entity.name %><%= method.name %>(instance, <%= NapiHelper.arguments(method.parameters.drop(1)).join(', ') %>);
+<%  else -%>
+    TW<%= entity.name %><%= method.name %>(instance, <%= NapiHelper.arguments(method.parameters.drop(1)).join(', ') %>);
+<%  end -%>
+<%=   render('napi/parameter_release.erb', { method: method }) -%>
+
+<%  if method.return_type.name != :void -%>
+    if (result) {
+        return External<TW<%= entity.name %>>::New(env, instance, [](Env _env, void* data) {
+            free((TW<%= entity.name %> *) data);
+        });
+    } else {
+        return env.Null();
+    }
+<%  else -%>
+    return External<TW<%= entity.name %>>::New(env, instance, [](Env _env, void* data) {
+        free((TW<%= entity.name %> *) data);
+    });
+<%  end -%>
+}
+
+<%  end -%>
+<%# Static properties -%>
+<%  entity.static_properties.each do |method| -%>
+<%=   render('napi/method.erb', { method: method }) %>
+<%  end -%>
+<%# Static methods -%>
+<%  entity.static_methods.each do |method| -%>
+<%    next if method.name.start_with?('Create') || method.name.start_with?('Init') -%>
+<%=   render('napi/method.erb', { method: method }) %>
+<%  end -%>
+<%# Properties -%>
+<% entity.properties.each do |method| -%>
+<%=  render('napi/method.erb', { method: method }) %>
+<% end -%>
+<%# Methods -%>
+<% entity.methods.each do |method| -%>
+<%   next if method.name == "Delete" -%>
+<%=  render('napi/method.erb', { method: method }) %>
+<% end -%>
+<%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
+<%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
+<%  if !less.nil? && !equal.nil? -%>
+<%=   render('napi/compare_to.erb', { less: less, equal: equal }) %>
+<%  end -%>
