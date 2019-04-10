@@ -51,7 +51,7 @@ Please follow these instructions when submitting a pull request (PR):
 * Write or adapt tests as needed.
 * Follow the code style of the project, including indentation. Use `clang-format` if you are unsure.
 * Run the tests.
-* Modify your commit history so that it tells a story using git's [interactive rebase](https://help.github.com/articles/interactive*rebase). Create a new branch if necessary.
+* Modify your commit history so that it tells a story using git's [interactive rebase](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History). Create a new branch if necessary.
 * Write your commit messages in the present tense. Your commit message should describe what the commit, when applied, does to the code, not what you did to the code.
 * Push your branch to your fork on Github, the remote `origin`.
 * From your fork open a pull request in the correct branch. Target the project's `master` branch.
@@ -63,7 +63,7 @@ Is it not uncommon for a PR to accumulate commits and merges with time. The
 library is in constant change. If your PR falls out of sync with the upstream
 master you need to rebase. We can't reliably review code that is spread over
 too many other changes to the codebase. Please use git's
-[interactive rebase](https://help.github.com/articles/interactive-rebase) and
+[interactive rebase](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History) and
 if necessary create a new PR.
 
 ## Before you start
