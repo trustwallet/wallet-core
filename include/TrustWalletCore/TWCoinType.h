@@ -35,6 +35,7 @@ enum TWCoinType {
     TWCoinTypeICON = 74,
     TWCoinTypeKIN = 2017,
     TWCoinTypeLitecoin = 2,
+    TWCoinTypeNULS = 8964,
     TWCoinTypeNEO = 888,
     TWCoinTypeNimiq = 242,
     TWCoinTypeOntology = 1024,
