@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWCosmosSigner.h>
 
-#include "../Tendermint/Signer.h"
+#include "../Cosmos/Signer.h"
 #include "../proto/Cosmos.pb.h"
 
 using namespace TW;
