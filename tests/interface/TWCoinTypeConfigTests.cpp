@@ -88,7 +88,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
 
     auto value26 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLUX));
-    assertStringsEqual(value24, "LUX");
+    assertStringsEqual(value26, "LUX");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -207,7 +207,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value28, "https://blockbook.groestlcoin.org/tx/123");
 
     auto value29 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
-    assertStringsEqual(value27, "https://explorer.poswallet.io/#/tx/123");
+    assertStringsEqual(value29, "https://explorer.poswallet.io/#/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -284,7 +284,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     assertStringsEqual(value25, "groestlcoin");
 
     auto value26 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLux));
-    assertStringsEqual(value24, "lux");
+    assertStringsEqual(value26, "lux");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -364,5 +364,5 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     assertStringsEqual(value26, "Groestlcoin");
 
     auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
-    assertStringsEqual(value25, "Lux");
+    assertStringsEqual(value27, "Lux");
 }
