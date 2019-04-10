@@ -19,7 +19,7 @@
 #include "Ontology/Address.h"
 #include "Ripple/Address.h"
 #include "Stellar/Address.h"
-#include "Tendermint/Address.h"
+#include "Cosmos/Address.h"
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
@@ -40,8 +40,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Aion::Address::isValid(string);
 
     case TWCoinTypeBinance:
-        return Tendermint::Address::isValid(string, HRP_BINANCE) ||
-               Tendermint::Address::isValid(string, HRP_BINANCE_TEST);
+        return Cosmos::Address::isValid(string, HRP_BINANCE) ||
+               Cosmos::Address::isValid(string, HRP_BINANCE_TEST);
 
     case TWCoinTypeBitcoin:
         return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) ||
@@ -52,7 +52,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
     case TWCoinTypeCosmos:
-        return Tendermint::Address::isValid(string, HRP_COSMOS);
+        return Cosmos::Address::isValid(string, HRP_COSMOS);
 
     case TWCoinTypeDash:
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDash}, {TWP2SHPrefixDash}});
@@ -397,9 +397,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     switch (coin) {
     case TWCoinTypeBinance:
-        return Tendermint::Address(HRP_BINANCE_TEST, publicKey).string();
+        return Cosmos::Address(HRP_BINANCE_TEST, publicKey).string();
     case TWCoinTypeCosmos:
-        return Tendermint::Address(HRP_COSMOS, publicKey).string();
+        return Cosmos::Address(HRP_COSMOS, publicKey).string();
 
     case TWCoinTypeBitcoin:
         return Bitcoin::Bech32Address(publicKey, 0, HRP_BITCOIN).string();

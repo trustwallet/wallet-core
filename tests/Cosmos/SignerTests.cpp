@@ -8,8 +8,8 @@
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "proto/Cosmos.pb.h"
-#include "Tendermint/Address.h"
-#include "Tendermint/Signer.h"
+#include "Cosmos/Address.h"
+#include "Cosmos/Signer.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
@@ -23,8 +23,8 @@ TEST(CosmosSigner, SignTx) {
     input.set_memo("");
     input.set_sequence(2);
 
-    auto fromAddress = TW::Tendermint::Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
-    auto toAddress = TW::Tendermint::Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
+    auto fromAddress = TW::Cosmos::Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
+    auto toAddress = TW::Cosmos::Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
 
     auto message = Proto::SendCoinsMessage();
     message.set_from_address(fromAddress.string());
