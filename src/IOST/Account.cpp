@@ -9,7 +9,7 @@ bool Account::isValid(const std::string& s) {
         return false; 
     }
     for (char ch : s) {
-        if (!((ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_')) {
+        if ((ch < 'a' || ch > 'z') && (ch < '0' || ch > '9') && ch != '_') {
             return false;
         }
     }
