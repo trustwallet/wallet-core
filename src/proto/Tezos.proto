@@ -24,7 +24,7 @@ message OperationList {
 }
 
 // An operation that can be applied to the Tezos blockchain.
-// Next field: 11
+// Next field: 12
 message Operation {
   int64 counter = 1;
   string source = 2;
@@ -39,6 +39,7 @@ message Operation {
     REVEAL = 7;
     TRANSACTION = 8;
     ORIGINATION = 9;
+    DELEGATION = 10;
   }
   OperationKind kind = 7;
 
@@ -47,6 +48,7 @@ message Operation {
     RevealOperationData reveal_operation_data = 8;
     TransactionOperationData transaction_operation_data = 9;
     OriginationOperationData origination_operation_data = 10;
+    DelegationOperationData delegation_operation_data = 11;
   }
 }
 
@@ -68,4 +70,10 @@ message RevealOperationData {
 message OriginationOperationData {
   string manager_pubkey = 1;
   int64 balance = 2;
+}
+
+// Delegation operation specific data.
+// Next field: 2
+message DelegationOperationData {
+  string delegate = 1;
 }
