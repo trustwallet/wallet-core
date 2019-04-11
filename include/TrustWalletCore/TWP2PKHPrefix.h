@@ -20,10 +20,10 @@ enum TWP2PKHPrefix {
     TWP2PKHPrefixDogecoin = 0x1e,
     TWP2PKHPrefixGroestlcoin = 0x24,
     TWP2PKHPrefixLitecoin = 0x30,
+    TWP2PKHPrefixQtum = 0x3a,
     TWP2PKHPrefixViacoin = 0x47,
     TWP2PKHPrefixZcashT = 0xB8,
     TWP2PKHPrefixZcoin = 0x52,
-    TWP2PKHPrefixQtum = 0x3a,
 };
 
 TW_EXTERN_C_END
