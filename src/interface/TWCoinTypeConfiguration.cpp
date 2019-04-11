@@ -124,6 +124,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
     case TWCoinTypeGroestlcoin:
+    case TWCoinTypeKIN:
     case TWCoinTypeIOST:
     case TWCoinTypeViacoin:
     case TWCoinTypeWanChain:
