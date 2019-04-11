@@ -9,11 +9,9 @@
 #include "../proto/IOST.pb.h"
 #include "../PrivateKey.h"
 
-namespace TW {
-namespace IOST {
+namespace TW::IOST {
 class Signer {
 public:
     Proto::SigningOutput sign(const Proto::SigningInput& input) const noexcept;
 };
-
-}} // namespace
+} // namespace TW::IOST

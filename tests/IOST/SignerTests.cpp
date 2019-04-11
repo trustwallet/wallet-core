@@ -12,8 +12,7 @@
 
 #include <iostream>
 
-namespace TW {
-namespace IOST {
+namespace TW::IOST {
 
 TEST(IOSTSigner, Sign) {
     auto tx = Proto::Transaction();
@@ -46,5 +45,5 @@ TEST(IOSTSigner, Sign) {
 
     ASSERT_EQ(hex(signature), "e8ce15214bad39683021c15dd318e963da8541fd8f3d8484df5042b4ea7fdafb7f46505b85841367d6e1736c7d3b433ca72089b88a23f43661dfb0429a10cb03");
 }
-}}
+} // namespace TW::IOST 
 

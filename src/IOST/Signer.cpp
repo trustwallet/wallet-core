@@ -2,6 +2,7 @@
 #include "Account.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "../BinaryCoding.h"
 #include <boost/endian/conversion.hpp>
 #include <sstream>
 #include <iostream>
@@ -13,16 +14,22 @@ using namespace TW::IOST;
 
 class IOSTEncoder {
   public:
-    IOSTEncoder() {}
+    IOSTEncoder() = default;
     void WriteByte(uint8_t b) { buffer << b; }
     void WriteInt32(uint32_t i) {
-        uint32_t r = boost::endian::endian_reverse(i);
-        buffer << std::string(reinterpret_cast<const char*>(&r), sizeof(r));
+        std::vector<uint8_t> data;
+        encode32BE(i, data);
+        for (auto b: data) {
+            buffer << b;
+        }
     }
 
     void WriteInt64(uint64_t i) {
-        uint64_t r = boost::endian::endian_reverse(i);
-        buffer << std::string(reinterpret_cast<const char*>(&r), sizeof(r));
+        std::vector<uint8_t> data;
+        encode64BE(i, data);
+        for (auto b: data) {
+            buffer << b;
+        }
     }
 
     void WriteString(std::string s) {
@@ -54,13 +61,13 @@ std::string encodeTransaction(const Proto::Transaction& t) {
     se.WriteString("");
 
     std::vector<std::string> svec;
-    for (auto item : t.signers()) {
+    for (auto& item : t.signers()) {
         svec.push_back(item);
     }
     se.WriteStringSlice(svec);
 
     se.WriteInt32(t.actions_size());
-    for (auto a : t.actions()) {
+    for (auto& a : t.actions()) {
         IOSTEncoder s;
         s.WriteString(a.contract());
         s.WriteString(a.action_name());
@@ -69,7 +76,7 @@ std::string encodeTransaction(const Proto::Transaction& t) {
     }
 
     se.WriteInt32(t.amount_limit_size());
-    for (auto a : t.amount_limit()) {
+    for (auto& a : t.amount_limit()) {
         IOSTEncoder s;
         s.WriteString(a.token());
         s.WriteString(a.value());
@@ -77,7 +84,7 @@ std::string encodeTransaction(const Proto::Transaction& t) {
     }
 
     se.WriteInt32(t.signatures_size());
-    for (auto sig : t.signatures()) {
+    for (auto& sig : t.signatures()) {
         IOSTEncoder s;
         s.WriteByte(sig.algorithm());
         s.WriteString(sig.signature());

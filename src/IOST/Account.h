@@ -10,7 +10,6 @@
 #include "../PrivateKey.h"
 #include "../proto/IOST.pb.h"
 
-#include <stdint.h>
 #include <string>
 
 namespace TW::IOST {
@@ -19,7 +18,7 @@ class Account {
   public:
     static bool isValid(const std::string& name);
     static std::string encodePubKey(const PublicKey& publicKey);
-    Account(const std::string& name): name(name) {}
+    Account(std::string name): name(std::move(name)) {}
     Account(const PublicKey& publicKey) {}
     Account(const Proto::AccountInfo& account);
     std::string string() const { return name; }
