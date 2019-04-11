@@ -28,6 +28,7 @@ enum TWCoinType {
     TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
+    TWCoinTypeDogecoin = 3,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
     TWCoinTypeGo = 6060,
@@ -42,15 +43,16 @@ enum TWCoinType {
     TWCoinTypeRipple = 144,
     TWCoinTypeStellar = 148,
     TWCoinTypeTezos = 1729,
+    TWCoinTypeTheta = 500,
     TWCoinTypeThunderToken = 1001,
     TWCoinTypeTomoChain = 889,
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
+    TWCoinTypeViacoin = 14,
     TWCoinTypeWanChain = 5718350,
     TWCoinTypeXDai = 700,
     TWCoinTypeZcash = 133,
     TWCoinTypeZcoin = 136,
-    TWCoinTypeTheta = 500,
 };
 
 /// Returns the purpose for a coin type.

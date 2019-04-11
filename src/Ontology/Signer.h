@@ -39,6 +39,6 @@ class Signer {
 } // namespace TW::Ontology
 
 /// Wrapper for C interface.
-struct TWOntologyAccount {
+struct TWOntologySigner {
     TW::Ontology::Signer impl;
 };

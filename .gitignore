@@ -13,8 +13,15 @@ lib/json
 lib/protobuf
 
 .idea/
+.vscode/
 
 # Generated files
 jni/cpp/generated
 jni/java
 swift/Sources/Generated
+
+# Code coverage files
+coverage.info
+coverage/
+
+cmake-build-debug/

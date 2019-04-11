@@ -8,7 +8,6 @@
 #include "Tezos/Forging.h"
 #include "PublicKey.h"
 #include "Data.h"
-#include "Tezos/Transaction.h"
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>

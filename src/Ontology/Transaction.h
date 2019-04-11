@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "PublicKey.h"
 #include "SigData.h"
 #include "../PublicKey.h"
 

@@ -25,7 +25,7 @@ class Asset {
   public:
     virtual Data contractAddress() = 0;
 
-    virtual Transaction decimals(const Address& address) = 0;
+    virtual Transaction decimals() = 0;
 
     virtual Transaction balanceOf(const Address& address) = 0;
 

@@ -11,8 +11,8 @@ public extension CoinType {
     func address(string: String) -> Address? {
         switch self {
         case .binance, .cosmos:
-            if let addr = TendermintAddress(string: string), addr.hrp == hrp { return addr }
-        case .bitcoin, .litecoin:
+            if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
+        case .bitcoin, .litecoin, .viacoin:
             if let addr = Bech32Address(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
@@ -20,7 +20,7 @@ public extension CoinType {
             if let addr = BitcoinCashAddress(string: string) {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
-        case .dash, .zcoin:
+        case .dash, .dogecoin, .zcoin:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .callisto,
              .ethereum,
@@ -58,7 +58,11 @@ public extension CoinType {
         case .decred:
             return DecredAddress(string: string)
         case .groestlcoin:
-            return GroestlcoinAddress(string: string)
+            if let addr = Bech32Address(string: string), addr.hrp == hrp {
+                return addr
+            } else {
+                return GroestlcoinAddress(string: string)
+            }
         }
         return .none
     }
@@ -71,6 +75,8 @@ public extension CoinType {
             return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.bitcoin.rawValue])
         case .litecoin:
             return Set([P2SHPrefix.litecoin.rawValue, P2PKHPrefix.litecoin.rawValue])
+        case .groestlcoin:
+            return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.groestlcoin.rawValue])
         case .dash:
             return Set([P2SHPrefix.dash.rawValue, P2PKHPrefix.dash.rawValue])
         case .zcoin:
@@ -95,6 +101,8 @@ public extension CoinType {
             return .cosmos
         case .litecoin:
             return .litecoin
+        case .groestlcoin:
+            return .groestlcoin
         default:
             return HRP.unknown
         }

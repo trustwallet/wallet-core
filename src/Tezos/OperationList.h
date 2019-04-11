@@ -1,18 +1,21 @@
 #pragma once
 
-#include "Transaction.h"
+#include "../Data.h"
 #include "proto/Tezos.pb.h"
 #include <string>
+
+using namespace TW::Tezos;
+using namespace TW::Tezos::Proto;
 
 namespace TW::Tezos {
 
 class OperationList {
   public:
     std::string branch;
-    std::vector<Transaction> operation_list;
+    std::vector<Operation> operation_list;
     OperationList(const std::string& string);
-    void addOperation(const Transaction& transaction);
-    /// Returns a string representation of the operations.
+    void addOperation(const Operation& transaction);
+    /// Returns a data representation of the operations.
     Data forge() const;
     Data forgeBranch() const;
 };
@@ -21,5 +24,5 @@ class OperationList {
 
 /// Wrapper for C interface.
 struct TWTezosOperationList {
-    TW::Tezos::OperationList impl;
+  TW::Tezos::OperationList impl;
 };

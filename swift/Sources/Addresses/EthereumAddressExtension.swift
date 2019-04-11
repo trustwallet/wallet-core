@@ -7,7 +7,7 @@
 import Foundation
 
 /// Ethereum address.
-extension EthereumAddress: Address, Hashable {
+extension EthereumAddress: Hashable {
     public static let size = 20
 
     /// EIP55 representation of the address.

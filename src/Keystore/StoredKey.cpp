@@ -24,14 +24,14 @@
 using namespace TW;
 using namespace TW::Keystore;
 
-StoredKey::StoredKey(StoredKeyType type, EncryptionParameters payload)
-    : type(type), payload(std::move(payload)), id(), accounts() {
+StoredKey::StoredKey(StoredKeyType type, std::string name, EncryptionParameters payload)
+    : type(type), id(), name(std::move(name)), payload(std::move(payload)), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }
 
-StoredKey::StoredKey(StoredKeyType type, const std::string& password, Data data)
-    : type(type), payload(password, data), id(), accounts() {
+StoredKey::StoredKey(StoredKeyType type, std::string name, const std::string& password, Data data)
+    : type(type), id(), name(std::move(name)), payload(password, data), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }
@@ -107,9 +107,6 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& passw
     }
     case StoredKeyType::privateKey:
         return PrivateKey(payload.decrypt(password));
-
-    case StoredKeyType::watchOnly:
-        throw std::invalid_argument("This is a watch-only key");
     }
 }
 
@@ -137,8 +134,6 @@ void StoredKey::fixAddresses(const std::string& password) {
         }
     }
         break;
-    case StoredKeyType::watchOnly:
-        break;
     }
 }
 
@@ -149,6 +144,7 @@ void StoredKey::fixAddresses(const std::string& password) {
 namespace CodingKeys {
 static const auto address = "address";
 static const auto type = "type";
+static const auto name = "name";
 static const auto id = "id";
 static const auto crypto = "crypto";
 static const auto activeAccounts = "activeAccounts";
@@ -163,18 +159,18 @@ static const auto crypto = "Crypto";
 namespace TypeString {
 static const auto privateKey = "private-key";
 static const auto mnemonic = "mnemonic";
-static const auto watch = "watch";
 } // namespace TypeString
 
 StoredKey::StoredKey(const nlohmann::json& json) {
     if (json.count(CodingKeys::type) != 0 &&
         json[CodingKeys::type].get<std::string>() == TypeString::mnemonic) {
         type = StoredKeyType::mnemonicPhrase;
-    } else if (json.count(CodingKeys::type) != 0 &&
-               json[CodingKeys::type].get<std::string>() == TypeString::watch) {
-        type = StoredKeyType::watchOnly;
     } else {
         type = StoredKeyType::privateKey;
+    }
+
+    if (json.count(CodingKeys::name) != 0) {
+        name = json[CodingKeys::name].get<std::string>();
     }
 
     if (json.count(CodingKeys::id) != 0) {
@@ -186,8 +182,6 @@ StoredKey::StoredKey(const nlohmann::json& json) {
     } else if (json.count(UppercaseCodingKeys::crypto) != 0) {
         // Workaround for myEtherWallet files
         payload = EncryptionParameters(json[UppercaseCodingKeys::crypto]);
-    } else if (type == StoredKeyType::watchOnly) {
-        payload = EncryptionParameters();
     } else {
         throw DecryptionError::invalidKeyFile;
     }
@@ -220,15 +214,13 @@ nlohmann::json StoredKey::json() const {
     case StoredKeyType::mnemonicPhrase:
         j[CodingKeys::type] = TypeString::mnemonic;
         break;
-    case StoredKeyType::watchOnly:
-        j[CodingKeys::type] = TypeString::watch;
-        break;
     }
 
     if (id) {
         j[CodingKeys::id] = *id;
     }
 
+    j[CodingKeys::name] = name;
     j[CodingKeys::crypto] = payload.json();
 
     nlohmann::json accountsJSON = nlohmann::json::array();

@@ -30,7 +30,7 @@ class StellarTests: XCTestCase {
     let privateKeyData = Data(hexString: "59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722")!
 
     func testSigner() {
-        let input = TWStellarSigningInput.with {
+        let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
@@ -46,7 +46,7 @@ class StellarTests: XCTestCase {
     }
 
     func testSignWithMemoHash() {
-        let input = TWStellarSigningInput.with {
+        let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
@@ -54,7 +54,7 @@ class StellarTests: XCTestCase {
             $0.account = account
             $0.destination = destination
             $0.privateKey = privateKeyData
-            $0.memoHash = TWStellarMemoHash.with {
+            $0.memoHash = StellarMemoHash.with {
                 $0.hash = Data(hexString: "315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3")!
             }
             $0.operationType = .payment
@@ -65,7 +65,7 @@ class StellarTests: XCTestCase {
     }
 
     func testSignWithMemoReturn() {
-        let input = TWStellarSigningInput.with {
+        let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
@@ -73,7 +73,7 @@ class StellarTests: XCTestCase {
             $0.account = account
             $0.destination = destination
             $0.privateKey = privateKeyData
-            $0.memoReturnHash = TWStellarMemoHash.with {
+            $0.memoReturnHash = StellarMemoHash.with {
                 $0.hash = Data(hexString: "315f5bdb76d078c43b8ac0064e4a0164612b1fce77c869345bfc94c75894edd3")!
             }
             $0.operationType = .payment
@@ -84,7 +84,7 @@ class StellarTests: XCTestCase {
     }
 
     func testSignWithMemoId() {
-        let input = TWStellarSigningInput.with {
+        let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
@@ -92,7 +92,7 @@ class StellarTests: XCTestCase {
             $0.account = account
             $0.destination = destination
             $0.privateKey = privateKeyData
-            $0.memoID = TWStellarMemoId.with {
+            $0.memoID = StellarMemoId.with {
                 $0.id = 1234567890
             }
             $0.operationType = .payment
@@ -103,7 +103,7 @@ class StellarTests: XCTestCase {
     }
     
     func testSignCreateAccount() {
-        let input = TWStellarSigningInput.with {
+        let input = StellarSigningInput.with {
             $0.passphrase = StellarPassphrase.stellar.description
             $0.amount = 10_000_000
             $0.fee = 1000
@@ -111,7 +111,7 @@ class StellarTests: XCTestCase {
             $0.account = account
             $0.destination = destination
             $0.privateKey = privateKeyData
-            $0.memoID = TWStellarMemoId.with {
+            $0.memoID = StellarMemoId.with {
                 $0.id = 1234567890
             }
             $0.operationType = .createAccount

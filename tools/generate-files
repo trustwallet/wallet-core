@@ -42,9 +42,10 @@ fi
 # Generate Proto interface file
 pushd protobuf-plugin
 cmake -H. -Bbuild
-make -Cbuild protoc-gen-int
+make -Cbuild
 popd
-"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-int --int_out include/TrustWalletCore src/proto/*.proto
+"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-c-typedef --c-typedef_out include/TrustWalletCore src/proto/*.proto
+"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated src/proto/*.proto
 
 # Generate Xcode project
 if [ -x "$(command -v xcodegen)" ]; then

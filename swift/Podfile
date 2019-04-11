@@ -1,5 +1,6 @@
 platform :ios, '10.0'
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+inhibit_all_warnings!
 target 'TrustWalletCore' do
   use_frameworks!
 

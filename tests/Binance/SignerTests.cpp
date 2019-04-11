@@ -8,9 +8,8 @@
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "proto/Binance.pb.h"
-#include "Tendermint/Address.h"
+#include "Cosmos/Address.h"
 #include "Binance/Signer.h"
-#include "Tendermint/Address.h"
 #include "proto/Binance.pb.h"
 
 #include <TrustWalletCore/TWHRP.h>
@@ -30,7 +29,7 @@ TEST(BinanceSigner, Sign) {
     input.set_private_key(key.data(), key.size());
 
     auto& order = *input.mutable_trade_order();
-    auto result = Tendermint::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu");
+    auto result = Cosmos::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu");
     ASSERT_TRUE(result.second);
     auto keyhash = result.first.keyHash;
     order.set_sender(keyhash.data(), keyhash.size());
@@ -58,7 +57,7 @@ TEST(BinanceSigner, Build) {
     input.set_private_key(key.data(), key.size());
 
     auto& order = *input.mutable_trade_order();
-    auto address = Tendermint::Address(HRP_BINANCE, parse_hex("b6561dcc104130059a7c08f48c64610c1f6f9064"));
+    auto address = Cosmos::Address(HRP_BINANCE, parse_hex("b6561dcc104130059a7c08f48c64610c1f6f9064"));
     auto keyhash = address.keyHash;
     order.set_sender(keyhash.data(), keyhash.size());
     order.set_id("B6561DCC104130059A7C08F48C64610C1F6F9064-11");
@@ -108,10 +107,10 @@ TEST(BinanceSigner, BuildSend) {
     auto& order = *signingInput.mutable_send_order();
 
     auto fromKeyhash = parse_hex("40c2979694bbc961023d1d27be6fc4d21a9febe6");
-    auto fromAddress = Tendermint::Address(HRP_BINANCE, fromKeyhash);
+    auto fromAddress = Cosmos::Address(HRP_BINANCE, fromKeyhash);
 
     auto toKeyhash = parse_hex("88b37d5e05f3699e2a1406468e5d87cb9dcceb95");
-    auto toAddress = Tendermint::Address(HRP_BINANCE, toKeyhash);
+    auto toAddress = Cosmos::Address(HRP_BINANCE, toKeyhash);
 
     auto input = order.add_inputs();
     input->set_address(fromKeyhash.data(), fromKeyhash.size());
@@ -171,12 +170,12 @@ TEST(BinanceSigner, BuildSend2) {
     token.set_amount(100000000000000);
 
     auto input =  Proto::SendOrder::Input();
-    auto fromKeyHash = Tendermint::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromKeyHash = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
     input.set_address(fromKeyHash.data(), fromKeyHash.size());
     *input.add_coins() = token;
 
     auto output =  Proto::SendOrder::Output();
-    auto toKeyHash = Tendermint::Address(HRP_BINANCE, toPublicKey).keyHash;
+    auto toKeyHash = Cosmos::Address(HRP_BINANCE, toPublicKey).keyHash;
     output.set_address(toKeyHash.data(), toKeyHash.size());
     *output.add_coins() = token;
 
