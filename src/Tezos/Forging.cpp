@@ -79,7 +79,6 @@ Data forgeOperation(const Operation& operation) {
   auto forgedCounter = forgeZarith(operation.counter());
   auto forgedGasLimit = forgeZarith(operation.gas_limit());
   auto forgedStorageLimit = forgeZarith(operation.storage_limit());
-  printf("Hello, world\n");
 
   if (operation.kind() == Operation_OperationKind_REVEAL) {
       auto publicKey = PublicKey(operation.reveal_operation_data().public_key());
@@ -108,7 +107,6 @@ Data forgeOperation(const Operation& operation) {
       append(forged, forgeBool(false));
       return forged;
   } else if (operation.kind() == Operation_OperationKind_DELEGATION) {
-    printf("FOUND DELEGATION\n");
     auto delegate = operation.delegation_operation_data().delegate();
     forged.push_back(0x0a);
     append(forged, forgedSource);
@@ -139,14 +137,3 @@ Data forgeOperation(const Operation& operation) {
   }
   return Data();
 }
-
-////
-//// "7105102c032807994dd9b5edf219261896a559876ca16cbf9d31dbe3612b89f2
-//10
-//01315b1206ec00b1b1e64cc3b8b93059f58fa2fc3900e9
-//// "7105102c032807994dd9b5edf219261896a559876ca16cbf9d31dbe3612b89f2
-//0a
-//01315b1206ec00b1b1e64cc3b8b93059f58fa2fc3900e9
-//
-//0944904e00ff00c4650fd609f88c67356e5fe01e37cd3ff654b18c"
-//0944904e00ff00c4650fd609f88c67356e5fe01e37cd3ff654b18c"
