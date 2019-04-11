@@ -81,6 +81,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
                 case .groestlcoin:
                     XCTAssertEqual("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
+                case .iost:
+                    XCTAssertEqual("TyEiLWJ2R5fN12dCH5i6fmALoYUsn49CqbRhZU96R1GD", address)
                 case .viacoin:
                     XCTAssertEqual("via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc", address)
                 }
