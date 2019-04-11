@@ -69,6 +69,29 @@ TEST(TezosOperationList, ForgeOperationList_RevealOnly) {
       ASSERT_EQ(op_list.forge(), parse_hex(expected));
 }
 
+TEST(TezosOperationList, ForgeOperationList_OriginationOnly) {
+    auto branch = "BLoCyPwBk3XoS5jLbKNzvYPe4RwFbnDdMSLqvsbhMmxopcPfAhP";
+    auto op_list = TW::Tezos::OperationList(branch);
+
+    auto originationOperationData = new TW::Tezos::Proto::OriginationOperationData();
+    originationOperationData -> set_manager_pubkey("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    originationOperationData -> set_balance(0);
+
+    auto originationOperation = TW::Tezos::Proto::Operation();
+    originationOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    originationOperation.set_fee(1285);
+    originationOperation.set_counter(30871);
+    originationOperation.set_gas_limit(10000);
+    originationOperation.set_storage_limit(257);
+    originationOperation.set_kind(TW::Tezos::Proto::Operation::ORIGINATION);
+    originationOperation.set_allocated_origination_operation_data(originationOperationData);
+    
+    op_list.addOperation(originationOperation);
+
+    auto expected = "8ee0e04e6e66717f5b580bd494f1c00b73c171f5ebd85e0ef4c1dbc4def1f6f109000081faa75f741ef614b0e35fcc8c90dfa3b0b95721850a97f101904e81020081faa75f741ef614b0e35fcc8c90dfa3b0b9572100ffff0000";
+    ASSERT_EQ(hex(op_list.forge()), hex(parse_hex(expected)));
+}
+
 TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
     auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
     auto op_list = TW::Tezos::OperationList(branch);

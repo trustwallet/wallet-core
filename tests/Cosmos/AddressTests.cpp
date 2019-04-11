@@ -7,12 +7,12 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
-#include "Tendermint/Address.h"
+#include "Cosmos/Address.h"
 
 #include <gtest/gtest.h>
 #include <TrustWalletCore/TWHDWallet.h>
 
-namespace TW::Tendermint {
+namespace TW::Cosmos {
 
 TEST(Address, Valid) {
     ASSERT_TRUE(Address::isValid("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2"));
@@ -42,4 +42,4 @@ TEST(Address, FromKeyHashCosmos) {
     ASSERT_EQ(address.string(), "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
 }
 
-} // namespace TW::Tendermint
+} // namespace TW::Cosmos

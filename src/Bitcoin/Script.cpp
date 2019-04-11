@@ -252,9 +252,9 @@ void Script::encode(std::vector<uint8_t>& data) const {
 
 Script Script::buildForAddress(const std::string& string) {
     static const std::vector<uint8_t> p2pkhPrefixes = {TWP2PKHPrefixBitcoin, TWP2PKHPrefixLitecoin,
-                                                       TWP2PKHPrefixDash, TWP2PKHPrefixZcoin};
+                                                       TWP2PKHPrefixDash, TWP2PKHPrefixZcoin, TWP2PKHPrefixViacoin};
     static const std::vector<uint8_t> p2shPrefixes = {TWP2SHPrefixBitcoin, TWP2SHPrefixLitecoin,
-                                                      TWP2SHPrefixDash, TWP2SHPrefixZcoin};
+                                                      TWP2SHPrefixDash, TWP2SHPrefixZcoin, TWP2SHPrefixViacoin};
 
     if (Address::isValid(string)) {
         auto address = Address(string);

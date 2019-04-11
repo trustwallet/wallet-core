@@ -6,7 +6,7 @@
 
 #include "Serialization.h"
 
-#include "../Tendermint/Address.h"
+#include "../Cosmos/Address.h"
 #include <TrustWalletCore/TWHRP.h>
 
 using namespace TW;
@@ -15,7 +15,7 @@ using json = nlohmann::json;
 
 static inline std::string addressString(const std::string& bytes, bool testNet) {
     auto data = std::vector<uint8_t>(bytes.begin(), bytes.end());
-    auto address = Tendermint::Address(testNet ? HRP_BINANCE_TEST : HRP_BINANCE, data);
+    auto address = Cosmos::Address(testNet ? HRP_BINANCE_TEST : HRP_BINANCE, data);
     return address.string();
 }
 

@@ -12,7 +12,7 @@
 #include <cstdint>
 #include <string>
 
-namespace TW::Tendermint {
+namespace TW::Cosmos {
 
 class Address {
   public:
@@ -24,10 +24,10 @@ class Address {
     /// Public key hash.
     Data keyHash;
 
-    /// Determines whether a string makes a valid Tendermint address.
+    /// Determines whether a string makes a valid Cosmos address.
     static bool isValid(const std::string& string);
 
-    /// Determines whether a string makes a valid Tendermint address, and the
+    /// Determines whether a string makes a valid Cosmos address, and the
     /// HRP matches.
     static bool isValid(const std::string& string, const std::string& hrp);
 
@@ -53,9 +53,9 @@ class Address {
     Address() = default;
 };
 
-} // namespace TW::Tendermint
+} // namespace TW::Cosmos
 
 /// Wrapper for C interface.
-struct TWTendermintAddress {
-    TW::Tendermint::Address impl;
+struct TWCosmosAddress {
+    TW::Cosmos::Address impl;
 };
