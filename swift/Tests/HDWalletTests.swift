@@ -131,7 +131,7 @@ class HDWalletTests: XCTestCase {
         let binance = CoinType.binance
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: binance)
-        let address = TendermintAddress(hrp: .binance, publicKey: key.getPublicKeySecp256k1(compressed: true))
+        let address = CosmosAddress(hrp: .binance, publicKey: key.getPublicKeySecp256k1(compressed: true))
 
         XCTAssertEqual("bnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8pja0td", address?.description)
     }
