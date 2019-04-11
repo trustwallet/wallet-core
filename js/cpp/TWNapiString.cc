@@ -8,7 +8,7 @@
 
 using namespace Napi;
 
-String TWStringJString(Env *_Nonnull env, TWString *_Nonnull string) {
+String TWStringJsString(Env *_Nonnull env, TWString *_Nonnull string) {
     return String::New(*env, TWStringUTF8Bytes(string));
 }
 

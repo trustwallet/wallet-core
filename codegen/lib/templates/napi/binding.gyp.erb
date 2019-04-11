@@ -13,22 +13,22 @@
         'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       },
       "sources": [ 
-          "cpp/Sources.cc",
-          "cpp/TWNapiData.cc",
-          "cpp/TWNapiString.cc",
+          "Sources.cc",
+          "TWNapiData.cc",
+          "TWNapiString.cc",
 <% entities.sort { |x,y| x.name <=> y.name }.each do |entity| -%>
-          "cpp/generated/<%= entity.name %>.cc",
+          "generated/<%= entity.name %>.cc",
 <% end -%>
       ],
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")",
-        "<(module_root_dir)/cpp/",
-        "<(module_root_dir)/../include",
-        "<(module_root_dir)/../trezor-crypto/include"
+        "<(module_root_dir)/",
+        "<(module_root_dir)/../../include",
+        "<(module_root_dir)/../../trezor-crypto/include"
       ],
-      "libraries": [ "<(module_root_dir)/../build/libTrustWalletCore.a",
-                     "<(module_root_dir)/../build/trezor-crypto/libTrezorCrypto.a",
-                     "<(module_root_dir)/../build/libprotobuf.a" ]
+      "libraries": [ "<(module_root_dir)/../../build/libTrustWalletCore.a",
+                     "<(module_root_dir)/../../build/trezor-crypto/libTrezorCrypto.a",
+                     "<(module_root_dir)/../../build/libprotobuf.a" ]
     }
   ]
 }

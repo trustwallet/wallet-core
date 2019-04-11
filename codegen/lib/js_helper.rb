@@ -15,7 +15,14 @@ module JsHelper
 
   # Transforms a proto name name to a JS class name
   def self.proto_to_class(name) # TODO
-    ''
+    parts = name.split('_')
+    return nil if parts.count < 3 || parts[0] != 'TW'
+
+    if parts.count == 3
+      "TW.Proto.#{parts.last}"
+    else
+      "TW.#{parts[1]}.Proto.#{parts.last}"
+    end
   end
 
   # Transform string to single quotes
@@ -25,13 +32,13 @@ module JsHelper
 
   def self.import_types_from_entity(entity)
     unique_types = []
-    methods = entity.properties + entity.methods
+    methods = entity.properties + entity.methods + entity.static_methods + entity.static_properties
     methods.each do |method|
-      if !method.parameters.empty? && !self.is_primitive_type(method.return_type)
+      if !method.parameters.empty? && (method.return_type.is_class || method.return_type.is_struct || method.return_type.is_enum) && method.return_type.name != entity.name
         unique_types |= [method.return_type.name]
       end
-      method.parameters.drop(1).map do |param|
-        if !self.is_primitive_type(param.type)
+      method.parameters.map do |param|
+        if (param.type.is_struct || param.type.is_class || param.type.is_enum) && param.type.name != entity.name
           unique_types |= [param.type.name]
         end
       end
@@ -52,14 +59,26 @@ module JsHelper
 
   def self.parameters(params)
     names = params.map do |param|
-      "#{param.name || 'value'}: #{type(param.type)}"
+      if param.type.name == :uint64
+        "#{param.name || 'value'}Uint64: #{type(param.type)}"
+      else
+        "#{param.name || 'value'}: #{type(param.type)}"
+      end
     end
     names.join(', ')
   end
 
   def self.arguments(params)
     params.map do |param|
-      param.name || 'value'
+      if param.type.is_struct || param.type.is_class 
+        "#{param.name || 'value'}.getNativeHandle()"
+      elsif param.type.name == :uint64
+        "#{param.name || 'value'}Uint64"
+      elsif param.type.is_proto
+        "\n                  #{proto_to_class(param.type.name)}.encode(#{param.name}).finish()"
+      else
+        param.name || 'value'
+      end
     end.join(', ')
   end
 
@@ -81,7 +100,7 @@ module JsHelper
     when :int, :uint8, :uint16, :uint32, :size
       'number'
     when :uint64
-      'long'
+      'string'
     when :data
       'Uint8Array'
     when 'Data'

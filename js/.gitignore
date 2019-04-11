@@ -5,4 +5,4 @@ proto/*
 cpp/generated/*
 cpp/Sources.cc
 binding.gyp
-js/*
+js/generated/*
