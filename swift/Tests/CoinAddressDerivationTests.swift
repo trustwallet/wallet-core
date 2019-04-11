@@ -31,6 +31,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
                 case .dash:
                     XCTAssertEqual("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
+                case .dogecoin:
+                    XCTAssertEqual("DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f", address)
                 case .ethereum:
                     XCTAssertEqual("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
                 case .ethereumClassic:
@@ -81,6 +83,8 @@ class CoinAddressDerivationTests: XCTestCase {
                     XCTAssertEqual("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
                 case .iost:
                     XCTAssertEqual("TyEiLWJ2R5fN12dCH5i6fmALoYUsn49CqbRhZU96R1GD", address)
+                case .viacoin:
+                    XCTAssertEqual("via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc", address)
                 }
             }
         }

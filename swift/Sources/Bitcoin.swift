@@ -8,28 +8,8 @@ import Foundation
 
 public extension HDWallet {
     static func derive(from extended: String, at path: DerivationPath) -> PublicKey? {
-        let xpubVersion: HDVersion
-        let xprvVersion: HDVersion
-        switch path.purpose {
-        case .bip44:
-            switch path.coinType {
-            case .litecoin:
-                xpubVersion = .ltub
-                xprvVersion = .ltpv
-            case .decred:
-                xpubVersion = .dpub
-                xprvVersion = .dprv
-            default:
-                xpubVersion = .xpub
-                xprvVersion = .xprv
-            }
-        case .bip49:
-            xpubVersion = path.coinType == .litecoin ? .mtub: .ypub
-            xprvVersion = path.coinType == .litecoin ? .mtpv: .yprv
-        case .bip84:
-            xpubVersion = .zpub
-            xprvVersion = .zprv
-        }
+        let xpubVersion = path.coinType.xpubVersion
+        let xprvVersion = path.coinType.xprvVersion
         return HDWallet.getPublicKeyFromExtended(extended: extended, coin: path.coinType, versionPublic: xpubVersion, versionPrivate: xprvVersion, change: path.change, address: path.address)
     }
 }

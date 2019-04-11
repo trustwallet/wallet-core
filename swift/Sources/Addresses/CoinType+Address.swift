@@ -11,8 +11,8 @@ public extension CoinType {
     func address(string: String) -> Address? {
         switch self {
         case .binance, .cosmos:
-            if let addr = TendermintAddress(string: string), addr.hrp == hrp { return addr }
-        case .bitcoin, .litecoin:
+            if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
+        case .bitcoin, .litecoin, .viacoin:
             if let addr = Bech32Address(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
@@ -20,7 +20,7 @@ public extension CoinType {
             if let addr = BitcoinCashAddress(string: string) {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
-        case .dash, .zcoin:
+        case .dash, .dogecoin, .zcoin:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .callisto,
              .ethereum,
