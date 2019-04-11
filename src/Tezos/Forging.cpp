@@ -90,6 +90,37 @@ Data forgeOperation(const Operation& operation) {
       append(forged, forgedStorageLimit);
       append(forged, forgePublicKey(publicKey));
       return forged;
+  } else if (operation.kind() == Operation_OperationKind_ORIGINATION) {
+      auto managerPublicKey = operation.origination_operation_data().manager_pubkey();
+      auto balance = operation.origination_operation_data().balance();
+      forged.push_back(0x09);
+      append(forged, forgedSource);
+      append(forged, forgedFee);
+      append(forged, forgedCounter);
+      append(forged, forgedGasLimit);
+      append(forged, forgedStorageLimit);
+      append(forged, forgePublicKeyHash(managerPublicKey));
+      append(forged, forgeZarith(balance));
+      append(forged, forgeBool(true));
+      append(forged, forgeBool(true));
+      append(forged, forgeBool(false));
+      append(forged, forgeBool(false));
+      return forged;
+  } else if (operation.kind() == Operation_OperationKind_DELEGATION) {
+      auto delegate = operation.delegation_operation_data().delegate();
+      forged.push_back(0x0a);
+      append(forged, forgedSource);
+      append(forged, forgedFee);
+      append(forged, forgedCounter);
+      append(forged, forgedGasLimit);
+      append(forged, forgedStorageLimit);
+      if (!delegate.empty()) {
+          append(forged, forgeBool(true));
+          append(forged, forgePublicKeyHash(delegate));
+      } else {
+          append(forged, forgeBool(false));
+      }
+      return forged;
   } else {
       auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
       auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();

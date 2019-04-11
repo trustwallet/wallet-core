@@ -25,11 +25,11 @@ class BinanceSignerTests: XCTestCase {
         token.amount = 1
 
         var input = TW_Binance_Proto_SendOrder.Input()
-        input.address = TendermintAddress(hrp: .binanceTest, publicKey: publicKey)!.keyHash
+        input.address = CosmosAddress(hrp: .binanceTest, publicKey: publicKey)!.keyHash
         input.coins = [token]
 
         var output = TW_Binance_Proto_SendOrder.Output()
-        output.address = TendermintAddress(string: "tbnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx3f309d9")!.keyHash
+        output.address = CosmosAddress(string: "tbnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx3f309d9")!.keyHash
         output.coins = [token]
 
         var sendOrder = TW_Binance_Proto_SendOrder()

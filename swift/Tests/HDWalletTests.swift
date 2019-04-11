@@ -131,7 +131,7 @@ class HDWalletTests: XCTestCase {
         let binance = CoinType.binance
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: binance)
-        let address = TendermintAddress(hrp: .binance, publicKey: key.getPublicKeySecp256k1(compressed: true))
+        let address = CosmosAddress(hrp: .binance, publicKey: key.getPublicKeySecp256k1(compressed: true))
 
         XCTAssertEqual("bnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8pja0td", address?.description)
     }
@@ -216,6 +216,15 @@ class HDWalletTests: XCTestCase {
         let address = groestlcoin.deriveAddress(privateKey: key)
 
         XCTAssertEqual("grs1qsjpmsmm4x34wlt6kk4zef9u0jtculguktwgwg4", address)
+    }
+
+    func testDeriveDoge() {
+        let doge = CoinType.dogecoin
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: doge)
+        let address = doge.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("DJRoWqKj6hVmZMEMPahJ7UsqaYCtEJ3xv9", address)
     }
 
     func testSignHash() {

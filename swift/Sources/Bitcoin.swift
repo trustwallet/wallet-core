@@ -10,6 +10,7 @@ public extension HDWallet {
     static func derive(from extended: String, at path: DerivationPath) -> PublicKey? {
         let xpubVersion: HDVersion
         let xprvVersion: HDVersion
+        /// need to move this to C++
         switch path.purpose {
         case .bip44:
             switch path.coinType {
@@ -19,6 +20,9 @@ public extension HDWallet {
             case .decred:
                 xpubVersion = .dpub
                 xprvVersion = .dprv
+            case .dogecoin:
+                xpubVersion = .dgub
+                xprvVersion = .dgpv
             default:
                 xpubVersion = .xpub
                 xprvVersion = .xprv

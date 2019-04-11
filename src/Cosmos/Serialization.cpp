@@ -6,7 +6,7 @@
 
 #include "Serialization.h"
 
-#include "../Tendermint/Address.h"
+#include "../Cosmos/Address.h"
 #include "../Base64.h"
 #include <TrustWalletCore/TWHRP.h>
 

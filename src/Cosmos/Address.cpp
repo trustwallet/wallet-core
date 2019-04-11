@@ -12,7 +12,7 @@
 #include <TrezorCrypto/ecdsa.h>
 #include <TrustWalletCore/TWHRP.h>
 
-using namespace TW::Tendermint;
+using namespace TW::Cosmos;
 
 bool Address::isValid(const std::string& addr) {
     auto dec = Bech32::decode(addr);

@@ -7,7 +7,7 @@ import org.junit.Test
 import wallet.core.jni.BinanceSigner
 import wallet.core.jni.HRP
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.TendermintAddress
+import wallet.core.jni.CosmosAddress
 import wallet.core.jni.proto.Binance
 import com.trustwallet.core.app.utils.toHex
 
@@ -35,11 +35,11 @@ class TestBinanceTransactionSigning {
         token.amount = 1
 
         val input = Binance.SendOrder.Input.newBuilder()
-        input.address = ByteString.copyFrom(TendermintAddress(HRP.BINANCETEST, publicKey).keyHash())
+        input.address = ByteString.copyFrom(CosmosAddress(HRP.BINANCETEST, publicKey).keyHash())
         input.addAllCoins(listOf(token.build()))
 
         val output =  Binance.SendOrder.Output.newBuilder()
-        output.address = ByteString.copyFrom(TendermintAddress("tbnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx3f309d9").keyHash())
+        output.address = ByteString.copyFrom(CosmosAddress("tbnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx3f309d9").keyHash())
         output.addAllCoins(listOf(token.build()))
 
         val sendOrder = Binance.SendOrder.newBuilder()
