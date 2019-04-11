@@ -106,10 +106,24 @@ Data forgeOperation(const Operation& operation) {
       append(forged, forgeBool(false));
       append(forged, forgeBool(false));
       return forged;
+  } else if (operation.kind() == Operation_OperationKind_DELEGATION) {
+    auto delegate = operation.delegation_operation_data().delegate();
+    forged.push_back(0x09);
+    append(forged, forgedSource);
+    append(forged, forgedFee);
+    append(forged, forgedCounter);
+    append(forged, forgedGasLimit);
+    append(forged, forgedStorageLimit);
+    if (delegate.empty()) {
+      append(forged, forgeBool(true));
+      append(forged, forgePublicKeyHash(delegate));
+    } else {
+      append(forged, forgeBool(false));
+    }
   } else {
       auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
       auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
-      forged.push_back(0x08);
+      forged.push_back(0x10);
       append(forged, forgedSource);
       append(forged, forgedFee);
       append(forged, forgedCounter);
