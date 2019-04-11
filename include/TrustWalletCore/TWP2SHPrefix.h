@@ -15,12 +15,13 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_ENUM(uint8_t)
 enum TWP2SHPrefix {
     TWP2SHPrefixBitcoin = 0x05,
-    TWP2SHPrefixLitecoin = 0x32,
-    TWP2SHPrefixViacoin = 0x21,
     TWP2SHPrefixDash = 0x10,
     TWP2SHPrefixDecred = 0x1a,
-    TWP2SHPrefixZcoin = 0x07,
+    TWP2SHPrefixDogecoin = 0x16,
+    TWP2SHPrefixLitecoin = 0x32,
+    TWP2SHPrefixViacoin = 0x21,
     TWP2SHPrefixZcashT = 0xBD,
+    TWP2SHPrefixZcoin = 0x07,
 };
 
 // Do not export TWP2SHPrefixGroestlcoin because it the same to
