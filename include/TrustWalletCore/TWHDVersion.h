@@ -33,6 +33,10 @@ enum TWHDVersion {
     // Decred
     TWHDVersionDPUB = 0x2fda926,
     TWHDVersionDPRV = 0x2fda4e8,
+
+    // Dogecoin
+    TWHDVersionDGUB = 0x02facafd,
+    TWHDVersionDGPV = 0x02fac398,
 };
 
 TW_EXTERN_C_END

@@ -176,7 +176,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeCallisto: return "https://explorer2.callisto.network";
     case TWCoinTypeDash: return "https://blockchair.com/dash";
     case TWCoinTypeDecred: return "https://mainnet.decred.org";
-    case TWCoinTypeDogecoin: "https://dogechain.info";
+    case TWCoinTypeDogecoin: return "https://dogechain.info";
     case TWCoinTypeEthereumClassic: return "https://gastracker.io";
     case TWCoinTypeGo: return "https://explorer.gochain.io";
     case TWCoinTypeGroestlcoin: return "https://blockbook.groestlcoin.org";
