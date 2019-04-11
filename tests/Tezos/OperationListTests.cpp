@@ -107,7 +107,7 @@ TEST(TezosOperationList, ForgeOperationList_Delegation_ClearDelegate) {
     delegationOperation.set_storage_limit(0);
     delegationOperation.set_kind(TW::Tezos::Proto::Operation::DELEGATION);
     delegationOperation.set_allocated_delegation_operation_data(delegationOperationData);
-    
+
     op_list.addOperation(delegationOperation);
 
     auto expected = "48b63d801fa824013a195f7885ba522503c59e0580f7663e15c52f03ccc935e60a01315b1206ec00b1b1e64cc3b8b93059f58fa2fc3900e90943904e0000";
@@ -132,7 +132,7 @@ TEST(TezosOperationList, ForgeOperationList_Delegation_AddDelegate) {
     
     op_list.addOperation(delegationOperation);
 
-    auto expected = "48b63d801fa824013a195f7885ba522503c59e0580f7663e15c52f03ccc935e60a01315b1206ec00b1b1e64cc3b8b93059f58fa2fc3900e90943904e0000";
+    auto expected = "7105102c032807994dd9b5edf219261896a559876ca16cbf9d31dbe3612b89f20a01315b1206ec00b1b1e64cc3b8b93059f58fa2fc3900e90944904e00ff00c4650fd609f88c67356e5fe01e37cd3ff654b18c";
     ASSERT_EQ(hex(op_list.forge()), hex(parse_hex(expected)));
 }
 
