@@ -9,6 +9,24 @@ import TrustWalletCore
 
 class DogeTests: XCTestCase {
 
+    func testAddress() {
+        let coin = CoinType.dogecoin
+        let string = "DLrjRgrVqbbpGrSQUtSYgsiWWMvRz5skQE"
+
+        XCTAssertEqual(
+            coin.address(string: string)?.description,
+            BitcoinAddress(string: string)?.description
+        )
+    }
+
+    func testAddressValidate() {
+        let coin = CoinType.dogecoin
+
+        XCTAssertTrue(
+            coin.validate(address: "DLrjRgrVqbbpGrSQUtSYgsiWWMvRz5skQE")
+        )
+    }
+
     func testExtendedKeys() {
         let wallet = HDWallet.test
 
