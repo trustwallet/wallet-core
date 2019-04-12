@@ -92,6 +92,50 @@ TEST(TezosOperationList, ForgeOperationList_OriginationOnly) {
     ASSERT_EQ(hex(op_list.forge()), hex(parse_hex(expected)));
 }
 
+TEST(TezosOperationList, ForgeOperationList_Delegation_ClearDelegate) {
+    auto branch = "BLGJfQDFEYZBRLj5GSHskj8NPaRYhk7Kx5WAfdcDucD3q98WdeW";
+    auto op_list = TW::Tezos::OperationList(branch);
+
+    auto delegationOperationData = new TW::Tezos::Proto::DelegationOperationData();
+    delegationOperationData -> set_delegate("");
+
+    auto delegationOperation = TW::Tezos::Proto::Operation();
+    delegationOperation.set_source("KT1D5jmrBD7bDa3jCpgzo32FMYmRDdK2ihka");
+    delegationOperation.set_fee(1257);
+    delegationOperation.set_counter(67);
+    delegationOperation.set_gas_limit(10000);
+    delegationOperation.set_storage_limit(0);
+    delegationOperation.set_kind(TW::Tezos::Proto::Operation::DELEGATION);
+    delegationOperation.set_allocated_delegation_operation_data(delegationOperationData);
+
+    op_list.addOperation(delegationOperation);
+
+    auto expected = "48b63d801fa824013a195f7885ba522503c59e0580f7663e15c52f03ccc935e60a01315b1206ec00b1b1e64cc3b8b93059f58fa2fc3900e90943904e0000";
+    ASSERT_EQ(hex(op_list.forge()), hex(parse_hex(expected)));
+}
+
+TEST(TezosOperationList, ForgeOperationList_Delegation_AddDelegate) {
+    auto branch = "BLa4GrVQTxUgQWbHv6cF7RXWSGzHGPbgecpQ795R3cLzw4cGfpD";
+    auto op_list = TW::Tezos::OperationList(branch);
+
+    auto delegationOperationData = new TW::Tezos::Proto::DelegationOperationData();
+    delegationOperationData -> set_delegate("tz1dYUCcrorfCoaQCtZaxi1ynGrP3prTZcxS");
+
+    auto delegationOperation = TW::Tezos::Proto::Operation();
+    delegationOperation.set_source("KT1D5jmrBD7bDa3jCpgzo32FMYmRDdK2ihka");
+    delegationOperation.set_fee(1257);
+    delegationOperation.set_counter(68);
+    delegationOperation.set_gas_limit(10000);
+    delegationOperation.set_storage_limit(0);
+    delegationOperation.set_kind(TW::Tezos::Proto::Operation::DELEGATION);
+    delegationOperation.set_allocated_delegation_operation_data(delegationOperationData);
+    
+    op_list.addOperation(delegationOperation);
+
+    auto expected = "7105102c032807994dd9b5edf219261896a559876ca16cbf9d31dbe3612b89f20a01315b1206ec00b1b1e64cc3b8b93059f58fa2fc3900e90944904e00ff00c4650fd609f88c67356e5fe01e37cd3ff654b18c";
+    ASSERT_EQ(hex(op_list.forge()), hex(parse_hex(expected)));
+}
+
 TEST(TezosOperationList, ForgeOperationList_TransactionAndReveal) {
     auto branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp";
     auto op_list = TW::Tezos::OperationList(branch);
