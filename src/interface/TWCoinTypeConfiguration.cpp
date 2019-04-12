@@ -100,8 +100,6 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeKIN:
         return 5;
     case TWCoinTypeOntology:
-        return 1;
-    default:
         return 0;
     }
 }
