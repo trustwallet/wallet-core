@@ -113,6 +113,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeLitecoin:
     case TWCoinTypeNEO:
     case TWCoinTypeStellar:
+    case TWCoinTypeOntology:
         url += "/transaction/" + txId;
         break;
     case TWCoinTypeCallisto:
@@ -129,9 +130,6 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
         url += "/tx/" + txId;
-        break;
-    case TWCoinTypeOntology:
-        url += "/api/v1/transaction/" + txId + "?raw=0";
         break;
     case TWCoinTypePoa:
         url += "/txid/search/" + txId;
