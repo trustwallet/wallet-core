@@ -208,8 +208,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto value29 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
     assertStringsEqual(value29, "https://live.blockcypher.com/doge/tx/123");
 
-    auto value30 WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
-    assertStringsEqual(value30 "https://qtum.info/tx/123");
+    auto value30 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
+    assertStringsEqual(value30, "https://qtum.info/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
