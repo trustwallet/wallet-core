@@ -87,6 +87,8 @@ public extension CoinType {
             return Set([P2SHPrefix.zcashT.rawValue, P2PKHPrefix.zcashT.rawValue])
         case .dogecoin:
             return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin.rawValue])
+        case .viacoin:
+            return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
         default:
             return Set()
         }
@@ -107,6 +109,8 @@ public extension CoinType {
             return .litecoin
         case .groestlcoin:
             return .groestlcoin
+        case .viacoin:
+            return .viacoin
         default:
             return HRP.unknown
         }
