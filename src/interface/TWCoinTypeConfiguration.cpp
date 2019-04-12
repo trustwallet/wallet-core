@@ -182,7 +182,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeICON: return "https://tracker.icon.foundation";
     case TWCoinTypeIOST: return "https://www.iostabc.com";
     case TWCoinTypeLitecoin: return "https://blockchair.com/litecoin";
-    case TWCoinTypeOntology: return "https://explorer.ont.io/";
+    case TWCoinTypeOntology: return "https://explorer.ont.io";
     case TWCoinTypeViacoin: return "https://explorer.viacoin.org";
     case TWCoinTypePoa: return "https://poaexplorer.com";
     case TWCoinTypeThunderToken: return "https://scan.thundercore.com";
