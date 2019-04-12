@@ -89,6 +89,8 @@ public extension CoinType {
             return Set([P2PKHPrefix.qtum.rawValue])
         case .dogecoin:
             return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin.rawValue])
+        case .viacoin:
+            return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
         default:
             return Set()
         }
@@ -109,6 +111,8 @@ public extension CoinType {
             return .litecoin
         case .groestlcoin:
             return .groestlcoin
+        case .viacoin:
+            return .viacoin
         case .qtum:
             return .qtum
         default:
