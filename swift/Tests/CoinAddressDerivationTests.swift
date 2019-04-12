@@ -15,78 +15,120 @@ class CoinAddressDerivationTests: XCTestCase {
         for _ in 0..<4 {
             for coin in CoinType.allCases {
                 let privateKey = wallet.getKeyForCoin(coin: coin)
-                let address = coin.deriveAddress(privateKey: privateKey)
+                let derivedAddress = coin.deriveAddress(privateKey: privateKey)
+                let address = coin.address(string: derivedAddress)
+
                 switch coin {
                 case .aion:
-                    XCTAssertEqual("0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e", address)
+                    let expectedResult = "0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .binance:
-                    XCTAssertEqual("tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl", address)
+                    let expectedResult = "tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .cosmos:
-                    XCTAssertEqual("cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn", address)
+                    let expectedResult = "cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .bitcoin:
-                    XCTAssertEqual("bc1quvuarfksewfeuevuc6tn0kfyptgjvwsvrprk9d", address)
+                    let expectedResult = "bc1quvuarfksewfeuevuc6tn0kfyptgjvwsvrprk9d"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .bitcoinCash:
-                    XCTAssertEqual("bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70", address)
+                    let expectedResult = "bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .callisto:
-                    XCTAssertEqual("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
+                    let expectedResult = "0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .dash:
-                    XCTAssertEqual("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
+                    let expectedResult = "XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .dogecoin:
-                    XCTAssertEqual("DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f", address)
+                    let expectedResult = "DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereum:
-                    XCTAssertEqual("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
+                    let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereumClassic:
-                    XCTAssertEqual("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
+                    let expectedResult = "0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .go:
-                    XCTAssertEqual("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
+                    let expectedResult = "0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .icon:
-                    XCTAssertEqual("hx18b380b53c23dc4ee9f6666bc20d1be02f3fe106", address)
+                    let expectedResult = "hx18b380b53c23dc4ee9f6666bc20d1be02f3fe106"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .litecoin:
-                    XCTAssertEqual("ltc1qhd8fxxp2dx3vsmpac43z6ev0kllm4n53t5sk0u", address)
+                    let expectedResult = "ltc1qhd8fxxp2dx3vsmpac43z6ev0kllm4n53t5sk0u"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ontology:
-                    XCTAssertEqual("AHKTnybvnWo3TeY8uvNXekvYxMrXogUjeT", address)
+                    let expectedResult = "AHKTnybvnWo3TeY8uvNXekvYxMrXogUjeT"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .poa:
-                    XCTAssertEqual("0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9", address)
+                    let expectedResult = "0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ripple:
-                    XCTAssertEqual("rPwE3gChNKtZ1mhH3Ko8YFGqKmGRWLWXV3", address)
+                    let expectedResult = "rPwE3gChNKtZ1mhH3Ko8YFGqKmGRWLWXV3"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tezos:
-                    XCTAssertEqual("tz1acnY9VbMagps26Kj3RfoGRWD9nYG5qaRX", address)
+                    let expectedResult = "tz1acnY9VbMagps26Kj3RfoGRWD9nYG5qaRX"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .thunderToken:
-                    XCTAssertEqual("0x4b92b3ED6d8b24575Bf5ce4C6a86ED261DA0C8d7", address)
+                    let expectedResult = "0x4b92b3ED6d8b24575Bf5ce4C6a86ED261DA0C8d7"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tomoChain:
-                    XCTAssertEqual("0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424", address)
+                    let expectedResult = "0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tron:
-                    XCTAssertEqual("TQ5NMqJjhpQGK7YJbESKtNCo86PJ89ujio", address)
+                    let expectedResult = "TQ5NMqJjhpQGK7YJbESKtNCo86PJ89ujio"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .veChain:
-                    XCTAssertEqual("0x1a553275dF34195eAf23942CB7328AcF9d48c160", address)
+                    let expectedResult = "0x1a553275dF34195eAf23942CB7328AcF9d48c160"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .wanChain:
-                    XCTAssertEqual("0xd5CA90B928279fe5d06144136A25dEd90127Ac15", address)
+                    let expectedResult = "0xd5CA90B928279fe5d06144136A25dEd90127Ac15"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .xdai:
-                    XCTAssertEqual("0x364d0551599B97EAf997bc06c8c40Aaf73124402", address)
+                    let expectedResult = "0x364d0551599B97EAf997bc06c8c40Aaf73124402"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zcash:
-                    XCTAssertEqual("t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy", address)
+                    let expectedResult = "t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zcoin:
-                    XCTAssertEqual("aEd5XFChyXobvEics2ppAqgK3Bgusjxtik", address)
+                    let expectedResult = "aEd5XFChyXobvEics2ppAqgK3Bgusjxtik"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .nimiq:
-                    XCTAssertEqual("NQ76 7AVR EHDA N05U X7SY XB14 XJU7 8ERV GM6H", address)
+                    let expectedResult = "NQ76 7AVR EHDA N05U X7SY XB14 XJU7 8ERV GM6H"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .stellar:
-                    XCTAssertEqual("GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P", address)
+                    let expectedResult = "GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .neo:
-                    XCTAssertEqual("AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF", address)
+                    let expectedResult = "AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .kin:
-                    XCTAssertEqual("GBL3MT2ICHHM5OJ2QJ44CAHGDK6MLPINVXBKOKLHGBWQDVRWTWQ7U2EA", address)
+                    let expectedResult = "GBL3MT2ICHHM5OJ2QJ44CAHGDK6MLPINVXBKOKLHGBWQDVRWTWQ7U2EA"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .decred:
-                    XCTAssertEqual("DsidJiDGceqHTyqiejABy1ZQ3FX4SiWZkYG", address)
+                    let expectedResult = "DsidJiDGceqHTyqiejABy1ZQ3FX4SiWZkYG"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .theta:
-                    XCTAssertEqual("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
+                    let expectedResult = "0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .groestlcoin:
-                    XCTAssertEqual("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
+                    let expectedResult = "grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .iost:
-                    XCTAssertEqual("TyEiLWJ2R5fN12dCH5i6fmALoYUsn49CqbRhZU96R1GD", address)
+                    let expectedResult = "TyEiLWJ2R5fN12dCH5i6fmALoYUsn49CqbRhZU96R1GD"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .viacoin:
-                    XCTAssertEqual("via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc", address)
+                    let expectedResult = "via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }
+    }
+
+    private func AssetCoinDerivation(_ coin: CoinType, _ expected: String, _ derivedAddress: String, _ address: Address?) {
+        XCTAssertNotNil(address, "\(coin) is not implemented CoinType.address(string: String)")
+        XCTAssertEqual(expected, derivedAddress, "\(coin) failed to match address")
+        XCTAssertEqual(expected, address?.description, "\(coin) is not implemented CoinType.address(string: String)")
     }
 }
