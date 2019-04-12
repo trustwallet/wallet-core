@@ -26,5 +26,6 @@ class SlipTests: XCTestCase {
         XCTAssertEqual(CoinType.tomoChain.rawValue, 889)
         XCTAssertEqual(CoinType.tezos.rawValue, 1729)
         XCTAssertEqual(CoinType.xdai.rawValue, 700)
+        XCTAssertEqual(CoinType.lux.rawValue, 3003)
     }
 }
