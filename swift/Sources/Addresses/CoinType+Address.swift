@@ -87,6 +87,8 @@ public extension CoinType {
             return Set([P2SHPrefix.zcashT.rawValue, P2PKHPrefix.zcashT.rawValue])
         case .qtum:
             return Set([P2PKHPrefix.qtum.rawValue])
+        case .dogecoin:
+            return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin.rawValue])
         default:
             return Set()
         }
@@ -114,3 +116,5 @@ public extension CoinType {
         }
     }
 }
+
+extension IOSTAccount: Address {}
