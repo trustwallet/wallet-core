@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 #pragma once
+#include "../Base58Address.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 
@@ -11,16 +12,10 @@
 
 namespace TW::NULS {
 
-class Address {
+class Address : public Base58Address<24> {
   public:
-    /// Number of bytes in an address.
-    static const size_t addressSize = 24;
-
     /// NULS Main Net Chain ID
     static const uint16_t MainNetID = 8964;
-
-    /// Address data consisting of a prefix byte followed by the public key hash.
-    std::array<byte, addressSize> bytes;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
@@ -29,16 +24,13 @@ class Address {
     static PrivateKey importHexPrivateKey(std::string hexPrivateKey);
 
     /// Initializes an address from a string representation.
-    Address(const std::string& string);
+    explicit Address(const std::string& string);
 
     /// Initializes an address from a public key.
-    Address(const PublicKey& publicKey);
+    explicit Address(const PublicKey& publicKey);
 
     /// Initializes an address with a collection of bytes.
-    Address(const std::vector<uint8_t>& data);
-
-    /// Returns a string representation of the address.
-    std::string string() const;
+    explicit Address(const std::vector<uint8_t>& data) : TW::Base58Address<24>(data) {}
 
     /// Determines is a valid address.
     bool isValid() const;
@@ -46,6 +38,9 @@ class Address {
     uint16_t chainID() const;
 
     uint8_t type() const;
+
+    /// Returns a string representation of the address.
+    std::string string() const;
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {

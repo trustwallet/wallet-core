@@ -34,7 +34,6 @@ struct TransactionBuilder {
         }
         plan.set_available_amount(availableAmount);
 
-        // UTXO 输入 资金量小于转出金额，失败
         if (availableAmount < plan.amount()) {
             return Proto::TransactionPlan{};
         }
@@ -48,7 +47,6 @@ struct TransactionBuilder {
         std::vector<Proto::TransactionOutput> outputs;
         outputs.push_back(output);
 
-        // 对UTXO排序
         auto sortedUtxos = purpose.utxos();
         std::sort(sortedUtxos.begin(), sortedUtxos.end(),
                   [](const Proto::TransactionInput& lhs, const Proto::TransactionInput& rhs) {
@@ -64,10 +62,8 @@ struct TransactionBuilder {
             int64_t fee = calculatorTransactionFee(selectUtxos.size(), 1, purpose.remark().size());
 
             if (values > (purpose.amount() + fee)) {
-                // 有找零，需要增加一条找零输出，重新计算手续费
                 fee = calculatorTransactionFee(selectUtxos.size(), 2, purpose.remark().size());
                 if (values < (purpose.amount() + fee)) {
-                    // 增加找零输出后费用不够，需要增加输入
                     continue;
                 }
 
@@ -91,13 +87,6 @@ struct TransactionBuilder {
         *plan.mutable_outputs() = {outputs.begin(), outputs.end()};
 
         return plan;
-    }
-
-    static inline int64_t sum(const Proto::TransactionPurpose& purpose) {
-        int64_t sum = 0;
-        for (auto& utxo : purpose.utxos())
-            sum += utxo.amount();
-        return sum;
     }
 
     static int64_t calculatorTransactionFee(uint32_t inputCount, uint32_t outputCount,

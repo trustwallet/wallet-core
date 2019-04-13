@@ -54,5 +54,5 @@ TWString* _Nonnull TWNULSAddressDescription(struct TWNULSAddress* _Nonnull addre
 
 /// Returns the key hash.
 TWData* _Nonnull TWNULSAddressKeyHash(struct TWNULSAddress* _Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::addressSize);
+    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::size);
 }

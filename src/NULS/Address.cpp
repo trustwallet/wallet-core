@@ -19,7 +19,7 @@ bool Address::isValid(const std::string& string) {
     }
 
     Data decoded = TW::Base58::bitcoin.decode(string);
-    if (decoded.size() != Address::addressSize) {
+    if (decoded.size() != size) {
         return false;
     }
 
@@ -30,15 +30,6 @@ bool Address::isValid(const std::string& string) {
     }
 
     return decoded[23] == checkSum;
-}
-
-Address::Address(const std::string& string) {
-    if (!isValid(string)) {
-        return;
-    }
-
-    Data decoded = TW::Base58::bitcoin.decode(string);
-    std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
 Address::Address(const TW::PublicKey& publicKey) {
@@ -58,16 +49,13 @@ Address::Address(const TW::PublicKey& publicKey) {
     bytes[23] = checkSum;
 }
 
-Address::Address(const std::vector<uint8_t>& data) {
-    if (data.size() != Address::addressSize) {
-        throw std::invalid_argument("Invalid address data");
+Address::Address(const std::string& string) {
+    const auto decoded = Base58::bitcoin.decode(string);
+    if (decoded.size() != Base58Address::size) {
+        throw std::invalid_argument("Invalid address string");
     }
 
-    std::copy(data.begin(), data.end(), bytes.begin());
-}
-
-std::string Address::string() const {
-    return TW::Base58::bitcoin.encode(bytes.begin(), bytes.end());
+    std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
 uint16_t Address::chainID() const {
@@ -119,3 +107,8 @@ TW::PrivateKey Address::importHexPrivateKey(std::string hexPrivateKey) {
     auto key = PrivateKey(data);
     return key;
 }
+
+std::string Address::string() const {
+    return TW::Base58::bitcoin.encode(bytes.begin(), bytes.end());
+}
+
