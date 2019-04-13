@@ -7,6 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
+if (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang"))
+    message(FATAL_ERROR "You should use clang compiler")
+endif()
+
 if ("$ENV{PREFIX}" STREQUAL "")
     set(PREFIX "${CMAKE_SOURCE_DIR}/build/local")
 else()

@@ -1,0 +1,1 @@
+export const WalletCore = require('../cpp/build/Release/trust-wallet-nodejs.node');

@@ -53,6 +53,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "KIN"; break;
     case TWCoinTypeTheta: string = "THETA"; break;
     case TWCoinTypeLux: string = "LUX"; break;
+    case TWCoinTypeQtum: string = "QTUM"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -88,6 +89,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeLux:
     case TWCoinTypeZcash:
     case TWCoinTypeNEO:
+    case TWCoinTypeQtum:
         return 8;
     case TWCoinTypeStellar:
         return 7;
@@ -131,6 +133,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
+    case TWCoinTypeQtum:
         url += "/tx/" + txId;
         break;
     case TWCoinTypePoa:
@@ -186,7 +189,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeICON: return "https://tracker.icon.foundation";
     case TWCoinTypeIOST: return "https://www.iostabc.com";
     case TWCoinTypeLitecoin: return "https://blockchair.com/litecoin";
-    case TWCoinTypeOntology: return "https://explorer.ont.io/";
+    case TWCoinTypeOntology: return "https://explorer.ont.io";
     case TWCoinTypeViacoin: return "https://explorer.viacoin.org";
     case TWCoinTypePoa: return "https://poaexplorer.com";
     case TWCoinTypeThunderToken: return "https://scan.thundercore.com";
@@ -208,6 +211,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeKIN: return "https://kinexplorer.com";
     case TWCoinTypeTheta: return "https://explorer.thetatoken.org";
     case TWCoinTypeLux: return "https://explorer.poswallet.io";
+    case TWCoinTypeQtum: return "https://qtum.info";
     default: return "";
     }
 }
@@ -250,6 +254,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "kin"; break;
     case TWCoinTypeTheta: string = "theta"; break;
     case TWCoinTypeLux: string = "lux"; break;
+    case TWCoinTypeQtum: string = "qtum"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -293,6 +298,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "Kin"; break;
     case TWCoinTypeTheta: string = "Theta"; break;
     case TWCoinTypeLux: string = "Lux"; break;
+    case TWCoinTypeQtum: string = "Qtum"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
