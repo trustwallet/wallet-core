@@ -375,10 +375,17 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value26 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
     assertStringsEqual(value26, "Groestlcoin");
 
-
     auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
     assertStringsEqual(value27, "Lux");
 
     auto value28 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
     assertStringsEqual(value28, "Qtum");
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetNodeSource) {
+    auto value1 = WRAPS(TWCoinTypeConfigurationGetNodeSource(TWCoinTypeEthereum));
+    assertStringsEqual(value1, "https://github.com/ethereum/go-ethereum");
+
+    auto value2 = WRAPS(TWCoinTypeConfigurationGetNodeSource(TWCoinTypeBitcoin));
+    assertStringsEqual(value2, "https://github.com/trezor/blockbook");
 }

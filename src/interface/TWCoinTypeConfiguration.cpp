@@ -304,4 +304,48 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
+TWString *_Nullable TWCoinTypeConfigurationGetNodeSource(enum TWCoinType type) {
+    string string;
+    switch (type) {
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeDash:
+    case TWCoinTypeDogecoin:
+    case TWCoinTypeDecred:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeGroestlcoin:
+    case TWCoinTypeZcash:
+    case TWCoinTypeZcoin:
+    case TWCoinTypeViacoin:
+    case TWCoinTypeLux:
+    case TWCoinTypeQtum: string = "https://github.com/trezor/blockbook"; break;
+    case TWCoinTypeICON: string = "https://github.com/icon-project/icon-rpc-server"; break;
+    case TWCoinTypeNEO: string = "https://github.com/neo-project/neo"; break;
+    case TWCoinTypeStellar: string = "https://github.com/stellar/go"; break;
+    case TWCoinTypeEthereum:
+    case TWCoinTypeCallisto:
+    case TWCoinTypePoa:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGo:
+    case TWCoinTypeXDai:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeThunderToken: string = "https://github.com/ethereum/go-ethereum"; break;
+    case TWCoinTypeWanChain: string = "https://github.com/wanchain/go-wanchain"; break;
+    case TWCoinTypeKIN: string = "https://github.com/kinecosystem/go"; break;
+    case TWCoinTypeIOST: string = "https://github.com/iost-official/go-iost"; break;
+    case TWCoinTypeOntology: string = "https://github.com/ontio/ontology"; break;
+    case TWCoinTypeTheta: string = "https://github.com/thetatoken/theta-protocol-ledger"; break;
+    case TWCoinTypeTron: string = "https://github.com/tronprotocol/java-tron"; break;
+    case TWCoinTypeAion: string = "https://github.com/aionnetwork/aion"; break;
+    case TWCoinTypeVeChain: string = "https://github.com/vechain/thor"; break;
+    case TWCoinTypeRipple: string = "https://github.com/ripple"; break;
+    case TWCoinTypeTezos: string = "https://gitlab.com/tezos/tezos"; break;
+    case TWCoinTypeNimiq: string = "https://github.com/nimiq-network/core"; break;
+    case TWCoinTypeBinance: string = "https://github.com/binance-chain/"; break;
+    case TWCoinTypeCosmos: string = "https://github.com/cosmos/cosmos-sdk"; break;
+    default: string = "";
+    }
+    return TWStringCreateWithUTF8Bytes(string.c_str());
+}
+
 #pragma clang diagnostic pop
