@@ -49,6 +49,7 @@ enum TWCoinType {
     TWCoinTypeWanChain = 5718350,
     TWCoinTypeXDai = 700,
     TWCoinTypeZcash = 133,
+	TWCoinTypeZelcash = 19167,
     TWCoinTypeZcoin = 136,
     TWCoinTypeTheta = 500,
 };

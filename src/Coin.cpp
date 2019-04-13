@@ -24,6 +24,7 @@
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
+#include "Zelcash/TAddress.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -109,6 +110,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
 
+    case TWCoinTypeZelcash:
+            return Zelcash::TAddress::isValid(string, {{Zelcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zelcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
+
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
     }
@@ -140,6 +144,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
@@ -175,6 +180,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeCosmos:
     case TWCoinTypeTheta:
@@ -205,6 +211,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcoin:
         return TWHDVersionXPUB;
 
@@ -248,6 +255,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcoin:
         return TWHDVersionXPRV;
 
@@ -305,6 +313,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeTheta:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
@@ -347,6 +356,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeRipple:
         return PublicKeyType::secp256k1;
@@ -444,6 +454,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeZcash:
         return Zcash::TAddress(publicKey, TWP2PKHPrefixZcashT).string();
 
+    case TWCoinTypeZelcash:
+		return Zelcash::TAddress(publicKey, TWP2PKHPrefixZcashT).string();
+
     case TWCoinTypeZcoin:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixZcoin).string();
 
@@ -487,6 +500,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcoin:
         return Hash::sha256ripemd;
 
@@ -526,6 +540,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcoin:
         return Hash::sha256d;
 

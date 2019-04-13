@@ -39,6 +39,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeXDai: string = "xDAI"; break;
     case TWCoinTypeZcoin: string = "XZC"; break;
     case TWCoinTypeZcash: string = "ZEC"; break;
+    case TWCoinTypeZelcash: string = "ZEL"; break;
     case TWCoinTypeBinance: string = "BNB"; break;
     case TWCoinTypeRipple: string = "XRP"; break;
     case TWCoinTypeTezos: string = "XTZ"; break;
@@ -79,6 +80,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeBinance:
     case TWCoinTypeZcoin:
     case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeNEO:
      return 8;
     case TWCoinTypeStellar:
@@ -144,6 +146,9 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeZcash:
         url += "/tx/ZEC/" + txId;
         break;
+    case TWCoinTypeZelcash:
+		url += "/tx/" + txId;
+		break;
     case TWCoinTypeRipple:
         url += "/explorer/" + txId;
         break;
@@ -185,6 +190,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeXDai: return "https://blockscout.com/poa/dai";
     case TWCoinTypeZcoin: return "https://explorer.zcoin.io";
     case TWCoinTypeZcash: return "https://chain.so";
+    case TWCoinTypeZelcash: return "https://explorer.zel.cash";
     case TWCoinTypeBinance: return "https://binance.com";
     case TWCoinTypeRipple: return "https://bithomp.com";
     case TWCoinTypeTezos: return "https://tzscan.io";
@@ -223,6 +229,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeXDai: string = "xdai"; break;
     case TWCoinTypeZcoin: string = "zcoin"; break;
     case TWCoinTypeZcash: string = "zcash"; break;
+    case TWCoinTypeZelcash: string = "zelcash"; break;
     case TWCoinTypeBinance: string = "binance"; break;
     case TWCoinTypeRipple: string = "ripple"; break;
     case TWCoinTypeTezos: string = "tezos"; break;
@@ -262,6 +269,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeXDai: string = "xDai"; break;
     case TWCoinTypeZcoin: string = "Zcoin"; break;
     case TWCoinTypeZcash: string = "Zcash"; break;
+    case TWCoinTypeZelcash: string = "Zelcash"; break;
     case TWCoinTypeBinance: string = "Binance"; break;
     case TWCoinTypeRipple: string = "XRP"; break;
     case TWCoinTypeTezos: string = "Tezos"; break;

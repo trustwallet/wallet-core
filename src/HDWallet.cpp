@@ -14,6 +14,7 @@
 #include "Decred/Address.h"
 #include "Ripple/Address.h"
 #include "Zcash/TAddress.h"
+#include "Zelcash/TAddress.h"
 
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/bip39.h>
