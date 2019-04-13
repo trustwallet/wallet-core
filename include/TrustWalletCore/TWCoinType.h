@@ -24,6 +24,7 @@ enum TWCoinType {
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
+    TWCoinTypeBravo = 282,
     TWCoinTypeCallisto = 820,
     TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
@@ -59,7 +60,6 @@ enum TWCoinType {
     TWCoinTypeXDai = 700,
     TWCoinTypeZcash = 133,
     TWCoinTypeZcoin = 136,
-    TWCoinTypeBravo = 282,
 };
 
 /// Returns the purpose for a coin type.

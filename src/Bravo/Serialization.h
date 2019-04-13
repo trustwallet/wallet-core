@@ -17,12 +17,13 @@ namespace Bravo {
         virtual void serialize(Data& os) const = 0;
     };
 
-    inline void encodeVarInt32(uint32_t x, Data& os) {
-        // 32-bit int would take at most 5 bytes as a varint
-        uint8_t bytes[5];
+    inline void encodeVarInt64(uint64_t x, Data& os) {
+        // 64-bit int would take at most 10 bytes as a varint
+        static const int maxBytes = 10;
+        uint8_t bytes[maxBytes];
 
         int lastNonZeroByte = 0;
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 0; i < maxBytes; ++i) {
             bytes[i] = (x & 0x7F);
             if (bytes[i]) {
                 lastNonZeroByte = i;
@@ -37,6 +38,10 @@ namespace Bravo {
         bytes[lastNonZeroByte] &= 0x7F;
 
         os.insert(os.end(), bytes, bytes + lastNonZeroByte + 1);
+    }
+
+    inline void encodeVarInt32(uint32_t x, Data& os) {
+        encodeVarInt64(static_cast<uint64_t>(x), os);
     }
 
     inline void encodeString(const std::string& s, Data& os) {

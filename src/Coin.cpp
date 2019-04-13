@@ -54,6 +54,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::CashAddress::isValid(string) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
+    case TWCoinTypeBravo:
+        return Bravo::Address::isValid(string);
+
     case TWCoinTypeCosmos:
         return Cosmos::Address::isValid(string, HRP_COSMOS);
 
@@ -137,9 +140,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeQtum:
         return Bitcoin::Bech32Address::isValid(string, HRP_QTUM) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixQtum}});
-
-    case TWCoinTypeBravo:
-        return Bravo::Address::isValid(string);
     }
 }
 
@@ -148,6 +148,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
@@ -180,7 +181,6 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
-    case TWCoinTypeBravo:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeViacoin:
@@ -195,6 +195,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeDash:
     case TWCoinTypeDecred:
@@ -223,7 +224,6 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
-    case TWCoinTypeBravo:
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
@@ -265,6 +265,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
 
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
+    case TWCoinTypeBravo:
     case TWCoinTypeCosmos:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -318,6 +319,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
 
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
+    case TWCoinTypeBravo:
     case TWCoinTypeCosmos:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -351,6 +353,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
@@ -381,7 +384,6 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
-    case TWCoinTypeBravo:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
     case TWCoinTypeNEO:
@@ -416,6 +418,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
     case TWCoinTypeDecred:
@@ -430,7 +433,6 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeRipple:
     case TWCoinTypeNULS:
     case TWCoinTypeQtum:
-    case TWCoinTypeBravo:
         return PublicKeyType::secp256k1;
 
     case TWCoinTypeCallisto:
@@ -481,6 +483,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(publicKey).string();
+
+    case TWCoinTypeBravo:
+        return Bravo::Address(publicKey).string();
 
     case TWCoinTypeDash:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixDash).string();
@@ -557,9 +562,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeQtum:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixQtum).string();
-
-    case TWCoinTypeBravo:
-        return Bravo::Address(publicKey).string();
     }
 }
 
@@ -569,6 +571,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
@@ -603,7 +606,6 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeNULS:
     case TWCoinTypeQtum:
-    case TWCoinTypeBravo:
         return Hash::sha256ripemd;
 
     case TWCoinTypeDecred:
@@ -618,6 +620,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
@@ -651,7 +654,6 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeNULS:
     case TWCoinTypeQtum:
-    case TWCoinTypeBravo:
         return Hash::sha256d;
 
     case TWCoinTypeDecred:

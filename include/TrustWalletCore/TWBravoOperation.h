@@ -15,15 +15,15 @@ struct TWBravoOperation *_Nullable TWBravoOperationNewTransferOperation(TWString
 TW_EXPORT_METHOD
 void TWBravoOperationDelete(struct TWBravoOperation *_Nonnull operation);
 
-TW_EXPORT_STATIC_PROPERTY
-size_t TWBravoOperationMaxMemoSize();
+TW_EXPORT_STATIC_METHOD
+size_t TWBravoOperationGetMaxMemoSize();
 
-TW_EXPORT_STATIC_PROPERTY
-size_t TWBravoOperationMaxAccountNameSize();
+TW_EXPORT_STATIC_METHOD
+size_t TWBravoOperationGetMaxAccountNameSize();
 
 // No. of decimals used in bravo assets.
 // The amount you pass should be (actual_amount * (10^^assetDecimals))
-TW_EXPORT_STATIC_PROPERTY
-size_t TWBravoOperationAssetDecimals();
+TW_EXPORT_STATIC_METHOD
+size_t TWBravoOperationGetAssetDecimals();
 
 TW_EXTERN_C_END
