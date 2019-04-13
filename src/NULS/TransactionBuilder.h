@@ -13,6 +13,7 @@
 namespace TW::NULS {
 
 struct TransactionBuilder {
+
     /// Plans a transaction by selecting UTXOs and calculating fees.
     static Proto::TransactionPlan plan(const NULS::Proto::TransactionPurpose& purpose) {
         auto plan = Proto::TransactionPlan();
@@ -92,6 +93,9 @@ struct TransactionBuilder {
     static int64_t calculatorTransactionFee(uint32_t inputCount, uint32_t outputCount,
                                             uint32_t remarkSize) {
         uint64_t size = 124 + 50 * inputCount + 38 * outputCount + remarkSize;
+        if (size > 300 * 1024) {
+            throw std::invalid_argument("transaction size too big");
+        }
         return calculateFee(size);
     }
 
