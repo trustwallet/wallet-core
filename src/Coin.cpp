@@ -27,11 +27,15 @@
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
+<<<<<<< master
 #include "NULS/Address.h"
 #include "Bravo/Address.h"
 #include "Steem/Address.h"
 #include "EOS/Address.h"
 #include "IoTeX/Address.h"
+=======
+#include "Zilliqa/Address.h"
+>>>>>>> HEAD~3
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -102,7 +106,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeIOST:
         return IOST::Account::isValid(string);
     case TWCoinTypeIoTeX:
-        return IoTeX::Address::isValid(string);    
+        return IoTeX::Address::isValid(string);
     case TWCoinTypeLitecoin:
         return Bitcoin::SegwitAddress::isValid(string, HRP_LITECOIN) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLitecoin}});
@@ -207,7 +211,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeXDai:
     case TWCoinTypeTheta:
         return Ethereum::Address(publicKey).string();
-    
+
     case TWCoinTypeEOS:
         return EOS::Address(publicKey).string();
 

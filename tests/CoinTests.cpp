@@ -9,11 +9,14 @@
 
 #include <gtest/gtest.h>
 
-#include "NEO/Address.h"
-
-using namespace TW::NEO;
-
 namespace TW {
+
+TEST(Coin, ValidateAddressZilliqa) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeZilliqa, "0x91cddcebe846ce4d47712287eee53cf17c2cfb77"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeZilliqa, "91cddcebe846ce4d47712287eee53cf17c2cfb77"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeZilliqa, "0x"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeZilliqa, ""));
+}
 
 TEST(Coin, ValidateAddressEthereum) {
     EXPECT_TRUE(validateAddress(TWCoinTypeEthereum, "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89"));
