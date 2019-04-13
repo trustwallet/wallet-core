@@ -122,6 +122,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
+    
+    case TWCoinTypeLux:
+        // same p2pkh prefix as litecoin
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLux}});
 
     case TWCoinTypeNULS:
         return NULS::Address::isValid(string);
@@ -165,6 +169,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
     case TWCoinTypeNULS:
+    case TWCoinTypeLux:
     case TWCoinTypeQtum:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
@@ -204,6 +209,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeCosmos:
     case TWCoinTypeTheta:
     case TWCoinTypeNULS:
+    case TWCoinTypeLux:
     case TWCoinTypeQtum:
         return TWCurveSECP256k1;
 
@@ -235,6 +241,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeDash:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeLux:
     case TWCoinTypeQtum:
         return TWHDVersionXPUB;
 
@@ -285,6 +292,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeDash:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeLux:
     case TWCoinTypeQtum:
         return TWHDVersionXPRV;
 
@@ -354,6 +362,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeTheta:
     case TWCoinTypeNULS:
+    case TWCoinTypeLux:
     case TWCoinTypeQtum:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
@@ -398,6 +407,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeViacoin:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeLux:
     case TWCoinTypeRipple:
     case TWCoinTypeNULS:
     case TWCoinTypeQtum:
@@ -514,6 +524,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
+    case TWCoinTypeLux:
+        return Bitcoin::Address(publicKey, TWP2PKHPrefixLitecoin).string();
 
     case TWCoinTypeNULS:
         return NULS::Address(publicKey).string();
@@ -542,6 +554,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeKIN:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
+    case TWCoinTypeLux:
     case TWCoinTypeNEO:
     case TWCoinTypeNimiq:
     case TWCoinTypeOntology:
@@ -586,6 +599,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeKIN:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
+    case TWCoinTypeLux:
     case TWCoinTypeNEO:
     case TWCoinTypeNimiq:
     case TWCoinTypeOntology:

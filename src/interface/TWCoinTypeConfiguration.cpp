@@ -53,6 +53,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "KIN"; break;
     case TWCoinTypeNULS: string = "NULS"; break;
     case TWCoinTypeTheta: string = "THETA"; break;
+    case TWCoinTypeLux: string = "LUX"; break;
     case TWCoinTypeQtum: string = "QTUM"; break;
     default: string = ""; break;
     }
@@ -86,6 +87,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeViacoin:
     case TWCoinTypeBinance:
     case TWCoinTypeZcoin:
+    case TWCoinTypeLux:
     case TWCoinTypeZcash:
     case TWCoinTypeNEO:
     case TWCoinTypeNULS:
@@ -168,6 +170,8 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeCosmos:
         url += "/blocks/1/transactions/" + txId;
         break;
+    case TWCoinTypeLux:
+        url += "/#/tx/" + txId;
     default: break;
     }
     return TWStringCreateWithUTF8Bytes(url.c_str());
@@ -210,6 +214,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeKIN: return "https://kinexplorer.com";
     case TWCoinTypeTheta: return "https://explorer.thetatoken.org";
     case TWCoinTypeNULS: return "https://nuls.world";
+    case TWCoinTypeLux: return "https://explorer.poswallet.io";
     case TWCoinTypeQtum: return "https://qtum.info";
     default: return "";
     }
@@ -253,6 +258,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "kin"; break;
     case TWCoinTypeTheta: string = "theta"; break;
     case TWCoinTypeNULS: string = "nuls"; break;
+    case TWCoinTypeLux: string = "lux"; break;
     case TWCoinTypeQtum: string = "qtum"; break;
     default: string = ""; break;
     }
@@ -297,6 +303,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "Kin"; break;
     case TWCoinTypeTheta: string = "Theta"; break;
     case TWCoinTypeNULS: string = "NULS"; break;
+    case TWCoinTypeLux: string = "Lux"; break;
     case TWCoinTypeQtum: string = "Qtum"; break;
     default: string = ""; break;
     }
