@@ -2,7 +2,7 @@ require 'parser'
 require 'test/unit'
 
 class ParserTest < Test::Unit::TestCase
-  def test_parse_method
+  def test_parse_method_align_pointer_right
     parser = Parser.new(path: '', string: 'void TWPrivateKeyDelete(struct TWPrivateKey *_Nonnull pk);')
     func = parser.parse_func
 
@@ -10,6 +10,26 @@ class ParserTest < Test::Unit::TestCase
     assert_equal(func.name, 'TWPrivateKeyDelete')
     assert_equal(func.parameters.first.name, 'pk')
     assert_equal(func.parameters.first.type.name, 'PrivateKey')
+  end
+
+  def test_parse_method_align_pointer_left
+    parser = Parser.new(path: '', string: 'struct TWPublicKey *_Nullable TWPublicKeyCreateWithData(TWData* _Nonnull someData);')
+    func = parser.parse_func
+
+    assert_equal(func.return_type.name, 'PublicKey')
+    assert_equal(func.name, 'TWPublicKeyCreateWithData')
+    assert_equal(func.parameters.first.name, 'someData')
+    assert_equal(func.parameters.first.type.name, :data)
+  end
+
+  def test_parse_method_align_pointer_center
+    parser = Parser.new(path: '', string: 'bool TWPublicKeyIsValid(TWData * _Nonnull data);')
+    func = parser.parse_func
+
+    assert_equal(func.return_type.name, :bool)
+    assert_equal(func.name, 'TWPublicKeyIsValid')
+    assert_equal(func.parameters.first.name, 'data')
+    assert_equal(func.parameters.first.type.name, :data)
   end
 
   def test_parse_invalid_method
@@ -37,7 +57,7 @@ class ParserTest < Test::Unit::TestCase
 
     assert_not_nil(parser.entity)
     assert_equal(parser.entity.name, 'PrivateKey')
-    assert_equal(parser.entity.is_struct, false)
+    assert_false(parser.entity.is_struct)
     assert_equal(parser.entity.methods.first.name, 'Delete')
     assert_equal(parser.entity.static_methods.first.name, 'Create')
   end
@@ -48,6 +68,6 @@ class ParserTest < Test::Unit::TestCase
 
     assert_not_nil(parser.entity)
     assert_equal(parser.entity.name, 'PublicKey')
-    assert_true(parser.entity.is_struct)
+    assert_false(parser.entity.is_struct)
   end
 end
