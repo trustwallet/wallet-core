@@ -52,6 +52,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "KIN"; break;
     case TWCoinTypeTheta: string = "THETA"; break;
+    case TWCoinTypeQtum: string = "QTUM"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -86,6 +87,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeZcoin:
     case TWCoinTypeZcash:
     case TWCoinTypeNEO:
+    case TWCoinTypeQtum:
         return 8;
     case TWCoinTypeStellar:
         return 7;
@@ -129,6 +131,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
+    case TWCoinTypeQtum:
         url += "/tx/" + txId;
         break;
     case TWCoinTypePoa:
@@ -203,6 +206,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNEO: return "https://neoscan.io";
     case TWCoinTypeKIN: return "https://kinexplorer.com";
     case TWCoinTypeTheta: return "https://explorer.thetatoken.org";
+    case TWCoinTypeQtum: return "https://qtum.info";
     default: return "";
     }
 }
@@ -244,6 +248,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeNEO: string = "neo"; break;
     case TWCoinTypeKIN: string = "kin"; break;
     case TWCoinTypeTheta: string = "theta"; break;
+    case TWCoinTypeQtum: string = "qtum"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -286,6 +291,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeNEO: string = "NEO"; break;
     case TWCoinTypeKIN: string = "Kin"; break;
     case TWCoinTypeTheta: string = "Theta"; break;
+    case TWCoinTypeQtum: string = "Qtum"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
