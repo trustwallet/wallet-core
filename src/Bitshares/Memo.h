@@ -1,0 +1,36 @@
+// Copyright © 2017-2019 Trust.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#pragma once
+
+#include <string>
+
+#include "../PublicKey.h"
+#include "../PrivateKey.h"
+#include "../Data.h"
+
+namespace TW {
+namespace Bitshares {
+
+TW::Data aesEncrypt(const uint8_t *message, size_t messageLength, const uint8_t *key, const uint8_t *initializationVector);
+
+template <typename T>
+TW::Data aesEncrypt(const T& message, const uint8_t *key, const uint8_t *initializationVector) {
+    return aesEncrypt(message.data(), message.size(), key, initializationVector);
+}
+
+class Memo {
+public:
+    PublicKey from, to;
+    uint64_t nonce;
+    Data encryptedMessage;
+
+    Memo(const PrivateKey& senderKey, const PublicKey& recipientKey, const std::string& message);
+
+    static Data getSharedSecret(const PrivateKey& senderKey, const PublicKey& recipientKey);
+};
+
+}} // namespace
