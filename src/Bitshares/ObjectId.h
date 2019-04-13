@@ -6,16 +6,33 @@
 
 #pragma once
 
-#include "../Bravo/Serialization.h"
-
 namespace TW {
 namespace Bitshares {
-    struct ObjectId: Bravo::Serializable {
+    struct ObjectId {
         uint8_t spaceId, typeId;
         uint64_t instance;
 
-        void serialize(const Data& os) {
-            Bravo::encodeVarInt64(os, instance);
+        ObjectId(uint8_t spaceId, uint8_t typeId, uint64_t instance): spaceId(spaceId), 
+                                                                        typeId(typeId),
+                                                                        instance(instance) { }
+
+        std::string string() const {
+            return std::to_string(spaceId) + "."
+                    + std::to_string(typeId) + "."
+                    + std::to_string(instance);
         }
+
+        friend bool operator==(const ObjectId& lhs, const ObjectId rhs);
+        friend bool operator!=(const ObjectId& lhs, const ObjectId rhs);
     };
+
+    inline bool operator==(const ObjectId& lhs, const ObjectId rhs) {
+        return lhs.spaceId == rhs.spaceId 
+                && lhs.typeId == rhs.typeId 
+                && lhs.instance == rhs.instance;
+    }
+
+    inline bool operator!=(const ObjectId& lhs, const ObjectId rhs) {
+        return ! (lhs == rhs);
+    }
 }} // namespace
