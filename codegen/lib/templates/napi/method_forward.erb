@@ -1,0 +1,75 @@
+<%
+  method = locals[:method]
+  if method.static
+    arguments = locals[:arguments] || NapiHelper.arguments(method.parameters)
+    call = render('napi/method_call.erb', { method: method, arguments: arguments })
+  else
+    instance = (method.entity.struct? ? '*' : '') + 'instance'
+    arguments = locals[:arguments] || [instance] + NapiHelper.arguments(method.parameters.drop(1))
+    call = render('napi/method_call.erb', { method: method, arguments: arguments })
+  end
+
+  # Method returns data
+  if should_return_data(method) -%>
+    <%= NapiHelper.type(method.return_type) %> result = TWDataUint8Array(&env, <%= call %>);
+<%= render('napi/parameter_release.erb', { method: method }) -%>
+    return result;
+
+<%
+  # Method returns a string
+  elsif should_return_string(method) -%>
+    String result = TWStringJsString(&env, <%= call %>);
+<%= render('napi/parameter_release.erb', { method: method }) -%>
+    return result;
+
+<%
+  # Method returns proto
+  elsif method.return_type.is_proto -%>
+    Uint8Array result = TWDataUint8Array(&env, <%= call %>);
+<%= render('napi/parameter_release.erb', { method: method }) -%>
+    return result;
+
+<%
+  # Method returns an object
+  elsif method.return_type.is_struct || method.return_type.is_class || method.return_type.is_enum
+    if method.return_type.is_struct -%>
+    struct TW<%= method.return_type.name %> result = <%= call %>;
+<%  elsif method.return_type.is_class -%>
+    struct TW<%= method.return_type.name %> *result = <%= call %>;
+<%  elsif method.return_type.is_enum -%>
+    enum TW<%= method.return_type.name %> result = <%= call %>;
+<%  else -%>
+    TW<%= method.return_type.name %> *result = <%= call %>;
+<%  end -%>
+<%= render('napi/parameter_release.erb', { method: method }) -%>
+<%  if method.return_type.is_struct -%>
+    struct TW<%= entity.name %>* returnInstance = (struct TW<%= entity.name %>*) malloc(sizeof(struct TW<%= entity.name %>));
+    memcpy(returnInstance, &result, sizeof(struct TW<%= entity.name %>));
+
+    return External<TW<%= entity.name %>>::New(env, returnInstance, [](Env _env, void* data) {
+        free((TW<%= entity.name %> *) data);
+    });
+<%  elsif method.return_type.is_enum -%>
+    return Number::New(env, (int) result);;
+<%  else -%>
+    if (result == NULL) {
+        return env.Null();
+    }
+
+    return External<TW<%= method.return_type.name %>>::New(env, result, [](Env _env, void* data) {
+        TW<%= entity.name %>Delete((TW<%= entity.name %> *) data);
+    });
+<%  end
+
+  # Method returns void
+  elsif method.return_type.name == :void -%>
+    <%= call %>;
+<%= render('napi/parameter_release.erb', { method: method }) -%>
+
+<% 
+  # Method returns a primitive
+  else -%>
+    <%= NapiHelper.type(method.return_type) %> resultValue = <%= NapiHelper.type(method.return_type) %>::New(env, <%= call %>);
+<%= render('napi/parameter_release.erb', { method: method }) -%>
+    return resultValue;
+<%end -%>

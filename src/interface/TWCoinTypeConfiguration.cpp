@@ -53,6 +53,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "KIN"; break;
     case TWCoinTypeNULS: string = "NULS"; break;
     case TWCoinTypeTheta: string = "THETA"; break;
+    case TWCoinTypeQtum: string = "QTUM"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -88,6 +89,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeZcash:
     case TWCoinTypeNEO:
     case TWCoinTypeNULS:
+    case TWCoinTypeQtum:
         return 8;
     case TWCoinTypeStellar:
         return 7;
@@ -111,15 +113,16 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
-    case TWCoinTypeDogecoin:
     case TWCoinTypeICON:
     case TWCoinTypeLitecoin:
     case TWCoinTypeNEO:
     case TWCoinTypeStellar:
+    case TWCoinTypeOntology:
         url += "/transaction/" + txId;
         break;
     case TWCoinTypeCallisto:
     case TWCoinTypeDecred:
+    case TWCoinTypeDogecoin:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGo:
@@ -130,10 +133,8 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
+    case TWCoinTypeQtum:
         url += "/tx/" + txId;
-        break;
-    case TWCoinTypeOntology:
-        url += "/api/v1/transaction/" + txId + "?raw=0";
         break;
     case TWCoinTypePoa:
         url += "/txid/search/" + txId;
@@ -180,14 +181,14 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeCallisto: return "https://explorer2.callisto.network";
     case TWCoinTypeDash: return "https://blockchair.com/dash";
     case TWCoinTypeDecred: return "https://mainnet.decred.org";
-    case TWCoinTypeDogecoin: return "https://dogechain.info";
+    case TWCoinTypeDogecoin: return "https://live.blockcypher.com/doge";
     case TWCoinTypeEthereumClassic: return "https://gastracker.io";
     case TWCoinTypeGo: return "https://explorer.gochain.io";
     case TWCoinTypeGroestlcoin: return "https://blockbook.groestlcoin.org";
     case TWCoinTypeICON: return "https://tracker.icon.foundation";
     case TWCoinTypeIOST: return "https://www.iostabc.com";
     case TWCoinTypeLitecoin: return "https://blockchair.com/litecoin";
-    case TWCoinTypeOntology: return "https://explorer.ont.io/";
+    case TWCoinTypeOntology: return "https://explorer.ont.io";
     case TWCoinTypeViacoin: return "https://explorer.viacoin.org";
     case TWCoinTypePoa: return "https://poaexplorer.com";
     case TWCoinTypeThunderToken: return "https://scan.thundercore.com";
@@ -209,6 +210,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeKIN: return "https://kinexplorer.com";
     case TWCoinTypeTheta: return "https://explorer.thetatoken.org";
     case TWCoinTypeNULS: return "https://nuls.world";
+    case TWCoinTypeQtum: return "https://qtum.info";
     default: return "";
     }
 }
@@ -251,6 +253,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "kin"; break;
     case TWCoinTypeTheta: string = "theta"; break;
     case TWCoinTypeNULS: string = "nuls"; break;
+    case TWCoinTypeQtum: string = "qtum"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -294,6 +297,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeKIN: string = "Kin"; break;
     case TWCoinTypeTheta: string = "Theta"; break;
     case TWCoinTypeNULS: string = "NULS"; break;
+    case TWCoinTypeQtum: string = "Qtum"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

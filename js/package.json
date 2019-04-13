@@ -7,16 +7,27 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "generate-js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
     "generate-ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
-    "generate": "npm run generate-js && npm run generate-ts"
+    "generate": "npm run generate-js && npm run generate-ts",
+    "build-bind": "cd cpp && npx node-gyp configure && npx node-gyp build"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "long": "^4.0.0",
-    "protobufjs": "^6.8.8"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/TrustWallet/wallet-core.git"
+  },
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "chai": "^4.2.0",
+    "long": "^4.0.0",
+    "mocha": "^6.1.1",
+    "node-addon-api": "^1.6.3",
+    "node-gyp": "^3.8.0",
+    "protobufjs": "^6.8.8"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.13.4"
   }
 }

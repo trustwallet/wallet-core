@@ -44,6 +44,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://cosmos.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" /></a>
 <a href="https://viacoin.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/14.png" width="32" /></a>
 <a href="https://dogecoin.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/3.png" width="32" /></a>
+<a href="https://qtum.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2301.png" width="32" /></a>
 
 # Usage
 

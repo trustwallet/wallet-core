@@ -12,7 +12,7 @@ public extension CoinType {
         switch self {
         case .binance, .cosmos:
             if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
-        case .bitcoin, .litecoin, .viacoin:
+        case .bitcoin, .litecoin, .viacoin, .qtum:
             if let addr = Bech32Address(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
@@ -85,8 +85,12 @@ public extension CoinType {
             return Set([P2SHPrefix.zcoin.rawValue, P2PKHPrefix.zcoin.rawValue])
         case .zcash:
             return Set([P2SHPrefix.zcashT.rawValue, P2PKHPrefix.zcashT.rawValue])
+        case .qtum:
+            return Set([P2PKHPrefix.qtum.rawValue])
         case .dogecoin:
             return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin.rawValue])
+        case .viacoin:
+            return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
         default:
             return Set()
         }
@@ -107,6 +111,10 @@ public extension CoinType {
             return .litecoin
         case .groestlcoin:
             return .groestlcoin
+        case .viacoin:
+            return .viacoin
+        case .qtum:
+            return .qtum
         default:
             return HRP.unknown
         }

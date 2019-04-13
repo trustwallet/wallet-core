@@ -1,0 +1,6 @@
+<%  entity = locals[:entity] -%>
+<%  if entity.struct? || entity.class? -%>
+    struct TW<%= entity.name %> *instance = info[0].As<External<TW<%= entity.name %>>>().Data();
+<%  elsif entity.enum? -%>
+    enum TW<%= entity.name %> instance = (enum TW<%= entity.name %>) ((int) info[0].As<Number>());
+<%  end -%>

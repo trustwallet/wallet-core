@@ -1,0 +1,9 @@
+<%  method = locals[:method] -%>
+<%= render('napi/method_prototype.erb', { method: method }) %> {
+    Env env = info.Env();
+<%  if !method.static -%>
+<%=   render('napi/instance_access.erb', { entity: entity }) %>
+<%  end -%>
+<%= render('napi/parameter_access.erb', { method: method }) -%>
+<%= render('napi/method_forward.erb', { method: method }) -%>
+}
