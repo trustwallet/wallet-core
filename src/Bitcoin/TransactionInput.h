@@ -6,24 +6,24 @@
 
 #pragma once
 
-#include "../Data.h"
 #include "OutPoint.h"
 #include "Script.h"
+#include "../Data.h"
 
 #include <vector>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Bitcoin transaction input.
 class TransactionInput {
-public:
+  public:
     /// Reference to the previous transaction's output.
     OutPoint previousOutput;
 
     /// Transaction version as defined by the sender.
     ///
-    /// Intended for "replacement" of transactions when information is updated before inclusion into a block.
+    /// Intended for "replacement" of transactions when information is updated
+    /// before inclusion into a block.
     uint32_t sequence;
 
     /// Computational Script for confirming transaction authorization.
@@ -32,12 +32,10 @@ public:
     /// Witness stack.
     std::vector<Data> scriptWitness;
 
-    /// Initializes an empty transaction input.
-    TransactionInput() = default;
-
-    /// Initializes a transaction input with a previous output, a script and a sequence number.
-    TransactionInput(const OutPoint& previousOutput, const Script& script, uint32_t sequence)
-        : previousOutput(previousOutput), sequence(sequence), script(script) {}
+    /// Initializes a transaction input with a previous output, a script and a
+    /// sequence number.
+    TransactionInput(OutPoint previousOutput, Script script, uint32_t sequence)
+        : previousOutput(std::move(previousOutput)), sequence(sequence), script(std::move(script)) {}
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
@@ -46,10 +44,9 @@ public:
     void encodeWitness(Data& data) const;
 };
 
-}} // namespace
+} // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
 struct TWBitcoinTransactionInput {
     TW::Bitcoin::TransactionInput impl;
 };
-

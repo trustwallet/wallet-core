@@ -6,13 +6,18 @@
 
 #pragma once
 
+#include "Data.h"
+#include "PublicKey.h"
+
+#include <TrustWalletCore/TWCurve.h>
+
 #include <array>
 #include <vector>
 
 namespace TW {
 
 class PrivateKey {
-public:
+  public:
     /// The number of bytes in a private key.
     static const size_t size = 32;
 
@@ -20,7 +25,7 @@ public:
     std::array<uint8_t, size> bytes;
 
     /// Determines if a collection of bytes makes a valid private key.
-    template<typename T>
+    template <typename T>
     static bool isValid(const T& data) {
         // Check length
         if (data.size() != size) {
@@ -38,31 +43,44 @@ public:
     }
 
     /// Initializes a private key with a collection of bytes.
-    template<typename T>
+    template <typename T>
     explicit PrivateKey(const T& data) {
-        assert(data.size() == size);
+        if (!isValid(data)) {
+            throw std::invalid_argument("Invalid private key data");
+        }
         std::copy(std::begin(data), std::end(data), std::begin(bytes));
     }
 
     /// Initializes a private key with a static array of bytes.
     PrivateKey(std::array<uint8_t, size>&& array) : bytes(array) {}
 
-    ~PrivateKey();
+    PrivateKey(const PrivateKey& other) = default;
+    PrivateKey& operator=(const PrivateKey& other) = default;
 
-    /// Returns the public key data for this private key.
-    std::vector<uint8_t> getPublicKey(bool compressed) const;
+    PrivateKey(PrivateKey&& other) = default;
+    PrivateKey& operator=(PrivateKey&& other) = default;
 
-    /// Signs a digest using ECDSA secp256k1.
-    std::array<uint8_t, 65> sign(const std::vector<uint8_t>&  digest) const;
+    virtual ~PrivateKey();
 
-    /// Signs a digest using ECDSA secp256k1. The result is encoded with DER.
-    std::vector<uint8_t> signAsDER(const std::vector<uint8_t>&  digest) const;
+    /// Returns the public key for this private key.
+    PublicKey getPublicKey(PublicKeyType type) const;
+
+    /// Signs a digest using the given ECDSA curve.
+    Data sign(const Data& digest, TWCurve curve) const;
+
+    /// Signs a digest using the given ECDSA curve. The result is encoded with
+    /// DER.
+    Data signAsDER(const Data& digest, TWCurve curve) const;
 };
 
-inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes == rhs.bytes; }
-inline bool operator!=(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes != rhs.bytes; }
+inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) {
+    return lhs.bytes == rhs.bytes;
+}
+inline bool operator!=(const PrivateKey& lhs, const PrivateKey& rhs) {
+    return lhs.bytes != rhs.bytes;
+}
 
-} // namespace
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWPrivateKey {

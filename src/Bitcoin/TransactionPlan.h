@@ -9,8 +9,7 @@
 #include "Amount.h"
 #include "../proto/Bitcoin.pb.h"
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Describes a preliminary transaction plan.
 struct TransactionPlan {
@@ -28,7 +27,7 @@ struct TransactionPlan {
 
     /// Selected unspent transaction outputs.
     std::vector<Bitcoin::Proto::UnspentTransaction> utxos;
-    
+
     TransactionPlan() = default;
 
     TransactionPlan(const Proto::TransactionPlan& plan)
@@ -36,8 +35,7 @@ struct TransactionPlan {
         , availableAmount(plan.available_amount())
         , fee(plan.fee())
         , change(plan.change())
-        , utxos(plan.utxos().begin(), plan.utxos().end())
-    {}
+        , utxos(plan.utxos().begin(), plan.utxos().end()) {}
 
     Proto::TransactionPlan proto() const {
         auto plan = Proto::TransactionPlan();
@@ -45,9 +43,9 @@ struct TransactionPlan {
         plan.set_available_amount(availableAmount);
         plan.set_fee(fee);
         plan.set_change(change);
-        *plan.mutable_utxos() = { utxos.begin(), utxos.end() };
+        *plan.mutable_utxos() = {utxos.begin(), utxos.end()};
         return plan;
     }
 };
 
-}} // namespace
+} // namespace TW::Bitcoin

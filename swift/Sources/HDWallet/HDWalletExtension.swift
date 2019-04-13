@@ -6,15 +6,11 @@
 
 /// A hierarchical deterministic wallet.
 public extension HDWallet {
-    public func getExtendedPrivateKey(for purpose: Purpose, coin: CoinType, version: HDVersion) -> String {
-        return getExtendedPrivateKey(purpose: purpose, coin: coin, version: version)
-    }
-
-    public func getExtendedPubKey(for purpose: Purpose, coin: CoinType, version: HDVersion) -> String {
+    func getExtendedPubKey(purpose: Purpose, coin: CoinType, version: HDVersion) -> String {
         return getExtendedPublicKey(purpose: purpose, coin: coin, version: version)
     }
 
-    public func getKey(at path: DerivationPath) -> PrivateKey {
-        return getKey(purpose: path.purpose, coin: path.coinType, account: path.account, change: path.change, address: path.address)
+    func getKey(at path: DerivationPath) -> PrivateKey {
+        return getKey(derivationPath: path.description)
     }
 }

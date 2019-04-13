@@ -5,16 +5,19 @@ ARG CMAKE_VERSION=3.13.4
 ARG PROTOBUF_VERSION=3.7.0
 
 # Install the basics
-RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils
+RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils ruby-full
 
 # Make latest NodeJS available
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
 # Install all required packages
 RUN apt-get install -y \
+    autoconf \
     git \
+    libcurl4-openssl-dev \
     libicu-dev \
     libssl-dev \
+    libtool \
     ninja-build \
     nodejs \
     pkg-config \
@@ -53,6 +56,7 @@ ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 RUN git clone https://github.com/TrustWallet/wallet-core.git \
     && cd wallet-core \
+    && export PREFIX=/usr/local \
     && tools/install-dependencies
 
 CMD ["/bin/bash"]

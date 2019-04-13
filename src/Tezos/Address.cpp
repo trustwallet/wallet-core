@@ -1,0 +1,73 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#include "Address.h"
+#include "BinaryCoding.h"
+#include "Forging.h"
+
+#include "../Base58.h"
+#include "../Hash.h"
+#include "../HexCoding.h"
+
+#include <TrezorCrypto/ecdsa.h>
+
+using namespace TW;
+using namespace TW::Tezos;
+
+/// Address prefixes.
+const std::array<byte, 3> tz1Prefix{6, 161, 159};
+const std::array<byte, 3> tz2Prefix{6, 161, 161};
+const std::array<byte, 3> tz3Prefix{6, 161, 164};
+const std::array<byte, 3> kt1Prefix{2, 90, 121};
+
+bool Address::isValid(const std::string& string) {
+    const auto decoded = Base58::bitcoin.decodeCheck(string);
+    if (decoded.size() != Address::size) {
+        return false;
+    }
+
+    // verify prefix
+    if (std::equal(tz1Prefix.begin(), tz1Prefix.end(), decoded.begin()) ||
+        std::equal(tz2Prefix.begin(), tz2Prefix.end(), decoded.begin()) ||
+        std::equal(tz3Prefix.begin(), tz3Prefix.end(), decoded.begin()) ||
+        std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
+        return true;
+    }
+
+    return false;
+}
+
+Address::Address(const PublicKey& publicKey) {
+    auto publicKeySize = publicKey.ed25519Size;
+
+    // Drop first byte of the public key which is a tag.
+    auto encoded = Data(publicKey.bytes.begin() + 1, publicKey.bytes.begin() + publicKeySize);
+    auto hash = Hash::blake2b(encoded, 20);
+    auto addressData = Data({6, 161, 159});
+    append(addressData, hash);
+    if (addressData.size() != Address::size)
+        throw std::invalid_argument("Invalid address key data");
+    std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
+}
+
+Data Address::forge() const {
+    auto data = Data();
+    std::string s = string();
+
+    if (s[0] == 'K') {
+        const auto decoded = Base58::bitcoin.decodeCheck(s);
+        if (decoded.size() != 23 || !std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
+            throw std::invalid_argument("Invalid Address For forge");
+        }
+        data.push_back(0x01);
+        data.insert(data.end(), decoded.begin() + kt1Prefix.size(), decoded.end());
+        data.push_back(0x00);
+        return data;
+    }
+    data.push_back(0);
+    append(data, forgePublicKeyHash(s));
+    return data;
+}

@@ -9,9 +9,14 @@
 #include "Address.h"
 #include <string>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
-std::string checksumed(const Address& address);
-    
-}} // namespace
+/// Checksum types for Ethereum-based blockchains.
+enum ChecksumType {
+    eip55 = 0,
+    wanchain = 1,
+};
+
+std::string checksumed(const Address& address, enum ChecksumType type);
+
+} // namespace TW::Ethereum

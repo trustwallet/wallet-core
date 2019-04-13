@@ -8,6 +8,7 @@
 
 #include "TWBase.h"
 #include "TWCoinType.h"
+#include "TWCurve.h"
 #include "TWData.h"
 #include "TWHDVersion.h"
 #include "TWPrivateKey.h"
@@ -48,9 +49,19 @@ TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet);
 
-/// Generates the private key at the specified derivation path.
+/// Generates the default private key for the specified coin.
 TW_EXPORT_METHOD
-struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWPurpose purpose, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
+struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin);
+
+/// Generates the private key for the specified derivation path.
+TW_EXPORT_METHOD
+struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, TWString *_Nonnull derivationPath);
+
+/// Generates the private key for the specified BIP44 path.
+///
+/// @see https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki
+TW_EXPORT_METHOD
+struct TWPrivateKey *_Nonnull TWHDWalletGetKeyBIP44(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address);
 
 /// Returns the extended private key.
 TW_EXPORT_METHOD
@@ -62,10 +73,6 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wa
 
 /// Computes the public key from an exteded public key representation.
 TW_EXPORT_STATIC_METHOD
-struct TWPublicKey TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);
-
-/// Generates an address from an exteded public key representation, coin type, and change and address indices.
-TW_EXPORT_STATIC_METHOD
-TWString *_Nullable TWHDWalletGetAddressFromExtended(TWString *_Nonnull extended, enum TWCoinType coinType, uint32_t change, uint32_t address);
+struct TWPublicKey *_Nonnull TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, enum TWHDVersion versionPublic, enum TWHDVersion versionPrivate, uint32_t change, uint32_t address);
 
 TW_EXTERN_C_END

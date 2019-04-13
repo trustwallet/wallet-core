@@ -43,14 +43,18 @@ bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWD
 
 /// Initializes an address from a public key and a prefix byte.
 TW_EXPORT_STATIC_METHOD
-void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix);
+void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey, uint8_t prefix);
 
 /// Returns the address base58 string representation.
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address);
 
-/// Returns the address data.
+/// Returns the address prefix.
 TW_EXPORT_PROPERTY
-TWData *_Nonnull TWBitcoinAddressData(struct TWBitcoinAddress address);
+uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress address);
+
+/// Returns the keyhash data.
+TW_EXPORT_PROPERTY
+TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress address);
 
 TW_EXTERN_C_END

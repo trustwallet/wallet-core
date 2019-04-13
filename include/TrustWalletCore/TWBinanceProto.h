@@ -16,3 +16,4 @@ typedef TWData *_Nonnull TW_Binance_Proto_SendOrder;
 typedef TWData *_Nonnull TW_Binance_Proto_TokenFreezeOrder;
 typedef TWData *_Nonnull TW_Binance_Proto_TokenUnfreezeOrder;
 typedef TWData *_Nonnull TW_Binance_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Binance_Proto_SigningOutput;

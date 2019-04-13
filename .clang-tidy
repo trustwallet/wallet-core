@@ -1,0 +1,7 @@
+---
+Checks:          'clang-diagnostic-*,clang-analyzer-*,modernize-*,portability-*,llvm-*,-llvm-include-order,-modernize-use-nodiscard,-llvm-header-guard'
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+AnalyzeTemporaryDtors: false
+FormatStyle:     file
+...

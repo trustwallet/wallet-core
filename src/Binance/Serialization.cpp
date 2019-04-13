@@ -6,7 +6,7 @@
 
 #include "Serialization.h"
 
-#include "../Tendermint/Address.h"
+#include "../Cosmos/Address.h"
 #include <TrustWalletCore/TWHRP.h>
 
 using namespace TW;
@@ -15,8 +15,8 @@ using json = nlohmann::json;
 
 static inline std::string addressString(const std::string& bytes, bool testNet) {
     auto data = std::vector<uint8_t>(bytes.begin(), bytes.end());
-    auto address = Tendermint::Address(testNet ? HRP_BINANCE_TEST : HRP_BINANCE, data);
-    return address.encode();
+    auto address = Cosmos::Address(testNet ? HRP_BINANCE_TEST : HRP_BINANCE, data);
+    return address.string();
 }
 
 json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
@@ -25,7 +25,7 @@ json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
     j["chain_id"] = input.chain_id();
     j["data"] = nullptr;
     j["memo"] = input.memo();
-    j["msgs"] = json::array({ orderJSON(input) });
+    j["msgs"] = json::array({orderJSON(input)});
     j["sequence"] = std::to_string(input.sequence());
     j["source"] = std::to_string(input.source());
     return j;
@@ -44,7 +44,7 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
         j["timeinforce"] = input.trade_order().timeinforce();
     } else if (input.has_cancel_trade_order()) {
         j["refid"] = input.cancel_trade_order().refid();
-        j["sender"] = input.cancel_trade_order().sender();
+        j["sender"] = addressString(input.cancel_trade_order().sender(), input.test_net());
         j["symbol"] = input.cancel_trade_order().symbol();
     } else if (input.has_send_order()) {
         j["inputs"] = inputsJSON(input.send_order(), input.test_net());
@@ -83,7 +83,8 @@ json Binance::outputsJSON(const Binance::Proto::SendOrder& order, bool testNet) 
     return j;
 }
 
-json Binance::tokensJSON(const ::google::protobuf::RepeatedPtrField<Binance::Proto::SendOrder_Token>& tokens) {
+json Binance::tokensJSON(
+    const ::google::protobuf::RepeatedPtrField<Binance::Proto::SendOrder_Token>& tokens) {
     json j = json::array();
     for (auto& token : tokens) {
         json sj;

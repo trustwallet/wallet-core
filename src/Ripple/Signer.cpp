@@ -11,18 +11,16 @@
 using namespace TW;
 using namespace TW::Ripple;
 
-const int MIN_FEE = 10;
-const int MAX_FEE = 1000000;
-const int FLAG_FULLY_CANONICAL = 0x80000000;
+static const int64_t fullyCanonical = 0x80000000;
 
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
     /// See https://github.com/trezor/trezor-core/blob/master/src/apps/ripple/sign_tx.py#L59
-    transaction.flags |= FLAG_FULLY_CANONICAL;
-    transaction.pub_key = privateKey.getPublicKey(true);
+    transaction.flags |= fullyCanonical;
+    transaction.pub_key = privateKey.getPublicKey(PublicKeyType::secp256k1).bytes;
 
     auto unsignedTx = transaction.getPreImage();
     auto hash = Hash::sha512(unsignedTx);
     auto half = Data(hash.begin(), hash.begin() + 32);
 
-    transaction.signature = privateKey.signAsDER(half);
+    transaction.signature = privateKey.signAsDER(half, TWCurveSECP256k1);
 }

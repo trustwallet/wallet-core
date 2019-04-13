@@ -1,0 +1,18 @@
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AlwaysBreakTemplateDeclarations: Yes
+BasedOnStyle: LLVM
+BreakConstructorInitializers: BeforeComma
+ColumnLimit: 100
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+IndentWidth: 4
+PointerAlignment: Left
+IncludeCategories:
+  - Regex:           '^"\.\./'
+    Priority:        2
+  - Regex:           '^<(TrustWalletCore|TrezorCrypto)/'
+    Priority:        3
+  - Regex:           '<.*>'
+    Priority:        4
+  - Regex:           '".*"'
+    Priority:        1

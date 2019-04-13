@@ -12,8 +12,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Tron {
+namespace TW::Tron {
 
 TEST(TronSigner, SignTransferAsset) {
     auto input = Proto::SigningInput();
@@ -80,4 +79,4 @@ TEST(TronSigner, SignTransfer) {
     ASSERT_EQ(hex(output.signature()), "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200");
 }
 
-}} // namespace
+} // namespace TW::Tron

@@ -4,9 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Transaction.h"
-
 #include "Bech32Address.h"
+#include "Transaction.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 
@@ -16,7 +15,8 @@
 
 using namespace TW::Bitcoin;
 
-std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, int index, uint32_t hashType, uint64_t amount) const {
+std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t index,
+                                              uint32_t hashType, uint64_t amount) const {
     assert(index < inputs.size());
 
     auto data = std::vector<uint8_t>{};
@@ -33,7 +33,8 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, int inde
     }
 
     // Input nSequence (none/all, depending on flags)
-    if ((hashType & TWSignatureHashTypeAnyoneCanPay) == 0 && !TWSignatureHashTypeIsSingle(hashType) && !TWSignatureHashTypeIsNone(hashType)) {
+    if ((hashType & TWSignatureHashTypeAnyoneCanPay) == 0 &&
+        !TWSignatureHashTypeIsSingle(hashType) && !TWSignatureHashTypeIsNone(hashType)) {
         auto hashSequence = getSequenceHash();
         std::copy(std::begin(hashSequence), std::end(hashSequence), std::back_inserter(data));
     } else {
@@ -56,7 +57,7 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, int inde
     } else if (TWSignatureHashTypeIsSingle(hashType) && index < outputs.size()) {
         auto outputData = std::vector<uint8_t>{};
         outputs[index].encode(outputData);
-        auto hashOutputs = TW::Hash::sha256(TW::Hash::sha256(outputData));
+        auto hashOutputs = TW::Hash::hash(hasher, outputData);
         copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
     } else {
         fill_n(back_inserter(data), 32, 0);
@@ -77,7 +78,7 @@ std::vector<uint8_t> Transaction::getPrevoutHash() const {
         auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(input.previousOutput);
         outpoint.encode(data);
     }
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
+    auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
 
@@ -86,7 +87,7 @@ std::vector<uint8_t> Transaction::getSequenceHash() const {
     for (auto& input : inputs) {
         encode32LE(input.sequence, data);
     }
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
+    auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
 
@@ -95,10 +96,9 @@ std::vector<uint8_t> Transaction::getOutputsHash() const {
     for (auto& output : outputs) {
         output.encode(data);
     }
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
+    auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
-
 
 void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
     encode32LE(version, data);
@@ -109,12 +109,12 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
         data.push_back(1);
     }
 
-    writeCompactSize(inputs.size(), data);
+    encodeVarInt(inputs.size(), data);
     for (auto& input : inputs) {
         input.encode(data);
     }
 
-    writeCompactSize(outputs.size(), data);
+    encodeVarInt(outputs.size(), data);
     for (auto& output : outputs) {
         output.encode(data);
     }
@@ -128,7 +128,9 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
     encode32LE(lockTime, data);
 }
 
-std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, size_t index, uint32_t hashType, uint64_t amount, TWBitcoinSignatureVersion version) const {
+std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, size_t index,
+                                                   uint32_t hashType, uint64_t amount,
+                                                   TWBitcoinSignatureVersion version) const {
     switch (version) {
     case BASE:
         return getSignatureHashBase(scriptCode, index, hashType);
@@ -138,30 +140,34 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, siz
 }
 
 /// Generates the signature hash for Witness version 0 scripts.
-std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Script& scriptCode, size_t index, uint32_t hashType, uint64_t amount) const {
+std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
+                                                            uint32_t hashType,
+                                                            uint64_t amount) const {
     auto preimage = getPreImage(scriptCode, index, hashType, amount);
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(preimage));
+    auto hash = TW::Hash::hash(hasher, preimage);
     return hash;
 }
 
 /// Generates the signature hash for for scripts other than witness scripts.
-std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode, size_t index, uint32_t hashType) const {
+std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode, size_t index,
+                                                       uint32_t hashType) const {
     assert(index < inputs.size());
 
     auto data = std::vector<uint8_t>{};
 
     encode32LE(version, data);
 
-    auto serializedInputCount = (hashType & TWSignatureHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
-    writeCompactSize(serializedInputCount, data);
+    auto serializedInputCount =
+        (hashType & TWSignatureHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
+    encodeVarInt(serializedInputCount, data);
     for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
         serializeInput(subindex, scriptCode, index, hashType, data);
     }
 
     auto hashNone = (hashType & 0x1f) == TWSignatureHashTypeNone;
     auto hashSingle = (hashType & 0x1f) == TWSignatureHashTypeSingle;
-    auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index+1 : outputs.size());
-    writeCompactSize(serializedOutputCount, data);
+    auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index + 1 : outputs.size());
+    encodeVarInt(serializedOutputCount, data);
     for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
             auto output = TransactionOutput(-1, {});
@@ -177,12 +183,14 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     // Sighash type
     encode32LE(hashType, data);
 
-    auto hash = TW::Hash::sha256(TW::Hash::sha256(data));
+    auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
 
-void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size_t index, uint32_t hashType, std::vector<uint8_t>& data) const {
-    // In case of SIGHASH_ANYONECANPAY, only the input being signed is serialized
+void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size_t index,
+                                 uint32_t hashType, std::vector<uint8_t>& data) const {
+    // In case of SIGHASH_ANYONECANPAY, only the input being signed is
+    // serialized
     if ((hashType & TWSignatureHashTypeAnyoneCanPay) != 0) {
         subindex = index;
     }
@@ -191,7 +199,7 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
 
     // Serialize the script
     if (subindex != index) {
-        writeCompactSize(0, data);
+        encodeVarInt(0, data);
     } else {
         scriptCode.encode(data);
     }
@@ -213,7 +221,8 @@ Proto::Transaction Transaction::proto() const {
 
     for (const auto& input : inputs) {
         auto protoInput = protoTx.add_inputs();
-        protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(), input.previousOutput.hash.size());
+        protoInput->mutable_previousoutput()->set_hash(input.previousOutput.hash.data(),
+                                                       input.previousOutput.hash.size());
         protoInput->mutable_previousoutput()->set_index(input.previousOutput.index);
         protoInput->set_sequence(input.sequence);
         protoInput->set_script(input.script.bytes.data(), input.script.bytes.size());

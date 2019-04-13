@@ -7,24 +7,15 @@
 import Foundation
 
 /// Ethereum address.
-extension EthereumAddress: Address, Hashable {
+extension EthereumAddress: Hashable {
     public static let size = 20
-
-    /// Validates that the raw data is a valid address.
-    static public func isValid(data: Data) -> Bool {
-        return data.count == EthereumAddress.size
-    }
 
     /// EIP55 representation of the address.
     public var eip55String: String {
         return description
     }
 
-    public var data: Data {
-        return keyHash
-    }
-
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(data)
+        hasher.combine(keyHash)
     }
 }

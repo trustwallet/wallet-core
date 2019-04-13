@@ -22,35 +22,31 @@ class BitcoinAddressTests: XCTestCase {
     }
 
     func testFromPrivateKey() {
-        let privateKey = PrivateKey(wif: "L5XECLxq1MDvBeYXjZwz5tTYsFZRWmaYziY3Wvc2bqSRAuRcBqhg")!
-        let publicKey = privateKey.getPublicKey(compressed: true)
-        let address = Bitcoin().compatibleAddress(for: publicKey)
+        let data = Data(hexString: "f7b5f7a8090c5c93cd2d6d01383c9286b221ea78d8bef3e482f0c5cdde653e68")!
+        let privateKey = PrivateKey(data: data)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+        let address = BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: P2SHPrefix.bitcoin.rawValue)
 
         XCTAssertEqual(address.description, "3Hv6oV8BYCoocW4eqZaEXsaR5tHhCxiMSk")
     }
 
     func testFromPrivateKeyUncompressed() {
-        let privateKey = PrivateKey(wif: "L5XECLxq1MDvBeYXjZwz5tTYsFZRWmaYziY3Wvc2bqSRAuRcBqhg")!
-        let publicKey = privateKey.getPublicKey(compressed: false)
-        let address = Bitcoin().compatibleAddress(for: publicKey)
+        let data = Data(hexString: "f7b5f7a8090c5c93cd2d6d01383c9286b221ea78d8bef3e482f0c5cdde653e68")!
+        let privateKey = PrivateKey(data: data)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let address = BitcoinAddress.compatibleAddress(publicKey: publicKey, prefix: P2SHPrefix.bitcoin.rawValue)
 
         XCTAssertEqual(address.description, "3Hv6oV8BYCoocW4eqZaEXsaR5tHhCxiMSk")
     }
 
     func testFromPrivateKeySegwitAddress() {
-        let privateKey = PrivateKey(wif: "KxZX6Jv3to6RWnhsffTcLLryRnNyyc8Ng2G8P9LFkbCdzGDEhNy1")!
-        let publicKey = privateKey.getPublicKey(compressed: true)
-        let address = Bitcoin().legacyAddress(for: publicKey)
+        let data = Data(hexString: "28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4")!
+        let privateKey = PrivateKey(data: data)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
-        XCTAssertEqual(address.description, Bitcoin().address(string: "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")!.description)
-    }
+        let address = BitcoinAddress(publicKey: publicKey, prefix: P2PKHPrefix.bitcoin.rawValue)
 
-    func testFromSewgitPrivateKey() {
-        let privateKey = PrivateKey(wif: "L5XECLxq1MDvBeYXjZwz5tTYsFZRWmaYziY3Wvc2bqSRAuRcBqhg")!
-        let publicKey = privateKey.getPublicKey(compressed: true)
-        let address = Bitcoin().compatibleAddress(for: publicKey)
-
-        XCTAssertEqual(address.description, Bitcoin().address(string: "3Hv6oV8BYCoocW4eqZaEXsaR5tHhCxiMSk")!.description)
+        XCTAssertEqual(address.description, BitcoinAddress(string: "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")!.description)
     }
 
     func testIsValid() {
@@ -69,15 +65,14 @@ class BitcoinAddressTests: XCTestCase {
 
     func testPublicKeyToBech32Address() {
         let publicKey = PublicKey(data: Data(hexString: "0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798")!)!
-        let bitcoin = Bitcoin()
         let expect = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"
         XCTAssertTrue(Bech32Address.isValidString(string: expect))
 
-        let address = bitcoin.address(for: publicKey)
+        let address = Bech32Address(hrp: .bitcoin, publicKey: publicKey)
         XCTAssertEqual(address.description, expect)
 
         let addressFromString = Bech32Address(string: expect)
-        XCTAssertEqual(address as? Bech32Address, addressFromString)
+        XCTAssertEqual(address.description, addressFromString?.description)
     }
 
     func testInvalidBech32Addresses() {

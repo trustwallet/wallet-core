@@ -8,11 +8,10 @@
 
 #include "Protobuf/TronInternal.pb.h"
 
+#include "../Base58.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
-
-#include <TrezorCrypto/base58.h>
 
 #include <cassert>
 
@@ -25,32 +24,29 @@ size_t base58Capacity = 128;
 protocol::TransferContract to_internal(const Proto::TransferContract& transfer) {
     auto internal = protocol::TransferContract();
 
-    uint8_t ownerAddressData[base58Capacity];
-    int ownerAddressSize = base58_decode_check(transfer.owner_address().c_str(), HASHER_SHA2D, ownerAddressData, (int)base58Capacity);
-    internal.set_owner_address(ownerAddressData, ownerAddressSize);
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(transfer.owner_address());
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
 
-    uint8_t toAddressData[base58Capacity];
-    int toAddressSize = base58_decode_check(transfer.to_address().c_str(), HASHER_SHA2D, toAddressData, (int)base58Capacity);
-    internal.set_to_address(toAddressData, toAddressSize);
+    const auto toAddress = Base58::bitcoin.decodeCheck(transfer.to_address());
+    internal.set_to_address(toAddress.data(), toAddress.size());
 
     internal.set_amount(transfer.amount());
 
     return internal;
 }
 
-/// Converts an external TransferAssetContract to an internal one used for signing.
+/// Converts an external TransferAssetContract to an internal one used for
+/// signing.
 protocol::TransferAssetContract to_internal(const Proto::TransferAssetContract& transfer) {
     auto internal = protocol::TransferAssetContract();
 
     internal.set_asset_name(transfer.asset_name());
 
-    uint8_t ownerAddressData[base58Capacity];
-    int ownerAddressSize = base58_decode_check(transfer.owner_address().c_str(), HASHER_SHA2D, ownerAddressData, (int)base58Capacity);
-    internal.set_owner_address(ownerAddressData, ownerAddressSize);
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(transfer.owner_address());
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
 
-    uint8_t toAddressData[base58Capacity];
-    int toAddressSize = base58_decode_check(transfer.to_address().c_str(), HASHER_SHA2D, toAddressData, (int)base58Capacity);
-    internal.set_to_address(toAddressData, toAddressSize);
+    const auto toAddress = Base58::bitcoin.decodeCheck(transfer.to_address());
+    internal.set_to_address(toAddress.data(), toAddress.size());
 
     internal.set_amount(transfer.amount());
 
@@ -121,7 +117,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     const auto hash = Hash::sha256(Data(serialized.begin(), serialized.end()));
 
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    const auto signature = key.sign(hash);
+    const auto signature = key.sign(hash, TWCurveSECP256k1);
 
     output.set_id(hash.data(), hash.size());
     output.set_signature(signature.data(), signature.size());

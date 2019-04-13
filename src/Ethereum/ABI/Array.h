@@ -6,10 +6,13 @@
 
 #pragma once
 
+#include "../../Data.h"
+#include "../../uint256.h"
+#include "Numbers.h"
+
 #include <numeric>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 template <typename T>
 bool is_dynamic(std::vector<T>) {
@@ -18,7 +21,8 @@ bool is_dynamic(std::vector<T>) {
 
 template <typename T>
 std::size_t size(const std::vector<T>& array) {
-    return 32 + std::accumulate(array.begin(), array.end(), 0u, [](size_t sum, auto x) { return sum + size(x); });
+    return 32 + std::accumulate(array.begin(), array.end(), 0u,
+                                [](size_t sum, auto x) { return sum + size(x); });
 }
 
 template <typename T>
@@ -55,4 +59,4 @@ std::string type_string(const std::vector<T>& array) {
     return type_string(array[0]) + "[]";
 }
 
-}} // namespace
+} // namespace TW::Ethereum

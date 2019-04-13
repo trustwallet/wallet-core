@@ -9,22 +9,22 @@
 #include "../Binance/Signer.h"
 #include "../proto/Binance.pb.h"
 
+const int64_t TWBinanceChainSource = 2;
+const char *TWBinanceChainId = "Binance-Chain-Nile";
+
+using namespace TW;
 using namespace TW::Binance;
 
-struct TWBinanceSigner *_Nonnull TWBinanceSignerCreate(TW_Binance_Proto_SigningInput data) {
+TW_Binance_Proto_SigningOutput TWBinanceSignerSign(TW_Binance_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
-    return new TWBinanceSigner{ Signer(std::move(input)) };
-}
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-void TWBinanceSignerDelete(struct TWBinanceSigner *_Nonnull signer) {
-    delete signer;
-}
+    auto signer = new TWBinanceSigner{ Signer(std::move(input)) };
+    auto encoded = signer->impl.build();
 
-TWData *_Nullable TWBinanceSignerBuild(struct TWBinanceSigner *_Nonnull signer) {
-    auto data = signer->impl.build();
-    if (data.empty()) {
-        return nullptr;
-    }
-    return TWDataCreateWithBytes(data.data(), data.size());
+    auto protoOutput = Proto::SigningOutput();
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+
+    auto serialized = protoOutput.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

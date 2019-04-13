@@ -6,22 +6,21 @@
 
 #pragma once
 
+#include "Transaction.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include "Transaction.h"
 
-namespace TW {
-namespace Ripple {
+namespace TW::Ripple {
 
 /// Helper class that performs Ripple transaction signing.
 class Signer {
-public:
+  public:
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 };
 
-}} // namespace
+} // namespace TW::Ripple
 
 /// Wrapper for C interface.
 struct TWRippleSigner {

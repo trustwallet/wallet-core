@@ -15,7 +15,7 @@ using namespace TW::Tron;
 
 TW_Tron_Proto_SigningOutput TWTronSignerSign(TW_Tron_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     const auto output = Signer::sign(input);
     auto serialized = output.SerializeAsString();

@@ -4,13 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWBitcoinAddress.h>
-
+#include "../Base58.h"
 #include "../Bitcoin/Address.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWBitcoinAddress.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <cstring>
 
@@ -25,31 +24,19 @@ bool TWBitcoinAddressIsValid(TWData *_Nonnull data) {
 }
 
 bool TWBitcoinAddressIsValidString(TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
-
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size) {
-        return false;
-    }
-
-    return true;
+    auto& s = *reinterpret_cast<const std::string*>(string);
+    return Address::isValid(s);
 }
 
 bool TWBitcoinAddressInitWithString(struct TWBitcoinAddress *_Nonnull address, TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
+    auto& s = *reinterpret_cast<const std::string*>(string);
 
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size) {
+    const auto decoded = TW::Base58::bitcoin.decodeCheck(s);
+    if (decoded.size() != Address::size) {
         return false;
     }
 
-    memcpy(address->bytes, buffer, Address::size);
+    std::copy(decoded.begin(), decoded.end(), address->bytes);
     return true;
 }
 
@@ -61,24 +48,22 @@ bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWD
     return true;
 }
 
-void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey publicKey, uint8_t prefix) {
+void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
     address->bytes[0] = prefix;
 
-    auto compressed = TWPublicKeyCompressed(publicKey);
-    ecdsa_get_pubkeyhash(compressed.bytes, HASHER_SHA2_RIPEMD,  address->bytes + 1);
+    ecdsa_get_pubkeyhash(publicKey->impl.compressed().bytes.data(), HASHER_SHA2_RIPEMD,  address->bytes + 1);
 }
 
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) {
-    size_t size = 0;
-    b58enc(nullptr, &size, address.bytes, Address::size);
-    size += 16;
-
-    std::vector<char> str(size);
-    base58_encode_check(address.bytes, Address::size, HASHER_SHA2D, str.data(), size);
-
+    const auto str = TW::Base58::bitcoin.encodeCheck(address.bytes, address.bytes + Address::size);
     return TWStringCreateWithUTF8Bytes(str.data());
 }
 
-TWData *_Nonnull TWBitcoinAddressData(struct TWBitcoinAddress address) {
-    return TWDataCreateWithBytes(address.bytes, Address::size);
+TW_EXPORT_PROPERTY
+uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress address) {
+    return address.bytes[0];
+}
+
+TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress address) {
+    return TWDataCreateWithBytes(address.bytes + 1, Address::size - 1);
 }

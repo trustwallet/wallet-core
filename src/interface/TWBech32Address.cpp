@@ -4,18 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWBech32Address.h>
-
-#include "../Bitcoin/Bech32Address.h"
 #include "../Bech32.h"
-
-#include <TrustWalletCore/TWHash.h>
-#include <TrustWalletCore/TWPublicKey.h>
-#include <TrustWalletCore/TWHRP.h>
+#include "../Bitcoin/Bech32Address.h"
 
 #include <TrezorCrypto/ecdsa.h>
-#include <string.h>
-#include <memory>
+#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWHRP.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 using namespace TW;
 using namespace TW::Bitcoin;
@@ -39,19 +35,8 @@ struct TWBech32Address *_Nullable TWBech32AddressCreateWithString(TWString *_Non
     return new TWBech32Address{ std::move(dec.first) };
 }
 
-struct TWBech32Address *_Nullable TWBech32AddressCreateWithData(enum TWHRP hrp, TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWBech32Address{ Bech32Address(stringForHRP(hrp), 0, *d) };
-}
-
-struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey publicKey) {
-    std::vector<uint8_t> data;
-    if (TWPublicKeyIsCompressed(publicKey)) {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::compressedSize);
-    } else {
-        data.insert(data.end(), publicKey.bytes, publicKey.bytes + PublicKey::uncompressedSize);
-    }
-    const auto address = Bech32Address(PublicKey(data), 0, stringForHRP(hrp));
+struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey) {
+    const auto address = Bech32Address(publicKey->impl, 0, stringForHRP(hrp));
     return new TWBech32Address{ std::move(address) };
 }
 
@@ -60,7 +45,7 @@ void TWBech32AddressDelete(struct TWBech32Address *_Nonnull address) {
 }
 
 TWString *_Nonnull TWBech32AddressDescription(struct TWBech32Address *_Nonnull address) {
-    const auto string = address->impl.encode();
+    const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 

@@ -6,21 +6,54 @@
 
 #pragma once
 
+#include "Data.h"
+#include "Hash.h"
+
 #include <array>
+#include <cassert>
+#include <stdexcept>
 #include <vector>
 
 namespace TW {
 
-class PublicKey {
-public:
-    /// The number of bytes in a compressed public key.
-    static const size_t compressedSize = 33;
+enum class PublicKeyType {
+    secp256k1,
+    secp256k1Extended,
+    ed25519,
+    nist256p1
+};
 
-    /// The number of bytes in an uncompressed public key.
-    static const size_t uncompressedSize = 65;
+class PublicKey {
+  public:
+    /// The number of bytes in a secp256k1 and nist256p1 public key.
+    static const size_t secp256k1Size = 33;
+
+    /// The number of bytes in a ed25519 public key.
+    static const size_t ed25519Size = 33;
+
+    /// The number of bytes in a secp256k1 extended public key.
+    static const size_t secp256k1ExtendedSize = 65;
 
     /// The public key bytes.
-    std::array<uint8_t, uncompressedSize> bytes;
+    Data bytes;
+
+    /// Type of public key.
+    PublicKeyType type() const {
+        switch (bytes.at(0)) {
+        case 1:
+            return PublicKeyType::ed25519;
+        case 2:
+        case 3:
+            return PublicKeyType::secp256k1;
+        case 4:
+        case 6:
+        case 7:
+            return PublicKeyType::secp256k1Extended;
+        default:
+            assert(false && "Invalid public key data");
+            return PublicKeyType::secp256k1;
+        }
+    }
 
     /// Determines if a collection of bytes makes a valid public key.
     template <typename T>
@@ -30,38 +63,61 @@ public:
             return false;
         }
         switch (data[0]) {
+        case 1:
+            return size == ed25519Size;
         case 2:
         case 3:
-            return size == compressedSize;
+            return size == secp256k1Size;
         case 4:
         case 6:
         case 7:
-            return size == uncompressedSize;
+            return size == secp256k1ExtendedSize;
         default:
             return false;
         }
     }
-    
+
     /// Initializes a public key with a collection of bytes.
-    template<typename T>
+    ///
+    /// @throws std::invalid_argument if the data is not a valid public key.
+    template <typename T>
     explicit PublicKey(const T& data) {
-        assert(isValid(data));
-        std::copy(std::begin(data), std::end(data), std::begin(bytes));
+        if (!isValid(data)) {
+            throw std::invalid_argument("Invalid public key data");
+        }
+        bytes.reserve(data.size());
+        std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
     }
 
     /// Determines if this is a compressed public key.
-    bool isCompressed() const {
-        return bytes[0] == 2 || bytes[0] == 3;
-    }
+    bool isCompressed() const { return bytes[0] >= 1 && bytes[0] <= 3; }
 
     /// Returns a compressed version of this public key.
     PublicKey compressed() const;
 
+    /// Returns an uncompressed version of this public key.
+    PublicKey uncompressed() const;
+
     /// Verifies a signature for the provided message.
     bool verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const;
+
+    /// Computes the public key hash.
+    ///
+    /// The public key hash is computed by applying the hasher to the public key
+    /// bytes and then prepending the prefix.
+    Data hash(const Data& prefix, Hash::Hasher hasher = Hash::sha256ripemd, bool skipTypeByte = false) const;
 };
 
-inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) { return lhs.bytes == rhs.bytes; }
-inline bool operator!=(const PublicKey& lhs, const PublicKey& rhs) { return lhs.bytes != rhs.bytes; }
+inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {
+    return lhs.bytes == rhs.bytes;
+}
+inline bool operator!=(const PublicKey& lhs, const PublicKey& rhs) {
+    return lhs.bytes != rhs.bytes;
+}
 
-} // namespace
+} // namespace TW
+
+/// Wrapper for C interface.
+struct TWPublicKey {
+    TW::PublicKey impl;
+};

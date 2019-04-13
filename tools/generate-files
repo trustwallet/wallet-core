@@ -11,28 +11,48 @@
 set -e
 
 ROOT="$PWD"
-PREFIX="$ROOT/build/local"
+PREFIX="${PREFIX:-$ROOT/build/local}"
 PATH="$PREFIX/bin":$PATH
 PROTOC="$PREFIX/bin/protoc"
 
+# Generate interface code
+codegen/bin/codegen
+
 # Generate Java, C++ and Swift Protobuf files
 if [ -x "$(command -v protoc-gen-swift)" ]; then
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=JNI/java --swift_out=swift/Sources --swift_opt=Visibility=Public src/proto/*.proto
+    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources/Generated --swift_opt=Visibility=Public src/proto/*.proto
 else
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=JNI/java src/proto/*.proto
+    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java src/proto/*.proto
 fi
 
 # Generate internal Protobuf files
 "$PROTOC" -I=$PREFIX/include -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
 
 # Generate JS Protobuf files
-pushd js
-mkdir -p proto
-npm install
-npm run generate
-popd
+if [ -x "$(command -v npm)" ]; then
+    pushd js
+    mkdir -p proto
+    npm install
+    npm run generate
+    popd
+else
+    echo -e "\nWARNING: Skipped installing Node.js package because the npm tool is not installed."
+fi
 
 # Generate Proto interface file
+pushd protobuf-plugin
 cmake -H. -Bbuild
-make -Cbuild protoc-gen-int
-"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=build/protobuf-plugin/protoc-gen-int --int_out include/TrustWalletCore src/proto/*.proto
+make -Cbuild
+popd
+"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-c-typedef --c-typedef_out include/TrustWalletCore src/proto/*.proto
+"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated src/proto/*.proto
+
+# Generate Xcode project
+if [ -x "$(command -v xcodegen)" ]; then
+    pushd swift
+    xcodegen
+    pod install
+    popd
+else
+    echo -e "\nWARNING: Skipped generating Xcode project because the xcodegen tool is not installed."
+fi

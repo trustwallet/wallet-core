@@ -22,22 +22,24 @@ bool Address::isValid(const std::string& string) {
     if (string.size() != Address::size * 2 + 2) {
         return false;
     }
-    if (!std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin()) && !std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
+    if (!std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin()) &&
+        !std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
         return false;
     }
     return true;
 }
 
 Address::Address(const std::string& string) {
-    assert(Address::isValid(string));
+    if (!isValid(string)) {
+        throw std::invalid_argument("Invalid address data");
+    }
 
     if (std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin())) {
         type = TWIconAddressTypeAddress;
     } else if (std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
         type = TWIconAddressTypeContract;
     } else {
-        assert(false && "Invalid address prefix");
-        type = TWIconAddressTypeAddress;
+        throw std::invalid_argument("Invalid address prefix");
     }
 
     const auto data = parse_hex(string.begin() + 2, string.end());
@@ -45,13 +47,15 @@ Address::Address(const std::string& string) {
 }
 
 Address::Address(const std::vector<uint8_t>& data, TWIconAddressType type) : type(type) {
-    assert(Address::isValid(data));
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address data");
+    }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey, TWIconAddressType type) : type(type) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
-    sha3_256(publicKey.bytes.data() + 1, PublicKey::uncompressedSize - 1, hash.data());
+    sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
 }
 

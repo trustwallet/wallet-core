@@ -17,22 +17,20 @@
 #include <tuple>
 #include <vector>
 
-namespace TW {
-namespace VeChain {
+namespace TW::VeChain {
 
 /// Helper class that performs VeChain transaction signing.
 class Signer {
-public:
+  public:
     Signer() = delete;
 
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
 };
 
-}} // namespace
+} // namespace TW::VeChain
 
 /// Wrapper for C interface.
 struct TWVeChainSigner {
     TW::VeChain::Signer impl;
 };
-
