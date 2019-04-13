@@ -1,0 +1,15 @@
+<%
+  method = locals[:method]
+  if method.static && !method.name.include?('Init')
+      parameters = method.parameters
+  else
+      parameters = method.parameters.drop(1)
+  end
+
+  parameters.each do |param|
+    if param.type.name == :data -%>
+    TWDataDelete(<%= param.name %>Data);
+<%  elsif param.type.name == :string -%>
+    TWStringDelete(<%= param.name %>String);
+<%  end -%>
+<%end -%>
