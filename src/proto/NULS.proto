@@ -47,6 +47,9 @@ message TransactionPurpose {
 
     /// Unspent input list
     repeated TransactionInput utxos = 7;
+
+    // If sending max amount.
+    bool use_max_amount = 8;
 }
 
 message TransactionPlan {
