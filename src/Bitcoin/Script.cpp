@@ -256,7 +256,7 @@ Script Script::buildForAddress(const std::string& string) {
                                                        TWP2PKHPrefixDogecoin, TWP2PKHPrefixQtum};
     static const std::vector<uint8_t> p2shPrefixes = {TWP2SHPrefixBitcoin, TWP2SHPrefixLitecoin,
                                                       TWP2SHPrefixDash, TWP2SHPrefixZcoin, TWP2SHPrefixViacoin,
-                                                      TWP2SHPrefixDogecoin};
+                                                      TWP2SHPrefixDogecoin, TWP2SHPrefixLux};
     if (Address::isValid(string)) {
         auto address = Address(string);
         auto p2pkh = std::find(p2pkhPrefixes.begin(), p2pkhPrefixes.end(), address.bytes[0]);

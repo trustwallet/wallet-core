@@ -20,7 +20,7 @@ public extension CoinType {
             if let addr = BitcoinCashAddress(string: string) {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
-        case .dash, .dogecoin, .zcoin:
+        case .dash, .dogecoin, .zcoin, .lux:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .callisto,
              .ethereum,
@@ -77,6 +77,8 @@ public extension CoinType {
             return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.bitcoin.rawValue])
         case .litecoin:
             return Set([P2SHPrefix.litecoin.rawValue, P2PKHPrefix.litecoin.rawValue])
+        case .lux:
+            return Set([P2SHPrefix.lux.rawValue, P2PKHPrefix.litecoin.rawValue])
         case .groestlcoin:
             return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.groestlcoin.rawValue])
         case .dash:

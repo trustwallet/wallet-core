@@ -86,8 +86,11 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value25 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
     assertStringsEqual(value25, "GRS");
 
-    auto value26 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
-    assertStringsEqual(value26, "QTUM");
+    auto value26 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLux));
+    assertStringsEqual(value26, "LUX");
+
+    auto value27 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
+    assertStringsEqual(value27, "QTUM");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -118,6 +121,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKIN), 5);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLux), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeQtum), 8);
 }
 
@@ -208,8 +212,11 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto value29 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
     assertStringsEqual(value29, "https://live.blockcypher.com/doge/tx/123");
 
-    auto value30 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
-    assertStringsEqual(value30, "https://qtum.info/tx/123");
+    auto value30 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
+    assertStringsEqual(value30, "https://explorer.poswallet.io/#/tx/123");
+
+    auto value31 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
+    assertStringsEqual(value31, "https://qtum.info/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -285,8 +292,11 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto value25 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
     assertStringsEqual(value25, "groestlcoin");
 
-    auto value26 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
-    assertStringsEqual(value26, "qtum");
+    auto value26 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLux));
+    assertStringsEqual(value26, "lux");
+
+    auto value27 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
+    assertStringsEqual(value27, "qtum");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -365,6 +375,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value26 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
     assertStringsEqual(value26, "Groestlcoin");
 
-    auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
-    assertStringsEqual(value27, "Qtum");
+
+    auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
+    assertStringsEqual(value27, "Lux");
+
+    auto value28 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
+    assertStringsEqual(value28, "Qtum");
 }
