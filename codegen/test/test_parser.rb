@@ -48,6 +48,6 @@ class ParserTest < Test::Unit::TestCase
 
     assert_not_nil(parser.entity)
     assert_equal(parser.entity.name, 'PublicKey')
-    assert_true(parser.entity.is_struct)
+    assert_equal(parser.entity.is_struct, false)
   end
 end
