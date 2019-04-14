@@ -1,16 +1,16 @@
 PODS:
-  - SwiftProtobuf (1.2.0)
+  - SwiftProtobuf (1.3.1)
 
 DEPENDENCIES:
-  - SwiftProtobuf (~> 1.2.0)
+  - SwiftProtobuf (~> 1.3.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - SwiftProtobuf
 
 SPEC CHECKSUMS:
-  SwiftProtobuf: 91a9856079044ef4ec762b2344c763cd9e5a73c1
+  SwiftProtobuf: 84cd6b8f4fd2fc3d9fbd80a0aaf2e957d52824ec
 
-PODFILE CHECKSUM: ae4ae1ed3285d5ca5a7e4859cbcd60e7b756f0f3
+PODFILE CHECKSUM: 5490c0aae53cc147fb4106805be15effb4cc4532
 
 COCOAPODS: 1.6.1
