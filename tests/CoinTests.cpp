@@ -97,6 +97,11 @@ TEST(Coin, validateAddressGroestlcoin){
     EXPECT_FALSE(validateAddress(TWCoinTypeGroestlcoin,"bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv"));
 }
 
+TEST(Coin, validateAddressNULS){
+    EXPECT_TRUE(validateAddress(TWCoinTypeNULS, "Nse1vKX9QHF7A84MHqrh4rRubVHAPc18"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeNULS, "Nse3uLgeCBWP48GCGx8L54gnELfpnSG9"));
+}
+
 TEST(Coin, validateAddressQtum) {
     EXPECT_TRUE(validateAddress(TWCoinTypeQtum, "qc1qn9gjawre2t6xmcv5gyqkujqhd8cfvvyx0rx2mp"));
     EXPECT_TRUE(validateAddress(TWCoinTypeQtum, "Qbmj3ufB1TaRSSP5DYR4KQxsyHBNrk8Y4p"));
@@ -141,6 +146,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeKIN, privateKey), "GDXJHJHWN6GRNOAZXON6XH74ZX6NYFAS5B7642RSJQVJTIPA4ZYUQLEB");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeTheta, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeQtum, privateKey), "QdtLm8ccxhuJFF5zCgikpaghbM3thdaGsW");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNULS, privateKey), "Nse5n2814K6wnTwvek7NxmLWxEV1kq4V");
 }
 
 } // namespace TW
