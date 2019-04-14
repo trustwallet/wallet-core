@@ -62,5 +62,6 @@ class CoinAddressDerivationTests {
         IOST -> assertEquals("TyEiLWJ2R5fN12dCH5i6fmALoYUsn49CqbRhZU96R1GD", address)
         LUX -> assertEquals("LYL6SZG8S6dyXRFT8Bw4FHUoVef3cWCoPi", address)
         QTUM -> assertEquals("QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF", address)
+        NULS -> assertEquals("NsdtNvsfmPerWk4BhcapHTB3LptF8Sbe", address)
     }
 }

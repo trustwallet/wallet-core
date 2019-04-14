@@ -25,6 +25,7 @@
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
+#include "NULS/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -126,6 +127,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         // same p2pkh prefix as litecoin
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLux}});
 
+    case TWCoinTypeNULS:
+        return NULS::Address::isValid(string);
+
     case TWCoinTypeQtum:
         return Bitcoin::Bech32Address::isValid(string, HRP_QTUM) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixQtum}});
@@ -164,6 +168,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
         return TWPurposeBIP44;
@@ -203,6 +208,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeCosmos:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
         return TWCurveSECP256k1;
@@ -269,6 +275,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
         return TWHDVersionNone;
     }
 }
@@ -319,6 +326,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeNEO:
     case TWCoinTypeKIN:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
         return TWHDVersionNone;
     }
 }
@@ -353,6 +361,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeTheta:
+    case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
@@ -400,6 +409,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeLux:
     case TWCoinTypeRipple:
+    case TWCoinTypeNULS:
     case TWCoinTypeQtum:
         return PublicKeyType::secp256k1;
 
@@ -517,6 +527,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeLux:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixLitecoin).string();
 
+    case TWCoinTypeNULS:
+        return NULS::Address(publicKey).string();
+        
     case TWCoinTypeQtum:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixQtum).string();
     }
@@ -558,6 +571,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeNULS:
     case TWCoinTypeQtum:
         return Hash::sha256ripemd;
 
@@ -602,6 +616,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeXDai:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
+    case TWCoinTypeNULS:
     case TWCoinTypeQtum:
         return Hash::sha256d;
 
