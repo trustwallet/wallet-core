@@ -81,16 +81,13 @@ struct TransactionBuilder {
             } else if (values > (purpose.amount() + fee)) {
                 // all amount bigger that spent and fee, need change back
 
-                // 找零增加了一条UTXO，要重新计算手续费
                 txSize = calculatorTransactionSize(selectUtxos.size(), 2, purpose.remark().size());
                 fee = calculatorTransactionFee(txSize);
-                // 选择金额小于 转出金额 + 手续费，追加 UTXO
                 if (values < (purpose.amount() + fee)) {
                     // don't have enough input amount because change back output
                     continue;
                 }
 
-                // 否则的话，写入找零输出
                 Proto::TransactionOutput changeOutput;
                 changeOutput.set_amount(values - purpose.amount() - fee);
                 changeOutput.set_to_address(purpose.from_address());
@@ -118,7 +115,6 @@ struct TransactionBuilder {
     static Proto::TransactionPlan
     calculatorMaxAmountPlan(const NULS::Proto::TransactionPurpose& purpose) {
         auto plan = Proto::TransactionPlan();
-        // 最大可转账计划，计算付掉手续费后最多能转的资金，不找零
 
         uint64_t maxInputs = calculatorMaxInput(purpose.remark().size());
         uint64_t selectCount = std::min((uint64_t)purpose.utxos_size(), maxInputs);
@@ -160,13 +156,6 @@ struct TransactionBuilder {
         *plan.mutable_inputs() = {selectUtxos.begin(), selectUtxos.end()};
         *plan.mutable_outputs() = {outputs.begin(), outputs.end()};
         return plan;
-    }
-
-    static int32_t getTransactionFee(uint32_t inputCount, uint32_t outputCount,
-                                     uint32_t remarkSize) {
-        uint64_t size = 124 + TRANSACTION_INPUT_SIZE * inputCount +
-                        TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
-        return calculatorTransactionFee(size);
     }
 
     static int32_t calculatorMaxInput(uint32_t remarkSize) {
