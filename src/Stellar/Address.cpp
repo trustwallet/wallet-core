@@ -36,7 +36,7 @@ bool Address::isValid(const std::string& string) {
 
     // ... and that checksums match
     uint16_t checksum_expected = Crc::crc16(decoded.data(), 33);
-    uint16_t checksum_actual = (decoded[34] << 8) | decoded[33]; // unsigned short (little endian)
+    uint16_t checksum_actual = static_cast<uint16_t>((decoded[34] << 8) | decoded[33]); // unsigned short (little endian)
     if (valid && checksum_expected != checksum_actual) {
         valid = false;
     }

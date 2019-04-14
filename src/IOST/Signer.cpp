@@ -86,7 +86,7 @@ std::string encodeTransaction(const Proto::Transaction& t) {
     se.WriteInt32(t.signatures_size());
     for (auto& sig : t.signatures()) {
         IOSTEncoder s;
-        s.WriteByte(sig.algorithm());
+        s.WriteByte(static_cast<uint8_t>(sig.algorithm()));
         s.WriteString(sig.signature());
         s.WriteString(sig.public_key());
         se.WriteString(s.AsString());

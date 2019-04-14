@@ -112,9 +112,12 @@ TEST(BitcoinCash, SignTransaction) {
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
     // Sign
-    auto result = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input)).sign();
-    ASSERT_TRUE(result);
+    auto signer = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input));
+    auto result = signer.sign();
     auto signedTx = result.payload();
+
+    ASSERT_TRUE(result);
+    ASSERT_EQ(fee, signer.plan.fee);
 
     // txid = "96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4"
 

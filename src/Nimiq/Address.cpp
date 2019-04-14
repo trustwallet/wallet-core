@@ -119,7 +119,7 @@ std::string Address::string() const {
     check = 98 - check;
 
     // Set checksum in address
-    string[2] = '0' + (check / 10);
+    string[2] = '0' + static_cast<uint8_t>((check / 10));
     string[3] = '0' + (check % 10);
 
     return string;

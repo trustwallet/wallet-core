@@ -125,7 +125,7 @@ std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version
     node_data.reserve(78);
 
     encode32BE(version, node_data);
-    node_data.push_back(node->depth);
+    node_data.push_back(static_cast<uint8_t>(node->depth));
     encode32BE(fingerprint, node_data);
     encode32BE(node->child_num, node_data);
     node_data.insert(node_data.end(), node->chain_code, node->chain_code + 32);

@@ -16,7 +16,7 @@ using namespace TW::NULS;
 
 TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose data) {
     Proto::TransactionPurpose purpose;
-    purpose.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    purpose.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto plan = TransactionBuilder::plan(purpose);
     std::vector<uint8_t> serializeData(plan.ByteSize());
@@ -28,7 +28,7 @@ TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose 
 
 TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_TransactionPlan data) {
     Proto::TransactionPlan plan;
-    plan.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    plan.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     const auto signer = Signer(plan);
     const auto output = signer.sign();

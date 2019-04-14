@@ -35,6 +35,8 @@ targets:
       testTargets:
         - TrustWalletCoreTests
       gatherCoverageData: true
+    settings:
+      CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
   TrustWalletCoreTests:
     type: bundle.unit-test
     platform: iOS
