@@ -19,7 +19,7 @@ enum TWP2SHPrefix {
     TWP2SHPrefixDash = 0x10,
     TWP2SHPrefixDecred = 0x1a,
     TWP2SHPrefixZcoin = 0x07,
-    TWP2SHPrefixZcashT = 0xBD
+    TWP2SHPrefixZcashT = 0xBD,
 };
 
 // Do not export TWP2SHPrefixGroestlcoin because it the same to
