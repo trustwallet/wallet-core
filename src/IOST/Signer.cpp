@@ -33,12 +33,12 @@ class IOSTEncoder {
     }
 
     void WriteString(std::string s) {
-        WriteInt32(s.size());
+        WriteInt32(static_cast<uint32_t>(s.size()));
         buffer << s;
     }
 
     void WriteStringSlice(const std::vector<std::string> v) {
-        WriteInt32(v.size());
+        WriteInt32(static_cast<uint32_t>(v.size()));
         for (std::string s : v) {
             WriteString(s);
         }
@@ -86,7 +86,7 @@ std::string encodeTransaction(const Proto::Transaction& t) {
     se.WriteInt32(t.signatures_size());
     for (auto& sig : t.signatures()) {
         IOSTEncoder s;
-        s.WriteByte(sig.algorithm());
+        s.WriteByte(static_cast<uint8_t>(sig.algorithm()));
         s.WriteString(sig.signature());
         s.WriteString(sig.public_key());
         se.WriteString(s.AsString());

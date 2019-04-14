@@ -20,7 +20,7 @@ inline void encode16LE(uint16_t val, std::vector<uint8_t>& data) {
 
 /// Decodes a 16-bit little-endian value from the provided buffer.
 inline uint16_t decode16LE(const uint8_t* _Nonnull src) {
-    return (uint16_t)(src[0]) | ((uint16_t)(src[1]) << 8);
+    return static_cast<uint16_t>((src[0]) | ((uint16_t)(src[1]) << 8));
 }
 
 /// Encodes a 32-bit little-endian value into the provided buffer.
@@ -128,7 +128,7 @@ inline void encode16BE(uint16_t val, std::vector<uint8_t>& data) {
 
 /// Decodes a 16-bit big-endian value from the provided buffer.
 inline uint16_t decode16BE(const uint8_t* _Nonnull src) {
-    return (uint16_t)(src[1]) | ((uint16_t)(src[0]) << 8);
+    return static_cast<uint16_t>((src[1]) | ((uint16_t)(src[0]) << 8));
 }
 
 /// Encodes a 32-bit big-endian value into the provided buffer.

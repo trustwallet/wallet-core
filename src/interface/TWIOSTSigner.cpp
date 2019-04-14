@@ -16,7 +16,7 @@ using namespace TW::IOST;
 
 TW_IOST_Proto_SigningOutput TWIOSTSignerSign(TW_IOST_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     auto protoOutput = Signer().sign(input);
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),

@@ -76,7 +76,7 @@ std::pair<Bech32Address, bool> Bech32Address::decode(const std::string& addr) {
 
 std::string Bech32Address::string() const {
     Data enc;
-    enc.push_back(witnessVersion);
+    enc.push_back(static_cast<uint8_t>(witnessVersion));
     Bech32::convertBits<8, 5, true>(enc, witnessProgram);
     std::string result = Bech32::encode(hrp, enc);
     if (!decode(result).second) {

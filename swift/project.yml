@@ -7,6 +7,7 @@ settings:
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/src
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
     CLANG_CXX_LANGUAGE_STANDARD: gnu++17
+    SWIFT_VERSION: 5.0
   configs:
     release:
       SWIFT_OPTIMIZATION_LEVEL: -Owholemodule
@@ -34,6 +35,8 @@ targets:
       testTargets:
         - TrustWalletCoreTests
       gatherCoverageData: true
+    settings:
+      CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
   TrustWalletCoreTests:
     type: bundle.unit-test
     platform: iOS

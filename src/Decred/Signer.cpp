@@ -170,7 +170,7 @@ Data Signer::pushAll(const std::vector<Data>& results) {
             data.push_back(static_cast<uint8_t>(result.size()));
         } else if (result.size() <= 0xffff) {
             data.push_back(OP_PUSHDATA2);
-            encode16LE(result.size(), data);
+            encode16LE(static_cast<uint16_t>(result.size()), data);
         } else {
             data.push_back(OP_PUSHDATA4);
             encode32LE(static_cast<uint32_t>(result.size()), data);
