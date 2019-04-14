@@ -37,6 +37,7 @@ class CoinAddressDerivationTests {
         GO -> assertEquals("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
         GROESTLCOIN -> assertEquals("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
         ICON -> assertEquals("hx18b380b53c23dc4ee9f6666bc20d1be02f3fe106", address)
+        IOCOIN -> assertEquals("ieCTzUZhc8a5T8Y8suosPw7eMgTtN5PE1H", address)
         LITECOIN -> assertEquals("ltc1qhd8fxxp2dx3vsmpac43z6ev0kllm4n53t5sk0u", address)
         ONTOLOGY -> assertEquals("AHKTnybvnWo3TeY8uvNXekvYxMrXogUjeT", address)
         POA -> assertEquals("0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9", address)

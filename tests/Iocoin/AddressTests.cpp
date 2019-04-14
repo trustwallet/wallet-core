@@ -33,3 +33,11 @@ TEST(IocoinAddress, FromString) {
     ASSERT_EQ(address.string(), string);
 }
 
+TEST(IocoinAddress, Derive) {
+    const auto mnemonic = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+    const auto wallet = HDWallet(mnemonic, "");
+    const auto path = TW::derivationPath(TWCoinTypeIocoin);
+    const auto address = TW::deriveAddress(TWCoinTypeIocoin, wallet.getKey(path));
+
+    ASSERT_EQ(address, "idm4bbwMbzieAAZttcvxXkAtka8ZVrZa3w");
+}
