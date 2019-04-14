@@ -12,6 +12,26 @@ class ParserTest < Test::Unit::TestCase
     assert_equal(func.parameters.first.type.name, 'PrivateKey')
   end
 
+  def test_parse_method_align_pointer_left
+    parser = Parser.new(path: '', string: 'struct TWPublicKey* _Nullable TWPublicKeyCreateWithData(TWData* _Nonnull someData);')
+    func = parser.parse_func
+
+    assert_equal(func.return_type.name, 'PublicKey')
+    assert_equal(func.name, 'TWPublicKeyCreateWithData')
+    assert_equal(func.parameters.first.name, 'someData')
+    assert_equal(func.parameters.first.type.name, :data)
+  end
+
+   def test_parse_method_align_pointer_center
+    parser = Parser.new(path: '', string: 'bool TWPublicKeyIsValid(TWData * _Nonnull data);')
+    func = parser.parse_func
+
+    assert_equal(func.return_type.name, :bool)
+    assert_equal(func.name, 'TWPublicKeyIsValid')
+    assert_equal(func.parameters.first.name, 'data')
+    assert_equal(func.parameters.first.type.name, :data)
+  end
+
   def test_parse_invalid_method
     parser = Parser.new(path: '', string: '
       TW_EXPORT_METHOD
