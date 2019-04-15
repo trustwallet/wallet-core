@@ -25,17 +25,16 @@ TEST(TWOntologySignerSign, OntBalanceOf) {
     input.set_contract("ONT");
     input.set_method("balanceOf");
     input.set_query_address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
+    input.set_nonce(3959576200);
     auto data = OntTxBuilder::build(input);
     std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
     auto protoOutput = Proto::SigningOutput();
     protoOutput.ParseFromString(serialized);
     auto rawTx = hex(protoOutput.encoded());
-    EXPECT_EQ(0, rawTx.find("00d1"));
-    EXPECT_EQ(12, rawTx.find(
-                      "0000000000000000000000000000000000000000000000000000000000000000000000004"));
-    EXPECT_EQ(85, rawTx.find("d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f66"));
-    EXPECT_EQ(148, rawTx.find("140000000000000000000000000000000000000001"));
-    EXPECT_EQ(190, rawTx.find("0068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"));
+    EXPECT_EQ("00d1885602ec000000000000000000000000000000000000000000000000000000000000000000000000"
+              "4d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f6614000000000000000000"
+              "00000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b650000",
+              rawTx);
 }
 
 TEST(TWOntologySignerSign, OntDecimals) {
@@ -47,15 +46,16 @@ TEST(TWOntologySignerSign, OntDecimals) {
     auto input = Ontology::Proto::SigningInput();
     input.set_contract("ONT");
     input.set_method("decimals");
+    input.set_nonce(1210761661);
     auto data = OntTxBuilder::build(input);
     std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
     auto protoOutput = Proto::SigningOutput();
     protoOutput.ParseFromString(serialized);
     auto rawTx = hex(protoOutput.encoded());
-    EXPECT_EQ(202, rawTx.length());
-    EXPECT_EQ(0, rawTx.find("00d1"));
-    EXPECT_EQ(84, rawTx.find("380008646563696d616c73"));
-    EXPECT_EQ(106, rawTx.find("140000000000000000000000000000000000000001"));
+    EXPECT_EQ("00d1bdc12a48000000000000000000000000000000000000000000000000000000000000000000000000"
+              "380008646563696d616c731400000000000000000000000000000000000000010068164f6e746f6c6f67"
+              "792e4e61746976652e496e766f6b650000",
+              rawTx);
 }
 
 TEST(TWOntologySignerSign, OntTransfer) {
@@ -68,6 +68,7 @@ TEST(TWOntologySignerSign, OntTransfer) {
     auto input = Ontology::Proto::SigningInput();
     input.set_contract("ONT");
     input.set_method("transfer");
+    input.set_nonce(2338116610);
     input.set_owner_private_key(ownerPrivateKey.data(), ownerPrivateKey.size());
     input.set_payer_private_key(payerPrivateKey.data(), payerPrivateKey.size());
     input.set_to_address("Af1n2cZHhMZumNqKgw9sfCNoTWu9de4NDn");
@@ -79,17 +80,16 @@ TEST(TWOntologySignerSign, OntTransfer) {
     auto protoOutput = Proto::SigningOutput();
     protoOutput.ParseFromString(serialized);
     auto rawTx = hex(protoOutput.encoded());
-    EXPECT_EQ(724, rawTx.length());
-    EXPECT_EQ(0, rawTx.find("00d1"));
-    EXPECT_EQ(13, rawTx.find("401000000000000204e000000000000"));
-    EXPECT_EQ(86, rawTx.find("00c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed29"
-                             "9ea06fcb94abac41aaf3ead76586a7cc8516a7cc86c51c1087472616e73666572"));
-    EXPECT_EQ(220, rawTx.find("1400000000000000000000000000000000000000010068164f6e746f6c6f67792e4e"
-                              "61746976652e496e766f6b"));
-    EXPECT_EQ(452,
-              rawTx.find("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486"));
-    EXPECT_EQ(656,
-              rawTx.find("03d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1ee"));
+    EXPECT_EQ("00d102d45c8bf401000000000000204e00000000000057e9d1a61f9aafa798b6c7fbeae35639681d7df6"
+              "7100c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed299ea06fcb94aba"
+              "c41aaf3ead76586a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
+              "00000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b6500024140301766d925382a6e"
+              "bb2ebeb18d3741954c9370dcf6d9c45b34ce7b18bc42dcdb7cff28ddaf7f1048822c0ca21a0c4926323a"
+              "2497875b963f3b8cbd3717aa6e7c2321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e4"
+              "47125f927b7486ac414038466b25ac49a22ba8c301328ef049a61711b257987e85e25d63e0444a14e860"
+              "305a4cd3bb6ea2fe80fd293abb3c592e679c42c546cbf3baa051a07b28b374a6232103d9fd62df332403"
+              "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
+              rawTx);
 }
 
 TEST(TWOntologySignerSign, OngDecimals) {
@@ -101,15 +101,16 @@ TEST(TWOntologySignerSign, OngDecimals) {
     auto input = Ontology::Proto::SigningInput();
     input.set_contract("ONG");
     input.set_method("decimals");
+    input.set_nonce(2045178595);
     auto data = OngTxBuilder::build(input);
     std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
     auto protoOutput = Proto::SigningOutput();
     protoOutput.ParseFromString(serialized);
     auto rawTx = hex(protoOutput.encoded());
-    EXPECT_EQ(202, rawTx.length());
-    EXPECT_EQ(0, rawTx.find("00d1"));
-    EXPECT_EQ(84, rawTx.find("380008646563696d616c73"));
-    EXPECT_EQ(106, rawTx.find("140000000000000000000000000000000000000002"));
+    EXPECT_EQ("00d1e3f2e679000000000000000000000000000000000000000000000000000000000000000000000000"
+              "380008646563696d616c731400000000000000000000000000000000000000020068164f6e746f6c6f67"
+              "792e4e61746976652e496e766f6b650000",
+              rawTx);
 }
 
 TEST(TWOntologySignerSign, OngBalanceOf) {
@@ -122,17 +123,16 @@ TEST(TWOntologySignerSign, OngBalanceOf) {
     input.set_contract("ONG");
     input.set_method("balanceOf");
     input.set_query_address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
+    input.set_nonce(3486522027);
     auto data = OngTxBuilder::build(input);
     std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
     auto protoOutput = Proto::SigningOutput();
     protoOutput.ParseFromString(serialized);
     auto rawTx = hex(protoOutput.encoded());
-    EXPECT_EQ(0, rawTx.find("00d1"));
-    EXPECT_EQ(12, rawTx.find(
-                      "0000000000000000000000000000000000000000000000000000000000000000000000004"));
-    EXPECT_EQ(85, rawTx.find("d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f66"));
-    EXPECT_EQ(148, rawTx.find("140000000000000000000000000000000000000002"));
-    EXPECT_EQ(190, rawTx.find("0068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"));
+    EXPECT_EQ("00d1ab1ad0cf000000000000000000000000000000000000000000000000000000000000000000000000"
+              "4d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f6614000000000000000000"
+              "00000000000000000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b650000",
+              rawTx);
 }
 
 TEST(TWOntologySignerSign, OngTransfer) {
@@ -151,22 +151,22 @@ TEST(TWOntologySignerSign, OngTransfer) {
     input.set_amount(1);
     input.set_gas_price(500);
     input.set_gas_limit(20000);
+    input.set_nonce(2827104669);
     auto data = OngTxBuilder::build(input);
     std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
     auto protoOutput = Proto::SigningOutput();
     protoOutput.ParseFromString(serialized);
     auto rawTx = hex(protoOutput.encoded());
-    EXPECT_EQ(724, rawTx.length());
-    EXPECT_EQ(0, rawTx.find("00d1"));
-    EXPECT_EQ(13, rawTx.find("401000000000000204e000000000000"));
-    EXPECT_EQ(86, rawTx.find("00c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed29"
-                             "9ea06fcb94abac41aaf3ead76586a7cc8516a7cc86c51c1087472616e73666572"));
-    EXPECT_EQ(220, rawTx.find("1400000000000000000000000000000000000000020068164f6e746f6c6f67792e4e"
-                              "61746976652e496e766f6b"));
-    EXPECT_EQ(452,
-              rawTx.find("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486"));
-    EXPECT_EQ(656,
-              rawTx.find("03d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1ee"));
+    EXPECT_EQ("00d19d3182a8f401000000000000204e00000000000057e9d1a61f9aafa798b6c7fbeae35639681d7df6"
+              "7100c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed299ea06fcb94aba"
+              "c41aaf3ead76586a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
+              "00000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b6500024140e27e935b87855efa"
+              "d62bb76b21c7b591f445f867eff86f888ca6ee1870ecd80f73b8ab199a4d757b4c7b9ed46c4ff8cfa8ae"
+              "faa90b7fb6485e358034448cba752321031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e4"
+              "47125f927b7486ac4140450047b2efb384129a16ec4c707790e9379b978cc7085170071d8d7c5c037d74"
+              "3b078bd4e21bb4404c0182a32ee05260e22454dffb34dacccf458dfbee6d32db232103d9fd62df332403"
+              "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
+              rawTx);
 }
 
 TEST(TWOntologySignerSign, OngWithdraw) {
@@ -185,25 +185,21 @@ TEST(TWOntologySignerSign, OngWithdraw) {
     input.set_amount(1);
     input.set_gas_price(500);
     input.set_gas_limit(20000);
+    input.set_nonce(3784713724);
     auto data = OngTxBuilder::build(input);
     std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
     auto protoOutput = Proto::SigningOutput();
     protoOutput.ParseFromString(serialized);
     auto rawTx = hex(protoOutput.encoded());
-    EXPECT_EQ(776, rawTx.length());
-    EXPECT_EQ(0, rawTx.find("00d1"));
-    EXPECT_EQ(12, rawTx.find("f401000000000000"));
-    EXPECT_EQ(28, rawTx.find("204e000000000000"));
-    EXPECT_EQ(44, rawTx.find("57e9d1a61f9aafa798b6c7fbeae35639681d7df6"));
-    EXPECT_EQ(rawTx[61], '8');
-    EXPECT_EQ(rawTx[62], 'b');
     EXPECT_EQ(
-        86, rawTx.find(
-                "00c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc81400000000000000000000000000"
-                "000000000000016a7cc814fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc8516a7cc86c"));
-    EXPECT_EQ(246, rawTx.find("0c7472616e7366657246726f6d"));
-    EXPECT_EQ(504,
-              rawTx.find("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486"));
-    EXPECT_EQ(708,
-              rawTx.find("03d9fd62df332403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1ee"));
+        "00d1fc2596e1f401000000000000204e00000000000057e9d1a61f9aafa798b6c7fbeae35639681d7df68b00c6"
+        "6b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc81400000000000000000000000000000000000000"
+        "016a7cc814fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc8516a7cc86c0c7472616e7366657246726f"
+        "6d1400000000000000000000000000000000000000020068164f6e746f6c6f67792e4e61746976652e496e766f"
+        "6b65000241400ef868766eeafce71b6ff2a4332aa4363980e66c55ef70aea80e3baee1daf02b43ae6d4c7c8a17"
+        "8b92f523602426eaa4205ab0ae5944b0fdae0abcbabaefbc4c2321031bec1250aa8f78275f99a6663688f31085"
+        "848d0ed92f1203e447125f927b7486ac4140c49c23092cd9003247a55792211d816010c7d6204c6e07a6e017da"
+        "70007b25ee2ab3665103f846300cd03512040275b78ae46812d40cd611058decdff5551e1f232103d9fd62df33"
+        "2403d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
+        rawTx);
 }

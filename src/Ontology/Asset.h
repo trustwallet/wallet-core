@@ -25,11 +25,12 @@ class Asset {
   public:
     virtual Data contractAddress() = 0;
 
-    virtual Transaction decimals() = 0;
+    virtual Transaction decimals(uint32_t nonce) = 0;
 
-    virtual Transaction balanceOf(const Address& address) = 0;
+    virtual Transaction balanceOf(const Address &address, uint32_t nonce) = 0;
 
-    virtual Transaction transfer(const Signer& from, const Address& to, uint64_t amount,
-                                 const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) = 0;
+    virtual Transaction transfer(const Signer &from, const Address &to, uint64_t amount,
+                                 const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
+                                 uint32_t nonce) = 0;
 };
 } // namespace TW::Ontology
