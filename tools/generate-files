@@ -33,7 +33,7 @@ if [ -x "$(command -v npm)" ]; then
     pushd js
     mkdir -p proto
     npm install
-    npm run generate
+    npm run gen-proto
     popd
 else
     echo -e "\nWARNING: Skipped installing Node.js package because the npm tool is not installed."

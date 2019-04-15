@@ -8,9 +8,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "generate-js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
     "generate-ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
-    "generate": "npm run generate-js && npm run generate-ts",
+    "gen-proto": "npm run generate-js && npm run generate-ts",
     "build-bind": "cd cpp && npx node-gyp configure && npx node-gyp build",
-    "dist": "rm -rf dist/* && npx tsc && cp -r proto dist/proto && mkdir dist/cpp && cp -r cpp/build dist/cpp/build"
+    "dist": "rm -rf dist/* && npx tsc && cp -r proto dist/proto && mkdir dist/cpp && cp -r cpp/build dist/cpp/build",
+    "build": "npm run build-bind && npm run dist"
   },
   "author": "",
   "license": "ISC",
