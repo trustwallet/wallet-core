@@ -1,4 +1,6 @@
 import { WalletCore } from '../WalletCore';
+import { TW } from '../../proto/TrustWalletCore';
+import * as Long from 'long';
 
 <%  import_entity_name =  JsHelper.import_types_from_entity(entity) -%>
 <%# Imports -%>
@@ -41,9 +43,15 @@ export class <%= entity.name %> {
 <%- end -%>
 <%# Static property declarations -%>
 <%- entity.static_properties.each do |property| -%>
+<%    if [:uint64, :size].include? property.return_type.name -%>
+    public static <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters) %>): <%= JsHelper.type(property.return_type) %> {
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>), true);
+    }
+<%    else -%>
     public static <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters) %>): <%= JsHelper.type(property.return_type) %> {
         return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>);
     }
+<%    end -%>
 
 <%- end -%>
 <%# Static method declarations -%>
@@ -52,6 +60,10 @@ export class <%= entity.name %> {
 <%    if should_return_object(method) -%>
     public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): <%= JsHelper.type(method.return_type) %> {
         return <%= JsHelper.type(method.return_type) %>.createWithNativeHandle(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>));
+    }
+<%    elsif [:uint64, :size].include? method.return_type.name -%>
+    public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): Long {
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>), true);
     }
 <%    else -%>
     public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): <%= JsHelper.type(method.return_type) %> {
@@ -62,9 +74,15 @@ export class <%= entity.name %> {
 <%- end -%>
 <%# Property declarations -%>
 <%- entity.properties.each do |property| -%>
+<%    if [:uint64, :size].include? property.return_type.name -%>
+    public <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters.drop(1)) %>): Long {
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: property) %>(this.getNativeHandle()), true);
+    }
+<%    else -%>
     public <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters.drop(1)) %>): <%= JsHelper.type(property.return_type) %> {
         return WalletCore.<%= NapiHelper.function_name(entity: entity, function: property) %>(this.getNativeHandle());
     }
+<%    end -%>
 
 <%- end -%>
 <%# Method declarations -%>
@@ -76,6 +94,14 @@ export class <%= entity.name %> {
         return <%= JsHelper.type(method.return_type) %>.createWithNativeHandle(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle(), <%= JsHelper.arguments(method.parameters.drop(1)) %>));
 <%      else -%>
         return <%= JsHelper.type(method.return_type) %>.createWithNativeHandle(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle()));
+<%      end -%>
+    }
+<%    elsif [:uint64, :size].include? method.return_type.name -%>
+    public <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters.drop(1)) %>): Long {
+<%      if method.parameters.length > 1 -%>
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle(), <%= JsHelper.arguments(method.parameters.drop(1)) %>), true);
+<%      else -%>
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle()), true);
 <%      end -%>
     }
 <%    else -%>

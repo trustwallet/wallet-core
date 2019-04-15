@@ -46,6 +46,12 @@ module JsHelper
     unique_types
   end
 
+  # check if enum entity needs a corresponding Util class export
+  def self.enum_has_util(entity)
+    has_string = entity.cases.all? { |c| !c.string.nil? } 
+    entity.properties.any? || entity.properties.any? || has_string
+  end
+
   # Transforms an interface name to a Js constant name
   def self.format_constant(name)
     name.upcase
@@ -67,7 +73,7 @@ module JsHelper
       if param.type.is_struct || param.type.is_class 
         "#{param.name || 'value'}.getNativeHandle()"
       elsif [:uint64, :size].include? param.type.name
-        "#{param.name || 'value'}Uint64"
+        "#{param.name || 'value'}Uint64.toString()"
       elsif param.type.is_proto
         "\n                  #{proto_to_class(param.type.name)}.encode(#{param.name}).finish()"
       else
@@ -93,7 +99,7 @@ module JsHelper
     when :int, :uint8, :uint16, :uint32
       'number'
     when :uint64, :size
-      'string'
+      'Long'
     when :data
       'Uint8Array'
     when 'Data'

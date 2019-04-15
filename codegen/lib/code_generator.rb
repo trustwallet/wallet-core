@@ -61,6 +61,10 @@ class CodeGenerator
 
   def render_js
     render_template(header: 'js/header.erb', template: 'js.erb', output_subfolder: 'js/js/generated', extension: 'ts')
+
+    index_ts = render('js/index.ts.erb')
+    index_ts_path = File.expand_path(File.join(output_folder, 'js/lib/', 'index.ts'))
+    File.write(index_ts_path, index_ts)
   end
 
   def render_napi_h
