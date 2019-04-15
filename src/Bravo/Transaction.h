@@ -37,7 +37,7 @@ namespace Bravo {
     class Transaction: Serializable
     {
     public:
-        Transaction(const std::string& referenceBlockId, uint32_t referenceBlockTime);
+        Transaction(const Data& referenceBlockId, int32_t referenceBlockTime);
 
         void serialize(Data& os) const noexcept;
         nlohmann::json serialize() const noexcept;
@@ -51,7 +51,7 @@ namespace Bravo {
     private:
         uint16_t refBlockNumber = 0;
         uint32_t refBlockPrefix = 0;
-        uint32_t expiration = 0;
+        int32_t expiration = 0;
         std::vector<std::unique_ptr<Operation>> operations;
         std::set<std::unique_ptr<FutureExtension>> extensions;
         std::vector<Signature> signatures;

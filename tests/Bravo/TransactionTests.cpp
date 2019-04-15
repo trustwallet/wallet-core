@@ -20,12 +20,11 @@ const std::string signs[] {
 
 TEST(BravoTransaction, Serialization) {
 
-    std::string referenceBlockId = "0000086bf9e7704509aa41311a66fa0a1b479c6b";
-    uint32_t referenceBlockTime = 1552464180;
+    auto referenceBlockId = parse_hex("0000086bf9e7704509aa41311a66fa0a1b479c6b");
+    int32_t referenceBlockTime = 1552464180;
     auto chainId = parse_hex("0000000000000000000000000000000000000000000000000000000000000000");
 
     Signer signer {chainId};
-
 
     Transaction tx {referenceBlockId, referenceBlockTime};
     tx.addOperation(new TransferOperation("alice", "bob", 90000, false, "Eva"));

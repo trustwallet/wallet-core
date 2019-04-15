@@ -63,7 +63,7 @@ Address::Address(const Data& data, std::string prefix) : bytes(data), prefix(pre
 
 /// Initializes a Bravo address from a public key.
 Address::Address(const PublicKey& publicKey, std::string prefix) : prefix(prefix) {
-    assert(Size == TW::PublicKey::secp256k1Size);
+    static_assert(Size == TW::PublicKey::secp256k1Size);
 
     // copy the raw, compressed key data
     bytes = publicKey.compressed().bytes;

@@ -1,10 +1,9 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWData.h"
-#include "TWPrivateKey.h"
 
-#include "TWBravoTransaction.h"
+#include "TWBravoProto.h"
+#include "TWCommonProto.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -13,12 +12,6 @@ TW_EXPORT_CLASS
 struct TWBravoSigner;
 
 TW_EXPORT_STATIC_METHOD
-struct TWBravoSigner *_Nonnull TWBravoSignerCreate(TWData *_Nonnull chainID);
-
-TW_EXPORT_METHOD
-void TWBravoSignerSign(struct TWBravoSigner *_Nonnull signer, struct TWPrivateKey *_Nonnull privateKey, struct TWBravoTransaction *_Nonnull transaction);
-
-TW_EXPORT_METHOD
-void TWBravoSignerDelete(struct TWBravoSigner *_Nonnull signer);
+TW_Proto_Result TWBravoSignerSign(TW_Bravo_Proto_SigningInput input);
 
 TW_EXTERN_C_END
