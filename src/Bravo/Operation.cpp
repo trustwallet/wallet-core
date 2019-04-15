@@ -7,15 +7,15 @@ using namespace TW::Bravo;
 using json = nlohmann::json;
 
 /// Transfer Operation
-TransferOperation::TransferOperation(std::string from, std::string to, Asset asset, std::string memo)
+TransferOperation::TransferOperation(const std::string& from, const std::string& to, const Asset& asset, const std::string& memo)
                          : from(from), to(to), asset(asset), memo(memo) {
 	validate();
 }
 
-TransferOperation::TransferOperation(std::string from, std::string to, int64_t amount, bool isTestNet, std::string memo) 
+TransferOperation::TransferOperation(const std::string& from, const std::string& to, int64_t amount, bool isTestNet, const std::string& memo) 
                     : TransferOperation(from, to, Asset(amount, isTestNet), memo) { }
 
-TransferOperation::TransferOperation(std::string from, std::string to, std::string asset, std::string memo)     
+TransferOperation::TransferOperation(const std::string& from, const std::string& to, const std::string& asset, const std::string& memo)     
                     : TransferOperation(from, to, Asset::fromString(asset), memo) { }
 
 void TransferOperation::validate()

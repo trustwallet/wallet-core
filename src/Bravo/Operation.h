@@ -23,9 +23,9 @@ namespace Bravo {
 
     class TransferOperation: public Operation {
     public:
-        TransferOperation(std::string from, std::string to, Asset asset, std::string memo);
-        TransferOperation(std::string from, std::string to, int64_t amount, bool isTestNet, std::string memo);
-		TransferOperation(std::string from, std::string to, std::string asset, std::string memo);
+        TransferOperation(const std::string& from, const std::string& to, const Asset& asset, const std::string& memo);
+        TransferOperation(const std::string& from, const std::string& to, int64_t amount, bool isTestNet, const std::string& memo);
+		TransferOperation(const std::string& from, const std::string& to, const std::string& asset, const std::string& memo);
 
         void serialize(Data& os) const noexcept override;
         nlohmann::json serialize() const noexcept override;
