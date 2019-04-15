@@ -8,7 +8,7 @@ import XCTest
 import TrustWalletCore
 
 class IocoinTests: XCTestCase {
-    let ioc = CoinType.ioc
+    let ioc = CoinType.iocoin
 
     func testValidAddresses() {
         XCTAssertTrue(ioc.validate(address: "ifnGXeM8HuYiXTqXGsqK6srr8kZjKueuCt"))
