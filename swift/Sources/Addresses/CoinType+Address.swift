@@ -58,6 +58,8 @@ public extension CoinType {
             return NEOAddress(string: string)
         case .decred:
             return DecredAddress(string: string)
+        case .iocoin:
+            return IocoinAddress(string: string)
         case .groestlcoin:
             if let addr = Bech32Address(string: string), addr.hrp == hrp {
                 return addr
