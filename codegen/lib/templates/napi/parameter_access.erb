@@ -18,8 +18,10 @@
     TWString *<%= param.name %>String = TWStringCreateWithJsString(info[<%= index %>].As<String>());
 <%  elsif param.type.name == :bool -%>
     bool <%= param.name %> = (bool) info[<%= index %>].As<Boolean>();
-<%  elsif [:int, :uint8, :size, :uint16, :uint32, :uint64].include? param.type.name -%>
-    int <%= param.name %> = info[<%= index %>].As<Number>();
+<%  elsif [:uint64, :size].include? param.type.name -%>
+    <%= NapiHelper.primitive_type(param.type) %> <%= param.name %> = std::stoull((std::string) info[<%= index %>].As<String>());
+<%  elsif [:int, :uint8, :uint16, :uint32].include? param.type.name -%>
+    <%= NapiHelper.primitive_type(param.type) %> <%= param.name %> = info[<%= index %>].As<Number>().Int64Value();
 <%  elsif param.type.is_struct -%>
 <%=     render('napi/struct_access.erb', { param: param, index: index }) -%>
 <%  elsif param.type.is_class -%>
@@ -29,4 +31,4 @@
 <%  elsif param.type.is_proto -%>
 <%=     render('napi/proto_access.erb', { param: param, index: index }) -%>
 <%  end -%>
-<%end -%>
+<% end -%>

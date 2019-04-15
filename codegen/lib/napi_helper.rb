@@ -44,19 +44,42 @@ module NapiHelper
     end
   end
 
+  def self.primitive_type(t)
+    case t.name
+    when :bool
+      'bool'
+    when :int
+      'int'
+    when :uint8
+      'uint8_t'
+    when :size
+      'size_t'
+    when :uint16
+      'uint16_t'
+    when :uint32
+      'uint32_t'
+    when :uint64
+      'uint64_t'
+    when :string
+      'string'
+    else
+      raise "Invalid type #{t.name}"
+    end
+  end
+
   def self.type(t)
     case t.name
     when :void
       'void'
     when :bool
       'Boolean'
-    when :int, :uint8, :size, :uint16, :uint32, :uint64
+    when :int, :uint8, :uint16, :uint32
       'Number'
     when :data
       'Uint8Array'
     when 'Data'
       'Uint8Array'
-    when :string
+    when :string, :size, :uint64
       'String'
     else
       if t.is_class || t.is_struct
