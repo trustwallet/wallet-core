@@ -22,18 +22,17 @@
   "dependencies": {
     "@types/long": "^4.0.0",
     "@types/node": "^11.13.4",
-    "bindings": "^1.5.0",
-    "chai": "^4.2.0",
     "long": "^4.0.0",
-    "mocha": "^6.1.1",
     "node-addon-api": "^1.6.3",
     "node-gyp": "github:brave/node-gyp",
-    "protobufjs": "^6.8.8",
-    "typescript": "^3.4.3"
+    "protobufjs": "^6.8.8"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
-    "@types/mocha": "^5.2.6"
+    "@types/mocha": "^5.2.6",
+    "chai": "^4.2.0",
+    "mocha": "^6.1.3",
+    "typescript": "^3.4.3"
   },
   "peerDependencies": {
     "@types/long": "^4.0.0",
