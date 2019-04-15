@@ -8,6 +8,7 @@
 
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWP2SHPrefix.h>
 
 #include <array>
 #include <cassert>
@@ -17,6 +18,11 @@ using namespace TW::Bitcoin;
 
 /// Cash address human-readable part
 static const std::string cashHRP = "bitcoincash";
+
+/// From https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cashaddr.md
+
+__unused static const uint8_t p2khVersion = 0x00;
+static const uint8_t p2shVersion = 0x08;
 
 static constexpr size_t maxHRPSize = 20;
 static constexpr size_t maxDataSize = 104;
@@ -86,5 +92,8 @@ Address CashAddress::legacyAddress() const {
     size_t outlen = 0;
     cash_data_to_addr(result.data(), &outlen, bytes.data(), CashAddress::size);
     assert(outlen == 21 && "Invalid length");
+    if (result[0] == p2shVersion) {
+        result[0] = TWP2SHPrefixBitcoin;
+    }
     return Address(result);
 }

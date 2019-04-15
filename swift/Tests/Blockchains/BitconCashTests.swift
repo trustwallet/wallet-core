@@ -41,4 +41,16 @@ class BitcoinCashTests: XCTestCase {
             BitcoinCashAddress(string: "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd")?.description
         )
     }
+
+    func testLockScript() {
+        let address = BitcoinCashAddress(string: "pzukqjmcyzrkh3gsqzdcy3e3d39cqxhl3g0f405k5l")!
+        let script = BitcoinScript.buildForAddress(address: address.description)
+        XCTAssertEqual(script.data.hexString, "a914b9604b7820876bc510009b8247316c4b801aff8a87")
+    }
+
+    func testLockScript2() {
+        let address = BitcoinCashAddress(string: "qphr8l8ns8wd99a8653ctfe5qcrxaumz5qpmqlk2ex")!
+        let script = BitcoinScript.buildForAddress(address: address.description)
+        XCTAssertEqual(script.data.hexString, "76a9146e33fcf381dcd297a7d52385a73406066ef362a088ac")
+    }
 }
