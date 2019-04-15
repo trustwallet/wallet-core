@@ -34,5 +34,9 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6"
+  },
+  "peerDependencies": {
+    "@types/long": "^4.0.0",
+    "long": "^4.0.0"
   }
 }
