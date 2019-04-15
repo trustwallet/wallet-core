@@ -46,12 +46,6 @@ module JsHelper
     unique_types
   end
 
-
-  # Create import statement given type
-  def self.str_to_import(t)
-      "import { #{t} } from './#{t}'"
-  end
-
   # Transforms an interface name to a Js constant name
   def self.format_constant(name)
     name.upcase
@@ -59,7 +53,7 @@ module JsHelper
 
   def self.parameters(params)
     names = params.map do |param|
-      if param.type.name == :uint64
+      if [:uint64, :size].include? param.type.name
         "#{param.name || 'value'}Uint64: #{type(param.type)}"
       else
         "#{param.name || 'value'}: #{type(param.type)}"
@@ -72,7 +66,7 @@ module JsHelper
     params.map do |param|
       if param.type.is_struct || param.type.is_class 
         "#{param.name || 'value'}.getNativeHandle()"
-      elsif param.type.name == :uint64
+      elsif [:uint64, :size].include? param.type.name
         "#{param.name || 'value'}Uint64"
       elsif param.type.is_proto
         "\n                  #{proto_to_class(param.type.name)}.encode(#{param.name}).finish()"
@@ -83,8 +77,7 @@ module JsHelper
   end
 
   def self.is_primitive_type(t)
-    case t.name
-    when :void, :bool, :int, :uint8, :uint16, :uint32, :size, :uint64, :data, 'Data', :string
+    if [:void, :bool, :int, :uint8, :uint16, :uint32, :size, :uint64, :data, 'Data', :string].include? t.name
       true
     else
       false
@@ -97,9 +90,9 @@ module JsHelper
       'void'
     when :bool
       'boolean'
-    when :int, :uint8, :uint16, :uint32, :size
+    when :int, :uint8, :uint16, :uint32
       'number'
-    when :uint64
+    when :uint64, :size
       'string'
     when :data
       'Uint8Array'

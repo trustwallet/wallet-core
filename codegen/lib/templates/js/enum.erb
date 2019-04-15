@@ -7,7 +7,7 @@ import { WalletCore } from '../WalletCore';
 <%# Imports -%>
 <% if !import_entity_name.empty? -%>
 <%- import_entity_name.each do |type| -%>
-<%= JsHelper.str_to_import(type) %>;
+import { <%= type %> } from './<%= type %>';
 <%  end -%>
 
 
@@ -24,30 +24,13 @@ export class <%= entity.name %>Util {
 
 <%# Property declarations -%>
 <%- entity.properties.each do |property| -%>
-<%-   if should_return_data(property) -%>
-    public static <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters) %>): Uint8Array {
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: property) %>(<%= JsHelper.arguments(property.parameters) %>);
-    }
-<%-   else -%>
     public static <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters) %>): <%= JsHelper.type(property.return_type) %> {
-        // prop
         return WalletCore.<%= NapiHelper.function_name(entity: entity, function: property) %>(<%= JsHelper.arguments(property.parameters) %>);
     }
-<%-   end -%>
-
 <%- end -%>
 <%# Method declarations -%>
 <%- entity.methods.each do |method| -%>
 <%-   next if method.name.start_with?('Delete') -%>
-<%-   if should_return_data(method) -%>
-    public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): Uint8Array {
-<%-     if method.parameters.length > 1 -%>
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= method.parameters[0].name %>, <%= JsHelper.arguments(method.parameters.drop(1)) %>);
-<%-     else -%>
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= method.parameters[0].name %>);
-<%-     end -%>
-    }
-<%-   else -%>
     public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): <%= JsHelper.type(method.return_type) %> {
 <%-     if method.parameters.length > 1 -%>
         return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= method.parameters[0].name %>, <%= JsHelper.arguments(method.parameters.drop(1)) %>);
@@ -55,8 +38,6 @@ export class <%= entity.name %>Util {
         return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= method.parameters[0].name %>);
 <%-     end -%>
     }
-<%-   end -%>
-
 <%- end -%>
 <%# toString -%>
 <%  if has_string -%>
@@ -69,6 +50,5 @@ export class <%= entity.name %>Util {
         }
     }
 <%  end -%>
-
 }
 <%  end -%>

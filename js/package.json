@@ -1,14 +1,16 @@
 {
   "name": "trust-wallet-core",
   "version": "1.0.0",
-  "description": "Trust Wallet Core Javascript Bindings",
-  "main": "main.js",
+  "description": "Trust Wallet Core JavaScript Bindings",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "generate-js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
     "generate-ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
     "generate": "npm run generate-js && npm run generate-ts",
-    "build-bind": "cd cpp && npx node-gyp configure && npx node-gyp build"
+    "build-bind": "cd cpp && npx node-gyp configure && npx node-gyp build",
+    "dist": "rm -rf dist && npx tsc && mkdir dist/cpp && cp -r cpp/build dist/cpp/build"
   },
   "author": "",
   "license": "ISC",
@@ -22,8 +24,9 @@
     "long": "^4.0.0",
     "mocha": "^6.1.1",
     "node-addon-api": "^1.6.3",
-    "node-gyp": "^3.8.0",
-    "protobufjs": "^6.8.8"
+    "node-gyp": "github:brave/node-gyp",
+    "protobufjs": "^6.8.8",
+    "typescript": "^3.4.3"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
