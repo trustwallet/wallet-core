@@ -9,43 +9,43 @@
 using namespace TW;
 using namespace TW::Ontology;
 
-TW_Ontology_Proto_SigningOutput OntTxBuilder::decimals() {
-    auto transaction = Ont().decimals();
+TW_Ontology_Proto_SigningOutput OntTxBuilder::decimals(const Ontology::Proto::SigningInput &input) {
+    auto transaction = Ont().decimals(input.nonce());
     auto encoded = transaction.serialize();
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_encoded(encoded.data(), encoded.size());
     auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),
                                  serialized.size());
 }
 
 TW_Ontology_Proto_SigningOutput
-OntTxBuilder::balanceOf(const Ontology::Proto::SigningInput& input) {
+OntTxBuilder::balanceOf(const Ontology::Proto::SigningInput &input) {
     auto queryAddress = Address(input.query_address());
-    auto transaction = Ont().balanceOf(queryAddress);
+    auto transaction = Ont().balanceOf(queryAddress, input.nonce());
     auto encoded = transaction.serialize();
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_encoded(encoded.data(), encoded.size());
     auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),
                                  serialized.size());
 }
 
-TW_Ontology_Proto_SigningOutput OntTxBuilder::transfer(const Ontology::Proto::SigningInput& input) {
+TW_Ontology_Proto_SigningOutput OntTxBuilder::transfer(const Ontology::Proto::SigningInput &input) {
     auto payerSigner = Signer(PrivateKey(input.payer_private_key()));
     auto fromSigner = Signer(PrivateKey(input.owner_private_key()));
     auto toAddress = Address(input.to_address());
     auto tranferTx = Ont().transfer(fromSigner, toAddress, input.amount(), payerSigner,
-                                    input.gas_price(), input.gas_limit());
+                                    input.gas_price(), input.gas_limit(), input.nonce());
     auto encoded = tranferTx.serialize();
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_encoded(encoded.data(), encoded.size());
     auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),
                                  serialized.size());
 }
 
-TW_Ontology_Proto_SigningOutput OntTxBuilder::build(const Ontology::Proto::SigningInput& input) {
+TW_Ontology_Proto_SigningOutput OntTxBuilder::build(const Ontology::Proto::SigningInput &input) {
     auto method = std::string(input.method().begin(), input.method().end());
     if (method == "transfer") {
         return OntTxBuilder::transfer(input);
@@ -54,7 +54,7 @@ TW_Ontology_Proto_SigningOutput OntTxBuilder::build(const Ontology::Proto::Signi
         return OntTxBuilder::balanceOf(input);
     }
     if (method == "decimals") {
-        return OntTxBuilder::decimals();
+        return OntTxBuilder::decimals(input);
     }
     Data nullData;
     return TWDataCreateWithBytes(nullData.data(), nullData.size());

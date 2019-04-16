@@ -17,7 +17,7 @@ namespace TW::Ontology {
 class OntTxBuilder {
 
   public:
-    static TW_Ontology_Proto_SigningOutput decimals();
+    static TW_Ontology_Proto_SigningOutput decimals(const Ontology::Proto::SigningInput &input);
 
     static TW_Ontology_Proto_SigningOutput balanceOf(const Ontology::Proto::SigningInput& input);
 
