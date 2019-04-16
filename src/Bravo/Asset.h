@@ -6,8 +6,7 @@
 
 #include <memory>
 
-namespace TW {
-namespace Bravo {
+namespace TW::Bravo {
 
     // An asset class that can be used by Bravo, EOS, steem, et. al.
     class Asset: Serializable {
@@ -48,8 +47,4 @@ namespace Bravo {
         static const uint8_t maxDecimals = 18;
 
     };
-}} // namespace
-
-struct TWBravoAsset {
-    TW::Bravo::Asset impl;
-};
+} // namespace

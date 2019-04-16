@@ -11,8 +11,7 @@
 #include "../PublicKey.h"
 #include "../Data.h"
 
-namespace TW {
-namespace Bravo {
+namespace TW::Bravo {
 
 class Address {
 public:
@@ -39,9 +38,8 @@ private:
     // Class constants
     static const size_t Size = 33;
 
-    std::string prefix;
-
     Data bytes;
+    std::string prefix;
 
     static bool extractKeyData(const std::string& string, const std::vector<std::string>& validPrefixes, Address *address = nullptr);
 };
@@ -51,7 +49,7 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
     return  lhs.bytes == rhs.bytes && lhs.prefix == rhs.prefix;
 }
 
-}} // namespace
+} // namespace
 
 
 /// Wrapper for C interface.

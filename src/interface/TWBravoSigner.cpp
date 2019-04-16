@@ -29,7 +29,7 @@ TW_Proto_Result TWBravoSignerSign(TW_Bravo_Proto_SigningInput input) {
         return createErrorResult("Amount out of range!");
     }
 
-    int64_t amount = static_cast<int64_t>(in.amount());
+    int64_t amount = static_cast<int64_t>(in.amount() * Asset::precision);
 
     try {
         // create a transfer operation

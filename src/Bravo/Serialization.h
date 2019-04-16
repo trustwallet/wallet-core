@@ -9,8 +9,7 @@
 #include <set>
 #include <string>
 
-namespace TW {
-namespace Bravo {
+namespace TW::Bravo {
     class Serializable
     {
     public:
@@ -87,4 +86,4 @@ namespace Bravo {
 
         return array;
     }
-}} // namespace
+} // namespace

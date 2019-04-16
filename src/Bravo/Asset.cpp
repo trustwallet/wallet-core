@@ -55,7 +55,7 @@ Asset Asset::fromString(std::string assetString) {
     int64_t precision = pow(10, static_cast<double>(decimals));
 
     // Parse amount
-    int64_t intPart, fractPart;
+    int64_t intPart, fractPart = 0;
     if (dotPosition != string::npos) {
         intPart = boost::lexical_cast<int64_t>(amountString.data(), dotPosition);
         fractPart = boost::lexical_cast<int64_t>(amountString.data() + dotPosition + 1, decimals);
@@ -100,7 +100,7 @@ std::string Asset::string() const {
 
     int charsWritten = snprintf(buffer, maxBufferSize, "%.*f %s", 
                         decimals,
-                        static_cast<double>(amount) / decimals,
+                        static_cast<double>(amount) / precision,
                         getSymbol().c_str());
 
     if (charsWritten < 0 || charsWritten > maxBufferSize) {

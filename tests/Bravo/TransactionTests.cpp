@@ -11,11 +11,11 @@ using namespace TW;
 using namespace TW::Bravo;
 
 const std::string signs[] {
-    "20217d319053597bfafc7d341d3abb3a29b87e4ba2242a0704e53e9108eabf37463d498d826508999561779d509c1d1d72212dae57b292b17af76bc7c958cae17e",
-    "2061018907ff2c6fb58c33f2a6ba4a6a1a6f87d06a0e4f8b5c67eb58507c0ad5782f59a17ae1e7cf5c1b93caa13cdc0bc12ce0dc5150bb96afa7aebb87b972fedb",
-    "1f588dd65fff1ad6378cc9120dff8262688c969d606f35601e1b9a4e7dac845f233c1e4dab15517bf4ee7103f2cdd1c1727da2792b51a1604e458e2ab9a81655c2",
-    "2001420f58ebb0d28bfd448a2570ef90e9ec5087fc2e6d42636403c54153bea2a329ad3e611d391c10c67754949c8aa44ebb99579f121963f4a523bac47e597455",
-    "2028e5b873f9d3b039c8dfa5af054e569cd4643bbe0751eef4d14a4cb3f3cfc7053c8f0e59d60dd82ebf8f016e8705fde42b55360f4a18c41fb1456c57017e5c15"
+    "1f05b3dddfcbca5748b02562645fe7c3f01044b78983ce673f84c230b2dc97beed19b2e8462f1e45f2ac7600c2900f9f90510efe0891141ad2c6b1ae33b21bcace",
+    "2074ce46787639f1cb7009cfff3893bb91ed8cd03cbb8e7858e09b6d656c663499050a2b325c9884ff3049b459323593bbe8868ec3f3be659cf44f12bb083f0a0a",
+    "1f1d562416a02d37f805aeb813925df13f4559baa56d26774b04dfeed39d8937bd499573df14d5a602cb7a672a18ffedd2b650edc89a4d3442de34c247828d9e0e",
+    "206182810e412ae4ac9e89e3487d64fad048ec1747fb33b9ceae6b74b849671a826e45321e045f21e86de49b89de651a46c456dd08c6d8c6f4036bb831e47c4e56",
+    "1f2fc97f4f1c24b09f08a17663ad97f5a0c95e0417a1f5aaf76e2743e68fd46eee08bef43ff863cfb65d1e183e42ecf31692663a289ea1205900e764a5c49bf0e7"
 };
 
 TEST(BravoTransaction, Serialization) {
@@ -30,7 +30,7 @@ TEST(BravoTransaction, Serialization) {
     tx.addOperation(new TransferOperation("alice", "bob", 90000, false, "Eva"));
 
     for (int i = 0; i < 5; i++) {
-        PrivateKey pk(Hash::sha256(hex(std::string(i, 'A'))));
+        PrivateKey pk(Hash::sha256(std::string(i + 1, 'A')));
 
         ASSERT_NO_THROW(signer.sign(pk, tx));
         const auto& sigs = tx.getSignatures();

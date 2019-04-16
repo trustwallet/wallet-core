@@ -275,7 +275,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeNULS: string = "nuls"; break;
     case TWCoinTypeLux: string = "lux"; break;
     case TWCoinTypeQtum: string = "qtum"; break;
-    case TWCoinTypeBravo: string = "bravocoin.com"; break;
+    case TWCoinTypeBravo: string = "bravocoin"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -323,7 +323,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeNULS: string = "NULS"; break;
     case TWCoinTypeLux: string = "Lux"; break;
     case TWCoinTypeQtum: string = "Qtum"; break;
-    case TWCoinTypeBravo: string = "Bravocoin.com"; break;
+    case TWCoinTypeBravo: string = "BravoCoin"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());

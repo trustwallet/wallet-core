@@ -7,8 +7,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
-namespace TW {
-namespace Bravo {
+namespace TW::Bravo {
 
 /// Helper class that performs Bravo transaction signing.
 class Signer {
@@ -30,9 +29,4 @@ public:
 	static int is_canonical(uint8_t by, uint8_t sig[64]);
 };
 
-}} // namespace
-
-// C interface Wrapper
-struct TWBravoSigner {
-    TW::Bravo::Signer impl;
-};
+} // namespace
