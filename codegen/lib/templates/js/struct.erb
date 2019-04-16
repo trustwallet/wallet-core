@@ -1,27 +1,26 @@
 import { WalletCore } from '../WalletCore';
+import { TW } from '../../proto/TrustWalletCore';
+import * as Long from 'long';
 
 <%  import_entity_name =  JsHelper.import_types_from_entity(entity) -%>
 <%# Imports -%>
 <% if !import_entity_name.empty? -%>
 <%- import_entity_name.each do |type| -%>
-<%= JsHelper.str_to_import(type) %>;
+import { <%= type %> } from './<%= type %>';
+<%  end -%>
 <% end -%>
-<% end -%>
-
-<%  less = entity.static_methods.detect{ |i| i.name == 'Less' } -%>
-<%  equal = entity.static_methods.detect{ |i| i.name == 'Equal' } -%>
 
 // Struct
 export class <%= entity.name %> {
 
 <%  if !entity.static_methods.detect{ |i| i.name.start_with?('Init') }.nil? -%>
-    private nativeHandle: any;
+    private nativeHandle: External;
 
-    private constructor(nativeHandle: any) {
+    private constructor(nativeHandle: External) {
         this.nativeHandle = nativeHandle;
     }
 
-    public static createWithNativeHandle(nativeHandle: any) {
+    public static createWithNativeHandle(nativeHandle: External) {
         return new <%= entity.name %>(nativeHandle);
     }
 
@@ -44,13 +43,9 @@ export class <%= entity.name %> {
 <%- end -%>
 <%# Static property declarations -%>
 <%- entity.static_properties.each do |property| -%>
-<%    if should_return_data(property) -%>
-    public static <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters) %>): Uint8Array {
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>);
-    }
-<%    elsif should_return_string(property) -%>
-    public static <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters) %>): string {
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>);
+<%    if [:uint64, :size].include? property.return_type.name -%>
+    public static <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters) %>): <%= JsHelper.type(property.return_type) %> {
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>), true);
     }
 <%    else -%>
     public static <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters) %>): <%= JsHelper.type(property.return_type) %> {
@@ -62,17 +57,13 @@ export class <%= entity.name %> {
 <%# Static method declarations -%>
 <%- entity.static_methods.each do |method| -%>
 <%-   next if method.name.start_with?('Init') -%>
-<%    if should_return_data(method) -%>
-    public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): Uint8Array {
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>);
-    }
-<%    elsif should_return_string(method) -%>
-    public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): string {
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>);
-    }
-<%    elsif should_return_object(method) -%>
+<%    if should_return_object(method) -%>
     public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): <%= JsHelper.type(method.return_type) %> {
         return <%= JsHelper.type(method.return_type) %>.createWithNativeHandle(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>));
+    }
+<%    elsif [:uint64, :size].include? method.return_type.name -%>
+    public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): Long {
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters) %>), true);
     }
 <%    else -%>
     public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters) %>): <%= JsHelper.type(method.return_type) %> {
@@ -83,13 +74,9 @@ export class <%= entity.name %> {
 <%- end -%>
 <%# Property declarations -%>
 <%- entity.properties.each do |property| -%>
-<%    if should_return_data(property) -%>
-    public <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters.drop(1)) %>): Uint8Array {
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: property) %>(this.getNativeHandle());
-    }
-<%    elsif should_return_string(property) -%>
-    public <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters.drop(1)) %>): string {
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: property) %>(this.getNativeHandle());
+<%    if [:uint64, :size].include? property.return_type.name -%>
+    public <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters.drop(1)) %>): Long {
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: property) %>(this.getNativeHandle()), true);
     }
 <%    else -%>
     public <%= JsHelper.format_name(property.name) %>(<%= JsHelper.parameters(property.parameters.drop(1)) %>): <%= JsHelper.type(property.return_type) %> {
@@ -101,28 +88,20 @@ export class <%= entity.name %> {
 <%# Method declarations -%>
 <%  entity.methods.each do |method| -%>
 <%    next if method.name.start_with?('Delete') -%>
-<%    if should_return_data(method) -%>
-    public <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters.drop(1)) %>): Uint8Array {
-<%      if method.parameters.length > 1 -%>
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle(), <%= JsHelper.arguments(method.parameters.drop(1)) %>);
-<%      else -%>
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle());
-<%      end -%>
-    }
-<%    elsif should_return_string(method) -%>
-    public <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters.drop(1)) %>): string {
-<%      if method.parameters.length > 1 -%>
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle(), <%= JsHelper.arguments(method.parameters.drop(1)) %>);
-<%      else -%>
-        return WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle());
-<%      end -%>
-    }
-<%    elsif should_return_object(method) -%>
+<%    if should_return_object(method) -%>
     public <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters.drop(1)) %>): <%= JsHelper.type(method.return_type) %> {
 <%      if method.parameters.length > 1 -%>
         return <%= JsHelper.type(method.return_type) %>.createWithNativeHandle(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle(), <%= JsHelper.arguments(method.parameters.drop(1)) %>));
 <%      else -%>
         return <%= JsHelper.type(method.return_type) %>.createWithNativeHandle(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle()));
+<%      end -%>
+    }
+<%    elsif [:uint64, :size].include? method.return_type.name -%>
+    public <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters.drop(1)) %>): Long {
+<%      if method.parameters.length > 1 -%>
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle(), <%= JsHelper.arguments(method.parameters.drop(1)) %>), true);
+<%      else -%>
+        return Long.fromString(WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(this.getNativeHandle()), true);
 <%      end -%>
     }
 <%    else -%>
@@ -135,9 +114,5 @@ export class <%= entity.name %> {
     }
 <%    end -%>
 
-<%  end -%>
-<%  if !less.nil? && !equal.nil? -%>
-<%    compareMethod = JsHelper.compareMethod(entity) -%>
-    public native <%= JsHelper.type(compareMethod.return_type) %> <%= JsHelper.format_name(compareMethod.name) %>(<%= JsHelper.parameters(compareMethod.parameters.drop(1)) %>);
 <%  end -%>
 }

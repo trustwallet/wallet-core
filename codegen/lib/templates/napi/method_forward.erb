@@ -14,21 +14,18 @@
     <%= NapiHelper.type(method.return_type) %> result = TWDataUint8Array(&env, <%= call %>);
 <%= render('napi/parameter_release.erb', { method: method }) -%>
     return result;
-
 <%
   # Method returns a string
   elsif should_return_string(method) -%>
     String result = TWStringJsString(&env, <%= call %>);
 <%= render('napi/parameter_release.erb', { method: method }) -%>
     return result;
-
 <%
   # Method returns proto
   elsif method.return_type.is_proto -%>
     Uint8Array result = TWDataUint8Array(&env, <%= call %>);
 <%= render('napi/parameter_release.erb', { method: method }) -%>
     return result;
-
 <%
   # Method returns an object
   elsif method.return_type.is_struct || method.return_type.is_class || method.return_type.is_enum
@@ -60,12 +57,16 @@
         TW<%= entity.name %>Delete((TW<%= entity.name %> *) data);
     });
 <%  end
-
   # Method returns void
   elsif method.return_type.name == :void -%>
     <%= call %>;
 <%= render('napi/parameter_release.erb', { method: method }) -%>
-
+<%
+  # Method returns unsigned 64 bit integer
+  elsif [:size, :uint64].include? method.return_type.name -%>
+    String returnValue = String::New(env, std::to_string(<%= call %>));
+<%= render('napi/parameter_release.erb', { method: method }) -%>
+    return returnValue;
 <% 
   # Method returns a primitive
   else -%>
