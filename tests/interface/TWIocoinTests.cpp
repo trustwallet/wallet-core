@@ -10,7 +10,7 @@
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWIocoinAddress.h>
-
+#include <TrustWalletCore/TWBitcoinScript.h>
 #include <gtest/gtest.h>
 
 TEST(Iocoin, ExtendedKeys) {
@@ -32,4 +32,14 @@ TEST(Iocoin, DerivePubkeyFromDpub) {
     auto address0 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeIocoin, pubKey0));
 
     assertStringsEqual(address0, "idi85QBDyPiLyi89HvAA4jY1hJS66M3wsL");
+}
+
+TEST(Iocoin, LockScripts) {
+    auto script1 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("igtYaw43AsogbQTMGDJPXrpV1phPREmKkJ").get()));
+    auto scriptData1 = WRAPD(TWBitcoinScriptData(script1.get()));
+    assertHexEqual(scriptData1, "76a9149a67996bb753f53b8e2f13cd15fda2722f2f245888ac");
+
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("iUfZgENcr6KRY8W88CTF1oBMBbrstm8xTt").get()));
+    auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
+    assertHexEqual(scriptData2, "76a914145197e9a8549072610b3515427553848c6d0d0388ac");
 }
