@@ -121,6 +121,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeDecred, privateKey), "Dsp4u8xxTHSZU2ELWTQLQP77xJhgeWrTsGK");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeEthereum, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeEthereumClassic, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeEthersocial, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeGo, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeGroestlcoin, privateKey), "grs1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0jsaf3d");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeICON, privateKey), "hx4728fc65c31728f0d3538b8783b5394b31a136b9");
