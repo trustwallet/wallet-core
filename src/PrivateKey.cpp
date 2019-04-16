@@ -71,6 +71,33 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     return result;
 }
 
+Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
+    Data result;
+    bool success = false;
+    switch (curve) {
+    case TWCurveSECP256k1: {
+        result.resize(65);
+        success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data() + 1,
+                                    result.data(), canonicalChecker) == 0;
+    } break;
+    case TWCurveEd25519: // not supported
+        break;
+    case TWCurveNIST256p1: {
+        result.resize(65);
+        success = ecdsa_sign_digest(&nist256p1, bytes.data(), digest.data(), result.data() + 1,
+                                    result.data(), canonicalChecker) == 0;
+    } break;
+    }
+
+    if (!success) {
+        return {};
+    }
+
+    // graphene adds 31 to the recovery id
+    result[0] += 31;
+    return result;
+}
+
 Data PrivateKey::signAsDER(const Data& digest, TWCurve curve) const {
     Data sig(64);
     bool success =
