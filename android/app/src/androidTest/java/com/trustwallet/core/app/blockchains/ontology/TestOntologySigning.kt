@@ -19,7 +19,7 @@ class TestOntologySigning {
             contract = "ONG"
             method = "balanceOf"
             queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"
-            nonce = 3486522027
+            nonce = 3486522027.toInt()
         }.build()
 
         val result = OntologySigner.sign(input).encoded.toByteArray()
@@ -38,7 +38,7 @@ class TestOntologySigning {
             contract = "ONT"
             method = "balanceOf"
             queryAddress = "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"
-            nonce = 3959576200
+            nonce = 3959576200.toInt()
         }.build()
 
         val result = OntologySigner.sign(input).encoded.toByteArray()
@@ -62,7 +62,7 @@ class TestOntologySigning {
             gasPrice = 500
             gasLimit = 20000
             payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".toHexBytesInByteString()
-            nonce = 2338116610
+            nonce = 2338116610.toInt()
         }.build()
 
         val result = OntologySigner.sign(input).encoded.toByteArray()
@@ -85,7 +85,7 @@ class TestOntologySigning {
             gasPrice = 500
             gasLimit = 20000
             payerPrivateKey = "4646464646464646464646464646464646464646464646464646464646464652".toHexBytesInByteString()
-            nonce = 2827104669
+            nonce = 2827104669.toInt()
         }.build()
 
         val result = OntologySigner.sign(input).encoded.toByteArray()
