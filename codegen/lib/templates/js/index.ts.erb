@@ -7,6 +7,7 @@
 // This is a GENERATED FILE, changes made here WILL BE LOST.
 //
 
+import { TW } from '../proto/TrustWalletCore';
 <% entities.sort { |x,y| x.name <=> y.name }.each do |entity| -%>
 <%  if entity.enum? && JsHelper.enum_has_util(entity) -%>
 import { <%= entity.name %>, <%= entity.name %>Util } from '../js/generated/<%= entity.name %>';
@@ -16,6 +17,7 @@ import { <%= entity.name %> } from '../js/generated/<%= entity.name %>';
 <% end -%>
 
 export {
+    TW,
 <% entities.sort { |x,y| x.name <=> y.name }.each do |entity| -%>
 <%  if entity.enum? && JsHelper.enum_has_util(entity) -%>
     <%= entity.name %>, <%= entity.name %>Util,
@@ -23,4 +25,4 @@ export {
     <%= entity.name %>,
 <%  end-%>
 <% end -%>
-}
+};
