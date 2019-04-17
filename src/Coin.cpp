@@ -244,6 +244,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
+    case TWCoinTypeIocoin:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeLux:
@@ -251,7 +252,6 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
         return TWHDVersionXPUB;
 
     case TWCoinTypeDecred:
-    case TWCoinTypeIocoin:
         return TWHDVersionDPUB;
 
     case TWCoinTypeDogecoin:
@@ -297,6 +297,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
+    case TWCoinTypeIocoin:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeLux:
@@ -304,7 +305,6 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
         return TWHDVersionXPRV;
 
     case TWCoinTypeDecred:
-    case TWCoinTypeIocoin:
         return TWHDVersionDPRV;
 
     case TWCoinTypeDogecoin:

@@ -19,19 +19,19 @@ TEST(Iocoin, ExtendedKeys) {
         STRING("TREZOR").get()
     ));
 
-    auto dpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeIocoin, TWHDVersionDPUB));
-    auto dprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeIocoin, TWHDVersionDPRV));
+    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeIocoin, TWHDVersionXPUB));
+    auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeIocoin, TWHDVersionXPRV));
 
-    assertStringsEqual(dpub, "dpubZGHTD5JbfpgQVUy4Gnu4XkEoPC185GDMik8YFNXeozB5Ewz8B4ccmfA6CFdw2hzYaNBTimiFPJZ6wVNrN7DjwQn2N86sGVYcu5MGoe2E83L");
-    assertStringsEqual(dprv, "dprv3pVMqwkJbSccb55J2Gqi1XSYmBSreKdHXCWDWTbHouaSXPxVJ7H1h5e53ZwKeaizKMkcZKB5AXAKLjxm5MB5gybv2Uh8z77XJyGyYbMsQy8");
+    assertStringsEqual(xpub, "xpub6DHj382cGmV2xBnzy7KaLLBqac3qwaBcHZL1BLzjaNH9R6kye9ix45TBHjBYvS9MdfQFWtSSctJZpdF6wm4pnN1eikCvJ7N9NRAZwGyFipn");
+    assertStringsEqual(xprv, "xprv9zJNdcViSPvjjhiXs5nZyCF72aDMY7TkvLQQNxb822kAYJRq6cQhWH8hSV9Tcq9V4WyvoMVhu5tm9BcUjb3LqTaLWvwC6QfnTkUDwbERbph");
 }
 
-TEST(Iocoin, DerivePubkeyFromDpub) {
-    auto dpub = STRING("dpubZGHTD5JbfpgQVUy4Gnu4XkEoPC185GDMik8YFNXeozB5Ewz8B4ccmfA6CFdw2hzYaNBTimiFPJZ6wVNrN7DjwQn2N86sGVYcu5MGoe2E83L");
-    auto pubKey0 = TWHDWalletGetPublicKeyFromExtended(dpub.get(), TWCoinTypeIocoin, TWHDVersionDPUB, TWHDVersionDPRV, 0, 0);
+TEST(Iocoin, DeriveFromXpub) {
+    auto xpub = STRING("");
+    auto pubKey0 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeIocoin, TWHDVersionXPUB, TWHDVersionXPRV, 0, 0);
     auto address0 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeIocoin, pubKey0));
 
-    assertStringsEqual(address0, "idi85QBDyPiLyi89HvAA4jY1hJS66M3wsL");
+    assertStringsEqual(address0, "iXkS9idLYaXHgBCj2UuLWgQaCAYbs2ymdx");
 }
 
 TEST(Iocoin, LockScripts) {
@@ -42,4 +42,7 @@ TEST(Iocoin, LockScripts) {
     auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("iUfZgENcr6KRY8W88CTF1oBMBbrstm8xTt").get()));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
     assertHexEqual(scriptData2, "76a914145197e9a8549072610b3515427553848c6d0d0388ac");
+    auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("bMWq7CWqBETShngqiRQpbUC2mcqT8AKxsx").get()));
+    auto scriptData3 = WRAPD(TWBitcoinScriptData(script3.get()));
+    assertHexEqual(scriptData3, "a914605ec8221d996ebfb6369b56c16e7d91369be43887");
 }
