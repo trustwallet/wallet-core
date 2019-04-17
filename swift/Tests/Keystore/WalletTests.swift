@@ -15,6 +15,7 @@ class WalletTests: XCTestCase {
         _ = try wallet.getAccount(password: "password", coin: .ethereum)
         _ = try wallet.getAccount(password: "password", coin: .callisto)
         _ = try wallet.getAccount(password: "password", coin: .poa)
+        _ = try wallet.getAccount(password: "password", coin: .ethersocial)
 
         XCTAssertEqual(wallet.key.accountCount, 3)
     }

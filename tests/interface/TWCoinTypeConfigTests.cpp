@@ -91,6 +91,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value27 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
     assertStringsEqual(value27, "QTUM");
+
+    auto value28 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthersocial));
+    assertStringsEqual(value28, "ESN");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -101,6 +104,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDash), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthersocial), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGo), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
@@ -217,6 +221,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value31 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
     assertStringsEqual(value31, "https://qtum.info/tx/123");
+
+    auto value32 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthersocial, txId));
+    assertStringsEqual(value32, "https://ethersocial.net/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -297,6 +304,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value27 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     assertStringsEqual(value27, "qtum");
+
+    auto value28 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthersocial));
+    assertStringsEqual(value28, "ethersocial");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -381,4 +391,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value28 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
     assertStringsEqual(value28, "Qtum");
+
+    auto value29 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthersocial));
+    assertStringsEqual(value29, "Ethersocial");
 }
