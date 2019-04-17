@@ -32,6 +32,7 @@ export class <%= entity.name %>Util {
         return WalletCore.<%= NapiHelper.function_name(entity: entity, function: property) %>(<%= JsHelper.arguments(property.parameters) %>);
     }
 <%-     end -%>
+
 <%- end -%>
 <%# Method declarations -%>
 <%- entity.methods.each do |method| -%>
@@ -53,6 +54,7 @@ export class <%= entity.name %>Util {
 <%-     end -%>
     }
 <%-     end -%>
+
 <%- end -%>
 <%# toString -%>
 <%  if has_string -%>
@@ -64,6 +66,7 @@ export class <%= entity.name %>Util {
             default: return '';
         }
     }
+
 <%  end -%>
 }
 <%  end -%>

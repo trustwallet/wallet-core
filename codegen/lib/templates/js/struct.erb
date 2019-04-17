@@ -14,7 +14,7 @@ import { <%= type %> } from './<%= type %>';
 export class <%= entity.name %> {
 
 <%  if !entity.static_methods.detect{ |i| i.name.start_with?('Init') }.nil? -%>
-    private nativeHandle: External;
+    private readonly nativeHandle: External;
 
     private constructor(nativeHandle: External) {
         this.nativeHandle = nativeHandle;
@@ -32,7 +32,7 @@ export class <%= entity.name %> {
 <%# Constructor declarations -%>
 <%- entity.static_methods.each do |method| -%>
 <%-   next unless method.name.start_with?('Init') -%>
-    public static <%= method.name %> (<%= JsHelper.parameters(method.parameters.drop(1)) %>): <%= entity.name %> | null {
+    public static <%= JsHelper.format_name(method.name) %>(<%= JsHelper.parameters(method.parameters.drop(1)) %>): <%= entity.name %> | null {
         const result = WalletCore.<%= NapiHelper.function_name(entity: entity, function: method) %>(<%= JsHelper.arguments(method.parameters.drop(1)) %>);
         if (result === null || result === undefined) {
             return null;

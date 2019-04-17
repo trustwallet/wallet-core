@@ -1,10 +1,10 @@
 {
-    "compilerOptions": {
-      "target": "es5",
-      "module": "commonjs",
-      "declaration": true,
-      "outDir": "./dist",
-      "strict": true
-    },
-    "exclude": ["js"]
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./dist",
+    "strict": true,
+    "typeRoots": ["./node_modules/@types"]
   }
+}
