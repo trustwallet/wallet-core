@@ -16,12 +16,12 @@ class BinanceChainTests: XCTestCase {
         XCTAssertEqual("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", address?.description)
     }
 
-    func testBinanceTestnet() {
+    func testBinanceMainnet() {
         let wallet = HDWallet(mnemonic: "rabbit tilt arm protect banner ill produce vendor april bike much identify pond upset front easily glass gallery address hair priority focus forest angle", passphrase: "")
         let key = wallet.getKeyForCoin(coin: .binance)
         let address = CoinType.binance.deriveAddress(privateKey: key)
 
         XCTAssertEqual(key.data.hexString, "727f677b390c151caf9c206fd77f77918f56904b5504243db9b21e51182c4c06")
-        XCTAssertEqual("tbnb1devga6q804tx9fqrnx0vtu5r36kxgp9t4ruzk2", address.description)
+        XCTAssertEqual("bnb1devga6q804tx9fqrnx0vtu5r36kxgp9tmk4xkm", address.description)
     }
 }
