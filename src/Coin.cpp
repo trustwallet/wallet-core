@@ -293,7 +293,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeViacoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeGroestlcoin:
-        return TWHDVersionXPRV;
+        return TWHDVersionZPRV;
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
