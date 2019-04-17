@@ -27,6 +27,7 @@
 #include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
 #include "NULS/Address.h"
+#include "Bravo/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -136,6 +137,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeQtum:
         return Bitcoin::Bech32Address::isValid(string, HRP_QTUM) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixQtum}});
+
+    case TWCoinTypeBravo:
+        return Bravo::Address::isValid(string);
     }
 }
 
@@ -176,6 +180,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
+    case TWCoinTypeBravo:
         return TWPurposeBIP44;
     case TWCoinTypeBitcoin:
     case TWCoinTypeViacoin:
@@ -218,6 +223,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
+    case TWCoinTypeBravo:
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
@@ -375,6 +381,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeNULS:
     case TWCoinTypeLux:
     case TWCoinTypeQtum:
+    case TWCoinTypeBravo:
         return DerivationPath(purpose(coin), coin, 0, 0, 0);
     case TWCoinTypeAion:
     case TWCoinTypeNEO:
@@ -423,6 +430,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeRipple:
     case TWCoinTypeNULS:
     case TWCoinTypeQtum:
+    case TWCoinTypeBravo:
         return PublicKeyType::secp256k1;
 
     case TWCoinTypeCallisto:
@@ -549,6 +557,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeQtum:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixQtum).string();
+
+    case TWCoinTypeBravo:
+        return Bravo::Address(publicKey).string();
     }
 }
 
@@ -592,6 +603,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeNULS:
     case TWCoinTypeQtum:
+    case TWCoinTypeBravo:
         return Hash::sha256ripemd;
 
     case TWCoinTypeDecred:
@@ -639,6 +651,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeZcoin:
     case TWCoinTypeNULS:
     case TWCoinTypeQtum:
+    case TWCoinTypeBravo:
         return Hash::sha256d;
 
     case TWCoinTypeDecred:

@@ -57,6 +57,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeTheta: string = "THETA"; break;
     case TWCoinTypeLux: string = "LUX"; break;
     case TWCoinTypeQtum: string = "QTUM"; break;
+    case TWCoinTypeBravo: string = "BRAVO"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -107,6 +108,8 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeNimiq:
     case TWCoinTypeKIN:
         return 5;
+    case TWCoinTypeBravo:
+        return 3;
     case TWCoinTypeOntology:
         return 0;
     }
@@ -178,6 +181,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         break;
     case TWCoinTypeLux:
         url += "/#/tx/" + txId;
+    case TWCoinTypeBravo: break;
     default: break;
     }
     return TWStringCreateWithUTF8Bytes(url.c_str());
@@ -224,6 +228,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNULS: return "https://nuls.world";
     case TWCoinTypeLux: return "https://explorer.poswallet.io";
     case TWCoinTypeQtum: return "https://qtum.info";
+    case TWCoinTypeBravo: return "https://explorer.bravocoin.com/";
     default: return "";
     }
 }
@@ -270,6 +275,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeNULS: string = "nuls"; break;
     case TWCoinTypeLux: string = "lux"; break;
     case TWCoinTypeQtum: string = "qtum"; break;
+    case TWCoinTypeBravo: string = "bravocoin.com"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
@@ -317,6 +323,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeNULS: string = "NULS"; break;
     case TWCoinTypeLux: string = "Lux"; break;
     case TWCoinTypeQtum: string = "Qtum"; break;
+    case TWCoinTypeBravo: string = "Bravocoin.com"; break;
     default: string = ""; break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
