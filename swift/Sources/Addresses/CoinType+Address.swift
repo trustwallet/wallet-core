@@ -25,6 +25,7 @@ public extension CoinType {
         case .callisto,
              .ethereum,
              .ethereumClassic,
+             .ethersocial,
              .go,
              .poa,
              .theta,

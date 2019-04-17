@@ -72,6 +72,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypePoa:
     case TWCoinTypeThunderToken:
@@ -148,6 +149,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeDecred:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeIOST:
@@ -191,6 +193,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeDogecoin:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeICON:
@@ -257,6 +260,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeIOST:
@@ -308,6 +312,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeIOST:
@@ -343,6 +348,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeDogecoin:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeICON:
@@ -416,6 +422,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypePoa:
     case TWCoinTypeThunderToken:
@@ -476,6 +483,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypePoa:
     case TWCoinTypeThunderToken:
@@ -547,6 +555,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeDogecoin:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeICON:
@@ -593,6 +602,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeDogecoin:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
+    case TWCoinTypeEthersocial:
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeIOST:
