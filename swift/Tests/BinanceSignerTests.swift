@@ -24,7 +24,7 @@ class BinanceSignerTests: XCTestCase {
         token.amount = 1
 
         var input = TW_Binance_Proto_SendOrder.Input()
-        input.address = CosmosAddress(hrp: .binanceTest, publicKey: publicKey)!.keyHash
+        input.address = CosmosAddress(hrp: .binance, publicKey: publicKey)!.keyHash
         input.coins = [token]
 
         var output = TW_Binance_Proto_SendOrder.Output()
