@@ -139,6 +139,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .bravoCoin:
                     let expectedResult = "BRV8g4c7Uve8NNsqDMeADLqPeFyohMQ7d9MzarSE23KogTS71BaiQ"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .steem:
+                    let expectedResult = "STM6WSusVTidc1e7TbLjhqQPYctbsndTRwXHpi82gMuJyKEkJVLvg"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }

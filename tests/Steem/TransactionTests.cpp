@@ -1,4 +1,3 @@
-#include "Steem/Signer.h"
 #include "Bravo/Transaction.h"
 #include "Bravo/Serialization.h"
 #include "Bravo/Signer.h"
@@ -12,17 +11,17 @@ using namespace TW;
 using namespace TW::Bravo;
 
 const std::string signs[] = {
-	"20be8c63fa6229c1f5f924977cd95c65ca751cf4dbce4d0e995ac1be45d4576166031eb486c6909119eaa31a2faf8237bc2a9d9de4921361ac8abe6e6ffff96f92",
-	"209aa272c77eab11f3d46dd8684828fa722dfaa093021257a78b9ab016bd20cfb67aa7847c3e612485945f1d5cc06fabf2f20f99085e5517ffe9c2bd79184ccada",
-	"1fefa7457dd7a5d95e42dc920bff9a513e2b9fc92d0ecf508e4ca503e2f8f947687f15ef64c162d807fba3840b69adc677f56957ff9c421b66ac3100fbef2d3cae",
-	"1f956bd1a9f1e7acaea655fffe571639f6260a40ea182a128c1b31b91f526933fe66b41fd9e3bc191c8cd78fdc70f67448879c40ea6a98d403b12d715924de36fb",
-	"1f519e8bed1c8a463034ba7b718355bca1f29ec6e1d3f5e9d7c4917726766fc5bd3a226d699ab0db2d25e8e92e40ba40b0f21b0be420bb3a1db17c00caff3de2f4"
+"20e8d87c007becf88802ab0e074c001f070cd6522e8d9966feb344b3cd761d43286127787d25fa0aa4cb76969f1facb34e76fc460f7feb029c650bef697080e55e",
+"2092b04bff8bd7ebfe0dd9ce938038f98d5c4bd4fd40d99bf94318b9c675f5b93440c650fe74e355a9e62a86acd800872666f3841524ede3bd0db117e322c9a558",
+"1f6bdaa662ef4da525e9c6d1013c64e92801a826eb00e82ced1c161758aefe7284318c6996e78cd8a2699d696a315ef56b1263411a34f7589993db19aaa1643fc2",
+"204cb00a8561afed98ed2d7ddae89ad143f3029585114007725a0e287d2d7c74960361cab8676ec10b2c14ef43a87b6aeb1a569e573b96aad1825ad134f8efc8ad",
+"20f80ab9f58ed70a646a71857e0a2739128a0efbe158d751249467a9a4b3d834a8637f6391dedc9620f0380dc71cd545bf7dcefd36b67071d366a2c99de5688c7a"
 };
 
 TEST(SteemTransaction, Serialization) {
 
-	std::string referenceBlockId = "000000c4819e7d5c54c23cca3f438a1f62aa2464";
-	uint32_t referenceBlockTime = 1553596224;
+	auto referenceBlockId = parse_hex("000000c4819e7d5c54c23cca3f438a1f62aa2464");
+	int32_t referenceBlockTime = 1553596224;
 	auto chainId = parse_hex("0000000000000000000000000000000000000000000000000000000000000000");
 
 	Signer signer{ chainId };
@@ -32,7 +31,7 @@ TEST(SteemTransaction, Serialization) {
 	tx.addOperation(new TransferOperation("alice", "bob", Asset(90000, Asset::decimals, "STEEM"), "Eva"));
 
 	for (int i = 0; i < 5; i++) {
-		PrivateKey pk(Hash::sha256(hex(std::string(i, 'A'))));
+		PrivateKey pk(Hash::sha256(std::string(i + 1, 'A')));
 
 		ASSERT_NO_THROW(signer.sign(pk, tx, nullptr));
 		const auto& sigs = tx.getSignatures();
