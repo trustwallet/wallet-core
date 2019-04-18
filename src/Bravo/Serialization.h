@@ -44,7 +44,7 @@ namespace TW::Bravo {
     }
 
     inline void encodeString(const std::string& s, Data& os) {
-        uint32_t size = s.size();
+        size_t size = s.size();
         encodeVarInt32(static_cast<uint32_t>(size), os);
         os.insert(os.end(), s.data(), s.data() + size);
     }

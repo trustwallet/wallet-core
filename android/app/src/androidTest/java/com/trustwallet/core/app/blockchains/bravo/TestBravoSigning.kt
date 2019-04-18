@@ -1,13 +1,15 @@
 package com.trustwallet.core.app.blockchains.bravo
 
+import android.util.Log
+import com.google.common.base.Utf8
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.*
 import org.junit.Test
-import wallet.core.jni.BravoSigner
-import wallet.core.jni.Hash
 import wallet.core.jni.proto.Bravo
 import org.json.JSONObject
+import wallet.core.jni.*
+import java.util.*
 
 
 class TestBravoSigning {
@@ -24,7 +26,7 @@ class TestBravoSigning {
         val bravoSigner: Bravo.SigningInput.Builder = Bravo.SigningInput.newBuilder()
 
         bravoSigner.apply {
-            chainId = ByteString.copyFrom("00000000000000000000000000000000".toHexByteArray())
+            chainId= ByteString.copyFrom(ByteArray(32))
             sender = "alice"
             recipient = "bob"
             amount = 90.0
@@ -32,13 +34,12 @@ class TestBravoSigning {
             memo = "Eva"
             referenceBlockId = ByteString.copyFrom("0000086bf9e7704509aa41311a66fa0a1b479c6b".toHexByteArray())
             referenceBlockTime = 1552464180
-            privateKey = ByteString.copyFrom(Hash.sha256("A".toHexByteArray()))
+            privateKey = ByteString.copyFrom(Hash.sha256("A".toByteArray()))
         }
 
         val result = BravoSigner.sign(bravoSigner.build())
         assertTrue("Error signing: " + result.error, result.success)
         assertEquals(1, result.objectsCount)
-
 
         val signingOutput: Bravo.SigningOutput = result.getObjects(0).unpack(Bravo.SigningOutput::class.java)
         val jsonObj = JSONObject(signingOutput.jsonEncoded)
@@ -49,7 +50,7 @@ class TestBravoSigning {
 
         val signatureValue: String = signatures.get(0) as String;
         assertNotNull("Error parsing JSON result", signatureValue)
-        assertEquals("1f3176fdb81ebe2dd7584607df148898ed90a000c6559611a6c29f05af586f365804a862e3a2bbba64f19160eb38e402c12eb6eeb81d880606ef86bb8ccfa59b76",signatureValue)
+        assertEquals("1f05b3dddfcbca5748b02562645fe7c3f01044b78983ce673f84c230b2dc97beed19b2e8462f1e45f2ac7600c2900f9f90510efe0891141ad2c6b1ae33b21bcace",signatureValue)
 
     }
 
@@ -60,7 +61,7 @@ class TestBravoSigning {
         val bravoSigner: Bravo.SigningInput.Builder = Bravo.SigningInput.newBuilder()
 
         val goodInput = bravoSigner.apply {
-            chainId = ByteString.copyFrom("00000000000000000000000000000000".toHexByteArray())
+            chainId = ByteString.copyFrom(ByteArray(32))
             sender = "alice"
             recipient = "bob"
             amount = 90.0
@@ -68,7 +69,7 @@ class TestBravoSigning {
             memo = "Eva"
             referenceBlockId = ByteString.copyFrom("0000086bf9e7704509aa41311a66fa0a1b479c6b".toHexByteArray())
             referenceBlockTime = 1552464180
-            privateKey = ByteString.copyFrom(Hash.sha256("A".toHexByteArray()))
+            privateKey = ByteString.copyFrom(Hash.sha256("A".toByteArray()))
         }
 
 
