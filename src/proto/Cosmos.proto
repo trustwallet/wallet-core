@@ -22,6 +22,13 @@ message SendCoinsMessage {
     repeated Coin amount = 3;
 }
 
+// Message for staking.
+message StakeMessage {
+    string delegator_address = 1;
+    string validator_address = 2;
+    Coin amount = 3;
+}
+
 // Signature
 message Signature {
     bytes public_key = 1;
@@ -48,6 +55,7 @@ message SigningInput {
 
     oneof message_oneof {
         SendCoinsMessage message = 7;
+        StakeMessage stake_message = 8;
     }
 }
 

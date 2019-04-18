@@ -16,7 +16,8 @@ using namespace TW::Cosmos::Proto;
 
 using json = nlohmann::json;
 
-const static std::string AMINO_PREFIX_SEND_MESSAGE = "cosmos-sdk/MsgSend";
+const static std::string AMINO_PREFIX_SEND_COIN_MESSAGE = "cosmos-sdk/MsgSend";
+const static std::string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
 const static std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
 const static std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
@@ -60,19 +61,34 @@ json messageJSON(json& coins, std::string from_address, std::string to_address) 
     jsonMsg["from_address"] = from_address;
     jsonMsg["to_address"] = to_address;
 
-    return wrapperJSON(AMINO_PREFIX_SEND_MESSAGE, jsonMsg);
+    return wrapperJSON(AMINO_PREFIX_SEND_COIN_MESSAGE, jsonMsg);
+}
+
+json stakeMessageJSON(json& coin, std::string delegator_address, std::string validator_address) {
+    json jsonMsg;
+
+    jsonMsg["amount"] = coin;
+    jsonMsg["delegator_address"] = delegator_address;
+    jsonMsg["validator_address"] = validator_address;
+
+    return wrapperJSON(AMINO_PREFIX_STAKE_MESSAGE, jsonMsg);
 }
 
 json messageJSON(const SigningInput& input) {
-    json jsonMsg;
-    
     if (input.has_message()) {
         json jsonCoins = json::array();
+        
         for (auto& coin : input.message().amount()) {
             jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
         }
 
         return messageJSON(jsonCoins, input.message().from_address(), input.message().to_address());
+    } else if (input.has_stake_message()) {
+        auto amount = input.stake_message().amount();
+        json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
+        return stakeMessageJSON(jsonAmount, 
+                                input.stake_message().delegator_address(), 
+                                input.stake_message().validator_address());
     }
 
     return nullptr;
