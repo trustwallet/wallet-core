@@ -240,7 +240,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
     case TWCoinTypeViacoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeGroestlcoin:
-        return TWHDVersionXPUB;
+        return TWHDVersionZPUB;
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
