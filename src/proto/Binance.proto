@@ -83,7 +83,6 @@ message SigningInput {
     int64 source = 4;
     string memo = 5;
     bytes private_key = 6;
-    bool test_net = 7;
 
     oneof order_oneof {
         TradeOrder trade_order = 8;
