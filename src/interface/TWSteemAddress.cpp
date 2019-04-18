@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright ï¿½ 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -39,14 +39,14 @@ struct TWSteemAddress *_Nullable TWSteemAddressCreateWithString(TWString *_Nonnu
 	}
 }
 
-struct TWSteemAddress *_Nonnull TWSteemAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWSteemAddressType type) {
-		return new TWSteemAddress{ Address(publicKey->impl, (type == TWSteemAddressType::TWSteemAddressTypeMainNet)? TW::Steem::MainnetPrefix : TW::Steem::TestnetPrefix) };
+struct TWSteemAddress *_Nonnull TWSteemAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWBravoAddressType type) {
+		return new TWSteemAddress{ Address(publicKey->impl, (type == TWBravoAddressType::TWBravoAddressTypeMainNet)? TW::Steem::MainnetPrefix : TW::Steem::TestnetPrefix) };
 }
 
-struct TWSteemAddress *_Nullable TWSteemAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWSteemAddressType type) {
+struct TWSteemAddress *_Nullable TWSteemAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWBravoAddressType type) {
 	auto d = reinterpret_cast<const Data *>(keyHash);
 	try {
-		return new TWSteemAddress{ Address(*d, (type == TWSteemAddressType::TWSteemAddressTypeMainNet) ? TW::Steem::MainnetPrefix : TW::Steem::TestnetPrefix) };
+		return new TWSteemAddress{ Address(*d, (type == TWBravoAddressType::TWBravoAddressTypeMainNet) ? TW::Steem::MainnetPrefix : TW::Steem::TestnetPrefix) };
 	}
 	catch (...) {
 		return nullptr;

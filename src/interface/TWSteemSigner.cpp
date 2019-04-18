@@ -1,30 +1,64 @@
-// Copyright © 2017-2019 Trust Wallet.
-//
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
-
 #include <TrustWalletCore/TWSteemSigner.h>
 
 #include "../Bravo/Signer.h"
-#include "../Steem/Signer.h"
-#include "../Steem/Transaction.h"
-#include "../Data.h"
+#include "../proto/Bravo.pb.h"
+#include "../proto/Common.pb.h"
 
-#include <string>
+const std::string MainNetAssetSymbol = "STEEM";
+const std::string TestNetAssetSymbol = "TESTS";
 
-using namespace TW;
 using namespace TW::Bravo;
 
-struct TWSteemSigner *_Nullable TWSteemSignerCreate(TWData *_Nonnull chainID) {
-	auto id = reinterpret_cast<const Data *>(chainID);
-	return new TWSteemSigner{ Signer(*id) };
+static TW_Proto_Result createErrorResult(const std::string& description) {
+
+    auto result = TW::Proto::Result();
+    result.set_success(false);
+    result.set_error(description);
+    auto serialized = result.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-void TWSteemSignerSign(struct TWSteemSigner *_Nonnull signer, struct TWPrivateKey *_Nonnull privateKey, struct TWSteemTransaction *_Nonnull transaction) {
-	signer->impl.sign(privateKey->impl, transaction->impl, nullptr);
-}
+TW_Proto_Result TWSteemSignerSign(TW_Bravo_Proto_SigningInput input) {
+    Proto::SigningInput in;
+    bool success = in.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)));
 
-void TWSteemSignerDelete(TWSteemSigner *_Nonnull signer) {
-	delete signer;
+    if (!success) {
+        return createErrorResult("Error parsing the input.");
+    }
+
+    // ensure the amount is within the limits of int64
+    if (in.amount() > static_cast<double>(INT64_MAX) / Asset::precision
+         || in.amount() < static_cast<double>(INT64_MIN) / Asset::precision) {
+        return createErrorResult("Amount out of range!");
+    }
+
+    int64_t amount = static_cast<int64_t>(in.amount());
+
+    try {
+        // create a transfer operation
+		Asset asset{amount, Asset::decimals, in.testnet() ? TestNetAssetSymbol : MainNetAssetSymbol};
+        auto op = new TransferOperation(in.sender(), in.recipient(), asset, in.memo());
+
+        // create a Transaction and add the transfer operation
+        Transaction tx{ TW::Data(in.reference_block_id().begin(), in.reference_block_id().end()), 
+						in.reference_block_time() };
+        tx.addOperation(op);
+
+        // sign the transaction with a Signer
+        auto key = TW::PrivateKey(TW::Data(in.private_key().begin(), in.private_key().end()));
+        auto chainId = TW::Data(in.chain_id().begin(), in.chain_id().end());
+        Signer(chainId).sign(key, tx, nullptr);
+
+        // add transaction's json encoding to Signing Output and return that
+        Proto::SigningOutput out;
+        out.set_json_encoded(tx.serialize().dump());
+
+        auto result = TW::Proto::Result();
+        result.set_success(true);
+        result.add_objects()->PackFrom(out);
+        auto serialized = result.SerializeAsString();
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    } catch (const std::exception& e) {
+        return createErrorResult(e.what());
+    }
 }

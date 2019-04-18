@@ -4,7 +4,7 @@
 #include "TWData.h"
 #include "TWString.h"
 
-#include "TWSteemAddressType.h"
+#include "TWBravoAddressType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -28,11 +28,11 @@ struct TWSteemAddress *_Nullable TWSteemAddressCreateWithString(TWString *_Nonnu
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWSteemAddress *_Nonnull TWSteemAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWSteemAddressType type);
+struct TWSteemAddress *_Nonnull TWSteemAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, enum TWBravoAddressType type);
 
 /// Creates an address from a key hash.
 TW_EXPORT_STATIC_METHOD
-struct TWSteemAddress *_Nullable TWSteemAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWSteemAddressType type);
+struct TWSteemAddress *_Nullable TWSteemAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWBravoAddressType type);
 
 TW_EXPORT_METHOD
 void TWSteemAddressDelete(struct TWSteemAddress *_Nonnull address);
