@@ -6,7 +6,7 @@
 
 using namespace TW::Bravo;
 
-TW_Proto_Result createErrorResult(const std::string& description) {
+static TW_Proto_Result createErrorResult(const std::string& description) {
 
     auto result = TW::Proto::Result();
     result.set_success(false);

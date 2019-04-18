@@ -17,7 +17,7 @@ Signature::Signature(Data sig): data(sig) {
 }
 
 void Signature::serialize(Data& os) const noexcept {
-    os.insert(os.end(), data.begin(), data.end());
+    append(os, data);
 }
 
 std::string Signature::string() const noexcept {

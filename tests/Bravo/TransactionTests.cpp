@@ -48,3 +48,45 @@ TEST(BravoTransaction, Serialization) {
         "6b08f9e770458cbb885c010205616c69636503626f62905f01000000000003425241564f00000345766100"
     );
 }
+
+TEST(BravoTransaction, Signature) {
+    ASSERT_THROW(Signature(parse_hex("aabbccdd")), std::invalid_argument);
+
+    const Data validSig = parse_hex("1f05b3dddfcbca5748b02562645fe7c3f01044b78983ce673f84c230b2dc97beed19b2e8462f1e45f2ac7600c2900f9f90510efe0891141ad2c6b1ae33b21bcace");
+
+    Signature *sig = nullptr;
+    ASSERT_NO_THROW(sig = new Signature(validSig));
+
+    ASSERT_EQ(
+        sig->string(),
+        hex(validSig)
+    );
+
+    Data buf;
+    sig->serialize(buf);
+    ASSERT_EQ(buf, validSig);
+
+    delete sig;
+}
+
+// Tests for the new sign function in PrivateKey for graphene-based systems
+TEST(BravoTransaction, GrapheneSigning) {
+    const Data message = Hash::sha256(std::string("Hello, world!"));
+    const PrivateKey privKey {Hash::sha256(std::string("A"))};
+    Data secpSig = privKey.sign(message, TWCurveSECP256k1, Signer::is_canonical);
+    Data nistSig = privKey.sign(message, TWCurveNIST256p1, Signer::is_canonical);
+
+    // ensure both are canonical
+    ASSERT_TRUE(Signer::is_canonical(*secpSig.data(), secpSig.data() + 1));
+    ASSERT_TRUE(Signer::is_canonical(*nistSig.data(), nistSig.data() + 1));
+
+    // check values
+    ASSERT_EQ(
+        hex(secpSig),
+        "2060577922244d9916fe93231806e64718e5f970f6afa90ac09ac8b7e434dbf3c218034d9e98a6726ae17360408449362b038d885bb010f0241f78e963a38a7347"
+    );
+    ASSERT_EQ(
+        hex(nistSig),
+        "2007ea15cce415779f39107006ff95108b386d68bcb6e24d9a0b1fda5361cc87031ee8d37a668ca42a298b003045b32b6d753ab855c9740d462ed9b48ad75397d1"
+    );
+}

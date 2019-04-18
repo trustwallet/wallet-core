@@ -31,5 +31,11 @@ TEST(BravoAsset, Serialization) {
         "e80300000000000003425241564f0000"
     );
 
-    // add tests for negative amounts, fractional amounts, string parsing, string output (toString()).
+    std::string assetStr = "3.141 PI";
+    ASSERT_EQ(
+        Asset::fromString(assetStr).string(),
+        assetStr
+    );
+
+    // add tests for negative amounts, fractional amounts
 }

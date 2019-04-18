@@ -17,6 +17,8 @@ TEST(BravoOperation, Validation) {
     ASSERT_THROW(TransferOperation("alice", "bob", 70000, false, std::string(MaxMemoSize + 1, 'a')), std::invalid_argument);
 
     ASSERT_NO_THROW(TransferOperation("alice", "bob", 60000, false, "Eva"));
+
+    ASSERT_NO_THROW(TransferOperation("Einstein", "Eddington", "6.0 RANDOM", "Gravity bends light."));
 }
 
 TEST(BravoOperation, Serialization) {
