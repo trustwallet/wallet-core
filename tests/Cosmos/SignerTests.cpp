@@ -26,7 +26,7 @@ TEST(CosmosSigner, SignTx) {
     auto fromAddress = TW::Cosmos::Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
     auto toAddress = TW::Cosmos::Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
 
-    auto &message = *input.mutable_message();
+    auto &message = *input.mutable_send_coins_message();
     message.set_from_address(fromAddress.string());
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amount();

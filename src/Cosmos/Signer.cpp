@@ -49,8 +49,8 @@ json Signer::buildTransactionJSON(const Data& signature) const {
     *transaction.mutable_fee() = input.fee();
     transaction.set_memo(input.memo());
 
-    if (input.has_message()) {
-        *transaction.mutable_message() = input.message();
+    if (input.has_send_coins_message()) {
+        *transaction.mutable_send_coins_message() = input.send_coins_message();
     } else if (input.has_stake_message()) {
         *transaction.mutable_stake_message() = input.stake_message();
     }

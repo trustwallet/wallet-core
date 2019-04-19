@@ -42,7 +42,7 @@ message Transaction {
     Signature signature = 3;
 
     oneof message_oneof {
-        SendCoinsMessage message = 4;
+        SendCoinsMessage send_coins_message = 4;
         StakeMessage stake_message = 5;
     }    
 }
@@ -58,7 +58,7 @@ message SigningInput {
     bytes private_key = 6;
 
     oneof message_oneof {
-        SendCoinsMessage message = 7;
+        SendCoinsMessage send_coins_message = 7;
         StakeMessage stake_message = 8;
     }
 }

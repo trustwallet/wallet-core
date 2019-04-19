@@ -54,7 +54,7 @@ json feeJSON(const Fee& fee) {
     return jsonFee;
 }
 
-json messageJSON(json& coins, std::string from_address, std::string to_address) {
+json sendCoinsMessageJSON(json& coins, std::string from_address, std::string to_address) {
     json jsonMsg;
 
     jsonMsg["amount"] = coins;
@@ -75,14 +75,16 @@ json stakeMessageJSON(json& coin, std::string delegator_address, std::string val
 }
 
 json messageJSON(const SigningInput& input) {
-    if (input.has_message()) {
+    if (input.has_send_coins_message()) {
         json jsonCoins = json::array();
         
-        for (auto& coin : input.message().amount()) {
+        for (auto& coin : input.send_coins_message().amount()) {
             jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
         }
 
-        return messageJSON(jsonCoins, input.message().from_address(), input.message().to_address());
+        return sendCoinsMessageJSON(jsonCoins, 
+                                    input.send_coins_message().from_address(), 
+                                    input.send_coins_message().to_address());
     } else if (input.has_stake_message()) {
         auto amount = input.stake_message().amount();
         json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
@@ -95,14 +97,16 @@ json messageJSON(const SigningInput& input) {
 }
 
 json messageJSON(const Transaction& transaction) {
-    if (transaction.has_message()) {
+    if (transaction.has_send_coins_message()) {
         json jsonCoins = json::array();
 
-        for (auto& coin : transaction.message().amount()) {
+        for (auto& coin : transaction.send_coins_message().amount()) {
             jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
         }
 
-        return messageJSON(jsonCoins, transaction.message().from_address(), transaction.message().to_address());
+        return sendCoinsMessageJSON(jsonCoins, 
+                                    transaction.send_coins_message().from_address(), 
+                                    transaction.send_coins_message().to_address());
     } else if (transaction.has_stake_message()) {
         auto amount = transaction.stake_message().amount();
         json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
