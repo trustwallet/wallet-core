@@ -19,9 +19,6 @@ public:
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction, int(*canonicalChecker)(uint8_t by, uint8_t sig[64]) = is_canonical) const;
-
-    /// Verifies the given transaction.
-    bool verify(const PrivateKey& privateKey, const Signature& signature, Transaction& transaction) const noexcept;
     
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;

@@ -19,6 +19,7 @@ const std::string signs[] {
 };
 
 TEST(BravoTransaction, Serialization) {
+    ASSERT_THROW(Transaction(Data(), 0), std::invalid_argument);
 
     auto referenceBlockId = parse_hex("0000086bf9e7704509aa41311a66fa0a1b479c6b");
     int32_t referenceBlockTime = 1552464180;
@@ -47,6 +48,8 @@ TEST(BravoTransaction, Serialization) {
         hex(buf),
         "6b08f9e770458cbb885c010205616c69636503626f62905f01000000000003425241564f00000345766100"
     );
+
+    ASSERT_NO_THROW(tx.serialize());
 }
 
 TEST(BravoTransaction, Signature) {
