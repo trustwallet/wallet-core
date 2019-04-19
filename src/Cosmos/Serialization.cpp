@@ -40,13 +40,14 @@ json amountJSON(std::string amount, std::string denom) {
 }
 
 json feeJSON(const Fee& fee) {
-    json jsonFee;
-
     json jsonAmounts = json::array();
+    
     for (auto& amount : fee.amount()) {
         jsonAmounts.push_back(
             amountJSON(std::to_string(amount.amount()), amount.denom()));
     }
+
+    json jsonFee;
 
     jsonFee["amount"] = jsonAmounts;
     jsonFee["gas"] = std::to_string(fee.gas());
@@ -74,23 +75,28 @@ json stakeMessageJSON(json& coin, std::string delegator_address, std::string val
     return wrapperJSON(AMINO_PREFIX_STAKE_MESSAGE, jsonMsg);
 }
 
+json sendCoinsMessageJSON(const SendCoinsMessage& message) {
+    json jsonCoins = json::array();
+    
+    for (auto& coin : message.amount()) {
+        jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
+    }
+
+    return sendCoinsMessageJSON(jsonCoins, message.from_address(), message.to_address());
+}
+
+json stakeMessageJSON(const StakeMessage& message) {
+    auto amount = message.amount();
+    json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
+
+    return stakeMessageJSON(jsonAmount, message.delegator_address(), message.validator_address());
+}
+
 json messageJSON(const SigningInput& input) {
     if (input.has_send_coins_message()) {
-        json jsonCoins = json::array();
-        
-        for (auto& coin : input.send_coins_message().amount()) {
-            jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
-        }
-
-        return sendCoinsMessageJSON(jsonCoins, 
-                                    input.send_coins_message().from_address(), 
-                                    input.send_coins_message().to_address());
+        return sendCoinsMessageJSON(input.send_coins_message());
     } else if (input.has_stake_message()) {
-        auto amount = input.stake_message().amount();
-        json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
-        return stakeMessageJSON(jsonAmount, 
-                                input.stake_message().delegator_address(), 
-                                input.stake_message().validator_address());
+        return stakeMessageJSON(input.stake_message());
     }
 
     return nullptr;
@@ -98,21 +104,9 @@ json messageJSON(const SigningInput& input) {
 
 json messageJSON(const Transaction& transaction) {
     if (transaction.has_send_coins_message()) {
-        json jsonCoins = json::array();
-
-        for (auto& coin : transaction.send_coins_message().amount()) {
-            jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
-        }
-
-        return sendCoinsMessageJSON(jsonCoins, 
-                                    transaction.send_coins_message().from_address(), 
-                                    transaction.send_coins_message().to_address());
+        return sendCoinsMessageJSON(transaction.send_coins_message());
     } else if (transaction.has_stake_message()) {
-        auto amount = transaction.stake_message().amount();
-        json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
-        return stakeMessageJSON(jsonAmount, 
-                                transaction.stake_message().delegator_address(), 
-                                transaction.stake_message().validator_address());
+        return stakeMessageJSON(transaction.stake_message());
     }
 
     return nullptr;
