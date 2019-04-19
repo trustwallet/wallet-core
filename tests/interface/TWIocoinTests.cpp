@@ -27,11 +27,11 @@ TEST(Iocoin, ExtendedKeys) {
 }
 
 TEST(Iocoin, DeriveFromXpub) {
-    auto xpub = STRING("");
+    auto xpub = STRING("xpub6DHj382cGmV2xBnzy7KaLLBqac3qwaBcHZL1BLzjaNH9R6kye9ix45TBHjBYvS9MdfQFWtSSctJZpdF6wm4pnN1eikCvJ7N9NRAZwGyFipn");
     auto pubKey0 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeIocoin, TWHDVersionXPUB, TWHDVersionXPRV, 0, 0);
     auto address0 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeIocoin, pubKey0));
 
-    assertStringsEqual(address0, "iXkS9idLYaXHgBCj2UuLWgQaCAYbs2ymdx");
+    assertStringsEqual(address0, "idi85QBDyPiLyi89HvAA4jY1hJS66M3wsL");
 }
 
 TEST(Iocoin, LockScripts) {
