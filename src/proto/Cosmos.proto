@@ -3,15 +3,15 @@ syntax = "proto3";
 package TW.Cosmos.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// Coin
-message Coin {
+// Amount
+message Amount {
     string denom = 1;
     int64 amount = 2;
 }
 
 // Fee
 message Fee {
-    repeated Coin amount = 1;
+    repeated Amount amounts = 1;
     uint64 gas = 2;
 }
 
@@ -19,14 +19,14 @@ message Fee {
 message SendCoinsMessage {
     string from_address = 1;
     string to_address = 2;
-    repeated Coin amount = 3;
+    repeated Amount amounts = 3;
 }
 
 // Message for staking.
 message StakeMessage {
     string delegator_address = 1;
     string validator_address = 2;
-    Coin amount = 3;
+    Amount amount = 3;
 }
 
 // Signature

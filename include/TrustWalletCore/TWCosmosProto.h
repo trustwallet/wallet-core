@@ -8,7 +8,7 @@
 
 #include "TWData.h"
 
-typedef TWData *_Nonnull TW_Cosmos_Proto_Coin;
+typedef TWData *_Nonnull TW_Cosmos_Proto_Amount;
 typedef TWData *_Nonnull TW_Cosmos_Proto_Fee;
 typedef TWData *_Nonnull TW_Cosmos_Proto_SendCoinsMessage;
 typedef TWData *_Nonnull TW_Cosmos_Proto_StakeMessage;

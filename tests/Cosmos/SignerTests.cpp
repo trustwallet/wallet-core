@@ -29,13 +29,13 @@ TEST(CosmosSigner, SignTx) {
     auto &message = *input.mutable_send_coins_message();
     message.set_from_address(fromAddress.string());
     message.set_to_address(toAddress.string());
-    auto amountOfTx = message.add_amount();
+    auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("muon");
     amountOfTx->set_amount(1);
     
     auto &fee = *input.mutable_fee();
     fee.set_gas(200000);
-    auto amountOfFee = fee.add_amount();
+    auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
     amountOfFee->set_amount(200);
 

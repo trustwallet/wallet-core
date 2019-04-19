@@ -42,7 +42,7 @@ json amountJSON(std::string amount, std::string denom) {
 json feeJSON(const Fee& fee) {
     json jsonAmounts = json::array();
     
-    for (auto& amount : fee.amount()) {
+    for (auto& amount : fee.amounts()) {
         jsonAmounts.push_back(
             amountJSON(std::to_string(amount.amount()), amount.denom()));
     }
@@ -55,20 +55,20 @@ json feeJSON(const Fee& fee) {
     return jsonFee;
 }
 
-json sendCoinsMessageJSON(json& coins, std::string from_address, std::string to_address) {
+json sendCoinsMessageJSON(json& amounts, std::string from_address, std::string to_address) {
     json jsonMsg;
 
-    jsonMsg["amount"] = coins;
+    jsonMsg["amount"] = amounts;
     jsonMsg["from_address"] = from_address;
     jsonMsg["to_address"] = to_address;
 
     return wrapperJSON(AMINO_PREFIX_SEND_COIN_MESSAGE, jsonMsg);
 }
 
-json stakeMessageJSON(json& coin, std::string delegator_address, std::string validator_address) {
+json stakeMessageJSON(json& amount, std::string delegator_address, std::string validator_address) {
     json jsonMsg;
 
-    jsonMsg["amount"] = coin;
+    jsonMsg["amount"] = amount;
     jsonMsg["delegator_address"] = delegator_address;
     jsonMsg["validator_address"] = validator_address;
 
@@ -76,13 +76,13 @@ json stakeMessageJSON(json& coin, std::string delegator_address, std::string val
 }
 
 json sendCoinsMessageJSON(const SendCoinsMessage& message) {
-    json jsonCoins = json::array();
+    json jsonAmounts = json::array();
     
-    for (auto& coin : message.amount()) {
-        jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
+    for (auto& amount : message.amounts()) {
+        jsonAmounts.push_back(amountJSON(std::to_string(amount.amount()), amount.denom()));
     }
 
-    return sendCoinsMessageJSON(jsonCoins, message.from_address(), message.to_address());
+    return sendCoinsMessageJSON(jsonAmounts, message.from_address(), message.to_address());
 }
 
 json stakeMessageJSON(const StakeMessage& message) {
@@ -123,16 +123,16 @@ json signatureJSON(const Signature& signature) {
 }
 
 json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
-    json jsonTx;
+    json jsonForSigning;
     
-    jsonTx["account_number"] = std::to_string(input.account_number());
-    jsonTx["chain_id"] = input.chain_id();
-    jsonTx["fee"] = feeJSON(input.fee());
-    jsonTx["memo"] = input.memo();
-    jsonTx["msgs"] = json::array({messageJSON(input)});
-    jsonTx["sequence"] = std::to_string(input.sequence());
+    jsonForSigning["account_number"] = std::to_string(input.account_number());
+    jsonForSigning["chain_id"] = input.chain_id();
+    jsonForSigning["fee"] = feeJSON(input.fee());
+    jsonForSigning["memo"] = input.memo();
+    jsonForSigning["msgs"] = json::array({messageJSON(input)});
+    jsonForSigning["sequence"] = std::to_string(input.sequence());
 
-    return jsonTx;
+    return jsonForSigning;
 }
 
 json TW::Cosmos::transactionJSON(const Transaction& transaction) {

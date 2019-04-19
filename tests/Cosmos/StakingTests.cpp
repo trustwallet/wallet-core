@@ -32,7 +32,7 @@ TEST(CosmosStaking, Staking) {
 
     auto &fee = *input.mutable_fee();
     fee.set_gas(101721);
-    auto amountOfFee = fee.add_amount();
+    auto amountOfFee = fee.add_amounts();
     amountOfFee->set_denom("muon");
     amountOfFee->set_amount(1018);
 
