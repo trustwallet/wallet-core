@@ -17,25 +17,25 @@ class CosmosSignerTests: XCTestCase {
         var sendCoinsMessage = TW_Cosmos_Proto_SendCoinsMessage()
         sendCoinsMessage.fromAddress = fromAddress
         sendCoinsMessage.toAddress = "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"
-        var coin = TW_Cosmos_Proto_Coin()
-        coin.amount = 1
-        coin.denom = "muon"
-        sendCoinsMessage.amount = [coin]
+        var amount = TW_Cosmos_Proto_Amount()
+        amount.amount = 1
+        amount.denom = "muon"
+        sendCoinsMessage.amounts = [amount]
 
-        var feeCoin = TW_Cosmos_Proto_Coin()
-        feeCoin.amount = 1
-        feeCoin.denom = "muon"
+        var feeAmount = TW_Cosmos_Proto_Amount()
+        feeAmount.amount = 1
+        feeAmount.denom = "muon"
 
         var fee = TW_Cosmos_Proto_Fee()
         fee.gas = 200000
-        fee.amount = [feeCoin]
+        fee.amounts = [feeAmount]
 
         var signingInput = TW_Cosmos_Proto_SigningInput()
         signingInput.accountNumber = 1037
         signingInput.chainID = "gaia-13002"
         signingInput.memo = ""
         signingInput.sequence = 2
-        signingInput.message = sendCoinsMessage
+        signingInput.sendCoinsMessage = sendCoinsMessage
         signingInput.fee = fee
         signingInput.privateKey = privateKey.data
 
