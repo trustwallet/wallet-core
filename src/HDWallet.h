@@ -75,6 +75,11 @@ class HDWallet {
                                               enum TWHDVersion versionPublic,
                                               enum TWHDVersion versionPrivate, uint32_t change,
                                               uint32_t address);
+
+    static PrivateKey getPrivateKeyFromExtended(const std::string& extended, TWCurve curve, Hash::Hasher hasher,
+                                             enum TWHDVersion versionPublic,
+                                             enum TWHDVersion versionPrivate, uint32_t change,
+                                             uint32_t address);
 };
 
 } // namespace TW
