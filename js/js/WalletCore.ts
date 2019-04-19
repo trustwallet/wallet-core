@@ -1,1 +1,1 @@
-export const WalletCore = require('../cpp/build/Release/trust-wallet-nodejs.node');
+export const WalletCore = require('bindings')('trust-wallet-nodejs.node');

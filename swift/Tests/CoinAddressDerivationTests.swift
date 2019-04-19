@@ -23,7 +23,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .binance:
-                    let expectedResult = "tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl"
+                    let expectedResult = "bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .cosmos:
                     let expectedResult = "cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn"

@@ -42,8 +42,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Aion::Address::isValid(string);
 
     case TWCoinTypeBinance:
-        return Cosmos::Address::isValid(string, HRP_BINANCE) ||
-               Cosmos::Address::isValid(string, HRP_BINANCE_TEST);
+        return Cosmos::Address::isValid(string, HRP_BINANCE);
 
     case TWCoinTypeBitcoin:
         return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) ||
@@ -123,7 +122,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
-    
+
     case TWCoinTypeLux:
         // same p2pkh prefix as litecoin
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLux}});
@@ -217,6 +216,7 @@ TWCurve TW::curve(TWCoinType coin) {
         return TWCurveSECP256k1;
 
     case TWCoinTypeNEO:
+    case TWCoinTypeOntology:
         return TWCurveNIST256p1;
 
     case TWCoinTypeAion:
@@ -226,9 +226,6 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeTezos:
     case TWCoinTypeKIN:
         return TWCurveEd25519;
-
-    case TWCoinTypeOntology:
-        return TWCurveNIST256p1;
     }
 }
 
@@ -457,7 +454,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     switch (coin) {
     case TWCoinTypeBinance:
-        return Cosmos::Address(HRP_BINANCE_TEST, publicKey).string();
+        return Cosmos::Address(HRP_BINANCE, publicKey).string();
 
     case TWCoinTypeCosmos:
         return Cosmos::Address(HRP_COSMOS, publicKey).string();
@@ -537,7 +534,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeNULS:
         return NULS::Address(publicKey).string();
-        
+
     case TWCoinTypeQtum:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixQtum).string();
     }

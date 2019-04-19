@@ -13,9 +13,9 @@ using namespace TW;
 
 using json = nlohmann::json;
 
-static inline std::string addressString(const std::string& bytes, bool testNet) {
+static inline std::string addressString(const std::string& bytes) {
     auto data = std::vector<uint8_t>(bytes.begin(), bytes.end());
-    auto address = Cosmos::Address(testNet ? HRP_BINANCE_TEST : HRP_BINANCE, data);
+    auto address = Cosmos::Address(HRP_BINANCE, data);
     return address.string();
 }
 
@@ -38,45 +38,45 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
         j["ordertype"] = 2;
         j["price"] = input.trade_order().price();
         j["quantity"] = input.trade_order().quantity();
-        j["sender"] = addressString(input.trade_order().sender(), input.test_net());
+        j["sender"] = addressString(input.trade_order().sender());
         j["side"] = input.trade_order().side();
         j["symbol"] = input.trade_order().symbol();
         j["timeinforce"] = input.trade_order().timeinforce();
     } else if (input.has_cancel_trade_order()) {
         j["refid"] = input.cancel_trade_order().refid();
-        j["sender"] = addressString(input.cancel_trade_order().sender(), input.test_net());
+        j["sender"] = addressString(input.cancel_trade_order().sender());
         j["symbol"] = input.cancel_trade_order().symbol();
     } else if (input.has_send_order()) {
-        j["inputs"] = inputsJSON(input.send_order(), input.test_net());
-        j["outputs"] = outputsJSON(input.send_order(), input.test_net());
+        j["inputs"] = inputsJSON(input.send_order());
+        j["outputs"] = outputsJSON(input.send_order());
     } else if (input.has_freeze_order()) {
-        j["from"] = addressString(input.freeze_order().from(), input.test_net());
+        j["from"] = addressString(input.freeze_order().from());
         j["symbol"] = input.freeze_order().symbol();
         j["amount"] = input.freeze_order().amount();
     } else if (input.has_unfreeze_order()) {
-        j["from"] = addressString(input.unfreeze_order().from(), input.test_net());
+        j["from"] = addressString(input.unfreeze_order().from());
         j["symbol"] = input.unfreeze_order().symbol();
         j["amount"] = input.unfreeze_order().amount();
     }
     return j;
 }
 
-json Binance::inputsJSON(const Binance::Proto::SendOrder& order, bool testNet) {
+json Binance::inputsJSON(const Binance::Proto::SendOrder& order) {
     json j = json::array();
     for (auto& input : order.inputs()) {
         json sj;
-        sj["address"] = addressString(input.address(), testNet);
+        sj["address"] = addressString(input.address());
         sj["coins"] = tokensJSON(input.coins());
         j.push_back(sj);
     }
     return j;
 }
 
-json Binance::outputsJSON(const Binance::Proto::SendOrder& order, bool testNet) {
+json Binance::outputsJSON(const Binance::Proto::SendOrder& order) {
     json j = json::array();
     for (auto& output : order.outputs()) {
         json sj;
-        sj["address"] = addressString(output.address(), testNet);
+        sj["address"] = addressString(output.address());
         sj["coins"] = tokensJSON(output.coins());
         j.push_back(sj);
     }
