@@ -6,5 +6,8 @@
     "outDir": "./build",
     "strict": true,
     "typeRoots": ["./node_modules/@types"]
-  }
+  },
+  "exclude": [
+    "./tests/**/*.ts"
+  ],
 }
