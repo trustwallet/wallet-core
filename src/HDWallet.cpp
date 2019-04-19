@@ -104,7 +104,7 @@ PublicKey HDWallet::getPublicKeyFromExtended(const std::string& extended, TWCurv
                                              enum TWHDVersion versionPrivate, uint32_t change,
                                              uint32_t address) {
     auto node = HDNode{};
-    deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node);
+    assert(deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node));
     hdnode_public_ckd(&node, change);
     hdnode_public_ckd(&node, address);
     hdnode_fill_public_key(&node);
