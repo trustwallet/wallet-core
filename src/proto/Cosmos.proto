@@ -39,8 +39,12 @@ message Signature {
 message Transaction {
     Fee fee = 1;
     string memo = 2;
-    SendCoinsMessage message = 3;
-    Signature signature = 4;
+    Signature signature = 3;
+
+    oneof message_oneof {
+        SendCoinsMessage message = 4;
+        StakeMessage stake_message = 5;
+    }    
 }
 
 // Input data necessary to create a signed order.

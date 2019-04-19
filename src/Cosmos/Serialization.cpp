@@ -95,13 +95,23 @@ json messageJSON(const SigningInput& input) {
 }
 
 json messageJSON(const Transaction& transaction) {
-    json jsonCoins = json::array();
+    if (transaction.has_message()) {
+        json jsonCoins = json::array();
 
-    for (auto& coin : transaction.message().amount()) {
-        jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
+        for (auto& coin : transaction.message().amount()) {
+            jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
+        }
+
+        return messageJSON(jsonCoins, transaction.message().from_address(), transaction.message().to_address());
+    } else if (transaction.has_stake_message()) {
+        auto amount = transaction.stake_message().amount();
+        json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
+        return stakeMessageJSON(jsonAmount, 
+                                transaction.stake_message().delegator_address(), 
+                                transaction.stake_message().validator_address());
     }
 
-    return messageJSON(jsonCoins, transaction.message().from_address(), transaction.message().to_address());
+    return nullptr;
 }
 
 json signatureJSON(const Signature& signature) {

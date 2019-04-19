@@ -26,20 +26,18 @@ TEST(CosmosSigner, SignTx) {
     auto fromAddress = TW::Cosmos::Address("cosmos", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
     auto toAddress = TW::Cosmos::Address("cosmos", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
 
-    auto message = Proto::SendCoinsMessage();
+    auto &message = *input.mutable_message();
     message.set_from_address(fromAddress.string());
     message.set_to_address(toAddress.string());
     auto amountOfTx = message.add_amount();
     amountOfTx->set_denom("muon");
     amountOfTx->set_amount(1);
-    *input.mutable_message() = message;
     
-    auto fee = Proto::Fee();
+    auto &fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amount();
     amountOfFee->set_denom("muon");
     amountOfFee->set_amount(200);
-    *input.mutable_fee() = fee;
 
     auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
     input.set_private_key(privateKey.data(), privateKey.size());
