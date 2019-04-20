@@ -31,6 +31,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType type) {
     case TWCoinTypeGroestlcoin: string = "GRS"; break;
     case TWCoinTypeICON:  string =  "ICX"; break;
     case TWCoinTypeIOST:  string = "IOST"; break;
+    case TWCoinTypeIocoin: string = "IOC"; break;
     case TWCoinTypeLitecoin: string = "LTC"; break;
     case TWCoinTypeOntology: string = "ONT"; break;
     case TWCoinTypeViacoin: string = "VIA"; break;
@@ -85,6 +86,7 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type) {
     case TWCoinTypeDogecoin:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeIOST:
+    case TWCoinTypeIocoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeBinance:
@@ -135,6 +137,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeKIN:
     case TWCoinTypeIOST:
     case TWCoinTypeViacoin:
+    case TWCoinTypeIocoin:
     case TWCoinTypeWanChain:
     case TWCoinTypeXDai:
     case TWCoinTypeZcoin:
@@ -195,6 +198,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeGroestlcoin: return "https://blockbook.groestlcoin.org";
     case TWCoinTypeICON: return "https://tracker.icon.foundation";
     case TWCoinTypeIOST: return "https://www.iostabc.com";
+    case TWCoinTypeIocoin: return "https://blockbook.iocoin.io";
     case TWCoinTypeLitecoin: return "https://blockchair.com/litecoin";
     case TWCoinTypeOntology: return "https://explorer.ont.io";
     case TWCoinTypeViacoin: return "https://explorer.viacoin.org";
@@ -240,6 +244,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type) {
     case TWCoinTypeGroestlcoin: string = "groestlcoin"; break;
     case TWCoinTypeICON:  string =  "icon"; break;
     case TWCoinTypeIOST:  string =  "iost"; break;
+    case TWCoinTypeIocoin: string = "iocoin"; break;
     case TWCoinTypeLitecoin: string = "litecoin"; break;
     case TWCoinTypeOntology: string = "ontology"; break;
     case TWCoinTypeViacoin: string = "viacoin"; break;
@@ -286,6 +291,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type) {
     case TWCoinTypeGroestlcoin: string =  "Groestlcoin"; break;
     case TWCoinTypeICON:  string =  "ICON"; break;
     case TWCoinTypeIOST:  string =  "IOST"; break;
+    case TWCoinTypeIocoin: string =  "Iocoin"; break;
     case TWCoinTypeLitecoin: string = "Litecoin"; break;
     case TWCoinTypeOntology: string = "Ontology"; break;
     case TWCoinTypeViacoin: string = "Viacoin"; break;
