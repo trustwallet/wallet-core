@@ -237,7 +237,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value33, "https://blockbook.iocoin.io/tx/123");
 
     auto value34 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBravo, txId));
-    assertStringsEqual(value34, "https://explorer.bravocoin.com/");
+    assertStringsEqual(value34, "https://explorer.bravocoin.com/txid/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {

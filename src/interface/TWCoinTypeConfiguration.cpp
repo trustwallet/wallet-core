@@ -181,7 +181,10 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
         break;
     case TWCoinTypeLux:
         url += "/#/tx/" + txId;
-    case TWCoinTypeBravo: break;
+        break;
+    case TWCoinTypeBravo: 
+        url += "/txid/" + txId;
+        break;
     default: break;
     }
     return TWStringCreateWithUTF8Bytes(url.c_str());
@@ -228,7 +231,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeNULS: return "https://nuls.world";
     case TWCoinTypeLux: return "https://explorer.poswallet.io";
     case TWCoinTypeQtum: return "https://qtum.info";
-    case TWCoinTypeBravo: return "https://explorer.bravocoin.com/";
+    case TWCoinTypeBravo: return "https://explorer.bravocoin.com";
     default: return "";
     }
 }
