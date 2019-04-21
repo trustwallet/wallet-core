@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "ParamsBuilder.h"
 
 #include "Tezos/BinaryCoding.h"
 #include "../Base58.h"
@@ -14,11 +15,8 @@ using namespace TW::NEO;
 
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
-    if (decoded.size() != Address::size || decoded[0] != version) {
-        return false;
-    }
+    return !(decoded.size() != Address::size || decoded[0] != version);
 
-    return true;
 }
 
 Address::Address(const PublicKey& publicKey) {
@@ -35,4 +33,13 @@ Address::Address(const PublicKey& publicKey) {
         throw std::invalid_argument("Invalid address key data");
 
     std::copy(keyHash.data(), keyHash.data() + Address::size, bytes.begin());
+}
+
+Data Address::toScriptHash(const Data& data) const {
+    return Hash::ripemd(Hash::sha256(data));
+}
+
+Address::Address(uint8_t m, const std::vector<Data>& publicKeys) {
+    auto builderData = toScriptHash(ParamsBuilder::fromMultiPubkey(m, publicKeys));
+    std::copy(builderData.begin(), builderData.end(), bytes.begin());
 }
