@@ -94,6 +94,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value28 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthersocial));
     assertStringsEqual(value28, "ESN");
+
+    auto value29 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIocoin));
+    assertStringsEqual(value29, "IOC");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -108,6 +111,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGo), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIocoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePoa), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderToken), 18);
@@ -183,7 +187,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value17, "https://explorer.zcoin.io/tx/123");
 
     auto value18 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
-    assertStringsEqual(value18, "https://binance.com");
+    assertStringsEqual(value18, "https://explorer.binance.org/tx/123");
 
     auto zecTxId = TWStringCreateWithUTF8Bytes("d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
     auto value20 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, zecTxId));
@@ -224,6 +228,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value32 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthersocial, txId));
     assertStringsEqual(value32, "https://ethersocial.net/tx/123");
+
+    auto value33 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIocoin, txId));
+    assertStringsEqual(value33, "https://blockbook.iocoin.io/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -307,6 +314,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value28 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthersocial));
     assertStringsEqual(value28, "ethersocial");
+    auto value29 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIocoin));
+    assertStringsEqual(value29, "iocoin");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -394,4 +403,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value29 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthersocial));
     assertStringsEqual(value29, "Ethersocial");
+    auto value30 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIocoin));
+    assertStringsEqual(value30, "Iocoin");
 }

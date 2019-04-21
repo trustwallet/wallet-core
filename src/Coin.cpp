@@ -15,6 +15,7 @@
 #include "Groestlcoin/Address.h"
 #include "IOST/Account.h"
 #include "Icon/Address.h"
+#include "Iocoin/Address.h"
 #include "NEO/Address.h"
 #include "Nimiq/Address.h"
 #include "Ontology/Address.h"
@@ -68,6 +69,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::Bech32Address::isValid(string, HRP_GROESTLCOIN) ||
                Groestlcoin::Address::isValid(string, {TWP2PKHPrefixGroestlcoin, TWP2SHPrefixGroestlcoin});
 
+    case TWCoinTypeIocoin:
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixIocoin}, {TWP2SHPrefixIocoin}});
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
@@ -152,6 +155,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeIOST:
+    case TWCoinTypeIocoin:
     case TWCoinTypeNimiq:
     case TWCoinTypeOntology:
     case TWCoinTypePoa:
@@ -196,6 +200,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeICON:
+    case TWCoinTypeIocoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
     case TWCoinTypePoa:
@@ -239,6 +244,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
+    case TWCoinTypeIocoin:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeLux:
@@ -291,6 +297,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
 
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
+    case TWCoinTypeIocoin:
     case TWCoinTypeZcash:
     case TWCoinTypeZcoin:
     case TWCoinTypeLux:
@@ -350,6 +357,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeICON:
     case TWCoinTypeIOST:
+    case TWCoinTypeIocoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeOntology:
@@ -406,6 +414,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeDecred:
     case TWCoinTypeDogecoin:
     case TWCoinTypeGroestlcoin:
+    case TWCoinTypeIocoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeZcash:
@@ -476,6 +485,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeGroestlcoin:
         return Bitcoin::Bech32Address(publicKey, 0, HRP_GROESTLCOIN).string();
+
+    case TWCoinTypeIocoin:
+        return Iocoin::Address(publicKey, TWP2PKHPrefixIocoin).string();
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -557,6 +569,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeICON:
     case TWCoinTypeIOST:
+    case TWCoinTypeIocoin:
     case TWCoinTypeKIN:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
@@ -603,6 +616,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeGo:
     case TWCoinTypeICON:
     case TWCoinTypeIOST:
+    case TWCoinTypeIocoin:
     case TWCoinTypeKIN:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
