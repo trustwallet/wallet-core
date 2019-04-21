@@ -126,6 +126,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeOntology:
         url += "/transaction/" + txId;
         break;
+    case TWCoinTypeBinance:
     case TWCoinTypeCallisto:
     case TWCoinTypeDecred:
     case TWCoinTypeDogecoin:
@@ -172,7 +173,6 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType typ
     case TWCoinTypeNimiq:
         url += "/#" + txId;
         break;
-    case TWCoinTypeBinance: break;
     case TWCoinTypeCosmos:
         url += "/blocks/1/transactions/" + txId;
         break;
@@ -211,7 +211,7 @@ const char *explorerURLForCoinType(enum TWCoinType type) {
     case TWCoinTypeXDai: return "https://blockscout.com/poa/dai";
     case TWCoinTypeZcoin: return "https://explorer.zcoin.io";
     case TWCoinTypeZcash: return "https://chain.so";
-    case TWCoinTypeBinance: return "https://binance.com";
+    case TWCoinTypeBinance: return "https://explorer.binance.org";
     case TWCoinTypeRipple: return "https://bithomp.com";
     case TWCoinTypeTezos: return "https://tzscan.io";
     case TWCoinTypeNimiq: return "https://nimiq.watch";
