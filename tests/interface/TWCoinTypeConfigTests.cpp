@@ -187,7 +187,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value17, "https://explorer.zcoin.io/tx/123");
 
     auto value18 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
-    assertStringsEqual(value18, "https://binance.com");
+    assertStringsEqual(value18, "https://explorer.binance.org/tx/123");
 
     auto zecTxId = TWStringCreateWithUTF8Bytes("d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
     auto value20 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, zecTxId));
@@ -228,6 +228,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value32 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthersocial, txId));
     assertStringsEqual(value32, "https://ethersocial.net/tx/123");
+
     auto value33 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIocoin, txId));
     assertStringsEqual(value33, "https://blockbook.iocoin.io/tx/123");
 }
