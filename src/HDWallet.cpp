@@ -99,7 +99,7 @@ std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, T
     return serialize(&node, fingerprintValue, version, true, base58Hasher(coin));
 }
 
-PublicKey HDWallet::getPublicKeyFromExtended(const std::string &extended, const DerivationPath& path) {
+std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string &extended, const DerivationPath& path) {
     const auto coin = path.coin();
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
@@ -107,7 +107,9 @@ PublicKey HDWallet::getPublicKeyFromExtended(const std::string &extended, const 
     const auto versionPrivate = TW::xprvVersion(coin);
 
     auto node = HDNode{};
-    deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node);
+    if (!deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node)) {
+        return {};
+    }
     hdnode_public_ckd(&node, path.change());
     hdnode_public_ckd(&node, path.address());
     hdnode_fill_public_key(&node);
@@ -115,7 +117,7 @@ PublicKey HDWallet::getPublicKeyFromExtended(const std::string &extended, const 
     return PublicKey(Data(node.public_key, node.public_key + 33));
 }
 
-PrivateKey HDWallet::getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path) {
+std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path) {
     const auto coin = path.coin();
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
@@ -123,7 +125,9 @@ PrivateKey HDWallet::getPrivateKeyFromExtended(const std::string &extended, cons
     const auto versionPrivate = TW::xprvVersion(coin);
 
     auto node = HDNode{};
-    deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node);
+    if (!deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node)) {
+        return {};
+    }
     hdnode_private_ckd(&node, path.change());
     hdnode_private_ckd(&node, path.address());
 

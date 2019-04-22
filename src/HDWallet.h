@@ -71,10 +71,10 @@ class HDWallet {
     std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
     /// Computes the public key from an exteded public key representation.
-    static PublicKey getPublicKeyFromExtended(const std::string &extended, const DerivationPath& path);
+    static std::optional<PublicKey> getPublicKeyFromExtended(const std::string &extended, const DerivationPath& path);
 
     /// Computes the private key from an exteded private key representation.
-    static PrivateKey getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path);
+    static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path);
 };
 
 } // namespace TW
