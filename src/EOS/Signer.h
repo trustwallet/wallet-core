@@ -8,8 +8,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
-namespace TW {
-namespace EOS {
+namespace TW::EOS {
 
 /// Helper class that performs EOS transaction signing.
 class Signer {
@@ -21,9 +20,6 @@ public:
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Type type, Transaction& transaction) const;
-
-    /// Verifies the given transaction.
-    bool verify(const PrivateKey& privateKey, const Signature& signature, Transaction& transaction) const noexcept;
     
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
@@ -31,9 +27,4 @@ public:
 	static int is_canonical(uint8_t by, uint8_t sig[64]);
 };
 
-}} // namespace
-
-// C interface Wrapper
-struct TWEOSSigner {
-    TW::EOS::Signer impl;
-};
+} // namespace TW::EOS

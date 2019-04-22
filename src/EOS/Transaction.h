@@ -11,8 +11,7 @@
 #include <set>
 #include <array>
 
-namespace TW {
-namespace EOS {
+namespace TW::EOS {
 
     class Signature: Bravo::Serializable
     {
@@ -43,7 +42,7 @@ namespace EOS {
     class Transaction: Bravo::Serializable
     {
     public:
-        Transaction(const std::string& referenceBlockId, uint32_t referenceBlockTime);
+        Transaction(const Data& referenceBlockId, int32_t referenceBlockTime);
 
         void serialize(Data& os) const noexcept;
         nlohmann::json serialize() const noexcept;
@@ -52,7 +51,7 @@ namespace EOS {
 
         uint16_t refBlockNumber = 0;
         uint32_t refBlockPrefix = 0;
-        uint32_t expiration = 0;
+        int32_t expiration = 0;
         uint32_t maxNetUsageWords = 0;
         uint8_t maxCPUUsageInMS = 0;
         uint32_t delaySeconds = 0;
@@ -69,9 +68,4 @@ namespace EOS {
         static const uint32_t ExpirySeconds = 30;
         // static const uint32_t ExpirySeconds = 60 * 10;
     };
-}} // namespace
-
-// C interface Wrapper
-struct TWEOSTransaction {
-    TW::EOS::Transaction impl;
-};
+} // namespace TW::EOS

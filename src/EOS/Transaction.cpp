@@ -70,8 +70,8 @@ json Extension::serialize() const noexcept {
     return json::array({type, hex(buffer)});
 }
 
-Transaction::Transaction(const std::string& referenceBlockId, uint32_t referenceBlockTime) {
-    setReferenceBlock(parse_hex(referenceBlockId));
+Transaction::Transaction(const Data& referenceBlockId, int32_t referenceBlockTime) {
+    setReferenceBlock(referenceBlockId);
     expiration = referenceBlockTime + Transaction::ExpirySeconds;
 }
 

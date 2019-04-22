@@ -2,8 +2,7 @@
 
 #include "Transaction.h"
 
-namespace TW {
-namespace EOS {
+namespace TW::EOS {
     enum class CompressionType {
         None = 0,
         // ZLIB = 1,
@@ -26,9 +25,4 @@ namespace EOS {
         void serialize(Data& os) const noexcept;
         nlohmann::json serialize() const noexcept;
     };
-}} // namespace
-
-// Wrapper for the C interface
-struct TWEOSPackedTransaction {
-    TW::EOS::PackedTransaction impl;
-};
+} // namespace TW::EOS

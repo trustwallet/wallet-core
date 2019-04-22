@@ -1,11 +1,9 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWData.h"
-#include "TWPrivateKey.h"
 
-#include "TWEOSTransaction.h"
-#include "TWEOSKeyType.h"
+#include "TWEOSProto.h"
+#include "TWCommonProto.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -14,12 +12,6 @@ TW_EXPORT_CLASS
 struct TWEOSSigner;
 
 TW_EXPORT_STATIC_METHOD
-struct TWEOSSigner *_Nonnull TWEOSSignerCreate(TWData *_Nonnull chainID);
-
-TW_EXPORT_METHOD
-void TWEOSSignerSign(struct TWEOSSigner *_Nonnull signer, struct TWPrivateKey *_Nonnull privateKey, enum TWEOSKeyType type, struct TWEOSTransaction *_Nonnull transaction);
-
-TW_EXPORT_METHOD
-void TWEOSSignerDelete(struct TWEOSSigner *_Nonnull signer);
+TW_Proto_Result TWEOSSignerSign(TW_EOS_Proto_SigningInput input);
 
 TW_EXTERN_C_END

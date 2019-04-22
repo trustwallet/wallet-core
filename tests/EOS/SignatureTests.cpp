@@ -8,7 +8,7 @@ using namespace TW::EOS;
 
 TEST(EOSSignature, Serialization) {
     Data buf;
-    Signature *sig;
+    Signature *sig = nullptr;
     ASSERT_NO_THROW(sig = new Signature(parse_hex("1f14262320d5b145220fb94d8fe204117edd25e52bbe9557b6e0909dd00307af266f5be1deef001446979523ac9de32c7eae5e5be4180b5a60c0e6bf14b2dd3e05"), Type::ModernK1));
     sig->serialize(buf);
 

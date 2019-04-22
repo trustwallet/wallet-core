@@ -2,8 +2,7 @@
 
 #include <string>
 
-namespace TW {
-namespace EOS {
+namespace TW::EOS {
 
     enum class Type {
         Legacy,
@@ -57,4 +56,4 @@ namespace EOS {
             return Modern::R1::fullSigPrefix;
         }
     }
-}} // namespace 
+} // namespace TW::EOS

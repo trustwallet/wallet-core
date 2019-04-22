@@ -12,8 +12,7 @@
 #include "../Data.h"
 #include "Prefixes.h"
 
-namespace TW {
-namespace EOS {
+namespace TW::EOS {
 
 class Address {
 public:
@@ -63,7 +62,7 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
              && lhs.type == rhs.type;
 }
 
-}} // namespace
+} // namespace TW::EOS
 
 struct TWEOSAddress {
     TW::EOS::Address impl;

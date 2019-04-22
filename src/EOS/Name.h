@@ -3,8 +3,7 @@
 #include "../Bravo/Serialization.h"
 #include "../BinaryCoding.h"
 
-namespace TW {
-namespace EOS {
+namespace TW::EOS {
     class Name: Bravo::Serializable {
     public:
         uint64_t value = 0;
@@ -16,9 +15,4 @@ namespace EOS {
 
         void serialize(Data& o) const;
     };
-}} // namespace
-
-// Wrapper of C interface
-struct TWEOSName {
-    TW::EOS::Name impl;
-};
+} // namespace TW::EOS

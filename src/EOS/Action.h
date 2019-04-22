@@ -8,8 +8,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-namespace TW {
-namespace EOS {
+namespace TW::EOS {
     class PermissionLevel: Bravo::Serializable {
     public:
         Name actor, permission;
@@ -35,12 +34,8 @@ namespace EOS {
 
     class TransferAction: public Action {
     public:
-        TransferAction(const std::string& currency, const std::string& from, const std::string& to, const std::string& assetString, const std::string& memo);
+        TransferAction(const std::string& currency, const std::string& from, const std::string& to, const Bravo::Asset& asset, const std::string& memo);
     private:
-        void setData(const std::string& from, const std::string& to, const std::string& assetString, const std::string& memo);
+        void setData(const std::string& from, const std::string& to, const Bravo::Asset& asset, const std::string& memo);
     };
-}} // namespace
-
-struct TWEOSAction {
-    TW::EOS::Action impl;
-};
+} // namespace TW::EOS

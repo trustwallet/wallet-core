@@ -12,60 +12,28 @@ void Signer::sign(const PrivateKey& privateKey, Type type, Transaction& transact
         throw std::invalid_argument("Invalid transaction!");;
     }
 
-    Data result;
-    result.resize(65);
-
-    const ecdsa_curve *curve = nullptr;
+    // values for Legacy and ModernK1
+    TWCurve curve = TWCurveSECP256k1;
     auto canonicalChecker = is_canonical;
 
-    switch (type) {
-    case Type::Legacy:
-        type = Type::ModernK1;
-    case Type::ModernK1:
-        curve = &secp256k1;
-        break;
-
-    case Type::ModernR1:
-        curve = &nist256p1;
+    //  Values for ModernR1
+    if (type == Type::ModernR1) {
+        curve = TWCurveNIST256p1;
         canonicalChecker = nullptr;
-        break;
     }
 
-    if (ecdsa_sign_digest(curve, privateKey.bytes.data(), hash(transaction).data(), result.data() + 1, result.data(), canonicalChecker) != 0) {
-        throw std::runtime_error("Signing failed.");
-    }
-
-    result[0] += 31;
+    const Data result = privateKey.sign(hash(transaction), curve, canonicalChecker);
 
     transaction.signatures.push_back(Signature(result, type));
-}
-
-
-bool Signer::verify(const PrivateKey& privateKey, const Signature& signature, Transaction& transaction) const noexcept {
-    switch (signature.type) {
-    case Type::Legacy: case Type::ModernK1:
-        return ecdsa_verify_digest(&secp256k1, 
-                                    privateKey.getPublicKey(PublicKeyType::secp256k1).bytes.data(), 
-                                    signature.data.data() + 1,
-                                    hash(transaction).data()) == 0;
-
-    case Type::ModernR1:
-        return ecdsa_verify_digest(&nist256p1, 
-                                    privateKey.getPublicKey(PublicKeyType::nist256p1).bytes.data(), 
-                                    signature.data.data() + 1,
-                                    hash(transaction).data()) == 0;
-    }
 }
 
 TW::Data Signer::hash(const Transaction& transaction) const noexcept {
     Data hashInput(chainID);
     transaction.serialize(hashInput);
 
-    Data cfdHash;
+    Data cfdHash(Hash::sha256Size);             // default value for empty cfd
     if (transaction.contextFreeData.size()) {
         cfdHash = Hash::sha256(transaction.contextFreeData);
-    } else {
-        cfdHash.assign(Hash::sha256Size, 0);
     }
 
     append(hashInput, cfdHash);
