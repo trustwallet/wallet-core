@@ -26,6 +26,11 @@ External<TW<%= entity.name %>> <%= NapiHelper.function_name(entity: entity, func
 <%=   render('napi/parameter_access.erb', { method: method }) -%>
     struct TW<%= entity.name %> *instance = TW<%= entity.name %><%= method.name %>(<%= NapiHelper.arguments(method.parameters).join(', ') %>);
 <%=   render('napi/parameter_release.erb', { method: method }) -%>
+<%      if method.return_type.is_nullable -%>
+    if (instance == nullptr) {
+        Error::New(env, "Invalid input").ThrowAsJavaScriptException();
+    }
+<%      end -%>
     return External<TW<%= entity.name %>>::New(env, instance, [](Env _env, void* data) {
         TW<%= entity.name %>Delete((TW<%= entity.name %> *) data);
     });

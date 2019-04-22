@@ -21,6 +21,9 @@ export class <%= entity.name %> {
     }
 
     public static createWithNativeHandle(nativeHandle: External) {
+        if (nativeHandle === null || nativeHandle === undefined) {
+            throw new Error('nativeHandle cannot be null or undefined');
+        }
         return new <%= entity.name %>(nativeHandle);
     }
 

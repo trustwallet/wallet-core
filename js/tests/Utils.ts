@@ -3,9 +3,12 @@ export const bufToHex = (buffer: ArrayBuffer) => {
 };
 
 export const fromHexString = (hexString: string) => {
-    const newHexString = hexString.length % 2 === 0 ? hexString : `0${hexString}`;
+    // Clean hex
+    const cleanHexString = hexString.substr(0, 2) === '0x' ? hexString.substr(2) : hexString;
+    // Ensure even padding
+    const paddedHexString = cleanHexString.length % 2 === 0 ? cleanHexString : `0${cleanHexString}`;
 
-    const match = newHexString.match(/.{1,2}/g);
+    const match = paddedHexString.match(/.{1,2}/g);
     if (match !== null) {
         return new Uint8Array(match.map(byte => parseInt(byte, 16)));
     }

@@ -5,7 +5,7 @@
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
   "scripts": {
-    "test": "mocha -r ts-node/register tests/**/*.test.ts",
+    "test": "mocha -r ts-node/register tests/**/*.test.ts tests/**/**/*.test.ts",
     "generate-js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
     "generate-ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
     "gen-proto": "npm run generate-js && npm run generate-ts",

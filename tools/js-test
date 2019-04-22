@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# This script builds JavaScript bindings
+
+set -e
+
+pushd js
+npm test
+popd
