@@ -22,6 +22,41 @@
 
 #include <TrezorCrypto/schnorr.h>
 #include <TrezorCrypto/memzero.h>
+#include "stdio.h"
+
+ static void hex_to_raw_bignum(const char *str, uint8_t bn_raw[32]) {
+  for (size_t i = 0; i < 32; i++) {
+    uint8_t c = 0;
+    if (str[i * 2] >= '0' && str[i * 2] <= '9') c += (str[i * 2] - '0') << 4;
+    if ((str[i * 2] & ~0x20) >= 'A' && (str[i * 2] & ~0x20) <= 'F')
+      c += (10 + (str[i * 2] & ~0x20) - 'A') << 4;
+    if (str[i * 2 + 1] >= '0' && str[i * 2 + 1] <= '9')
+      c += (str[i * 2 + 1] - '0');
+    if ((str[i * 2 + 1] & ~0x20) >= 'A' && (str[i * 2 + 1] & ~0x20) <= 'F')
+      c += (10 + (str[i * 2 + 1] & ~0x20) - 'A');
+    bn_raw[i] = c;
+  }
+}
+
+static void bn_be_to_hex_string(const bignum256 *b, char result[64]) {
+  uint8_t raw_number[32] = {0};
+  bn_write_be(b, raw_number);
+  for (int i = 0; i < 32; ++i)
+    sprintf(result + i * 2, "%02x", ((unsigned char *)raw_number)[i]);
+}
+
+void schnorr_to_hex_str(const schnorr_sign_pair *sign, char hex_str[128]) {
+  bn_be_to_hex_string(&sign->r, hex_str);
+  bn_be_to_hex_string(&sign->s, hex_str + 64);
+}
+
+void schnorr_from_hex_str(const char hex_str[128], schnorr_sign_pair *sign) {
+  uint8_t buf[32];
+  hex_to_raw_bignum(hex_str, buf);
+  bn_read_be(buf, &sign->r);
+  hex_to_raw_bignum(hex_str + 64, buf);
+  bn_read_be(buf, &sign->s);
+}
 
 // r = H(Q, kpub, m)
 static void calc_r(const curve_point *Q, const uint8_t pub_key[33],
