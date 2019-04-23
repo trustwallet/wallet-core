@@ -11,19 +11,37 @@
 
   # Method returns data
   if should_return_data(method) -%>
-    <%= NapiHelper.type(method.return_type) %> result = TWDataUint8Array(&env, <%= call %>);
+    TWData* twResult = <%= call %>;
+<%  if method.return_type.is_nullable -%>
+    if (twResult == nullptr) {
+        Error::New(env, "Invalid input").ThrowAsJavaScriptException();
+    }
+<%  end -%>
+    <%= NapiHelper.type(method.return_type) %> result = TWDataUint8Array(&env, twResult);
 <%= render('napi/parameter_release.erb', { method: method }) -%>
     return result;
 <%
   # Method returns a string
   elsif should_return_string(method) -%>
-    String result = TWStringJsString(&env, <%= call %>);
+    TWString* twResult = <%= call %>;
+<%  if method.return_type.is_nullable -%>
+    if (twResult == nullptr) {
+        Error::New(env, "Invalid input").ThrowAsJavaScriptException();
+    }
+<%  end -%>
+    String result = TWStringJsString(&env, twResult);
 <%= render('napi/parameter_release.erb', { method: method }) -%>
     return result;
 <%
   # Method returns proto
   elsif method.return_type.is_proto -%>
-    Uint8Array result = TWDataUint8Array(&env, <%= call %>);
+    TWData* twResult = <%= call %>;
+<%  if method.return_type.is_nullable -%>
+    if (twResult == nullptr) {
+        Error::New(env, "Invalid input").ThrowAsJavaScriptException();
+    }
+<%  end -%>
+    Uint8Array result = TWDataUint8Array(&env, twResult);
 <%= render('napi/parameter_release.erb', { method: method }) -%>
     return result;
 <%

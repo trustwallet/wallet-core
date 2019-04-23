@@ -1,10 +1,10 @@
+<%# Imports -%>
 import { WalletCore } from '../WalletCore';
 import { TW } from '../../proto/TrustWalletCore';
 import * as Long from 'long';
-
 <%  import_entity_name =  JsHelper.import_types_from_entity(entity) -%>
-<%# Imports -%>
 <% if !import_entity_name.empty? -%>
+
 <%- import_entity_name.each do |type| -%>
 import { <%= type %> } from './<%= type %>';
 <%  end -%>
@@ -21,6 +21,9 @@ export class <%= entity.name %> {
     }
 
     public static createWithNativeHandle(nativeHandle: External) {
+        if (nativeHandle === null || nativeHandle === undefined) {
+            throw new Error('nativeHandle cannot be null or undefined');
+        }
         return new <%= entity.name %>(nativeHandle);
     }
 

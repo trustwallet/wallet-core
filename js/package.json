@@ -5,7 +5,7 @@
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha -r ts-node/register tests/**/*.test.ts tests/**/**/*.test.ts",
     "generate-js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
     "generate-ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
     "gen-proto": "npm run generate-js && npm run generate-ts",
@@ -33,6 +33,7 @@
     "@types/mocha": "^5.2.6",
     "chai": "^4.2.0",
     "mocha": "^6.1.3",
+    "ts-node": "^8.1.0",
     "typescript": "^3.4.3"
   },
   "peerDependencies": {
