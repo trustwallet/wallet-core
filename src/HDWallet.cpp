@@ -117,6 +117,8 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string &e
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeSECP256k1);
     case TWCurveED25519:
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeED25519);
+    case TWCurveED25519Blake2bNano:
+        return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeED25519Blake2b);
     case TWCurveNIST256p1:
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeNIST256p1);
     }
@@ -210,6 +212,8 @@ const char* curveName(TWCurve curve) {
         return SECP256K1_NAME;
     case TWCurveED25519:
         return ED25519_NAME;
+    case TWCurveED25519Blake2bNano:
+        return ED25519_BLAKE2B_NANO_NAME;
     case TWCurveNIST256p1:
         return NIST256P1_NAME;
     default:
