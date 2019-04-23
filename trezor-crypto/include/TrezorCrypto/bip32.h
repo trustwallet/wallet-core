@@ -75,8 +75,6 @@ int hdnode_public_ckd(HDNode *inout, uint32_t i);
 
 void hdnode_public_ckd_address_optimized(const curve_point *pub, const uint8_t *chain_code, uint32_t i, uint32_t version, HasherType hasher_pubkey, HasherType hasher_base58, char *addr, int addrsize, int addrformat);
 
-int hdnode_private_ckd_cached(HDNode *inout, const uint32_t *i, size_t i_count, uint32_t *fingerprint);
-
 uint32_t hdnode_fingerprint(HDNode *node);
 
 void hdnode_fill_public_key(HDNode *node);

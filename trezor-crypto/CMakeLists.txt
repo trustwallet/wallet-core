@@ -56,3 +56,7 @@ target_include_directories(TrezorCrypto
     PRIVATE
         src
 )
+
+if(NOT ANDROID AND NOT IOS_PLATFORM)
+    add_subdirectory(tests)
+endif()

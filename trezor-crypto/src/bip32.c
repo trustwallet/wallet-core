@@ -27,24 +27,24 @@
 
 #include "options.h"
 
-#include <TrezorCrypto/aes.h>
 #include <TrezorCrypto/address.h>
+#include <TrezorCrypto/aes.h>
+#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/bignum.h>
-#include <TrezorCrypto/hmac.h>
-#include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/bip32.h>
+#include <TrezorCrypto/curves.h>
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-keccak.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-sha3.h>
+#include <TrezorCrypto/ed25519.h>
+#include <TrezorCrypto/hmac.h>
+#include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/nem.h>
+#include <TrezorCrypto/nist256p1.h>
+#include <TrezorCrypto/pbkdf2.h>
+#include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
-#include <TrezorCrypto/base58.h>
-#include <TrezorCrypto/curves.h>
-#include <TrezorCrypto/secp256k1.h>
-#include <TrezorCrypto/nist256p1.h>
-#include <TrezorCrypto/ed25519.h>
-#include "ed25519-donna/ed25519-sha3.h"
-#include "ed25519-donna/ed25519-keccak.h"
-#include <TrezorCrypto/nem.h>
-#include <TrezorCrypto/pbkdf2.h>
-#include <TrezorCrypto/memzero.h>
 
 const curve_info ed25519_info = {
 	.bip32_name = "ed25519 seed",
