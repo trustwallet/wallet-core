@@ -27,6 +27,7 @@
 #include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
 #include "NULS/Address.h"
+#include "Bravo/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -52,6 +53,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress::isValid(string) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
+
+    case TWCoinTypeBravo:
+        return Bravo::Address::isValid(string);
 
     case TWCoinTypeCosmos:
         return Cosmos::Address::isValid(string, HRP_COSMOS);
@@ -144,6 +148,7 @@ TWPurpose TW::purpose(TWCoinType coin) {
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
@@ -190,6 +195,7 @@ TWCurve TW::curve(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeDash:
     case TWCoinTypeDecred:
@@ -259,6 +265,7 @@ TWHDVersion TW::xpubVersion(TWCoinType coin) {
 
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
+    case TWCoinTypeBravo:
     case TWCoinTypeCosmos:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -312,6 +319,7 @@ TWHDVersion TW::xprvVersion(TWCoinType coin) {
 
     case TWCoinTypeAion:
     case TWCoinTypeBinance:
+    case TWCoinTypeBravo:
     case TWCoinTypeCosmos:
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -345,6 +353,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
@@ -409,6 +418,7 @@ PublicKeyType TW::publicKeyType(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
     case TWCoinTypeDecred:
@@ -473,6 +483,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(publicKey).string();
+
+    case TWCoinTypeBravo:
+        return Bravo::Address(publicKey).string();
 
     case TWCoinTypeDash:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixDash).string();
@@ -558,6 +571,7 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:
@@ -606,6 +620,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
+    case TWCoinTypeBravo:
     case TWCoinTypeCallisto:
     case TWCoinTypeCosmos:
     case TWCoinTypeDash:

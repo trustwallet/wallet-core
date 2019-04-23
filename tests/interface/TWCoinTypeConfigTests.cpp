@@ -97,6 +97,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value29 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIocoin));
     assertStringsEqual(value29, "IOC");
+
+    auto value30 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBravo));
+    assertStringsEqual(value30, "BRAVO");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -131,6 +134,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLux), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeQtum), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravo), 3);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -231,6 +235,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value33 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIocoin, txId));
     assertStringsEqual(value33, "https://blockbook.iocoin.io/tx/123");
+
+    auto value34 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBravo, txId));
+    assertStringsEqual(value34, "https://explorer.bravocoin.com/txid/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -316,6 +323,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     assertStringsEqual(value28, "ethersocial");
     auto value29 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIocoin));
     assertStringsEqual(value29, "iocoin");
+
+    auto value30 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBravo));
+    assertStringsEqual(value30, "bravocoin");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -405,4 +415,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     assertStringsEqual(value29, "Ethersocial");
     auto value30 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIocoin));
     assertStringsEqual(value30, "Iocoin");
+
+    auto value31 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBravo));
+    assertStringsEqual(value31, "BravoCoin");
 }

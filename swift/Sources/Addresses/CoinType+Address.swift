@@ -70,6 +70,8 @@ public extension CoinType {
             return IOSTAccount(string: string)
         case .nuls:
             return NULSAddress(string: string)
+        case .bravo:
+            return BravoAddress(string: string)
         }
         return .none
     }

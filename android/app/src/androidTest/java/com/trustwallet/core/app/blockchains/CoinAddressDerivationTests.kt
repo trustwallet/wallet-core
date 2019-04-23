@@ -65,5 +65,6 @@ class CoinAddressDerivationTests {
         LUX -> assertEquals("LYL6SZG8S6dyXRFT8Bw4FHUoVef3cWCoPi", address)
         QTUM -> assertEquals("QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF", address)
         NULS -> assertEquals("NsdtNvsfmPerWk4BhcapHTB3LptF8Sbe", address)
+        BRAVO -> assertEquals("BRV8g4c7Uve8NNsqDMeADLqPeFyohMQ7d9MzarSE23KogTS71BaiQ", address)
     }
 }
