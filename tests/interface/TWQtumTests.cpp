@@ -85,6 +85,21 @@ TEST(Qtum, DeriveFromXpub) {
     assertStringsEqual(address9String, "QfbKFChfhx1s4VXS9BzaVJgyKw5a1hnFg4");
 }
 
+TEST(Qtum, DeriveFromZpub) {
+    auto zpub = STRING("zpub6rJJqJZcpaC7DrdsYiprLfUfvtaf11ZZWmrmYeWMkdZTx6tgfQLiBZuisraogskwBRLMGWfXoCyWRrXSypwPdNV2UWJXm5bDVQvBXvrzz9d");
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2301'/0'/0/4").get());
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2301'/0'/0/11").get());
+
+    auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, pubKey4));
+    auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));
+
+    auto address11 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, pubKey11));
+    auto address11String = WRAPS(TWBech32AddressDescription(address11.get()));
+
+    assertStringsEqual(address4String, "qc1q3cvjmc2cgjkz9y58waj3r9ccchmrmrdzq03783");
+    assertStringsEqual(address11String, "qc1qrlk0ajg6khu2unsdppggs3pgpxxvdeymky58af");
+}
+
 /*
 HD scheme that is used in qtum desktop wallet is "<MASTER KEY>/<COIN>/<INTERNAL>":
 m/88'/0'

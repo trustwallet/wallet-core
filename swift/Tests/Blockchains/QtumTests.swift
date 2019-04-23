@@ -61,4 +61,14 @@ class QtumTests: XCTestCase {
         XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: P2PKHPrefix.qtum.rawValue).description, "QStYeAAfiYKxsABzY9yugHDpm5bsynYPqc")
         XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: P2PKHPrefix.qtum.rawValue).description, "QfbKFChfhx1s4VXS9BzaVJgyKw5a1hnFg4")
     }
+
+    func testDeriveFromZPub() {
+        let zpub = "zpub6rJJqJZcpaC7DrdsYiprLfUfvtaf11ZZWmrmYeWMkdZTx6tgfQLiBZuisraogskwBRLMGWfXoCyWRrXSypwPdNV2UWJXm5bDVQvBXvrzz9d"
+        let qtum = CoinType.qtum
+        let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: .bip84, coinType: qtum, account: 0, change: 0, address: 4))!
+        let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: .bip84, coinType: qtum, account: 0, change: 0, address: 11))!
+
+        XCTAssertEqual(Bech32Address(hrp: .qtum, publicKey: zpubAddr4).description, "qc1q3cvjmc2cgjkz9y58waj3r9ccchmrmrdzq03783")
+        XCTAssertEqual(Bech32Address(hrp: .qtum, publicKey: zpubAddr11).description, "qc1qrlk0ajg6khu2unsdppggs3pgpxxvdeymky58af")
+    }
 }
