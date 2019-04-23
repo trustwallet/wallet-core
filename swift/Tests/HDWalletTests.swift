@@ -285,6 +285,19 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(xpubAddr9.description, "1DUrqK4hj6vNNUTWXADpbqyjVWUYFD7xTZ")
     }
 
+    func testDeriveFromYPub() {
+        let ypub = "ypub6Ww3ibxVfGzLrAH1PNcjyAWenMTbbAosGNB6VvmSEgytSER9azLDWCxoJwW7Ke7icmizBMXrzBx9979FfaHxHcrArf3zbeJJJUZPf663zsP"
+
+        let bitcoin = CoinType.bitcoin
+        let ypub3 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: bitcoin, account: 0, change: 0, address: 3))!
+        let ypub10 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: bitcoin, account: 0, change: 0, address: 10))!
+
+        let ypubAddr3 = BitcoinAddress.compatibleAddress(publicKey: ypub3, prefix: P2SHPrefix.bitcoin.rawValue)
+        let ypubAddr10 = BitcoinAddress.compatibleAddress(publicKey: ypub10, prefix: P2SHPrefix.bitcoin.rawValue)
+        XCTAssertEqual(ypubAddr3.description, "38CahkVftQneLonbWtfWxiiaT2fdnzsEAN")
+        XCTAssertEqual(ypubAddr10.description, "38mWd5D48ShYPJMZngtmxPQVYhQR5DGgfF")
+    }
+
     func testDeriveFromZPub() {
         let zpub = "zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs"
         let bitcoin = CoinType.bitcoin

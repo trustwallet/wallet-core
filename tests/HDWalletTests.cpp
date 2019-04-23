@@ -30,6 +30,25 @@ TEST(HDWallet, privateKeyFromXPRV) {
     EXPECT_EQ(address.string(), "bitcoincash:qp3y0dyg6ya8nt4n3algazn073egswkytqs00z7rz4");
 }
 
+TEST(HDWallet, privateKeyFromMptv) {
+    const std::string mptv = "Mtpv7SkyM349Svcf1WiRtB5hC91ZZkVsGuv3kz1V7tThGxBFBzBLFnw6LpaSvwpHHuy8dAfMBqpBvaSAHzbffvhj2TwfojQxM7Ppm3CzW67AFL5";
+    auto privateKey = HDWallet::getPrivateKeyFromExtended(mptv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 4));
+    auto publicKey = privateKey->getPublicKey(PublicKeyType::secp256k1);
+
+    auto witness = Data{0x00, 0x14};
+    auto keyHash = Hash::sha256ripemd(publicKey.bytes.data(), publicKey.bytes.data() + 33);
+    witness.insert(witness.end(), keyHash.begin(), keyHash.end());
+
+    auto prefix = Data{TWP2SHPrefixLitecoin};
+    auto redeemScript = Hash::sha256ripemd(witness.data(), witness.data() + witness.size());
+    prefix.insert(prefix.end(), redeemScript.begin(), redeemScript.end());
+
+    auto address = Bitcoin::Address(prefix);
+
+    EXPECT_EQ(hex(publicKey.bytes), "02c36f9c3051e9cfbb196ecc35311f3ad705ea6798ffbe6b039e70f6bd047e6f2c");
+    EXPECT_EQ(address.string(), "MBzcCaoLk9626cLj2UVvcxs6nsVUi39zEy");
+}
+
 TEST(HDWallet, privateKeyFromZprv) {
     const std::string zprv = "zprvAdzGEQ44z4WPLNCRpDaup2RumWxLGgR8PQ9UVsSmJigXsHVDaHK1b6qGM2u9PmxB2Gx264ctAz4yRoN3Xwf1HZmKcn6vmjqwsawF4WqQjfd";
     auto privateKey = HDWallet::getPrivateKeyFromExtended(zprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoin, 0, 0, 5));

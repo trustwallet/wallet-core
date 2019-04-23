@@ -39,4 +39,10 @@ enum TWHDVersion {
     TWHDVersionDGPV = 0x02fac398,
 };
 
+TW_EXPORT_PROPERTY
+bool TWHDVersionIsPublic(enum TWHDVersion version);
+
+TW_EXPORT_PROPERTY
+bool TWHDVersionIsPrivate(enum TWHDVersion version);
+
 TW_EXTERN_C_END

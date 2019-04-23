@@ -194,6 +194,18 @@ TEST(HDWallet, PublicKeyFromX) {
     assertHexEqual(data9, "03786c1d274f2c804ff9a57d8e7289c281d4aef15e17187ad9f9c3722d81a6ae66");
 }
 
+TEST(HDWallet, PublicKeyFromY) {
+    auto ypub = STRING("ypub6Ww3ibxVfGzLrAH1PNcjyAWenMTbbAosGNB6VvmSEgytSER9azLDWCxoJwW7Ke7icmizBMXrzBx9979FfaHxHcrArf3zbeJJJUZPf663zsP");
+    auto ypubAddr3 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), STRING("m/44'/0'/0'/0/3").get());
+    auto ypubAddr10 = TWHDWalletGetPublicKeyFromExtended(ypub.get(), STRING("m/44'/0'/0'/0/10").get());
+
+    auto data3 = WRAPD(TWPublicKeyData(ypubAddr3));
+    auto data10 = WRAPD(TWPublicKeyData(ypubAddr10));
+
+    assertHexEqual(data3, "0299bd0bdc081a9888fac95a33e8bebcdeeb57cf7477f2f0721362f3a51a157227");
+    assertHexEqual(data10, "03a39ad9c0d19bb43c45643582614298c96b0f7c9462c0de789c69013b0d609d1c");
+}
+
 TEST(HDWallet, PublicKeyFromZ) {
     auto zpub = STRING("zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs");
     auto zpubAddr4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/0'/0'/0/4").get());

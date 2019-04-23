@@ -30,7 +30,7 @@ namespace {
 
 uint32_t fingerprint(HDNode *node, Hash::Hasher hasher);
 std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version, bool use_public, Hash::Hasher hasher);
-bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, uint32_t version_public, uint32_t version_private, HDNode *node);
+bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode *node);
 HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath);
 HDNode getMasterNode(const HDWallet& wallet, TWCurve curve);
 
@@ -103,11 +103,9 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string &e
     const auto coin = path.coin();
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
-    const auto versionPublic = TW::xpubVersion(coin);
-    const auto versionPrivate = TW::xprvVersion(coin);
 
     auto node = HDNode{};
-    if (!deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node)) {
+    if (!deserialize(extended, curve, hasher, &node)) {
         return {};
     }
     hdnode_public_ckd(&node, path.change());
@@ -121,11 +119,9 @@ std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string 
     const auto coin = path.coin();
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
-    const auto versionPublic = TW::xpubVersion(coin);
-    const auto versionPrivate = TW::xprvVersion(coin);
 
     auto node = HDNode{};
-    if (!deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node)) {
+    if (!deserialize(extended, curve, hasher, &node)) {
         return {};
     }
     hdnode_private_ckd(&node, path.change());
@@ -161,7 +157,7 @@ std::string serialize(const HDNode *node, uint32_t fingerprint, uint32_t version
     return Base58::bitcoin.encodeCheck(node_data, hasher);
 }
 
-bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, uint32_t version_public, uint32_t version_private, HDNode *node) {
+bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher, HDNode *node) {
     memset(node, 0, sizeof(HDNode));
     node->curve = get_curve_by_name(curveName(curve));
 
@@ -171,9 +167,9 @@ bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher
     }
 
     uint32_t version = decode32BE(node_data.data());
-    if (version == version_public) {
+    if (TWHDVersionIsPublic(static_cast<TWHDVersion>(version))) {
         std::copy(node_data.begin() + 45, node_data.begin() + 45 + 33, node->public_key);
-    } else if (version == version_private) { // private node
+    } else if (TWHDVersionIsPrivate(static_cast<TWHDVersion>(version))) {
         if (node_data[45]) { // invalid data
             return false;
         }
