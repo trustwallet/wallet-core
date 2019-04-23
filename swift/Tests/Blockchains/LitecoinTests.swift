@@ -59,27 +59,6 @@ class LitecoinTests: XCTestCase {
         XCTAssertEqual(zpub, "zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs")
     }
 
-    func testDeriveFromLtub() {
-        let xpub = "Ltub2Ye6FtTv7U4zzHDL6iMfcE3cj5BHJjkBXQj1deZEAgSBrHB5oM191hYTF8BC34r7vRDGng59yfP6FH4m3nttc3TLDg944G8QK7d5NnygCRu"
-        let litecoin = CoinType.litecoin
-        let xpubAddr2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: litecoin, account: 0, change: 0, address: 2))!
-        let xpubAddr9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: litecoin, account: 0, change: 0, address: 9))!
-
-        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: P2PKHPrefix.litecoin.rawValue).description, "LdJvSS8gcRSN1WbSEj6srV8dKzGcybHGKt")
-        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: P2PKHPrefix.litecoin.rawValue).description, "Laj4byUKgW3wuou4G3XCAPWqzVc3SdEpQk")
-    }
-
-    func testDeriveFromMtub() {
-        let ypub = "Mtub2sZjeBCxVccvybLHSD1i3Aw38QvCTDadaPyXbSkRRX1RQm3mxtfsbQU5M3PdCSP4xAFHCceEQ3FmQF69Du2wbcmebt3CaWAGALBSe8c4Gvw"
-
-        let litecoin = CoinType.litecoin
-        let ypubAddr3 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: litecoin, account: 0, change: 0, address: 3))!
-        let ypubAddr10 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: litecoin, account: 0, change: 0, address: 10))!
-
-        XCTAssertEqual(BitcoinAddress.compatibleAddress(publicKey: ypubAddr3, prefix: P2SHPrefix.litecoin.rawValue).description, "MVr2vvjyaTzmfX3LFZcg5KZ7Cc36pgAWcy")
-        XCTAssertEqual(BitcoinAddress.compatibleAddress(publicKey: ypubAddr10, prefix: P2SHPrefix.litecoin.rawValue).description, "MTgkF6T5h92QDmpFsBk4fJeYt3dx5ERQtD")
-    }
-
     func testDeriveFromZPub() {
         let zpub = "zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs"
         let litecoin = CoinType.litecoin

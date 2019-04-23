@@ -25,21 +25,3 @@ TEST(Ripple, ExtendedKeys) {
     assertStringsEqual(xpub, "xpub6D9oDY4gqFBtsFEonh5GTDiUm6nmij373YWzmYdshcnM4AFzdhUf55iZD33vNU2ZqfQJU5wiCJUgisMt2RHKDzhi1PbZfh5Y2NiiYJAQqUn");
     assertStringsEqual(xprv, "xprv9zASp2XnzsdbemALgfYG65mkD4xHKGKFgKbPyAEG9HFNBMvr6AAQXHQ5MmqM66EnbJfe9TvYMy1bucz7hSQjG43NVizRZwJJYfLmeKo4nVB");
 }
-
-TEST(Ripple, DerivePubkeyFromXpub) {
-    auto xpub = STRING("xpub6D9oDY4gqFBtsFEonh5GTDiUm6nmij373YWzmYdshcnM4AFzdhUf55iZD33vNU2ZqfQJU5wiCJUgisMt2RHKDzhi1PbZfh5Y2NiiYJAQqUn");
-    auto pubKey0 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeRipple, TWHDVersionXPUB, TWHDVersionXPRV, 0, 0);
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeRipple, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto pubKey6 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeRipple, TWHDVersionXPUB, TWHDVersionXPRV, 0, 6);
-
-    auto address0 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeRipple, pubKey0));
-    auto address2 = TWRippleAddressCreateWithPublicKey(pubKey2);
-    auto address2String = WRAPS(TWRippleAddressDescription(address2));
-
-    auto address6 = TWRippleAddressCreateWithPublicKey(pubKey6);
-    auto address6String = WRAPS(TWRippleAddressDescription(address6));
-
-    assertStringsEqual(address0, "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav");
-    assertStringsEqual(address2String, "rJD8Bobd1JDJW34Y2nyqxofvfe672AGw7e");
-    assertStringsEqual(address6String, "rLimL8BjBDb1UB8icRtTnJTt5m6DUeWXbC");
-}

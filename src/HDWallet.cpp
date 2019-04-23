@@ -99,27 +99,37 @@ std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, T
     return serialize(&node, fingerprintValue, version, true, base58Hasher(coin));
 }
 
-PublicKey HDWallet::getPublicKeyFromExtended(const std::string &extended, TWCurve curve,
-                                             Hash::Hasher hasher, enum TWHDVersion versionPublic,
-                                             enum TWHDVersion versionPrivate, uint32_t change,
-                                             uint32_t address) {
+std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string &extended, const DerivationPath& path) {
+    const auto coin = path.coin();
+    const auto curve = TW::curve(coin);
+    const auto hasher = TW::base58Hasher(coin);
+    const auto versionPublic = TW::xpubVersion(coin);
+    const auto versionPrivate = TW::xprvVersion(coin);
+
     auto node = HDNode{};
-    deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node);
-    hdnode_public_ckd(&node, change);
-    hdnode_public_ckd(&node, address);
+    if (!deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node)) {
+        return {};
+    }
+    hdnode_public_ckd(&node, path.change());
+    hdnode_public_ckd(&node, path.address());
     hdnode_fill_public_key(&node);
 
     return PublicKey(Data(node.public_key, node.public_key + 33));
 }
 
-PrivateKey HDWallet::getPrivateKeyFromExtended(const std::string &extended, TWCurve curve,
-                                               Hash::Hasher hasher, enum TWHDVersion versionPublic,
-                                               enum TWHDVersion versionPrivate, uint32_t change,
-                                               uint32_t address) {
+std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path) {
+    const auto coin = path.coin();
+    const auto curve = TW::curve(coin);
+    const auto hasher = TW::base58Hasher(coin);
+    const auto versionPublic = TW::xpubVersion(coin);
+    const auto versionPrivate = TW::xprvVersion(coin);
+
     auto node = HDNode{};
-    deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node);
-    hdnode_private_ckd(&node, change);
-    hdnode_private_ckd(&node, address);
+    if (!deserialize(extended, curve, hasher, versionPublic, versionPrivate, &node)) {
+        return {};
+    }
+    hdnode_private_ckd(&node, path.change());
+    hdnode_private_ckd(&node, path.address());
 
     return PrivateKey(Data(node.private_key, node.private_key + 32));
 }

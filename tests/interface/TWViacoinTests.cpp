@@ -74,27 +74,10 @@ TEST(Viacoin, ExtendedKeys) {
     assertStringsEqual(zpub, "zpub6qUUfiw2RW2i3Sy8zHVgbjoQSsi4UkgC75e6SjorAFwEV7YGFQoLELRhpe8NZ3xtsKHhbJW3kYWQLMFfCmMFDPkSer8BP9fiJcaZRL4LsR4");
 }
 
-TEST(Viacoin, DeriveFromXpub) {
-    auto xpub = STRING("xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeViacoin, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeViacoin, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
-
-    TWBitcoinAddress address2;
-    TWBitcoinAddressInitWithPublicKey(&address2, pubKey2, TWP2PKHPrefixViacoin);
-    auto address2String = WRAPS(TWBitcoinAddressDescription(address2));
-
-    TWBitcoinAddress address9;
-    TWBitcoinAddressInitWithPublicKey(&address9, pubKey9, TWP2PKHPrefixViacoin);
-    auto address9String = WRAPS(TWBitcoinAddressDescription(address9));
-
-    assertStringsEqual(address2String, "VvN4z8c2zQA9gNnTTdxZkgYqagpVjkdb8z");
-    assertStringsEqual(address9String, "VnUgk2EA8upaSFMfFwsT2kJbBKmWher7pC");
-}
-
 TEST(Viacoin, DeriveFromZpub) {
     auto zpub = STRING("zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeViacoin, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeViacoin, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/14'/0'/0/4").get());
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/14'/0'/0/11").get());
 
     auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPViacoin, pubKey4));
     auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));
