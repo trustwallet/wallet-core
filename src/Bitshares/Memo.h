@@ -7,19 +7,19 @@
 #pragma once
 
 #include <string>
+#include <nlohmann/json.hpp>
 
 #include "../PublicKey.h"
 #include "../PrivateKey.h"
 #include "../Data.h"
 
-namespace TW {
-namespace Bitshares {
+namespace TW::Bitshares {
 
 TW::Data aesEncrypt(const uint8_t *message, size_t messageLength, const uint8_t *key, const uint8_t *initializationVector);
 
 template <typename T>
 TW::Data aesEncrypt(const T& message, const uint8_t *key, const uint8_t *initializationVector) {
-    return aesEncrypt(message.data(), message.size(), key, initializationVector);
+    return aesEncrypt(reinterpret_cast<const uint8_t*>(message.data()), message.size(), key, initializationVector);
 }
 
 class Memo {
@@ -31,6 +31,9 @@ public:
     Memo(const PrivateKey& senderKey, const PublicKey& recipientKey, const std::string& message);
 
     static Data getSharedSecret(const PrivateKey& senderKey, const PublicKey& recipientKey);
+
+        void serialize(Data& os) const noexcept;
+        nlohmann::json serialize() const noexcept;
 };
 
-}} // namespace
+} // namespace TW::Bitshares

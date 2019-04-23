@@ -9,13 +9,12 @@ TransferOperation::TransferOperation(uint64_t senderId,
                                     uint64_t recipientId,
                                     const Asset& amount,
                                     const Asset& fee,
-                                    const Memo& memo) 
+                                    Memo *memo) 
                                     : from({1, 2, senderId}),
                                       to({1, 2, recipientId}),
+                                      memo(memo),
                                       amount(amount),
-                                      fee(fee),
-                                      memo( memo) 
-{
+                                      fee(fee) {
     validate();
 }
 
@@ -33,7 +32,33 @@ void TransferOperation::validate() {
     }
 }
 
-void TransferOperation::serialize(Data& os) const noexcept override {
+void TransferOperation::serialize(Data& os) const noexcept {
+    fee.serialize(os);
+    Bravo::encodeVarInt64(from.instance, os);
+    Bravo::encodeVarInt64(to.instance, os);
+    amount.serialize(os);
 
+    if (memo) {
+        os.push_back(1);
+        memo->serialize(os);
+    } else {
+        os.push_back(0);
+    }
+
+    os.push_back(0);        // no extensions, so 0
 }
-json TransferOperation::serialize() const noexcept override;
+
+json TransferOperation::serialize() const noexcept {
+    json obj;
+    obj["fee"] = fee.serialize();
+    obj["from"] = from.string();
+    obj["to"] = to.string();
+    obj["amount"] = amount.serialize();
+
+    if (memo) {
+        obj["memo"] = memo->serialize();
+    }
+
+    obj["extensions"] = json::array();
+    return json::array({OperationId, obj});
+}

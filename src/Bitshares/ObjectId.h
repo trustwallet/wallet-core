@@ -6,33 +6,32 @@
 
 #pragma once
 
-namespace TW {
-namespace Bitshares {
-    struct ObjectId {
-        uint8_t spaceId, typeId;
-        uint64_t instance;
+namespace TW::Bitshares {
+struct ObjectId {
+    uint8_t spaceId, typeId;
+    uint64_t instance;
 
-        ObjectId(uint8_t spaceId, uint8_t typeId, uint64_t instance): spaceId(spaceId), 
-                                                                        typeId(typeId),
-                                                                        instance(instance) { }
+    ObjectId(uint8_t spaceId, uint8_t typeId, uint64_t instance): spaceId(spaceId), 
+                                                                    typeId(typeId),
+                                                                    instance(instance) { }
 
-        std::string string() const {
-            return std::to_string(spaceId) + "."
-                    + std::to_string(typeId) + "."
-                    + std::to_string(instance);
-        }
-
-        friend bool operator==(const ObjectId& lhs, const ObjectId rhs);
-        friend bool operator!=(const ObjectId& lhs, const ObjectId rhs);
-    };
-
-    inline bool operator==(const ObjectId& lhs, const ObjectId rhs) {
-        return lhs.spaceId == rhs.spaceId 
-                && lhs.typeId == rhs.typeId 
-                && lhs.instance == rhs.instance;
+    std::string string() const {
+        return std::to_string(spaceId) + "."
+                + std::to_string(typeId) + "."
+                + std::to_string(instance);
     }
 
-    inline bool operator!=(const ObjectId& lhs, const ObjectId rhs) {
-        return ! (lhs == rhs);
-    }
-}} // namespace
+    friend bool operator==(const ObjectId& lhs, const ObjectId rhs);
+    friend bool operator!=(const ObjectId& lhs, const ObjectId rhs);
+};
+
+inline bool operator==(const ObjectId& lhs, const ObjectId rhs) {
+    return lhs.spaceId == rhs.spaceId 
+            && lhs.typeId == rhs.typeId 
+            && lhs.instance == rhs.instance;
+}
+
+inline bool operator!=(const ObjectId& lhs, const ObjectId rhs) {
+    return ! (lhs == rhs);
+}
+} // namespace TW::Bitshares

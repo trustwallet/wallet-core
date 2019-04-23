@@ -12,24 +12,23 @@
 #include "Memo.h"
 #include "../Bravo/Operation.h"
 
-namespace TW {
-namespace Bitshares {
-    class TransferOperation: public Bravo::Operation {
-    public:
-        TransferOperation(uint64_t senderId, 
-                            uint64_t recipientId, 
-                            const Asset& amount, 
-                            const Asset& fee,
-                            const Memo& memo);
+namespace TW::Bitshares {
+class TransferOperation: public Bravo::Operation {
+public:
+    TransferOperation(uint64_t senderId, 
+                        uint64_t recipientId, 
+                        const Asset& amount, 
+                        const Asset& fee,
+                        Memo *memo);
 
-        void serialize(Data& os) const noexcept override;
-        nlohmann::json serialize() const noexcept override;
-		void validate();
-        static const int OperationId = 0;
+    void serialize(Data& os) const noexcept override;
+    nlohmann::json serialize() const noexcept override;
+    void validate();
+    static const int OperationId = 0;
 
-    private:
-        ObjectId from, to;
-        Memo memo;
-        Asset amount, fee;
-    }
-}} // namespace
+private:
+    ObjectId from, to;
+    std::unique_ptr<Memo> memo;
+    Asset amount, fee;
+};
+} // namespace TW::Bitshares
