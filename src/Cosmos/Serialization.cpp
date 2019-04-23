@@ -16,7 +16,8 @@ using namespace TW::Cosmos::Proto;
 
 using json = nlohmann::json;
 
-const static std::string AMINO_PREFIX_SEND_MESSAGE = "cosmos-sdk/MsgSend";
+const static std::string AMINO_PREFIX_SEND_COIN_MESSAGE = "cosmos-sdk/MsgSend";
+const static std::string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
 const static std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
 const static std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
@@ -39,13 +40,14 @@ json amountJSON(std::string amount, std::string denom) {
 }
 
 json feeJSON(const Fee& fee) {
-    json jsonFee;
-
     json jsonAmounts = json::array();
-    for (auto& amount : fee.amount()) {
+    
+    for (auto& amount : fee.amounts()) {
         jsonAmounts.push_back(
             amountJSON(std::to_string(amount.amount()), amount.denom()));
     }
+
+    json jsonFee;
 
     jsonFee["amount"] = jsonAmounts;
     jsonFee["gas"] = std::to_string(fee.gas());
@@ -53,39 +55,61 @@ json feeJSON(const Fee& fee) {
     return jsonFee;
 }
 
-json messageJSON(json& coins, std::string from_address, std::string to_address) {
+json sendCoinsMessageJSON(json& amounts, std::string from_address, std::string to_address) {
     json jsonMsg;
 
-    jsonMsg["amount"] = coins;
+    jsonMsg["amount"] = amounts;
     jsonMsg["from_address"] = from_address;
     jsonMsg["to_address"] = to_address;
 
-    return wrapperJSON(AMINO_PREFIX_SEND_MESSAGE, jsonMsg);
+    return wrapperJSON(AMINO_PREFIX_SEND_COIN_MESSAGE, jsonMsg);
+}
+
+json stakeMessageJSON(json& amount, std::string delegator_address, std::string validator_address) {
+    json jsonMsg;
+
+    jsonMsg["amount"] = amount;
+    jsonMsg["delegator_address"] = delegator_address;
+    jsonMsg["validator_address"] = validator_address;
+
+    return wrapperJSON(AMINO_PREFIX_STAKE_MESSAGE, jsonMsg);
+}
+
+json sendCoinsMessageJSON(const SendCoinsMessage& message) {
+    json jsonAmounts = json::array();
+    
+    for (auto& amount : message.amounts()) {
+        jsonAmounts.push_back(amountJSON(std::to_string(amount.amount()), amount.denom()));
+    }
+
+    return sendCoinsMessageJSON(jsonAmounts, message.from_address(), message.to_address());
+}
+
+json stakeMessageJSON(const StakeMessage& message) {
+    auto amount = message.amount();
+    json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
+
+    return stakeMessageJSON(jsonAmount, message.delegator_address(), message.validator_address());
 }
 
 json messageJSON(const SigningInput& input) {
-    json jsonMsg;
-    
-    if (input.has_message()) {
-        json jsonCoins = json::array();
-        for (auto& coin : input.message().amount()) {
-            jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
-        }
-
-        return messageJSON(jsonCoins, input.message().from_address(), input.message().to_address());
+    if (input.has_send_coins_message()) {
+        return sendCoinsMessageJSON(input.send_coins_message());
+    } else if (input.has_stake_message()) {
+        return stakeMessageJSON(input.stake_message());
     }
 
     return nullptr;
 }
 
 json messageJSON(const Transaction& transaction) {
-    json jsonCoins = json::array();
-
-    for (auto& coin : transaction.message().amount()) {
-        jsonCoins.push_back(amountJSON(std::to_string(coin.amount()), coin.denom()));
+    if (transaction.has_send_coins_message()) {
+        return sendCoinsMessageJSON(transaction.send_coins_message());
+    } else if (transaction.has_stake_message()) {
+        return stakeMessageJSON(transaction.stake_message());
     }
 
-    return messageJSON(jsonCoins, transaction.message().from_address(), transaction.message().to_address());
+    return nullptr;
 }
 
 json signatureJSON(const Signature& signature) {
@@ -99,16 +123,16 @@ json signatureJSON(const Signature& signature) {
 }
 
 json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
-    json jsonTx;
+    json jsonForSigning;
     
-    jsonTx["account_number"] = std::to_string(input.account_number());
-    jsonTx["chain_id"] = input.chain_id();
-    jsonTx["fee"] = feeJSON(input.fee());
-    jsonTx["memo"] = input.memo();
-    jsonTx["msgs"] = json::array({messageJSON(input)});
-    jsonTx["sequence"] = std::to_string(input.sequence());
+    jsonForSigning["account_number"] = std::to_string(input.account_number());
+    jsonForSigning["chain_id"] = input.chain_id();
+    jsonForSigning["fee"] = feeJSON(input.fee());
+    jsonForSigning["memo"] = input.memo();
+    jsonForSigning["msgs"] = json::array({messageJSON(input)});
+    jsonForSigning["sequence"] = std::to_string(input.sequence());
 
-    return jsonTx;
+    return jsonForSigning;
 }
 
 json TW::Cosmos::transactionJSON(const Transaction& transaction) {
