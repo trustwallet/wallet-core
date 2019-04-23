@@ -69,7 +69,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         result.resize(64);
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Blake2b);
         ed25519_sign_blake2b(digest.data(), digest.size(), bytes.data(),
-                             publicKey.bytes.data() + 1, result.data());
+                             publicKey.bytes.data(), result.data());
     } break;
     case TWCurveNIST256p1: {
         result.resize(65);
