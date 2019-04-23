@@ -28,6 +28,7 @@ const char SECP256K1_SMART_NAME[] = "secp256k1-smart";
 const char NIST256P1_NAME[] = "nist256p1";
 const char ED25519_NAME[] = "ed25519";
 const char ED25519_CARDANO_NAME[] = "ed25519 cardano seed";
+const char ED25519_BLAKE2B_NANO_NAME[] = "ed25519-blake2b-nano";
 const char ED25519_SHA3_NAME[] = "ed25519-sha3";
 const char ED25519_KECCAK_NAME[] = "ed25519-keccak";
 const char CURVE25519_NAME[] = "curve25519";
