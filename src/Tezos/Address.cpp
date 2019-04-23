@@ -9,6 +9,7 @@
 #include "Forging.h"
 
 #include "../Base58.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
@@ -57,11 +58,7 @@ std::string Address::deriveOriginatedAddress(const std::string& operationHash, i
     // Decode and remove 2 byte prefix.
     auto decoded = Base58::bitcoin.decodeCheck(operationHash);
     decoded.erase(decoded.begin(), decoded.begin() + 2);
-
-    decoded.push_back((operationIndex & 0xff000000) >> 24);
-    decoded.push_back((operationIndex & 0x00ff0000) >> 16);
-    decoded.push_back((operationIndex & 0x0000ff00) >> 8);
-    decoded.push_back((operationIndex & 0x000000ff));
+    TW::encode32BE(operationIndex, decoded);
 
     auto hash = Hash::blake2b(decoded, 20);
 
