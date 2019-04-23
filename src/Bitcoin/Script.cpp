@@ -7,7 +7,7 @@
 #include "Script.h"
 
 #include "Address.h"
-#include "Bech32Address.h"
+#include "SegwitAddress.h"
 #include "CashAddress.h"
 
 #include "../BinaryCoding.h"
@@ -275,8 +275,8 @@ Script Script::buildForAddress(const std::string& string) {
             std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToScriptHash(data);
         }
-    } else if (Bech32Address::isValid(string)) {
-        auto result = Bech32Address::decode(string);
+    } else if (SegwitAddress::isValid(string)) {
+        auto result = SegwitAddress::decode(string);
         // address starts with bc/ltc
         auto program = result.first.witnessProgram;
         return buildPayToWitnessPubkeyHash(program);

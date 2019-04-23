@@ -6,7 +6,7 @@
 
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHash.h>
@@ -29,8 +29,8 @@ TEST(Qtum, LegacyAddress) {
 TEST(Qtum, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, publicKey));
-    auto string = WRAPS(TWBech32AddressDescription(address.get()));
+    auto address = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, publicKey));
+    auto string = WRAPS(TWSegwitAddressDescription(address.get()));
 
     assertStringsEqual(string, "qc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0as6uywkk");
 }
@@ -90,11 +90,11 @@ TEST(Qtum, DeriveFromZpub) {
     auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2301'/0'/0/4").get());
     auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2301'/0'/0/11").get());
 
-    auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, pubKey4));
-    auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));
+    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey4));
+    auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, pubKey11));
-    auto address11String = WRAPS(TWBech32AddressDescription(address11.get()));
+    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey11));
+    auto address11String = WRAPS(TWSegwitAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "qc1q3cvjmc2cgjkz9y58waj3r9ccchmrmrdzq03783");
     assertStringsEqual(address11String, "qc1qrlk0ajg6khu2unsdppggs3pgpxxvdeymky58af");

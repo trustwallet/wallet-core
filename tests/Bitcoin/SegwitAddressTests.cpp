@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Bech32.h"
-#include "Bitcoin/Bech32Address.h"
+#include "Bitcoin/SegwitAddress.h"
 
 #include <cstring>
 #include <gtest/gtest.h>
@@ -136,11 +136,11 @@ bool case_insensitive_equal(const std::string& s1, const std::string& s2) {
     return true;
 }
 
-TEST(Bech32Address, ValidChecksum) {
+TEST(SegwitAddress, ValidChecksum) {
     for (auto i = 0; i < sizeof(valid_checksum) / sizeof(valid_checksum[0]); ++i) {
         auto dec = Bech32::decode(valid_checksum[i]);
         ASSERT_FALSE(dec.first.empty());
-        
+
         auto recode = Bech32::encode(dec.first, dec.second);
         ASSERT_FALSE(recode.empty());
 
@@ -148,17 +148,17 @@ TEST(Bech32Address, ValidChecksum) {
     }
 }
 
-TEST(Bech32Address, InvalidChecksum) {
+TEST(SegwitAddress, InvalidChecksum) {
     for (auto i = 0; i < sizeof(invalid_checksum) / sizeof(invalid_checksum[0]); ++i) {
         auto dec = Bech32::decode(invalid_checksum[i]);
         EXPECT_TRUE(dec.first.empty() && dec.second.empty());
     }
 }
 
-TEST(Bech32Address, ValidAddress) {
+TEST(SegwitAddress, ValidAddress) {
     for (auto i = 0; i < sizeof(valid_address) / sizeof(valid_address[0]); ++i) {
         std::string hrp = "bc";
-        auto dec = Bech32Address::decode(valid_address[i].address);
+        auto dec = SegwitAddress::decode(valid_address[i].address);
         ASSERT_TRUE(dec.second);
 
         std::vector<uint8_t> spk = segwit_scriptpubkey(dec.first.witnessVersion, dec.first.witnessProgram);
@@ -171,22 +171,22 @@ TEST(Bech32Address, ValidAddress) {
     }
 }
 
-TEST(Bech32Address, InvalidAddress) {
+TEST(SegwitAddress, InvalidAddress) {
     for (auto i = 0; i < sizeof(invalid_address) / sizeof(invalid_address[0]); ++i) {
-        auto dec = Bech32Address::decode(invalid_address[i]);
+        auto dec = SegwitAddress::decode(invalid_address[i]);
         EXPECT_FALSE(dec.second) <<  "Invalid address reported as valid: " << invalid_address[i];
     }
 }
 
-TEST(Bech32Address, InvalidAddressEncoding) {
+TEST(SegwitAddress, InvalidAddressEncoding) {
     for (auto i = 0; i < sizeof(invalid_address_enc) / sizeof(invalid_address_enc[0]); ++i) {
-        auto address = Bech32Address(invalid_address_enc[i].hrp, invalid_address_enc[i].version, std::vector<uint8_t>(invalid_address_enc[i].program_length, 0));
+        auto address = SegwitAddress(invalid_address_enc[i].hrp, invalid_address_enc[i].version, std::vector<uint8_t>(invalid_address_enc[i].program_length, 0));
         std::string code = address.string();
         EXPECT_TRUE(code.empty());
     }
 }
 
-TEST(Bech32Address, LegacyAddress) {
-    auto result = Bech32Address::decode("TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3");
+TEST(SegwitAddress, LegacyAddress) {
+    auto result = SegwitAddress::decode("TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3");
     EXPECT_FALSE(result.second);
 }

@@ -6,7 +6,7 @@
 
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWGroestlcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHash.h>
@@ -81,11 +81,11 @@ TEST(Groestlcoin, DeriveFromZpub) {
     auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/84'/17'/0'/0/4").get());
     auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/84'/17'/0'/0/11").get());
 
-    auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPGroestlcoin, pubKey4));
-    auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));
+    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPGroestlcoin, pubKey4));
+    auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPGroestlcoin, pubKey11));
-    auto address11String = WRAPS(TWBech32AddressDescription(address11.get()));
+    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPGroestlcoin, pubKey11));
+    auto address11String = WRAPS(TWSegwitAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "grs1quwq6ml2r8rc25tue5ltfa6uc4pdzhtzul3c0rk");
     assertStringsEqual(address11String, "grs1ql0a7czm8wrj253h78dm2h5j2k89zwpy2qjq0q9");

@@ -6,7 +6,7 @@
 
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHash.h>
@@ -29,8 +29,8 @@ TEST(Viacoin, LegacyAddress) {
 TEST(Viacoin, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPViacoin, publicKey));
-    auto string = WRAPS(TWBech32AddressDescription(address.get()));
+    auto address = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, publicKey));
+    auto string = WRAPS(TWSegwitAddressDescription(address.get()));
 
     assertStringsEqual(string, "via1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asu2r3d2");
 }
@@ -96,11 +96,11 @@ TEST(Viacoin, DeriveFromZpub) {
     auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/14'/0'/0/4").get());
     auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/14'/0'/0/11").get());
 
-    auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPViacoin, pubKey4));
-    auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));
+    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, pubKey4));
+    auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPViacoin, pubKey11));
-    auto address11String = WRAPS(TWBech32AddressDescription(address11.get()));
+    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPViacoin, pubKey11));
+    auto address11String = WRAPS(TWSegwitAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "via1qcgnevr9rp7aazy62m4gen0tfzlssa52agh6ugv");
     assertStringsEqual(address11String, "via1qy072y8968nzp6mz3j292h8lp72d678fc4zwd0f");

@@ -8,7 +8,7 @@
 
 #include "Aion/Address.h"
 #include "Bitcoin/Address.h"
-#include "Bitcoin/Bech32Address.h"
+#include "Bitcoin/SegwitAddress.h"
 #include "Bitcoin/CashAddress.h"
 #include "Decred/Address.h"
 #include "Ethereum/Address.h"
@@ -47,7 +47,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Cosmos::Address::isValid(string, HRP_BINANCE);
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_BITCOIN) ||
+        return Bitcoin::SegwitAddress::isValid(string, HRP_BITCOIN) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
     case TWCoinTypeBitcoinCash:
@@ -70,7 +70,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDogecoin}, {TWP2SHPrefixDogecoin}});
 
     case TWCoinTypeGroestlcoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_GROESTLCOIN) ||
+        return Bitcoin::SegwitAddress::isValid(string, HRP_GROESTLCOIN) ||
                Groestlcoin::Address::isValid(string, {TWP2PKHPrefixGroestlcoin, TWP2SHPrefixGroestlcoin});
 
     case TWCoinTypeIocoin:
@@ -95,11 +95,11 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return IOST::Account::isValid(string);
 
     case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_LITECOIN) ||
+        return Bitcoin::SegwitAddress::isValid(string, HRP_LITECOIN) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLitecoin}});
 
     case TWCoinTypeViacoin:
-        return Bitcoin::Bech32Address::isValid(string, HRP_VIACOIN) ||
+        return Bitcoin::SegwitAddress::isValid(string, HRP_VIACOIN) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixViacoin}, {TWP2SHPrefixViacoin}});
 
     case TWCoinTypeOntology:
@@ -138,7 +138,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return NULS::Address::isValid(string);
 
     case TWCoinTypeQtum:
-        return Bitcoin::Bech32Address::isValid(string, HRP_QTUM) ||
+        return Bitcoin::SegwitAddress::isValid(string, HRP_QTUM) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixQtum}});
     }
 }
@@ -479,7 +479,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Cosmos::Address(HRP_COSMOS, publicKey).string();
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::Bech32Address(publicKey, 0, HRP_BITCOIN).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, HRP_BITCOIN).string();
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(publicKey).string();
@@ -497,7 +497,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Bitcoin::Address(publicKey, TWP2PKHPrefixDogecoin).string();
 
     case TWCoinTypeGroestlcoin:
-        return Bitcoin::Bech32Address(publicKey, 0, HRP_GROESTLCOIN).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, HRP_GROESTLCOIN).string();
 
     case TWCoinTypeIocoin:
         return Iocoin::Address(publicKey, TWP2PKHPrefixIocoin).string();
@@ -522,9 +522,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return IOST::Account::encodePubKey(publicKey);
 
     case TWCoinTypeLitecoin:
-        return Bitcoin::Bech32Address(publicKey, 0, HRP_LITECOIN).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, HRP_LITECOIN).string();
     case TWCoinTypeViacoin:
-        return Bitcoin::Bech32Address(publicKey, 0, HRP_VIACOIN).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, HRP_VIACOIN).string();
     case TWCoinTypeOntology:
         return Ontology::Address(publicKey).string();
     case TWCoinTypeNimiq:
