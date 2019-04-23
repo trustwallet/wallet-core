@@ -63,19 +63,19 @@ class BitcoinAddressTests: XCTestCase {
         XCTAssertEqual(BitcoinAddress(publicKey: compressedPK, prefix: 0).description, "1KbUJ4x8epz6QqxkmZbTc4f79JbWWz6g37")
     }
 
-    func testPublicKeyToBech32Address() {
+    func testPublicKeyToSegwitAddress() {
         let publicKey = PublicKey(data: Data(hexString: "0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798")!)!
         let expect = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"
-        XCTAssertTrue(Bech32Address.isValidString(string: expect))
+        XCTAssertTrue(SegwitAddress.isValidString(string: expect))
 
-        let address = Bech32Address(hrp: .bitcoin, publicKey: publicKey)
+        let address = SegwitAddress(hrp: .bitcoin, publicKey: publicKey)
         XCTAssertEqual(address.description, expect)
 
-        let addressFromString = Bech32Address(string: expect)
+        let addressFromString = SegwitAddress(string: expect)
         XCTAssertEqual(address.description, addressFromString?.description)
     }
 
-    func testInvalidBech32Addresses() {
+    func testInvalidSegwitAddresses() {
         let addresses = [
             "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t5",
             "bc1rw5uspcuh",
@@ -87,7 +87,7 @@ class BitcoinAddressTests: XCTestCase {
         ]
 
         for invalid in addresses {
-            XCTAssertFalse(Bech32Address.isValidString(string: invalid), "'\(invalid)' should not be a valid Bech32 address")
+            XCTAssertFalse(SegwitAddress.isValidString(string: invalid), "'\(invalid)' should not be a valid Bech32 address")
         }
     }
 }

@@ -17,8 +17,8 @@ class QtumTests: XCTestCase {
 
         let privateKey2 = PrivateKey(data: Data(hexString: "55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625")!)!
         let publicKey2 = privateKey2.getPublicKeySecp256k1(compressed: true)
-        let bech32Address = Bech32Address(hrp: .qtum, publicKey: publicKey2)
-        XCTAssertEqual(Bech32Address(string: "qc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0as6uywkk")!.description, bech32Address.description)
+        let bech32Address = SegwitAddress(hrp: .qtum, publicKey: publicKey2)
+        XCTAssertEqual(SegwitAddress(string: "qc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0as6uywkk")!.description, bech32Address.description)
     }
 
     func testQtumBlockchain() {
@@ -68,7 +68,7 @@ class QtumTests: XCTestCase {
         let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: .bip84, coinType: qtum, account: 0, change: 0, address: 4))!
         let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: .bip84, coinType: qtum, account: 0, change: 0, address: 11))!
 
-        XCTAssertEqual(Bech32Address(hrp: .qtum, publicKey: zpubAddr4).description, "qc1q3cvjmc2cgjkz9y58waj3r9ccchmrmrdzq03783")
-        XCTAssertEqual(Bech32Address(hrp: .qtum, publicKey: zpubAddr11).description, "qc1qrlk0ajg6khu2unsdppggs3pgpxxvdeymky58af")
+        XCTAssertEqual(SegwitAddress(hrp: .qtum, publicKey: zpubAddr4).description, "qc1q3cvjmc2cgjkz9y58waj3r9ccchmrmrdzq03783")
+        XCTAssertEqual(SegwitAddress(hrp: .qtum, publicKey: zpubAddr11).description, "qc1qrlk0ajg6khu2unsdppggs3pgpxxvdeymky58af")
     }
 }

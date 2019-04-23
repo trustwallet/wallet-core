@@ -13,7 +13,7 @@ public extension CoinType {
         case .binance, .cosmos:
             if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
         case .bitcoin, .litecoin, .viacoin, .qtum:
-            if let addr = Bech32Address(string: string), addr.hrp == hrp {
+            if let addr = SegwitAddress(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .bitcoinCash:
@@ -61,7 +61,7 @@ public extension CoinType {
         case .iocoin:
             return IocoinAddress(string: string)
         case .groestlcoin:
-            if let addr = Bech32Address(string: string), addr.hrp == hrp {
+            if let addr = SegwitAddress(string: string), addr.hrp == hrp {
                 return addr
             } else {
                 return GroestlcoinAddress(string: string)
