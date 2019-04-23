@@ -16,8 +16,8 @@ class GroestlcoinTests: XCTestCase {
 
         let privateKey2 = PrivateKey(data: Data(hexString: "8c59c0a6f433a961109d4fd485c4562f87e0f1ad0ece32e1db406a84c5028391")!)!
         let publicKey2 = privateKey2.getPublicKeySecp256k1(compressed: true)
-        let bech32Address = Bech32Address(hrp: .groestlcoin, publicKey: publicKey2)
-        XCTAssertEqual(Bech32Address(string: "grs1qsjpmsmm4x34wlt6kk4zef9u0jtculguktwgwg4")!.description, bech32Address.description)
+        let bech32Address = SegwitAddress(hrp: .groestlcoin, publicKey: publicKey2)
+        XCTAssertEqual(SegwitAddress(string: "grs1qsjpmsmm4x34wlt6kk4zef9u0jtculguktwgwg4")!.description, bech32Address.description)
     }
 
     func testGroestlcoinBlockchain() {
@@ -61,7 +61,7 @@ class GroestlcoinTests: XCTestCase {
         let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: groestlcoin.purpose, coinType: groestlcoin, account: 0, change: 0, address: 4))!
         let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: groestlcoin.purpose, coinType: groestlcoin, account: 0, change: 0, address: 11))!
 
-        XCTAssertEqual(Bech32Address(hrp: .groestlcoin, publicKey: zpubAddr4).description, "grs1quwq6ml2r8rc25tue5ltfa6uc4pdzhtzul3c0rk")
-        XCTAssertEqual(Bech32Address(hrp: .groestlcoin, publicKey: zpubAddr11).description, "grs1ql0a7czm8wrj253h78dm2h5j2k89zwpy2qjq0q9")
+        XCTAssertEqual(SegwitAddress(hrp: .groestlcoin, publicKey: zpubAddr4).description, "grs1quwq6ml2r8rc25tue5ltfa6uc4pdzhtzul3c0rk")
+        XCTAssertEqual(SegwitAddress(hrp: .groestlcoin, publicKey: zpubAddr11).description, "grs1ql0a7czm8wrj253h78dm2h5j2k89zwpy2qjq0q9")
     }
 }

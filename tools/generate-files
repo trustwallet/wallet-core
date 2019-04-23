@@ -15,6 +15,11 @@ PREFIX="${PREFIX:-$ROOT/build/local}"
 PATH="$PREFIX/bin":$PATH
 PROTOC="$PREFIX/bin/protoc"
 
+# Clean
+rm -rf swift/Sources/Generated
+rm -rf jni/java
+rm -rf jni/cpp/generated
+
 # Generate interface code
 codegen/bin/codegen
 
