@@ -36,29 +36,8 @@ bool TWHDVersionIsPublic(enum TWHDVersion version) {
 }
 
 bool TWHDVersionIsPrivate(enum TWHDVersion version) {
-    switch (version) {
-    case TWHDVersionXPUB:
-    case TWHDVersionYPUB:
-    case TWHDVersionZPUB:
-    case TWHDVersionLTUB:
-    case TWHDVersionMTUB:
-    case TWHDVersionDPUB:
-    case TWHDVersionDGUB:
-        return false;
-
-    case TWHDVersionXPRV:
-    case TWHDVersionYPRV:
-    case TWHDVersionZPRV:
-    case TWHDVersionLTPV:
-    case TWHDVersionMTPV:
-    case TWHDVersionDPRV:
-    case TWHDVersionDGPV:
-        return true;
-
-    case TWHDVersionNone:
-    default:
-        return false;
-    }
+    if (version == TWHDVersionNone) return false;
+    return !TWHDVersionIsPublic(version);
 }
 
 #pragma clang diagnostic pop
