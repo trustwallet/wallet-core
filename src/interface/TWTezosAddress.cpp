@@ -23,6 +23,12 @@ bool TWTezosAddressIsValidString(TWString *_Nonnull string) {
     return Address::isValid(*s);
 }
 
+TWString *_Nonnull TWTezosAddressDeriveOriginatedAddress(TWString *_Nonnull operationHash, int operationIndex) {
+    auto s = reinterpret_cast<const std::string*>(operationHash);
+    auto derivedAddress = Address::deriveOriginatedAddress(*s, operationIndex);
+    return TWStringCreateWithUTF8Bytes(derivedAddress.c_str());
+}
+
 struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
     try {

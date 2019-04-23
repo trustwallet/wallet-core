@@ -28,6 +28,9 @@ class Address : public TW::Base58Address<23> {
     /// Initializes a Tezos address with a public key.
     explicit Address(const PublicKey& publicKey);
 
+    /// Derives an originated address from the given inputs.
+    static std::string deriveOriginatedAddress(const std::string& operationHash, int operationIndex);
+
     /// Forge an address to hex bytes.
     Data forge() const;
 };

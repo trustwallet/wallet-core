@@ -53,6 +53,24 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
 }
 
+std::string Address::deriveOriginatedAddress(const std::string& operationHash, int operationIndex) {
+    // Decode and remove 2 byte prefix.
+    auto decoded = Base58::bitcoin.decodeCheck(operationHash);
+    decoded.erase(decoded.begin(), decoded.begin() + 2);
+
+    decoded.push_back((operationIndex & 0xff000000) >> 24);
+    decoded.push_back((operationIndex & 0x00ff0000) >> 16);
+    decoded.push_back((operationIndex & 0x0000ff00) >> 8);
+    decoded.push_back((operationIndex & 0x000000ff));
+
+    auto hash = Hash::blake2b(decoded, 20);
+
+    auto prefix = Data({2, 90, 121});
+    prefix.insert(prefix.end(), hash.begin(), hash.end());
+
+    return Base58::bitcoin.encodeCheck(prefix);
+}
+
 Data Address::forge() const {
     auto data = Data();
     std::string s = string();
