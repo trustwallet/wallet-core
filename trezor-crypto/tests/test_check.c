@@ -86,8 +86,7 @@
 #define DECRED_VERSION_PUBLIC  0x02fda926
 #define DECRED_VERSION_PRIVATE 0x02fda4e8
 
-const uint8_t *fromhex(const char *str)
-{
+const uint8_t *fromhex(const char *str) {
 	static uint8_t buf[FROMHEX_MAXLEN];
 	size_t len = strlen(str) / 2;
 	if (len > FROMHEX_MAXLEN) len = FROMHEX_MAXLEN;
