@@ -40,11 +40,15 @@ uint32_t Address::createChecksum(const uint8_t *buffer, Type type) {
         break;
 
     case Type::ModernK1:
-        ripemd160_Update(&ctx, (const uint8_t *) Modern::K1::prefix.c_str(), Modern::K1::prefix.size());
+        ripemd160_Update(&ctx, 
+                        (const uint8_t *) Modern::K1::prefix.c_str(), 
+                        static_cast<uint32_t>(Modern::K1::prefix.size()));
         break;
 
     case Type::ModernR1:
-        ripemd160_Update(&ctx, (const uint8_t *) Modern::R1::prefix.c_str(), Modern::R1::prefix.size());
+        ripemd160_Update(&ctx, 
+                        (const uint8_t *) Modern::R1::prefix.c_str(), 
+                        static_cast<uint32_t>(Modern::R1::prefix.size()));
         break;
     }
 

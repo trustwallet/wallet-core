@@ -11,7 +11,7 @@ PackedTransaction::PackedTransaction(const Transaction& transaction, Compression
 
     if (cfd.size()) {
         packedCFD.push_back(1);
-        packedCFD.push_back(cfd.size());
+        Bravo::encodeVarInt64(cfd.size(), packedCFD);
         append(packedCFD, cfd);
     }
 
@@ -22,9 +22,9 @@ void PackedTransaction::serialize(Data& os) const noexcept {
     using namespace TW::Bravo;
     encodeCollection(signatures, os);
     os.push_back(static_cast<uint8_t>(compression));
-    encodeVarInt32(packedCFD.size(), os);
+    encodeVarInt64(packedCFD.size(), os);
     append(os, packedCFD);
-    encodeVarInt32(packedTrx.size(), os);
+    encodeVarInt64(packedTrx.size(), os);
     append(os, packedTrx);
 }
 

@@ -20,7 +20,7 @@ void Action::serialize(Data& o) const {
     account.serialize(o);
     name.serialize(o);
     encodeCollection(authorization, o);
-    Bravo::encodeVarInt32(data.size(), o);
+    Bravo::encodeVarInt64(data.size(), o);
     append(o, data);
 }
 

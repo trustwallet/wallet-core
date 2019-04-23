@@ -35,7 +35,7 @@ std::string Signature::string() const noexcept {
 
     Data buffer(data);
 
-    // append the subPrefix to the buffer data hash the buffer
+    // append the subPrefix to the buffer data and hash the buffer
     for (const char& c : subPrefix) {
         buffer.push_back(static_cast<uint8_t>(c));
     }
@@ -43,7 +43,7 @@ std::string Signature::string() const noexcept {
     Data hash;
     hash.resize(RIPEMD160_DIGEST_LENGTH);
 
-    ripemd160(buffer.data(), DataSize + subPrefix.size(), hash.data());
+    ripemd160(buffer.data(), static_cast<uint32_t>(buffer.size()), hash.data());
 
     // drop the subPrefix and append the checksum to the bufer
     buffer.resize(DataSize);
@@ -62,7 +62,7 @@ std::string Signature::string() const noexcept {
 
 void Extension::serialize(Data& os) const noexcept {
     encode16LE(type, os);
-    Bravo::encodeVarInt32(buffer.size(), os);
+    Bravo::encodeVarInt64(buffer.size(), os);
     append(os, buffer);
 }
 

@@ -9,33 +9,33 @@
 #include <string>
 
 namespace TW::EOS {
-    class PermissionLevel: Bravo::Serializable {
-    public:
-        Name actor, permission;
+class PermissionLevel: Bravo::Serializable {
+public:
+    Name actor, permission;
 
-        PermissionLevel(const Name& actor, const Name& permission) : actor(actor), permission(permission) { }
-        virtual ~PermissionLevel() { }
+    PermissionLevel(const Name& actor, const Name& permission) : actor(actor), permission(permission) { }
+    virtual ~PermissionLevel() { }
 
-        void serialize(Data& o) const;
-        nlohmann::json serialize() const noexcept;
-    };
+    void serialize(Data& o) const;
+    nlohmann::json serialize() const noexcept;
+};
 
-    class Action: Bravo::Serializable {
-    public:
-        Name account, name;
-        std::vector<PermissionLevel> authorization;
-        Data data;
+class Action: Bravo::Serializable {
+public:
+    Name account, name;
+    std::vector<PermissionLevel> authorization;
+    Data data;
 
-        virtual ~Action() { }
+    virtual ~Action() { }
 
-        void serialize(Data& o) const;
-        nlohmann::json serialize() const noexcept;
-    };
+    void serialize(Data& o) const;
+    nlohmann::json serialize() const noexcept;
+};
 
-    class TransferAction: public Action {
-    public:
-        TransferAction(const std::string& currency, const std::string& from, const std::string& to, const Bravo::Asset& asset, const std::string& memo);
-    private:
-        void setData(const std::string& from, const std::string& to, const Bravo::Asset& asset, const std::string& memo);
-    };
+class TransferAction: public Action {
+public:
+    TransferAction(const std::string& currency, const std::string& from, const std::string& to, const Bravo::Asset& asset, const std::string& memo);
+private:
+    void setData(const std::string& from, const std::string& to, const Bravo::Asset& asset, const std::string& memo);
+};
 } // namespace TW::EOS
