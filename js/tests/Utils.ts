@@ -1,5 +1,8 @@
-export const bufToHex = (buffer: ArrayBuffer) => {
-    return `0x${Array.prototype.map.call(new Uint8Array(buffer), (x: any) => (`00${x.toString(16)}`).slice(-2)).join('')}`;
+export const bufToHex = (buffer: ArrayBuffer, prefix: boolean = true) => {
+    if (prefix) {
+        return `0x${Array.prototype.map.call(new Uint8Array(buffer), (x: any) => (`00${x.toString(16)}`).slice(-2)).join('')}`;
+    }
+    return `${Array.prototype.map.call(new Uint8Array(buffer), (x: any) => (`00${x.toString(16)}`).slice(-2)).join('')}`;
 };
 
 export const fromHexString = (hexString: string) => {
