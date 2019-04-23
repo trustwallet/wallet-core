@@ -8,7 +8,7 @@
 
 #include "Base58.h"
 #include "BinaryCoding.h"
-#include "Bitcoin/Bech32Address.h"
+#include "Bitcoin/SegwitAddress.h"
 #include "Bitcoin/CashAddress.h"
 #include "Coin.h"
 #include "Decred/Address.h"

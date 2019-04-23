@@ -17,37 +17,37 @@ struct TWPublicKey;
 
 /// Represents a BIP 0173 address.
 TW_EXPORT_CLASS
-struct TWBech32Address;
+struct TWSegwitAddress;
 
 /// Compares two addresses for equality.
 TW_EXPORT_STATIC_METHOD
-bool TWBech32AddressEqual(struct TWBech32Address *_Nonnull lhs, struct TWBech32Address *_Nonnull rhs);
+bool TWSegwitAddressEqual(struct TWSegwitAddress *_Nonnull lhs, struct TWSegwitAddress *_Nonnull rhs);
 
 /// Determines if the string is a valid Bech32 address.
 TW_EXPORT_STATIC_METHOD
-bool TWBech32AddressIsValidString(TWString *_Nonnull string);
+bool TWSegwitAddressIsValidString(TWString *_Nonnull string);
 
 /// Creates an address from a string representaion.
 TW_EXPORT_STATIC_METHOD
-struct TWBech32Address *_Nullable TWBech32AddressCreateWithString(TWString *_Nonnull string);
+struct TWSegwitAddress *_Nullable TWSegwitAddressCreateWithString(TWString *_Nonnull string);
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWBech32Address *_Nonnull TWBech32AddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey);
+struct TWSegwitAddress *_Nonnull TWSegwitAddressCreateWithPublicKey(enum TWHRP hrp, struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
-void TWBech32AddressDelete(struct TWBech32Address *_Nonnull address);
+void TWSegwitAddressDelete(struct TWSegwitAddress *_Nonnull address);
 
 /// Returns the address string representation.
 TW_EXPORT_PROPERTY
-TWString *_Nonnull TWBech32AddressDescription(struct TWBech32Address *_Nonnull address);
+TWString *_Nonnull TWSegwitAddressDescription(struct TWSegwitAddress *_Nonnull address);
 
 /// Returns the human-readable part.
 TW_EXPORT_PROPERTY
-enum TWHRP TWBech32AddressHRP(struct TWBech32Address *_Nonnull address);
+enum TWHRP TWSegwitAddressHRP(struct TWSegwitAddress *_Nonnull address);
 
 /// Returns the witness program
 TW_EXPORT_PROPERTY
-TWData *_Nonnull TWBech32AddressWitnessProgram(struct TWBech32Address *_Nonnull address);
+TWData *_Nonnull TWSegwitAddressWitnessProgram(struct TWSegwitAddress *_Nonnull address);
 
 TW_EXTERN_C_END

@@ -13,7 +13,7 @@
 
 namespace TW::Bitcoin {
 
-class Bech32Address {
+class SegwitAddress {
   public:
     /// Human-readable part.
     ///
@@ -35,16 +35,16 @@ class Bech32Address {
 
     /// Initializes a Bech32 address with a human-readable part, a witness
     /// version, and a witness program.
-    Bech32Address(std::string hrp, int witver, std::vector<uint8_t> witprog)
+    SegwitAddress(std::string hrp, int witver, std::vector<uint8_t> witprog)
         : hrp(std::move(hrp)), witnessVersion(witver), witnessProgram(std::move(witprog)) {}
 
     /// Initializes a Bech32 address with a public key and a HRP prefix.
-    Bech32Address(const PublicKey& publicKey, int witver, std::string hrp);
+    SegwitAddress(const PublicKey& publicKey, int witver, std::string hrp);
 
     /// Decodes a SegWit address.
     ///
     /// \returns a pair with the address and a success flag.
-    static std::pair<Bech32Address, bool> decode(const std::string& addr);
+    static std::pair<SegwitAddress, bool> decode(const std::string& addr);
 
     /// Encodes the SegWit address.
     ///
@@ -52,21 +52,21 @@ class Bech32Address {
     std::string string() const;
 
     /// Initializes a Bech32 address with raw data.
-    static std::pair<Bech32Address, bool> fromRaw(const std::string& hrp,
+    static std::pair<SegwitAddress, bool> fromRaw(const std::string& hrp,
                                                   const std::vector<uint8_t>& data);
 
-    bool operator==(const Bech32Address& rhs) const {
+    bool operator==(const SegwitAddress& rhs) const {
         return hrp == rhs.hrp && witnessVersion == rhs.witnessVersion &&
                witnessProgram == rhs.witnessProgram;
     }
 
   private:
-    Bech32Address() = default;
+    SegwitAddress() = default;
 };
 
 } // namespace TW::Bitcoin
 
 /// Wrapper for C interface.
-struct TWBech32Address {
-    TW::Bitcoin::Bech32Address impl;
+struct TWSegwitAddress {
+    TW::Bitcoin::SegwitAddress impl;
 };
