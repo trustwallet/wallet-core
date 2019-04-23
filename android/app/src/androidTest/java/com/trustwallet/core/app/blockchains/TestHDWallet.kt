@@ -82,8 +82,8 @@ class TestHDWallet {
     @Test
     fun testPublicKeyFromX() {
         val xpub = "xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj"
-        val xpubAddr2 = HDWallet.getPublicKeyFromExtended(xpub, CoinType.BITCOIN, HDVersion.XPUB, HDVersion.XPRV, 0, 2)
-        val xpubAddr9 = HDWallet.getPublicKeyFromExtended(xpub, CoinType.BITCOIN, HDVersion.XPUB, HDVersion.XPRV, 0, 9)
+        val xpubAddr2 = HDWallet.getPublicKeyFromExtended(xpub, "m/44'/145'/0'/0/2")
+        val xpubAddr9 = HDWallet.getPublicKeyFromExtended(xpub, "m/44'/145'/0'/0/9")
 
         assertEquals(
             Numeric.toHexString(xpubAddr2.data()),
