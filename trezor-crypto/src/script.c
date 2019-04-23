@@ -22,7 +22,7 @@
 
 #include <string.h>
 #include <TrezorCrypto/base58.h>
-#include "script.h"
+#include <TrezorCrypto/script.h>
 
 int script_output_to_address(const uint8_t *script, int scriptlen, char *addr, int addrsize)
 {

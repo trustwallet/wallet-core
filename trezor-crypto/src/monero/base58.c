@@ -34,8 +34,8 @@
 #include <sys/types.h>
 
 #include "int-util.h"
-#include "base58.h"
 
+#include <TrezorCrypto/monero/base58.h>
 #include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/sha2.h>
 

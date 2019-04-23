@@ -40,6 +40,21 @@ static struct valid_cashaddr_data valid_cashaddr[] = {
 	}
 };
 
+int my_strncasecmp(const char *s1, const char *s2, size_t n) {
+	size_t i = 0;
+	while (i < n) {
+		char c1 = s1[i];
+		char c2 = s2[i];
+		if (c1 >= 'A' && c1 <= 'Z') c1 = (c1 - 'A') + 'a';
+		if (c2 >= 'A' && c2 <= 'Z') c2 = (c2 - 'A') + 'a';
+		if (c1 < c2) return -1;
+		if (c1 > c2) return 1;
+		if (c1 == 0) return 0;
+		++i;
+	}
+	return 0;
+}
+
 START_TEST(test_cashaddr)
 {
 	size_t i;

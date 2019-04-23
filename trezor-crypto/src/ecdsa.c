@@ -30,14 +30,14 @@
 #include "options.h"
 
 #include <TrezorCrypto/address.h>
-#include <TrezorCrypto/bignum.h>
-#include <TrezorCrypto/rand.h>
-#include <TrezorCrypto/hmac.h>
-#include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/base58.h>
-#include <TrezorCrypto/secp256k1.h>
-#include "rfc6979.h"
+#include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/hmac.h>
 #include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/rand.h>
+#include <TrezorCrypto/rfc6979.h>
+#include <TrezorCrypto/secp256k1.h>
 
 // Set cp2 = cp1
 void point_copy(const curve_point *cp1, curve_point *cp2)

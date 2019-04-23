@@ -5,7 +5,7 @@
 #ifndef TREZOR_CRYPTO_MONERO_H
 #define TREZOR_CRYPTO_MONERO_H
 
-#include <TrezorCrypto/base58.h>
+#include "base58.h"
 #include "serialize.h"
 #include "xmr.h"
 #include "range_proof.h"

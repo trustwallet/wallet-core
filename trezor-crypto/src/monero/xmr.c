@@ -2,9 +2,9 @@
 // Created by Dusan Klinec on 10/05/2018.
 //
 
-#include "xmr.h"
 #include "int-util.h"
-#include "serialize.h"
+#include <TrezorCrypto/monero/xmr.h>
+#include <TrezorCrypto/monero/serialize.h>
 #include <TrezorCrypto/rand.h>
 
 
