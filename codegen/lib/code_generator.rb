@@ -43,7 +43,7 @@ class CodeGenerator
     render_template(header: 'swift/header.erb', template: 'swift.erb', output_subfolder: 'swift/Sources/Generated', extension: 'swift')
 
     framework_header = render('swift/TrustWalletCore.h.erb')
-    framework_header_path = File.expand_path(File.join(output_folder, 'swift/Sources', 'TrustWalletCore.h'))
+    framework_header_path = File.expand_path(File.join(output_folder, 'swift/Sources/Generated', 'TrustWalletCore.h'))
     File.write(framework_header_path, framework_header)
   end
 
