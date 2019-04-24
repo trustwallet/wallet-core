@@ -16,7 +16,7 @@ describe('StellarAddress', () => {
     });
 
     it('test address from PublicKey', () => {
-        const pubkey = PublicKey.createWithData(fromHexString('0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D'));
+        const pubkey = PublicKey.createWithData(fromHexString('0103E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D'));
         const address = StellarAddress.createWithPublicKey(pubkey);
 
         expect(address.description()).to.equal('GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ');
