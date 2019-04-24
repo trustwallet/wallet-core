@@ -64,8 +64,8 @@ describe('Bech32Address', () => {
 
     it('test PublicKey from X', () => {
         const xpub = 'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj';
-        const xpubAddr2 = HDWallet.getPublicKeyFromExtended(xpub, CoinType.BITCOIN, HDVersion.XPUB, HDVersion.XPRV, 0, 2);
-        const xpubAddr9 = HDWallet.getPublicKeyFromExtended(xpub, CoinType.BITCOIN, HDVersion.XPUB, HDVersion.XPRV, 0, 9);
+        const xpubAddr2 = HDWallet.getPublicKeyFromExtended(xpub, 'm/44\'/145\'/0\'/0/2');
+        const xpubAddr9 = HDWallet.getPublicKeyFromExtended(xpub, 'm/44\'/145\'/0\'/0/9');
 
         expect(bufToHex(xpubAddr2.data()), '0x0338994349b3a804c44bbec55c2824443ebb9e475dfdad14f4b1a01a97d42751b3');
         expect(bufToHex(xpubAddr9.data()), '0x03786c1d274f2c804ff9a57d8e7289c281d4aef15e17187ad9f9c3722d81a6ae66');
