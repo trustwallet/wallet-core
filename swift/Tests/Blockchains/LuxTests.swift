@@ -19,10 +19,9 @@ class LuxTests: XCTestCase {
         for addr in [
             "bc1qvtvte5tzlqlfhcdmph94lxk8jcz54q6psyvgla",
             "18eqGohuqvrZLL3LMR4Wv81qvKeDHsGpjH",
-            "LV7LV7Z4bWDEjYkfx9dQo6k6RjGbXsg6hS",
             "Xm1iDLBP5tdxTxc6t7uJBCVjC4L2A5vB2J",
             "TKjdnbJxP4yHeLTHZ86DGnFFY6QhTjuBv2",
-            ] {
+        ] {
             XCTAssertFalse(lux.validate(address: addr))
         }
     }
