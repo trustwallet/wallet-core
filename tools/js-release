@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# This script publishes JavaScript module to npm.
+
+set -e
+
+pushd js
+npm publish
+popd
