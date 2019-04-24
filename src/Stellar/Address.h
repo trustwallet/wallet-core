@@ -14,14 +14,17 @@
 namespace TW::Stellar {
 
 class Address {
-  public:
+  private:
     // 56 character base-32 encoded string
     static const size_t size = 56;
+
     // Decodes to 35 bytes
     static const size_t rawSize = 35;
+
     // Raw key size is 32 bytes
     static const size_t keySize = 32;
 
+  public:
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
     std::array<byte, keySize> bytes;
