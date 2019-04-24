@@ -196,9 +196,16 @@ Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload
 
 ### JavaScript
 
+#### First Time
+You need to first log into your npm account that has permissions to publish.
+```
+$ npm login
+```
+
+#### Every Release
 1. Run `bootstrap.sh`.
 2. Update the version number in `js/package.json` and the `npm` badge in `js/README.md`
-3. Run `tools/js-release` to publish the updated version to the `npm` registry.
+3. Run `tools/js-release` to build, test and publish the updated version to the `npm` registry.
 
 ### Android
 
