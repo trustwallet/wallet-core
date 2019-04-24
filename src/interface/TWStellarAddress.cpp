@@ -45,5 +45,5 @@ TWString *_Nonnull TWStellarAddressDescription(struct TWStellarAddress *_Nonnull
 }
 
 TWData *_Nonnull TWStellarAddressKeyHash(struct TWStellarAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::size);
+    return TWDataCreateWithBytes(address->impl.bytes.data(), address->impl.bytes.size());
 }

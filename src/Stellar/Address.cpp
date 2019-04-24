@@ -58,8 +58,11 @@ Address::Address(const std::string& string) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto publicKeyData = publicKey.bytes;
-    std::copy(publicKeyData.begin() + 1, publicKeyData.begin() + 33, bytes.data());
+    if (publicKey.type() != PublicKeyType::ed25519) {
+        throw std::invalid_argument("Invalid public key type");
+    }
+    static_assert(PublicKey::ed25519Size - 1 == keySize);
+    std::copy(publicKey.bytes.begin() + 1, publicKey.bytes.end(), bytes.data());
 }
 
 std::string Address::string() const {

@@ -26,7 +26,7 @@ class TestAddress {
 
     @Test
     fun testAddressFromPublicKey() {
-        val pubkey = PublicKey("0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D".toHexByteArray())
+        val pubkey = PublicKey("0103E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D".toHexByteArray())
         val address = StellarAddress(pubkey)
 
         assertEquals(address.description(), "GAB6EDWGWSRZUYUYCWXAFQFBHE5ZEJPDXCIMVZC3LH2C7IU35FTI2NOQ")
