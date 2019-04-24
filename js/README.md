@@ -1,6 +1,6 @@
 # Trust Wallet Core
 
-[![npm (scoped)](https://img.shields.io/badge/npm-v0.1.0-blue.svg?style=flat-square&logo=npm)](https://www.npmjs.com/package/trust-wallet-core)
+[![npm](https://img.shields.io/badge/npm-v0.1.0-blue.svg?style=flat-square&logo=npm)](https://www.npmjs.com/package/trust-wallet-core)
 
 `trust-wallet-core` is a JavaScript wrapper around the [wallet-core](https://github.com/TrustWallet/wallet-core) library that is a standalone `npm` package.
 
