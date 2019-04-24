@@ -25,6 +25,13 @@ TEST(StoredKey, LoadLegacyPrivateKey) {
     EXPECT_EQ(hex(key.payload.decrypt("testpassword")), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 }
 
+TEST(StoredKey, LoadLivepeerKey) {
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/livepeer.json");
+    EXPECT_EQ(key.id, "70ea3601-ee21-4e94-a7e4-66255a987d22");
+    EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeEthereum);
+    EXPECT_EQ(hex(key.payload.decrypt("Radchenko")), "09b4379d9a41a71d94ee36357bccb4d77b45e7fd9307e2c0f673dd54c0558c73");
+}
+
 TEST(StoredKey, LoadLegacyMnemonic) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-mnemonic.json");
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
