@@ -10,7 +10,6 @@ const std::string TestNetAssetSymbol = "TESTS";
 using namespace TW::Bravo;
 
 static TW_Proto_Result createErrorResult(const std::string& description) {
-
     auto result = TW::Proto::Result();
     result.set_success(false);
     result.set_error(description);
@@ -32,7 +31,7 @@ TW_Proto_Result TWSteemSignerSign(TW_Bravo_Proto_SigningInput input) {
         return createErrorResult("Amount out of range!");
     }
 
-    int64_t amount = static_cast<int64_t>(in.amount() * Asset::precision);
+    auto amount = static_cast<int64_t>(in.amount() * Asset::precision);
 
     try {
         // create a transfer operation

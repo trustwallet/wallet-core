@@ -8,15 +8,13 @@
 
 #include "../Bravo/Address.h"
 
-namespace TW {
-namespace Steem {
-    const std::string MainnetPrefix = "STM";
-    const std::string TestnetPrefix = "TST";
-}}
+namespace TW::Steem {
+const std::string MainnetPrefix = "STM";
+const std::string TestnetPrefix = "TST";
+} // namespace TW::Steem
 
 // Steem address class is similar to Bravo. 
 // Just creating TWSteemAddress struct for C interface 
-
 struct TWSteemAddress {
-	TW::Bravo::Address impl;
+    TW::Bravo::Address impl;
 };

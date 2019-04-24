@@ -244,7 +244,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value34, "https://explorer.bravocoin.com/txid/123");
 
     auto value35 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSteem, txId));
-    assertStringsEqual(value35, "https://steemblockexplorer.com/");
+    assertStringsEqual(value35, "https://steemblockexplorer.com/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -335,7 +335,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     assertStringsEqual(value30, "bravocoin");
 
     auto value31 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSteem));
-    assertStringsEqual(value31, "steemit");
+    assertStringsEqual(value31, "steem");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -430,5 +430,5 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     assertStringsEqual(value31, "BravoCoin");
 
     auto value32 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSteem));
-    assertStringsEqual(value32, "Steemit");
+    assertStringsEqual(value32, "Steem");
 }
