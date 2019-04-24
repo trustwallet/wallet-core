@@ -78,6 +78,7 @@ targets:
       - trezor-crypto/src/ed25519-donna/ed25519-donna-impl-base.c
       - trezor-crypto/src/ed25519-donna/ed25519.c
       - trezor-crypto/src/ed25519-donna/curve25519-donna-scalarmult-base.c
+      - trezor-crypto/src/ed25519-donna/ed25519-blake2b.c
       - trezor-crypto/src/ed25519-donna/ed25519-sha3.c
       - trezor-crypto/src/ed25519-donna/ed25519-keccak.c
       - trezor-crypto/src/monero/base58.c
@@ -92,6 +93,7 @@ targets:
       - trezor-crypto/src/chacha20poly1305/poly1305-donna.c
       - trezor-crypto/src/chacha20poly1305/rfc7539.c
       - trezor-crypto/src/rc4.c
+      - trezor-crypto/src/nano.c
       - trezor-crypto/src/nem.c
       - trezor-crypto/src/cash_addr.c
       - trezor-crypto/src/memzero.c
