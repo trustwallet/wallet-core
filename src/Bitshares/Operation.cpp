@@ -33,6 +33,7 @@ void TransferOperation::validate() {
 }
 
 void TransferOperation::serialize(Data& os) const noexcept {
+    Bravo::encodeVarInt64(operationId(), os);
     fee.serialize(os);
     Bravo::encodeVarInt64(from.instance, os);
     Bravo::encodeVarInt64(to.instance, os);
