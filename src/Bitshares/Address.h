@@ -8,14 +8,12 @@
 
 #include "../Bravo/Address.h"
 
-namespace TW {
-namespace Bitshares {
-    const std::string AddressPrefix = "BTS";
-}}
+namespace TW::Bitshares {
+const std::string AddressPrefix = "BTS";
+}
 
 // Bitshares address class is similar to Bravo. 
 // Just creating TWBitsharesAddress struct for C interface 
-
 struct TWBitsharesAddress {
 	TW::Bravo::Address impl;
 };

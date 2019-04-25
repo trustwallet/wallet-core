@@ -15,6 +15,8 @@
 
 namespace TW::Bitshares {
 
+// Encrypts message using AES-256 in CBC mode and PKCS#5 padding
+// The key must be 256 bits long and the IV 128 bits.
 TW::Data aesEncrypt(const uint8_t *message, size_t messageLength, const uint8_t *key, const uint8_t *initializationVector);
 
 template <typename T>
@@ -28,12 +30,13 @@ public:
     uint64_t nonce;
     Data encryptedMessage;
 
-    Memo(const PrivateKey& senderKey, const PublicKey& recipientKey, const std::string& message);
+    // Nonce should not be set manually except for debugging
+    Memo(const PrivateKey& senderKey, const PublicKey& recipientKey, const std::string& message, uint64_t nonce = 0);
+
+    void serialize(Data& os) const noexcept;
+    nlohmann::json serialize() const noexcept;
 
     static Data getSharedSecret(const PrivateKey& senderKey, const PublicKey& recipientKey);
-
-        void serialize(Data& os) const noexcept;
-        nlohmann::json serialize() const noexcept;
 };
 
 } // namespace TW::Bitshares

@@ -19,12 +19,12 @@ public:
                         uint64_t recipientId, 
                         const Asset& amount, 
                         const Asset& fee,
-                        Memo *memo);
+                        Memo *memo = nullptr);
 
     void serialize(Data& os) const noexcept override;
     nlohmann::json serialize() const noexcept override;
     void validate();
-    static const int OperationId = 0;
+    static constexpr int operationId() { return 0; };
 
 private:
     ObjectId from, to;

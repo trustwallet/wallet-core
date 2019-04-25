@@ -60,5 +60,5 @@ json TransferOperation::serialize() const noexcept {
     }
 
     obj["extensions"] = json::array();
-    return json::array({OperationId, obj});
+    return json::array({operationId(), obj});
 }

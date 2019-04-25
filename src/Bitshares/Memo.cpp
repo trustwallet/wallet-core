@@ -18,7 +18,7 @@ using namespace TW::Bitshares;
 using Data = TW::Data;
 using json = nlohmann::json;
 
-Memo::Memo(const PrivateKey& senderKey, const PublicKey& recipientKey, const std::string& message)
+Memo::Memo(const PrivateKey& senderKey, const PublicKey& recipientKey, const std::string& message, uint64_t nonce)
         : from(senderKey.getPublicKey(PublicKeyType::secp256k1)), to(recipientKey) {
     if (recipientKey.type() != PublicKeyType::secp256k1) {
         throw std::invalid_argument("Recipient's public key is not a secp25k1 public key.");
@@ -28,42 +28,39 @@ Memo::Memo(const PrivateKey& senderKey, const PublicKey& recipientKey, const std
         throw std::invalid_argument("Message is empty.");
     }
 
-    random_buffer(reinterpret_cast<uint8_t *>(&nonce), sizeof(nonce));
-    Data secret = getSharedSecret(senderKey, recipientKey);
+    if (!nonce) {
+        random_buffer(reinterpret_cast<uint8_t *>(&nonce), sizeof(nonce));
+    }
+    this->nonce = nonce;
 
-    // The first 32 bytes will be used as encryption key and the next 32 as the IV
-    Data encryptionKeyPlusIV = Hash::sha512(boost::lexical_cast<std::string>(nonce) + hex(secret));
+    // We hash (string(nonce) || hex_string(sharedSecret)) with sha512 to get 64 bytes.
+    // The first 32 bytes will be used as encryption key and the next 16 as the IV.
+    Data encryptionKeyPlusIV = Hash::sha512(boost::lexical_cast<std::string>(nonce)
+                                             + hex(getSharedSecret(senderKey, recipientKey)));
 
     // Encrypted Message = AES(4-byte Checksum + Original Message)
     Data input = Hash::sha256(message);
     input.resize(4);
     input.insert(input.end(), message.begin(), message.end());
 
-    aesEncrypt( message,
-                encryptionKeyPlusIV.data(),
-                encryptionKeyPlusIV.data() + 32);
+    encryptedMessage = aesEncrypt(  input,
+                                    encryptionKeyPlusIV.data(),
+                                    encryptionKeyPlusIV.data() + 32);
 }
 
 Data Memo::getSharedSecret(const PrivateKey& senderKey, const PublicKey& recipientKey) {
-    Data dhKey(PublicKey::secp256k1Size);
-
+    Data dhKey(65);
     if (ecdh_multiply(&secp256k1, senderKey.bytes.data(), recipientKey.bytes.data(), dhKey.data()) != 0) {
         throw std::runtime_error("Could not derive a shared secret");
     }
 
-    Data result(Hash::sha512Size);
-    sha512_Raw(dhKey.data() + 1, dhKey.size() - 1, result.data());
-
-    return result;
+    // return SHA512 of the X co-ordinate
+    return Hash::sha512(dhKey.data() + 1, dhKey.data() + 33);
 }
 
-/// Function that encrypts the given 
 Data TW::Bitshares::aesEncrypt(const uint8_t *message, size_t messageLength, const uint8_t *key, const uint8_t *initializationVector) {
-    // need a non-const copy
-    Data iv(initializationVector, initializationVector + 32);
-
+    // create context
     aes_encrypt_ctx context;
-
     if (aes_encrypt_key256(key, &context) == EXIT_FAILURE) {
         throw std::runtime_error("Encryption error: Error initializing the key");
     }
@@ -74,14 +71,19 @@ Data TW::Bitshares::aesEncrypt(const uint8_t *message, size_t messageLength, con
     size_t outputSize = (fullBlocksCount + (remainingBytes ? 1 : 0)) * 16;
     Data output(outputSize);
 
+    // create a non-const copy of the iv
+    Data iv(initializationVector, initializationVector + 16);
+
     // encrypt the full blocks at a go
-    if (aes_cbc_encrypt(message, output.data(), fullBlocksCount * 16, iv.data(), &context) == EXIT_FAILURE) {
-        throw std::runtime_error("Encryption error: Error encrypting the message");
+    if (fullBlocksCount) {
+        if (aes_cbc_encrypt(message, output.data(), fullBlocksCount * 16, iv.data(), &context) == EXIT_FAILURE) {
+            throw std::runtime_error("Encryption error: Error encrypting the message");
+        }
     }
 
-    // create a 0-padded buffer for the remaining bytes and encrypt that too
+    // create a __PKCS#5-padded__ buffer for the remaining bytes and encrypt that too
     if (remainingBytes) {
-        Data lastBlock(message + (fullBlocksCount * 16), message + (fullBlocksCount * 16) + remainingBytes);
+        Data lastBlock(16, 16 - remainingBytes);
         std::memcpy(lastBlock.data(), message + (fullBlocksCount * 16), remainingBytes);
         if (aes_cbc_encrypt(lastBlock.data(), output.data() + (fullBlocksCount * 16), 16, iv.data(), &context) == EXIT_FAILURE) {
             throw std::runtime_error("Encryption error: Error encrypting the message");
