@@ -67,4 +67,6 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
+    // Signed transaction in JSON.
+    string json = 2;
 }
