@@ -36,7 +36,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testWanchain() {
-        let wanChain = CoinType.wanChain
+        let wanChain = CoinType.wanchain
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: wanChain)
         let address = wanChain.deriveAddress(privateKey: key)

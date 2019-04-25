@@ -30,7 +30,7 @@ describe('CoinAddressDerivation', () => {
             case CoinType.ETHEREUM: expect('0x8f348F300873Fd5DA36950B2aC75a26584584feE').to.equal(address); break;
             case CoinType.ETHEREUMCLASSIC: expect('0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c').to.equal(address); break;
             case CoinType.ETHERSOCIAL: expect('0x182dd55D97C1F8D3781CDaDFC275948Ac38Ea1fe').to.equal(address); break;
-            case CoinType.GO: expect('0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2').to.equal(address); break;
+            case CoinType.GOCHAIN: expect('0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2').to.equal(address); break;
             case CoinType.GROESTLCOIN: expect('grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j').to.equal(address); break;
             case CoinType.ICON: expect('hx18b380b53c23dc4ee9f6666bc20d1be02f3fe106').to.equal(address); break;
             case CoinType.LITECOIN: expect('ltc1qhd8fxxp2dx3vsmpac43z6ev0kllm4n53t5sk0u').to.equal(address); break;
