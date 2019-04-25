@@ -5,5 +5,11 @@
 set -e
 
 pushd js
+
+echo "Building & packaging..."
+npm run build
+
+echo "Testing..."
 npm test
+
 popd
