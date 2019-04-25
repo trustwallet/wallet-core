@@ -128,7 +128,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) const noexce
     auto sig = t.mutable_publisher_sigs(0);
     sig->set_algorithm(Proto::Algorithm::ED25519);
     sig->set_public_key(pubkeyStr);
-    auto signature = acc.sign(Hash::sha3_256(encodeTransaction(t)), TWCurveEd25519);
+    auto signature = acc.sign(Hash::sha3_256(encodeTransaction(t)), TWCurveED25519);
     std::string signatureStr(signature.begin(), signature.end());
     sig->set_signature(signatureStr);
 
