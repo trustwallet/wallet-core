@@ -224,7 +224,7 @@
     },
     {
         "id": "poa",
-        "name": "POA",
+        "name": "POA Network",
         "symbol": "POA",
         "decimals": 18,
         "derivationPath": "m/44'/178'/0'/0/0",
@@ -342,7 +342,7 @@
     },
     {
         "id": "ripple",
-        "name": "Ripple",
+        "name": "XRP",
         "symbol": "XRP",
         "decimals": 6,
         "derivationPath": "m/44'/144'/0'/0/0",

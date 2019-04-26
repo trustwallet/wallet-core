@@ -64,10 +64,10 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .ontology:
                     let expectedResult = "AHKTnybvnWo3TeY8uvNXekvYxMrXogUjeT"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .poa:
+                case .poanetwork:
                     let expectedResult = "0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .ripple:
+                case .xrp:
                     let expectedResult = "rPwE3gChNKtZ1mhH3Ko8YFGqKmGRWLWXV3"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tezos:

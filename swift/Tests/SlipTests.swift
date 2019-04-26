@@ -20,7 +20,7 @@ class SlipTests: XCTestCase {
         XCTAssertEqual(CoinType.ethereumClassic.rawValue, 61)
         XCTAssertEqual(CoinType.goChain.rawValue, 6060)
         XCTAssertEqual(CoinType.ontology.rawValue, 1024)
-        XCTAssertEqual(CoinType.poa.rawValue, 178)
+        XCTAssertEqual(CoinType.poanetwork.rawValue, 178)
         XCTAssertEqual(CoinType.veChain.rawValue, 818)
         XCTAssertEqual(CoinType.icon.rawValue, 74)
         XCTAssertEqual(CoinType.tomoChain.rawValue, 889)

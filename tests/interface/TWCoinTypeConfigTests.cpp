@@ -41,7 +41,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value9 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLitecoin));
     assertStringsEqual(value9, "LTC");
 
-    auto value10 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePOA));
+    auto value10 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePOANetwork));
     assertStringsEqual(value10, "POA");
 
     auto value12 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeThunderToken));
@@ -116,7 +116,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIocoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOA), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOANetwork), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderToken), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTomoChain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTron), 6);
@@ -166,7 +166,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto value9 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLitecoin, txId));
     assertStringsEqual(value9, "https://blockchair.com/litecoin/transaction/123");
 
-    auto value10 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOA, txId));
+    auto value10 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOANetwork, txId));
     assertStringsEqual(value10, "https://poaexplorer.com/txid/search/123");
 
     auto value11 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeThunderToken, txId));
@@ -268,7 +268,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto value9 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLitecoin));
     assertStringsEqual(value9, "litecoin");
 
-    auto value10 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOA));
+    auto value10 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOANetwork));
     assertStringsEqual(value10, "poa");
 
     auto value12 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeThunderToken));
@@ -356,8 +356,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value9 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLitecoin));
     assertStringsEqual(value9, "Litecoin");
 
-    auto value10 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOA));
-    assertStringsEqual(value10, "POA");
+    auto value10 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOANetwork));
+    assertStringsEqual(value10, "POA Network");
 
     auto value12 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeThunderToken));
     assertStringsEqual(value12, "Thunder Token");
@@ -389,8 +389,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value21 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
     assertStringsEqual(value21, "Aion");
 
-    auto value22 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRipple));
-    assertStringsEqual(value22, "Ripple");
+    auto value22 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
+    assertStringsEqual(value22, "XRP");
 
     auto value23 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKin));
     assertStringsEqual(value23, "Kin");

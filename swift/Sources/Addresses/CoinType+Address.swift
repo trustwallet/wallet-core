@@ -27,7 +27,7 @@ public extension CoinType {
              .ethereumClassic,
              .ethersocial,
              .goChain,
-             .poa,
+             .poanetwork,
              .theta,
              .thunderToken,
              .tomoChain,
@@ -40,7 +40,7 @@ public extension CoinType {
             return IconAddress(string: string)
         case .ontology:
             return OntologyAddress(string: string)
-        case .ripple:
+        case .xrp:
             return RippleAddress(string: string)
         case .tezos:
             return TezosAddress(string: string)

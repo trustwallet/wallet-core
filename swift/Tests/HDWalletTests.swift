@@ -154,7 +154,7 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveRipple() {
-        let ripple = CoinType.ripple
+        let ripple = CoinType.xrp
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: ripple)
         let address = ripple.deriveAddress(privateKey: key)

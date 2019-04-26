@@ -142,8 +142,8 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeViacoin, privateKey), "via1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z09y9mn2");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNimiq, privateKey), "NQ74 D40G N3M0 9EJD ET56 UPLR 02VC X6DU 8G1E");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeOntology, privateKey), "AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypePOA, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypeRipple, privateKey), "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQ");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypePOANetwork, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeXRP, privateKey), "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQ");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeStellar, privateKey), "GDXJHJHWN6GRNOAZXON6XH74ZX6NYFAS5B7642RSJQVJTIPA4ZYUQLEB");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeTezos, privateKey), "tz1gcEWswVU6dxfNQWbhTgaZrUrNUFwrsT4z");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeThunderToken, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");

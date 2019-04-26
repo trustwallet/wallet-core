@@ -80,7 +80,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeEthersocial:
     case TWCoinTypeGoChain:
-    case TWCoinTypePOA:
+    case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
@@ -108,7 +108,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);
 
-    case TWCoinTypeRipple:
+    case TWCoinTypeXRP:
         return Ripple::Address::isValid(string);
 
     case TWCoinTypeStellar:
@@ -185,7 +185,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeEthersocial:
     case TWCoinTypeGoChain:
-    case TWCoinTypePOA:
+    case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
@@ -211,7 +211,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeAion:
         return Aion::Address(publicKey).string();
 
-    case TWCoinTypeRipple:
+    case TWCoinTypeXRP:
         return Ripple::Address(publicKey).string();
 
     case TWCoinTypeTezos:
