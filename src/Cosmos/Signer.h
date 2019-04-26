@@ -28,15 +28,15 @@ public:
     std::vector<uint8_t> sign() const;
     std::string signInBase64() const;
 
-    /// Builds the transaction.
+    /// Builds the signed transaction.
     ///
-    /// \returns the transaction.
-    std::string buildTransaction() const;
-    std::vector<uint8_t> build() const;
+    /// \returns the signed transaction.
+    Proto::SigningOutput build() const;
 
 private:
     std::string signaturePreimage() const;
     nlohmann::json buildTransactionJSON(const Data& signature) const;
+    std::string buildTransaction() const;
 };
 
 } // namespace

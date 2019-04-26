@@ -65,8 +65,15 @@ std::string Signer::buildTransaction() const {
     return buildTransactionJSON(signature).dump();
 }
 
-std::vector<uint8_t> Signer::build() const {
+Proto::SigningOutput Signer::build() const {
+    auto output = Proto::SigningOutput();
+
     auto signature = sign();
     auto txJson = buildTransactionJSON(signature);
-    return json::to_cbor(txJson);
+    auto txEncoded = json::to_cbor(txJson);
+
+    output.set_json(txJson.dump());
+    output.set_encoded(txEncoded.data(), txEncoded.size());
+
+    return output;
 }
