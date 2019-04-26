@@ -65,11 +65,11 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
     }
 }
 
-PublicKeyType TW::publicKeyType(TWCoinType coin) {
+enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
     switch (coin) {
 <%  coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-        return PublicKeyType::<%= coin['publicKeyType'] %>;
+        return TWPublicKeyType<%= format_name(coin['publicKeyType']) %>;
 <% end -%>
     }
 }

@@ -28,7 +28,7 @@ bool Address::isValid(const std::string& string) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    if (publicKey.type() != PublicKeyType::secp256k1Extended) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
         throw std::invalid_argument("Invalid public key type");
     }
     const auto pkdata = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());

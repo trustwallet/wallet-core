@@ -81,7 +81,7 @@ std::vector<uint8_t> Signer::encodeOrder() const {
 
 std::vector<uint8_t> Signer::encodeSignature(const std::vector<uint8_t>& signature) const {
     auto key = PrivateKey(input.private_key());
-    auto publicKey = key.getPublicKey(PublicKeyType::secp256k1);
+    auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     auto encodedPublicKey = pubKeyPrefix;
     encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.bytes.size()));

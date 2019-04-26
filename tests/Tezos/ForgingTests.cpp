@@ -106,7 +106,7 @@ TEST(Forging, ForgePublicKey) {
     auto expected = "00311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
   
     auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
-    auto publicKey = privateKey.getPublicKey(PublicKeyType::ed25519);
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     auto output = forgePublicKey(publicKey);
   
     ASSERT_EQ(output, parse_hex(expected));
@@ -151,5 +151,5 @@ TEST(TezosTransaction, forgeReveal) {
     auto expected = "07000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
     auto serialized = forgeOperation(revealOperation);
 
-    ASSERT_EQ(serialized, parse_hex(expected));
+    ASSERT_EQ(hex(serialized), expected);
 }

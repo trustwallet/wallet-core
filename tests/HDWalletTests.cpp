@@ -23,7 +23,7 @@ namespace TW {
 TEST(HDWallet, privateKeyFromXPRV) {
     const std::string xprv = "xprv9yqEgpMG2KCjvotCxaiMkzmKJpDXz2xZi3yUe4XsURvo9DUbPySW1qRbdeDLiSxZt88hESHUhm2AAe2EqfWM9ucdQzH3xv1HoKoLDqHMK9n";
     auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 3));
-    auto publicKey = privateKey->getPublicKey(PublicKeyType::secp256k1);
+    auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Bitcoin::CashAddress(publicKey);
 
     EXPECT_EQ(hex(publicKey.bytes), "025108168f7e5aad52f7381c18d8f880744dbee21dc02c15abe512da0b1cca7e2f");
@@ -33,7 +33,7 @@ TEST(HDWallet, privateKeyFromXPRV) {
 TEST(HDWallet, privateKeyFromMptv) {
     const std::string mptv = "Mtpv7SkyM349Svcf1WiRtB5hC91ZZkVsGuv3kz1V7tThGxBFBzBLFnw6LpaSvwpHHuy8dAfMBqpBvaSAHzbffvhj2TwfojQxM7Ppm3CzW67AFL5";
     auto privateKey = HDWallet::getPrivateKeyFromExtended(mptv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoinCash, 0, 0, 4));
-    auto publicKey = privateKey->getPublicKey(PublicKeyType::secp256k1);
+    auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
 
     auto witness = Data{0x00, 0x14};
     auto keyHash = Hash::sha256ripemd(publicKey.bytes.data(), publicKey.bytes.data() + 33);
@@ -52,7 +52,7 @@ TEST(HDWallet, privateKeyFromMptv) {
 TEST(HDWallet, privateKeyFromZprv) {
     const std::string zprv = "zprvAdzGEQ44z4WPLNCRpDaup2RumWxLGgR8PQ9UVsSmJigXsHVDaHK1b6qGM2u9PmxB2Gx264ctAz4yRoN3Xwf1HZmKcn6vmjqwsawF4WqQjfd";
     auto privateKey = HDWallet::getPrivateKeyFromExtended(zprv, DerivationPath(TWPurposeBIP44, TWCoinTypeBitcoin, 0, 0, 5));
-    auto publicKey = privateKey->getPublicKey(PublicKeyType::secp256k1);
+    auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Bitcoin::SegwitAddress(publicKey, 0, "bc");
 
     EXPECT_EQ(hex(publicKey.bytes), "022dc3f5a3fcfd2d1cc76d0cb386eaad0e30247ba729da0d8847a2713e444fdafa");
@@ -62,7 +62,7 @@ TEST(HDWallet, privateKeyFromZprv) {
 TEST(HDWallet, privateKeyFromDGRV) {
     const std::string dgpv = "dgpv595jAJYGBLanByCJXRzrWBZFVXdNisfuPmKRDquCQcwBbwKbeR21AtkETf4EpjBsfsK3kDZgMqhcuky1B9PrT5nxiEcjghxpUVYviHXuCmc";
     auto privateKey = HDWallet::getPrivateKeyFromExtended(dgpv, DerivationPath(TWPurposeBIP44, TWCoinTypeDogecoin, 0, 0, 1));
-    auto publicKey = privateKey->getPublicKey(PublicKeyType::secp256k1);
+    auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
     auto address = Bitcoin::Address(publicKey, TWP2PKHPrefixDogecoin);
 
     EXPECT_EQ(hex(publicKey.bytes), "03eb6bf281990ee074a39c71ed8ce78c486066ac433bcf066dd5eb08f87d3a6c34");

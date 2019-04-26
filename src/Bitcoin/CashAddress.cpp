@@ -70,7 +70,7 @@ CashAddress::CashAddress(const std::vector<uint8_t>& data) {
 }
 
 CashAddress::CashAddress(const PublicKey& publicKey) {
-    if (publicKey.type() != PublicKeyType::secp256k1) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("CashAddress needs a compressed SECP256k1 public key.");
     }
     std::array<uint8_t, 21> payload;

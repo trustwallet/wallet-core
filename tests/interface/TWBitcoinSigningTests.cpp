@@ -245,7 +245,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     input.set_change_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU");
 
     auto utxoKey0 = PrivateKey(parse_hex("eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf"));
-    auto pubKey0 = utxoKey0.getPublicKey(PublicKeyType::secp256k1);
+    auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
     ASSERT_EQ(hex(utxoPubkeyHash.begin(), utxoPubkeyHash.end()), "79091972186c449eb1ded22b78e40d009bdf0089");
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());

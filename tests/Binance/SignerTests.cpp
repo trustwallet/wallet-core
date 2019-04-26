@@ -90,6 +90,26 @@ TEST(BinanceSigner, Build) {
             "1240""2a78b6d9a108eb9440221802b626e24d80179395ac984f016db012ef1a0c16d71b4d7053e05366ae3ea2681fc8052398fda20551c965d74c5970bbc66b94b48e"
             "1801"
             "200a"
+//          fc01
+//          f0625dee
+//          0a65
+//              ce6dc043
+//              0a14 b6561dcc104130059a7c08f48c64610c1f6f9064
+//              122b 423635363144434331303431333030353941374330384634384336343631304331463646393036342d3131
+//              1a0b 4254432d3543345f424e42
+//              2002
+//              2801
+//              3080c2d72f
+//              3880989abc04
+//              4001
+//          128e
+//              01
+//              0a46
+//              eb5ae987
+//              41029729a52e4e3c2b4a4e52aa74033eedaf8ba1df5ab6d1f518fd69e67bbd309b0e9729a52e4e3c2b4a4e52aa74033eedaf8ba1df5ab6d1f518fd69e67bbd309b0e
+//              1240 2a78b6d9a108eb9440221802b626e24d80179395ac984f016db012ef1a0c16d71b4d7053e05366ae3ea2681fc8052398fda20551c965d74c5970bbc66b94b48e
+//              1801
+//              200a
     );
 }
 
@@ -153,11 +173,11 @@ TEST(BinanceSigner, BuildSend2) {
 
     const auto fromWallet = HDWallet("swift slam quote sail high remain mandate sample now stamp title among fiscal captain joy puppy ghost arrow attract ozone situate install gain mean", "");
     const auto fromPrivateKey = fromWallet.getKey(derivationPath);
-    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(PublicKeyType::secp256k1));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
 
     const auto toWallet = HDWallet( "bottom quick strong ranch section decide pepper broken oven demand coin run jacket curious business achieve mule bamboo remain vote kid rigid bench rubber", "");
     const auto toPrivateKey = toWallet.getKey(derivationPath);
-    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(PublicKeyType::secp256k1));
+    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("bnbchain-1000");

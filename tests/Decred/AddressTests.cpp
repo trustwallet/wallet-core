@@ -16,7 +16,7 @@ using namespace TW;
 using namespace TW::Decred;
 
 TEST(DecredAddress, FromPublicKey) {
-    const auto publicKey = PublicKey(parse_hex("0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"));
+    const auto publicKey = PublicKey(parse_hex("0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"), TWPublicKeyTypeSECP256k1);
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "DsmcYVbP1Nmag2H4AS17UTvmWXmGeA7nLDx");
 }

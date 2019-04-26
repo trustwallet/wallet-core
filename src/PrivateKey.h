@@ -63,7 +63,7 @@ class PrivateKey {
     virtual ~PrivateKey();
 
     /// Returns the public key for this private key.
-    PublicKey getPublicKey(PublicKeyType type) const;
+    PublicKey getPublicKey(enum TWPublicKeyType type) const;
 
     /// Signs a digest using the given ECDSA curve.
     Data sign(const Data& digest, TWCurve curve) const;

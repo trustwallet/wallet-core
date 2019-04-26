@@ -16,7 +16,7 @@ const char *address2 = "bc1qr583w2swedy2acd7rung055k8t3n7udp7vyzyg";
 
 TEST(TWSegwitAddress, PublicKeyToAddress) {
     auto pkData = DATA("0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798");
-    auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pkData.get()));
+    auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pkData.get(), TWPublicKeyTypeSECP256k1));
 
     auto address = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPBitcoin, publicKey.get()));
     auto string = WRAPS(TWSegwitAddressDescription(address.get()));

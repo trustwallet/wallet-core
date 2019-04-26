@@ -42,7 +42,7 @@ json Signer::buildTransactionJSON(const Data& signature) const {
     auto sig = Cosmos::Proto::Signature();
     sig.set_signature(signature.data(), signature.size());
     auto privateKey = PrivateKey(input.private_key());
-    auto publicKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     sig.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
 
     auto transaction = Cosmos::Proto::Transaction();

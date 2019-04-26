@@ -64,7 +64,7 @@ TEST(NULSAddress, FromData) {
 TEST(NULSAddress, FromPrivateKey) {
     const auto privateKey =
         PrivateKey(parse_hex("e4e0454476a38d9c5dbf332cf576f6dd77c6941e41c64be3ae22b334f3bed2de"));
-    const auto publicKey = PublicKey(privateKey.getPublicKey(PublicKeyType::secp256k1));
+    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "NsdzroTToPjWGSqz9ZpWJNSvDRhtcE7S");
@@ -72,7 +72,7 @@ TEST(NULSAddress, FromPrivateKey) {
 
 TEST(NULSAddress, FromCompressedPublicKey) {
     const auto publicKey =
-        PublicKey(parse_hex("03d38bb716c3a641895ffaa480c29cc7aa5f75ed550138a52e644e94afc9d0cd03"));
+        PublicKey(parse_hex("03d38bb716c3a641895ffaa480c29cc7aa5f75ed550138a52e644e94afc9d0cd03"), TWPublicKeyTypeSECP256k1);
     const auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "NsdzroTToPjWGSqz9ZpWJNSvDRhtcE7S");
@@ -81,7 +81,7 @@ TEST(NULSAddress, FromCompressedPublicKey) {
 TEST(NULSAddress, FromPrivateKey33) {
     const auto privateKey = NULS::Address::importHexPrivateKey(
         "00a2139f4972f19f82fa26f08166880913be795bc6e1d596c2108fc4f60f2ec5f2");
-    const auto publicKey = PublicKey(privateKey.getPublicKey(PublicKeyType::secp256k1));
+    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "NsdvEERpbh9PyhVGBuE4Tgkee83HYbdj");

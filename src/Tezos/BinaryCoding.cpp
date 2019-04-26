@@ -26,12 +26,12 @@ PublicKey parsePublicKey(const std::string& publicKey) {
     const auto decoded = Base58::bitcoin.decodeCheck(publicKey);
 
     std::array<byte, 4> prefix = {13, 15, 37, 217};
-    auto pk = Data({1});
+    auto pk = Data();
 
     if (decoded.size() != 32 + prefix.size()) {
         throw std::invalid_argument("Invalid Public Key");
     }
     append(pk, Data(decoded.begin() + prefix.size(), decoded.end()));
 
-    return PublicKey(pk);
+    return PublicKey(pk, TWPublicKeyTypeED25519);
 }

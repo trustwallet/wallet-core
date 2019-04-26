@@ -14,7 +14,7 @@ namespace TW::Tron {
 
 TEST(TronAddress, FromPrivateKey) {
     const auto privateKey =  PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
-    const auto publicKey = privateKey.getPublicKey(PublicKeyType::secp256k1Extended);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     const auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
@@ -22,7 +22,7 @@ TEST(TronAddress, FromPrivateKey) {
 
 TEST(TronAddress, FromPublicKey) {
     const auto privateKey = PrivateKey(parse_hex("BE88DF1D0BF30A923CB39C3BB953178BAAF3726E8D3CE81E7C8462E046E0D835"));
-    const auto publicKey = privateKey.getPublicKey(PublicKeyType::secp256k1Extended);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     const auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "THRF3GuPnvvPzKoaT8pJex5XHmo8NNbCb3");
