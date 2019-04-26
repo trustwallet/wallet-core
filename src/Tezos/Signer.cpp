@@ -28,7 +28,7 @@ Data Signer::signData(const PrivateKey& privateKey, Data data) {
 
     Data hash = Hash::blake2b(watermarkedData, 32);
     TW::PublicKey pk = privateKey.getPublicKey(PublicKeyType::ed25519);
-    Data signature = privateKey.sign(hash, TWCurve::TWCurveEd25519);
+    Data signature = privateKey.sign(hash, TWCurve::TWCurveED25519);
 
     Data signedData = Data();
     append(signedData, data);

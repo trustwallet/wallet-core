@@ -30,13 +30,13 @@ describe('CoinAddressDerivation', () => {
             case CoinType.ETHEREUM: expect('0x8f348F300873Fd5DA36950B2aC75a26584584feE').to.equal(address); break;
             case CoinType.ETHEREUMCLASSIC: expect('0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c').to.equal(address); break;
             case CoinType.ETHERSOCIAL: expect('0x182dd55D97C1F8D3781CDaDFC275948Ac38Ea1fe').to.equal(address); break;
-            case CoinType.GO: expect('0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2').to.equal(address); break;
+            case CoinType.GOCHAIN: expect('0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2').to.equal(address); break;
             case CoinType.GROESTLCOIN: expect('grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j').to.equal(address); break;
             case CoinType.ICON: expect('hx18b380b53c23dc4ee9f6666bc20d1be02f3fe106').to.equal(address); break;
             case CoinType.LITECOIN: expect('ltc1qhd8fxxp2dx3vsmpac43z6ev0kllm4n53t5sk0u').to.equal(address); break;
             case CoinType.ONTOLOGY: expect('AHKTnybvnWo3TeY8uvNXekvYxMrXogUjeT').to.equal(address); break;
-            case CoinType.POA: expect('0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9').to.equal(address); break;
-            case CoinType.RIPPLE: expect('rPwE3gChNKtZ1mhH3Ko8YFGqKmGRWLWXV3').to.equal(address); break;
+            case CoinType.POANETWORK: expect('0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9').to.equal(address); break;
+            case CoinType.XRP: expect('rPwE3gChNKtZ1mhH3Ko8YFGqKmGRWLWXV3').to.equal(address); break;
             case CoinType.TEZOS: expect('tz1acnY9VbMagps26Kj3RfoGRWD9nYG5qaRX').to.equal(address); break;
             case CoinType.THUNDERTOKEN: expect('0x4b92b3ED6d8b24575Bf5ce4C6a86ED261DA0C8d7').to.equal(address); break;
             case CoinType.TOMOCHAIN: expect('0xC74b6D8897cBa9A4b659d43fEF73C9cA852cE424').to.equal(address); break;

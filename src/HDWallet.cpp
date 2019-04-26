@@ -201,7 +201,7 @@ const char* curveName(TWCurve curve) {
     switch (curve) {
     case TWCurveSECP256k1:
         return SECP256K1_NAME;
-    case TWCurveEd25519:
+    case TWCurveED25519:
         return ED25519_NAME;
     case TWCurveNIST256p1:
         return NIST256P1_NAME;

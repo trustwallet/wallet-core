@@ -94,7 +94,7 @@ class KeyStoreTests: XCTestCase {
     func testAddAccounts() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = keyStore.hdWallet!
-        _ = try keyStore.addAccounts(wallet: wallet, coins: [.ethereum, .callisto, .poa], password: "password")
+        _ = try keyStore.addAccounts(wallet: wallet, coins: [.ethereum, .callisto, .poanetwork], password: "password")
 
         let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
         let savedWallet = savedKeyStore.hdWallet!

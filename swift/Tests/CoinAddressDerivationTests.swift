@@ -52,7 +52,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .ethersocial:
                     let expectedResult = "0x182dd55D97C1F8D3781CDaDFC275948Ac38Ea1fe"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .go:
+                case .goChain:
                     let expectedResult = "0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .icon:
@@ -64,10 +64,10 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .ontology:
                     let expectedResult = "AHKTnybvnWo3TeY8uvNXekvYxMrXogUjeT"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .poa:
+                case .poanetwork:
                     let expectedResult = "0xe8a3e8bE17E172B6926130eAfB521e9D2849aca9"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .ripple:
+                case .xrp:
                     let expectedResult = "rPwE3gChNKtZ1mhH3Ko8YFGqKmGRWLWXV3"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .tezos:
@@ -85,7 +85,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .veChain:
                     let expectedResult = "0x1a553275dF34195eAf23942CB7328AcF9d48c160"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .wanChain:
+                case .wanchain:
                     let expectedResult = "0xd5CA90B928279fe5d06144136A25dEd90127Ac15"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .xdai:
@@ -136,7 +136,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .nuls:
                     let expectedResult = "NsdtNvsfmPerWk4BhcapHTB3LptF8Sbe"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .bravo:
+                case .bravoCoin:
                     let expectedResult = "BRV8g4c7Uve8NNsqDMeADLqPeFyohMQ7d9MzarSE23KogTS71BaiQ"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }

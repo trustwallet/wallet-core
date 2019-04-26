@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+require 'fileutils'
+require 'json'
+
+# Transforms a coin name to a C++ name
+def self.format_name(n)
+  formatted = n
+  formatted = formatted.sub(/^([a-z]+)/, &:upcase)
+  formatted = formatted.sub(/\s/, '')
+  formatted
+end
+
+json_string = File.read('coins.json')
+coins = JSON.parse(json_string).sort_by { |x| x['name'] }
+
+path = File.expand_path('coins.cpp.erb', File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
+template = ERB.new(File.read(path), nil, '-')
+result = template.result(binding)
+
+FileUtils.mkdir_p File.join('src', 'Generated')
+path = File.join('src', 'Generated', 'Coins.cpp')
+File.write(path, result)

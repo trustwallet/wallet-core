@@ -54,7 +54,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::CashAddress::isValid(string) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
-    case TWCoinTypeBravo:
+    case TWCoinTypeBravoCoin:
         return Bravo::Address::isValid(string);
 
     case TWCoinTypeCosmos:
@@ -79,15 +79,15 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypePoa:
+    case TWCoinTypeGoChain:
+    case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeXDai:
     case TWCoinTypeTheta:
         return Ethereum::Address::isValid(string);
-    case TWCoinTypeWanChain:
+    case TWCoinTypeWanchain:
         return Wanchain::Address::isValid(string);
     case TWCoinTypeICON:
         return Icon::Address::isValid(string);
@@ -108,11 +108,11 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);
 
-    case TWCoinTypeRipple:
+    case TWCoinTypeXRP:
         return Ripple::Address::isValid(string);
 
     case TWCoinTypeStellar:
-    case TWCoinTypeKIN:
+    case TWCoinTypeKin:
         return Stellar::Address::isValid(string);
 
     case TWCoinTypeTezos:
@@ -143,328 +143,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     }
 }
 
-TWPurpose TW::purpose(TWCoinType coin) {
-    switch (coin) {
-    case TWCoinTypeAion:
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeBravo:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeCosmos:
-    case TWCoinTypeDash:
-    case TWCoinTypeDogecoin:
-    case TWCoinTypeDecred:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypeICON:
-    case TWCoinTypeIOST:
-    case TWCoinTypeIocoin:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeOntology:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeStellar:
-    case TWCoinTypeTezos:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeNEO:
-    case TWCoinTypeKIN:
-    case TWCoinTypeTheta:
-    case TWCoinTypeNULS:
-    case TWCoinTypeLux:
-    case TWCoinTypeQtum:
-        return TWPurposeBIP44;
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeGroestlcoin:
-        return TWPurposeBIP84;
-    }
-}
-
-TWCurve TW::curve(TWCoinType coin) {
-    switch (coin) {
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeBravo:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeDash:
-    case TWCoinTypeDecred:
-    case TWCoinTypeDogecoin:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypeGroestlcoin:
-    case TWCoinTypeICON:
-    case TWCoinTypeIocoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeCosmos:
-    case TWCoinTypeTheta:
-    case TWCoinTypeNULS:
-    case TWCoinTypeLux:
-    case TWCoinTypeQtum:
-        return TWCurveSECP256k1;
-
-    case TWCoinTypeNEO:
-    case TWCoinTypeOntology:
-        return TWCurveNIST256p1;
-
-    case TWCoinTypeAion:
-    case TWCoinTypeIOST:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeStellar:
-    case TWCoinTypeTezos:
-    case TWCoinTypeKIN:
-        return TWCurveEd25519;
-    }
-}
-
-TWHDVersion TW::xpubVersion(TWCoinType coin) {
-    switch (coin) {
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeGroestlcoin:
-        return TWHDVersionZPUB;
-
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeDash:
-    case TWCoinTypeIocoin:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeLux:
-    case TWCoinTypeQtum:
-        return TWHDVersionXPUB;
-
-    case TWCoinTypeDecred:
-        return TWHDVersionDPUB;
-
-    case TWCoinTypeDogecoin:
-        return TWHDVersionDGUB;
-
-    case TWCoinTypeAion:
-    case TWCoinTypeBinance:
-    case TWCoinTypeBravo:
-    case TWCoinTypeCosmos:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypeICON:
-    case TWCoinTypeIOST:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeOntology:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeStellar:
-    case TWCoinTypeTezos:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-    case TWCoinTypeNEO:
-    case TWCoinTypeKIN:
-    case TWCoinTypeTheta:
-    case TWCoinTypeNULS:
-        return TWHDVersionNone;
-    }
-}
-
-TWHDVersion TW::xprvVersion(TWCoinType coin) {
-    switch (coin) {
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeGroestlcoin:
-        return TWHDVersionZPRV;
-
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeDash:
-    case TWCoinTypeIocoin:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeLux:
-    case TWCoinTypeQtum:
-        return TWHDVersionXPRV;
-
-    case TWCoinTypeDecred:
-        return TWHDVersionDPRV;
-
-    case TWCoinTypeDogecoin:
-        return TWHDVersionDGPV;
-
-    case TWCoinTypeAion:
-    case TWCoinTypeBinance:
-    case TWCoinTypeBravo:
-    case TWCoinTypeCosmos:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypeICON:
-    case TWCoinTypeIOST:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeOntology:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeStellar:
-    case TWCoinTypeTezos:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-    case TWCoinTypeNEO:
-    case TWCoinTypeKIN:
-    case TWCoinTypeTheta:
-    case TWCoinTypeNULS:
-        return TWHDVersionNone;
-    }
-}
-
-DerivationPath TW::derivationPath(TWCoinType coin) {
-    switch (coin) {
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeBravo:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeCosmos:
-    case TWCoinTypeDash:
-    case TWCoinTypeDecred:
-    case TWCoinTypeDogecoin:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypeGroestlcoin:
-    case TWCoinTypeICON:
-    case TWCoinTypeIOST:
-    case TWCoinTypeIocoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeOntology:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeTheta:
-    case TWCoinTypeNULS:
-    case TWCoinTypeLux:
-    case TWCoinTypeQtum:
-        return DerivationPath(purpose(coin), coin, 0, 0, 0);
-    case TWCoinTypeAion:
-    case TWCoinTypeNEO:
-        return DerivationPath{
-            DerivationPathIndex(purpose(coin), true),
-            DerivationPathIndex(coin, true),
-            DerivationPathIndex(0, true),
-            DerivationPathIndex(0, true),
-            DerivationPathIndex(0, true),
-        };
-    case TWCoinTypeNimiq:
-    case TWCoinTypeTezos:
-        return DerivationPath{
-            DerivationPathIndex(purpose(coin), true),
-            DerivationPathIndex(coin, true),
-            DerivationPathIndex(0, true),
-            DerivationPathIndex(0, true),
-        };
-
-    case TWCoinTypeStellar:
-    case TWCoinTypeKIN:
-        return DerivationPath{
-            DerivationPathIndex(purpose(coin), true),
-            DerivationPathIndex(coin, true),
-            DerivationPathIndex(0, true)
-        };
-    }
-}
-
-PublicKeyType TW::publicKeyType(TWCoinType coin) {
-    switch (coin) {
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeBravo:
-    case TWCoinTypeCosmos:
-    case TWCoinTypeDash:
-    case TWCoinTypeDecred:
-    case TWCoinTypeDogecoin:
-    case TWCoinTypeGroestlcoin:
-    case TWCoinTypeIocoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeLux:
-    case TWCoinTypeRipple:
-    case TWCoinTypeNULS:
-    case TWCoinTypeQtum:
-        return PublicKeyType::secp256k1;
-
-    case TWCoinTypeCallisto:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypePoa:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-    case TWCoinTypeICON:
-    case TWCoinTypeTron:
-    case TWCoinTypeTheta:
-        return PublicKeyType::secp256k1Extended;
-
-    case TWCoinTypeNEO:
-    case TWCoinTypeOntology:
-        return PublicKeyType::nist256p1;
-
-    case TWCoinTypeAion:
-    case TWCoinTypeIOST:
-    case TWCoinTypeKIN:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeStellar:
-    case TWCoinTypeTezos:
-        return PublicKeyType::ed25519;
-    }
-}
-
 std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
     auto keyType = TW::publicKeyType(coin);
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType));
@@ -484,7 +162,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(publicKey).string();
 
-    case TWCoinTypeBravo:
+    case TWCoinTypeBravoCoin:
         return Bravo::Address(publicKey).string();
 
     case TWCoinTypeDash:
@@ -506,15 +184,15 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypePoa:
+    case TWCoinTypeGoChain:
+    case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
     case TWCoinTypeXDai:
     case TWCoinTypeTheta:
         return Ethereum::Address(publicKey).string();
-    case TWCoinTypeWanChain:
+    case TWCoinTypeWanchain:
         return Wanchain::Address(publicKey).string();
     case TWCoinTypeICON:
         return Icon::Address(publicKey, TWIconAddressTypeAddress).string();
@@ -533,7 +211,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeAion:
         return Aion::Address(publicKey).string();
 
-    case TWCoinTypeRipple:
+    case TWCoinTypeXRP:
         return Ripple::Address(publicKey).string();
 
     case TWCoinTypeTezos:
@@ -549,7 +227,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Bitcoin::Address(publicKey, TWP2PKHPrefixZcoin).string();
 
     case TWCoinTypeStellar:
-    case TWCoinTypeKIN:
+    case TWCoinTypeKin:
         return Stellar::Address(publicKey).string();
 
     case TWCoinTypeNEO:
@@ -562,105 +240,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeQtum:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixQtum).string();
-    }
-}
-
-Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
-    switch (coin) {
-    case TWCoinTypeAion:
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeBravo:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeCosmos:
-    case TWCoinTypeDash:
-    case TWCoinTypeDogecoin:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypeGroestlcoin:
-    case TWCoinTypeICON:
-    case TWCoinTypeIOST:
-    case TWCoinTypeIocoin:
-    case TWCoinTypeKIN:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeLux:
-    case TWCoinTypeNEO:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeOntology:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeStellar:
-    case TWCoinTypeTezos:
-    case TWCoinTypeTheta:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeNULS:
-    case TWCoinTypeQtum:
-        return Hash::sha256ripemd;
-
-    case TWCoinTypeDecred:
-        return Hash::blake256ripemd;
-    }
-}
-
-/// Hasher to use for base 58 checksums.
-Hash::Hasher TW::base58Hasher(TWCoinType coin) {
-    switch (coin) {
-    case TWCoinTypeAion:
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeBravo:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeCosmos:
-    case TWCoinTypeDash:
-    case TWCoinTypeDogecoin:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
-    case TWCoinTypeGo:
-    case TWCoinTypeICON:
-    case TWCoinTypeIOST:
-    case TWCoinTypeIocoin:
-    case TWCoinTypeKIN:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeLux:
-    case TWCoinTypeNEO:
-    case TWCoinTypeNimiq:
-    case TWCoinTypeOntology:
-    case TWCoinTypePoa:
-    case TWCoinTypeRipple:
-    case TWCoinTypeStellar:
-    case TWCoinTypeTezos:
-    case TWCoinTypeTheta:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeTron:
-    case TWCoinTypeVeChain:
-    case TWCoinTypeWanChain:
-    case TWCoinTypeXDai:
-    case TWCoinTypeZcash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeNULS:
-    case TWCoinTypeQtum:
-        return Hash::sha256d;
-
-    case TWCoinTypeDecred:
-        return Hash::blake256d;
-
-    case TWCoinTypeGroestlcoin:
-        return Hash::groestl512d;
     }
 }
 

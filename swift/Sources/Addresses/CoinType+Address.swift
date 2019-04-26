@@ -26,21 +26,21 @@ public extension CoinType {
              .ethereum,
              .ethereumClassic,
              .ethersocial,
-             .go,
-             .poa,
+             .goChain,
+             .poanetwork,
              .theta,
              .thunderToken,
              .tomoChain,
              .veChain,
              .xdai:
             return EthereumAddress(string: string)
-        case .wanChain:
+        case .wanchain:
             return WanchainAddress(string: string)
         case .icon:
             return IconAddress(string: string)
         case .ontology:
             return OntologyAddress(string: string)
-        case .ripple:
+        case .xrp:
             return RippleAddress(string: string)
         case .tezos:
             return TezosAddress(string: string)
@@ -70,7 +70,7 @@ public extension CoinType {
             return IOSTAccount(string: string)
         case .nuls:
             return NULSAddress(string: string)
-        case .bravo:
+        case .bravoCoin:
             return BravoAddress(string: string)
         }
         return .none
