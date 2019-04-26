@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Bravo/Serialization.h"
 #include "../Bravo/Asset.h"
 #include "../BinaryCoding.h"
 #include "Name.h"
@@ -8,8 +7,10 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+using Data = TW::Data;
+
 namespace TW::EOS {
-class PermissionLevel: Bravo::Serializable {
+class PermissionLevel {
 public:
     Name actor, permission;
 
@@ -20,7 +21,7 @@ public:
     nlohmann::json serialize() const noexcept;
 };
 
-class Action: Bravo::Serializable {
+class Action {
 public:
     Name account, name;
     std::vector<PermissionLevel> authorization;
@@ -28,8 +29,8 @@ public:
 
     virtual ~Action() { }
 
-    void serialize(Data& o) const;
-    nlohmann::json serialize() const noexcept;
+    virtual void serialize(Data& o) const;
+    virtual nlohmann::json serialize() const noexcept;
 };
 
 class TransferAction: public Action {

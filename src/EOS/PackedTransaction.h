@@ -13,7 +13,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM( CompressionType, {
 // // {CompressionType::ZLIB, "zlib"},
 })
 
-class PackedTransaction: Bravo::Serializable {
+class PackedTransaction {
 public:
     std::vector<Signature> signatures;
     CompressionType compression;

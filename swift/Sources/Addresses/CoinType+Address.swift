@@ -74,7 +74,7 @@ public extension CoinType {
             return BravoAddress(string: string)
         case .steem:
             return SteemAddress(string: string)
-        case .eos:
+        case .eosio:
             return EOSAddress(string: string)
         }
         return .none

@@ -2,7 +2,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include "../Bravo/Serialization.h"
 #include "Action.h"
 #include "../Data.h"
 #include "../PrivateKey.h"
@@ -13,8 +12,7 @@
 
 namespace TW::EOS {
 
-class Signature: Bravo::Serializable
-{
+class Signature {
 public:
     Data data;
     Type type;
@@ -28,7 +26,7 @@ public:
     std::string string() const noexcept;
 };
 
-class Extension: Bravo::Serializable {
+class Extension {
 public:
     uint16_t type;
     Data buffer;
@@ -39,8 +37,7 @@ public:
     nlohmann::json serialize() const noexcept;
 };
 
-class Transaction: Bravo::Serializable
-{
+class Transaction {
 public:
     Transaction(const Data& referenceBlockId, int32_t referenceBlockTime);
 

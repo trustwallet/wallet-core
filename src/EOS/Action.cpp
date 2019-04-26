@@ -1,5 +1,6 @@
 #include "Action.h"
 #include "../HexCoding.h"
+#include "../Bravo/Serialization.h"
 
 using namespace TW::EOS;
 using json = nlohmann::json;
@@ -19,7 +20,7 @@ json PermissionLevel::serialize() const noexcept {
 void Action::serialize(Data& o) const {
     account.serialize(o);
     name.serialize(o);
-    encodeCollection(authorization, o);
+    Bravo::encodeCollection(authorization, o);
     Bravo::encodeVarInt64(data.size(), o);
     append(o, data);
 }
@@ -28,7 +29,7 @@ json Action::serialize() const noexcept {
     json obj;
     obj["account"] = account.string();
     obj["name"] = name.string();
-    obj["authorizations"] = encodeCollection(authorization);
+    obj["authorizations"] = Bravo::encodeCollection(authorization);
     obj["data"] = hex(data);
     return obj;
 }

@@ -1,10 +1,12 @@
 #pragma once
 
-#include "../Bravo/Serialization.h"
 #include "../BinaryCoding.h"
+#include "../Data.h"
+
+using Data = TW::Data;
 
 namespace TW::EOS {
-class Name: Bravo::Serializable {
+class Name {
 public:
     uint64_t value = 0;
 

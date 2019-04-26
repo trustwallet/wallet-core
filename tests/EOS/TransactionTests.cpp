@@ -12,19 +12,19 @@ using namespace TW;
 using namespace TW::EOS;
 
 static std::string k1Sigs[5] {
-    "SIG_K1_JzCPEWQegyedcpYSvkWrcTeowKDdVhNLPdMoUuYZjBPoywhR4V852WhT1LGXoXivjocfPQiP8kUgzKKYaUZJi7QAKr13Qn",
-    "SIG_K1_K2p7c6n8neJxq6gcBwsYZg8paG5ZqMoh4WeZS5EEXDNjw8vucmbAYqkMXaZB6wvcLof5BhffYGwoBDpuJWUcapv8aNQuKu",
-    "SIG_K1_KmB6bRnY6Lgu4gLR9p7pt426FDVY48Zdqyw3LjfukM7hXaPLZAZokGEQ1SyrEu5MyToNEVX79784fA79tDj9nk2fHWGF59",
-    "SIG_K1_KZbnL6WtEjkGE2QXvnBARTNMCjAjtTdCmnnS9r3fd5vd8YsxZTMdz8SjqSY199JtGLtfHpL1vRjJ7GgSuGiUaNvjyjD3R1",
-    "SIG_K1_K4opjz6tq4HpsERPb4ZDjZSj5VLZEakbFR93saxHBbuSG8N6eGmG3ufPnJUPqErwRWQQMPtE5jrgFzvdcA1DKcGVWypxPz"
+    "SIG_K1_KfCdjsrTnx5cBpbA5cUdHZAsRYsnC9uKzuS1shFeqfMCfdZwX4PBm9pfHwGRT6ffz3eavhtkyNci5GoFozQAx8P8PBnDmj",
+    "SIG_K1_K6wW678ngyWT7fgR4nNqm5XoKZBp9NDN4tKsctyzzADjXn15iAH9tcnQ393t6uvsqYxHKjdnxxduT1nyKMLiZbRqL7dHYr",
+    "SIG_K1_K6cUbZX6xfWcV5iotVprnf12Lc5AmV8SKmN5hVdv39gcM8wfEcwcNScvTuGLWpWzDT463dyhNmUfMB4nqt7tJVFnzx8mSi",
+    "SIG_K1_Khj7xhMd8HxrT6dUzuwiFM1MfMHtog5jCygJj7ADvdmUGkzZkmjymZXucEAud3whJ2qsMcxHcKtLWs8Ndm6be14qjTAH2a",
+    "SIG_K1_K93MjjE39CSH7kwJBgoRsSF2VaH6a8psQKU29nSg4xxxrVhz2iQuubyyB5t2ACZFFYSkNHSdYia5efhnW6Z9SPtbQTquMY"
 };
 
 static std::string r1Sigs[5] { 
-    "SIG_R1_KN7C1VJdLgCxo2mdmb2eRQHNNtHucA7Ry9PEvV7TYqYKwNHM9L7Y8oNXAdP8aAnqiiXGc3tG58upKA9Nhiebfcfdr78kSe",
-    "SIG_R1_L1j95iuv3XJ9jP9qG2cxtxN2aXSUazG6fg9WxLQUBSJc2u36BexJYNsMXaXsSNoF9cpEGWsmKJ3nQQBrj78W6KYJybJW1p",
-    "SIG_R1_Kzi1Mg5nfQUvimEcQ7hjDBtVTskUvCspEAsA7bTE7PBmY5CjaUJysAESmtMjE5d8LcyUnVha6RVqR6EhPifKqK168TjJcc",
-    "SIG_R1_KGKdxNg8mDnDFXYF5GDThrU2uc2CEhywQpWQRbgZdXsLmvvo4asrX3mexMh9SwBTeditFQibwjgDq6QJPP4qdz8w8GA2hC",
-    "SIG_R1_KMkPwMqz1CrtevotkkquMeSD3Qv6yz2hsEaA5bbgKBeRRNT5EdctgRFb2JrWw1JzbKsRaYTEmepQACyh1fzVtz7EdQQMLd"
+    "SIG_R1_Kbywy4Mjun4Ymrh23Xk5yRtKJxcDWaDjQjLKERAny6Vs6oT1DYoEdoAj9AJK9iukHdEd9HBYnf3GmLtA55JFY5VaNszJMa",
+    "SIG_R1_KAhJJg4QGYBWY7hG6BKGAbW57fg6g8xTh3LG3Sss3bGv4BwiwHmRV1jsgh6hrnVRUoCaKMbJQzzWy9HXy6PnDmfJ6fbZMJ",
+    "SIG_R1_KxAwVKfpLr2MeK4aSAp5LSi2Vohsp94Uhk5UvZZDUJqd7ccBkhc2kYY1L6z5rjRNNo7BeP1Qr6H2xPFqo54YQ6DjczAqLW",
+    "SIG_R1_K1isJT8pJhkrHi3mcvrfY12nY6jirMCWaAHWuBXvu2ondcm3QHkgdaTwERskftZ9cqB5k2r8ajoYS4VWsiivjbd56D6pxX",
+    "SIG_R1_KWtgvnj2LaaYdtBTjM7bTR23LPBytDHFE7gPEfGTZ7PWc4yc6piPuPUHsVJVkvKmpW2gEUhq3toCfjkt34itSxMgekovdG"
 };
 
 TEST(EOSTransaction, Serialization) {
@@ -69,9 +69,9 @@ TEST(EOSTransaction, Serialization) {
         "4dac38a8ad7f095a09ec0eb0cbd060c9d8ea0a842535d369c9ce526cdf1b5d85"
     );
 
-
+    // verify k1 sigs
     for (int i = 0; i < 5; i++) {
-        PrivateKey pk(Hash::sha256(hex(std::string(i, 'A'))));
+        PrivateKey pk(Hash::sha256(std::string(i + 1, 'A')));
         ASSERT_NO_THROW(signer.sign(pk, Type::ModernK1, tx2));
 
         ASSERT_EQ(
@@ -80,8 +80,9 @@ TEST(EOSTransaction, Serialization) {
         );
     }
 
+    // verify r1 sigs
     for (int i = 0; i < 5; i++) {
-        PrivateKey pk(Hash::sha256(hex(std::string(i, 'A'))));
+        PrivateKey pk(Hash::sha256(std::string(i + 1, 'A')));
         ASSERT_NO_THROW(signer.sign(pk, Type::ModernR1, tx2));
 
         ASSERT_EQ(
