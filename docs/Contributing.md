@@ -97,7 +97,7 @@ Use the `bootstrap.sh` script in the root folder to install dependencies,
 generate files, build, and test. The build pipeline uses CMake. If you add or
 rename files you need to re-run cmake: `cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug`.
 If you only change existing files and want to run the tests you only need to
-run make: `make -C build tests`.
+run make: `make -Cbuild tests && build/tests/tests tests`.
 
 If you change interface files, `coins.json`, or Protobuf files you need to
 regenerate code: `tools/generate-files`.
