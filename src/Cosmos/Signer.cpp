@@ -72,7 +72,7 @@ Proto::SigningOutput Signer::build() const {
     auto txJson = buildTransactionJSON(signature);
     auto txEncoded = json::to_cbor(txJson);
 
-    output.set_json(txJson);
+    output.set_json(txJson.dump());
     output.set_encoded(txEncoded.data(), txEncoded.size());
 
     return output;

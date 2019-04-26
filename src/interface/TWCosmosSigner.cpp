@@ -17,7 +17,7 @@ TW_Cosmos_Proto_SigningOutput TWCosmosSignerSign(TW_Cosmos_Proto_SigningInput da
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto signer = new TWCosmosSigner{ Signer(std::move(input)) };
-    auto output = signer->impl.build();
+    Proto::SigningOutput output = signer->impl.build();
 
     auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
