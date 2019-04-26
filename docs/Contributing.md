@@ -93,22 +93,30 @@ This project has a number of different pieces. Each piece lives in its own subfo
 
 ## Building
 
-Use the `bootstrap.sh` script in the root folder to quickly build and test.
+Use the `bootstrap.sh` script in the root folder to install dependencies,
+generate files, build, and test. The build pipeline uses CMake. If you add or
+rename files you need to re-run cmake: `cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug`.
+If you only change existing files and want to run the tests you only need to
+run make: `make -Cbuild tests && build/tests/tests tests`.
 
-The build pipeline uses CMake. If you add or rename files you need to re-run cmake: `cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug`. If you only change existing files and want to run the tests you only need to run make: `make -C build tests`.
+If you change interface files, `coins.json`, or Protobuf files you need to
+regenerate code: `tools/generate-files`.
 
-If you change interface files in the include folder you need to regenerate the interface code: `codegen/bin/codegen`. Run `codegen/bin/codegen -h` to get usage information on the tool. Note that currently if you add a new interface header file you need to manually add that file as a public header to the iOS project, otherwise iOS tests will fail.
+If you'd rather use and IDE for building and debugging you can specify the `-G`
+option to cmake. For instance to use Xcode call `cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug`
+and use the generated project in the xcode folder.
 
 ## Testing
 
-Use the `bootstrap.sh` script in the root folder to quickly build and test. After you have run either `bootstrap.sh` or `cmake`, run `make -C build tests && build/tests/tests tests`. This will run all the C++ tests, Or use XCode for testing and debugging. Run `cmake -Bxcode -GXcode -DCMAKE_BUILD_TYPE=Debug` to generate a Xcode project. Then go to `xcode/` folder and open `TrustWalletCore.xcodeproj`.
-
-To run integration tests on each platform run the respective script in the tools folder:
+After running `bootstrap.sh` run `make -C build tests && build/tests/tests tests`
+to run all the C++ unit tests. To run integration tests on each platform run
+the respective script in the tools folder:
 
 * Android: run `tools/android-test` or import `android` folder to Android Studio
-* iOS: run `tools/ios-test` or cd `swift` folder, run `pod install` and open `TrustWalletCore.xcworkspace`
+* iOS: run `tools/ios-test` or cd `swift` folder and open `TrustWalletCore.xcworkspace`
 * JavaScript: run `tools/js-test` or cd `js` folder, run `npm test`
 
+To run all tests in one go use the `tools/tests` script.
 
 ## C Headers
 
