@@ -28,6 +28,7 @@
 #include "Zcash/TAddress.h"
 #include "NULS/Address.h"
 #include "Bravo/Address.h"
+#include "Steem/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -110,6 +111,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeXRP:
         return Ripple::Address::isValid(string);
+
+    case TWCoinTypeSteem:
+        return Bravo::Address::isValid(string, { TW::Steem::MainnetPrefix, TW::Steem::TestnetPrefix });
 
     case TWCoinTypeStellar:
     case TWCoinTypeKin:
@@ -213,6 +217,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeXRP:
         return Ripple::Address(publicKey).string();
+
+    case TWCoinTypeSteem:
+        return Bravo::Address(publicKey, TW::Steem::MainnetPrefix).string();
 
     case TWCoinTypeTezos:
         return Tezos::Address(publicKey).string();

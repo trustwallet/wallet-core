@@ -490,5 +490,16 @@
         "publicKeyType": "secp256k1",
         "transactionPath": "/txid/",
         "explorer": "https://explorer.bravocoin.com"
+    },
+    {
+        "id": "steem",
+        "name": "Steem",
+        "symbol": "STEEM",
+        "decimals": 3,
+        "derivationPath": "m/44'/135'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "transactionPath": "/tx/",
+        "explorer": "https://steemblockexplorer.com"
     }
 ]
