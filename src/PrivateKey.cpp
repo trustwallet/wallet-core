@@ -52,7 +52,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data(),
                                     result.data() + 64, nullptr) == 0;
     } break;
-    case TWCurveEd25519: {
+    case TWCurveED25519: {
         result.resize(64);
         const auto publicKey = getPublicKey(PublicKeyType::ed25519);
         ed25519_sign(digest.data(), digest.size(), bytes.data(), publicKey.bytes.data() + 1,
@@ -80,7 +80,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(
         success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data() + 1,
                                     result.data(), canonicalChecker) == 0;
     } break;
-    case TWCurveEd25519: // not supported
+    case TWCurveED25519: // not supported
         break;
     case TWCurveNIST256p1: {
         result.resize(65);

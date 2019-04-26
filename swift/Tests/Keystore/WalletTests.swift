@@ -14,7 +14,7 @@ class WalletTests: XCTestCase {
         let wallet = Wallet(keyURL: url, key: key)
         _ = try wallet.getAccount(password: "password", coin: .ethereum)
         _ = try wallet.getAccount(password: "password", coin: .callisto)
-        _ = try wallet.getAccount(password: "password", coin: .poa)
+        _ = try wallet.getAccount(password: "password", coin: .poanetwork)
         _ = try wallet.getAccount(password: "password", coin: .ethersocial)
 
         XCTAssertEqual(wallet.key.accountCount, 4)
