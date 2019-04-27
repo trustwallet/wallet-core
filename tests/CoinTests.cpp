@@ -177,6 +177,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNULS, privateKey), "Nse5n2814K6wnTwvek7NxmLWxEV1kq4V");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBravoCoin, privateKey), "BRV5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeSteem, privateKey), "STM5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeEOSIO, privateKey), "EOS5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
 }
 
 } // namespace TW

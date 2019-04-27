@@ -13,7 +13,9 @@ TEST(EOSAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("EOS65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjT"));
     ASSERT_FALSE(Address::isValid("PUB_5hieQEFWh68h6bjaYAY25Ptd2bmqLCaFsunaneh9gZsmSgUBUe"));
     ASSERT_FALSE(Address::isValid("PUB_K1_5hieQEFWh68h6bjaYAY25Ptd2bmqLCaFsunaneh9gZsmSgUBUe"));
-    ASSERT_FALSE(Address::isValid("PUB_K1_65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjTF"));
+
+    ASSERT_THROW(Address("PUB_K1_65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjTF"), std::invalid_argument);
+    ASSERT_THROW(EOS::Address(Data(0)), std::invalid_argument);
 }
 
 TEST(EOSAddress, Base58) {
@@ -62,4 +64,7 @@ TEST(EOSAddress, IsValid) {
     ASSERT_TRUE(Address::isValid("PUB_R1_6pQRUVU5vdneRnmjSiZPsvu3zBqcptvg6iK2Vz4vKo4ugnzow3"));
     ASSERT_TRUE(Address::isValid("EOS5mGcPvsqFDe8YRrA3yMMjQgjrCa6yiCho79KViDhvxh4ajQjgS"));
     ASSERT_TRUE(Address::isValid("PUB_R1_82dMu3zSSfyHYc4cvWJ6SPsHZWB5mBNAyhL53xiM5xpqmfqetN"));
+
+    ASSERT_NO_THROW(Address(parse_hex("039d91164ea04f4e751762643ef4ae520690af361b8e677cf341fd213419956b356cb721b7"), Type::ModernR1));
+    ASSERT_NO_THROW(Address(parse_hex("02d3c8e736a9a50889766caf3c37bd16e2fecc7340b3130e25d4c01b153f996a10a78afc0e"), Type::Legacy));
 }

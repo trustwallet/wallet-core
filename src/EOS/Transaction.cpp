@@ -99,7 +99,7 @@ void Transaction::serialize(Data& os) const noexcept{
     encodeCollection(transactionExtensions, os);
 }
 
-json Transaction::serialize() const noexcept {
+json Transaction::serialize() const {
     using namespace Bravo;
 
     // get a formatted date

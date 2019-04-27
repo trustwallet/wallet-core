@@ -20,7 +20,7 @@ Name::Name(const std::string& str) {
         value |= (toSymbol(str[i]) & 0x0f);
 }
 
-uint64_t Name::toSymbol(char c) const {
+uint64_t Name::toSymbol(char c) const noexcept {
     if (c >= 'a' && c <= 'z')
         return c - 'a' + 6;
 
@@ -30,7 +30,7 @@ uint64_t Name::toSymbol(char c) const {
     return 0;
 }
 
-std::string Name::string() const {
+std::string Name::string() const noexcept {
     static const char* charMap = ".12345abcdefghijklmnopqrstuvwxyz";
 
     std::string str(13,'.');
@@ -49,6 +49,6 @@ std::string Name::string() const {
     return str;
 }
 
-void Name::serialize(Data& o) const {
+void Name::serialize(Data& o) const noexcept  {
     encode64LE(value, o);
 }

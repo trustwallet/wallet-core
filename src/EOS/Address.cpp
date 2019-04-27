@@ -14,10 +14,10 @@ bool Address::isValid(const std::string& string) {
 /// Determines whether the given byte array is a valid keyBuffer
 /// Verifies the buffer's size and it's checksum bytes
 bool Address::isValid(const uint8_t *buffer, size_t size, EOS::Type type) {
+    if (size != KeyDataSize) return false;
+
     // last Address::ChecksumSize bytes are a checksum
     uint32_t checksum = decode32LE(buffer + PublicKeyDataSize);
-
-    if (size != KeyDataSize) return false;
     if (createChecksum(buffer, type) != checksum) return false;
     return true;
 }

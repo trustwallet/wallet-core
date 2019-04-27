@@ -42,7 +42,7 @@ public:
     Transaction(const Data& referenceBlockId, int32_t referenceBlockTime);
 
     void serialize(Data& os) const noexcept;
-    nlohmann::json serialize() const noexcept;
+    nlohmann::json serialize() const;
 
     inline bool isValid() { return maxNetUsageWords < UINT32_MAX / 8UL; }
 

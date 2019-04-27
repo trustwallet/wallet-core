@@ -35,7 +35,7 @@ class TestEOSSigning {
             "PUB_K1_65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjTF"
         )
         addr.forEach {
-            assertFalse(CoinType.EOS.validate(it))
+            assertFalse(CoinType.EOSIO.validate(it))
         }
     }
 
@@ -59,7 +59,7 @@ class TestEOSSigning {
             sender = "token"
             recipient = "eosio"
             memo = "my second transfer"
-            asset = asset.build()
+            asset = asset
             privateKey = ByteString.copyFrom(Hash.sha256("A".toByteArray()))
             privateKeyType = EOS.KeyType.MODERNK1
         }
@@ -85,14 +85,14 @@ class TestEOSSigning {
     }
 
 
-    fun getAssetBuilderDecimal(decimal: Int): EOS.Asset {
+    fun getAssetBuilderDecimal(decimal: Int): EOS.Asset.Builder {
         val builder = EOS.Asset.newBuilder()
-        return builder.setDecimals(decimal).setAmount(300000).setSymbol("TKN").build()
+        return builder.setDecimals(decimal).setAmount(300000).setSymbol("TKN")
     }
 
-    fun getAssetBuilderSymbol(symbol : String): EOS.Asset {
+    fun getAssetBuilderSymbol(symbol : String): EOS.Asset.Builder {
         val builder = EOS.Asset.newBuilder()
-        return builder.setDecimals(4).setAmount(300000).setSymbol(symbol).build()
+        return builder.setDecimals(4).setAmount(300000).setSymbol(symbol)
     }
 
 

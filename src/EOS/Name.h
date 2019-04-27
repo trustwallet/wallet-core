@@ -12,9 +12,9 @@ public:
 
     Name() { }
     Name(const std::string& str);
-    uint64_t toSymbol(char c) const;
-    std::string string() const;
+    uint64_t toSymbol(char c) const noexcept;
+    std::string string() const noexcept;
 
-    void serialize(Data& o) const;
+    void serialize(Data& o) const noexcept;
 };
 } // namespace TW::EOS
