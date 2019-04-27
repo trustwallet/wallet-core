@@ -10,7 +10,7 @@ import TrustWalletCore
 class BinanceChainTests: XCTestCase {
 
     func testAddress() {
-        let publicKey = PublicKey(data: Data(hexString: "0x026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")!)!
+        let publicKey = PublicKey(data: Data(hexString: "0x026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")!, type: .secp256k1)!
         let address = CosmosAddress(hrp: .binance, publicKey: publicKey)
 
         XCTAssertEqual("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", address?.description)

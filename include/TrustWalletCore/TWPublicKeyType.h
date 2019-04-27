@@ -10,7 +10,7 @@
 TW_EXTERN_C_BEGIN
 
 /// Public key types
-TW_EXPORT_ENUM(int)
+TW_EXPORT_ENUM(uint32_t)
 enum TWPublicKeyType {
     TWPublicKeyTypeSECP256k1 = 0,
     TWPublicKeyTypeSECP256k1Extended = 1,
