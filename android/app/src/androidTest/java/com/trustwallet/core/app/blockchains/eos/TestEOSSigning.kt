@@ -6,6 +6,7 @@ import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.*
 import org.junit.Test
+import wallet.core.jni.proto.Bravo
 import org.json.JSONObject
 import wallet.core.jni.*
 import wallet.core.jni.proto.EOS
@@ -39,27 +40,33 @@ class TestEOSSigning {
         }
     }
 
+    fun getAssetBuilder(amt: Long, decimal: Int, sym: String): EOS.Asset.Builder {
+        var asset: EOS.Asset.Builder = EOS.Asset.newBuilder();
+        asset.apply {
+            amount = amt
+            decimals = decimal
+            symbol = sym
+        }
+        return asset;
+    }
+
+
     // ensure valid input is signed
     @Test
     fun eosTransactionSigning() {
-        var asset : EOS.Asset.Builder =  EOS.Asset.newBuilder();
-
-        asset.apply {
-            amount = 300000
-            decimals = 4
-            symbol = "TKN"
-        };
         val signingInput: EOS.SigningInput.Builder = EOS.SigningInput.newBuilder()
 
         signingInput.apply {
-            chainId = ByteString.copyFrom("cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f".toHexByteArray())
-            referenceBlockId = ByteString.copyFrom("000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144".toHexByteArray())
+            chainId =
+                ByteString.copyFrom("cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f".toHexByteArray())
+            referenceBlockId =
+                ByteString.copyFrom("000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144".toHexByteArray())
             referenceBlockTime = 1554209118
             currency = "token"
             sender = "token"
             recipient = "eosio"
             memo = "my second transfer"
-            asset = asset
+            asset = getAssetBuilder(300000, 4, "TKN").build()
             privateKey = ByteString.copyFrom(Hash.sha256("A".toByteArray()))
             privateKeyType = EOS.KeyType.MODERNK1
         }
@@ -84,53 +91,32 @@ class TestEOSSigning {
 
     }
 
-
-    fun getAssetBuilderDecimal(decimal: Int): EOS.Asset.Builder {
-        val builder = EOS.Asset.newBuilder()
-        return builder.setDecimals(decimal).setAmount(300000).setSymbol("TKN")
-    }
-
-    fun getAssetBuilderSymbol(symbol : String): EOS.Asset.Builder {
-        val builder = EOS.Asset.newBuilder()
-        return builder.setDecimals(4).setAmount(300000).setSymbol(symbol)
-    }
-
-
     // ensure invalid inputs are not signed
     @Test
-    fun testSigningFailures() {
-        var assets : EOS.Asset.Builder =  EOS.Asset.newBuilder();
-
-        assets.apply {
-            amount = 300000
-            var decimals = 4
-            symbol = "TKN"
-        }
-
+    fun testFailures() {
         val signingInput: EOS.SigningInput.Builder = EOS.SigningInput.newBuilder()
-
         val goodInput = signingInput.apply {
-            chainId = ByteString.copyFrom("cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f".toHexByteArray())
-            referenceBlockId = ByteString.copyFrom("000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144".toHexByteArray())
+            chainId =ByteString.copyFrom("cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f".toHexByteArray())
+            referenceBlockId =ByteString.copyFrom("000067d6f6a7e7799a1f3d487439a679f8cf95f1c986f35c0d2fa320f51a7144".toHexByteArray())
             referenceBlockTime = 1554209118
             currency = "token"
             sender = "token"
             recipient = "eosio"
             memo = "my second transfer"
-            asset = assets.build()
+            asset = getAssetBuilder(300000, 4, "TKN").build()
             privateKey = ByteString.copyFrom(Hash.sha256("A".toByteArray()))
             privateKeyType = EOS.KeyType.MODERNK1
         }
 
 
         var badinput = goodInput;
-        badinput.asset = getAssetBuilderDecimal(19);
+        badinput.asset = getAssetBuilder(300000, 19, "TKN").build();
         var result = EOSSigner.sign(badinput.build())
         assertFalse("Expected error but signing suceeded!", result.success)
 
 
         badinput = goodInput;
-        badinput.asset = getAssetBuilderSymbol("xyz");
+        badinput.asset = getAssetBuilder(300000, 4, "xyz").build()
         result = EOSSigner.sign(badinput.build())
         assertFalse("Expected error but signing suceeded!", result.success)
 
