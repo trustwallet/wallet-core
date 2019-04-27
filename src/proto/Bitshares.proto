@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package TW.Bitshares.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// An asset's data.
+message Asset {
+    sint64 amount = 1;
+    uint64 asset_id = 2;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Chain id (256-bit number)
+    bytes chain_id = 1;
+
+    // Sender's user id
+    uint64 sender_id = 2;
+
+    // Recipient's user id
+    uint64 recipient_id = 3;
+
+    // Asset to transfer
+    Asset asset = 4;
+
+    // Asset to send as fee
+    Asset fee = 5;
+
+    // Memo to attach to the transaction
+    string memo = 6;
+
+    // Recipient's public key's raw bytes
+    // Used for encrypting the memo.
+    // Can be left empty if memo is also empty
+    bytes recipient_public_key = 7;
+
+    // Reference Block Id (160-bits)
+    bytes reference_block_id = 8;
+
+    // Timestamp on the reference block
+    sfixed32 reference_block_time = 9;
+
+    // Sender's private key's raw bytes
+    bytes private_key = 10;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // JSON of the signed transaction.
+    string json_encoded = 1;
+}
