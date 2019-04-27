@@ -54,7 +54,7 @@ bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *signature, TWDat
     return pk->impl.verify(s, m);
 }
 
-enum TWPublicKeyType TWPublicKeyType(struct TWPublicKey *_Nonnull publicKey) {
+enum TWPublicKeyType TWPublicKeyKeyType(struct TWPublicKey *_Nonnull publicKey) {
     return publicKey->impl.type;
 }
 

@@ -44,7 +44,7 @@ TW_EXPORT_METHOD
 bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message);
 
 TW_EXPORT_PROPERTY
-enum TWPublicKeyType TWPublicKeyType(struct TWPublicKey *_Nonnull publicKey);
+enum TWPublicKeyType TWPublicKeyKeyType(struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWPublicKeyDescription(struct TWPublicKey *_Nonnull publicKey);
