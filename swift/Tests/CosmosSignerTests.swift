@@ -50,8 +50,9 @@ class CosmosSignerTests: XCTestCase {
 
         let expectedJSON: String = """
 {
-  "type": "auth/StdTx",
-  "value": {
+"mode": "async"
+"tx": {
+    "type": "auth/StdTx",
     "fee": {
       "amount": [
         {
@@ -85,7 +86,8 @@ class CosmosSignerTests: XCTestCase {
         },
         "signature": "/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="
       }
-    ]
+    ],
+    "type": "cosmos-sdk/MsgSend"
   }
 }
 """
