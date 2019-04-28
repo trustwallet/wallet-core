@@ -51,7 +51,7 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
 Data forgePublicKey(PublicKey publicKey) {
     std::array<uint8_t, 4> prefix = {13, 15, 37, 217};
     auto data = Data(prefix.begin(), prefix.end());
-    auto bytes = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
+    auto bytes = Data(publicKey.bytes.begin(), publicKey.bytes.end());
     append(data, bytes);
 
     auto pk = Base58::bitcoin.encodeCheck(data);
@@ -81,7 +81,7 @@ Data forgeOperation(const Operation& operation) {
   auto forgedStorageLimit = forgeZarith(operation.storage_limit());
 
   if (operation.kind() == Operation_OperationKind_REVEAL) {
-      auto publicKey = PublicKey(operation.reveal_operation_data().public_key());
+      auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), TWPublicKeyTypeED25519);
       forged.push_back(0x07);
       append(forged, forgedSource);
       append(forged, forgedFee);

@@ -13,42 +13,54 @@
 using namespace TW;
 
 PublicKey PublicKey::compressed() const {
-    if (isCompressed()) {
+    if (type != TWPublicKeyTypeSECP256k1Extended && type != TWPublicKeyTypeNIST256p1Extended) {
         return *this;
     }
 
     std::array<uint8_t, secp256k1Size> newBytes;
     newBytes[0] = 0x02 | (bytes[64] & 0x01);
-    std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
-    return PublicKey(newBytes);
-}
 
-PublicKey PublicKey::uncompressed() const {
-    auto keyType = type();
-    if (!isCompressed() || keyType == PublicKeyType::ed25519) {
+    switch (type) {
+    case TWPublicKeyTypeSECP256k1Extended:
+        std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
+        return PublicKey(newBytes, TWPublicKeyTypeSECP256k1);
+    case TWPublicKeyTypeNIST256p1Extended:
+        std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
+        return PublicKey(newBytes, TWPublicKeyTypeNIST256p1);
+    default:
         return *this;
     }
+}
 
+PublicKey PublicKey::extended() const {
     std::array<uint8_t, secp256k1ExtendedSize> newBytes;
-    if (keyType == PublicKeyType::secp256k1) {
+    switch (type) {
+    case TWPublicKeyTypeSECP256k1:
         ecdsa_uncompress_pubkey(&secp256k1, bytes.data(), newBytes.data());
-    } else if (keyType == PublicKeyType::nist256p1) {
+        return PublicKey(newBytes, TWPublicKeyTypeSECP256k1Extended);
+    case TWPublicKeyTypeSECP256k1Extended:
+        return *this;
+    case TWPublicKeyTypeNIST256p1:
         ecdsa_uncompress_pubkey(&nist256p1, bytes.data(), newBytes.data());
+        return PublicKey(newBytes, TWPublicKeyTypeNIST256p1Extended);
+    case TWPublicKeyTypeNIST256p1Extended:
+        return *this;
+    case TWPublicKeyTypeED25519:
+       return *this;
     }
-    return PublicKey(newBytes);
 }
 
 bool PublicKey::verify(const std::vector<uint8_t>& signature,
                        const std::vector<uint8_t>& message) const {
-    switch (type()) {
-    case PublicKeyType::secp256k1:
-    case PublicKeyType::secp256k1Extended:
+    switch (type) {
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeSECP256k1Extended:
         return ecdsa_verify_digest(&secp256k1, bytes.data(), signature.data(), message.data()) == 0;
-    case PublicKeyType::ed25519:
-        return ed25519_sign_open(message.data(), message.size(), bytes.data() + 1,
-                                 signature.data()) == 0;
-    case PublicKeyType::nist256p1:
+    case TWPublicKeyTypeNIST256p1:
+    case TWPublicKeyTypeNIST256p1Extended:
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
+    case TWPublicKeyTypeED25519:
+        return ed25519_sign_open(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
     }
 }
 

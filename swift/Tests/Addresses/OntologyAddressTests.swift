@@ -21,7 +21,7 @@ class OntologyAddressTests: XCTestCase {
     }
     
     func testFromPublicKey() {
-        let publicKey = PublicKey(data: Data(hexString: "031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486")!)!
+        let publicKey = PublicKey(data: Data(hexString: "031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486")!, type: .nist256p1)!
         let address = OntologyAddress(publicKey: publicKey)
         XCTAssertEqual(address.description, "AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5")
     }

@@ -19,7 +19,7 @@ TW_Theta_Proto_SigningOutput TWThetaSignerSign(TW_Theta_Proto_SigningInput data)
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto pkFrom = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto from = Ethereum::Address(pkFrom.getPublicKey(PublicKeyType::secp256k1Extended));
+    auto from = Ethereum::Address(pkFrom.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
 
     auto transaction = Transaction(
         /* from: */ from,

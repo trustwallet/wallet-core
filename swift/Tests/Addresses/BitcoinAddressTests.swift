@@ -58,13 +58,13 @@ class BitcoinAddressTests: XCTestCase {
 
     func testCompressedPublicKey() {
         // compressed public key starting with 0x03 (greater than midpoint of curve)
-        let compressedPK = PublicKey(data: Data(hexString: "030589ee559348bd6a7325994f9c8eff12bd5d73cc683142bd0dd1a17abc99b0dc")!)!
+        let compressedPK = PublicKey(data: Data(hexString: "030589ee559348bd6a7325994f9c8eff12bd5d73cc683142bd0dd1a17abc99b0dc")!, type: .secp256k1)!
         XCTAssertTrue(compressedPK.isCompressed)
         XCTAssertEqual(BitcoinAddress(publicKey: compressedPK, prefix: 0).description, "1KbUJ4x8epz6QqxkmZbTc4f79JbWWz6g37")
     }
 
     func testPublicKeyToSegwitAddress() {
-        let publicKey = PublicKey(data: Data(hexString: "0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798")!)!
+        let publicKey = PublicKey(data: Data(hexString: "0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798")!, type: .secp256k1)!
         let expect = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"
         XCTAssertTrue(SegwitAddress.isValidString(string: expect))
 

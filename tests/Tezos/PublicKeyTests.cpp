@@ -25,6 +25,6 @@ TEST(TezosPublicKey, parse) {
     auto input = "edpkuAfEJCEatRgFpRGg3gn3FdWniLXBoubARreRwuVZPWufkgDBvR";
     auto bytes = Data({1, 69, 27, 222, 131, 36, 84, 186, 115, 230, 224, 222, 49, 63, 207, 93, 21, 101, 236, 81, 8, 14, 220, 115, 187, 25, 40, 123, 142, 10, 178, 18, 43});
     auto output = parsePublicKey(input);
-    auto expected = PublicKey(bytes);
+    auto expected = PublicKey(bytes, TWPublicKeyTypeED25519);
     ASSERT_EQ(output, expected);
 }

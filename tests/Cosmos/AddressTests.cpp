@@ -24,7 +24,7 @@ TEST(Address, Invalid) {
 
 TEST(Address, FromKeyHash) {
     auto privateKey = PrivateKey(parse_hex("95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832"));
-    auto publicKeyData = privateKey.getPublicKey(PublicKeyType::secp256k1);
+    auto publicKeyData = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502");
 
     auto publicKey = PublicKey(publicKeyData);
@@ -34,7 +34,7 @@ TEST(Address, FromKeyHash) {
 
 TEST(Address, FromKeyHashCosmos) {
     auto privateKey = PrivateKey(parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005"));
-    auto publicKeyData = privateKey.getPublicKey(PublicKeyType::secp256k1);
+    auto publicKeyData = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "0257286ec3f37d33557bbbaa000b27744ac9023aa9967cae75a181d1ff91fa9dc5");
 
     auto publicKey = PublicKey(publicKeyData);

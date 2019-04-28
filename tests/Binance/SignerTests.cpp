@@ -153,11 +153,11 @@ TEST(BinanceSigner, BuildSend2) {
 
     const auto fromWallet = HDWallet("swift slam quote sail high remain mandate sample now stamp title among fiscal captain joy puppy ghost arrow attract ozone situate install gain mean", "");
     const auto fromPrivateKey = fromWallet.getKey(derivationPath);
-    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(PublicKeyType::secp256k1));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
 
     const auto toWallet = HDWallet( "bottom quick strong ranch section decide pepper broken oven demand coin run jacket curious business achieve mule bamboo remain vote kid rigid bench rubber", "");
     const auto toPrivateKey = toWallet.getKey(derivationPath);
-    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(PublicKeyType::secp256k1));
+    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("bnbchain-1000");

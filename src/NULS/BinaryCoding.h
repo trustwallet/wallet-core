@@ -66,7 +66,7 @@ static inline Data calcTransactionDigest(Data& data) {
 }
 
 static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash) {
-    PublicKey pubKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
+    PublicKey pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     Data transactionSignature = Data();
     encodeVarInt(pubKey.bytes.size(), transactionSignature);

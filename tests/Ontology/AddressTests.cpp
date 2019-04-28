@@ -24,7 +24,7 @@ TEST(OntologyAddress, validation) {
 
 TEST(OntologyAddress, fromPubKey) {
     auto address = Address(
-        PublicKey(parse_hex("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486")));
+        PublicKey(parse_hex("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486"), TWPublicKeyTypeSECP256k1));
     EXPECT_EQ("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5", address.string());
 }
 

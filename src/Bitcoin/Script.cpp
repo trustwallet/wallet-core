@@ -137,7 +137,7 @@ bool Script::matchMultisig(std::vector<std::vector<uint8_t>>& keys, int& require
         if (!res) {
             break;
         }
-        if (!TW::PublicKey::isValid(operand)) {
+        if (!TW::PublicKey::isValid(operand, TWPublicKeyTypeSECP256k1)) {
             break;
         }
         keys.push_back(operand);

@@ -41,10 +41,7 @@ bool Address::isValid(const std::string& string) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto publicKeySize = publicKey.ed25519Size;
-
-    // Drop first byte of the public key which is a tag.
-    auto encoded = Data(publicKey.bytes.begin() + 1, publicKey.bytes.begin() + publicKeySize);
+    auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.end());
     auto hash = Hash::blake2b(encoded, 20);
     auto addressData = Data({6, 161, 159});
     append(addressData, hash);

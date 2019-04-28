@@ -45,7 +45,7 @@ TEST(BravoAddress, FromPrivateKey) {
 
     for (int i = 0; i < 3; i++) { 
         const auto privateKey = PrivateKey(parse_hex(privArray[i]));
-        const auto publicKey = PublicKey(privateKey.getPublicKey(PublicKeyType::secp256k1));
+        const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
         const auto address = Address(publicKey);
    
         ASSERT_EQ(address.string(), pubArray[i]);

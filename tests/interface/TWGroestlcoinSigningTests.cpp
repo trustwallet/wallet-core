@@ -98,7 +98,7 @@ TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
 
     // TX input
     auto utxoKey0 = PrivateKey(parse_hex("302fc195a8fc96c5a581471e67e4c1ac2efda252f76ad5c77a53764c70d58f91"));
-    auto pubKey0 = utxoKey0.getPublicKey(PublicKeyType::secp256k1);
+    auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
     EXPECT_EQ(hex(utxoPubkeyHash.begin(), utxoPubkeyHash.end()), "2fc7d70acef142d1f7b5ef2f20b1a9b759797674");
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());

@@ -50,7 +50,7 @@ Address::Address(const std::vector<uint8_t>& data) {
 }
 
 Address::Address(const PublicKey& publicKey, uint8_t prefix) {
-    if (publicKey.type() != PublicKeyType::secp256k1) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("Groestlcoin::Address needs a compressed SECP256k1 public key.");
     }
     bytes[0] = prefix;

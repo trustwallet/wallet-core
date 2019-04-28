@@ -37,11 +37,11 @@ Data Account::sign(const Data& digest, TWCurve curve) const {
 }
 
 Data Account::publicActiveKey() const {
-    return PrivateKey(activeKey).getPublicKey(PublicKeyType::ed25519).bytes;
+    return PrivateKey(activeKey).getPublicKey(TWPublicKeyTypeED25519).bytes;
 }
 
 Data Account::publicOwnerKey() const {
-    return PrivateKey(ownerKey).getPublicKey(PublicKeyType::ed25519).bytes;
+    return PrivateKey(ownerKey).getPublicKey(TWPublicKeyTypeED25519).bytes;
 }
 
 

@@ -185,7 +185,7 @@ class HDWalletTests: XCTestCase {
         let pubkey = key.getPublicKeyEd25519()
         let address = TezosAddress(publicKey: pubkey)
 
-        XCTAssertEqual(pubkey.data.hexString, "01c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371")
+        XCTAssertEqual(pubkey.data.hexString, "c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371")
         XCTAssertEqual("tz1RsC3AREfrMwh6Hdu7qGKxBwb1VgwJv1qw", address.description)
     }
 

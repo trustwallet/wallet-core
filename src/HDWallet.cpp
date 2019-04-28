@@ -112,7 +112,14 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string &e
     hdnode_public_ckd(&node, path.address());
     hdnode_fill_public_key(&node);
 
-    return PublicKey(Data(node.public_key, node.public_key + 33));
+    switch (curve) {
+    case TWCurveSECP256k1:
+        return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeSECP256k1);
+    case TWCurveED25519:
+        return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeED25519);
+    case TWCurveNIST256p1:
+        return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeNIST256p1);
+    }
 }
 
 std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path) {
