@@ -33,7 +33,7 @@ Address Signer::getAddress() const {
     return Address(address);
 }
 
-void Signer::sign(Transaction& tx) const {
+void Signer::sign(Transaction &tx) const {
     if (tx.sigVec.size() >= Transaction::sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
@@ -42,7 +42,7 @@ void Signer::sign(Transaction& tx) const {
     tx.sigVec.emplace_back(publicKey, signature, 1);
 }
 
-void Signer::addSign(Transaction& tx) const {
+void Signer::addSign(Transaction &tx) const {
     if (tx.sigVec.size() >= Transaction::sigVecLimit) {
         throw std::runtime_error("the number of transaction signatures should not be over 16.");
     }
