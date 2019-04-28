@@ -13,16 +13,16 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPurpose.h>
-#include <TrustWalletCore/TWZelcashTAddress.h>
+#include <TrustWalletCore/TWZcashTAddress.h>
 
 #include <gtest/gtest.h>
 
 TEST(Zelcash, TransparentAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWZelcashTAddress();
-    TWZelcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
-    auto addressString = WRAPS(TWZelcashTAddressDescription(address));
+    auto address = TWZcashTAddress();
+    TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
+    auto addressString = WRAPS(TWZcashTAddressDescription(address));
     assertStringsEqual(addressString, "t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy");
 }
 
@@ -35,9 +35,9 @@ TEST(Zelcash, DeriveTransparentAddress) {
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), derivationPath.get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
 
-    TWZelcashTAddress address;
-    TWZelcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
-    auto addressString = WRAPS(TWZelcashTAddressDescription(address));
+    TWZcashTAddress address;
+    TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
+    auto addressString = WRAPS(TWZcashTAddressDescription(address));
 
     assertStringsEqual(addressString, "t1Trs2rNPzL4Jm24foTd89KpPWqLtLSciDY");
 }
@@ -60,13 +60,13 @@ TEST(Zelcash, DerivePubkeyFromXpub) {
     auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
     auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
 
-    TWZelcashTAddress address3;
-    TWZelcashTAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixZcashT);
-    auto address3String = WRAPS(TWZelcashTAddressDescription(address3));
+    TWZcashTAddress address3;
+    TWZcashTAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixZcashT);
+    auto address3String = WRAPS(TWZcashTAddressDescription(address3));
 
-    TWZelcashTAddress address5;
-    TWZelcashTAddressInitWithPublicKey(&address5, pubKey5, TWP2PKHPrefixZcashT);
-    auto address5String = WRAPS(TWZelcashTAddressDescription(address5));
+    TWZcashTAddress address5;
+    TWZcashTAddressInitWithPublicKey(&address5, pubKey5, TWP2PKHPrefixZcashT);
+    auto address5String = WRAPS(TWZcashTAddressDescription(address5));
 
     assertStringsEqual(address3String, "t1NdSKKkBXV3GBDMcPvpWu12qcNwAZwB4hD");
     assertStringsEqual(address5String, "t1Trs2rNPzL4Jm24foTd89KpPWqLtLSciDY");

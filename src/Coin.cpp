@@ -24,7 +24,6 @@
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
-#include "Zelcash/TAddress.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -107,11 +106,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeZcoin:
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixZcoin}, {TWP2SHPrefixZcoin}});
 
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
-
-    case TWCoinTypeZelcash:
-            return Zelcash::TAddress::isValid(string, {{Zelcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zelcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
@@ -451,11 +448,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeTron:
         return Tron::Address(publicKey).string();
 
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcash:
         return Zcash::TAddress(publicKey, TWP2PKHPrefixZcashT).string();
-
-    case TWCoinTypeZelcash:
-		return Zelcash::TAddress(publicKey, TWP2PKHPrefixZcashT).string();
 
     case TWCoinTypeZcoin:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixZcoin).string();

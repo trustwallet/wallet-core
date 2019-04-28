@@ -16,7 +16,6 @@
 #include "../Hash.h"
 #include "../PublicKey.h"
 #include "../Zcash/TAddress.h"
-#include "../Zelcash/TAddress.h"
 
 #include <TrustWalletCore/TWBitcoinOpCodes.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -300,12 +299,6 @@ Script Script::buildForAddress(const std::string& string) {
         }
     } else if (Zcash::TAddress::isValid(string)) {
         auto address = Zcash::TAddress(string);
-        auto data = std::vector<uint8_t>();
-        data.reserve(Address::size - 2);
-        std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
-        return buildPayToPublicKeyHash(data);
-    } else if (Zelcash::TAddress::isValid(string)) {
-        auto address = Zelcash::TAddress(string);
         auto data = std::vector<uint8_t>();
         data.reserve(Address::size - 2);
         std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));

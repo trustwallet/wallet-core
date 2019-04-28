@@ -201,6 +201,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value28 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
     assertStringsEqual(value28, "https://blockbook.groestlcoin.org/tx/123");
+
+    auto value29 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
+        assertStringsEqual(value29, "https://explorer.zel.cash/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -275,6 +278,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value25 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
     assertStringsEqual(value25, "groestlcoin");
+
+    auto value26 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
+        assertStringsEqual(value26, "zelcash");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -352,4 +358,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value26 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
     assertStringsEqual(value26, "Groestlcoin");
+
+    auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
+        assertStringsEqual(value27, "Zelcash");
 }

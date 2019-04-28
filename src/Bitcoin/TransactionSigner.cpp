@@ -14,7 +14,6 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../Zcash/Transaction.h"
-#include "../Zelcash/Transaction.h"
 #include "../Groestlcoin/Transaction.h"
 
 using namespace TW;
@@ -272,5 +271,4 @@ Data TransactionSigner<Transaction>::scriptForScriptHash(const Data& hash) const
 // Explicitly instantiate a Signers for compatible transactions.
 template class TW::Bitcoin::TransactionSigner<Bitcoin::Transaction>;
 template class TW::Bitcoin::TransactionSigner<Zcash::Transaction>;
-template class TW::Bitcoin::TransactionSigner<Zelcash::Transaction>;
 template class TW::Bitcoin::TransactionSigner<Groestlcoin::Transaction>;
