@@ -1,61 +1,67 @@
-// Copyright © 2017-2019 Trust Wallet.
-//
-// This file is part of Trust. The full Trust copyright notice, including
-// terms governing use, modification, and redistribution, is contained in the
-// file LICENSE at the root of the source code distribution tree.
-
 #include "Transaction.h"
-#include "Address.h"
-#include "ParamsBuilder.h"
 
-#include "../Hash.h"
-#include "../HexCoding.h"
-
-#include <string>
-
-using namespace TW;
 using namespace TW::NEO;
 
-const std::string Transaction::ZERO_PAYER = "AFmseVrdL9f9oyCzZefL9tG6UbvhPbdYzM";
+#define SIZE_INC(V, X) {\
+    (V) += 8; \
+    for (auto &__x_ : (X)) { \
+        (V) += __x_.size(); \
+    } \
+}
+int64_t Transaction::size() const {
+    auto resp = sizeof(type) + sizeof(version);
+    SIZE_INC(resp, attributes);
+    SIZE_INC(resp, inInputs);
+    SIZE_INC(resp, outputs);
+//    SIZE_INC(resp, witnesses);
 
-std::vector<uint8_t> Transaction::serializeUnsigned() {
-    ParamsBuilder builder;
-    builder.pushBack(version);
-    builder.pushBack(txType);
-    builder.pushBack(nonce);
-    builder.pushBack(gasPrice);
-    builder.pushBack(gasLimit);
-    builder.pushBack(arrayByteToArrayUint(Address(payer).bytes));
+    return resp;
+}
+#undef SIZE_INC
 
-    if (!payload.empty()) {
-        builder.pushVar(payload);
+#define DESERIALIZE_V(P, TYPE, VEC) {\
+    auto vsize_ = readUInt64(data, 5); \
+    (VEC) = std::vector<TYPE>(vsize_); \
+    (P) += 8; \
+    for (int __i_ = 0; __i_ < vsize_; ++__i_) { \
+        TYPE ta; \
+        ta.deserialize(data, pos); \
+        pos += ta.size(); \
+        (VEC).push_back(ta); \
+    }\
+}
+void Transaction::deserialize(const Data &data) const {
+    TransactionType txType = (TransactionType) readUInt16(data);
+    if (txType != type) {
+        throw std::invalid_argument("Transaction::DeserializeUnsigned FormatException");
     }
-    builder.pushBack((uint8_t)0x00);
-    return builder.getBytes();
-}
 
-std::vector<uint8_t> Transaction::serialize() {
-    std::vector<uint8_t> txData;
-    auto unsignedData = serializeUnsigned();
-    txData.insert(txData.end(), unsignedData.begin(), unsignedData.end());
-    ParamsBuilder builder;
-    builder.pushVar(sigVec.size());
-    for (auto sig : sigVec) {
-        builder.pushBack(sig.serialize());
-    }
-    auto sigData = builder.getBytes();
-    txData.insert(txData.end(), sigData.begin(), sigData.end());
-    return txData;
+    Version = data[4];
+//            DeserializeExclusiveData(reader);
+    int pos = 5;
+    DESERIALIZE_V(pos, TransactionAttribute, attributes);
+    DESERIALIZE_V(pos, CoinReference, inInputs);
+    DESERIALIZE_V(pos, TransactionOutput, outputs);
+    DESERIALIZE_V(pos, Witness, witnesses);
 }
+#undef DESERIALIZE_V
 
-std::vector<uint8_t> Transaction::txHash() {
-    auto txSerialized = Transaction::serializeUnsigned();
-    return Hash::sha256(Hash::sha256(txSerialized));
+#define SERIALIZE_V(R, V) { \
+    append((R), write((V).size())); \
+    for (auto &__x_: (V)) { \
+        append((R), __x_.serialize()); \
+    } \
 }
+Data Transaction::serialize() const {
+    Data resp(size());
+    append(resp, write(type));
+    append(resp, write(version));
 
-std::vector<uint8_t> Transaction::serialize(const PublicKey& pk) {
-    ParamsBuilder builder;
-    builder.push(pk.bytes);
-    builder.pushBack((uint8_t)0xAC);
-    return builder.getBytes();
+    SERIALIZE_V(resp, attributes);
+    SERIALIZE_V(resp, inInputs);
+    SERIALIZE_V(resp, outputs);
+    SERIALIZE_V(resp, witnesses);
+
+    return std::move(resp);
 }
+#undef SERIALIZE_V

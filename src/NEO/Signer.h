@@ -17,25 +17,25 @@
 
 namespace TW::NEO {
 
-class Signer {
-  private:
-    Data publicKey;
-    TW::PrivateKey privateKey;
-    std::string address;
+    class Signer {
+    private:
+        Data publicKey;
+        TW::PrivateKey privateKey;
+        std::string address;
 
-  public:
-    explicit Signer(TW::PrivateKey priKey);
+    public:
+        explicit Signer(TW::PrivateKey priKey);
 
-    PrivateKey getPrivateKey() const;
+        PrivateKey getPrivateKey() const;
 
-    PublicKey getPublicKey() const;
+        PublicKey getPublicKey() const;
 
-    Address getAddress() const;
+        Address getAddress() const;
 
-    void sign(Transaction& tx) const;
+        void sign(Transaction &tx) const;
 
-    void addSign(Transaction& tx) const;
-};
+        void addSign(Transaction &tx) const;
+    };
 } // namespace TW::NEO
 
 /// Wrapper for C interface.

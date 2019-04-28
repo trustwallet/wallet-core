@@ -6,70 +6,32 @@
 
 #pragma once
 
-#include "PublicKey.h"
-#include "SigData.h"
-#include "../PublicKey.h"
-
 #include <string>
 
+#include "ISerializable.hpp"
+#include "PublicKey.h"
+#include "TransactionType.h"
+#include "TransactionAttribute.hpp"
+#include "CoinReference.hpp"
+#include "Witness.hpp"
+
 namespace TW::NEO {
+    class Transaction : public ISerializable {
+    private:
+        const TransactionType type;
+        byte version;
 
-class Transaction {
+        std::vector<TransactionAttribute> attributes;
+        std::vector<CoinReference> inInputs;
+        std::vector<TransactionOutput> outputs;
+        std::vector<Witness> witnesses;
 
-  private:
-    uint8_t version;
+    public:
+        int64_t size() const;
 
-    uint8_t txType;
+        void deserialize(const Data &data) const;
 
-    uint32_t nonce;
-
-    uint64_t gasPrice;
-
-    uint64_t gasLimit;
-
-    std::string payer;
-
-    std::vector<uint8_t> payload;
-
-    std::vector<uint8_t> attributes;
-
-    static const std::string ZERO_PAYER;
-
-  public:
-    static const size_t sigVecLimit = 16;
-
-    std::vector<SigData> sigVec;
-
-    Transaction(uint8_t ver, uint8_t type, uint32_t nonce, uint64_t gasPrice, uint64_t gasLimit,
-                std::string payer, std::vector<uint8_t> payload)
-        : version(ver)
-        , txType(type)
-        , nonce(nonce)
-        , gasPrice(gasPrice)
-        , gasLimit(gasLimit)
-        , payload(std::move(payload)) {
-        if (payer.empty()) {
-            payer = ZERO_PAYER;
-        }
-        this->payer = payer;
-    }
-
-    std::vector<uint8_t> serializeUnsigned();
-
-    std::vector<uint8_t> serialize();
-
-    std::vector<uint8_t> txHash();
-
-    std::vector<uint8_t> serialize(const PublicKey& pk);
-
-    template <std::size_t Size>
-    std::array<uint8_t, Size> arrayByteToArrayUint(const std::array<byte, Size> &bytes) const {
-        std::array<uint8_t, Size> builderData;
-        for (std::size_t i = 0; i < Size; ++i) {
-            builderData[i] = (uint8_t) bytes[i];
-        }
-        return builderData;
+        Data serialize() const;
     };
-};
 
 } // namespace TW::NEO

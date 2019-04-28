@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-#include "ParamsBuilder.h"
 
 #include "Tezos/BinaryCoding.h"
 #include "../Base58.h"
@@ -29,8 +28,9 @@ Address::Address(const PublicKey& publicKey) {
     auto keyHash = Hash::ripemd(Hash::sha256(pkdata));
     keyHash.insert(keyHash.begin(), 0x17);
 
-    if (keyHash.size() != Address::size)
+    if (keyHash.size() != Address::size) {
         throw std::invalid_argument("Invalid address key data");
+    }
 
     std::copy(keyHash.data(), keyHash.data() + Address::size, bytes.begin());
 }

@@ -16,13 +16,13 @@ using int256_t = boost::multiprecision::int256_t;
 using uint256_t = boost::multiprecision::uint256_t;
 
 /// Loads a `uint256_t` from a collection of bytes.
-inline uint256_t load(const Data& data) {
+inline uint256_t load(const Data& data, int initial_position = 0) {
     using boost::multiprecision::cpp_int;
     if (data.empty()) {
         return uint256_t(0);
     }
     uint256_t result;
-    import_bits(result, data.begin(), data.end());
+    import_bits(result, data.begin() + initial_position, data.end());
     return result;
 }
 
