@@ -171,7 +171,6 @@ class CosmosSignerTests: XCTestCase {
 }
 
 """
-              print("OutputJson: \(output.json)")
         XCTAssertEqual(expectedJSON.flatten(), output.json)
     }
 }
