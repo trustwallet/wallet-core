@@ -13,5 +13,5 @@ Uint8Array TWDataUint8Array(Env *_Nonnull env, TWData *_Nonnull data) {
 }
 
 TWData *_Nonnull TWDataCreateWithUint8Array(Uint8Array data) {
-    return TWDataCreateWithBytes((uint8_t*) data.Data(), data.ByteLength());
+    return TWDataCreateWithBytes(data.Data(), data.ByteLength());
 }

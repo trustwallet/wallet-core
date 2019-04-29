@@ -32,7 +32,7 @@ External<TW<%= entity.name %>> <%= NapiHelper.function_name(entity: entity, func
     }
 <%      end -%>
     return External<TW<%= entity.name %>>::New(env, instance, [](Env _env, void* data) {
-        TW<%= entity.name %>Delete((TW<%= entity.name %> *) data);
+        TW<%= entity.name %>Delete(reinterpret_cast<TW<%= entity.name %> *>(data));
     });
 }
 
@@ -51,7 +51,7 @@ void <%= NapiHelper.function_name(entity: entity, function: method) %>(const Cal
 Value <%= NapiHelper.function_name(entity: entity, function: method) %>(const CallbackInfo& info) {
     Env env = info.Env();
 <%=   render('napi/parameter_access.erb', { method: method }) -%>
-    struct TW<%= entity.name %>* instance = (struct TW<%= entity.name %>*) malloc(sizeof(struct TW<%= entity.name %>));
+    struct TW<%= entity.name %>* instance = new TW<%= entity.name %>();
 <%  if method.return_type.name != :void -%>
     bool result = TW<%= entity.name %><%= method.name %>(instance, <%= NapiHelper.arguments(method.parameters.drop(1)).join(', ') %>);
 <%  else -%>
@@ -62,14 +62,14 @@ Value <%= NapiHelper.function_name(entity: entity, function: method) %>(const Ca
 <%  if method.return_type.name != :void -%>
     if (result) {
         return External<TW<%= entity.name %>>::New(env, instance, [](Env _env, void* data) {
-            free((TW<%= entity.name %> *) data);
+            delete reinterpret_cast<TW<%= entity.name %> *>(data);
         });
     } else {
         return env.Null();
     }
 <%  else -%>
     return External<TW<%= entity.name %>>::New(env, instance, [](Env _env, void* data) {
-        free((TW<%= entity.name %> *) data);
+        delete reinterpret_cast<TW<%= entity.name %> *>(data);
     });
 <%  end -%>
 }
