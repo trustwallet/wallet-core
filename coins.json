@@ -660,5 +660,16 @@
         "curve": "ed25519",
         "publicKeyType": "curve25519",
         "explorer": "https://wavesexplorer.com/tx/"
+    },
+    {
+        "id": "bitshares",
+        "name": "Bitshares",
+        "symbol": "BTS",
+        "decimals": 5,
+        "derivationPath": "m/44'/308'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "transactionPath": "/tx/",
+        "explorer": "https://cryptofresh.com"
     }
 ]
