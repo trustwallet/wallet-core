@@ -86,7 +86,7 @@ class BitsharesTests: XCTestCase {
     }
     
     func testMemos() throws {
-        let message = "Hello world!"
+        let message = "Hello, world!"
         var inputWithMemo = signingInput
         let senderPublicKey = PrivateKey(data: Hash.sha256(data: "A".data(using: .utf8)!))!.getPublicKeySecp256k1(compressed: true)
         let recipientPublicKey = PrivateKey(data: Hash.sha256(data: "B".data(using: .utf8)!))!.getPublicKeySecp256k1(compressed: true)
@@ -120,6 +120,10 @@ class BitsharesTests: XCTestCase {
         let keyPlusIV = Hash.sha512(data: ("\(nonce)" + sharedSecretHex).data(using: .utf8)!)
         let decrypted = AES.cbcdecrypt(key: keyPlusIV[0..<32], data: encryptedData, iv: keyPlusIV[32..<48])
         XCTAssertNotNil(decrypted)
-        XCTAssertEqual(decrypted!.dropFirst(4), message.data(using: .utf8)!)
+        let messageData = message.data(using: .utf8)!
+        
+        // check decrypted bytes against the original message's bytes
+        // skip the checksum bytes (first 4) and the padding bytes
+        XCTAssertEqual(decrypted![4..<messageData.count + 4], messageData)
     }
 }

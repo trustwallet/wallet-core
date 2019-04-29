@@ -73,7 +73,7 @@ Data TW::Bitshares::aesEncrypt(const uint8_t *message, size_t messageLength, con
     size_t fullBlockBytes = (messageLength / 16) * 16;        // no. of bytes that make up the full 16-byte blocks
     size_t remainingBytes = messageLength % 16;
 
-    size_t outputSize = fullBlockBytes + (remainingBytes ? 16 : 0);
+    size_t outputSize = fullBlockBytes + 16;
     Data output(outputSize);
 
     // create a non-const copy of the iv
@@ -87,12 +87,10 @@ Data TW::Bitshares::aesEncrypt(const uint8_t *message, size_t messageLength, con
     }
 
     // create a __PKCS#5-padded__ buffer for the remaining bytes and encrypt that too
-    if (remainingBytes) {
-        Data lastBlock(16, static_cast<unsigned char>(16 - remainingBytes));
-        std::memcpy(lastBlock.data(), message + fullBlockBytes, remainingBytes);
-        if (aes_cbc_encrypt(lastBlock.data(), output.data() + fullBlockBytes, 16, iv.data(), &context) == EXIT_FAILURE) {
-            throw std::runtime_error("Encryption error: Error encrypting the message");
-        }
+    Data lastBlock(16, static_cast<unsigned char>(16 - remainingBytes));
+    std::memcpy(lastBlock.data(), message + fullBlockBytes, remainingBytes);
+    if (aes_cbc_encrypt(lastBlock.data(), output.data() + fullBlockBytes, 16, iv.data(), &context) == EXIT_FAILURE) {
+        throw std::runtime_error("Encryption error: Error encrypting the message");
     }
 
     return output;
