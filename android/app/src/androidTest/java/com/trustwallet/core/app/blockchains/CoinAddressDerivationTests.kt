@@ -80,5 +80,6 @@ class CoinAddressDerivationTests {
         MONETARYUNIT -> assertEquals("7W3QRu8FttKzmYtRbXNKopeHweAKWuun2q", address)
         RAVENCOIN -> assertEquals("RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS", address)
         WAVES -> assertEquals("3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n", address)
+        BITSHARES -> assertEquals("BTS58ARYk4isf7dm9HN8fjanEfmi9jCLJozVzeYNCWo8asZyb82uC", address)
     }
 }

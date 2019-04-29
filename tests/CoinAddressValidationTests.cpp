@@ -258,4 +258,11 @@ TEST(Coin, ValidateAddressWaves) {
     EXPECT_FALSE(validateAddress(TWCoinTypeWaves, "3P7WTh6kLKa8pAy4ynrSHm8TN8PVrdR7M1Q"));
 }
 
+TEST(Coin, ValidateAddressBitshares) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeBitshares, "BTS67eD8Rx4us2bjjxyc1ciWzP1MQJd8CvQDmiiqRnu5659LXMJiv"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeBitshares, "BTS4yPnD1zXSqyK4LFHkt1d5m5LZq2oaMFGYjosVXURUfqaUAXTKQ"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeBitshares, "BTS5LZBF18uucMKVyKMQ7r6qnXBWn9StM5AJYHs1kidPeyNexuBUmm"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeBitshares, "BTS115LZBF18uucMKVyKMQ7r6qnXBWn9StM5AJYHs1kidPeyNexuBUm"));
+}
+
 } // namespace TW

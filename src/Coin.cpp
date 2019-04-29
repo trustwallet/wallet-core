@@ -36,6 +36,7 @@
 #include "Semux/Address.h"
 #include "ARK/Address.h"
 #include "Waves/Address.h"
+#include "Bitshares/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -61,6 +62,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress::isValid(string) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
+
+    case TWCoinTypeBitshares:
+        return Bravo::Address::isValid(string, {Bitshares::AddressPrefix});
 
     case TWCoinTypeBravoCoin:
         return Bravo::Address::isValid(string);
@@ -202,6 +206,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(publicKey).string();
+
+    case TWCoinTypeBitshares:
+        return Bravo::Address(publicKey, {Bitshares::AddressPrefix}).string();
 
     case TWCoinTypeBravoCoin:
         return Bravo::Address(publicKey).string();
