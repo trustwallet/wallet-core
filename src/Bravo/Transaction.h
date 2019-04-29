@@ -12,7 +12,7 @@
 
 namespace TW::Bravo {
 
-class Signature : Serializable {
+class Signature {
   private:
     static const unsigned long DataSize = 65;
 
@@ -25,14 +25,14 @@ class Signature : Serializable {
 };
 
 /// for the future
-class FutureExtension : Serializable {
+class FutureExtension {
   public:
     virtual ~FutureExtension() = 0;
     virtual void serialize(Data& os) const = 0;
     virtual nlohmann::json serialize() const = 0;
 };
 
-class Transaction : Serializable {
+class Transaction {
   public:
     Transaction(const Data& referenceBlockId, int32_t referenceBlockTime);
 
