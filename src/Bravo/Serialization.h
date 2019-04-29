@@ -10,11 +10,6 @@
 #include <string>
 
 namespace TW::Bravo {
-class Serializable {
-public:
-    virtual void serialize(Data& os) const = 0;
-};
-
 inline void encodeVarInt64(uint64_t x, Data& os) {
     // 64-bit int would take at most 10 bytes as a varint
     static const int maxBytes = 10;
@@ -44,13 +39,13 @@ inline void encodeVarInt32(uint32_t x, Data& os) {
 
 inline void encodeString(const std::string& s, Data& os) {
     size_t size = s.size();
-    encodeVarInt32(static_cast<uint32_t>(size), os);
+    encodeVarInt64(size, os);
     os.insert(os.end(), s.data(), s.data() + size);
 }
 
 template<typename Collection>
 inline void encodeCollection(const Collection& collection, Data& os) {
-    encodeVarInt32(static_cast<uint32_t>(std::size(collection)), os);
+    encodeVarInt64(std::size(collection), os);
     for (const auto& item : collection) {
         item.serialize(os);
     }
@@ -58,7 +53,7 @@ inline void encodeCollection(const Collection& collection, Data& os) {
 
 template<typename Collection>
 inline void encodePointerCollection(const Collection& collection, Data& os) {
-    encodeVarInt32(static_cast<uint32_t>(std::size(collection)), os);
+    encodeVarInt64(std::size(collection), os);
     for (const auto& item : collection) {
         item->serialize(os);
     }
