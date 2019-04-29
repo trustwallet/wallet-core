@@ -20,13 +20,11 @@ const static std::string AMINO_PREFIX_SEND_COIN_MESSAGE = "cosmos-sdk/MsgSend";
 const static std::string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
 const static std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
 const static std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
-const static std::string BROADCAST_MODE = "async";
 
-json higherWrapperJSON(const std::string& broadCastMode, json& jsonObj) {
+json higherWrapperJSON(json& jsonObj) {
     json jsonMsgWrapper;
 
     jsonMsgWrapper["tx"] = jsonObj;
-    jsonMsgWrapper["mode"] = broadCastMode;
 
     return jsonMsgWrapper;
 }
@@ -154,5 +152,5 @@ json TW::Cosmos::transactionJSON(const Transaction& transaction) {
     jsonTx["msg"] = json::array({messageJSON(transaction)});
     jsonTx["signatures"] = json::array({signatureJSON(transaction.signature())});
 
-    return higherWrapperJSON(BROADCAST_MODE, jsonTx);
+    return higherWrapperJSON(jsonTx);
 }

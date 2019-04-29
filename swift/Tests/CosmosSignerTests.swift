@@ -50,7 +50,6 @@ class CosmosSignerTests: XCTestCase {
         let expectedJSON: String =
 """
 {
-  "mode": "async",
   "tx": {
     "fee": {
       "amount": [
@@ -132,7 +131,6 @@ class CosmosSignerTests: XCTestCase {
 
         let expectedJSON = """
 {
-  "mode": "async",
   "tx": {
     "fee": {
       "amount": [
