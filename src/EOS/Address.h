@@ -21,7 +21,7 @@ public:
     static bool isValid(const std::string& string);
 
     /// Determines whether the given byte array is a valid keyBuffer
-    static bool isValid(const uint8_t *buffer, size_t size, Type type = Type::Legacy);
+    static bool isValid(const  Data& bytes, Type type = Type::Legacy);
 
     /// Initializes a EOS address from a string representation.
     Address(const std::string& string);
@@ -46,19 +46,17 @@ protected:
     static const size_t PublicKeyDataSize = 33;
     static const size_t ChecksumSize = 4;
     static const size_t KeyDataSize = PublicKeyDataSize + ChecksumSize;
-    static const size_t Base58Size = KeyDataSize * 138 / 100 + 2; // a buffer size large enough to fit base58 representation of the key data
 
-
-    uint8_t keyData[KeyDataSize];
+    Data keyData;
     Type type;
 
-    static uint32_t createChecksum(const uint8_t *buffer, Type type);
+    static uint32_t createChecksum(const Data& bytes, Type type);
     static bool extractKeyData(const std::string& string, Address *address = nullptr);
 };
 
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return memcmp(lhs.keyData, rhs.keyData, Address::KeyDataSize) == 0
+    return lhs.keyData == rhs.keyData
              && lhs.type == rhs.type;
 }
 

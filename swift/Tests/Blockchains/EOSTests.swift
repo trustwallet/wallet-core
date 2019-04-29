@@ -15,8 +15,8 @@ class EOSTests: XCTestCase {
     }
     
     func testValidAddresses() {
-        XCTAssertTrue(CoinType.eosio.validate(address: "EOS6Vm7RWMS1KKAM9kDXgggpu4sJkFMEpARhmsWA84tk4P22m29AV"))
-        XCTAssertTrue(CoinType.eosio.validate(address: "PUB_R1_6pQRUVU5vdneRnmjSiZPsvu3zBqcptvg6iK2Vz4vKo4ugnzow3"))
+        XCTAssertTrue(CoinType.eos.validate(address: "EOS6Vm7RWMS1KKAM9kDXgggpu4sJkFMEpARhmsWA84tk4P22m29AV"))
+        XCTAssertTrue(CoinType.eos.validate(address: "PUB_R1_6pQRUVU5vdneRnmjSiZPsvu3zBqcptvg6iK2Vz4vKo4ugnzow3"))
     }
     
     func testInvalidAddresses() {

@@ -1,8 +1,8 @@
 #include "Address.h"
 
 #include <stdexcept>
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ripemd160.h>
+#include <Base58.h>
 #include <BinaryCoding.h>
 
 using namespace TW::EOS;
@@ -11,28 +11,28 @@ bool Address::isValid(const std::string& string) {
     return extractKeyData(string);
 }
 
-/// Determines whether the given byte array is a valid keyBuffer
+/// Determines whether the given byte vector is a valid keyBuffer
 /// Verifies the buffer's size and it's checksum bytes
-bool Address::isValid(const uint8_t *buffer, size_t size, EOS::Type type) {
-    if (size != KeyDataSize) return false;
+bool Address::isValid(const Data& bytes, EOS::Type type) {
+    if (bytes.size() != KeyDataSize) return false;
 
     // last Address::ChecksumSize bytes are a checksum
-    uint32_t checksum = decode32LE(buffer + PublicKeyDataSize);
-    if (createChecksum(buffer, type) != checksum) return false;
+    uint32_t checksum = decode32LE(bytes.data() + PublicKeyDataSize);
+    if (createChecksum(bytes, type) != checksum) return false;
     return true;
 }
 
 /// Creates a checksum of PublicKeyDataSize bytes at the buffer
 /// IMPORTANT: THERE ARE NO SIZE CHECKS. THE BUFFER IS ASSUMED
-///             TO HAVE AT LEAST PublicKeyDataSize bytes.
-uint32_t Address::createChecksum(const uint8_t *buffer, Type type) {
+///             TO HAVE PublicKeyDataSize bytes.
+uint32_t Address::createChecksum(const Data& bytes, Type type) {
     // create our own checksum and compare the two
     uint8_t hash[RIPEMD160_DIGEST_LENGTH];
     RIPEMD160_CTX ctx;
     ripemd160_Init(&ctx);
 
-    // add the buffer bytes to the hash input
-    ripemd160_Update(&ctx, buffer, PublicKeyDataSize);
+    // add the bytes to the hash input
+    ripemd160_Update(&ctx, bytes.data(), PublicKeyDataSize);
 
     //  append the prefix to the hash input as well in case of modern types
     switch (type) {
@@ -65,9 +65,6 @@ bool Address::extractKeyData(const std::string& string, Address *address) {
     // verify if the string has one of the valid prefixes
     Type type;
     size_t prefixSize;
-    // std::cout << "Checking prefix for " + string + ".\n";
-    // std::cout << "Prefix: " + string.substr(0, Legacy::prefix.size()) + "\n";
-    // std::cout << "Legacy Prefix: " + Legacy::prefix + " (" << sizeof(Legacy::prefix) << "\n";
     if (string.substr(0, Legacy::prefix.size()) == Legacy::prefix) {
         type = Type::Legacy;
         prefixSize = Legacy::prefix.size();
@@ -81,23 +78,14 @@ bool Address::extractKeyData(const std::string& string, Address *address) {
         return false;
     }
 
-    // the binary data will easily fit in a buffer of the size of base58 data
-    size_t size = string.size();
-
-    uint8_t buffer[size];
-    if (!b58tobin(buffer, &size, string.c_str() + prefixSize)) {
+    const Data& decodedBytes = Base58::bitcoin.decode(string.substr(prefixSize));
+    if (decodedBytes.size() != KeyDataSize) {
         return false;
     }
 
-    if (size != KeyDataSize) {
-        return false;
-    }
-
-    // get a pointer past the padding
-    const uint8_t *bufferP = buffer + string.size() - size;
-    if (isValid(bufferP, size, type)) {
+    if (isValid(decodedBytes, type)) {
         if (address) {
-            std::memcpy(address->keyData, bufferP, KeyDataSize);
+            address->keyData = decodedBytes;
             address->type = type;
         }
 
@@ -115,12 +103,10 @@ Address::Address(const std::string& string) {
 }
 
 /// Initializes a EOS address from raw bytes
-Address::Address(const Data& data, Type type) : type(type) {
-    if (!isValid(data.data(), data.size(), type)) {
+Address::Address(const Data& data, Type type) : keyData(data), type(type) {
+    if (!isValid(data, type)) {
         throw std::invalid_argument("Invalid byte size!");
     }
-
-    std::memcpy(keyData, data.data(), KeyDataSize);
 }
 
 /// Initializes a EOS address from a public key.
@@ -128,25 +114,17 @@ Address::Address(const PublicKey& publicKey, Type type) : type(type) {
     assert(PublicKeyDataSize == TW::PublicKey::secp256k1Size);
 
     // copy the raw, compressed key data
-    std::memcpy(keyData, 
-                reinterpret_cast<void *>(publicKey.compressed().bytes.data()), 
-                PublicKeyDataSize);
+    keyData = publicKey.compressed().bytes;
 
     // append the checksum
     uint32_t checksum = createChecksum(keyData, type);
-    Data bytes;
-    encode32LE(checksum, bytes);
+    Data checksumBytes;
+    encode32LE(checksum, checksumBytes);
 
-    for (int i = 0; i < ChecksumSize; ++i) {
-        keyData[PublicKeyDataSize + i] = bytes[i];
-    } 
+    append(keyData, checksumBytes);
 }
 
 /// Returns a string representation of the EOS address.
 std::string Address::string() const {
-    size_t b58Size = Base58Size;
-    char b58[b58Size];
-    b58enc(b58, &b58Size, keyData, KeyDataSize);
-
-    return prefix() + std::string(b58);
+    return prefix() + Base58::bitcoin.encode(keyData);
 }

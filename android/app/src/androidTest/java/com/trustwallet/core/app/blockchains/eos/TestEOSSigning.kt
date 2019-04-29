@@ -21,8 +21,8 @@ class TestEOSSigning {
 
     @Test
     fun testValidAddresses() {
-        assertTrue(CoinType.EOSIO.validate("EOS6Vm7RWMS1KKAM9kDXgggpu4sJkFMEpARhmsWA84tk4P22m29AV"))
-        assertTrue(CoinType.EOSIO.validate("PUB_R1_6pQRUVU5vdneRnmjSiZPsvu3zBqcptvg6iK2Vz4vKo4ugnzow3"))
+        assertTrue(CoinType.EOS.validate("EOS6Vm7RWMS1KKAM9kDXgggpu4sJkFMEpARhmsWA84tk4P22m29AV"))
+        assertTrue(CoinType.EOS.validate("PUB_R1_6pQRUVU5vdneRnmjSiZPsvu3zBqcptvg6iK2Vz4vKo4ugnzow3"))
     }
 
     @Test
@@ -36,7 +36,7 @@ class TestEOSSigning {
             "PUB_K1_65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjTF"
         )
         addr.forEach {
-            assertFalse(CoinType.EOSIO.validate(it))
+            assertFalse(CoinType.EOS.validate(it))
         }
     }
 

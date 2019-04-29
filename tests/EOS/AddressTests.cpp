@@ -1,6 +1,7 @@
 #include "EOS/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include <TrustWalletCore/TWPublicKeyType.h>
 
 #include <gtest/gtest.h>
 
@@ -52,7 +53,7 @@ TEST(EOSAddress, FromPrivateKey) {
 
     for (int i = 0; i < 4; i++) { 
         const auto privateKey = PrivateKey(parse_hex(privArray[i]));
-        const auto publicKey = PublicKey(privateKey.getPublicKey(privTypes[i] == Type::Legacy ? PublicKeyType::secp256k1 : PublicKeyType::nist256p1));
+        const auto publicKey = PublicKey(privateKey.getPublicKey(privTypes[i] == Type::Legacy ? TWPublicKeyTypeSECP256k1 : TWPublicKeyTypeNIST256p1));
         const auto address = Address(publicKey, privTypes[i]);
    
         ASSERT_EQ(address.string(), pubArray[i]);

@@ -503,10 +503,10 @@
         "explorer": "https://steemblockexplorer.com"
     },
     {
-        "id": "eosio",
-        "name": "EOSIO",
+        "id": "eos",
+        "name": "EOS",
         "symbol": "EOS",
-        "decimals": 18,
+        "decimals": 4,
         "derivationPath": "m/44'/194'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",

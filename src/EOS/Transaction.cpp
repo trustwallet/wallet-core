@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <ctime>
 
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ripemd160.h>
+#include <Base58.h>
 
 #include "../Hash.h"
 #include "../HexCoding.h"
@@ -52,12 +52,7 @@ std::string Signature::string() const noexcept {
         buffer.push_back(hash[i]);
     }
 
-    // create a base58 representation of the buffer
-    size_t b58Size = (DataSize + ChecksumSize) * 138 / 100 + 2;;
-    char b58[b58Size];
-    b58enc(b58, &b58Size, buffer.data(), DataSize + ChecksumSize);
-
-    return prefix + std::string(b58);
+    return prefix + Base58::bitcoin.encode(buffer);
 }
 
 void Extension::serialize(Data& os) const noexcept {
