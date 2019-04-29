@@ -9,7 +9,7 @@ add_library(TrezorCrypto
     src/aes/aescrypt.c src/aes/aeskey.c src/aes/aestab.c src/aes/aes_modes.c
     src/ed25519-donna/curve25519-donna-32bit.c src/ed25519-donna/curve25519-donna-helpers.c src/ed25519-donna/modm-donna-32bit.c
     src/ed25519-donna/ed25519-donna-basepoint-table.c src/ed25519-donna/ed25519-donna-32bit-tables.c src/ed25519-donna/ed25519-donna-impl-base.c
-    src/ed25519-donna/ed25519.c src/ed25519-donna/curve25519-donna-scalarmult-base.c src/ed25519-donna/ed25519-sha3.c src/ed25519-donna/ed25519-keccak.c
+    src/ed25519-donna/ed25519.c src/ed25519-donna/curve25519-donna-scalarmult-base.c src/ed25519-donna/ed25519-sha3.c src/ed25519-donna/ed25519-keccak.c src/ed25519-donna/ed25519-blake2b.c
     src/monero/base58.c
     src/monero/serialize.c
     src/monero/xmr.c
@@ -18,6 +18,7 @@ add_library(TrezorCrypto
     src/blake2b.c src/blake2s.c
     src/chacha20poly1305/chacha20poly1305.c src/chacha20poly1305/chacha_merged.c src/chacha20poly1305/poly1305-donna.c src/chacha20poly1305/rfc7539.c
     src/rc4.c
+    src/nano.c
     src/nem.c
     src/cash_addr.c
     src/memzero.c

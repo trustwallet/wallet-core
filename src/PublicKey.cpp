@@ -7,6 +7,7 @@
 #include "PublicKey.h"
 
 #include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/secp256k1.h>
 
@@ -46,6 +47,7 @@ PublicKey PublicKey::extended() const {
     case TWPublicKeyTypeNIST256p1Extended:
         return *this;
     case TWPublicKeyTypeED25519:
+    case TWPublicKeyTypeED25519Blake2b:
        return *this;
     }
 }
@@ -61,6 +63,8 @@ bool PublicKey::verify(const std::vector<uint8_t>& signature,
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeED25519:
         return ed25519_sign_open(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
+    case TWPublicKeyTypeED25519Blake2b:
+        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
     }
 }
 

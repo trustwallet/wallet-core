@@ -34,6 +34,7 @@
 #include <TrezorCrypto/bip32.h>
 #include <TrezorCrypto/curves.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-keccak.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-sha3.h>
 #include <TrezorCrypto/ed25519.h>
@@ -57,6 +58,15 @@ const curve_info ed25519_info = {
 
 const curve_info ed25519_cardano_info = {
 	.bip32_name = "ed25519 cardano seed",
+	.params = NULL,
+	.hasher_base58 = HASHER_SHA2D,
+	.hasher_sign = HASHER_SHA2D,
+	.hasher_pubkey = HASHER_SHA2_RIPEMD,
+	.hasher_script = HASHER_SHA2,
+};
+
+const curve_info ed25519_blake2b_nano_info = {
+	.bip32_name = "ed25519 seed",
 	.params = NULL,
 	.hasher_base58 = HASHER_SHA2D,
 	.hasher_sign = HASHER_SHA2D,
@@ -475,6 +485,8 @@ void hdnode_fill_public_key(HDNode *node)
 		node->public_key[0] = 1;
 		if (node->curve == &ed25519_info) {
 			ed25519_publickey(node->private_key, node->public_key + 1);
+		} else if (node->curve == &ed25519_blake2b_nano_info) {
+			ed25519_publickey_blake2b(node->private_key, node->public_key + 1);
 		} else if (node->curve == &ed25519_sha3_info) {
 			ed25519_publickey_sha3(node->private_key, node->public_key + 1);
 		} else if (node->curve == &ed25519_keccak_info) {
@@ -614,6 +626,8 @@ int hdnode_sign(HDNode *node, const uint8_t *msg, uint32_t msg_len, HasherType h
 		hdnode_fill_public_key(node);
 		if (node->curve == &ed25519_info) {
 			ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
+		} else if (node->curve == &ed25519_blake2b_nano_info) {
+			ed25519_sign_blake2b(msg, msg_len, node->private_key, node->public_key + 1, sig);
 		} else if (node->curve == &ed25519_sha3_info) {
 			ed25519_sign_sha3(msg, msg_len, node->private_key, node->public_key + 1, sig);
 		} else if (node->curve == &ed25519_keccak_info) {
@@ -738,6 +752,9 @@ const curve_info *get_curve_by_name(const char *curve_name) {
 	}
 	if (strcmp(curve_name, ED25519_CARDANO_NAME) == 0) {
 		return &ed25519_cardano_info;
+	}
+	if (strcmp(curve_name, ED25519_BLAKE2B_NANO_NAME) == 0) {
+		return &ed25519_blake2b_nano_info;
 	}
 	if (strcmp(curve_name, ED25519_SHA3_NAME) == 0) {
 		return &ed25519_sha3_info;
