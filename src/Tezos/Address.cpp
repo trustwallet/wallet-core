@@ -9,6 +9,7 @@
 #include "Forging.h"
 
 #include "../Base58.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
@@ -48,6 +49,20 @@ Address::Address(const PublicKey& publicKey) {
     if (addressData.size() != Address::size)
         throw std::invalid_argument("Invalid address key data");
     std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
+}
+
+std::string Address::deriveOriginatedAddress(const std::string& operationHash, int operationIndex) {
+    // Decode and remove 2 byte prefix.
+    auto decoded = Base58::bitcoin.decodeCheck(operationHash);
+    decoded.erase(decoded.begin(), decoded.begin() + 2);
+    TW::encode32BE(operationIndex, decoded);
+
+    auto hash = Hash::blake2b(decoded, 20);
+
+    auto prefix = Data({2, 90, 121});
+    prefix.insert(prefix.end(), hash.begin(), hash.end());
+
+    return Base58::bitcoin.encodeCheck(prefix);
 }
 
 Data Address::forge() const {

@@ -78,6 +78,14 @@ TEST(TezosAddress, string) {
     ASSERT_EQ(address.string(), addressString);
 }
 
+TEST(TezosAddress, deriveOriginatedAddress) {
+    auto operationHash = "oo7VeTEPjEusPKnsHtKcGYbYa7i4RWpcEhUVo3Suugbbs6K62Ro";
+    auto operationIndex = 0;
+    auto expected = "KT1WrtjtAYQSrUVvSNJPTZTebiUWoopQL5hw";
+        
+    ASSERT_EQ(Address::deriveOriginatedAddress(operationHash, operationIndex), expected);
+}
+
 TEST(TezosAddress, PublicKeyInit) {
     std::array<uint8_t, 33> bytes {1, 254, 21, 124, 200, 1, 23, 39, 147, 108, 89, 47, 133, 108, 144, 113, 211, 156, 244, 172, 218, 223, 166, 215, 100, 53, 228, 97, 156, 157, 197, 111, 99,};
     const auto publicKey = PublicKey(bytes, TWPublicKeyTypeED25519);
