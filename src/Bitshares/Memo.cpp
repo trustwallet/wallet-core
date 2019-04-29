@@ -7,6 +7,7 @@
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/aes.h>
 #include <boost/lexical_cast.hpp>
+#include <TrustWalletCore/TWPublicKeyType.h>
 
 #include "../Hash.h"
 #include "../HexCoding.h"
@@ -19,8 +20,8 @@ using Data = TW::Data;
 using json = nlohmann::json;
 
 Memo::Memo(const PrivateKey& senderKey, const PublicKey& recipientKey, const std::string& message, uint64_t nonce)
-        : from(senderKey.getPublicKey(PublicKeyType::secp256k1)), to(recipientKey) {
-    if (recipientKey.type() != PublicKeyType::secp256k1) {
+        : from(senderKey.getPublicKey(TWPublicKeyTypeSECP256k1)), to(recipientKey) {
+    if (recipientKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("Recipient's public key is not a secp25k1 public key.");
     }
 

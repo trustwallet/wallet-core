@@ -31,7 +31,7 @@ TW_Proto_Result TWBitsharesSignerSign(TW_Bitshares_Proto_SigningInput input) {
         Memo *memo = nullptr;
         const std::string& memoContents = in.memo();
         if (memoContents.size()) {
-            auto publicKey = TW::PublicKey(TW::Data(in.recipient_public_key().begin(), in.recipient_public_key().end()));
+            auto publicKey = TW::PublicKey(TW::Data(in.recipient_public_key().begin(), in.recipient_public_key().end()), TWPublicKeyTypeSECP256k1);
             memo = new Memo(privateKey, publicKey, memoContents);
         }
 

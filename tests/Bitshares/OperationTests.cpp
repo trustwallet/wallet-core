@@ -20,7 +20,7 @@ TEST(BitsharesOperation, Serialization) {
     PrivateKey pk1{Hash::sha256(std::string("A"))};
     PrivateKey pk2{Hash::sha256(std::string("B"))};
 
-    Memo *memo = new Memo(pk1, pk2.getPublicKey(PublicKeyType::secp256k1), "Hello, world!", 1);
+    Memo *memo = new Memo(pk1, pk2.getPublicKey(TWPublicKeyTypeSECP256k1), "Hello, world!", 1);
     TransferOperation *op = nullptr;
     ASSERT_NO_THROW(op = new TransferOperation(12, 16, Asset(511, 0), Asset(2, 0), memo));
 

@@ -13,8 +13,8 @@ TEST(BitsharesMemo, Invalid) {
     PrivateKey pk1{Hash::sha256(std::string("A"))};
     PrivateKey pk2{Hash::sha256(std::string("B"))};
 
-    ASSERT_THROW(Memo(pk1, pk2.getPublicKey(PublicKeyType::secp256k1Extended), "Hello, world!"), std::invalid_argument);
-    ASSERT_THROW(Memo(pk1, pk2.getPublicKey(PublicKeyType::secp256k1), ""), std::invalid_argument);
+    ASSERT_THROW(Memo(pk1, pk2.getPublicKey(TWPublicKeyTypeSECP256k1Extended), "Hello, world!"), std::invalid_argument);
+    ASSERT_THROW(Memo(pk1, pk2.getPublicKey(TWPublicKeyTypeSECP256k1), ""), std::invalid_argument);
 }
 
 TEST(BitsharesMemo, Serialization) {
@@ -23,7 +23,7 @@ TEST(BitsharesMemo, Serialization) {
 
     Memo *memo = nullptr;
 
-    ASSERT_NO_THROW(memo = new Memo(pk1, pk2.getPublicKey(PublicKeyType::secp256k1), "Hello, world! How are you doing?", 1));
+    ASSERT_NO_THROW(memo = new Memo(pk1, pk2.getPublicKey(TWPublicKeyTypeSECP256k1), "Hello, world! How are you doing?", 1));
 
     Data buf;
     memo->serialize(buf);
