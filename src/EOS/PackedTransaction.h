@@ -1,3 +1,9 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 #pragma once
 
 #include "Transaction.h"
@@ -5,12 +11,10 @@
 namespace TW::EOS {
 enum class CompressionType {
     None = 0,
-    // ZLIB = 1,
 };
 
 NLOHMANN_JSON_SERIALIZE_ENUM( CompressionType, {
 {CompressionType::None, "none"},
-// // {CompressionType::ZLIB, "zlib"},
 })
 
 class PackedTransaction {
@@ -20,7 +24,7 @@ public:
     Data packedCFD;
     Data packedTrx;
 
-    PackedTransaction(const Transaction& transaction, CompressionType type) noexcept;
+    PackedTransaction(const Transaction& transaction, CompressionType type = CompressionType::None) noexcept;
 
     void serialize(Data& os) const noexcept;
     nlohmann::json serialize() const noexcept;

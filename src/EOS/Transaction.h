@@ -1,3 +1,9 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 #pragma once
 
 #include <nlohmann/json.hpp>
@@ -62,7 +68,6 @@ public:
 
     void setReferenceBlock(const Data& referenceBlockId);
 
-    static const uint32_t ExpirySeconds = 30;
-    // static const uint32_t ExpirySeconds = 60 * 10;
+    static const int32_t ExpirySeconds = 30;
 };
 } // namespace TW::EOS
