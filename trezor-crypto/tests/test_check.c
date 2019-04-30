@@ -52,6 +52,7 @@
 #include <TrezorCrypto/ed25519.h>
 #include <TrezorCrypto/memzero.h>
 #include <TrezorCrypto/monero/monero.h>
+#include <TrezorCrypto/nano.h>
 #include <TrezorCrypto/nem.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/pbkdf2.h>
@@ -4737,6 +4738,8 @@ END_TEST
 #include "test_check_monero.h"
 #endif
 
+#include "test_check_nano.h"
+
 // define test suite and cases
 Suite *test_suite(void)
 {
@@ -5035,6 +5038,14 @@ Suite *test_suite(void)
 	tcase_add_test(tc, test_xmr_gen_range_sig);
 	suite_add_tcase(s, tc);
 #endif
+
+	tc = tcase_create("nano");
+	tcase_add_test(tc, test_bip32_nano_vector_1);
+	tcase_add_test(tc, test_base32_nano);
+	tcase_add_test(tc, test_nano_get_address);
+	tcase_add_test(tc, test_nano_validate_address);
+	suite_add_tcase(s, tc);
+
 	return s;
 }
 

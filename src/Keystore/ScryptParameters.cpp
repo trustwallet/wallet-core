@@ -48,9 +48,12 @@ static const auto r = "r";
 ScryptParameters::ScryptParameters(const nlohmann::json& json) {
     salt = parse_hex(json[CodingKeys::salt].get<std::string>());
     desiredKeyLength = json[CodingKeys::desiredKeyLength];
-    n = json[CodingKeys::n];
-    p = json[CodingKeys::p];
-    r = json[CodingKeys::r];
+    if (json.count(CodingKeys::n) != 0)
+        n = json[CodingKeys::n];
+    if (json.count(CodingKeys::n) != 0)
+        p = json[CodingKeys::p];
+    if (json.count(CodingKeys::n) != 0)
+        r = json[CodingKeys::r];
 }
 
 /// Saves `this` as a JSON object.

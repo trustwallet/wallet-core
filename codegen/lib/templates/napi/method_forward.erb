@@ -58,21 +58,20 @@
 <%  end -%>
 <%= render('napi/parameter_release.erb', { method: method }) -%>
 <%  if method.return_type.is_struct -%>
-    struct TW<%= entity.name %>* returnInstance = (struct TW<%= entity.name %>*) malloc(sizeof(struct TW<%= entity.name %>));
-    memcpy(returnInstance, &result, sizeof(struct TW<%= entity.name %>));
+    struct TW<%= method.return_type.name %>* returnInstance = new TW<%= method.return_type.name %>(result);
 
-    return External<TW<%= entity.name %>>::New(env, returnInstance, [](Env _env, void* data) {
-        free((TW<%= entity.name %> *) data);
+    return External<TW<%= method.return_type.name %>>::New(env, returnInstance, [](Env _env, void* data) {
+        delete reinterpret_cast<TW<%= method.return_type.name %> *>(data);
     });
 <%  elsif method.return_type.is_enum -%>
     return Number::New(env, (int) result);;
 <%  else -%>
-    if (result == NULL) {
+    if (result == nullptr) {
         return env.Null();
     }
 
     return External<TW<%= method.return_type.name %>>::New(env, result, [](Env _env, void* data) {
-        TW<%= entity.name %>Delete((TW<%= entity.name %> *) data);
+        TW<%= method.return_type.name %>Delete(reinterpret_cast<TW<%= method.return_type.name %> *>(data));
     });
 <%  end
   # Method returns void

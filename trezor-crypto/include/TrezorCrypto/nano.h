@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016 Jochen Hoenicke
+ * Copyright (c) 2019 Mart Roosmaa
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -20,24 +20,34 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __CURVES_H__
-#define __CURVES_H__
+#ifndef __NANO_H__
+#define __NANO_H__
+
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include <TrezorCrypto/ed25519.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern const char SECP256K1_NAME[];
-extern const char SECP256K1_DECRED_NAME[];
-extern const char SECP256K1_GROESTL_NAME[];
-extern const char SECP256K1_SMART_NAME[];
-extern const char NIST256P1_NAME[];
-extern const char ED25519_NAME[];
-extern const char ED25519_CARDANO_NAME[];
-extern const char ED25519_BLAKE2B_NANO_NAME[];
-extern const char ED25519_SHA3_NAME[];
-extern const char ED25519_KECCAK_NAME[];
-extern const char CURVE25519_NAME[];
+extern const char *BASE32_ALPHABET_NANO;
+
+size_t nano_get_address(
+    const ed25519_public_key public_key,
+    const char *prefix,
+    const size_t prefix_len,
+    char *out,
+    size_t out_len);
+
+bool nano_validate_address(
+    const char *prefix,
+    const size_t prefix_len,
+    const char *address,
+    const size_t address_len,
+    ed25519_public_key out_public_key);
 
 #ifdef __cplusplus
 } /* extern "C" */

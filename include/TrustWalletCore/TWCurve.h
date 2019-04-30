@@ -12,9 +12,10 @@ TW_EXTERN_C_BEGIN
 /// Elliptic cruves
 TW_EXPORT_ENUM()
 enum TWCurve {
-    TWCurveSECP256k1       /* "secp256k1" */,
-    TWCurveED25519         /* "ed25519" */,
-    TWCurveNIST256p1       /* "nist256p1" */,
+    TWCurveSECP256k1              /* "secp256k1" */,
+    TWCurveED25519                /* "ed25519" */,
+    TWCurveED25519Blake2bNano     /* "ed25519-blake2b-nano" */,
+    TWCurveNIST256p1              /* "nist256p1" */,
 };
 
 TW_EXTERN_C_END

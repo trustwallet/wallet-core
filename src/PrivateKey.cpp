@@ -9,6 +9,7 @@
 #include "PublicKey.h"
 
 #include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/secp256k1.h>
@@ -42,6 +43,10 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         result.resize(PublicKey::ed25519Size);
         ed25519_publickey(bytes.data(), result.data());
         break;
+    case TWPublicKeyTypeED25519Blake2b:
+        result.resize(PublicKey::ed25519Size);
+        ed25519_publickey_blake2b(bytes.data(), result.data());
+        break;
     }
     return PublicKey(result, type);
 }
@@ -59,6 +64,12 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         result.resize(64);
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
         ed25519_sign(digest.data(), digest.size(), bytes.data(), publicKey.bytes.data(), result.data());
+    } break;
+    case TWCurveED25519Blake2bNano: {
+        result.resize(64);
+        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Blake2b);
+        ed25519_sign_blake2b(digest.data(), digest.size(), bytes.data(),
+                             publicKey.bytes.data() + 1, result.data());
     } break;
     case TWCurveNIST256p1: {
         result.resize(65);
@@ -83,6 +94,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(
                                     result.data(), canonicalChecker) == 0;
     } break;
     case TWCurveED25519: // not supported
+    case TWCurveED25519Blake2bNano: // not supported
         break;
     case TWCurveNIST256p1: {
         result.resize(65);

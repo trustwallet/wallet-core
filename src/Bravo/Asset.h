@@ -9,7 +9,7 @@
 namespace TW::Bravo {
 
 // An asset class that can be used by Bravo, EOS, steem, et. al.
-class Asset: Serializable {
+class Asset {
 public:
     int64_t amount;
     uint64_t symbol = 0;

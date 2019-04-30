@@ -12,7 +12,7 @@ namespace TW::Bravo {
 const static unsigned int MaxMemoSize = 2048;
 const static unsigned int MaxAccountNameSize = 16;
 
-class Operation : public Serializable {
+class Operation {
   public:
     virtual void serialize(Data& os) const = 0;
     virtual nlohmann::json serialize() const = 0;
