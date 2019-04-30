@@ -11,9 +11,9 @@
 #include "ScryptParameters.h"
 #include "../Data.h"
 
+#include <boost/variant.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
-#include <variant>
 
 namespace TW::Keystore {
 
@@ -38,7 +38,7 @@ struct EncryptionParameters {
     AESParameters cipherParams = AESParameters();
 
     /// Key derivation function parameters.
-    std::variant<ScryptParameters, PBKDF2Parameters> kdfParams = ScryptParameters();
+    boost::variant<ScryptParameters, PBKDF2Parameters> kdfParams = ScryptParameters();
 
     /// Message authentication code.
     Data mac;
@@ -46,7 +46,7 @@ struct EncryptionParameters {
     EncryptionParameters() = default;
 
     /// Initializes `EncryptionParameters` with standard values.
-    EncryptionParameters(Data encrypted, AESParameters cipherParams, std::variant<ScryptParameters, PBKDF2Parameters> kdfParams, Data mac)
+    EncryptionParameters(Data encrypted, AESParameters cipherParams, boost::variant<ScryptParameters, PBKDF2Parameters> kdfParams, Data mac)
         : encrypted(std::move(encrypted))
         , cipherParams(std::move(cipherParams))
         , kdfParams(std::move(kdfParams))

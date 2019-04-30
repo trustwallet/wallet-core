@@ -13,6 +13,7 @@
 #include <TrezorCrypto/pbkdf2.h>
 #include <TrezorCrypto/scrypt.h>
 
+#include <boost/variant/get.hpp>
 #include <cassert>
 
 using namespace TW;
@@ -28,7 +29,7 @@ static Data computeMAC(Iter begin, Iter end, Data key) {
 }
 
 EncryptionParameters::EncryptionParameters(const std::string& password, Data data) : mac() {
-    auto scryptParams = std::get<ScryptParameters>(kdfParams);
+    auto scryptParams = boost::get<ScryptParameters>(kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
            scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
@@ -53,15 +54,15 @@ Data EncryptionParameters::decrypt(const std::string& password) const {
     auto derivedKey = Data();
     auto mac = Data();
 
-    if (std::holds_alternative<ScryptParameters>(kdfParams)) {
-        auto scryptParams = std::get<ScryptParameters>(kdfParams);
+    if (kdfParams.which() == 0) {
+        auto scryptParams = boost::get<ScryptParameters>(kdfParams);
         derivedKey.resize(scryptParams.defaultDesiredKeyLength);
         scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
             scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
             scryptParams.defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
-    } else if (std::holds_alternative<PBKDF2Parameters>(kdfParams)) {
-        auto pbkdf2Params = std::get<PBKDF2Parameters>(kdfParams);
+    } else if (kdfParams.which() == 1) {
+        auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
         derivedKey.resize(pbkdf2Params.defaultDesiredKeyLength);
         pbkdf2_hmac_sha256(reinterpret_cast<const byte*>(password.data()), password.size(), pbkdf2Params.salt.data(),
             pbkdf2Params.salt.size(), pbkdf2Params.iterations, derivedKey.data(),
@@ -133,12 +134,12 @@ nlohmann::json EncryptionParameters::json() const {
     j[CodingKeys::cipherParams] = cipherParams.json();
     j[CodingKeys::mac] = hex(mac);
 
-    if (std::holds_alternative<ScryptParameters>(kdfParams)) {
-        auto scryptParams = std::get<ScryptParameters>(kdfParams);
+    if (kdfParams.which() == 0) {
+        auto scryptParams = boost::get<ScryptParameters>(kdfParams);
         j[CodingKeys::kdf] = "scrypt";
         j[CodingKeys::kdfParams] = scryptParams.json();
-    } else if (std::holds_alternative<PBKDF2Parameters>(kdfParams)) {
-        auto pbkdf2Params = std::get<PBKDF2Parameters>(kdfParams);
+    } else if (kdfParams.which() == 1) {
+        auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
         j[CodingKeys::kdf] = "pbkdf2";
         j[CodingKeys::kdfParams] = pbkdf2Params.json();
 
