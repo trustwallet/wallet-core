@@ -235,8 +235,8 @@ $ gpg --export-secret-keys -o secring.gpg
 ```
 
 ```
-NEXUS_USERNAME=user
-NEXUS_PASSWORD=pass
+nexusUsername=user
+nexusPassword=pass
 
 signing.keyId=00000000
 signing.password=password
@@ -249,4 +249,10 @@ org.gradle.daemon=true
 
 1. Update the `VERSION_NAME` in `android/gradle.properties`.
 2. In the `android` folder run `./gradlew uploadArchive`.
-3. Go to the [Sonatype](https://oss.sonatype.org/#stagingRepositories) webpage. Look for the staging library. It should be at the end of the list. Select it, and press “Close” button.
+3. In the `android` folder run `./gradlew closeAndReleaseRepository`.
+
+In case of problems in the last step go to the [Sonatype](https://oss.sonatype.org/#stagingRepositories)
+webpage. Look for the staging library. It should be at the end of the list.
+Select it, and press "Close" button. Once it's closed select it an press
+"Release". Make sure to drop stale repositories so that the automatic release
+works in subsequent tries.
