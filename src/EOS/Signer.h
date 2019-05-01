@@ -6,13 +6,13 @@
 
 #pragma once
 
-#include <stdexcept>
-
-#include "Transaction.h"
-#include "Prefixes.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "Prefixes.h"
+#include "Transaction.h"
+
+#include <stdexcept>
 
 namespace TW::EOS {
 
@@ -26,7 +26,7 @@ public:
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Type type, Transaction& transaction) const;
-    
+
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
 

@@ -7,7 +7,6 @@
 #pragma once
 
 #include "../Bravo/Asset.h"
-#include "../BinaryCoding.h"
 #include "Name.h"
 
 #include <nlohmann/json.hpp>
@@ -16,6 +15,7 @@
 using Data = TW::Data;
 
 namespace TW::EOS {
+
 class PermissionLevel {
 public:
     Name actor, permission;
@@ -45,4 +45,5 @@ public:
 private:
     void setData(const std::string& from, const std::string& to, const Bravo::Asset& asset, const std::string& memo);
 };
+
 } // namespace TW::EOS
