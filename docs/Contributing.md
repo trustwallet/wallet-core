@@ -158,27 +158,6 @@ Since the C language doesn't provide good abstractions for variable-sized arrays
 
 The proto file will be used to generate C++ classes and also classes in each supported client language (Swift, Java, etc.). The code generator will also generate the protobuf serialization code so that library clients don't have to worry about serialization. To generate the Protocol Buffers code run the `tools/generate-files` script when you modify the `src/TrustWalletCore.proto` file.
 
-## Blockchain checklist
-
-When implementing a new blockchain make sure you go through this checklist:
-- [ ] Implement functionality in C++. Put it in a subfolder of `src/`.
-    - [ ] Address (if necessary)
-    - [ ] Transaction (if necessary)
-    - [ ] Signer
-- [ ] Write unit tests. Put them in a subfolder of `tests/`.
-    - [ ] `Mnemonic phrase - > Address` derivation test. Put this test in the `CoinTests.cpp` file
-- [ ] Add the coin definition to `coins.json`.
-- [ ] Add relevant constants in `TWCoinType`, `TWP2SHPrefix`, `TWEthereymChainID`, `TWHRP`, etc., as necessary.
-- [ ] Implement address validation and derivation in `src/Coin.cpp`.
-- [ ] Write interface header in `include/TrustWalletCore` and implement the interface in `src/interface`.
-    - [ ] Address interface (if necessary).
-    - [ ] Signing interface.
-- [ ] Validate generated code in Android an iOS projects. Write integration tests for each.
-- [ ] Add a coin icon to "Supported Blockchains" section in `README.md`
-    - [ ] Upload coin icon to [TrustWallet/tokens](https://github.com/TrustWallet/tokens) if necessary
-
-Also check out the [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain) document.
-
 ## Code Style
 
 Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStandards.html) for C++. We use `clang-format` to ensure a consistent code sytle. **Do not** reformat files that you didn't modify, or the header files in the `include` folder. You can install a clang-format extension for your IDE.
@@ -186,5 +165,5 @@ Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStand
 ## More
 
 * Building on [Linux](Linux.md)
-* [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain)
+* [Adding Support for a New Blockchain](NewBlockchain.md)
 * [Releasing](Releasing.md)
