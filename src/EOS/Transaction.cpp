@@ -4,16 +4,15 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Transaction.h"
-
-#include <stdexcept>
-#include <ctime>
-
-#include <TrezorCrypto/ripemd160.h>
-#include <Base58.h>
-
+#include "../Base58.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include "Transaction.h"
+
+#include <TrezorCrypto/ripemd160.h>
+
+#include <ctime>
+#include <stdexcept>
 
 using namespace TW::EOS;
 using json = nlohmann::json;
@@ -58,7 +57,7 @@ std::string Signature::string() const noexcept {
         buffer.push_back(hash[i]);
     }
 
-    return prefix + Base58::bitcoin.encode(buffer);
+    return prefix + TW::Base58::bitcoin.encode(buffer);
 }
 
 void Extension::serialize(Data& os) const noexcept {
