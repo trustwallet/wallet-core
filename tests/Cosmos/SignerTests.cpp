@@ -10,6 +10,7 @@
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
+#include <iostream>
 
 #include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
@@ -32,7 +33,7 @@ TEST(CosmosSigner, SignTx) {
     auto amountOfTx = message.add_amounts();
     amountOfTx->set_denom("muon");
     amountOfTx->set_amount(1);
-    
+
     auto &fee = *input.mutable_fee();
     fee.set_gas(200000);
     auto amountOfFee = fee.add_amounts();
@@ -50,48 +51,15 @@ TEST(CosmosSigner, SignTx) {
 
     auto output = signer.build();
 
-    ASSERT_EQ(
-        "{"
-            "\"type\":\"auth/StdTx\","
-            "\"value\":{"
-                "\"fee\":{"
-                    "\"amount\":["
-                                    "{\"amount\":\"200\",\"denom\":\"muon\"}"
-                                "],"
-                    "\"gas\":\"200000\""
-                "},"
-                "\"memo\":\"\","
-                "\"msg\":["
-                        "{"
-                            "\"type\":\"cosmos-sdk/MsgSend\","
-                            "\"value\":{"
-                                "\"amount\":["
-                                                "{\"amount\":\"1\",\"denom\":\"muon\"}"
-                                            "],"
-                                "\"from_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\","
-                                "\"to_address\":\"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573\""
-                            "}"
-                        "}"
-                    "],"
-                "\"signatures\":["
-                                    "{"
-                                        "\"pub_key\":{"
-                                            "\"type\":\"tendermint/PubKeySecp256k1\","
-                                            "\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\""
-                                        "},"
-                                        "\"signature\":\"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg==\""
-                                    "}"
-                                "]"
-            "}"
-        "}", 
-        output.json());
+    ASSERT_EQ("{\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"200\",\"denom\":\"muon\"}],\"gas\":\"200000\"},\"memo\":\"\",\"msg\":[{\"type\":\"cosmos-sdk/MsgSend\",\"value\":{\"amount\":[{\"amount\":\"1\",\"denom\":\"muon\"}],\"from_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"to_address\":\"cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg==\"}],\"type\":\"cosmos-sdk/MsgSend\"}}", output.json());
 
-        ASSERT_EQ("a264747970656a617574682f53746454786576616c7565a463666565a266616d6f756e7481a266616d6f756e74633230306564656e6f6d646d756f6e6367617366323030303030646d656d6f60636d736781a2647479706572636f736d6f732d73646b2f4d736753656e646576616c7565a366616d6f756e7481a266616d6f756e7461316564656e6f6d646d756f6e6c66726f6d5f61646472657373782d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b7967783065706836646430326a746f5f61646472657373782d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537336a7369676e61747572657381a2677075625f6b6579a26474797065781a74656e6465726d696e742f5075624b6579536563703235366b316576616c7565782c416c636f6273507a66544e56653775714141736e6445724a416a71706c6e79756461474230662b522b703346697369676e617475726578582f4437346d644947794942332f73517649626f4c54665339503945562f6659477267485a45322f764e6a395836654d36653537473361746c6a4e422b5041426e52773370546b353175586d6843466f70384f2f5a4a673d3d", hex(output.encoded()));
+    ASSERT_EQ("a1627478a563666565a266616d6f756e7481a266616d6f756e74633230306564656e6f6d646d756f6e6367617366323030303030646d656d6f60636d736781a2647479706572636f736d6f732d73646b2f4d736753656e646576616c7565a366616d6f756e7481a266616d6f756e7461316564656e6f6d646d756f6e6c66726f6d5f61646472657373782d636f736d6f733168736b366a727979716a6668703564686335357463396a74636b7967783065706836646430326a746f5f61646472657373782d636f736d6f73317a743530617a7570616e716c66616d356166687633686578777975746e756b656834633537336a7369676e61747572657381a2677075625f6b6579a26474797065781a74656e6465726d696e742f5075624b6579536563703235366b316576616c7565782c416c636f6273507a66544e56653775714141736e6445724a416a71706c6e79756461474230662b522b703346697369676e617475726578582f4437346d644947794942332f73517649626f4c54665339503945562f6659477267485a45322f764e6a395836654d36653537473361746c6a4e422b5041426e52773370546b353175586d6843466f70384f2f5a4a673d3d647479706572636f736d6f732d73646b2f4d736753656e64", hex(output.encoded()));
 
-        /*
-            the sample tx on testnet 
-            https://hubble.figment.network/chains/gaia-13003/blocks/142933/transactions/3A9206598C3D2E75A5EC074FD33EA53EB18EC729357F0965971C1C51F812AEA3?format=json
-        */
+
+    /*
+        the sample tx on testnet
+        https://hubble.figment.network/chains/gaia-13003/blocks/142933/transactions/3A9206598C3D2E75A5EC074FD33EA53EB18EC729357F0965971C1C51F812AEA3?format=json
+    */
 }
 
 }

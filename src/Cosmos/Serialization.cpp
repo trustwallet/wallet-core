@@ -21,6 +21,14 @@ const static std::string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
 const static std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
 const static std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
+json higherWrapperJSON(json& jsonObj) {
+    json jsonMsgWrapper;
+
+    jsonMsgWrapper["tx"] = jsonObj;
+
+    return jsonMsgWrapper;
+}
+
 json wrapperJSON(const std::string& type, json& jsonObj) {
     json jsonMsgWrapper;
 
@@ -35,13 +43,13 @@ json amountJSON(std::string amount, std::string denom) {
 
     jsonAmount["amount"] = amount;
     jsonAmount["denom"] = denom;
-    
+
     return jsonAmount;
 }
 
 json feeJSON(const Fee& fee) {
     json jsonAmounts = json::array();
-    
+
     for (auto& amount : fee.amounts()) {
         jsonAmounts.push_back(
             amountJSON(std::to_string(amount.amount()), amount.denom()));
@@ -77,7 +85,7 @@ json stakeMessageJSON(json& amount, std::string delegator_address, std::string v
 
 json sendCoinsMessageJSON(const SendCoinsMessage& message) {
     json jsonAmounts = json::array();
-    
+
     for (auto& amount : message.amounts()) {
         jsonAmounts.push_back(amountJSON(std::to_string(amount.amount()), amount.denom()));
     }
@@ -124,7 +132,7 @@ json signatureJSON(const Signature& signature) {
 
 json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
     json jsonForSigning;
-    
+
     jsonForSigning["account_number"] = std::to_string(input.account_number());
     jsonForSigning["chain_id"] = input.chain_id();
     jsonForSigning["fee"] = feeJSON(input.fee());
@@ -137,11 +145,12 @@ json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
 
 json TW::Cosmos::transactionJSON(const Transaction& transaction) {
     json jsonTx;
-    
+
+    jsonTx["type"] = AMINO_PREFIX_SEND_COIN_MESSAGE;
     jsonTx["fee"] = feeJSON(transaction.fee());
     jsonTx["memo"] = transaction.memo();
     jsonTx["msg"] = json::array({messageJSON(transaction)});
     jsonTx["signatures"] = json::array({signatureJSON(transaction.signature())});
-    
-    return wrapperJSON(AMINO_PREFIX_TRANSACTION, jsonTx);  
+
+    return higherWrapperJSON(jsonTx);
 }
