@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <string>
-
-#include "../PublicKey.h"
 #include "../Data.h"
+#include "../PublicKey.h"
 #include "Prefixes.h"
+
+#include <string>
 
 namespace TW::EOS {
 
@@ -38,8 +38,6 @@ public:
     friend bool operator==(const Address& lhs, const Address& rhs);
 
     inline std::string prefix() const { return pubPrefixForType(type); }
-
-
 
 protected:
     // Class constants

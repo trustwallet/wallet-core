@@ -9,6 +9,7 @@
 #include "Transaction.h"
 
 namespace TW::EOS {
+
 enum class CompressionType {
     None = 0,
 };
@@ -29,4 +30,5 @@ public:
     void serialize(Data& os) const noexcept;
     nlohmann::json serialize() const noexcept;
 };
+
 } // namespace TW::EOS

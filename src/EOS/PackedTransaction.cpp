@@ -8,6 +8,7 @@
 
 #include "../HexCoding.h"
 
+using namespace TW;
 using namespace TW::EOS;
 using json = nlohmann::json;
 

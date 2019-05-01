@@ -4,11 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "../BinaryCoding.h"
 #include "Name.h"
 
-#include <stdexcept>
 #include <boost/algorithm/string/trim.hpp>
+#include <stdexcept>
 
+using namespace TW;
 using namespace TW::EOS;
 
 Name::Name(const std::string& str) {

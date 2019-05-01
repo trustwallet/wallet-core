@@ -14,6 +14,7 @@
 #include <ctime>
 #include <stdexcept>
 
+using namespace TW;
 using namespace TW::EOS;
 using json = nlohmann::json;
 

@@ -11,6 +11,7 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/nist256p1.h>
 
+using namespace TW;
 using namespace TW::EOS;
 
 void Signer::sign(const PrivateKey& privateKey, Type type, Transaction& transaction) const {
