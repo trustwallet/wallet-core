@@ -106,6 +106,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value32 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
     assertStringsEqual(value32, "EOS");
+
+    auto value33 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNano));
+    assertStringsEqual(value33, "NANO");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -143,6 +146,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravoCoin), 3);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSteem), 3);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 4);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNano), 30);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -252,6 +256,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value36 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
     assertStringsEqual(value36, "https://bloks.io/transaction/123");
+
+    auto value37 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNano, txId));
+    assertStringsEqual(value37, "https://www.nanode.co/block/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -346,6 +353,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value32 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
     assertStringsEqual(value32, "eos");
+
+    auto value33 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNano));
+    assertStringsEqual(value33, "nano");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -424,7 +434,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value26 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
     assertStringsEqual(value26, "Groestlcoin");
 
-
     auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
     assertStringsEqual(value27, "Lux");
 
@@ -444,4 +453,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value33 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
     assertStringsEqual(value33, "EOS");
+
+    auto value34 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNano));
+    assertStringsEqual(value34, "Nano");
 }

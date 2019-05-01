@@ -16,6 +16,7 @@
 #include "IOST/Account.h"
 #include "Icon/Address.h"
 #include "Iocoin/Address.h"
+#include "Nano/Address.h"
 #include "NEO/Address.h"
 #include "Nimiq/Address.h"
 #include "Ontology/Address.h"
@@ -136,6 +137,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
 
+    case TWCoinTypeNano:
+        return Nano::Address::isValid(string);
+
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
 
@@ -245,6 +249,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeStellar:
     case TWCoinTypeKin:
         return Stellar::Address(publicKey).string();
+
+    case TWCoinTypeNano:
+        return Nano::Address(publicKey).string();
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();

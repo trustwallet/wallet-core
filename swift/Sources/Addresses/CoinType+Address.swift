@@ -54,6 +54,8 @@ public extension CoinType {
             return StellarAddress(string: string)
         case .aion:
             return AionAddress(string: string)
+        case .nano:
+            return NanoAddress(string: string)
         case .neo:
             return NEOAddress(string: string)
         case .decred:

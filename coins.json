@@ -512,5 +512,16 @@
         "publicKeyType": "secp256k1",
         "transactionPath": "/transaction/",
         "explorer": "https://bloks.io"
+    },
+    {
+        "id": "nano",
+        "name": "Nano",
+        "symbol": "NANO",
+        "decimals": 30,
+        "derivationPath": "m/44'/165'/0'",
+        "curve": "ed25519Blake2bNano",
+        "publicKeyType": "ed25519Blake2b",
+        "transactionPath": "/block/",
+        "explorer": "https://www.nanode.co"
     }
 ]

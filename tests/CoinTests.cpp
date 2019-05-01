@@ -137,6 +137,14 @@ TEST(Coin, ValidateAddressEOS) {
     EXPECT_FALSE(validateAddress(TWCoinTypeEOS, "EOS65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjT"));
 }
 
+TEST(Coin, ValidateAddressNano) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeNano, "nano_1nanode8ngaakzbck8smq6ru9bethqwyehomf79sae1k7xd47dkidjqzffeg"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeNano, "xrb_1111111111111111111111111111111111111111111111111111hifc8npp"));
+
+    EXPECT_FALSE(validateAddress(TWCoinTypeNano, "nano_1111111111111111111111111111111111111111111111111111hi111111"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeNano, "fake_1nanode8ngaakzbck8smq6ru9bethqwyehomf79sae1k7xd47dkidjqzffeg"));
+}
+
 TEST(Coin, DeriveAddress) {
     const auto privateKey = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeAion, privateKey), "0xa0010b0ea04ba4d76ca6e5e9900bacf19bc4402eaec7e36ea7ddd8eed48f60f3");
@@ -170,6 +178,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeZcash, privateKey), "t1b9xfAk3kZp5Qk3rinDPq7zzLkJGHTChDS");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeZcoin, privateKey), "aHzpPjmY132KseS4nkiQTbDahTEXqesY89");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeLux, privateKey), "LcWJv3djruGY4uh7xVPZyKxqJJUTdrzqL7");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNano, privateKey), "nano_1qepdf4k95dhb5gsmhmq3iddqsxiafwkihunm7irn48jdiwdtnn6pe93k3f6");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEO, privateKey), "AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeKin, privateKey), "GDXJHJHWN6GRNOAZXON6XH74ZX6NYFAS5B7642RSJQVJTIPA4ZYUQLEB");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeTheta, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");

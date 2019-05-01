@@ -103,6 +103,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .stellar:
                     let expectedResult = "GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .nano:
+                    let expectedResult = "nano_39gsbcishxn3n7wd17ono4otq5wazwzusqgqigztx73wbrh5jwbdbshfnumc"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .neo:
                     let expectedResult = "AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
