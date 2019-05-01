@@ -103,6 +103,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value31 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSteem));
     assertStringsEqual(value31, "STEEM");
+
+    auto value32 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
+    assertStringsEqual(value32, "EOS");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -139,6 +142,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeQtum), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravoCoin), 3);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSteem), 3);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 4);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -245,6 +249,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value35 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSteem, txId));
     assertStringsEqual(value35, "https://steemblockexplorer.com/tx/123");
+
+    auto value36 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
+    assertStringsEqual(value36, "https://bloks.io/transaction/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -336,6 +343,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value31 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSteem));
     assertStringsEqual(value31, "steem");
+
+    auto value32 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
+    assertStringsEqual(value32, "eos");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -431,4 +441,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value32 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSteem));
     assertStringsEqual(value32, "Steem");
+
+    auto value33 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
+    assertStringsEqual(value33, "EOS");
 }

@@ -501,5 +501,16 @@
         "publicKeyType": "secp256k1",
         "transactionPath": "/tx/",
         "explorer": "https://steemblockexplorer.com"
+    },
+    {
+        "id": "eos",
+        "name": "EOS",
+        "symbol": "EOS",
+        "decimals": 4,
+        "derivationPath": "m/44'/194'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "transactionPath": "/transaction/",
+        "explorer": "https://bloks.io"
     }
 ]

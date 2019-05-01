@@ -142,6 +142,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .steem:
                     let expectedResult = "STM6WSusVTidc1e7TbLjhqQPYctbsndTRwXHpi82gMuJyKEkJVLvg"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .eos:
+                    let expectedResult = "EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }
