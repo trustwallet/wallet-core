@@ -7,18 +7,35 @@
 #include <TrustWalletCore/TWIoTeXSigner.h>
 
 #include "../IoTeX/Signer.h"
+#include "../proto/Common.pb.h"
 #include "../proto/IoTeX.pb.h"
 
-using namespace TW;
 using namespace TW::IoTeX;
 
-TW_IoTeX_Proto_SigningOutput TWIoTeXSignerSign(TW_IoTeX_Proto_SigningInput data) {
-    Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-
-    auto signer = new TWIoTeXSigner{ Signer(std::move(input)) };
-    Proto::SigningOutput output = signer->impl.build();
-
-    auto serialized = output.SerializeAsString();
+static TW_Proto_Result createErrorResult(const std::string& description) {
+    auto result = TW::Proto::Result();
+    result.set_success(false);
+    result.set_error(description);
+    auto serialized = result.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
+TW_Proto_Result TWIoTeXSignerSign(TW_IoTeX_Proto_SigningInput data) {
+    Proto::SigningInput input;
+    if (!input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)))) {
+        return createErrorResult("IoTeX: invalid input, please check IoTeX.proto file for correct msg format");
+    }
+
+    try {
+        auto signer = new TWIoTeXSigner{ Signer(std::move(input)) };
+        Proto::SigningOutput output = signer->impl.build();
+
+        auto result = TW::Proto::Result();
+        result.set_success(true);
+        result.add_objects()->PackFrom(output);
+        auto serialized = result.SerializeAsString();
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    } catch (const std::exception& e) {
+        return createErrorResult(e.what());
+    }
 }

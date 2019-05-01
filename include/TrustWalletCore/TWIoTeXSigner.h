@@ -8,6 +8,7 @@
 
 #include "TWBase.h"
 #include "TWData.h"
+#include "TWCommonProto.h"
 #include "TWIoTeXProto.h"
 
 TW_EXTERN_C_BEGIN
@@ -18,6 +19,6 @@ struct TWIoTeXSigner;
 
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
-TW_IoTeX_Proto_SigningOutput TWIoTeXSignerSign(TW_IoTeX_Proto_SigningInput input);
+TW_Proto_Result TWIoTeXSignerSign(TW_IoTeX_Proto_SigningInput input);
 
 TW_EXTERN_C_END
