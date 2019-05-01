@@ -31,7 +31,7 @@ Address::Address(const std::vector<uint8_t>& data) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    Data publicKeyData(publicKey.bytes.begin() + 1, publicKey.bytes.begin() + 33);
+    Data publicKeyData(publicKey.bytes.begin(), publicKey.bytes.end());
     auto hash = TW::Hash::blake2b(publicKeyData, size);
     std::copy(hash.end() - size, hash.end(), bytes.begin());
     bytes[0] = 0xa0;

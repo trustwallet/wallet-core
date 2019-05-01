@@ -19,7 +19,10 @@ lib/protobuf
 jni/cpp/generated
 jni/java
 swift/Sources/Generated
+src/Generated
 
 # Code coverage files
 coverage.info
 coverage/
+
+cmake-build-debug/

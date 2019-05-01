@@ -9,6 +9,7 @@
 #include "PublicKey.h"
 
 #include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/secp256k1.h>
@@ -19,28 +20,35 @@ PrivateKey::~PrivateKey() {
     std::fill(bytes.begin(), bytes.end(), 0);
 }
 
-PublicKey PrivateKey::getPublicKey(PublicKeyType type) const {
+PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
     Data result;
     switch (type) {
-    case PublicKeyType::secp256k1:
+    case TWPublicKeyTypeSECP256k1:
         result.resize(PublicKey::secp256k1Size);
         ecdsa_get_public_key33(&secp256k1, bytes.data(), result.data());
         break;
-    case PublicKeyType::secp256k1Extended:
+    case TWPublicKeyTypeSECP256k1Extended:
         result.resize(PublicKey::secp256k1ExtendedSize);
         ecdsa_get_public_key65(&secp256k1, bytes.data(), result.data());
         break;
-    case PublicKeyType::ed25519:
-        result.resize(PublicKey::ed25519Size);
-        result[0] = 1;
-        ed25519_publickey(bytes.data(), result.data() + 1);
-        break;
-    case PublicKeyType::nist256p1:
+    case TWPublicKeyTypeNIST256p1:
         result.resize(PublicKey::secp256k1Size);
         ecdsa_get_public_key33(&nist256p1, bytes.data(), result.data());
         break;
+    case TWPublicKeyTypeNIST256p1Extended:
+        result.resize(PublicKey::secp256k1ExtendedSize);
+        ecdsa_get_public_key65(&nist256p1, bytes.data(), result.data());
+        break;
+    case TWPublicKeyTypeED25519:
+        result.resize(PublicKey::ed25519Size);
+        ed25519_publickey(bytes.data(), result.data());
+        break;
+    case TWPublicKeyTypeED25519Blake2b:
+        result.resize(PublicKey::ed25519Size);
+        ed25519_publickey_blake2b(bytes.data(), result.data());
+        break;
     }
-    return PublicKey(result);
+    return PublicKey(result, type);
 }
 
 Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
@@ -52,11 +60,16 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data(),
                                     result.data() + 64, nullptr) == 0;
     } break;
-    case TWCurveEd25519: {
+    case TWCurveED25519: {
         result.resize(64);
-        const auto publicKey = getPublicKey(PublicKeyType::ed25519);
-        ed25519_sign(digest.data(), digest.size(), bytes.data(), publicKey.bytes.data() + 1,
-                     result.data());
+        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
+        ed25519_sign(digest.data(), digest.size(), bytes.data(), publicKey.bytes.data(), result.data());
+    } break;
+    case TWCurveED25519Blake2bNano: {
+        result.resize(64);
+        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Blake2b);
+        ed25519_sign_blake2b(digest.data(), digest.size(), bytes.data(),
+                             publicKey.bytes.data() + 1, result.data());
     } break;
     case TWCurveNIST256p1: {
         result.resize(65);
@@ -68,6 +81,34 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
     if (!success) {
         return {};
     }
+    return result;
+}
+
+Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
+    Data result;
+    bool success = false;
+    switch (curve) {
+    case TWCurveSECP256k1: {
+        result.resize(65);
+        success = ecdsa_sign_digest(&secp256k1, bytes.data(), digest.data(), result.data() + 1,
+                                    result.data(), canonicalChecker) == 0;
+    } break;
+    case TWCurveED25519: // not supported
+    case TWCurveED25519Blake2bNano: // not supported
+        break;
+    case TWCurveNIST256p1: {
+        result.resize(65);
+        success = ecdsa_sign_digest(&nist256p1, bytes.data(), digest.data(), result.data() + 1,
+                                    result.data(), canonicalChecker) == 0;
+    } break;
+    }
+
+    if (!success) {
+        return {};
+    }
+
+    // graphene adds 31 to the recovery id
+    result[0] += 31;
     return result;
 }
 

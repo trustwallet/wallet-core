@@ -14,7 +14,7 @@ using namespace TW;
 using namespace TW::NEO;
 
  TEST(NEOAddress, FromPublicKey) {
-     const auto publicKey = PublicKey(parse_hex("0222b2277d039d67f4197a638dd5a1d99c290b17aa8c4a16ccee5165fe612de66a"));
+     const auto publicKey = PublicKey(parse_hex("0222b2277d039d67f4197a638dd5a1d99c290b17aa8c4a16ccee5165fe612de66a"), TWPublicKeyTypeSECP256k1);
      const auto address = Address(publicKey);
      auto str = hex(address.bytes);
      ASSERT_EQ(string("AKmrAHRD9ZDUnu4m3vWWonpsojo4vgSuqp"), address.string());

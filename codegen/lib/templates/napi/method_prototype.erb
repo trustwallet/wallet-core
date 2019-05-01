@@ -1,0 +1,4 @@
+<%
+  method = locals[:method]
+-%>
+<%= NapiHelper.type(method.return_type) %> <%= NapiHelper.function_name(entity: entity, function: method) %>(const CallbackInfo& info)<% -%>

@@ -63,10 +63,14 @@ class PrivateKey {
     virtual ~PrivateKey();
 
     /// Returns the public key for this private key.
-    PublicKey getPublicKey(PublicKeyType type) const;
+    PublicKey getPublicKey(enum TWPublicKeyType type) const;
 
     /// Signs a digest using the given ECDSA curve.
     Data sign(const Data& digest, TWCurve curve) const;
+
+    /// Signs a digest using the given ECDSA curve and prepends the recovery id (a la graphene)
+    /// Only a sig that passes canonicalChecker is returned
+    Data sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(uint8_t by, uint8_t sig[64])) const;
 
     /// Signs a digest using the given ECDSA curve. The result is encoded with
     /// DER.

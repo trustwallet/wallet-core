@@ -29,6 +29,22 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX -H.
 make
 make install
 
+# Download Check
+export CHECK_VERSION=0.12.0
+CHECK_DIR="$ROOT/build/check/staging"
+mkdir -p "$CHECK_DIR"
+cd "$CHECK_DIR"
+if [ ! -f check-$CHECK_VERSION.tar.gz ]; then
+    curl -fSsOL https://github.com/libcheck/check/releases/download/0.12.0/check-$CHECK_VERSION.tar.gz
+fi
+tar xzf check-$CHECK_VERSION.tar.gz
+
+# Build Check
+cd check-$CHECK_VERSION
+./configure --prefix="$PREFIX"
+make -j4
+make install
+
 # Download Nlohmann JSON
 export JSON_VERSION=3.5.0
 JSON_DIR="$ROOT/build/json/staging"

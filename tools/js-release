@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# This script publishes JavaScript module to npm.
+
+set -e
+
+pushd js
+
+echo "Building & packaging..."
+npm run build
+
+echo "Testing..."
+npm test
+
+echo "Publishing..."
+npm publish
+
+popd

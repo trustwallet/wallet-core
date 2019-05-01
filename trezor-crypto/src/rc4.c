@@ -20,7 +20,7 @@
  * OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "rc4.h"
+#include <TrezorCrypto/rc4.h>
 
 static inline void rc4_swap(RC4_CTX *ctx, uint8_t i, uint8_t j) {
     uint8_t temp = ctx->S[i];

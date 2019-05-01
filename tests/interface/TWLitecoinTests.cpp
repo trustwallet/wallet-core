@@ -6,7 +6,7 @@
 
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHash.h>
@@ -29,8 +29,8 @@ TEST(Litecoin, LegacyAddress) {
 TEST(Litecoin, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPLitecoin, publicKey));
-    auto string = WRAPS(TWBech32AddressDescription(address.get()));
+    auto address = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPLitecoin, publicKey));
+    auto string = WRAPS(TWSegwitAddressDescription(address.get()));
 
     assertStringsEqual(string, "ltc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asjnaxwu");
 }
@@ -74,33 +74,16 @@ TEST(Litecoin, ExtendedKeys) {
     assertStringsEqual(zpub, "zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs");
 }
 
-TEST(Litecoin, DeriveFromLtub) {
-    auto xpub = STRING("Ltub2Ye6FtTv7U4zzHDL6iMfcE3cj5BHJjkBXQj1deZEAgSBrHB5oM191hYTF8BC34r7vRDGng59yfP6FH4m3nttc3TLDg944G8QK7d5NnygCRu");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeLitecoin, TWHDVersionLTUB, TWHDVersionLTPV, 0, 2);
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeLitecoin, TWHDVersionLTUB, TWHDVersionLTPV, 0, 9);
-
-    TWBitcoinAddress address2;
-    TWBitcoinAddressInitWithPublicKey(&address2, pubKey2, TWP2PKHPrefixLitecoin);
-    auto address2String = WRAPS(TWBitcoinAddressDescription(address2));
-
-    TWBitcoinAddress address9;
-    TWBitcoinAddressInitWithPublicKey(&address9, pubKey9, TWP2PKHPrefixLitecoin);
-    auto address9String = WRAPS(TWBitcoinAddressDescription(address9));
-
-    assertStringsEqual(address2String, "LdJvSS8gcRSN1WbSEj6srV8dKzGcybHGKt");
-    assertStringsEqual(address9String, "Laj4byUKgW3wuou4G3XCAPWqzVc3SdEpQk");
-}
-
 TEST(Litecoin, DeriveFromZpub) {
     auto zpub = STRING("zpub6sCFp8chadVDXVt7GRmQFpq8B7W8wMLdFDto1hXu2jLZtvkFhRnwScXARNfrGSeyhR8DBLJnaUUkBbkmB2GwUYkecEAMUcbUpFQV4v7PXcs");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeLitecoin, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeLitecoin, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2'/0'/0/4").get());
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2'/0'/0/11").get());
 
-    auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPLitecoin, pubKey4));
-    auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));
+    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPLitecoin, pubKey4));
+    auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPLitecoin, pubKey11));
-    auto address11String = WRAPS(TWBech32AddressDescription(address11.get()));
+    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPLitecoin, pubKey11));
+    auto address11String = WRAPS(TWSegwitAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "ltc1qcgnevr9rp7aazy62m4gen0tfzlssa52axwytt6");
     assertStringsEqual(address11String, "ltc1qy072y8968nzp6mz3j292h8lp72d678fcmms6vl");

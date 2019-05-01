@@ -16,7 +16,7 @@ using namespace TW;
 using namespace TW::Ripple;
 
 TEST(RippleAddress, FromPublicKey) {
-    const auto publicKey = PublicKey(parse_hex("0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D"));
+    const auto publicKey = PublicKey(parse_hex("0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D"), TWPublicKeyTypeSECP256k1);
     const auto address = Address(publicKey);
     auto str = hex(address.bytes);
     ASSERT_EQ(string("rnBFvgZphmN39GWzUJeUitaP22Fr9be75H"), address.string());

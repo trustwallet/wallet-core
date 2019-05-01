@@ -70,8 +70,8 @@ TEST(BitcoinCash, ExtendedKeys) {
 
 TEST(BitcoinCash, DeriveFromXPub) {
     auto xpub = STRING("xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeBitcoinCash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/145'/0'/0/2").get());
+    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/145'/0'/0/9").get());
 
     TWBitcoinCashAddress address2;
     TWBitcoinCashAddressInitWithPublicKey(&address2, pubKey2);
@@ -112,9 +112,12 @@ TEST(BitcoinCash, SignTransaction) {
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
     // Sign
-    auto result = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input)).sign();
-    ASSERT_TRUE(result);
+    auto signer = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input));
+    auto result = signer.sign();
     auto signedTx = result.payload();
+
+    ASSERT_TRUE(result);
+    ASSERT_EQ(fee, signer.plan.fee);
 
     // txid = "96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4"
 

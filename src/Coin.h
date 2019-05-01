@@ -40,7 +40,7 @@ TWHDVersion xprvVersion(TWCoinType coin);
 DerivationPath derivationPath(TWCoinType coin);
 
 /// Returns the public key type for a particular coin.
-PublicKeyType publicKeyType(TWCoinType coin);
+enum TWPublicKeyType publicKeyType(TWCoinType coin);
 
 /// Derives the address for a particular coin from the private key.
 std::string deriveAddress(TWCoinType coin, const PrivateKey& privateKey);

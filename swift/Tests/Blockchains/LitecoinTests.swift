@@ -22,8 +22,8 @@ class LitecoinTests: XCTestCase {
 
         let privateKey3 = PrivateKey(data: Data(hexString: "55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625")!)!
         let publicKey3 = privateKey3.getPublicKeySecp256k1(compressed: true)
-        let bech32Address = Bech32Address(hrp: .litecoin, publicKey: publicKey3)
-        XCTAssertEqual(Bech32Address(string: "ltc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asjnaxwu")!.description, bech32Address.description)
+        let bech32Address = SegwitAddress(hrp: .litecoin, publicKey: publicKey3)
+        XCTAssertEqual(SegwitAddress(string: "ltc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asjnaxwu")!.description, bech32Address.description)
     }
 
     func testLitecoinBlockchain() {
@@ -86,7 +86,7 @@ class LitecoinTests: XCTestCase {
         let zpubAddr4 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: litecoin.purpose, coinType: litecoin, account: 0, change: 0, address: 4))!
         let zpubAddr11 = HDWallet.derive(from: zpub, at: DerivationPath(purpose: litecoin.purpose, coinType: litecoin, account: 0, change: 0, address: 11))!
 
-        XCTAssertEqual(Bech32Address(hrp: .litecoin, publicKey: zpubAddr4).description, "ltc1qcgnevr9rp7aazy62m4gen0tfzlssa52axwytt6")
-        XCTAssertEqual(Bech32Address(hrp: .litecoin, publicKey: zpubAddr11).description, "ltc1qy072y8968nzp6mz3j292h8lp72d678fcmms6vl")
+        XCTAssertEqual(SegwitAddress(hrp: .litecoin, publicKey: zpubAddr4).description, "ltc1qcgnevr9rp7aazy62m4gen0tfzlssa52axwytt6")
+        XCTAssertEqual(SegwitAddress(hrp: .litecoin, publicKey: zpubAddr11).description, "ltc1qy072y8968nzp6mz3j292h8lp72d678fcmms6vl")
     }
 }

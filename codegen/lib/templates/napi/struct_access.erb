@@ -1,0 +1,5 @@
+<% param = locals[:param] -%>
+<% index = locals[:index] -%>
+<% name = param.name -%>
+<% type = param.type -%>
+    struct TW<%= type.name %> *<%= name %>Instance = info[<%= index %>].As<External<TW<%= type.name %>>>().Data();

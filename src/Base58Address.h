@@ -77,7 +77,7 @@ class Base58Address {
 
     /// Initializes a  address with a public key and a prefix.
     Base58Address(const PublicKey& publicKey, const Data& prefix) {
-        if (publicKey.type() != PublicKeyType::secp256k1) {
+        if (publicKey.type != TWPublicKeyTypeSECP256k1) {
             throw std::invalid_argument("Bitcoin::Address needs a compressed SECP256k1 public key.");
         }
         const auto data = publicKey.hash(prefix, Hash::sha256ripemd);

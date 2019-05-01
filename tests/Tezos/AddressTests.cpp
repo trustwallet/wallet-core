@@ -60,11 +60,11 @@ TEST(TezosAddress, isInvalid) {
 }
 
 TEST(TezosAddress, isValid) {
-    std::array<std::string, 4> validAddresses {        
+    std::array<std::string, 4> validAddresses {
         "tz1Yju7jmmsaUiG9qQLoYv35v5pHgnWoLWbt",
         "tz2PdGc7U5tiyqPgTSgqCDct94qd6ovQwP6u",
         "tz3VEZ4k6a4Wx42iyev6i2aVAptTRLEAivNN",
-        "KT1VsSxSXUkgw6zkBGgUuDXXuJs9ToPqkrCg"  
+        "KT1VsSxSXUkgw6zkBGgUuDXXuJs9ToPqkrCg"
     };
 
     for (auto &address : validAddresses) {
@@ -78,9 +78,17 @@ TEST(TezosAddress, string) {
     ASSERT_EQ(address.string(), addressString);
 }
 
+TEST(TezosAddress, deriveOriginatedAddress) {
+    auto operationHash = "oo7VeTEPjEusPKnsHtKcGYbYa7i4RWpcEhUVo3Suugbbs6K62Ro";
+    auto operationIndex = 0;
+    auto expected = "KT1WrtjtAYQSrUVvSNJPTZTebiUWoopQL5hw";
+        
+    ASSERT_EQ(Address::deriveOriginatedAddress(operationHash, operationIndex), expected);
+}
+
 TEST(TezosAddress, PublicKeyInit) {
     std::array<uint8_t, 33> bytes {1, 254, 21, 124, 200, 1, 23, 39, 147, 108, 89, 47, 133, 108, 144, 113, 211, 156, 244, 172, 218, 223, 166, 215, 100, 53, 228, 97, 156, 157, 197, 111, 99,};
-    const auto publicKey = PublicKey(bytes);
+    const auto publicKey = PublicKey(bytes, TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
 
     auto expected = "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT";

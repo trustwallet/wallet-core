@@ -25,11 +25,11 @@ struct TWStoredKey *_Nullable TWStoredKeyLoad(TWString *_Nonnull path);
 
 /// Imports a private key.
 TW_EXPORT_STATIC_METHOD
-struct TWStoredKey *_Nonnull TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull password, enum TWCoinType coin);
+struct TWStoredKey *_Nonnull TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin);
 
 /// Imports an HD wallet.
 TW_EXPORT_STATIC_METHOD
-struct TWStoredKey *_Nonnull TWStoredKeyImportHDWallet(TWString *_Nonnull mnemonic, TWString *_Nonnull password, enum TWCoinType coin);
+struct TWStoredKey *_Nonnull TWStoredKeyImportHDWallet(TWString *_Nonnull mnemonic, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin);
 
 /// Imports a key from JSON.
 TW_EXPORT_STATIC_METHOD
@@ -37,7 +37,7 @@ struct TWStoredKey *_Nullable TWStoredKeyImportJSON(TWData *_Nonnull json);
 
 /// Creates a new key.
 TW_EXPORT_STATIC_METHOD
-struct TWStoredKey *_Nonnull TWStoredKeyCreate(TWString *_Nonnull password);
+struct TWStoredKey *_Nonnull TWStoredKeyCreate(TWString *_Nonnull name, TWString *_Nonnull password);
 
 TW_EXPORT_METHOD
 void TWStoredKeyDelete(struct TWStoredKey *_Nonnull key);
@@ -45,6 +45,10 @@ void TWStoredKeyDelete(struct TWStoredKey *_Nonnull key);
 /// Stored key uniqie identifier.
 TW_EXPORT_PROPERTY
 TWString *_Nullable TWStoredKeyIdentifier(struct TWStoredKey *_Nonnull key);
+
+/// Stored key namer.
+TW_EXPORT_PROPERTY
+TWString *_Nonnull TWStoredKeyName(struct TWStoredKey *_Nonnull key);
 
 /// Whether this key is a mnemonic phrase for a HD wallet.
 TW_EXPORT_PROPERTY

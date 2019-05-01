@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package TW.NULS.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message TransactionInput {
+    string from_hash = 1;
+    int32 from_index = 2;
+    int64 amount = 3;
+    int64 lock_time = 4;
+    string address = 5;
+}
+
+message TransactionOutput {
+    string to_address = 1;
+    int64 amount = 2;
+    int64 lock_time = 3;
+    int32 index = 4;
+}
+
+message Transaction {
+    string from_address = 2;
+    string to_address = 3;
+    int64 amount = 4;
+
+    /// UTF-8 encode strings
+    string remark = 5;
+
+    int64 timestamp = 6;
+
+    /// Unspent input list
+    repeated TransactionInput inputs = 7;
+    /// Output list
+    repeated TransactionOutput outputs = 8;
+}
+
+message TransactionPurpose {
+    bytes private_key = 1;
+    string from_address = 2;
+    string to_address = 3;
+    int64 amount = 4;
+
+    /// UTF-8 encode strings
+    string remark = 5;
+
+    int64 timestamp = 6;
+
+    /// Unspent input list
+    repeated TransactionInput utxos = 7;
+
+    // If sending max amount.
+    bool use_max_amount = 8;
+}
+
+message TransactionPlan {
+    bytes private_key = 1;
+    string from_address = 2;
+    string to_address = 3;
+    int64 amount = 4;
+
+    /// UTF-8 encode strings
+    string remark = 5;
+
+    int64 timestamp = 6;
+    int64 fee = 7;
+    int64 change = 8;
+    int64 available_amount = 9;
+
+    /// Selected Unspent input list
+    repeated TransactionInput inputs = 10;
+    repeated TransactionOutput outputs = 11;
+}
+
+message SigningOutput {
+    bytes encoded = 1;
+}
