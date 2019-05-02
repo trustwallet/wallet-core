@@ -225,7 +225,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value25, "https://kinexplorer.com/tx/123");
 
     auto value26 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
-    assertStringsEqual(value26, "https://hubble.figment.network/chains/cosmoshub-1/blocks/1/transactions/123");
+    assertStringsEqual(value26, "https://www.mintscan.io/txs/123");
 
     auto value27 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTheta, txId));
     assertStringsEqual(value27, "https://explorer.thetatoken.org/txs/123");
