@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package TW.IoTeX.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message Transfer {
+    string amount  = 1;
+    string recipient = 2;
+    bytes payload  = 3;
+}
+
+message Execution {
+    string amount  = 1;
+    string contract = 2;
+    bytes data = 3;
+}
+
+message ActionCore {
+    uint32 version = 1;
+    uint64 nonce = 2;
+    uint64 gasLimit = 3;
+    string gasPrice = 4;
+    oneof action {
+        Transfer transfer = 10;
+        Execution execution = 12;
+  }
+}
+
+message Action {
+    ActionCore core = 1;
+    bytes senderPubKey = 2;
+    bytes signature = 3;
+}
+
+// transaction signing input
+message SigningInput {
+    uint32 version = 1;
+    uint64 nonce = 2;
+    uint64 gasLimit = 3;
+    string gasPrice = 4;
+    bytes privateKey = 5;
+    oneof action {
+        Transfer transfer = 10;
+        Execution execution = 12;
+  }
+}
+
+// transaction signing output
+message SigningOutput {
+    // Signed and encoded Action bytes
+    bytes encoded = 1;
+
+    // Signed Action hash
+    bytes hash = 2;
+}

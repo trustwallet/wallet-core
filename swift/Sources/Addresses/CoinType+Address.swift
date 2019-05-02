@@ -78,6 +78,8 @@ public extension CoinType {
             return SteemAddress(string: string)
         case .eos:
             return EOSAddress(string: string)
+        case .ioTeX:
+            return IoTeXAddress(string: string)
         }
         return .none
     }
