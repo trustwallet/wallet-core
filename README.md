@@ -45,7 +45,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://decred.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/42.png" width="32" /></a>
 <a href="https://www.groestlcoin.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/17.png" width="32" /></a>
 <a href="https://viacoin.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/14.png" width="32" /></a>
-<a href="https://monetaryunit.org/" target="_blank"><img src="https://raw.githubusercontent.com/muecoin/insignia/master/MUE/MUE_logo_width_120px.png" width="32" /></a>
+<a href="https://monetaryunit.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/311.png" width="32" /></a>
 <a href="https://luxcore.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/3003.png" width="32" /></a>
 <a href="https://qtum.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2301.png" width="32" /></a>
 <a href="https://iost.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/291.png" width="32" /></a>
