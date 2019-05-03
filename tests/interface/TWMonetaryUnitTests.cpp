@@ -6,7 +6,7 @@
 
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHash.h>
