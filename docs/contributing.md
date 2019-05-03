@@ -111,7 +111,7 @@ struct TWPublicKey {
 
 You can also define enumerations using the `TW_EXPORT_ENUM()` macro:
 
-```text
+```c
 TW_EXPORT_ENUM(uint32_t)
 enum TWCoinType {
     TWCoinTypeBitcoin = 0,
@@ -141,4 +141,6 @@ Wallet core follows the [LLVM Coding Standards](http://llvm.org/docs/CodingStand
 * Building on [Linux](linux.md)
 * [Adding Support for a New Blockchain](newblockchain.md)
 * [Releasing](releasing.md)
+
+
 

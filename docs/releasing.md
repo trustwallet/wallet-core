@@ -2,7 +2,7 @@
 
 Before releasing please update the version numbers in `android/gradle.properties` and `TrustWalletCore.podspec` and commit this change. Then create a new git tag for that number and push \(replace 0.0.0 with the actual version number\):
 
-```text
+```bash
 git tag 0.0.0
 git push
 git push origin 0.0.0
@@ -18,8 +18,8 @@ Run `bootstrap.sh` then `tools/ios-release`. This will build, archive and upload
 
 You need to first log into your npm account that has permissions to publish.
 
-```text
-$ npm login
+```bash
+npm login
 ```
 
 ### Every Release
@@ -40,17 +40,17 @@ $ npm login
 6. Send Key to the server using the installed tool GPG Keychain
 7. Generate the signing.keyId value:
 
-   ```text
-   $ gpg --list-keys --keyid-format short
+   ```bash
+   gpg --list-keys --keyid-format short
    ```
 
 8. Get the `.gpg` secret key that will be assigned to signing.secretKeyRingFile parameter:
 
-   ```text
-   $ gpg --export-secret-keys -o secring.gpg
+   ```bash
+   gpg --export-secret-keys -o secring.gpg
    ```
 
-```text
+```bash
 # Note: both spellings of username and password are needed
 NEXUS_USERNAME=user
 NEXUS_PASSWORD=pass

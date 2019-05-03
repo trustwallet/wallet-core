@@ -18,7 +18,7 @@ If you do need to add a new cryptographic function or other building block pleas
 
 The first step is to support the address format specific to the blockchain. Create `src/Blockchain/Address.h` and `src/Blockchain/Address.cpp` where `Blockchain` is the blockchain name. Put this in the header file:
 
-```text
+```cpp
 // Copyright © 2017-2019 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
