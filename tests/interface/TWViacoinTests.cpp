@@ -13,7 +13,6 @@
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
-#include <TrustWalletCore/TWP2SHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
