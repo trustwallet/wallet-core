@@ -13,6 +13,7 @@ const char* stringForHRP(enum TWHRP hrp) {
     case TWHRPBitcoin: return HRP_BITCOIN;
     case TWHRPLitecoin: return HRP_LITECOIN;
     case TWHRPViacoin: return HRP_VIACOIN;
+    case TWHRPMonetaryUnit: return HRP_MONETARYUNIT;
     case TWHRPBitcoinCash: return HRP_BITCOINCASH;
     case TWHRPBinance: return HRP_BINANCE;
     case TWHRPCosmos: return HRP_COSMOS;
@@ -29,6 +30,8 @@ enum TWHRP hrpForString(const char *_Nonnull string) {
         return TWHRPLitecoin;
     } else if (std::strcmp(string, HRP_VIACOIN) == 0) {
         return TWHRPViacoin;
+    } else if (std::strcmp(string, HRP_MONETARYUNIT) == 0) {
+        return TWHRPMonetaryUnit;
     } else if (std::strcmp(string, HRP_BITCOINCASH) == 0) {
         return TWHRPBitcoinCash;
     } else if (std::strcmp(string, HRP_BINANCE) == 0) {
