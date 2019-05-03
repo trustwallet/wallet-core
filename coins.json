@@ -223,6 +223,21 @@
         "explorer": "https://explorer.viacoin.org"
     },
     {
+        "id": "monetaryunit",
+        "name": "MonetaryUnit",
+        "symbol": "MUE",
+        "decimals": 8,
+        "derivationPath": "m/44'/31'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "transactionPath": "/tx/",
+        "explorer": "https://blockbook.monetaryunit.org"
+    },
+    {
         "id": "poa",
         "name": "POA Network",
         "symbol": "POA",

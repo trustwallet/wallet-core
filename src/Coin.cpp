@@ -110,6 +110,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress::isValid(string, HRP_VIACOIN) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixViacoin}, {TWP2SHPrefixViacoin}});
+            
+    case TWCoinTypeMonetaryUnit:
+        return Bitcoin::SegwitAddress::isValid(string, HRP_MONETARYUNIT) ||
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixMonetaryUnit}, {TWP2SHPrefixMonetaryUnit}});
 
     case TWCoinTypeOntology:
         return Ontology::Address::isValid(string);
@@ -223,6 +227,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Bitcoin::SegwitAddress(publicKey, 0, HRP_LITECOIN).string();
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress(publicKey, 0, HRP_VIACOIN).string();
+    case TWCoinTypeMonetaryUnit:
+        return Bitcoin::SegwitAddress(publicKey, 0, HRP_MONETARYUNIT).string();
     case TWCoinTypeOntology:
         return Ontology::Address(publicKey).string();
     case TWCoinTypeNimiq:

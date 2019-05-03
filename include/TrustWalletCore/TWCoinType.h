@@ -60,6 +60,7 @@ enum TWCoinType {
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeViacoin = 14,
+    TWCoinTypeMonetaryUnit = 31,
     TWCoinTypeWanchain = 5718350,
     TWCoinTypeXDai = 700,
     TWCoinTypeZcash = 133,

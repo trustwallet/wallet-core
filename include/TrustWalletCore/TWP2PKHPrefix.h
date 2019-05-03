@@ -16,6 +16,7 @@ TW_EXPORT_ENUM(uint8_t)
 enum TWP2PKHPrefix {
     TWP2PKHPrefixBitcoin = 0x00,
     TWP2PKHPrefixDash = 0x4C,
+    TWP2PKHPrefixMonetaryUnit = 0x10,
     TWP2PKHPrefixDecred = 0x3f,
     TWP2PKHPrefixDogecoin = 0x1e,
     TWP2PKHPrefixGroestlcoin = 0x24,

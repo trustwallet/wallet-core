@@ -135,6 +135,15 @@ class HDWalletTests: XCTestCase {
 
         XCTAssertEqual("LUWu1RfpiSpBp4tYKqV3WwYdmJpgYmKpfh", address)
     }
+    
+    func testDeriveMonetaryUnit() {
+        let monetaryunit = CoinType.monetaryunit
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: monetaryunit)
+        let address = monetaryunit.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("7UQUGq9UQD57R5Kn6hHoYrpaRjDdWtZWF7", address)
+    }
 
     func testDeriveBinanceChain() {
         let binance = CoinType.binance
