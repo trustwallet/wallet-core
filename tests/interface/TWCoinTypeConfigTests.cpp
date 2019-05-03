@@ -113,8 +113,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto value34 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIoTeX));
     assertStringsEqual(value34, "IOTX");
     
-    auto value35 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonetaryUnit));
-    assertStringsEqual(value35, "MUE");
+    auto value39 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(value39, "MUE");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -246,9 +246,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value30 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
     assertStringsEqual(value30, "https://explorer.poswallet.io/#/tx/123");
-
-    auto value28 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonetaryUnit, txId));
-    assertStringsEqual(value28, "https://blockbook.monetaryunit.org/tx/123");
     
     auto value31 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
     assertStringsEqual(value31, "https://qtum.info/tx/123");
@@ -273,6 +270,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     
     auto value38 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIoTeX, txId));
     assertStringsEqual(value38, "https://iotexscan.io/action/123");
+    
+    auto value39 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonetaryUnit, txId));
+    assertStringsEqual(value39, "https://blockbook.monetaryunit.org/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -351,8 +351,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto value26 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLux));
     assertStringsEqual(value26, "lux");
     
-    auto value35 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonetaryUnit));
-    assertStringsEqual(value35, "monetaryunit");
+    auto value39 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(value39, "monetaryunit");
 
     auto value27 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     assertStringsEqual(value27, "qtum");
@@ -457,8 +457,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
     assertStringsEqual(value27, "Lux");
     
-    auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonetaryUnit));
-    assertStringsEqual(value27, "MonetaryUnit");
+    auto value39 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(value39, "MonetaryUnit");
 
     auto value28 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
     assertStringsEqual(value28, "Qtum");
