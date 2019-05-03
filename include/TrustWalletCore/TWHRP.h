@@ -18,6 +18,7 @@ enum TWHRP {
     TWHRPBitcoin     /* "bc" */,
     TWHRPLitecoin    /* "ltc" */,
     TWHRPViacoin     /* "via" */,
+    TWHRPMonetaryUnit     /* "mue" */,
     TWHRPBitcoinCash /* "bitcoincash" */,
     TWHRPBinance     /* "bnb" */,
     TWHRPCosmos      /* "cosmos" */,
@@ -32,6 +33,7 @@ static const char *_Nonnull HRP_LITECOIN = "ltc";
 static const char *_Nonnull HRP_COSMOS = "cosmos";
 static const char *_Nonnull HRP_GROESTLCOIN = "grs";
 static const char *_Nonnull HRP_VIACOIN = "via";
+static const char *_Nonnull HRP_MONETARYUNIT = "mue";
 static const char *_Nonnull HRP_QTUM = "qc";
 
 const char *_Nullable stringForHRP(enum TWHRP hrp);
