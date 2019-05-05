@@ -7,62 +7,86 @@
 #include "TWTestUtilities.h"
 
 #include <TrustWalletCore/TWSegwitAddress.h>
-#include <TrustWalletCore/TWBitcoinAddress.h>
+#include <TrustWalletCore/TWMonetaryUnitAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
-#include <TrustWalletCore/TWP2SHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
 
 TEST(MonetaryUnit, Address) {
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("3c3385ddc6fd95ba7282051aeb440bc75820b8c10db5c83c052d7586e3e98e84").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddress();
-    TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixLitecoin);
-    auto addressString = WRAPS(TWBitcoinAddressDescription(address));
-    assertStringsEqual(addressString, "LV7LV7Z4bWDEjYkfx9dQo6k6RjGbXsg6hS");
+    auto address = WRAP(TWMonetaryUnitAddress, TWMonetaryUnitAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixMonetaryUnit));
+    auto addressString = WRAPS(TWMonetaryUnitAddressDescription(address.get()));
+    assertStringsEqual(addressString, "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
+
+    auto address2 = WRAP(TWMonetaryUnitAddress, TWMonetaryUnitAddressCreateWithString(STRING("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM").get()));
+    auto address2String = WRAPS(TWMonetaryUnitAddressDescription(address2.get()));
+    assertStringsEqual(address2String, "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
+
+    ASSERT_TRUE(TWMonetaryUnitAddressEqual(address.get(), address2.get()));
+}
+
+TEST(MonetaryUnit, BuildForLegacyAddress) {
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM").get()));
+    auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
+    assertHexEqual(scriptData, "76a91498af0aaca388a7e1024f505c033626d908e3b54a88ac");
+}
+
+TEST(MonetaryUnit, BuildForSegwitP2SHAddress) {
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P").get()));
+    auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
+    assertHexEqual(scriptData, "a9140055b0c94df477ee6b9f75185dfc9aa8ce2e52e487");
+}
+
+TEST(MonetaryUnit, BuildForNativeSegwitAddress) {
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne").get()));
+    auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
+    assertHexEqual(scriptData, "00147557920fbc32a1ef4ef26bae5e8ce3f95abf09ce");
 }
 
 TEST(MonetaryUnit, ExtendedKeys) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(
-        STRING("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal").get(),
-        STRING("TREZOR").get()
+        STRING("all all all all all all all all all all all all").get(),
+        STRING("").get()
     ));
 
-    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeMonetaryUnit, TWHDVersionXPUB));
+    // .bip44
     auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeMonetaryUnit, TWHDVersionXPRV));
+    auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeMonetaryUnit, TWHDVersionXPUB));
 
-    assertStringsEqual(xpub, "xpub6CPmhSbYFoVy6rr2eGGkK7nbJYTL8SoWZYs3uSuWRpUg1s9Ln3xmEjMyycjvsF8qF76UEqh4yvmdCBbtXPKatMdrvo5bdhchvQqEZw4anDC");
-    assertStringsEqual(xprv, "xprv9yQRHw4eRRwftNmZYEjjwyqrkWcqiz5fCKwT74VtsUwh94pCEWeWgw3W8LEC1BVF5r6bJLuCnD6HR2X8bETk3mw5VBgVDuw2BNL2NAVGp5y");
+    assertStringsEqual(xprv, "xprv9zHDfLCJPTf5UrS16CrJ56WzSSoAYhJriX8Lfsco3TtPhG2DkwkVXjaDxZKU5USfmq5xjp1CZhpSrpHAPFwZWN75egb19TxWmMMmkd3csxP");
+    assertStringsEqual(xpub, "xpub6DGa4qjCDqDNhLWUCEPJSETizUdexA2i5k3wUG2QboRNa4MNJV4k5XthorGcogStY5K5iJ6NHtsznNK599ir8PmA3d1jqEoZHsixDTddNA9");
+
+    // .bip49
+    auto yprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP49, TWCoinTypeMonnetaryUnit, TWHDVersionYPRV));
+    auto ypub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP49, TWCoinTypeMonetaryUnit, TWHDVersionYPUB));
+
+    assertStringsEqual(yprv, "yprvAJkRD9AD6QrU1hvSdcJT1Cdc1DwEMsBHFt4Gqd5NsK8Vhdn3ArEHYGaJhWotcn24VWx9rC6dDutHNea9zws8owL1qWEt3pVD2GGk4DSXyvm");
+    assertStringsEqual(ypub, "ypub6Xjmceh6vnQmEBzujdqTNLaLZFmimKu8d6yse1UzRefUaS7BiPYY64tnYpQQydp1gnb2cGkccBd1RtHRDtGXagqmRLxTStV88GWaeYh8ndG");
+
+    // .bip84
+    auto zprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP84, TWCoinTypeMonetaryUnit, TWHDVersionZPRV));
+    auto zpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP84, TWCoinTypeMonetaryUnit, TWHDVersionZPUB));
+    assertStringsEqual(zprv, "zprvAcXuP1BeFt59rhLMnqTEL9j2TUz5mzXkj8NPcfvLKGzHm5mofJAeJMvFzzbNizahKxVEvptBpSxdhBcGbxdbaFP58caWLWAjZWMT7Jb6pFW");
+    assertStringsEqual(zpub, "zpub6qXFnWiY6FdT5BQptrzEhHfm1WpaBTFc6MHzR4KwscXGdt6xCqUtrAEjrHdeEsjaYEwVMgjtTvENQ83yo2fmkYYGjTpJoH7vFWKQJp1bg1X");
 }
 
-TEST(MonetaryUnit, DeriveFromXpub) {
-    auto xpub = STRING("xpub6Cb8Q6pDeS8PdKNbDv9Hvq4WpJXL3JvKvmHHwR1wD2H543hiCUE1f1tB5AXE6yg13k7xZ6PzEXMNUFHXk6kkx4RYte8VB1i4tCX9rwQVR4a");
-    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeMonetaryUnit, TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
-    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeMonetaryUnit, TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
+TEST(MonetaryUnit, DeriveFromZpub) {
+    auto zpub = STRING("zpub6qXFnWiY6FdT5BQptrzEhHfm1WpaBTFc6MHzR4KwscXGdt6xCqUtrAEjrHdeEsjaYEwVMgjtTvENQ83yo2fmkYYGjTpJoH7vFWKQJp1bg1X");
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/84'/17'/0'/0/4").get());
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/84'/17'/0'/0/11").get());
 
-    TWBitcoinAddress address3;
-    TWBitcoinAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixLitecoin);
-    auto address3String = WRAPS(TWBitcoinAddressDescription(address3));
+    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPMonetaryUnit, pubKey4));
+    auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));
 
-    TWBitcoinAddress address5;
-    TWBitcoinAddressInitWithPublicKey(&address5, pubKey5, TWP2PKHPrefixLitecoin);
-    auto address5String = WRAPS(TWBitcoinAddressDescription(address5));
+    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPMonetaryUnit, pubKey11));
+    auto address11String = WRAPS(TWSegwitAddressDescription(address11.get()));
 
-    assertStringsEqual(address3String, "LfJVQc6oq2T19WQLHAvMeHUjZVsspKFQu4");
-    assertStringsEqual(address5String, "LdEXFwEC9qZTVbVJdhNzHmrQBmUmG4VxzL");
-}
-
-TEST(MonetaryUnit, LockScripts) {
-    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("7UQUGq9UQD57R5Kn6hHoYrpaRjDdWtZWF7").get()));
-    auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
-    assertHexEqual(scriptData2, "76a914bd92088bb7e82d611a9b94fbb74a0908152b784f88ac");
-
-    auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("7oBSZsdN6jDoEn2agojLuUqoZbjWBbcwCm").get()));
-    auto scriptData3 = WRAPD(TWBitcoinScriptData(script3.get()));
-    assertHexEqual(scriptData3, "a914c84a999d5df4a6a8e06908c5e35a9cb1260d834587");
+    assertStringsEqual(address4String, "7UQUGq9UQD57R5Kn6hHoYrpaRjDdWtZWF7");
+    assertStringsEqual(address11String, "7oBSZsdN6jDoEn2agojLuUqoZbjWBbcwCm");
 }
