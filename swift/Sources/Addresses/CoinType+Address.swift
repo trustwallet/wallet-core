@@ -20,7 +20,7 @@ public extension CoinType {
             if let addr = BitcoinCashAddress(string: string) {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
-        case .dash, .dogecoin, .zcoin, .lux, .monetaryunit:
+        case .dash, .dogecoin, .zcoin, .lux, .monetaryUnit:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .callisto,
              .ethereum,
@@ -108,8 +108,8 @@ public extension CoinType {
             return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin.rawValue])
         case .viacoin:
             return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
-        case .monetaryunit:
-            return Set([P2SHPrefix.monetaryunit.rawValue, P2PKHPrefix.monetaryunit.rawValue])
+        case .monetaryUnit:
+            return Set([P2SHPrefix.monetaryUnit.rawValue, P2PKHPrefix.monetaryUnit.rawValue])
         default:
             return Set()
         }
@@ -132,8 +132,8 @@ public extension CoinType {
             return .groestlcoin
         case .viacoin:
             return .viacoin
-        case .monetaryunit:
-            return .monetaryunit
+        case .monetaryUnit:
+            return .monetaryUnit
         case .qtum:
             return .qtum
         default:
