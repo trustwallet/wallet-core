@@ -25,6 +25,8 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://z.cash/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/133.png" width="32" /></a>
 <a href="https://testnet.binance.org" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/714.png" width="32" /></a>
 <a href="https://ripple.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/144.png" width="32" /></a>
+<a href="https://callisto.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/820.png" width="32" /></a>
+<a href="https://poa.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/178.png" width="32" /></a>
 <a href="https://wanchain.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5718350.png" width="32" /></a>
 <a href="https://www.vechain.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/818.png" width="32" /></a>
 <a href="https://tron.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/195.png" width="32" /></a>
@@ -49,6 +51,11 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://qtum.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2301.png" width="32" /></a>
 <a href="https://iost.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/291.png" width="32" /></a>
 <a href="https://nuls.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/8964.png" width="32" /></a>
+<a href="https://www.iocoin.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/295.png" width="32" /></a>
+<a href="https://bravocoin.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/282.png" width="32" /></a>
+<a href="http://steem.io" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/135.png" width="32" /></a>
+<a href="https://eos.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/194.png" width="32" /></a>
+<a href="https://nano.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/165.png" width="32" /></a>
 
 # Usage
 
