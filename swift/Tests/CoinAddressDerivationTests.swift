@@ -125,7 +125,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "ieCTzUZhc8a5T8Y8suosPw7eMgTtN5PE1H"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .iost:
-                    let expectedResult = "AjvLqiYRd2vbRwqn3uXoUYMpZ3qZ2r57MYUNhYiKu41w"
+                    let expectedResult = "EKRQPgX7nKt8hJABwm9m3BKWGj7kcSECkJnCBauHQWin"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .lux:
                     let expectedResult = "LYL6SZG8S6dyXRFT8Bw4FHUoVef3cWCoPi"

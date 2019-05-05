@@ -160,7 +160,7 @@
         "name": "IOST",
         "symbol": "IOST",
         "decimals": 8,
-        "derivationPath": "m/44'/291'/0'/0/0",
+        "derivationPath": "m/44'/291'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "transactionPath": "/tx/",
