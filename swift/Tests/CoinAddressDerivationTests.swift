@@ -133,7 +133,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .viacoin:
                     let expectedResult = "via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .monetaryunit:
+                case .monetaryUnit:
                     let expectedResult = "7UQUGq9UQD57R5Kn6hHoYrpaRjDdWtZWF7"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .qtum:
