@@ -8,11 +8,11 @@ import XCTest
 import TrustWalletCore
 
 class MonetaryUnitTests: XCTestCase {
-    let monetaryunit = CoinType.monetaryunit
+    let monetaryunit = CoinType.monetaryUnit
 
     func testValidAddresses() {
-        XCTAssertTrue(lux.validate(address: "7UQUGq9UQD57R5Kn6hHoYrpaRjDdWtZWF7"))
-        XCTAssertTrue(lux.validate(address: "7oBSZsdN6jDoEn2agojLuUqoZbjWBbcwCm"))
+        XCTAssertTrue(monetaryunit.validate(address: "7UQUGq9UQD57R5Kn6hHoYrpaRjDdWtZWF7"))
+        XCTAssertTrue(monetaryunit.validate(address: "7oBSZsdN6jDoEn2agojLuUqoZbjWBbcwCm"))
     }
 
     func testInvalidAddresses() {
