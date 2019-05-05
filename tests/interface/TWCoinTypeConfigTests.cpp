@@ -352,7 +352,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     assertStringsEqual(value26, "lux");
     
     auto value39 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonetaryUnit));
-    assertStringsEqual(value39, "monetaryUnit");
+    assertStringsEqual(value39, "monetaryunit");
 
     auto value27 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     assertStringsEqual(value27, "qtum");
