@@ -137,7 +137,7 @@ class HDWalletTests: XCTestCase {
     }
     
     func testDeriveMonetaryUnit() {
-        let monetaryunit = CoinType.monetaryunit
+        let monetaryunit = CoinType.monetaryUnit
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: monetaryunit)
         let address = monetaryunit.deriveAddress(privateKey: key)
