@@ -63,7 +63,7 @@ TEST(MonetaryUnit, ExtendedKeys) {
     assertStringsEqual(xpub, "xpub6DGa4qjCDqDNhLWUCEPJSETizUdexA2i5k3wUG2QboRNa4MNJV4k5XthorGcogStY5K5iJ6NHtsznNK599ir8PmA3d1jqEoZHsixDTddNA9");
 
     // .bip49
-    auto yprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP49, TWCoinTypeMonnetaryUnit, TWHDVersionYPRV));
+    auto yprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP49, TWCoinTypeMonetaryUnit, TWHDVersionYPRV));
     auto ypub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP49, TWCoinTypeMonetaryUnit, TWHDVersionYPUB));
 
     assertStringsEqual(yprv, "yprvAJkRD9AD6QrU1hvSdcJT1Cdc1DwEMsBHFt4Gqd5NsK8Vhdn3ArEHYGaJhWotcn24VWx9rC6dDutHNea9zws8owL1qWEt3pVD2GGk4DSXyvm");
