@@ -57,7 +57,7 @@ describe('CoinAddressDerivation', () => {
             case CoinType.DOGECOIN: expect('DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f').to.equal(address); break;
             case CoinType.KIN: expect('GBL3MT2ICHHM5OJ2QJ44CAHGDK6MLPINVXBKOKLHGBWQDVRWTWQ7U2EA').to.equal(address); break;
             case CoinType.VIACOIN: expect('via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc').to.equal(address); break;
-            case CoinType.IOST: expect('AjvLqiYRd2vbRwqn3uXoUYMpZ3qZ2r57MYUNhYiKu41w').to.equal(address); break;
+            case CoinType.IOST: expect('EKRQPgX7nKt8hJABwm9m3BKWGj7kcSECkJnCBauHQWin').to.equal(address); break;
             case CoinType.LUX: expect('LYL6SZG8S6dyXRFT8Bw4FHUoVef3cWCoPi').to.equal(address); break;
             case CoinType.QTUM: expect('QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF').to.equal(address); break;
             case CoinType.NULS: expect('NsdtNvsfmPerWk4BhcapHTB3LptF8Sbe').to.equal(address); break;
