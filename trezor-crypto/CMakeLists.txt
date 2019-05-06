@@ -26,6 +26,7 @@ add_library(TrezorCrypto
     src/ripple/base58.c
     src/nist256p1.c
     src/groestl.c
+    src/schnorr.c
 )
 
 target_compile_options(TrezorCrypto

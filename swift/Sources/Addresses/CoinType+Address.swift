@@ -80,6 +80,8 @@ public extension CoinType {
             return EOSAddress(string: string)
         case .ioTeX:
             return IoTeXAddress(string: string)
+        case .zilliqa:
+            return ZilliqaAddress(string: string)
         }
         return .none
     }
