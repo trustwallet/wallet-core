@@ -141,8 +141,8 @@
         "base58Hasher": "groestl512d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "transactionPath": "/tx/",
-        "explorer": "https://blockbook.groestlcoin.org"
+        "transactionPath": "/grs/tx.dws?",
+        "explorer": "https://chainz.cryptoid.info"
     },
     {
         "id": "icon",
@@ -178,8 +178,8 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/tx/",
-        "explorer": "https://blockbook.iocoin.io"
+        "transactionPath": "/ioc/tx.dws?",
+        "explorer": "https://chainz.cryptoid.info"
     },
     {
         "id": "litecoin",
