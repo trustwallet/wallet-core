@@ -6,12 +6,11 @@
 
 #pragma once
 
-#include <nlohmann/json.hpp>
-
-#include "Action.h"
 #include "../Data.h"
-#include "../PrivateKey.h"
+#include "Action.h"
 #include "Prefixes.h"
+
+#include <nlohmann/json.hpp>
 
 #include <set>
 #include <array>

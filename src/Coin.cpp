@@ -16,6 +16,7 @@
 #include "IOST/Account.h"
 #include "Icon/Address.h"
 #include "Iocoin/Address.h"
+#include "Nano/Address.h"
 #include "NEO/Address.h"
 #include "Nimiq/Address.h"
 #include "Ontology/Address.h"
@@ -30,6 +31,7 @@
 #include "Bravo/Address.h"
 #include "Steem/Address.h"
 #include "EOS/Address.h"
+#include "IoTeX/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -99,7 +101,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Icon::Address::isValid(string);
     case TWCoinTypeIOST:
         return IOST::Account::isValid(string);
-
+    case TWCoinTypeIoTeX:
+        return IoTeX::Address::isValid(string);    
     case TWCoinTypeLitecoin:
         return Bitcoin::SegwitAddress::isValid(string, HRP_LITECOIN) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLitecoin}});
@@ -136,6 +139,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 	case TWCoinTypeZelcash:
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
+
+    case TWCoinTypeNano:
+        return Nano::Address::isValid(string);
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
@@ -212,7 +218,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Icon::Address(publicKey, TWIconAddressTypeAddress).string();
     case TWCoinTypeIOST:
         return IOST::Account::encodePubKey(publicKey);
-
+    case TWCoinTypeIoTeX:
+        return IoTeX::Address(publicKey).string();
     case TWCoinTypeLitecoin:
         return Bitcoin::SegwitAddress(publicKey, 0, HRP_LITECOIN).string();
     case TWCoinTypeViacoin:
@@ -247,6 +254,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeStellar:
     case TWCoinTypeKin:
         return Stellar::Address(publicKey).string();
+
+    case TWCoinTypeNano:
+        return Nano::Address(publicKey).string();
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();

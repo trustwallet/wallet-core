@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package TW.Nano.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Private key
+    bytes private_key = 1;
+
+    // Optional parent block hash
+    bytes parent_block = 2;
+
+    oneof link_oneof {
+        // Hash of a block to receive from
+        bytes link_block = 3;
+        // Recipient address to send coins to
+        string link_recipient = 4;
+    }
+
+    // Representative address
+    string representative = 5;
+
+    // Account balance (128-bit unsigned integer, as a string)
+    string balance = 6;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signature
+    bytes signature = 1;
+    // Block hash
+    bytes block_hash = 2;
+}

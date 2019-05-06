@@ -106,6 +106,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto value32 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
     assertStringsEqual(value32, "EOS");
+
+    auto value33 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNano));
+    assertStringsEqual(value33, "NANO");
+    
+    auto value34 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIoTeX));
+    assertStringsEqual(value34, "IOTX");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -143,6 +149,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravoCoin), 3);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSteem), 3);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 4);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNano), 30);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -221,7 +229,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(value25, "https://kinexplorer.com/tx/123");
 
     auto value26 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
-    assertStringsEqual(value26, "https://hubble.figment.network/chains/cosmoshub-1/blocks/1/transactions/123");
+    assertStringsEqual(value26, "https://www.mintscan.io/txs/123");
 
     auto value27 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTheta, txId));
     assertStringsEqual(value27, "https://explorer.thetatoken.org/txs/123");
@@ -252,9 +260,16 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto value36 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
     assertStringsEqual(value36, "https://bloks.io/transaction/123");
+
+    auto value37 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNano, txId));
+    assertStringsEqual(value37, "https://www.nanode.co/block/123");
     
-    auto value37 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
-        assertStringsEqual(value37, "https://explorer.zel.cash/tx/123");
+    auto value38 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIoTeX, txId));
+    assertStringsEqual(value38, "https://iotexscan.io/action/123");
+  
+    auto value39 = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
+        assertStringsEqual(value39, "https://explorer.zel.cash/tx/123");
+
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -349,9 +364,16 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     
     auto value32 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
     assertStringsEqual(value32, "eos");
-    
-    auto value33 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
-        assertStringsEqual(value33, "zelcash");
+
+    auto value33 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNano));
+    assertStringsEqual(value33, "nano");
+
+    auto value34 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIoTeX));
+    assertStringsEqual(value34, "iotex");
+  
+    auto value35 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
+        assertStringsEqual(value35, "zelcash");
+
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -430,7 +452,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto value26 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
     assertStringsEqual(value26, "Groestlcoin");
 
-
     auto value27 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
     assertStringsEqual(value27, "Lux");
 
@@ -439,6 +460,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value29 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthersocial));
     assertStringsEqual(value29, "Ethersocial");
+
     auto value30 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIocoin));
     assertStringsEqual(value30, "Iocoin");
 
@@ -450,7 +472,14 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     
     auto value33 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
     assertStringsEqual(value33, "EOS");
-    
-    auto value34 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
-        assertStringsEqual(value34, "Zelcash");
+
+    auto value34 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNano));
+    assertStringsEqual(value34, "Nano");
+
+    auto value35 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIoTeX));
+    assertStringsEqual(value35, "IoTeX");
+  
+    auto value36 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
+        assertStringsEqual(value36, "Zelcash");
+
 }

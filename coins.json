@@ -160,7 +160,7 @@
         "name": "IOST",
         "symbol": "IOST",
         "decimals": 8,
-        "derivationPath": "m/44'/291'/0'/0/0",
+        "derivationPath": "m/44'/291'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "transactionPath": "/tx/",
@@ -403,8 +403,8 @@
         "derivationPath": "m/44'/118'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/blocks/1/transactions/",
-        "explorer": "https://hubble.figment.network/chains/cosmoshub-1"
+        "transactionPath": "/txs/",
+        "explorer": "https://www.mintscan.io"
     },
     {
         "id": "neo",
@@ -512,6 +512,28 @@
         "publicKeyType": "secp256k1",
         "transactionPath": "/transaction/",
         "explorer": "https://bloks.io"
+    },
+    {
+        "id": "nano",
+        "name": "Nano",
+        "symbol": "NANO",
+        "decimals": 30,
+        "derivationPath": "m/44'/165'/0'",
+        "curve": "ed25519Blake2bNano",
+        "publicKeyType": "ed25519Blake2b",
+        "transactionPath": "/block/",
+        "explorer": "https://www.nanode.co"
+    },
+    {
+        "id": "iotex",
+        "name": "IoTeX",
+        "symbol": "IOTX",
+        "decimals": 18,
+        "derivationPath": "m/44'/304'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "transactionPath": "/action/",
+        "explorer": "https://iotexscan.io"
     },
     {
         "id": "zelcash",

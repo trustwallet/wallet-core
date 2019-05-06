@@ -18,16 +18,15 @@ Reason:
 
 ## Checklist
 
+- [ ] Add the coin definition to `coins.json` and `TWCoinType`.
 - [ ] Implement functionality in C++. Put it in a subfolder of `src/`.
     - [ ] Address (if necessary)
     - [ ] Transaction (if necessary)
     - [ ] Signer
 - [ ] Write unit tests. Put them in a subfolder of `tests/`.
-    [ ] `Mnemonic phrase - > Address` derivation test. Put this test in the `CoinTests.cpp` file
-- [ ] Add relevant constants in `TWCoinType`, `TWP2SHPrefix`, `TWEthereymChainID`, `TWHRP`, etc., as necessary.
-- [ ] Return correct curve and purpose in `src/Coin.cpp`.
+    - [ ] `Mnemonic phrase - > Address` derivation test. Put this test in the `CoinTests.cpp` file
+- [ ] Add relevant constants in `TWP2SHPrefix`, `TWEthereymChainID`, `TWHRP`, etc., as necessary.
 - [ ] Implement address validation and derivation in `src/Coin.cpp`.
-- [ ] Implement coin configuration `src/include/TWCoinTypeConfiguration.cpp`.
 - [ ] Write interface header in `include/TrustWalletCore` and implement the interface in `src/interface`.
     - [ ] Address interface (if necessary).
     - [ ] Signing interface.

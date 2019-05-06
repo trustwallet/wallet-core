@@ -103,6 +103,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .stellar:
                     let expectedResult = "GA3H6I4C5XUBYGVB66KXR27JV5KS3APSTKRUWOIXZ5MVWZKVTLXWKZ2P"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .nano:
+                    let expectedResult = "nano_39gsbcishxn3n7wd17ono4otq5wazwzusqgqigztx73wbrh5jwbdbshfnumc"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .neo:
                     let expectedResult = "AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
@@ -122,7 +125,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "ieCTzUZhc8a5T8Y8suosPw7eMgTtN5PE1H"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .iost:
-                    let expectedResult = "AjvLqiYRd2vbRwqn3uXoUYMpZ3qZ2r57MYUNhYiKu41w"
+                    let expectedResult = "EKRQPgX7nKt8hJABwm9m3BKWGj7kcSECkJnCBauHQWin"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .lux:
                     let expectedResult = "LYL6SZG8S6dyXRFT8Bw4FHUoVef3cWCoPi"
@@ -144,6 +147,9 @@ class CoinAddressDerivationTests: XCTestCase {
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .eos:
                     let expectedResult = "EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .ioTeX:
+                    let expectedResult = "io1qw9cccecw09q7p5kzyqtuhfhvah2mhfrc84jfk"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
