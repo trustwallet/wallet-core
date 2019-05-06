@@ -32,8 +32,12 @@ struct TWStoredKey *_Nonnull TWStoredKeyCreate(TWString *_Nonnull name, TWString
     return new TWStoredKey{ StoredKey(StoredKeyType::mnemonicPhrase, nameString, passwordString, data) };
 }
 
-struct TWStoredKey *_Nonnull TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
+struct TWStoredKey *_Nullable TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
     auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);
+    if (!TW::PrivateKey::isValid(privateKeyData)) {
+        return nullptr;
+    }
+
     auto& nameString = *reinterpret_cast<const std::string*>(name);
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
     auto result = new TWStoredKey{ StoredKey(StoredKeyType::privateKey, nameString, passwordString, privateKeyData) };
@@ -45,8 +49,12 @@ struct TWStoredKey *_Nonnull TWStoredKeyImportPrivateKey(TWData *_Nonnull privat
     return result;
 }
 
-struct TWStoredKey *_Nonnull TWStoredKeyImportHDWallet(TWString *_Nonnull mnemonic, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
+struct TWStoredKey *_Nullable TWStoredKeyImportHDWallet(TWString *_Nonnull mnemonic, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
     auto& mnemonicString = *reinterpret_cast<const std::string*>(mnemonic);
+    if (!TW::HDWallet::isValid(mnemonicString)) {
+        return nullptr;
+    }
+
     auto& nameString = *reinterpret_cast<const std::string*>(name);
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
 
