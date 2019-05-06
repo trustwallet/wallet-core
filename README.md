@@ -23,7 +23,6 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://www.dash.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5.png" width="32" /></a>
 <a href="https://zcoin.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/136.png" width="32" /></a>
 <a href="https://z.cash/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/133.png" width="32" /></a>
-<a href="https://zel.cash/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" /></a>
 <a href="https://testnet.binance.org" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/714.png" width="32" /></a>
 <a href="https://ripple.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/144.png" width="32" /></a>
 <a href="https://callisto.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/820.png" width="32" /></a>
@@ -57,6 +56,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="http://steem.io" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/135.png" width="32" /></a>
 <a href="https://eos.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/194.png" width="32" /></a>
 <a href="https://nano.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/165.png" width="32" /></a>
+<a href="https://zel.cash/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" /></a>
 
 # Usage
 

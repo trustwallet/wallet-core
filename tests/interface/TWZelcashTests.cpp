@@ -57,8 +57,8 @@ TEST(Zelcash, ExtendedKeys) {
 
 TEST(Zelcash, DerivePubkeyFromXpub) {
     auto xpub = STRING("xpub6DATuScKPEk6YvULrHPff1NKC49nyz5mCZQyxSDEQihq3kfoKDYCznLrsdW4KmXw9TryNfEZ9JSD8tJL9UTC3LnBA54YZL7nqMtJm7Ffnoz");
-    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
-    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
+    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/19167'/0'/0/3").get());
+    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/19167'/0'/0/5").get());
 
     TWZcashTAddress address3;
     TWZcashTAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixZcashT);
@@ -74,7 +74,7 @@ TEST(Zelcash, DerivePubkeyFromXpub) {
 
 TEST(Zelcash, DerivePubkeyFromXpub2) {
     auto xpub = STRING("xpub6C7HhMqpir3KBA6ammv5B58RT3XFTJqoZFoj3J56dz9XwehZ2puSH38ERtnz7HaXGxaZP8AHT4M2bSRHpBXUZrbsJ2xg3xs53DGKYCqj8mr");
-    auto pubKey = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeZelcash, TWHDVersionXPUB, TWHDVersionXPRV, 0, 0);
+    auto pubKey = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/19167'/0'/0/0").get());
     auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeZelcash, pubKey));
     assertStringsEqual(address, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt");
 }
