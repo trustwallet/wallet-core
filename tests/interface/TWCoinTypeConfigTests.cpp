@@ -361,7 +361,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto value31 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSteem));
     assertStringsEqual(value31, "steem");
-    
+
     auto value32 = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
     assertStringsEqual(value32, "eos");
 
@@ -469,7 +469,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto value32 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSteem));
     assertStringsEqual(value32, "Steem");
-    
+
     auto value33 = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
     assertStringsEqual(value33, "EOS");
 
