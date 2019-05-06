@@ -136,7 +136,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeZcoin:
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixZcoin}, {TWP2SHPrefixZcoin}});
 
-	case TWCoinTypeZelcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
 
@@ -244,7 +244,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeTron:
         return Tron::Address(publicKey).string();
 
-	case TWCoinTypeZelcash:
+    case TWCoinTypeZelcash:
     case TWCoinTypeZcash:
         return Zcash::TAddress(publicKey, TWP2PKHPrefixZcashT).string();
 
