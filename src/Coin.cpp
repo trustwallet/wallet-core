@@ -27,15 +27,12 @@
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
-<<<<<<< master
 #include "NULS/Address.h"
 #include "Bravo/Address.h"
 #include "Steem/Address.h"
 #include "EOS/Address.h"
 #include "IoTeX/Address.h"
-=======
 #include "Zilliqa/Address.h"
->>>>>>> HEAD~3
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -142,6 +139,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
+
+    case TWCoinTypeZilliqa:
+        return Zilliqa::Address::isValid(string);
 
     case TWCoinTypeNano:
         return Nano::Address::isValid(string);
@@ -252,6 +252,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeZcoin:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixZcoin).string();
+
+    case TWCoinTypeZilliqa:
+        return Zilliqa::Address(publicKey).string();
 
     case TWCoinTypeStellar:
     case TWCoinTypeKin:

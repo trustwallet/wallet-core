@@ -10,8 +10,7 @@
 
 #include <string>
 
-namespace TW {
-namespace Zilliqa {
+namespace TW::Zilliqa {
 
 class Address {
   public:
@@ -37,5 +36,13 @@ class Address {
     std::string string() const;
 };
 
-} // namespace Zilliqa
-} // namespace TW
+inline bool operator==(const Address& lhs, const Address& rhs) {
+    return lhs.bytes == rhs.bytes;
+}
+
+} // namespace TW::Zilliqa
+
+/// Wrapper for C interface.
+struct TWZilliqaAddress {
+    TW::Zilliqa::Address impl;
+};
