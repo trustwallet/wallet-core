@@ -236,7 +236,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(theta, "https://explorer.thetatoken.org/txs/123");
 
     auto grs = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
-    assertStringsEqual(grs, "https://blockbook.groestlcoin.org/tx/123");
+    assertStringsEqual(grs, "https://chainz.cryptoid.info/grs/tx.dws?123");
 
     auto doge = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
     assertStringsEqual(doge, "https://live.blockcypher.com/doge/tx/123");
@@ -251,7 +251,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(ets, "https://ethersocial.net/tx/123");
 
     auto iocoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIocoin, txId));
-    assertStringsEqual(iocoin, "https://blockbook.iocoin.io/tx/123");
+    assertStringsEqual(iocoin, "https://chainz.cryptoid.info/ioc/tx.dws?123");
 
     auto bravo = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBravoCoin, txId));
     assertStringsEqual(bravo, "https://explorer.bravocoin.com/txid/123");
