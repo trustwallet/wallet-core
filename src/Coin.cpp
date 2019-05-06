@@ -32,6 +32,7 @@
 #include "Steem/Address.h"
 #include "EOS/Address.h"
 #include "IoTeX/Address.h"
+#include "Zilliqa/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -102,7 +103,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeIOST:
         return IOST::Account::isValid(string);
     case TWCoinTypeIoTeX:
-        return IoTeX::Address::isValid(string);    
+        return IoTeX::Address::isValid(string);
     case TWCoinTypeLitecoin:
         return Bitcoin::SegwitAddress::isValid(string, HRP_LITECOIN) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLitecoin}});
@@ -138,6 +139,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeZcash:
         return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
+
+    case TWCoinTypeZilliqa:
+        return Zilliqa::Address::isValid(string);
 
     case TWCoinTypeNano:
         return Nano::Address::isValid(string);
@@ -207,7 +211,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeXDai:
     case TWCoinTypeTheta:
         return Ethereum::Address(publicKey).string();
-    
+
     case TWCoinTypeEOS:
         return EOS::Address(publicKey).string();
 
@@ -248,6 +252,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeZcoin:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixZcoin).string();
+
+    case TWCoinTypeZilliqa:
+        return Zilliqa::Address(publicKey).string();
 
     case TWCoinTypeStellar:
     case TWCoinTypeKin:

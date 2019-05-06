@@ -534,5 +534,16 @@
         "publicKeyType": "secp256k1Extended",
         "transactionPath": "/action/",
         "explorer": "https://iotexscan.io"
+    },
+    {
+        "id": "zilliqa",
+        "name": "Zilliqa",
+        "symbol": "ZIL",
+        "decimals": 12,
+        "derivationPath": "m/44'/313'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "transactionPath": "/transactions/",
+        "explorer": "https://explorer.zilliqa.com"
     }
 ]

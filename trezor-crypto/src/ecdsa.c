@@ -917,6 +917,11 @@ int ecdsa_address_decode(const char *addr, uint32_t version, HasherType hasher_b
 		&& address_check_prefix(out, version);
 }
 
+void compress_coords(const curve_point *cp, uint8_t *compressed) {
+  compressed[0] = bn_is_odd(&cp->y) ? 0x03 : 0x02;
+  bn_write_be(&cp->x, compressed + 1);
+}
+
 void uncompress_coords(const ecdsa_curve *curve, uint8_t odd, const bignum256 *x, bignum256 *y)
 {
 	// y^2 = x^3 + a*x + b
