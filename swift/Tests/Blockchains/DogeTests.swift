@@ -41,7 +41,7 @@ class DogeTests: XCTestCase {
         let dgub = "dgub8rjvUmFc6cqR6NRBEj2FBZCHUDUrykPyv24Vea6bCsPex5PzNFrRtr4KN37XgwuVzzC2MikJRW2Ddcp99Ehsqp2iaU4eerNCJVruKxz6Gci"
         let pubkey8 = HDWallet.derive(from: dgub, at: DerivationPath(purpose: .bip44, coinType: coin, account: 0, change: 0, address: 8))!
 
-        let address = BitcoinAddress(publicKey: pubkey8, prefix: P2PKHPrefix.dogecoin.rawValue)
+        let address = BitcoinAddress(publicKey: pubkey8, prefix: P2PKHPrefix.dogecoin.rawValue)!
         XCTAssertEqual(address.description, "DLrjRgrVqbbpGrSQUtSYgsiWWMvRz5skQE")
     }
 }

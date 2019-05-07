@@ -278,8 +278,8 @@ class HDWalletTests: XCTestCase {
         let xpub9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: bitcoin, account: 0, change: 0, address: 9))!
 
 
-        let xpubAddr2 = BitcoinAddress(publicKey: xpub2, prefix: P2PKHPrefix.bitcoin.rawValue)
-        let xpubAddr9 = BitcoinAddress(publicKey: xpub9, prefix: P2PKHPrefix.bitcoin.rawValue)
+        let xpubAddr2 = BitcoinAddress(publicKey: xpub2, prefix: P2PKHPrefix.bitcoin.rawValue)!
+        let xpubAddr9 = BitcoinAddress(publicKey: xpub9, prefix: P2PKHPrefix.bitcoin.rawValue)!
 
         XCTAssertEqual(xpubAddr2.description,  "1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb")
         XCTAssertEqual(xpubAddr9.description, "1DUrqK4hj6vNNUTWXADpbqyjVWUYFD7xTZ")

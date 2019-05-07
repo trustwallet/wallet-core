@@ -66,10 +66,10 @@ TWString *_Nonnull TWBitcoinCashAddressDescription(struct TWBitcoinCashAddress a
     return TWStringCreateWithUTF8Bytes(result);
 }
 
-TWBitcoinAddress TWBitcoinCashAddressLegacyAddress(struct TWBitcoinCashAddress address) {
-    auto result = TWBitcoinAddress();
+TWBitcoinAddress *_Nonnull TWBitcoinCashAddressLegacyAddress(struct TWBitcoinCashAddress address) {
+    auto result = TW::Data(TW::Bitcoin::Address::size);
     size_t outlen = 0;
-    cash_data_to_addr(result.bytes, &outlen, address.bytes, dataSize);
+    cash_data_to_addr(result.data(), &outlen, address.bytes, dataSize);
     assert(outlen == 21 && "Invalid length");
-    return result;
+    return new TWBitcoinAddress{ TW::Bitcoin::Address(result) };
 }

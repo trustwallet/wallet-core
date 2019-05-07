@@ -44,7 +44,7 @@ class BitcoinAddressTests: XCTestCase {
         let privateKey = PrivateKey(data: data)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
-        let address = BitcoinAddress(publicKey: publicKey, prefix: P2PKHPrefix.bitcoin.rawValue)
+        let address = BitcoinAddress(publicKey: publicKey, prefix: P2PKHPrefix.bitcoin.rawValue)!
 
         XCTAssertEqual(address.description, BitcoinAddress(string: "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")!.description)
     }
@@ -60,7 +60,7 @@ class BitcoinAddressTests: XCTestCase {
         // compressed public key starting with 0x03 (greater than midpoint of curve)
         let compressedPK = PublicKey(data: Data(hexString: "030589ee559348bd6a7325994f9c8eff12bd5d73cc683142bd0dd1a17abc99b0dc")!, type: .secp256k1)!
         XCTAssertTrue(compressedPK.isCompressed)
-        XCTAssertEqual(BitcoinAddress(publicKey: compressedPK, prefix: 0).description, "1KbUJ4x8epz6QqxkmZbTc4f79JbWWz6g37")
+        XCTAssertEqual(BitcoinAddress(publicKey: compressedPK, prefix: 0)!.description, "1KbUJ4x8epz6QqxkmZbTc4f79JbWWz6g37")
     }
 
     func testPublicKeyToSegwitAddress() {

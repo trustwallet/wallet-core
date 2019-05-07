@@ -17,15 +17,12 @@ struct TWPublicKey;
 static const size_t TWZcashTAddressSize = 22;
 
 /// Represents a transparent Zcash address.
-TW_EXPORT_STRUCT
-struct TWZcashTAddress {
-    /// Address data consisting of two prefix bytes followed by the public key hash.
-    uint8_t bytes[22];
-};
+TW_EXPORT_CLASS
+struct TWZcashTAddress;
 
 /// Compares two addresses for equality.
 TW_EXPORT_STATIC_METHOD
-bool TWZcashTAddressEqual(struct TWZcashTAddress lhs, struct TWZcashTAddress rhs);
+bool TWZcashTAddressEqual(struct TWZcashTAddress *_Nonnull lhs, struct TWZcashTAddress *_Nonnull rhs);
 
 /// Determines if the data is a valid Bitcoin address.
 TW_EXPORT_STATIC_METHOD
@@ -37,18 +34,21 @@ bool TWZcashTAddressIsValidString(TWString *_Nonnull string);
 
 /// Initializes an address from a base58 sring representaion.
 TW_EXPORT_STATIC_METHOD
-bool TWZcashTAddressInitWithString(struct TWZcashTAddress *_Nonnull address, TWString *_Nonnull string);
+struct TWZcashTAddress *_Nullable TWZcashTAddressCreateWithString(TWString *_Nonnull string);
 
 /// Initializes an address from raw data.
 TW_EXPORT_STATIC_METHOD
-bool TWZcashTAddressInitWithData(struct TWZcashTAddress *_Nonnull address, TWData *_Nonnull data);
+struct TWZcashTAddress *_Nullable TWZcashTAddressCreateWithData(TWData *_Nonnull data);
 
 /// Initializes an address from a public key and a prefix byte.
 TW_EXPORT_STATIC_METHOD
-bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey, uint8_t prefix);
+struct TWZcashTAddress *_Nullable TWZcashTAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix);
+
+TW_EXPORT_METHOD
+void TWZcashTAddressDelete(struct TWZcashTAddress *_Nonnull address);
 
 /// Returns the address base58 string representation.
 TW_EXPORT_PROPERTY
-TWString *_Nonnull TWZcashTAddressDescription(struct TWZcashTAddress address);
+TWString *_Nonnull TWZcashTAddressDescription(struct TWZcashTAddress *_Nonnull address);
 
 TW_EXTERN_C_END
