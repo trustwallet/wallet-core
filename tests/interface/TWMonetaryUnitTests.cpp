@@ -23,7 +23,7 @@ TEST(MonetaryUnit, TransparentAddress) {
     auto address = TWBitcoinAddress();
     TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixMonetaryUnit);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
-    assertStringsEqual(addressString, "t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy");
+    assertStringsEqual(addressString, "7cJ2ye1qsjPCZgHuAiyDH62vHb2QsEj2BX");
 }
 
 TEST(MonetaryUnit, DeriveTransparentAddress) {
@@ -39,7 +39,7 @@ TEST(MonetaryUnit, DeriveTransparentAddress) {
     TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixMonetaryUnit);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
 
-    assertStringsEqual(addressString, "t1Trs2rNPzL4Jm24foTd89KpPWqLtLSciDY");
+    assertStringsEqual(addressString, "7nwu4fU9umfz4DajrPyQh3AQ8ESTywniZc");
 }
 
 TEST(MonetaryUnit, ExtendedKeys) {
@@ -51,8 +51,8 @@ TEST(MonetaryUnit, ExtendedKeys) {
     auto xpub = WRAPS(TWHDWalletGetExtendedPublicKey(wallet.get(), TWPurposeBIP44, TWCoinTypeMonetaryUnit, TWHDVersionXPUB));
     auto xprv = WRAPS(TWHDWalletGetExtendedPrivateKey(wallet.get(), TWPurposeBIP44, TWCoinTypeMonetaryUnit, TWHDVersionXPRV));
 
-    assertStringsEqual(xpub, "xpub6DATuScKPEk6YvULrHPff1NKC49nyz5mCZQyxSDEQihq3kfoKDYCznLrsdW4KmXw9TryNfEZ9JSD8tJL9UTC3LnBA54YZL7nqMtJm7Ffnoz");
-    assertStringsEqual(xprv, "xprv9zB7Vw5RYsBoLSPskFrfHsRae2KJaXMuqLVPA3ocrPArAxLemgDxSz2P2NdreeXKs8N3BxbVPHXeiaamtWC4zoa2Ff8toqa7NEbNWH32Ctb");
+    assertStringsEqual(xpub, "xpub6DKSaEADdUgknSNMW7hECg4GnDP1VQSprsJm5tWjHNupnJeW1LjjEyFy4WRg2zwPZFJFiSVNsyVqFE4uBv1y96tJzFmQo1h5BPZe8pUJkSY");
+    assertStringsEqual(xprv, "xprv9zL6AidKo78TZxHtQ6ADqY7YEBYX5wiyVePAHW77j3NquWKMToRUhAwVDFiAQ1k2UgTeCyFMXTLjS7jUC52VoXiebkpbnZr8t3paNapL8cr");
 }
 
 TEST(MonetaryUnit, DerivePubkeyFromXpub) {
