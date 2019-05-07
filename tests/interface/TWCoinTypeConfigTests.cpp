@@ -118,6 +118,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSemux));
     assertStringsEqual(semux, "SEM");
+    
+    auto mue = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(mue, "MUE");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -159,6 +162,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -277,6 +281,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSemux, txId));
     assertStringsEqual(semux, "https://semux.info/explorer/transaction/123");
+    
+    auto mue = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonetaryUnit, txId));
+    assertStringsEqual(mue, "https://blockbook.monetaryunit.org/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -387,6 +394,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSemux));
     assertStringsEqual(semux, "semux");
+    
+    auto mue = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(mue, "monetaryunit");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -500,4 +510,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSemux));
     assertStringsEqual(semux, "Semux");
+    
+    auto mue = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(mue, "MonetaryUnit");
 }
