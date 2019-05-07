@@ -25,11 +25,11 @@ struct TWStoredKey *_Nullable TWStoredKeyLoad(TWString *_Nonnull path);
 
 /// Imports a private key.
 TW_EXPORT_STATIC_METHOD
-struct TWStoredKey *_Nonnull TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin);
+struct TWStoredKey *_Nullable TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin);
 
 /// Imports an HD wallet.
 TW_EXPORT_STATIC_METHOD
-struct TWStoredKey *_Nonnull TWStoredKeyImportHDWallet(TWString *_Nonnull mnemonic, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin);
+struct TWStoredKey *_Nullable TWStoredKeyImportHDWallet(TWString *_Nonnull mnemonic, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin);
 
 /// Imports a key from JSON.
 TW_EXPORT_STATIC_METHOD

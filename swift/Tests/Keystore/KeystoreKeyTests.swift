@@ -38,7 +38,7 @@ class KeystoreKeyTests: XCTestCase {
 
     func testCreateWallet() {
         let privateKeyData = Data(hexString: "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266")!
-        let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "name", password: "password", coin: .ethereum)
+        let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "name", password: "password", coin: .ethereum)!
         let decrypted = key.decryptPrivateKey(password: "password")!
 
         XCTAssertEqual(decrypted.hexString, privateKeyData.hexString)
