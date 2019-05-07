@@ -20,7 +20,7 @@ public extension CoinType {
             if let addr = BitcoinCashAddress(string: string) {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
-        case .dash, .dogecoin, .zcoin, .lux:
+        case .dash, .dogecoin, .zcoin, .lux, .monetaryUnit:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .callisto,
              .ethereum,
