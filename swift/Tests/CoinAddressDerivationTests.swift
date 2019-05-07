@@ -157,6 +157,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .semux:
                     let expectedResult = "0xfe604170382452f77bc922bc19eb4b53504b09c2"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .monetaryUnit:
+                    let expectedResult = "7kC1oLHygVZ6NwuYjof7xYuqmMgovTbtEE"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }
