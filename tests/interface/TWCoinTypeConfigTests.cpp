@@ -118,6 +118,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSemux));
     assertStringsEqual(semux, "SEM");
+
+    auto dexon = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDEXON));
+    assertStringsEqual(dexon, "DXN");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -159,6 +162,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDEXON), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -277,6 +281,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSemux, txId));
     assertStringsEqual(semux, "https://semux.info/explorer/transaction/123");
+
+    auto dexon = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDEXON, txId));
+    assertStringsEqual(dexon, "https://dexonscan.app/transaction/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -387,6 +394,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSemux));
     assertStringsEqual(semux, "semux");
+
+    auto dexon = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDEXON));
+    assertStringsEqual(dexon, "dexon");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -500,4 +510,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSemux));
     assertStringsEqual(semux, "Semux");
+
+    auto dexon = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDEXON));
+    assertStringsEqual(dexon, "DEXON");
 }
