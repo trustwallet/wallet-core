@@ -13,16 +13,16 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPurpose.h>
-#include <TrustWalletCore/TWZcashTAddress.h>
+#include <TrustWalletCore/TWBitcoinAddress.h>
 
 #include <gtest/gtest.h>
 
 TEST(MonetaryUnit, TransparentAddress) {
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWZcashTAddress();
-    TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
-    auto addressString = WRAPS(TWZcashTAddressDescription(address));
+    auto address = TWBitcoinAddress();
+    TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixMonetaryUnit);
+    auto addressString = WRAPS(TWBitcoinTAddressDescription(address));
     assertStringsEqual(addressString, "t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy");
 }
 
@@ -35,9 +35,9 @@ TEST(MonetaryUnit, DeriveTransparentAddress) {
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), derivationPath.get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
 
-    TWZcashTAddress address;
-    TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
-    auto addressString = WRAPS(TWZcashTAddressDescription(address));
+    TWBitcoinAddress address;
+    TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixMonetaryUnit);
+    auto addressString = WRAPS(TWBitcoinAddressDescription(address));
 
     assertStringsEqual(addressString, "t1Trs2rNPzL4Jm24foTd89KpPWqLtLSciDY");
 }
@@ -60,13 +60,13 @@ TEST(MonetaryUnit, DerivePubkeyFromXpub) {
     auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/31'/0'/0/3").get());
     auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/31'/0'/0/5").get());
 
-    TWZcashTAddress address3;
-    TWZcashTAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixZcashT);
-    auto address3String = WRAPS(TWZcashTAddressDescription(address3));
+    TWBitcoinAddress address3;
+    TWBitcoinAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixMonetaryUnit);
+    auto address3String = WRAPS(TWBitcoinAddressDescription(address3));
 
-    TWZcashTAddress address5;
-    TWZcashTAddressInitWithPublicKey(&address5, pubKey5, TWP2PKHPrefixZcashT);
-    auto address5String = WRAPS(TWZcashTAddressDescription(address5));
+    TWBitcoinAddress address5;
+    TWBitcoinAddressInitWithPublicKey(&address5, pubKey5, TWP2PKHPrefixMonetaryUnit);
+    auto address5String = WRAPS(TWBitcoinAddressDescription(address5));
 
     assertStringsEqual(address3String, "t1NdSKKkBXV3GBDMcPvpWu12qcNwAZwB4hD");
     assertStringsEqual(address5String, "t1Trs2rNPzL4Jm24foTd89KpPWqLtLSciDY");
