@@ -46,7 +46,8 @@ public extension CoinType {
             return TezosAddress(string: string)
         case .tron:
             return TronAddress(string: string)
-        case .zcash:
+        case .zelcash,
+             .zcash:
             return ZcashTAddress(string: string)
         case .nimiq:
             return NimiqAddress(string: string)
@@ -104,7 +105,8 @@ public extension CoinType {
             return Set([P2SHPrefix.dash.rawValue, P2PKHPrefix.dash.rawValue])
         case .zcoin:
             return Set([P2SHPrefix.zcoin.rawValue, P2PKHPrefix.zcoin.rawValue])
-        case .zcash:
+        case .zelcash,
+             .zcash:
             return Set([P2SHPrefix.zcashT.rawValue, P2PKHPrefix.zcashT.rawValue])
         case .qtum:
             return Set([P2PKHPrefix.qtum.rawValue])
