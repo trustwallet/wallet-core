@@ -283,10 +283,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeSemux:
         return Semux::Address(publicKey).string();
-    }
-    
+
     case TWCoinTypeMonetaryUnit:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixMonetaryUnit).string();
+    }
 }
 
 #pragma clang diagnostic pop
