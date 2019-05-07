@@ -16,32 +16,32 @@ using namespace TW;
 using namespace TW::Semux;
 
 std::vector<uint8_t> Transaction::serialize() const {
-    std::vector<uint8_t> data;
+    std::vector<uint8_t> buffer;
 
     auto hash = this->getHash();
-    this->writeBytes(Data(hash.begin(), hash.end()), data);
+    this->writeBytes(Data(hash.begin(), hash.end()), buffer);
 
     auto preimage = this->getPreImage();
-    this->writeBytes(Data(preimage.begin(), preimage.end()), data);
+    this->writeBytes(Data(preimage.begin(), preimage.end()), buffer);
 
-    this->writeBytes(Data(this->signature.begin(), this->signature.end()), data);
+    this->writeBytes(Data(this->signature.begin(), this->signature.end()), buffer);
 
-    return data;
+    return buffer;
 }
 
 std::vector<uint8_t> Transaction::getPreImage() const {
-    std::vector<uint8_t> data;
+    std::vector<uint8_t> buffer;
 
-    data.push_back(this->network);
-    data.push_back(this->transactionType);
-    this->writeBytes(Data(this->to.bytes.begin(), this->to.bytes.end()), data);
-    this->writeLong(this->value, data);
-    this->writeLong(this->fee, data);
-    this->writeLong(this->nonce, data);
-    this->writeLong(this->timestamp, data);
-    this->writeBytes(this->data, data);
+    buffer.push_back(this->network);
+    buffer.push_back(this->transactionType);
+    this->writeBytes(Data(this->to.bytes.begin(), this->to.bytes.end()), buffer);
+    encode64BE(this->value, buffer);
+    encode64BE(this->fee, buffer);
+    encode64BE(this->nonce, buffer);
+    encode64BE(this->timestamp, buffer);
+    this->writeBytes(this->data, buffer);
 
-    return data;
+    return buffer;
 }
 
 std::vector<uint8_t> Transaction::getHash() const {

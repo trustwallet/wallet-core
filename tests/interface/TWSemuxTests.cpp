@@ -11,6 +11,7 @@
 #include <TrustWalletCore/TWSemuxAddress.h>
 #include <TrustWalletCore/TWSemuxSigner.h>
 #include <TrustWalletCore/TWSemuxProto.h>
+#include <TrustWalletCore/TWHDWallet.h>
 
 #include <gtest/gtest.h>
 
@@ -37,4 +38,21 @@ TEST(TWSemuxSigner, Sign) {
             "20e3b076d3d634b9c88b4b2ab281ffd7c440e0eeccf157f2a7cc09c3b7885958c738000114db7cadb25fdcdd546fb0268524107582c3f8999c00000000075bcd1500000000004c4b40000000000000007b000001629b9257d0006064f22068b0e9d103aaae81c099d1d59a44c7ec022550ab8dcccd28104a2a79d27c9dc9a277da765bd5bde2667af78a67a99aa33bf6e352e36546d0285526210e057f987e38f88037e8019cbb774dda106fc051fc4a6320a00294fe1866d08442"
             );
 
+}
+
+TEST(TWSemuxAddress, HDWallet) {
+    auto mnemonic = "shoot island position soft burden budget tooth cruel issue economy destroy above";
+    auto passphrase = "";
+
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(
+            STRING(mnemonic).get(),
+            STRING(passphrase).get()
+    ));
+
+    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeDerivationPath(TWCoinTypeSemux));
+    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
+    auto address = TWSemuxAddressCreateWithPublicKey(publicKey);
+    auto addressStr = WRAPS(TWSemuxAddressDescription(address));
+
+    assertStringsEqual(addressStr, "0xfe604170382452f77bc922bc19eb4b53504b09c2");
 }

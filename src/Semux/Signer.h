@@ -17,7 +17,7 @@ namespace TW::Semux {
 class Signer {
   public:
     /// Signs the given transaction.
-    void sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept;
+    static void sign(const PrivateKey &privateKey, Transaction &transaction) noexcept;
 };
 
 } // namespace TW::Semux

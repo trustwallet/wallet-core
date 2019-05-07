@@ -12,7 +12,7 @@
 using namespace TW;
 using namespace TW::Semux;
 
-void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
+void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexcept {
     auto hash = transaction.getHash();
     auto signature = privateKey.sign(hash, TWCurveED25519);
     auto pubkey = privateKey.getPublicKey(TWPublicKeyTypeED25519);

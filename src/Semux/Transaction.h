@@ -49,24 +49,9 @@ class Transaction {
     std::vector<uint8_t> getHash() const;
 
   private:
-    void writeBytes(const Data bytes, Data &data) const {
-        encodeVarInt(bytes.size(), data);
-        data.insert(data.end(), bytes.begin(), bytes.end());
-    }
-
-    void writeLong(const uint64_t l, Data &data) const {
-        uint32_t i1 = (uint32_t)(l >> 32);
-        uint32_t i2 = (uint32_t)l;
-
-        writeInt(i1, data);
-        writeInt(i2, data);
-    }
-
-    void writeInt(const uint32_t i, Data &data) const {
-        data.push_back(0xFF & (i >> 24));
-        data.push_back(0xFF & (i >> 16));
-        data.push_back(0xFF & (i >> 8));
-        data.push_back(0xFF & i);
+    void writeBytes(const Data &bytes, Data &buffer) const {
+        encodeVarInt(bytes.size(), buffer);
+        buffer.insert(buffer.end(), bytes.begin(), bytes.end());
     }
 };
 
