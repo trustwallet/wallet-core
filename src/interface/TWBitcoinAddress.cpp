@@ -54,6 +54,10 @@ struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithPublicKey(struct TW
     }
 }
 
+void TWBitcoinAddressDelete(struct TWBitcoinAddress *_Nonnull address) {
+    delete address;
+}
+
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress *_Nonnull address) {
     return TWStringCreateWithUTF8Bytes(address->impl.string().c_str());
 }

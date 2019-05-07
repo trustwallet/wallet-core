@@ -42,6 +42,9 @@ struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithData(TWData *_Nonnu
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix);
 
+TW_EXPORT_METHOD
+void TWBitcoinAddressDelete(struct TWBitcoinAddress *_Nonnull address);
+
 /// Returns the address base58 string representation.
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress *_Nonnull address);
