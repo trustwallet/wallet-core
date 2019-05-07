@@ -54,6 +54,12 @@ bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *signature, TWDat
     return pk->impl.verify(s, m);
 }
 
+bool TWPublicKeyVerifySchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message) {
+    auto& s = *reinterpret_cast<const TW::Data *>(signature);
+    auto& m = *reinterpret_cast<const TW::Data *>(message);
+    return pk->impl.verifySchnorr(s, m);
+}
+
 enum TWPublicKeyType TWPublicKeyKeyType(struct TWPublicKey *_Nonnull publicKey) {
     return publicKey->impl.type;
 }

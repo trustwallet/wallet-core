@@ -17,7 +17,7 @@ message SigningInput {
     // Recipient's address.
     string to_address = 4;
 
-    // Amount to send in wei (256-bit numner)
+    // Amount to send in wei (256-bit number)
     bytes amount = 5;
 
     // Optional payload
@@ -31,7 +31,7 @@ message SigningInput {
 message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 1;
-    
+
     // Signature.
     bytes signature = 2;
 }

@@ -110,7 +110,10 @@ class PublicKey {
     PublicKey extended() const;
 
     /// Verifies a signature for the provided message.
-    bool verify(const std::vector<uint8_t>& signature, const std::vector<uint8_t>& message) const;
+    bool verify(const Data& signature, const Data& message) const;
+
+    /// Verifies a schnorr signature for the provided message.
+    bool verifySchnorr(const Data& signature, const Data& message) const;
 
     /// Computes the public key hash.
     ///

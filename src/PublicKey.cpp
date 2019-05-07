@@ -52,8 +52,7 @@ PublicKey PublicKey::extended() const {
     }
 }
 
-bool PublicKey::verify(const std::vector<uint8_t>& signature,
-                       const std::vector<uint8_t>& message) const {
+bool PublicKey::verify(const Data& signature, const Data& message) const {
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
@@ -65,6 +64,20 @@ bool PublicKey::verify(const std::vector<uint8_t>& signature,
         return ed25519_sign_open(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
     case TWPublicKeyTypeED25519Blake2b:
         return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
+    }
+}
+
+bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const {
+    switch (type) {
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeSECP256k1Extended:
+        return ecdsa_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
+    case TWPublicKeyTypeNIST256p1:
+    case TWPublicKeyTypeNIST256p1Extended:
+        return false;
+    case TWPublicKeyTypeED25519:
+    case TWPublicKeyTypeED25519Blake2b:
+        return false;
     }
 }
 
