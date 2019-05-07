@@ -76,5 +76,5 @@ TEST(MonetaryUnit, DerivePubkeyFromXpub2) {
     auto xpub = STRING("xpub6C7HhMqpir3KBA6ammv5B58RT3XFTJqoZFoj3J56dz9XwehZ2puSH38ERtnz7HaXGxaZP8AHT4M2bSRHpBXUZrbsJ2xg3xs53DGKYCqj8mr");
     auto pubKey = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/31'/0'/0/0").get());
     auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeMonetaryUnit, pubKey));
-    assertStringsEqual(address, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt");
+    assertStringsEqual(address, "7brFdbavfxUb7TH8zJBcKu38Zshbeb1VJp");
 }
