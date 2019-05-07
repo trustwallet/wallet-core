@@ -112,6 +112,8 @@ public extension CoinType {
             return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin.rawValue])
         case .viacoin:
             return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
+        case .monetaryUnit:
+            return Set([P2SHPrefix.monetaryUnit.rawValue, P2PKHPrefix.monetaryUnit.rawValue])
         default:
             return Set()
         }
