@@ -115,6 +115,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto zil = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZilliqa));
     assertStringsEqual(zil, "ZIL");
+
+    auto semux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSemux));
+    assertStringsEqual(semux, "SEM");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -155,6 +158,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNano), 30);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -270,9 +274,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto zil = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZilliqa, txId));
     assertStringsEqual(zil, "https://explorer.zilliqa.com/transactions/123");
-  
+
+    auto semux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSemux, txId));
+    assertStringsEqual(semux, "https://semux.info/explorer/transaction/123");
+
     auto zel = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
-        assertStringsEqual(zel, "https://explorer.zel.cash/tx/123");
+    assertStringsEqual(zel, "https://explorer.zel.cash/tx/123");
 
 }
 
@@ -381,9 +388,13 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto zil = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZilliqa));
     assertStringsEqual(zil, "zilliqa");
+  
+    auto semux = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSemux));
+    assertStringsEqual(semux, "semux");
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
         assertStringsEqual(zel, "zelcash");
+
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -495,6 +506,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto zil = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZilliqa));
     assertStringsEqual(zil, "Zilliqa");
 
+    auto semux = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSemux));
+    assertStringsEqual(semux, "Semux");
+
     auto zel = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
-        assertStringsEqual(zel, "Zelcash");
+    assertStringsEqual(zel, "Zelcash");
+
 }
