@@ -22,7 +22,7 @@ TEST(MonetaryUnit, TransparentAddress) {
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
     auto address = TWBitcoinAddress();
     TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixMonetaryUnit);
-    auto addressString = WRAPS(TWBitcoinTAddressDescription(address));
+    auto addressString = WRAPS(TWBitcoinAddressDescription(address));
     assertStringsEqual(addressString, "t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy");
 }
 
