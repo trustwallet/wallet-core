@@ -545,5 +545,16 @@
         "publicKeyType": "secp256k1",
         "transactionPath": "/transactions/",
         "explorer": "https://explorer.zilliqa.com"
+    },
+    {
+        "id": "semux",
+        "name": "Semux",
+        "symbol": "SEM",
+        "decimals": 9,
+        "derivationPath": "m/44'/7562605'/0'/0'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "transactionPath": "/transaction/",
+        "explorer": "https://semux.info/explorer"
     }
 ]

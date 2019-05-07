@@ -82,6 +82,8 @@ public extension CoinType {
             return IoTeXAddress(string: string)
         case .zilliqa:
             return ZilliqaAddress(string: string)
+        case .semux:
+            return SemuxAddress(string: string)
         }
         return .none
     }

@@ -33,6 +33,7 @@
 #include "EOS/Address.h"
 #include "IoTeX/Address.h"
 #include "Zilliqa/Address.h"
+#include "Semux/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -159,6 +160,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeQtum:
         return Bitcoin::SegwitAddress::isValid(string, HRP_QTUM) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixQtum}});
+
+    case TWCoinTypeSemux:
+        return Semux::Address::isValid(string);
     }
 }
 
@@ -273,6 +277,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeQtum:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixQtum).string();
+
+    case TWCoinTypeSemux:
+        return Semux::Address(publicKey).string();
     }
 }
 
