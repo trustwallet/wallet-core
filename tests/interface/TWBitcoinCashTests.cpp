@@ -8,6 +8,7 @@
 
 #include "HexCoding.h"
 #include "proto/Bitcoin.pb.h"
+#include "Bitcoin/Address.h"
 #include "Bitcoin/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
 
@@ -30,8 +31,7 @@ TEST(BitcoinCash, Address) {
 TEST(BitcoinCash, LegacyToCashAddr) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("28071bf4e2b0340db41b807ed8a5514139e5d6427ff9d58dbd22b7ed187103a4").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddress();
-    TWBitcoinAddressInitWithPublicKey(&address, publicKey, 0);
+    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, 0);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
     assertStringsEqual(addressString, "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1");
 
@@ -49,7 +49,7 @@ TEST(BitcoinCash, LockScript) {
     auto legacyString = WRAPS(TWBitcoinAddressDescription(legacyAddress));
     assertStringsEqual(legacyString, "1AwDXywmyhASpCCFWkqhySgZf8KiswFoGh");
 
-    auto keyHash = WRAPD(TWDataCreateWithBytes(legacyAddress.bytes + 1, 20));
+    auto keyHash = WRAPD(TWDataCreateWithBytes(legacyAddress->impl.bytes.data() + 1, 20));
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKeyHash(keyHash.get()));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a9146cfa0e96c34fce09c0e4e671fcd43338c14812e588ac");

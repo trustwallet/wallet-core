@@ -53,6 +53,6 @@ TWString *_Nonnull TWBitcoinCashAddressDescription(struct TWBitcoinCashAddress a
 
 /// Returns the legacy bitcoin address.
 TW_EXPORT_PROPERTY
-struct TWBitcoinAddress TWBitcoinCashAddressLegacyAddress(struct TWBitcoinCashAddress address);
+struct TWBitcoinAddress *_Nonnull TWBitcoinCashAddressLegacyAddress(struct TWBitcoinCashAddress address);
 
 TW_EXTERN_C_END
