@@ -68,8 +68,8 @@ TEST(MonetaryUnit, DerivePubkeyFromXpub) {
     TWBitcoinAddressInitWithPublicKey(&address5, pubKey5, TWP2PKHPrefixMonetaryUnit);
     auto address5String = WRAPS(TWBitcoinAddressDescription(address5));
 
-    assertStringsEqual(address3String, "t1NdSKKkBXV3GBDMcPvpWu12qcNwAZwB4hD");
-    assertStringsEqual(address5String, "t1Trs2rNPzL4Jm24foTd89KpPWqLtLSciDY");
+    assertStringsEqual(address3String, "7XAV4j6ev3fgfWY6rDLVXCHWRnsBBv4o5i");
+    assertStringsEqual(address5String, "7cPunFisNtgjFKFAFk96mX54LFGtvozo3d");
 }
 
 TEST(MonetaryUnit, DerivePubkeyFromXpub2) {
