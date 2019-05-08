@@ -12,7 +12,7 @@ class LitecoinTests: XCTestCase {
         let privateKey1 = PrivateKey(data: Data(hexString: "a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730")!)!
         let publicKey1 = privateKey1.getPublicKeySecp256k1(compressed: true)
 
-        let legacyAddress = BitcoinAddress(publicKey: publicKey1, prefix: P2PKHPrefix.litecoin.rawValue)
+        let legacyAddress = BitcoinAddress(publicKey: publicKey1, prefix: P2PKHPrefix.litecoin.rawValue)!
         XCTAssertEqual(BitcoinAddress(string: "LV7LV7Z4bWDEjYkfx9dQo6k6RjGbXsg6hS")!.description, legacyAddress.description)
 
         let privateKey2 = PrivateKey(data: Data(hexString: "f6ee7e6c9bd2f4dc8f0db0dc4679de06c998afc42d825edf7966dd4488b0aa1f")!)!
@@ -65,8 +65,8 @@ class LitecoinTests: XCTestCase {
         let xpubAddr2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: litecoin, account: 0, change: 0, address: 2))!
         let xpubAddr9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: litecoin, account: 0, change: 0, address: 9))!
 
-        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: P2PKHPrefix.litecoin.rawValue).description, "LdJvSS8gcRSN1WbSEj6srV8dKzGcybHGKt")
-        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: P2PKHPrefix.litecoin.rawValue).description, "Laj4byUKgW3wuou4G3XCAPWqzVc3SdEpQk")
+        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: P2PKHPrefix.litecoin.rawValue)!.description, "LdJvSS8gcRSN1WbSEj6srV8dKzGcybHGKt")
+        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: P2PKHPrefix.litecoin.rawValue)!.description, "Laj4byUKgW3wuou4G3XCAPWqzVc3SdEpQk")
     }
 
     func testDeriveFromMtub() {

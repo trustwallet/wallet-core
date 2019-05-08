@@ -20,8 +20,7 @@
 TEST(Qtum, LegacyAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddress();
-    TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixQtum);
+    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixQtum);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
     assertStringsEqual(addressString, "QWVNLCXwhJqzut9YCLxbeMTximr2hmw7Vr");
 }
@@ -73,12 +72,10 @@ TEST(Qtum, DeriveFromXpub) {
     auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/2301'/0'/0/2").get());
     auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/2301'/0'/0/9").get());
 
-    TWBitcoinAddress address2;
-    TWBitcoinAddressInitWithPublicKey(&address2, pubKey2, TWP2PKHPrefixQtum);
+    auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2, TWP2PKHPrefixQtum);
     auto address2String = WRAPS(TWBitcoinAddressDescription(address2));
 
-    TWBitcoinAddress address9;
-    TWBitcoinAddressInitWithPublicKey(&address9, pubKey9, TWP2PKHPrefixQtum);
+    auto address9 = TWBitcoinAddressCreateWithPublicKey(pubKey9, TWP2PKHPrefixQtum);
     auto address9String = WRAPS(TWBitcoinAddressDescription(address9));
 
     assertStringsEqual(address2String, "QStYeAAfiYKxsABzY9yugHDpm5bsynYPqc");
