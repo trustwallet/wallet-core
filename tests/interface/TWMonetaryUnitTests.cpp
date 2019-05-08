@@ -32,7 +32,7 @@ TEST(MonetaryUnit, DeriveTransparentAddress) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto derivationPath = STRING("m/44'/31'/0'/0/5");
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), derivationPath.get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), true);
 
     auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixMonetaryUnit);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
