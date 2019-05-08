@@ -8,6 +8,10 @@
 
 #include "../Coin.h"
 
+enum TWBlockchain TWCoinTypeBlockchain(enum TWCoinType coin) {
+    return TW::blockchain(coin);
+}
+
 enum TWPurpose TWCoinTypePurpose(enum TWCoinType coin) {
     return TW::purpose(coin);
 }

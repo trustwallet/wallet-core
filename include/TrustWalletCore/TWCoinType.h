@@ -7,6 +7,7 @@
 #pragma once
 
 #include "TWBase.h"
+#include "TWBlockchain.h"
 #include "TWCurve.h"
 #include "TWPrivateKey.h"
 #include "TWPurpose.h"
@@ -67,6 +68,10 @@ enum TWCoinType {
     TWCoinTypeZilliqa = 313,
     TWCoinTypeSemux = 7562605,
 };
+
+/// Returns the blockchain for a coin type.
+TW_EXPORT_PROPERTY
+enum TWBlockchain TWCoinTypeBlockchain(enum TWCoinType coin);
 
 /// Returns the purpose for a coin type.
 TW_EXPORT_PROPERTY

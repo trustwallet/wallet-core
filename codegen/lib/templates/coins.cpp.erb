@@ -12,6 +12,15 @@
 
 using namespace TW;
 
+TWBlockchain TW::blockchain(TWCoinType coin) {
+    switch (coin) {
+<% coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return TWBlockchain<%= format_name(coin['blockchain']) %>;
+<% end -%>
+    }
+}
+
 TWPurpose TW::purpose(TWCoinType coin) {
     switch (coin) {
 <% coins.each do |coin| -%>
