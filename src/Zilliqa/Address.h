@@ -27,10 +27,13 @@ class Address {
     static bool isValid(const std::string& string);
 
     /// Initializes an address from a string representation.
-    Address(const std::string& string);
+    explicit Address(const std::string& string);
+
+    /// Initializes an address with a collection of bytes.
+    explicit Address(const Data& data);
 
     /// Initializes an address from a public key.
-    Address(const PublicKey& publicKey);
+    explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address. 20-bytes hex-encoded
     std::string string() const;

@@ -71,7 +71,7 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeSECP256k1Extended:
-        return ecdsa_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
+        return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
         return false;

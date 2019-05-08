@@ -38,6 +38,5 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    const std::string addressString = "0x";
-    return addressString + hex(bytes);
+    return "0x" + hex(bytes);
 }

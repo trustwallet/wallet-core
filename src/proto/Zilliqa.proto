@@ -20,8 +20,8 @@ message SigningInput {
     // GasPrice (256-bit number)
     bytes gas_price        = 5;
 
-    // GasLimit (256-bit number)
-    bytes gas_limit        = 6;
+    // GasLimit
+    uint64 gas_limit        = 6;
 
     // Private Key
     bytes private_key      = 7;

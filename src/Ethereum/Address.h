@@ -24,7 +24,7 @@ class Address {
     std::array<uint8_t, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
-    static bool isValid(const std::vector<uint8_t>& data) { return data.size() == size; }
+    static bool isValid(const Data& data) { return data.size() == size; }
 
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string);
@@ -33,7 +33,7 @@ class Address {
     explicit Address(const std::string& string);
 
     /// Initializes an address with a collection of bytes.
-    explicit Address(const std::vector<uint8_t>& data);
+    explicit Address(const Data& data);
 
     /// Initializes an address with a public key.
     explicit Address(const PublicKey& publicKey);

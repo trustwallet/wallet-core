@@ -1151,7 +1151,7 @@ int ecdsa_sig_to_der(const uint8_t *sig, uint8_t *der)
 	return *len + 2;
 }
 
-int ecdsa_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *msg, const uint32_t msg_len, uint8_t *sig)
+int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *msg, const uint32_t msg_len, uint8_t *sig)
 {
 	int i;
 	bignum256 k, randk;
@@ -1197,7 +1197,7 @@ int ecdsa_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const 
 	return -1;
 }
 
-int ecdsa_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
+int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
 {
 	schnorr_sign_pair sign;
 	bn_read_be(sig, &sign.r);

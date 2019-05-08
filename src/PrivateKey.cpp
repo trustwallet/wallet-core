@@ -134,7 +134,7 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
     Data sig(64);
     switch (curve) {
     case TWCurveSECP256k1: {
-        success = ecdsa_schnorr_sign(&secp256k1, bytes.data(), message.data(), static_cast<uint32_t>(message.size()), sig.data()) == 0;
+        success = zil_schnorr_sign(&secp256k1, bytes.data(), message.data(), static_cast<uint32_t>(message.size()), sig.data()) == 0;
     } break;
 
     case TWCurveNIST256p1:
