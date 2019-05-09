@@ -27,3 +27,8 @@ class Address : public TW::Base58Address<21> {
 };
 
 } // namespace TW::Bitcoin
+
+/// Wrapper for C interface.
+struct TWBitcoinAddress {
+    TW::Bitcoin::Address impl;
+};

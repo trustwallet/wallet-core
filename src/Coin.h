@@ -12,6 +12,7 @@
 #include "PrivateKey.h"
 #include "PublicKey.h"
 
+#include <TrustWalletCore/TWBlockchain.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWCurve.h>
 #include <TrustWalletCore/TWHDVersion.h>
@@ -23,6 +24,9 @@ namespace TW {
 
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);
+
+/// Returns the blockchain for a coin type.
+TWBlockchain blockchain(TWCoinType coin);
 
 /// Returns the purpose for a coin type.
 TWPurpose purpose(TWCoinType coin);
