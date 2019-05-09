@@ -20,8 +20,7 @@
 TEST(Zelcash, TransparentAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWZcashTAddress();
-    TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
+    auto address = TWZcashTAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixZcashT);
     auto addressString = WRAPS(TWZcashTAddressDescription(address));
     assertStringsEqual(addressString, "t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy");
 }
@@ -33,10 +32,9 @@ TEST(Zelcash, DeriveTransparentAddress) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     auto derivationPath = STRING("m/44'/19167'/0'/0/5");
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), derivationPath.get()));
-    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), true);
 
-    TWZcashTAddress address;
-    TWZcashTAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixZcashT);
+    auto address = TWZcashTAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixZcashT);
     auto addressString = WRAPS(TWZcashTAddressDescription(address));
 
     assertStringsEqual(addressString, "t1Trs2rNPzL4Jm24foTd89KpPWqLtLSciDY");
@@ -60,12 +58,10 @@ TEST(Zelcash, DerivePubkeyFromXpub) {
     auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/19167'/0'/0/3").get());
     auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/19167'/0'/0/5").get());
 
-    TWZcashTAddress address3;
-    TWZcashTAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixZcashT);
+    auto address3 = TWZcashTAddressCreateWithPublicKey(pubKey3, TWP2PKHPrefixZcashT);
     auto address3String = WRAPS(TWZcashTAddressDescription(address3));
 
-    TWZcashTAddress address5;
-    TWZcashTAddressInitWithPublicKey(&address5, pubKey5, TWP2PKHPrefixZcashT);
+    auto address5 = TWZcashTAddressCreateWithPublicKey(pubKey5, TWP2PKHPrefixZcashT);
     auto address5String = WRAPS(TWZcashTAddressDescription(address5));
 
     assertStringsEqual(address3String, "t1NdSKKkBXV3GBDMcPvpWu12qcNwAZwB4hD");
@@ -75,6 +71,6 @@ TEST(Zelcash, DerivePubkeyFromXpub) {
 TEST(Zelcash, DerivePubkeyFromXpub2) {
     auto xpub = STRING("xpub6C7HhMqpir3KBA6ammv5B58RT3XFTJqoZFoj3J56dz9XwehZ2puSH38ERtnz7HaXGxaZP8AHT4M2bSRHpBXUZrbsJ2xg3xs53DGKYCqj8mr");
     auto pubKey = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/19167'/0'/0/0").get());
-    auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeZelcash, pubKey));
+    auto address = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeZcash, pubKey));
     assertStringsEqual(address, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt");
 }
