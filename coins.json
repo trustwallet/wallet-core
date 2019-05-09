@@ -116,6 +116,18 @@
         "explorer": "https://gastracker.io"
     },
     {
+        "id": "ellaism",
+        "name": "Ellaism",
+        "symbol": "ELLA",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivationPath": "m/44'/163'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "transactionPath": "/tx/",
+        "explorer": "https://explorer.ellaism.org"
+    },
+    {
         "id": "ethersocial",
         "name": "Ethersocial",
         "symbol": "ESN",

@@ -23,6 +23,7 @@ public extension CoinType {
         case .dash, .dogecoin, .zcoin, .lux:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .callisto,
+             .ellaism,
              .ethereum,
              .ethereumClassic,
              .ethersocial,
