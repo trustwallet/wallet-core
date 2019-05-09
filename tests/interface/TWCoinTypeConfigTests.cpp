@@ -283,7 +283,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(semux, "https://semux.info/explorer/transaction/123");
     
     auto mue = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonetaryUnit, txId));
-    assertStringsEqual(mue, "https://blockbook.monetaryunit.org/tx/123");
+    assertStringsEqual(mue, "https://explorer.monetaryunit.org/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
