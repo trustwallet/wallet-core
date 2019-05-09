@@ -28,10 +28,10 @@ namespace TW::NEO {
 
     public:
         int64_t size() const;
-
         void deserialize(const Data &data) const;
-
         Data serialize() const;
+
+        Data Transaction::getHash() const;
     };
 
 } // namespace TW::NEO

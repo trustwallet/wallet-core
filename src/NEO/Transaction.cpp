@@ -65,3 +65,7 @@ Data Transaction::serialize() const {
     return std::move(resp);
 }
 #undef SERIALIZE_V
+
+Data Transaction::getHash() const {
+    return Hash::sha256(Hash::sha256(serialize()));
+}
