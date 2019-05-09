@@ -27,7 +27,7 @@ struct TransactionBuilder {
         auto unspentSelector = UnspentSelector(calculator);
         if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
             output_size = 1;
-            auto newAmount = 0;
+            Amount newAmount = 0;
             auto input_size = 0;
 
             for (auto utxo : input.utxo()) {
