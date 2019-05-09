@@ -22,19 +22,13 @@ namespace TW::NEO {
         Data publicKey;
         TW::PrivateKey privateKey;
         std::string address;
-
     public:
         explicit Signer(TW::PrivateKey priKey);
-
         PrivateKey getPrivateKey() const;
-
         PublicKey getPublicKey() const;
-
         Address getAddress() const;
 
-        void sign(Transaction &tx) const;
-
-        void addSign(Transaction &tx) const;
+        Data sign(Transaction &tx) const;
     };
 } // namespace TW::NEO
 

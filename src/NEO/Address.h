@@ -33,9 +33,6 @@ namespace TW::NEO {
         /// Initializes a NEO address with a public key.
         explicit Address(const PublicKey &publicKey);
 
-        /// Initializes an address with a collection of public key.
-        Address(uint8_t m, const std::vector<Data> &publicKeys);
-
         Data toScriptHash(const Data &data) const;
     };
 

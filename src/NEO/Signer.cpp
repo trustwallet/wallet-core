@@ -33,20 +33,8 @@ Address Signer::getAddress() const {
     return Address(address);
 }
 
-void Signer::sign(Transaction &tx) const {
-    if (tx.sigVec.size() >= Transaction::sigVecLimit) {
-        throw std::runtime_error("the number of transaction signatures should not be over 16.");
-    }
-    auto signature = getPrivateKey().sign(Hash::sha256(tx.txHash()), TWCurveNIST256p1);
+Data Signer::sign(Transaction &tx) const {
+    auto signature = getPrivateKey().sign(Hash::sha256(tx.getHash()), TWCurveNIST256p1);
     signature.pop_back();
-    tx.sigVec.emplace_back(publicKey, signature, 1);
-}
-
-void Signer::addSign(Transaction &tx) const {
-    if (tx.sigVec.size() >= Transaction::sigVecLimit) {
-        throw std::runtime_error("the number of transaction signatures should not be over 16.");
-    }
-    auto signature = getPrivateKey().sign(Hash::sha256(tx.txHash()), TWCurveNIST256p1);
-    signature.pop_back();
-    tx.sigVec.emplace_back(publicKey, signature, 1);
+    return signature;
 }
