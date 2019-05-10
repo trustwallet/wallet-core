@@ -5,6 +5,7 @@
 #include "ISerializable.h"
 #include "../uint256.h"
 #include "../Data.h"
+#include "../ReadData.h"
 
 namespace TW::NEO {
     class CoinReference : public ISerializable {
@@ -24,7 +25,7 @@ namespace TW::NEO {
         }
 
         Data serialize() const override {
-            return concat(store(prevHash), store(prevIndex));
+            return concat(store(prevHash), writeUshort(prevIndex));
         }
     };
 }

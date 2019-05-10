@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../uint256.h"
-#include "../uint160.hpp"
+#include "../UInt.hpp"
 #include "../Data.h"
 #include "../ReadData.h"
 #include "ISerializable.h"
@@ -22,11 +22,11 @@ namespace TW::NEO {
         void deserialize(const Data &data, int initial_pos = 0) override {
             assetId = load(data, initial_pos);
             value = readInt64(data, initial_pos + sizeof(assetId));
-            scriptHash = load160(data, initial_pos + sizeof(assetId) + sizeof(value));
+            scriptHash = load<uint160_t>(data, initial_pos + sizeof(assetId) + sizeof(value));
         }
 
         Data serialize() const override {
-            return concat(concat(store(assetId), writeLong(value)), storeUint160(scriptHash));
+            return concat(concat(store(assetId), writeLong(value)), store<uint160_t>(scriptHash));
         }
     };
 }
