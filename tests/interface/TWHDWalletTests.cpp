@@ -153,6 +153,15 @@ TEST(HDWallet, DeriveDoge) {
     assertStringsEqual(xpub, "dgub8rjvUmFc6cqR6NRBEj2FBZCHUDUrykPyv24Vea6bCsPex5PzNFrRtr4KN37XgwuVzzC2MikJRW2Ddcp99Ehsqp2iaU4eerNCJVruKxz6Gci");
 }
 
+TEST(HDWallet, DeriveZilliqa) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
+    auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeZilliqa));
+    auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), true);
+    auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
+
+    assertHexEqual(publicKeyData, "b49a9fb16cd2b46ee538be807f712073009ea528e407a25a4bf91a63c3e49f99");
+}
+
 TEST(HDWallet, DeriveAionPrivateKey) {
     auto words = STRING("zero behind diesel afraid edge salad drop episode high pear twin resource");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
