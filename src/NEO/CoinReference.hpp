@@ -20,7 +20,7 @@ namespace TW::NEO {
         }
 
         void deserialize(const Data &data, int initial_pos = 0) override {
-            prevHash = load(data, initial_pos);
+            prevHash = load(readBytes(data, 32, initial_pos));
             prevIndex = readUInt16(data, size() - sizeof(prevIndex));
         }
 
