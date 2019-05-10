@@ -20,8 +20,8 @@ namespace TW::NEO {
         }
 
         void deserialize(const Data &data, int initial_pos = 0) override {
-            prevHash = load(readBytes(data, 32, initial_pos));
-            prevIndex = readUInt16(data, size() - sizeof(prevIndex));
+            prevHash = load<uint256_t>(readBytes(data, 32, initial_pos));
+            prevIndex = readUInt16(data, initial_pos + 32);
         }
 
         Data serialize() const override {
