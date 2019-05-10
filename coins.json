@@ -601,7 +601,7 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "transactionPath": "/tx/",
-        "explorer": "https://viewblock.io/zilliqa/"
+        "explorer": "https://viewblock.io/zilliqa"
     },
     {
         "id": "semux",

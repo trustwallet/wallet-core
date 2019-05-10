@@ -159,7 +159,7 @@ TEST(HDWallet, DeriveZilliqa) {
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), true);
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
-    assertHexEqual(publicKeyData, "b49a9fb16cd2b46ee538be807f712073009ea528e407a25a4bf91a63c3e49f99");
+    assertHexEqual(publicKeyData, "0262746d4988c63b9972c63272461e9fa080d4dfa2a1fda3dd01285620c0a60c22");
 }
 
 TEST(HDWallet, DeriveAionPrivateKey) {
