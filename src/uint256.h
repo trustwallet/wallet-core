@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Data.h"
+#include "UInt.hpp"
 
 #include <boost/multiprecision/cpp_int.hpp>
 
@@ -17,35 +18,18 @@ using uint256_t = boost::multiprecision::uint256_t;
 
 /// Loads a `uint256_t` from a collection of bytes.
 inline uint256_t load(const Data& data, int initial_position = 0) {
-    using boost::multiprecision::cpp_int;
-    if (data.empty()) {
-        return uint256_t(0);
-    }
-    uint256_t result;
-    import_bits(result, data.begin() + initial_position, data.end());
-    return result;
+    return load<uint256_t>(data, initial_position);
 }
 
 /// Loads a `uint256_t` from Protobuf bytes (which are wrongly represented as
 /// std::string).
 inline uint256_t load(const std::string& data) {
-    using boost::multiprecision::cpp_int;
-    if (data.empty()) {
-        return uint256_t(0);
-    }
-    uint256_t result;
-    import_bits(result, reinterpret_cast<const byte*>(data.data()),
-                reinterpret_cast<const byte*>(data.data() + data.size()));
-    return result;
+    return load<uint256_t>(data);
 }
 
 /// Stores a `uint256_t` as a collection of bytes.
 inline Data store(const uint256_t& v) {
-    using boost::multiprecision::cpp_int;
-    Data bytes;
-    bytes.reserve(32);
-    export_bits(v, std::back_inserter(bytes), 8);
-    return bytes;
+    return store<uint256_t>(v);
 }
 
 } // namespace TW

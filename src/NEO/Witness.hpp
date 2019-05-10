@@ -2,7 +2,7 @@
 
 #include "ISerializable.h"
 #include "../Data.h"
-#include "../uint160.hpp"
+#include "../UInt.hpp"
 
 namespace TW::NEO {
     class Witness : public ISerializable {
