@@ -22,10 +22,9 @@ using namespace TW;
 using namespace Bitcoin;
 
 TEST(MonetaryUnitTransaction, Encode) {
-    continue;
+    
 }
 
 TEST(MonetaryUnitTransaction, Signing) {
-  continue;
-    );
+
 }
