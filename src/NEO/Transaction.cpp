@@ -1,5 +1,8 @@
+#include "../Data.h"
+#include "../ReadData.h"
 #include "Transaction.h"
 
+using namespace TW;
 using namespace TW::NEO;
 
 #define SIZE_INC(V, X) {\
@@ -30,15 +33,14 @@ int64_t Transaction::size() const {
         (VEC).push_back(ta); \
     }\
 }
-void Transaction::deserialize(const Data &data) const {
-    TransactionType txType = (TransactionType) readUInt16(data);
+void Transaction::deserialize(const Data &data, int initial_pos) {
+    TransactionType txType = (TransactionType) readUInt16(data, initial_pos);
     if (txType != type) {
         throw std::invalid_argument("Transaction::DeserializeUnsigned FormatException");
     }
 
-    Version = data[4];
-//            DeserializeExclusiveData(reader);
-    int pos = 5;
+    version = data[initial_pos + 4];
+    int pos = initial_pos + 5;
     DESERIALIZE_V(pos, TransactionAttribute, attributes);
     DESERIALIZE_V(pos, CoinReference, inInputs);
     DESERIALIZE_V(pos, TransactionOutput, outputs);
@@ -47,22 +49,22 @@ void Transaction::deserialize(const Data &data) const {
 #undef DESERIALIZE_V
 
 #define SERIALIZE_V(R, V) { \
-    append((R), write((V).size())); \
+    append((R), writeUlong((V).size())); \
     for (auto &__x_: (V)) { \
         append((R), __x_.serialize()); \
     } \
 }
 Data Transaction::serialize() const {
     Data resp(size());
-    append(resp, write(type));
-    append(resp, write(version));
+    append(resp, writeInt(type));
+    resp.push_back(version);
 
     SERIALIZE_V(resp, attributes);
     SERIALIZE_V(resp, inInputs);
     SERIALIZE_V(resp, outputs);
     SERIALIZE_V(resp, witnesses);
 
-    return std::move(resp);
+    return resp;
 }
 #undef SERIALIZE_V
 

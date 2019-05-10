@@ -9,18 +9,19 @@ namespace TW::NEO {
     public:
         Data invocationScript;
         Data verificationScript;
-
     public:
-        int64_t size() const {
+        virtual ~Witness() {}
+
+        int64_t size() const override {
             return invocationScript.size() + verificationScript.size();
         }
 
-        void deserialize(const Data &data) {
-            invocationScript = readBytes(data, 65536);
-            verificationScript = readBytes(data, 65536, invocationScript.size());
+        void deserialize(const Data &data, int initial_pos = 0) override {
+            invocationScript = readBytes(data, 65536, initial_pos);
+            verificationScript = readBytes(data, 65536, initial_pos + invocationScript.size());
         }
 
-        Data serialize() const {
+        Data serialize() const override {
             return concat(invocationScript, verificationScript);
         }
     };
