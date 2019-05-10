@@ -6,21 +6,15 @@
 
 #pragma once
 
-#include "PublicKey.h"
-#include "TransactionType.h"
-#include "TransactionAttribute.hpp"
-#include "../PublicKey.h"
-
-#include <string>
+#include <cstdint>
+#include "../Data.h"
 
 namespace TW::NEO {
     class ISerializable {
     public:
         virtual int64_t size() const = 0;
-
-        virtual void deserialize(const Data &data) = 0;
-
         virtual Data serialize() const = 0;
+        virtual void deserialize(const Data &data) = 0;
     };
 
 } // namespace TW::NEO

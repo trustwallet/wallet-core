@@ -8,17 +8,20 @@
 
 #include "Data.h"
 
+// #include <boost/multiprecision/number.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_int/cpp_int_config.hpp>
 
 namespace TW {
 
-using int160_t = number<boost::multiprecision::backends::cpp_int_backend<160, 160, boost::multiprecision::signed_magnitude, boost::multiprecision::unchecked, void>>;
-using uint160_t = number<boost::multiprecision::backends::cpp_int_backend<160, 160, boost::multiprecision::unsigned_magnitude, boost::multiprecision::unchecked, void>>;
+namespace bm = boost::multiprecision;
+
+using int160_t = bm::number<bm::backends::cpp_int_backend<160, 160, bm::signed_magnitude, bm::unchecked, void>>;
+using uint160_t = bm::number<bm::backends::cpp_int_backend<160, 160, bm::unsigned_magnitude, bm::unchecked, void>>;
 
 /// Loads a `uint160_t` from a collection of bytes.
 inline uint160_t load160(const Data &data, int initial_position = 0) {
-    using boost::multiprecision::cpp_int;
+    using bm::cpp_int;
     if (data.empty()) {
         return uint160_t(0);
     }
@@ -30,7 +33,7 @@ inline uint160_t load160(const Data &data, int initial_position = 0) {
 /// Loads a `uint160_t` from Protobuf bytes (which are wrongly represented as
 /// std::string).
 inline uint160_t load160(const std::string &data) {
-    using boost::multiprecision::cpp_int;
+    using bm::cpp_int;
     if (data.empty()) {
         return uint160_t(0);
     }
@@ -41,8 +44,8 @@ inline uint160_t load160(const std::string &data) {
 }
 
 /// Stores a `uint160_t` as a collection of bytes.
-inline Data store(const uint160_t &v) {
-    using boost::multiprecision::cpp_int;
+inline Data storeUint160(const uint160_t &v) {
+    using bm::cpp_int;
     Data bytes;
     bytes.reserve(20);
     export_bits(v, std::back_inserter(bytes), 8);

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "ISerializable.hpp"
+#include "ISerializable.h"
 #include "../uint256.h"
 #include "../Data.h"
 
@@ -12,17 +12,17 @@ namespace TW::NEO {
         uint256_t prevHash;
         ushort prevIndex;
 
-        int64_t size() const {
+        int64_t size() const override {
             return prevHash.precision() + sizeof(prevIndex);
         }
 
-        void deserialize(const Data &data) {
+        void deserialize(const Data &data) override {
             prevHash = load(data);
             prevIndex = readUInt16(data, size() - sizeof(prevIndex));
         }
 
-        Data serialize() const {
-            return concat(store(prevHash), write(prevIndex));
+        Data serialize() const override {
+            return concat(store(prevHash), store(prevIndex));
         }
     };
 }

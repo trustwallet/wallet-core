@@ -8,30 +8,30 @@
 
 #include <string>
 
-#include "ISerializable.hpp"
+#include "ISerializable.h"
 #include "PublicKey.h"
 #include "TransactionType.h"
 #include "TransactionAttribute.hpp"
+#include "TransactionOutput.hpp"
 #include "CoinReference.hpp"
 #include "Witness.hpp"
 
 namespace TW::NEO {
     class Transaction : public ISerializable {
     private:
-        const TransactionType type;
+        TransactionType type;
         byte version;
 
         std::vector<TransactionAttribute> attributes;
         std::vector<CoinReference> inInputs;
         std::vector<TransactionOutput> outputs;
         std::vector<Witness> witnesses;
-
     public:
-        int64_t size() const;
-        void deserialize(const Data &data) const;
-        Data serialize() const;
+        int64_t size() const override;
+        void deserialize(const Data &data) override;
+        Data serialize() const override;
 
-        Data Transaction::getHash() const;
+        Data getHash() const;
     };
 
 } // namespace TW::NEO

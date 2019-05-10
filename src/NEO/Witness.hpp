@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ISerializable.hpp"
+#include "ISerializable.h"
 #include "../Data.h"
 #include "../uint160.hpp"
 

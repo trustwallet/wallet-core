@@ -9,14 +9,9 @@
 #include "Address.h"
 #include "Transaction.h"
 #include "../PrivateKey.h"
-
-#include <array>
-#include <string>
-#include <vector>
-
+#include "../Data.h"
 
 namespace TW::NEO {
-
     class Signer {
     private:
         Data publicKey;
