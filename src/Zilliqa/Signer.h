@@ -17,8 +17,11 @@ class Signer {
   public:
     Signer() = delete;
 
-    /// Signs the given transaction.
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    /// compute preImage from signing input.
+    static Data getPreImage(const Proto::SigningInput& input) noexcept;
+
+    /// Signs the given transaction preImage.
+    static Proto::SigningOutput sign(const Data& preImage, const PrivateKey& key) noexcept;
 };
 
 } // namespace TW::Zilliqa

@@ -36,7 +36,8 @@ class PrivateKeyTests: XCTestCase {
     func testSignSchnorr() {
         let privateKey = PrivateKey(data: Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let message = "hello schnorr".data(using: .utf8)!
+        let data = "hello schnorr".data(using: .utf8)!
+        let message = Hash.sha256(data: data)
 
         let sig = privateKey.signSchnorr(message: message, curve: .secp256k1)!
         let verified = publicKey.verifySchnorr(signature: sig, message: message)
