@@ -2,49 +2,47 @@
 
 #include <string>
 
-using namespace TW;
-
-inline Data readBytes(const Data &from, int max, int initial_pos = 0) {
+inline TW::Data TW::readBytes(const TW::Data &from, int max, int initial_pos) {
     if (from.size() - initial_pos < max) {
         throw std::invalid_argument("Data::Cannot read enough bytes!");
     }
-    return Data(from.begin() + initial_pos, from.begin() + initial_pos + max);
+    return TW::Data(from.begin() + initial_pos, from.begin() + initial_pos + max);
 }
 
-inline uint16_t readUInt16(const Data &from, int initial_pos = 0) {
-    Data bytes = readBytes(from, 2, initial_pos);
+inline uint16_t TW::readUInt16(const TW::Data &from, int initial_pos) {
+    TW::Data bytes = readBytes(from, 2, initial_pos);
     uint16_t val = bytes[0] | (bytes[1] << 8);
     return val;
 }
 
 // read int16 in little-endian format
-inline int16_t readInt16(const Data &from, int initial_pos = 0) {
+inline int16_t TW::readInt16(const TW::Data &from, int initial_pos) {
     return (int16_t) readUInt16(from, initial_pos);
 }
 
-inline uint64_t readUInt64(const Data &from, int initial_pos = 0)
+inline uint64_t TW::readUInt64(const TW::Data &from, int initial_pos)
 {
-    Data bytes = readBytes(from, 8, initial_pos);
-    uint32 val1 = bytes[0] | (bytes[1]<<8) | (bytes[2]<<16) | (bytes[3]<<24);
+    TW::Data bytes = readBytes(from, 8, initial_pos);
+    uint32_t val1 = bytes[0] | (bytes[1]<<8) | (bytes[2]<<16) | (bytes[3]<<24);
     ulong val2 = bytes[4] | (bytes[5]<<8) | (bytes[6]<<16) | (bytes[7]<<24);
     ulong val = val1 | val2 << 32;
     return val;
 }
 
-inline int64_t readInt64(const Data &from, int initial_pos = 0)
+inline int64_t TW::readInt64(const TW::Data &from, int initial_pos)
 {
     return (int64_t) readUInt64(from, initial_pos);
 }
 
-inline Data write(ushort v) {
-    return Data({(byte) (((v >> 0) << 8) >> 8), (byte) (((v >> 8) << 8) >> 8)});
+inline TW::Data TW::writeUshort(ushort v) {
+    return TW::Data({(byte) (((v >> 0) << 8) >> 8), (byte) (((v >> 8) << 8) >> 8)});
 }
 
-inline Data write(short v) {
-    return write(ushort(v));
+inline TW::Data TW::writeShort(short v) {
+    return writeUshort(ushort(v));
 }
 
-inline Data write(uint v) {
+inline TW::Data TW::writeUint(uint v) {
     return Data({
         (byte) (((v >> 0) << 24) >> 24),
         (byte) (((v >> 8) << 24) >> 24),
@@ -53,11 +51,11 @@ inline Data write(uint v) {
     });
 }
 
-inline Data write(int v) {
-    return write(uint(v));
+inline TW::Data TW::writeInt(int v) {
+    return writeUint(uint(v));
 }
 
-inline Data write(ulong v) {
+inline TW::Data TW::writeUlong(ulong v) {
     return Data({
         (byte) (((v >> 0) << 56) >> 56),
         (byte) (((v >> 8) << 56) >> 56),
@@ -70,6 +68,6 @@ inline Data write(ulong v) {
     });
 }
 
-inline Data write(long v) {
-    return write(ulong(v));
+inline TW::Data TW::writeLong(long v) {
+    return writeUlong(ulong(v));
 }

@@ -30,18 +30,18 @@ inline bool has_prefix(const Data& data, T& prefix) {
 }
 
 inline Data readBytes(const Data &from, int max, int initial_pos = 0);
-inline uint16_t readUInt16(const Data &from, int initial_pos = 0);
+inline uint16_t readUInt16(const Data &from, int initial_pos);
 /// read int16 in little-endian format
-inline int16_t readInt16(const Data &from, int initial_pos = 0);
-inline int64_t readInt64(const Data &from, int initial_pos = 0);
-inline uint64_t readUInt64(const Data &from, int initial_pos = 0);
+inline int16_t readInt16(const Data &from, int initial_pos);
+inline int64_t readInt64(const Data &from, int initial_pos);
+inline uint64_t readUInt64(const Data &from, int initial_pos);
 
-inline Data write(ushort v);
-inline Data write(short v);
-inline Data write(uint v);
-inline Data write(int v);
-inline Data write(ulong v);
-inline Data write(long v);
+inline Data writeUshort(ushort v);
+inline Data writeShort(short v);
+inline Data writeUint(uint v);
+inline Data writeInt(int v);
+inline Data writeUlong(ulong v);
+inline Data writeLong(long v);
 
 template<class T>
 static std::vector<T> concat(const std::vector<T>& v1, const std::vector<T>& v2)
