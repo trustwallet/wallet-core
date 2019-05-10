@@ -1,9 +1,10 @@
 #pragma once
 
-#include "ISerializable.h"
 #include "../uint256.h"
 #include "../uint160.hpp"
 #include "../Data.h"
+#include "../ReadData.h"
+#include "ISerializable.h"
 
 namespace TW::NEO {
     class TransactionOutput : public ISerializable {
@@ -12,15 +13,16 @@ namespace TW::NEO {
         int64_t value;
         uint160_t scriptHash;
 
+        virtual ~TransactionOutput() {}
+
         int64_t size() const override {
-            //return assetId.precision() + sizeof(value) + scriptHash.precision();
-            return sizeof(value);
+            return sizeof(assetId) + sizeof(value) + sizeof(scriptHash);
         }
 
-        void deserialize(const Data &data) override {
-            assetId = load(data);
-            value = readInt64(data, assetId.precision());
-            scriptHash = load160(data, assetId.precision() + sizeof(value));
+        void deserialize(const Data &data, int initial_pos = 0) override {
+            assetId = load(data, initial_pos);
+            value = readInt64(data, initial_pos + sizeof(assetId));
+            scriptHash = load160(data, initial_pos + sizeof(assetId) + sizeof(value));
         }
 
         Data serialize() const override {

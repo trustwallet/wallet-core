@@ -6,10 +6,8 @@
 
 #pragma once
 
-#include <string>
-
+#include "../PublicKey.h"
 #include "ISerializable.h"
-#include "PublicKey.h"
 #include "TransactionType.h"
 #include "TransactionAttribute.hpp"
 #include "TransactionOutput.hpp"
@@ -27,8 +25,9 @@ namespace TW::NEO {
         std::vector<TransactionOutput> outputs;
         std::vector<Witness> witnesses;
     public:
+        virtual ~Transaction() {}
         int64_t size() const override;
-        void deserialize(const Data &data) override;
+        void deserialize(const Data &data, int initial_pos = 0) override;
         Data serialize() const override;
 
         Data getHash() const;

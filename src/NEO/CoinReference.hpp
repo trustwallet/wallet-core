@@ -12,12 +12,14 @@ namespace TW::NEO {
         uint256_t prevHash;
         ushort prevIndex;
 
+        virtual ~CoinReference() {}
+
         int64_t size() const override {
-            return prevHash.precision() + sizeof(prevIndex);
+            return sizeof(prevHash) + sizeof(prevIndex);
         }
 
-        void deserialize(const Data &data) override {
-            prevHash = load(data);
+        void deserialize(const Data &data, int initial_pos = 0) override {
+            prevHash = load(data, initial_pos);
             prevIndex = readUInt16(data, size() - sizeof(prevIndex));
         }
 
