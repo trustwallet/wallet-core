@@ -37,7 +37,7 @@ TEST(MonetaryUnitTransaction, Encode) {
     transaction.outputs.emplace_back(0x0098958b, script1);
 
     auto unsignedData = std::vector<uint8_t>();
-    transaction.encode(unsignedData);
+    transaction.encode(0, unsignedData);
 
     ASSERT_EQ(hex(unsignedData.begin(), unsignedData.end()),
         /* header */          "04000080"
@@ -76,58 +76,4 @@ TEST(MonetaryUnitTransaction, Encode) {
 
     auto sighash = transaction.getSignatureHash(scriptCode, 0, 1, 0x02faf080, BASE);
     ASSERT_EQ(hex(sighash.begin(), sighash.end()), "f3148f80dfab5e573d5edfe7a850f5fd39234f80b5429d3a57edcc11e34c585b");
-}
-
-TEST(MonetaryUnitTransaction, Signing) {
-    // tx on mainnet
-    // https://explorer.zcha.in/transactions/ec9033381c1cc53ada837ef9981c03ead1c7c41700ff3a954389cfaddc949256
-    const int64_t amount = 488000;
-    const int64_t fee = 6000;
-
-    auto input = Bitcoin::Proto::SigningInput();
-    input.set_hash_type(TWSignatureHashTypeAll);
-    input.set_amount(amount);
-    input.set_byte_fee(1);
-    input.set_to_address("t1QahNjDdibyE4EdYkawUSKBBcVTSqv64CS");
-
-    auto hash0 = DATA("53685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a");
-    auto utxo0 = input.add_utxo();
-    utxo0->mutable_out_point()->set_hash(TWDataBytes(hash0.get()), TWDataSize(hash0.get()));
-    utxo0->mutable_out_point()->set_index(0);
-    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
-    utxo0->set_amount(494000);
-    auto script0 = parse_hex("76a914f84c7f4dd3c3dc311676444fdead6e6d290d50e388ac");
-    utxo0->set_script(script0.data(), script0.size());
-
-    auto utxoKey0 = DATA("a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559");
-    input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
-
-    auto plan = Bitcoin::TransactionBuilder::plan(input);
-    plan.amount = amount;
-    plan.fee = fee;
-    plan.change = 0;
-
-    // Sign
-    auto result = TW::Bitcoin::TransactionSigner<Transaction>(std::move(input), plan).sign();
-    ASSERT_TRUE(result) << result.error();
-    auto signedTx = result.payload();
-
-    // txid = "ec9033381c1cc53ada837ef9981c03ead1c7c41700ff3a954389cfaddc949256"
-
-    Data serialized;
-    signedTx.encode(serialized);
-    ASSERT_EQ(hex(serialized),
-        "04000080"
-        "85202f89"
-        "01"
-            "53685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a""00000000""6b483045022100ca0be9f37a4975432a52bb65b25e483f6f93d577955290bb7fb0060a93bfc92002203e0627dff004d3c72a957dc9f8e4e0e696e69d125e4d8e275d119001924d3b48012103b243171fae5516d1dc15f9178cfcc5fdc67b0a883055c117b01ba8af29b953f6""ffffffff"
-        "01"
-            "4072070000000000""1976a91449964a736f3713d64283fd0018626ba50091c7e988ac"
-        "00000000"
-        "00000000"
-        "0000000000000000"
-        "00"
-        "00"
-        "00"
-    );
 }
