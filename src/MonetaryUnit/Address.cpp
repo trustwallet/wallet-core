@@ -14,7 +14,7 @@
 using namespace TW::MonetaryUnit;
 
 bool Address::isValid(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::sha256);
+    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::sha256d);
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -23,7 +23,7 @@ bool Address::isValid(const std::string& string) {
 }
 
 bool Address::isValid(const std::string& string, const std::vector<byte>& validPrefixes) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::sha256);
+    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::sha256d);
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -34,7 +34,7 @@ bool Address::isValid(const std::string& string, const std::vector<byte>& validP
 }
 
 Address::Address(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::sha256);
+    const auto decoded = Base58::bitcoin.decodeCheck(string, Hash::sha256d);
     if (decoded.size() != Address::size) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -58,5 +58,5 @@ Address::Address(const PublicKey& publicKey, uint8_t prefix) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encodeCheck(bytes, Hash::sha256);
+    return Base58::bitcoin.encodeCheck(bytes, Hash::sha256d);
 }
