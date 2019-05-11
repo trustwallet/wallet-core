@@ -58,5 +58,5 @@ Address::Address(const PublicKey& publicKey, uint8_t prefix) {
 }
 
 std::string Address::string() const {
-    return Base58::bitcoin.encodeCheck(bytes, Hash::groestl512d);
+    return Base58::bitcoin.encodeCheck(bytes, Hash::sha256);
 }
