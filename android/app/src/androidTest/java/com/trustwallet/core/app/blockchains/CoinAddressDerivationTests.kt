@@ -31,6 +31,7 @@ class CoinAddressDerivationTests {
         BITCOINCASH -> assertEquals("bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70", address)
         CALLISTO -> assertEquals("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
+        ELLAISM -> assertEquals("0x1Ae593CAdb8BAC47D0394617396650474c303F9C", address)
         ETHEREUM -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         ETHEREUMCLASSIC -> assertEquals("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
         ETHERSOCIAL -> assertEquals("0x182dd55D97C1F8D3781CDaDFC275948Ac38Ea1fe", address)

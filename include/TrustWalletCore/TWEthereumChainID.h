@@ -16,6 +16,7 @@ enum TWEthereumChainID {
     TWEthereumChainIDGo = 60,
     TWEthereumChainIDPOA = 99,
     TWEthereumChainIDCallisto = 820,
+    TWEthereumChainIDEllaism = 64,
     TWEthereumChainIDEthereumClassic = 61,
     TWEthereumChainIDEthersocial = 31102,
     TWEthereumChainIDVeChain = 74,

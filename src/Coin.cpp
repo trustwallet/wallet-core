@@ -82,6 +82,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeIocoin:
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixIocoin}, {TWP2SHPrefixIocoin}});
     case TWCoinTypeCallisto:
+    case TWCoinTypeEllaism:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeEthersocial:
@@ -206,6 +207,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Iocoin::Address(publicKey, TWP2PKHPrefixIocoin).string();
 
     case TWCoinTypeCallisto:
+    case TWCoinTypeEllaism:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeEthersocial:

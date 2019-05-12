@@ -31,6 +31,7 @@ enum TWCoinType {
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
     TWCoinTypeDogecoin = 3,
+    TWCoinTypeEllaism = 163,
     TWCoinTypeEOS = 194,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
