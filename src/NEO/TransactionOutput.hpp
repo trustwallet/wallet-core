@@ -16,13 +16,13 @@ namespace TW::NEO {
         virtual ~TransactionOutput() {}
 
         int64_t size() const override {
-            return sizeof(assetId) + sizeof(value) + sizeof(scriptHash);
+            return 32 + 8 + 20;
         }
 
         void deserialize(const Data &data, int initial_pos = 0) override {
-            assetId = load(data, initial_pos);
-            value = readInt64(data, initial_pos + sizeof(assetId));
-            scriptHash = load<uint160_t>(data, initial_pos + sizeof(assetId) + sizeof(value));
+            assetId = load<uint256_t>(readBytes(data, 32, initial_pos));
+            value = readInt64(data, initial_pos + 32);
+            scriptHash = load<uint160_t>(readBytes(data, 20, initial_pos + 32 + 8));
         }
 
         Data serialize() const override {
