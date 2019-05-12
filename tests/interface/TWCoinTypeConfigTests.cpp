@@ -284,6 +284,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto dexon = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDEXON, txId));
     assertStringsEqual(dexon, "https://dexonscan.app/transaction/123");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
+    assertStringsEqual(zel, "https://explorer.zel.cash/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -397,6 +400,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto dexon = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDEXON));
     assertStringsEqual(dexon, "dexon");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
+    assertStringsEqual(zel, "zelcash");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -513,4 +519,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto dexon = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDEXON));
     assertStringsEqual(dexon, "DEXON");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
+    assertStringsEqual(zel, "Zelcash");
 }

@@ -26,7 +26,7 @@ inline auto sum(const std::vector<Proto::UnspentTransaction>& utxos) {
     return s;
 }
 
-inline auto buildUTXO(const OutPoint& outPoint, int64_t amount) {
+inline auto buildUTXO(const OutPoint& outPoint, Amount amount) {
     Proto::UnspentTransaction utxo;
     utxo.set_amount(amount);
     utxo.mutable_out_point()->set_hash(outPoint.hash.data(), outPoint.hash.size());
@@ -34,7 +34,7 @@ inline auto buildUTXO(const OutPoint& outPoint, int64_t amount) {
     return utxo;
 }
 
-inline auto buildSigningInput(int amount, int byteFee, const std::vector<Proto::UnspentTransaction> utxos, bool useMaxAmount) {
+inline auto buildSigningInput(Amount amount, int byteFee, const std::vector<Proto::UnspentTransaction> utxos, bool useMaxAmount) {
     Proto::SigningInput input;
     input.set_amount(amount);
     input.set_byte_fee(byteFee);
@@ -77,4 +77,21 @@ TEST(TransactionPlan, MaxAmount) {
     ASSERT_EQ(txPlan.amount, 19120);
     ASSERT_EQ(txPlan.change, 0);
     ASSERT_EQ(txPlan.fee, 10880);
+}
+
+TEST(TransactionPlan, MaxAmountDoge) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(txOutPoint, Amount(100000000)));
+    utxos.push_back(buildUTXO(txOutPoint, Amount(2000000000)));
+    utxos.push_back(buildUTXO(txOutPoint, Amount(200000000)));
+
+    ASSERT_EQ(sum(utxos), Amount(2300000000));
+
+    auto sigingInput = buildSigningInput(Amount(2300000000), 100, utxos, true);
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    ASSERT_EQ(txPlan.availableAmount, Amount(2300000000));
+    ASSERT_EQ(txPlan.amount, Amount(2299951200));
+    ASSERT_EQ(txPlan.change, 0);
+    ASSERT_EQ(txPlan.fee, 48800);
 }
