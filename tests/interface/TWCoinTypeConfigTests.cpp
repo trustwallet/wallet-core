@@ -284,6 +284,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto ella = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEllaism, txId));
     assertStringsEqual(ella, "https://explorer.ellaism.org/tx/123");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
+    assertStringsEqual(zel, "https://explorer.zel.cash/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -397,6 +400,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto ella = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEllaism));
     assertStringsEqual(ella, "ellaism");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
+    assertStringsEqual(zel, "zelcash");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -513,4 +519,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto ella = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEllaism));
     assertStringsEqual(ella, "Ellaism");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
+    assertStringsEqual(zel, "Zelcash");
 }
