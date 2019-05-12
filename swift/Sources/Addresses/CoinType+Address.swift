@@ -33,7 +33,8 @@ public extension CoinType {
              .thunderToken,
              .tomoChain,
              .veChain,
-             .xdai:
+             .xdai,
+             .dexon:
             return EthereumAddress(string: string)
         case .wanchain:
             return WanchainAddress(string: string)
