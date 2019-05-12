@@ -12,16 +12,20 @@
 namespace TW {
 
 Data readBytes(const Data &from, int max, int initial_pos = 0);
+Data readVarBytes(const Data &from, int initial_pos = 0);
 uint16_t readUInt16(const Data &from, int initial_pos = 0);
-int16_t readInt16(const Data &from, int initial_pos = 0);
-int64_t readInt64(const Data &from, int initial_pos = 0);
+uint32_t readUInt32(const Data &from, int initial_pos = 0);
 uint64_t readUInt64(const Data &from, int initial_pos = 0);
+int16_t readInt16(const Data &from, int initial_pos = 0);
+int32_t readInt32(const Data &from, int initial_pos = 0);
+int64_t readInt64(const Data &from, int initial_pos = 0);
 
+Data writeVarBytes(const Data &from, int initial_pos = 0);
 Data writeUshort(ushort v);
-Data writeShort(short v);
 Data writeUint(uint v);
-Data writeInt(int v);
 Data writeUlong(ulong v);
+Data writeShort(short v);
+Data writeInt(int v);
 Data writeLong(long v);
 
 template<class T>
