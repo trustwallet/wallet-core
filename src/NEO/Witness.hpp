@@ -2,7 +2,6 @@
 
 #include "ISerializable.h"
 #include "../Data.h"
-#include "../UInt.hpp"
 
 namespace TW::NEO {
     class Witness : public ISerializable {
@@ -17,12 +16,12 @@ namespace TW::NEO {
         }
 
         void deserialize(const Data &data, int initial_pos = 0) override {
-            invocationScript = readBytes(data, 65536, initial_pos);
-            verificationScript = readBytes(data, 65536, initial_pos + invocationScript.size());
+            invocationScript = readVarBytes(data, initial_pos);
+            verificationScript = readVarBytes(data, initial_pos + 4 + invocationScript.size());
         }
 
         Data serialize() const override {
-            return concat(invocationScript, verificationScript);
+            return concat(writeVarBytes(invocationScript), writeVarBytes(verificationScript));
         }
     };
 }
