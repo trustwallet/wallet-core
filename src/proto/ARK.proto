@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package TW.ARK.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    bytes private_key = 1;
+    uint32 timestamp = 2;
+    string recipientId = 3;
+    uint64 amount = 4;
+    uint64 fee = 5;
+}
+
+message SigningOutput {
+    string json = 1;
+}

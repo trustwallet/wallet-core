@@ -29,6 +29,7 @@ enum TWBlockchain {
     TWBlockchainOntology = 14,
     TWBlockchainZilliqa = 15,
     TWBlockchainIoTeX = 16,
+    TWBlockchainArk = 17
 };
 
 TW_EXTERN_C_END
