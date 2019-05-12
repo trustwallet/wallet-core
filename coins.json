@@ -602,5 +602,21 @@
         "publicKeyType": "ed25519",
         "transactionPath": "/transaction/",
         "explorer": "https://semux.info/explorer"
+    },
+    {
+        "id": "zelcash",
+        "name": "Zelcash",
+        "symbol": "ZEL",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/44'/19167'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "transactionPath": "/tx/",
+        "explorer": "https://explorer.zel.cash"
     }
 ]
