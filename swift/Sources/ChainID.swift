@@ -14,4 +14,5 @@ public enum ChainID: UInt32 {
     case thunderToken = 18
     case tomoChain = 88
     case ethersocial = 31102
+    case dexon = 237
 }
