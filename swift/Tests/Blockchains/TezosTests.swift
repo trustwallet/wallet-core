@@ -27,6 +27,16 @@ class TezosTests: XCTestCase {
         XCTAssertEqual(address.description, "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT")
     }
 
+    public func testDeriveOriginatedAddress() {
+        let operationHash = "oo7VeTEPjEusPKnsHtKcGYbYa7i4RWpcEhUVo3Suugbbs6K62Ro"
+        let operationIndex: Int32 = 0
+
+        let expected = "KT1WrtjtAYQSrUVvSNJPTZTebiUWoopQL5hw";
+        let actual = TezosAddress.deriveOriginatedAddress(operationHash: operationHash, operationIndex: operationIndex)
+
+        XCTAssertEqual(actual, expected)
+    }
+
     public func testSigning() {
         let privateKeyData = Data(hexString: "c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8")!
         let privateKey = PrivateKey(data: privateKeyData)!

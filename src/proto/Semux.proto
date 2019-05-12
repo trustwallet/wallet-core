@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package TW.Semux.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    bytes private_key = 1;
+
+    string destination = 2;
+
+    uint64 value = 3;
+
+    uint64 fee = 4;
+
+    // current latest transaction serial number
+    uint64 nonce = 5;
+
+    // current timestamp in millisecond
+    uint64 timestamp = 6;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    bytes encoded = 1;
+}

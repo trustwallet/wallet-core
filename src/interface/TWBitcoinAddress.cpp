@@ -15,8 +15,8 @@
 
 using namespace TW::Bitcoin;
 
-bool TWBitcoinAddressEqual(struct TWBitcoinAddress lhs, struct TWBitcoinAddress rhs) {
-    return std::memcmp(lhs.bytes, rhs.bytes, Address::size) == 0;
+bool TWBitcoinAddressEqual(struct TWBitcoinAddress *_Nonnull lhs, struct TWBitcoinAddress *_Nonnull rhs) {
+    return lhs->impl == rhs->impl;
 }
 
 bool TWBitcoinAddressIsValid(TWData *_Nonnull data) {
@@ -28,42 +28,44 @@ bool TWBitcoinAddressIsValidString(TWString *_Nonnull string) {
     return Address::isValid(s);
 }
 
-bool TWBitcoinAddressInitWithString(struct TWBitcoinAddress *_Nonnull address, TWString *_Nonnull string) {
+struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithString(TWString *_Nonnull string) {
     auto& s = *reinterpret_cast<const std::string*>(string);
-
-    const auto decoded = TW::Base58::bitcoin.decodeCheck(s);
-    if (decoded.size() != Address::size) {
-        return false;
+    try {
+        return new TWBitcoinAddress{ Address(s) };
+    } catch (...) {
+        return nullptr;
     }
-
-    std::copy(decoded.begin(), decoded.end(), address->bytes);
-    return true;
 }
 
-bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWData *_Nonnull data) {
-    if (TWDataSize(data) != Address::size) {
-        return false;
+struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithData(TWData *_Nonnull data) {
+    auto& d = *reinterpret_cast<const TW::Data*>(data);
+    try {
+        return new TWBitcoinAddress{ Address(d) };
+    } catch (...) {
+        return nullptr;
     }
-    TWDataCopyBytes(data, 0, Address::size, address->bytes);
-    return true;
 }
 
-void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
-    address->bytes[0] = prefix;
-
-    ecdsa_get_pubkeyhash(publicKey->impl.compressed().bytes.data(), HASHER_SHA2_RIPEMD,  address->bytes + 1);
+struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
+    try {
+        return new TWBitcoinAddress{ Address(publicKey->impl, prefix) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
-TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) {
-    const auto str = TW::Base58::bitcoin.encodeCheck(address.bytes, address.bytes + Address::size);
-    return TWStringCreateWithUTF8Bytes(str.data());
+void TWBitcoinAddressDelete(struct TWBitcoinAddress *_Nonnull address) {
+    delete address;
 }
 
-TW_EXPORT_PROPERTY
-uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress address) {
-    return address.bytes[0];
+TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress *_Nonnull address) {
+    return TWStringCreateWithUTF8Bytes(address->impl.string().c_str());
 }
 
-TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress address) {
-    return TWDataCreateWithBytes(address.bytes + 1, Address::size - 1);
+uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress *_Nonnull address) {
+    return address->impl.bytes[0];
+}
+
+TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress *_Nonnull address) {
+    return TWDataCreateWithBytes(address->impl.bytes.data() + 1, Address::size - 1);
 }

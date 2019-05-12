@@ -16,7 +16,7 @@ using namespace TW;
 using namespace TW::Iocoin;
 
 TEST(IocoinAddress, FromPublicKey) {
-    const auto publicKey = PublicKey(parse_hex("0321851014f96129e9d712aa55bbde85c3b084fca5e37b29e4e03c006479018d94"));
+    const auto publicKey = PublicKey(parse_hex("0321851014f96129e9d712aa55bbde85c3b084fca5e37b29e4e03c006479018d94"), TWPublicKeyTypeSECP256k1);
     const auto address = Address(publicKey, 103);
 	    ASSERT_EQ(address.string(), "iaZQtBdd1RPKveBTPGHu9NXPyBh8bybsDz");
 }
@@ -33,3 +33,11 @@ TEST(IocoinAddress, FromString) {
     ASSERT_EQ(address.string(), string);
 }
 
+TEST(IocoinAddress, Derive) {
+    const auto mnemonic = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
+    const auto wallet = HDWallet(mnemonic, "");
+    const auto path = TW::derivationPath(TWCoinTypeIocoin);
+    const auto address = TW::deriveAddress(TWCoinTypeIocoin, wallet.getKey(path));
+
+    ASSERT_EQ(address, "idm4bbwMbzieAAZttcvxXkAtka8ZVrZa3w");
+}

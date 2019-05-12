@@ -71,8 +71,8 @@ struct TransactionBuilder {
             selectUtxos.push_back(utxo);
             values += utxo.amount();
             // We need recalculate transaction fee when we insert an new utxo record
-            int64_t txSize =
-                calculatorTransactionSize(selectUtxos.size(), 1, purpose.remark().size());
+            uint32_t txSize =
+                calculatorTransactionSize(static_cast<uint32_t>(selectUtxos.size()), 1, static_cast<uint32_t>(purpose.remark().size()));
             fee = calculatorTransactionFee(txSize);
 
             if (values == (purpose.amount() + fee)) {
@@ -81,7 +81,7 @@ struct TransactionBuilder {
             } else if (values > (purpose.amount() + fee)) {
                 // all amount bigger that spent and fee, need change back
 
-                txSize = calculatorTransactionSize(selectUtxos.size(), 2, purpose.remark().size());
+                txSize = calculatorTransactionSize(static_cast<uint32_t>(selectUtxos.size()), 2, static_cast<uint32_t>(purpose.remark().size()));
                 fee = calculatorTransactionFee(txSize);
                 if (values < (purpose.amount() + fee)) {
                     // don't have enough input amount because change back output
@@ -116,8 +116,8 @@ struct TransactionBuilder {
     calculatorMaxAmountPlan(const NULS::Proto::TransactionPurpose& purpose) {
         auto plan = Proto::TransactionPlan();
 
-        uint64_t maxInputs = calculatorMaxInput(purpose.remark().size());
-        uint64_t selectCount = std::min((uint64_t)purpose.utxos_size(), maxInputs);
+        uint32_t maxInputs = calculatorMaxInput(static_cast<uint32_t>(purpose.remark().size()));
+        uint32_t selectCount = std::min((uint32_t)purpose.utxos_size(), maxInputs);
 
         auto sortedUtxos = purpose.utxos();
         std::sort(sortedUtxos.begin(), sortedUtxos.end(),
@@ -133,7 +133,7 @@ struct TransactionBuilder {
             selectUtxos.push_back(utxo);
         }
 
-        uint64_t txSize = calculatorTransactionSize(selectCount, 1, purpose.remark().size());
+        uint32_t txSize = calculatorTransactionSize(selectCount, 1, static_cast<uint32_t>(purpose.remark().size()));
         uint64_t fee = calculatorTransactionFee(txSize);
         if (newAmount < fee) {
             return Proto::TransactionPlan{};
@@ -168,9 +168,9 @@ struct TransactionBuilder {
         return maxInputs;
     }
 
-    static int32_t calculatorTransactionSize(uint32_t inputCount, uint32_t outputCount,
+    static uint32_t calculatorTransactionSize(uint32_t inputCount, uint32_t outputCount,
                                              uint32_t remarkSize) {
-        uint64_t size = 124 + TRANSACTION_INPUT_SIZE * inputCount +
+        uint32_t size = 124 + TRANSACTION_INPUT_SIZE * inputCount +
                         TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
         return size;
     }

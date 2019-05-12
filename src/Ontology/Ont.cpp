@@ -8,38 +8,37 @@
 #include "Data.h"
 #include "ParamsBuilder.h"
 
-#include <TrezorCrypto/rand.h>
-
 #include <unordered_map>
 
 using namespace TW;
 using namespace TW::Ontology;
 
-Transaction Ont::decimals() {
+Transaction Ont::decimals(uint32_t nonce) {
     auto builder = ParamsBuilder();
     auto invokeCode =
         ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "decimals", Data());
-    auto tx = Transaction((uint8_t)0, txType, random32(), (uint64_t)0, (uint64_t)0,
-                          (std::string) "", invokeCode);
+    auto tx = Transaction((uint8_t)0, txType, nonce, (uint64_t)0, (uint64_t)0, (std::string) "",
+                          invokeCode);
     return tx;
 }
 
-Transaction Ont::balanceOf(const Address& address) {
+Transaction Ont::balanceOf(const Address &address, uint32_t nonce) {
     auto builder = ParamsBuilder();
     auto invokeCode =
         ParamsBuilder::buildNativeInvokeCode(contractAddress(), version, "balanceOf", address.data);
-    auto tx = Transaction((uint8_t)0, txType, random32(), (uint64_t)0, (uint64_t)0,
+    auto tx = Transaction((uint8_t)0, txType, nonce, (uint64_t)0, (uint64_t)0,
                           (std::string) "", invokeCode);
     return tx;
 }
 
-Transaction Ont::transfer(const Signer& from, const Address& to, uint64_t amount,
-                          const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) {
+Transaction Ont::transfer(const Signer &from, const Address &to, uint64_t amount,
+                          const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
+                          uint32_t nonce) {
     std::list<boost::any> transferParam{from.getAddress().data, to.data, amount};
     std::vector<boost::any> args{transferParam};
     auto invokeCode =
         ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
-    auto tx = Transaction(version, txType, random32(), gasPrice, gasLimit,
+    auto tx = Transaction(version, txType, nonce, gasPrice, gasLimit,
                           payer.getAddress().string(), invokeCode);
     from.sign(tx);
     payer.addSign(tx);

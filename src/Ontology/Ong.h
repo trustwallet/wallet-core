@@ -21,15 +21,16 @@ class Ong : public Asset {
   public:
     Data contractAddress() override { return ongContract; }
 
-    Transaction decimals() override;
+    Transaction decimals(uint32_t nonce) override;
 
-    Transaction balanceOf(const Address& address) override;
+    Transaction balanceOf(const Address &address, uint32_t nonce) override;
 
-    Transaction transfer(const Signer& from, const Address& to, uint64_t amount,
-                         const Signer& payer, uint64_t gasPrice, uint64_t gasLimit) override;
+    Transaction transfer(const Signer &from, const Address &to, uint64_t amount,
+                         const Signer &payer, uint64_t gasPrice, uint64_t gasLimit,
+                         uint32_t nonce) override;
 
-    Transaction withdraw(const Signer& claimer, const Address& receiver, uint64_t amount,
-                         const Signer& payer, uint64_t gasPrice, uint64_t gasLimit);
+    Transaction withdraw(const Signer &claimer, const Address &receiver, uint64_t amount,
+                         const Signer &payer, uint64_t gasPrice, uint64_t gasLimit, uint32_t nonce);
 };
 
 } // namespace TW::Ontology

@@ -46,10 +46,10 @@ module JsHelper
     unique_types
   end
 
-
-  # Create import statement given type
-  def self.str_to_import(t)
-      "import { #{t} } from './#{t}'"
+  # check if enum entity needs a corresponding Util class export
+  def self.enum_has_util(entity)
+    has_string = entity.cases.all? { |c| !c.string.nil? } 
+    entity.properties.any? || entity.properties.any? || has_string
   end
 
   # Transforms an interface name to a Js constant name
@@ -59,7 +59,7 @@ module JsHelper
 
   def self.parameters(params)
     names = params.map do |param|
-      if param.type.name == :uint64
+      if [:uint64, :size].include? param.type.name
         "#{param.name || 'value'}Uint64: #{type(param.type)}"
       else
         "#{param.name || 'value'}: #{type(param.type)}"
@@ -72,8 +72,8 @@ module JsHelper
     params.map do |param|
       if param.type.is_struct || param.type.is_class 
         "#{param.name || 'value'}.getNativeHandle()"
-      elsif param.type.name == :uint64
-        "#{param.name || 'value'}Uint64"
+      elsif [:uint64, :size].include? param.type.name
+        "#{param.name || 'value'}Uint64.toString()"
       elsif param.type.is_proto
         "\n                  #{proto_to_class(param.type.name)}.encode(#{param.name}).finish()"
       else
@@ -83,8 +83,7 @@ module JsHelper
   end
 
   def self.is_primitive_type(t)
-    case t.name
-    when :void, :bool, :int, :uint8, :uint16, :uint32, :size, :uint64, :data, 'Data', :string
+    if [:void, :bool, :int, :uint8, :uint16, :uint32, :size, :uint64, :data, 'Data', :string].include? t.name
       true
     else
       false
@@ -97,10 +96,10 @@ module JsHelper
       'void'
     when :bool
       'boolean'
-    when :int, :uint8, :uint16, :uint32, :size
+    when :int, :uint8, :uint16, :uint32
       'number'
-    when :uint64
-      'string'
+    when :uint64, :size
+      'Long'
     when :data
       'Uint8Array'
     when 'Data'

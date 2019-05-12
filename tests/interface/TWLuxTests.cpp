@@ -6,7 +6,7 @@
 
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHash.h>
@@ -21,8 +21,7 @@
 TEST(Lux, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddress();
-    TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixLitecoin);
+    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixLitecoin);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
     assertStringsEqual(addressString, "LV7LV7Z4bWDEjYkfx9dQo6k6RjGbXsg6hS");
 }
@@ -42,15 +41,13 @@ TEST(Lux, ExtendedKeys) {
 
 TEST(Lux, DeriveFromXpub) {
     auto xpub = STRING("xpub6Cb8Q6pDeS8PdKNbDv9Hvq4WpJXL3JvKvmHHwR1wD2H543hiCUE1f1tB5AXE6yg13k7xZ6PzEXMNUFHXk6kkx4RYte8VB1i4tCX9rwQVR4a");
-    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeLux, TWHDVersionXPUB, TWHDVersionXPRV, 0, 3);
-    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeLux, TWHDVersionXPUB, TWHDVersionXPRV, 0, 5);
+    auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/3003'/0'/0/3").get());
+    auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/3003'/0'/0/5").get());
 
-    TWBitcoinAddress address3;
-    TWBitcoinAddressInitWithPublicKey(&address3, pubKey3, TWP2PKHPrefixLitecoin);
+    auto address3 = TWBitcoinAddressCreateWithPublicKey(pubKey3, TWP2PKHPrefixLitecoin);
     auto address3String = WRAPS(TWBitcoinAddressDescription(address3));
 
-    TWBitcoinAddress address5;
-    TWBitcoinAddressInitWithPublicKey(&address5, pubKey5, TWP2PKHPrefixLitecoin);
+    auto address5 = TWBitcoinAddressCreateWithPublicKey(pubKey5, TWP2PKHPrefixLitecoin);
     auto address5String = WRAPS(TWBitcoinAddressDescription(address5));
 
     assertStringsEqual(address3String, "LfJVQc6oq2T19WQLHAvMeHUjZVsspKFQu4");

@@ -22,12 +22,11 @@
 
 #include <TrezorCrypto/nem.h>
 
-#include "ed25519-donna/ed25519-keccak.h"
-
 #include <TrezorCrypto/base32.h>
+#include <TrezorCrypto/ed25519-donna/ed25519-keccak.h>
+#include <TrezorCrypto/memzero.h>
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha3.h>
-#include <TrezorCrypto/memzero.h>
 
 #include <string.h>
 

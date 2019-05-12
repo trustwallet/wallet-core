@@ -6,7 +6,7 @@
 
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWHash.h>
@@ -20,8 +20,7 @@
 TEST(Qtum, LegacyAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddress();
-    TWBitcoinAddressInitWithPublicKey(&address, publicKey, TWP2PKHPrefixQtum);
+    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixQtum);
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
     assertStringsEqual(addressString, "QWVNLCXwhJqzut9YCLxbeMTximr2hmw7Vr");
 }
@@ -29,8 +28,8 @@ TEST(Qtum, LegacyAddress) {
 TEST(Qtum, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, publicKey));
-    auto string = WRAPS(TWBech32AddressDescription(address.get()));
+    auto address = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, publicKey));
+    auto string = WRAPS(TWSegwitAddressDescription(address.get()));
 
     assertStringsEqual(string, "qc1qytnqzjknvv03jwfgrsmzt0ycmwqgl0as6uywkk");
 }
@@ -70,15 +69,13 @@ TEST(Qtum, ExtendedKeys) {
 
 TEST(Qtum, DeriveFromXpub) {
     auto xpub = STRING("xpub6CAkJZPecMDxRXEXZpDwyxcQ6CGie8GdovuJhsGwc2gFbLxdGr1PyqBXmsL7aYds1wfY2rB3YMVZiEE3CB3Lkj6KGoq1rEJ1wuaGkMDBf1m");
-    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, TWHDVersionXPUB, TWHDVersionXPRV, 0, 2);
-    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), TWCoinTypeQtum, TWHDVersionXPUB, TWHDVersionXPRV, 0, 9);
+    auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/2301'/0'/0/2").get());
+    auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/2301'/0'/0/9").get());
 
-    TWBitcoinAddress address2;
-    TWBitcoinAddressInitWithPublicKey(&address2, pubKey2, TWP2PKHPrefixQtum);
+    auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2, TWP2PKHPrefixQtum);
     auto address2String = WRAPS(TWBitcoinAddressDescription(address2));
 
-    TWBitcoinAddress address9;
-    TWBitcoinAddressInitWithPublicKey(&address9, pubKey9, TWP2PKHPrefixQtum);
+    auto address9 = TWBitcoinAddressCreateWithPublicKey(pubKey9, TWP2PKHPrefixQtum);
     auto address9String = WRAPS(TWBitcoinAddressDescription(address9));
 
     assertStringsEqual(address2String, "QStYeAAfiYKxsABzY9yugHDpm5bsynYPqc");
@@ -87,14 +84,14 @@ TEST(Qtum, DeriveFromXpub) {
 
 TEST(Qtum, DeriveFromZpub) {
     auto zpub = STRING("zpub6rJJqJZcpaC7DrdsYiprLfUfvtaf11ZZWmrmYeWMkdZTx6tgfQLiBZuisraogskwBRLMGWfXoCyWRrXSypwPdNV2UWJXm5bDVQvBXvrzz9d");
-    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, TWHDVersionZPUB, TWHDVersionZPRV, 0, 4);
-    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), TWCoinTypeQtum, TWHDVersionZPUB, TWHDVersionZPRV, 0, 11);
+    auto pubKey4 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2301'/0'/0/4").get());
+    auto pubKey11 = TWHDWalletGetPublicKeyFromExtended(zpub.get(), STRING("m/44'/2301'/0'/0/11").get());
 
-    auto address4 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, pubKey4));
-    auto address4String = WRAPS(TWBech32AddressDescription(address4.get()));
+    auto address4 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey4));
+    auto address4String = WRAPS(TWSegwitAddressDescription(address4.get()));
 
-    auto address11 = WRAP(TWBech32Address, TWBech32AddressCreateWithPublicKey(TWHRPQtum, pubKey11));
-    auto address11String = WRAPS(TWBech32AddressDescription(address11.get()));
+    auto address11 = WRAP(TWSegwitAddress, TWSegwitAddressCreateWithPublicKey(TWHRPQtum, pubKey11));
+    auto address11String = WRAPS(TWSegwitAddressDescription(address11.get()));
 
     assertStringsEqual(address4String, "qc1q3cvjmc2cgjkz9y58waj3r9ccchmrmrdzq03783");
     assertStringsEqual(address11String, "qc1qrlk0ajg6khu2unsdppggs3pgpxxvdeymky58af");

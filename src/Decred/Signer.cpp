@@ -102,7 +102,7 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
             return Result<std::vector<Data>>::failure("Missing private key.");
         }
 
-        auto pubkey = PrivateKey(key).getPublicKey(PublicKeyType::secp256k1);
+        auto pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
         auto signature = createSignature(transactionToSign, script, key, index);
         if (signature.empty()) {
             // Error: Failed to sign
@@ -170,7 +170,7 @@ Data Signer::pushAll(const std::vector<Data>& results) {
             data.push_back(static_cast<uint8_t>(result.size()));
         } else if (result.size() <= 0xffff) {
             data.push_back(OP_PUSHDATA2);
-            encode16LE(result.size(), data);
+            encode16LE(static_cast<uint16_t>(result.size()), data);
         } else {
             data.push_back(OP_PUSHDATA4);
             encode32LE(static_cast<uint32_t>(result.size()), data);
@@ -182,7 +182,7 @@ Data Signer::pushAll(const std::vector<Data>& results) {
 
 Data Signer::keyForPublicKeyHash(const Data& hash) const {
     for (auto& key : input.private_key()) {
-        auto publicKey = PrivateKey(key).getPublicKey(PublicKeyType::secp256k1);
+        auto publicKey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
         auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(publicKey.bytes));
         if (std::equal(std::begin(keyHash), std::end(keyHash), std::begin(hash), std::end(hash))) {
             return Data(key.begin(), key.end());

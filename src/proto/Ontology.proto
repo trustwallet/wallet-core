@@ -26,6 +26,8 @@ message SigningInput {
     // base58 encode address string (160-bit number)
     string query_address = 9;
 
+    uint32 nonce = 10;
+
 }
 
 // Transaction signing output.

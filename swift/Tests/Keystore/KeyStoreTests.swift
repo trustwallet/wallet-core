@@ -94,7 +94,7 @@ class KeyStoreTests: XCTestCase {
     func testAddAccounts() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = keyStore.hdWallet!
-        _ = try keyStore.addAccounts(wallet: wallet, coins: [.ethereum, .callisto, .poa], password: "password")
+        _ = try keyStore.addAccounts(wallet: wallet, coins: [.ethereum, .callisto, .poanetwork], password: "password")
 
         let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
         let savedWallet = savedKeyStore.hdWallet!
@@ -118,7 +118,7 @@ class KeyStoreTests: XCTestCase {
     func testImportKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let privateKeyData = Data(hexString: "9cdb5cab19aec3bd0fcd614c5f185e7a1d97634d4225730eba22497dc89a716c")!
-        let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "name", password: "password", coin: .ethereum)
+        let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "name", password: "password", coin: .ethereum)!
         let json = key.exportJSON()!
 
         let wallet = try keyStore.import(json: json, name: "name", password: "password", newPassword: "newPassword", coins: [.ethereum])

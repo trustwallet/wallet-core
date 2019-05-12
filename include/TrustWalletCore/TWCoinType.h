@@ -7,6 +7,7 @@
 #pragma once
 
 #include "TWBase.h"
+#include "TWBlockchain.h"
 #include "TWCurve.h"
 #include "TWPrivateKey.h"
 #include "TWPurpose.h"
@@ -24,27 +25,35 @@ enum TWCoinType {
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
+    TWCoinTypeBravoCoin = 282,
     TWCoinTypeCallisto = 820,
     TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
     TWCoinTypeDogecoin = 3,
+    TWCoinTypeEllaism = 163,
+    TWCoinTypeEOS = 194,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
-    TWCoinTypeGo = 6060,
+    TWCoinTypeEthersocial = 31102,
+    TWCoinTypeGoChain = 6060,
     TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
     TWCoinTypeIOST = 291,
-    TWCoinTypeKIN = 2017,
+    TWCoinTypeIocoin = 295,
+    TWCoinTypeIoTeX = 304,
+    TWCoinTypeKin = 2017,
     TWCoinTypeLitecoin = 2,
     TWCoinTypeNULS = 8964,
     TWCoinTypeLux = 3003,
+    TWCoinTypeNano = 165,
     TWCoinTypeNEO = 888,
     TWCoinTypeNimiq = 242,
     TWCoinTypeOntology = 1024,
-    TWCoinTypePoa = 178,
+    TWCoinTypePOANetwork = 178,
     TWCoinTypeQtum = 2301,
-    TWCoinTypeRipple = 144,
+    TWCoinTypeXRP = 144,
+    TWCoinTypeSteem = 135,
     TWCoinTypeStellar = 148,
     TWCoinTypeTezos = 1729,
     TWCoinTypeTheta = 500,
@@ -53,11 +62,19 @@ enum TWCoinType {
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
     TWCoinTypeViacoin = 14,
-    TWCoinTypeWanChain = 5718350,
+    TWCoinTypeWanchain = 5718350,
     TWCoinTypeXDai = 700,
     TWCoinTypeZcash = 133,
     TWCoinTypeZcoin = 136,
+    TWCoinTypeZilliqa = 313,
+    TWCoinTypeSemux = 7562605,
+    TWCoinTypeDEXON = 237,
+    TWCoinTypeZelcash = 19167,
 };
+
+/// Returns the blockchain for a coin type.
+TW_EXPORT_PROPERTY
+enum TWBlockchain TWCoinTypeBlockchain(enum TWCoinType coin);
 
 /// Returns the purpose for a coin type.
 TW_EXPORT_PROPERTY

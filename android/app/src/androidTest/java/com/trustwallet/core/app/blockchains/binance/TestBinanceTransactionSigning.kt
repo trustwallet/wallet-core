@@ -26,7 +26,6 @@ class TestBinanceTransactionSigning {
         signingInput.chainId = "Binance-Chain-Nile"
         signingInput.accountNumber = 0
         signingInput.sequence = 0
-        signingInput.testNet = true
 
         signingInput.privateKey = ByteString.copyFrom(privateKey.data())
 
@@ -35,11 +34,11 @@ class TestBinanceTransactionSigning {
         token.amount = 1
 
         val input = Binance.SendOrder.Input.newBuilder()
-        input.address = ByteString.copyFrom(CosmosAddress(HRP.BINANCETEST, publicKey).keyHash())
+        input.address = ByteString.copyFrom(CosmosAddress(HRP.BINANCE, publicKey).keyHash())
         input.addAllCoins(listOf(token.build()))
 
         val output =  Binance.SendOrder.Output.newBuilder()
-        output.address = ByteString.copyFrom(CosmosAddress("tbnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx3f309d9").keyHash())
+        output.address = ByteString.copyFrom(CosmosAddress("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5").keyHash())
         output.addAllCoins(listOf(token.build()))
 
         val sendOrder = Binance.SendOrder.newBuilder()
@@ -50,6 +49,6 @@ class TestBinanceTransactionSigning {
 
         val sign: Binance.SigningOutput = BinanceSigner.sign(signingInput.build())
         val signBytes = sign.encoded.toByteArray()
-        assertEquals(signBytes.toHex(), "0xb801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e5021240376f64070fdb621a4cf24e24da350476260efaf4bae799cacca19b31bc0d1ce4054f09fcffe9cfabef6a8d6a24bc1814bd444720a35f035f3c26409ffad2a9e2")
+        assertEquals(signBytes.toHex(), "0xb801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212401b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679")
     }
 }

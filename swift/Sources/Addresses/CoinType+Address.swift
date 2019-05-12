@@ -13,7 +13,7 @@ public extension CoinType {
         case .binance, .cosmos:
             if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
         case .bitcoin, .litecoin, .viacoin, .qtum:
-            if let addr = Bech32Address(string: string), addr.hrp == hrp {
+            if let addr = SegwitAddress(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .bitcoinCash:
@@ -23,29 +23,33 @@ public extension CoinType {
         case .dash, .dogecoin, .zcoin, .lux:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .callisto,
+             .ellaism,
              .ethereum,
              .ethereumClassic,
-             .go,
-             .poa,
+             .ethersocial,
+             .goChain,
+             .poanetwork,
              .theta,
              .thunderToken,
              .tomoChain,
              .veChain,
-             .xdai:
+             .xdai,
+             .dexon:
             return EthereumAddress(string: string)
-        case .wanChain:
+        case .wanchain:
             return WanchainAddress(string: string)
         case .icon:
             return IconAddress(string: string)
         case .ontology:
             return OntologyAddress(string: string)
-        case .ripple:
+        case .xrp:
             return RippleAddress(string: string)
         case .tezos:
             return TezosAddress(string: string)
         case .tron:
             return TronAddress(string: string)
-        case .zcash:
+        case .zelcash,
+             .zcash:
             return ZcashTAddress(string: string)
         case .nimiq:
             return NimiqAddress(string: string)
@@ -53,12 +57,16 @@ public extension CoinType {
             return StellarAddress(string: string)
         case .aion:
             return AionAddress(string: string)
+        case .nano:
+            return NanoAddress(string: string)
         case .neo:
             return NEOAddress(string: string)
         case .decred:
             return DecredAddress(string: string)
+        case .iocoin:
+            return IocoinAddress(string: string)
         case .groestlcoin:
-            if let addr = Bech32Address(string: string), addr.hrp == hrp {
+            if let addr = SegwitAddress(string: string), addr.hrp == hrp {
                 return addr
             } else {
                 return GroestlcoinAddress(string: string)
@@ -67,6 +75,18 @@ public extension CoinType {
             return IOSTAccount(string: string)
         case .nuls:
             return NULSAddress(string: string)
+        case .bravoCoin:
+            return BravoAddress(string: string)
+        case .steem:
+            return SteemAddress(string: string)
+        case .eos:
+            return EOSAddress(string: string)
+        case .ioTeX:
+            return IoTeXAddress(string: string)
+        case .zilliqa:
+            return ZilliqaAddress(string: string)
+        case .semux:
+            return SemuxAddress(string: string)
         }
         return .none
     }
@@ -87,7 +107,8 @@ public extension CoinType {
             return Set([P2SHPrefix.dash.rawValue, P2PKHPrefix.dash.rawValue])
         case .zcoin:
             return Set([P2SHPrefix.zcoin.rawValue, P2PKHPrefix.zcoin.rawValue])
-        case .zcash:
+        case .zelcash,
+             .zcash:
             return Set([P2SHPrefix.zcashT.rawValue, P2PKHPrefix.zcashT.rawValue])
         case .qtum:
             return Set([P2PKHPrefix.qtum.rawValue])
@@ -108,7 +129,7 @@ public extension CoinType {
         case .bitcoinCash:
             return .bitcoinCash
         case .binance:
-            return .binanceTest
+            return .binance
         case .cosmos:
             return .cosmos
         case .litecoin:

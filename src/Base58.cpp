@@ -109,7 +109,7 @@ Data Base58::decode(const char* begin, const char* end) const {
         for (auto b256it = b256.rbegin(); (carry != 0 || i < length) && (b256it != b256.rend());
              ++b256it, ++i) {
             carry += 58 * (*b256it);
-            *b256it = carry % 256;
+            *b256it = static_cast<uint8_t>(carry % 256);
             carry /= 256;
         }
         assert(carry == 0);

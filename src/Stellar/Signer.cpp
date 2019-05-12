@@ -33,7 +33,7 @@ std::string Signer::sign() const noexcept {
     auto hash = Hash::sha256(encodedWithHeaders);
     auto data = Data(hash.begin(), hash.end());
 
-    auto sign = key.sign(data, TWCurveEd25519);
+    auto sign = key.sign(data, TWCurveED25519);
 
     auto signature = Data();
     signature.insert(signature.end(), encoded.begin(), encoded.end());

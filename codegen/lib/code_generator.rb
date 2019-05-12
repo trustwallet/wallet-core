@@ -43,7 +43,7 @@ class CodeGenerator
     render_template(header: 'swift/header.erb', template: 'swift.erb', output_subfolder: 'swift/Sources/Generated', extension: 'swift')
 
     framework_header = render('swift/TrustWalletCore.h.erb')
-    framework_header_path = File.expand_path(File.join(output_folder, 'swift/Sources', 'TrustWalletCore.h'))
+    framework_header_path = File.expand_path(File.join(output_folder, 'swift/Sources/Generated', 'TrustWalletCore.h'))
     File.write(framework_header_path, framework_header)
   end
 
@@ -61,10 +61,14 @@ class CodeGenerator
 
   def render_js
     render_template(header: 'js/header.erb', template: 'js.erb', output_subfolder: 'js/js/generated', extension: 'ts')
+
+    index_ts = render('js/index.ts.erb')
+    index_ts_path = File.expand_path(File.join(output_folder, 'js/lib/', 'index.ts'))
+    File.write(index_ts_path, index_ts)
   end
 
   def render_napi_h
-    render_template(header: 'napi/header.erb', template: 'js_napi_h.erb', output_subfolder: 'js/cpp/generated', extension: 'h')
+    render_template(header: 'js/header.erb', template: 'js_napi_h.erb', output_subfolder: 'js/cpp/generated', extension: 'h')
 
     napi_source = render('napi/Sources.cc.erb')
     napi_source_path = File.expand_path(File.join(output_folder, 'js/cpp/', 'Sources.cc'))
@@ -72,7 +76,7 @@ class CodeGenerator
   end
 
   def render_napi_cpp
-    render_template(header: 'napi/header.erb', template: 'js_napi_cc.erb', output_subfolder: 'js/cpp/generated', extension: 'cc')
+    render_template(header: 'js/header.erb', template: 'js_napi_cc.erb', output_subfolder: 'js/cpp/generated', extension: 'cc')
 
     binding_gyp = render('napi/binding.gyp.erb')
     binding_gyp_path = File.expand_path(File.join(output_folder, 'js/cpp/', 'binding.gyp'))

@@ -30,14 +30,14 @@
 #include "options.h"
 
 #include <TrezorCrypto/address.h>
-#include <TrezorCrypto/bignum.h>
-#include <TrezorCrypto/rand.h>
-#include <TrezorCrypto/hmac.h>
-#include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/base58.h>
-#include <TrezorCrypto/secp256k1.h>
-#include "rfc6979.h"
+#include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/hmac.h>
 #include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/rand.h>
+#include <TrezorCrypto/rfc6979.h>
+#include <TrezorCrypto/secp256k1.h>
 
 // Set cp2 = cp1
 void point_copy(const curve_point *cp1, curve_point *cp2)
@@ -915,6 +915,11 @@ int ecdsa_address_decode(const char *addr, uint32_t version, HasherType hasher_b
 	int prefix_len = address_prefix_bytes_len(version);
 	return base58_decode_check(addr, hasher_base58, out, 20 + prefix_len) == 20 + prefix_len
 		&& address_check_prefix(out, version);
+}
+
+void compress_coords(const curve_point *cp, uint8_t *compressed) {
+  compressed[0] = bn_is_odd(&cp->y) ? 0x03 : 0x02;
+  bn_write_be(&cp->x, compressed + 1);
 }
 
 void uncompress_coords(const ecdsa_curve *curve, uint8_t odd, const bignum256 *x, bignum256 *y)

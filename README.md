@@ -5,12 +5,14 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 [![iOS status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20iOS)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=13)
 [![Android status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20Android)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=11)
 [![Linux status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20Linux)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=24)
+[![JavaScript status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20JavaScript)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build?definitionId=29)
 
 ![Codecov](https://codecov.io/gh/TrustWallet/wallet-core/branch/master/graph/badge.svg)
 ![GitHub](https://img.shields.io/github/license/TrustWallet/wallet-core.svg)
 ![Maven Central](https://img.shields.io/maven-central/v/com.trustwallet.walletcore/walletcore.svg)
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
+[![npm](https://img.shields.io/badge/npm-v0.1.0-blue.svg?style=flat-square&logo=npm)](https://www.npmjs.com/package/trust-wallet-core)
 
 ### Supported Blockchains
 
@@ -23,6 +25,8 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://z.cash/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/133.png" width="32" /></a>
 <a href="https://testnet.binance.org" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/714.png" width="32" /></a>
 <a href="https://ripple.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/144.png" width="32" /></a>
+<a href="https://callisto.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/820.png" width="32" /></a>
+<a href="https://poa.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/178.png" width="32" /></a>
 <a href="https://wanchain.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5718350.png" width="32" /></a>
 <a href="https://www.vechain.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/818.png" width="32" /></a>
 <a href="https://tron.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/195.png" width="32" /></a>
@@ -39,7 +43,6 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://cosmos.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" /></a>
 <a href="https://dogecoin.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/3.png" width="32" /></a>
 <a href="https://ont.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1024.png" width="32" /></a>
-
 <a href="https://poa.network/xdai" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/700.png" width="32" /></a>
 <a href="https://decred.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/42.png" width="32" /></a>
 <a href="https://www.groestlcoin.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/17.png" width="32" /></a>
@@ -48,6 +51,14 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://qtum.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2301.png" width="32" /></a>
 <a href="https://iost.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/291.png" width="32" /></a>
 <a href="https://nuls.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/8964.png" width="32" /></a>
+<a href="https://www.iocoin.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/295.png" width="32" /></a>
+<a href="https://bravocoin.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/282.png" width="32" /></a>
+<a href="http://steem.io" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/135.png" width="32" /></a>
+<a href="https://eos.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/194.png" width="32" /></a>
+<a href="https://nano.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/165.png" width="32" /></a>
+<a href="https://semux.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/7562605.png" width="32" /></a>
+<a href="https://dexon.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/237.png" width="32" /></a>
+<a href="https://zel.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" /></a>
 
 # Usage
 
@@ -71,9 +82,19 @@ We currently support only CocoaPods. Add this line to your Podfile and run `pod 
 pod 'TrustWalletCore'
 ```
 
+## JavaScript
+Type definititions are included in the package.
+To install the `npm` package, run
+
+```bash
+npm install trust-wallet-core
+```
+
 # Contributing
 
-The best way to submit feedback and report bugs is to [open a GitHub issue](https://github.com/TrustWallet/wallet-core/issues/new). If you want to contribute code please see [Contributing](docs/Contributing.md). If you want to add support for a new blockchain also see [Adding Support for a New Blockchain](https://github.com/TrustWallet/wallet-core/wiki/Adding-Support-for-a-New-Blockchain).
+The best way to submit feedback and report bugs is to [open a GitHub issue](https://github.com/TrustWallet/wallet-core/issues/new).
+If you want to contribute code please see [Contributing](docs/contributing.md).
+If you want to add support for a new blockchain also see [Adding Support for a New Blockchain](docs/newblockchain.md).
 
 Request for new blockchain? [🚀 here](https://github.com/TrustWallet/wallet-core/issues/new?template=new_blockchain.md&title=Add+support+for).
 

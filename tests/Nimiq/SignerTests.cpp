@@ -16,16 +16,16 @@ namespace TW::Nimiq {
 
 TEST(NimiqSigner, DerivePublicKey) {
     const PrivateKey privateKey(parse_hex("e3cc33575834add098f8487123cd4bca543ee859b3e8cfe624e7e6a97202b756"));
-    const PublicKey publicKey((privateKey.getPublicKey(TW::PublicKeyType::ed25519)));
+    const PublicKey publicKey((privateKey.getPublicKey(TWPublicKeyTypeED25519)));
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "NQ27 GBAY EVHP HK5X 6JHV JGFJ 5M3H BF4Y G7GD");
 }
 
 TEST(NimiqSigner, Sign) {
     const PrivateKey privateKey(parse_hex("e3cc33575834add098f8487123cd4bca543ee859b3e8cfe624e7e6a97202b756"));
-    const auto pubkey = privateKey.getPublicKey(TW::PublicKeyType::ed25519);
+    const auto pubkey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     std::array<uint8_t, 32> pubkeyBytes;
-    std::copy(pubkey.bytes.data() + 1, pubkey.bytes.data() + 33, pubkeyBytes.data());
+    std::copy(pubkey.bytes.begin(), pubkey.bytes.end(), pubkeyBytes.data());
 
     Transaction tx(
         pubkeyBytes,

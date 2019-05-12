@@ -2,7 +2,7 @@
 // Created by Dusan Klinec on 10/05/2018.
 //
 
-#include "range_proof.h"
+#include <TrezorCrypto/monero/range_proof.h>
 
 
 static void xmr_hash_ge25519_to_scalar(bignum256modm r, const ge25519 *p){

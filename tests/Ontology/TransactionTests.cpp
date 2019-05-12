@@ -41,7 +41,6 @@ TEST(OntologyTransaction, validity) {
         "f66a7cc8516a7cc86c51c1087472616e736665721400000000000000000000000000000000000000010068164f"
         "6e746f6c6f67792e4e61746976652e496e766f6b650000";
     EXPECT_EQ(hexTx, hex(tx.serialize()));
-    EXPECT_EQ(316, hex(tx.serialize()).length());
     auto signer1 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
     signer1.sign(tx);
     hexTx =

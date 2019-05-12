@@ -36,7 +36,7 @@ bool Address::isValid(const std::string& string) {
 
     // ... and that checksums match
     uint16_t checksum_expected = Crc::crc16(decoded.data(), 33);
-    uint16_t checksum_actual = (decoded[34] << 8) | decoded[33]; // unsigned short (little endian)
+    uint16_t checksum_actual = static_cast<uint16_t>((decoded[34] << 8) | decoded[33]); // unsigned short (little endian)
     if (valid && checksum_expected != checksum_actual) {
         valid = false;
     }
@@ -58,8 +58,11 @@ Address::Address(const std::string& string) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto publicKeyData = publicKey.bytes;
-    std::copy(publicKeyData.begin() + 1, publicKeyData.begin() + 33, bytes.data());
+    if (publicKey.type != TWPublicKeyTypeED25519) {
+        throw std::invalid_argument("Invalid public key type");
+    }
+    static_assert(PublicKey::ed25519Size == keySize);
+    std::copy(publicKey.bytes.begin(), publicKey.bytes.end(), bytes.data());
 }
 
 std::string Address::string() const {

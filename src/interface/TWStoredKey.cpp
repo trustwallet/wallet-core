@@ -19,7 +19,7 @@ struct TWStoredKey *_Nullable TWStoredKeyLoad(TWString *_Nonnull path) {
     auto& pathString = *reinterpret_cast<const std::string*>(path);
     try {
         return new TWStoredKey{ StoredKey::load(pathString) };
-    } catch (std::exception) {
+    } catch (...) {
         return nullptr;
     }
 }
@@ -32,8 +32,12 @@ struct TWStoredKey *_Nonnull TWStoredKeyCreate(TWString *_Nonnull name, TWString
     return new TWStoredKey{ StoredKey(StoredKeyType::mnemonicPhrase, nameString, passwordString, data) };
 }
 
-struct TWStoredKey *_Nonnull TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
+struct TWStoredKey *_Nullable TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
     auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);
+    if (!TW::PrivateKey::isValid(privateKeyData)) {
+        return nullptr;
+    }
+
     auto& nameString = *reinterpret_cast<const std::string*>(name);
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
     auto result = new TWStoredKey{ StoredKey(StoredKeyType::privateKey, nameString, passwordString, privateKeyData) };
@@ -45,8 +49,12 @@ struct TWStoredKey *_Nonnull TWStoredKeyImportPrivateKey(TWData *_Nonnull privat
     return result;
 }
 
-struct TWStoredKey *_Nonnull TWStoredKeyImportHDWallet(TWString *_Nonnull mnemonic, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
+struct TWStoredKey *_Nullable TWStoredKeyImportHDWallet(TWString *_Nonnull mnemonic, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
     auto& mnemonicString = *reinterpret_cast<const std::string*>(mnemonic);
+    if (!TW::HDWallet::isValid(mnemonicString)) {
+        return nullptr;
+    }
+
     auto& nameString = *reinterpret_cast<const std::string*>(name);
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
 
@@ -66,7 +74,7 @@ struct TWStoredKey *_Nullable TWStoredKeyImportJSON(TWData *_Nonnull json) {
     auto& d = *reinterpret_cast<const TW::Data*>(json);
     try {
         return new TWStoredKey{ StoredKey(nlohmann::json::parse(d)) };
-    } catch (std::exception) {
+    } catch (...) {
         return nullptr;
     }
 }
@@ -109,7 +117,7 @@ struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnu
             return nullptr;
         }
        return new TWAccount{ *account };
-    } catch (std::exception) {
+    } catch (...) {
         return nullptr;
     }
 }
@@ -125,7 +133,7 @@ bool TWStoredKeyStore(struct TWStoredKey *_Nonnull key, TWString *_Nonnull path)
     auto& pathString = *reinterpret_cast<const std::string*>(path);
     try {
         key->impl.store(pathString);
-    } catch (std::exception) {
+    } catch (...) {
         return false;
     }
     return true;
@@ -136,7 +144,7 @@ TWData *_Nullable TWStoredKeyDecryptPrivateKey(struct TWStoredKey *_Nonnull key,
     try {
         const auto data = key->impl.payload.decrypt(passwordString);
         return TWDataCreateWithBytes(data.data(), data.size());
-    } catch (DecryptionError) {
+    } catch (...) {
         return nullptr;
     }
 }
@@ -147,7 +155,7 @@ TWString *_Nullable TWStoredKeyDecryptMnemonic(struct TWStoredKey *_Nonnull key,
         const auto data = key->impl.payload.decrypt(passwordString);
         const auto string = std::string(data.begin(), data.end());
         return TWStringCreateWithUTF8Bytes(string.c_str());
-    } catch (DecryptionError) {
+    } catch (...) {
         return nullptr;
     }
 }
@@ -156,7 +164,7 @@ struct TWPrivateKey *_Nullable TWStoredKeyPrivateKey(struct TWStoredKey *_Nonnul
     auto& passwordString = *reinterpret_cast<const std::string*>(password);
     try {
         return new TWPrivateKey{ key->impl.privateKey(coin, passwordString) };
-    } catch (std::exception) {
+    } catch (...) {
         return nullptr;
     }
 }
@@ -168,7 +176,7 @@ struct TWHDWallet *_Nullable TWStoredKeyWallet(struct TWStoredKey *_Nonnull key,
     }
     try {
         return new TWHDWallet{ key->impl.wallet(passwordString) };
-    } catch (DecryptionError) {
+    } catch (...) {
         return nullptr;
     }
 }
