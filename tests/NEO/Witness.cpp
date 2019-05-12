@@ -10,36 +10,38 @@
 #include "ReadData.h"
 #include "UInt.hpp"
 #include "HexCoding.h"
-#include "NEO/TransactionOutput.hpp"
+#include "NEO/Witness.hpp"
 
 using namespace std;
 using namespace TW;
 using namespace TW::NEO;
 
-TEST(NEOTransactionOutput, Serialize) {
-    auto transactionOutput = TransactionOutput();
-    string assetId = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a";
-    string scriptHash = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b";
-    transactionOutput.value = 1L;
-    transactionOutput.assetId = load<uint256_t>(parse_hex(assetId));
-    transactionOutput.scriptHash = load<uint160_t>(parse_hex(scriptHash));
-    ASSERT_EQ(assetId + "0100000000000000" + scriptHash, hex(transactionOutput.serialize()));
+TEST(NEOWitness, Serialize) {
+    auto witness = Witness();
+    string invocationScript = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a";
+    string verificationScript = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b";
+    witness.invocationScript = parse_hex(invocationScript);
+    witness.verificationScript = parse_hex(verificationScript);
+    ASSERT_EQ("20000000" + invocationScript + "14000000" + verificationScript, hex(witness.serialize()));
 
-    transactionOutput.value = 0xff01;
-    ASSERT_EQ(assetId + "01ff000000000000" + scriptHash, hex(transactionOutput.serialize()));
+    invocationScript = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4aba";
+    verificationScript = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b";
+    witness.invocationScript = parse_hex(invocationScript);
+    witness.verificationScript = parse_hex(verificationScript);
+    ASSERT_EQ("21000000" + invocationScript + "13000000" + verificationScript, hex(witness.serialize()));
 }
 
-TEST(NEOtransactionOutput, Deserialize) {
-    string assetId = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a";
-    string scriptHash = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b";
-    auto transactionOutput = TransactionOutput();
-    transactionOutput.deserialize(parse_hex(assetId + "0100000000000000" + scriptHash));
-    ASSERT_EQ(1, transactionOutput.value);
-    ASSERT_EQ(assetId, hex(store(transactionOutput.assetId)));
-    ASSERT_EQ(scriptHash, hex(store(transactionOutput.scriptHash)));
+TEST(NEOWitness, Deserialize) {
+    auto witness = Witness();
+    string invocationScript = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a";
+    string verificationScript = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b";
+    witness.deserialize(parse_hex("20000000" + invocationScript + "14000000" + verificationScript));
+    ASSERT_EQ(invocationScript, hex(witness.invocationScript));
+    ASSERT_EQ(verificationScript, hex(witness.verificationScript));
 
-    transactionOutput.deserialize(parse_hex(assetId + "01ff000000000000" + scriptHash));
-    ASSERT_EQ(0xff01, transactionOutput.value);
-    ASSERT_EQ(assetId, hex(store(transactionOutput.assetId)));
-    ASSERT_EQ(scriptHash, hex(store(transactionOutput.scriptHash)));
+    invocationScript = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4aba";
+    verificationScript = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b";
+    witness.deserialize(parse_hex("21000000" + invocationScript + "13000000" + verificationScript));
+    ASSERT_EQ(invocationScript, hex(witness.invocationScript));
+    ASSERT_EQ(verificationScript, hex(witness.verificationScript));
 }

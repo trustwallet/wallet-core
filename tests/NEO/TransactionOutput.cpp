@@ -29,7 +29,7 @@ TEST(NEOTransactionOutput, Serialize) {
     ASSERT_EQ(assetId + "01ff000000000000" + scriptHash, hex(transactionOutput.serialize()));
 }
 
-TEST(NEOtransactionOutput, Deserialize) {
+TEST(NEOTransactionOutput, Deserialize) {
     string assetId = "bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a";
     string scriptHash = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b";
     auto transactionOutput = TransactionOutput();
