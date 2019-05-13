@@ -16,7 +16,7 @@ namespace TW::NEO {
         virtual ~CoinReference() {}
 
         int64_t size() const override {
-            return sizeof(prevHash) + sizeof(prevIndex);
+            return 32 + 2; // sizeof(prevHash) + sizeof(prevIndex);
         }
 
         void deserialize(const Data &data, int initial_pos = 0) override {
