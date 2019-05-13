@@ -1,3 +1,5 @@
+#include "../uint256.h"
+#include "../UInt.hpp"
 #include "../Data.h"
 #include "../ReadData.h"
 #include "Transaction.h"
@@ -66,4 +68,8 @@ Data Transaction::serialize() const {
 
 Data Transaction::getHash() const {
     return Hash::sha256(Hash::sha256(serialize()));
+}
+
+uint256_t Transaction::getHashUInt256() const {
+    return load<uint256_t>(getHash());
 }
