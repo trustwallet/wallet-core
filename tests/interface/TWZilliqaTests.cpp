@@ -13,8 +13,14 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWBlockchain.h>
+#include <TrustWalletCore/TWCoinType.h>
 
 #include <gtest/gtest.h>
+
+TEST(ZilliqaTests, Config) {
+    ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
+}
 
 TEST(ZilliqaTests, Sign) {
 

@@ -25,8 +25,9 @@ enum TWBlockchain {
     TWBlockchainStellar = 10,
     TWBlockchainAion = 11,
     TWBlockchainCosmos = 12,
-    TWBlockchainTheta = 23,
-    TWBlockchainOntology = 14
+    TWBlockchainTheta = 13,
+    TWBlockchainOntology = 14,
+    TWBlockchainZilliqa = 15,
 };
 
 TW_EXTERN_C_END
