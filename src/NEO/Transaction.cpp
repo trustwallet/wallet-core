@@ -12,39 +12,35 @@ using namespace TW::NEO;
     } \
 }
 int64_t Transaction::size() const {
-    auto resp = sizeof(type) + sizeof(version);
+    auto resp = 1 + 1; // sizeof(type) + sizeof(version);
     SIZE_INC(resp, attributes);
     SIZE_INC(resp, inInputs);
     SIZE_INC(resp, outputs);
-//    SIZE_INC(resp, witnesses);
+//    SIZE_INC(resp, witnesses); // witnessess is not serialized
 
     return resp;
 }
 #undef SIZE_INC
 
-#define DESERIALIZE_V(P, TYPE, VEC) {\
-    auto vsize_ = readUInt64(data, 5); \
-    (VEC) = std::vector<TYPE>(vsize_); \
+#define DESERIALIZE_V(SOURCE, P, TYPE, VEC) {\
+    auto vsize_ = readUInt64((SOURCE), (P)); \
+    (VEC).clear(); \
     (P) += 8; \
     for (int __i_ = 0; __i_ < vsize_; ++__i_) { \
         TYPE ta; \
-        ta.deserialize(data, pos); \
-        pos += ta.size(); \
+        ta.deserialize((SOURCE), (P)); \
+        (P) += ta.size(); \
         (VEC).push_back(ta); \
     }\
 }
 void Transaction::deserialize(const Data &data, int initial_pos) {
-    TransactionType txType = (TransactionType) readUInt16(data, initial_pos);
-    if (txType != type) {
-        throw std::invalid_argument("Transaction::DeserializeUnsigned FormatException");
-    }
-
-    version = data[initial_pos + 4];
-    int pos = initial_pos + 5;
-    DESERIALIZE_V(pos, TransactionAttribute, attributes);
-    DESERIALIZE_V(pos, CoinReference, inInputs);
-    DESERIALIZE_V(pos, TransactionOutput, outputs);
-    DESERIALIZE_V(pos, Witness, witnesses);
+    type = (TransactionType) data[initial_pos];
+    version = data[initial_pos + 1];
+    int pos = initial_pos + 2;
+    DESERIALIZE_V(data, pos, TransactionAttribute, attributes);
+    DESERIALIZE_V(data, pos, CoinReference, inInputs);
+    DESERIALIZE_V(data, pos, TransactionOutput, outputs);
+    // DESERIALIZE_V(data, pos, Witness, witnesses); // witnessess is not serialized
 }
 #undef DESERIALIZE_V
 
@@ -55,14 +51,14 @@ void Transaction::deserialize(const Data &data, int initial_pos) {
     } \
 }
 Data Transaction::serialize() const {
-    Data resp(size());
-    append(resp, writeInt(type));
+    Data resp;
+    resp.push_back((byte) type);
     resp.push_back(version);
 
     SERIALIZE_V(resp, attributes);
     SERIALIZE_V(resp, inInputs);
     SERIALIZE_V(resp, outputs);
-    SERIALIZE_V(resp, witnesses);
+    // SERIALIZE_V(resp, witnesses); // witnessess is not serialized
 
     return resp;
 }

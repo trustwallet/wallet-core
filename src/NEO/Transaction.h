@@ -16,15 +16,14 @@
 
 namespace TW::NEO {
     class Transaction : public ISerializable {
-    private:
+    public:
         TransactionType type;
         byte version;
-
         std::vector<TransactionAttribute> attributes;
         std::vector<CoinReference> inInputs;
         std::vector<TransactionOutput> outputs;
         std::vector<Witness> witnesses;
-    public:
+
         virtual ~Transaction() {}
         int64_t size() const override;
         void deserialize(const Data &data, int initial_pos = 0) override;
