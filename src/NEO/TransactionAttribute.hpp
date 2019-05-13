@@ -14,11 +14,11 @@ namespace TW::NEO {
         virtual ~TransactionAttribute() {}
 
         int64_t size() const override {
-            return sizeof(usage) + data.size();
+            return 1 + data.size();
         }
 
         void deserialize(const Data &data, int initial_pos = 0) override {
-            usage = (TransactionAttributeUsage) readBytes(data, 1, initial_pos)[0];
+            usage = (TransactionAttributeUsage) data[initial_pos];
             if (data.size() + initial_pos < 1) {
                 throw std::invalid_argument("Invalid data for deserialization");
             }
