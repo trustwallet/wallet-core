@@ -42,3 +42,28 @@ TEST(ZilliqaSigner, PreImage) {
 
     ASSERT_TRUE(pubKey.verifySchnorr(Data(signature.begin(), signature.end()), preImage));
 }
+
+TEST(ZilliqaSigner, Signing) {
+    auto privateKey = PrivateKey(parse_hex("0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748"));
+    auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+
+    // 1 ZIL
+    auto amount = uint256_t(1000000000000);
+    auto gasPrice = uint256_t(1000000000);
+    auto amountData = store(amount);
+    auto gasData = store(gasPrice);
+
+    auto input = Proto::SigningInput();
+    input.set_version(65537);
+    input.set_nonce(2);
+    input.set_to_address("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C");
+    input.set_amount(amountData.data(), amountData.size());
+    input.set_gas_price(gasData.data(), gasData.size());
+    input.set_gas_limit(uint64_t(1));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    auto preImage = Signer::getPreImage(input);
+    auto signature = Signer::sign(preImage, privateKey).signature();
+
+    ASSERT_EQ(hex(signature.begin(), signature.end()), "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268");
+}

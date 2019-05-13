@@ -1154,10 +1154,13 @@ int ecdsa_sig_to_der(const uint8_t *sig, uint8_t *der)
 int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *msg, const uint32_t msg_len, uint8_t *sig)
 {
 	int i;
-	bignum256 k, randk;
+	bignum256 k;
+
+	uint8_t hash[32];
+	sha256_Raw(msg, msg_len, hash);
 
 	rfc6979_state rng;
-	init_rfc6979(priv_key, msg, &rng);
+	init_rfc6979(priv_key, hash, &rng);
 
 	for (i = 0; i < 10000; i++) {
 		// generate K deterministically
@@ -1167,11 +1170,8 @@ int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const ui
 			continue;
 		}
 
-		// randomize operations to counter side-channel attacks
-		generate_k_random(&randk, &curve->order);
-
 		schnorr_sign_pair sign;
-		if (schnorr_sign(curve, priv_key, &randk, msg, msg_len, &sign) != 0) {
+		if (schnorr_sign(curve, priv_key, &k, msg, msg_len, &sign) != 0) {
 			continue;
 		}
 
@@ -1180,7 +1180,6 @@ int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const ui
 		bn_write_be(&sign.s, sig + 32);
 
 		memzero(&k, sizeof(k));
-		memzero(&randk, sizeof(randk));
 		memzero(&rng, sizeof(rng));
 		memzero(&sign, sizeof(sign));
 		return 0;
@@ -1189,7 +1188,6 @@ int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const ui
 	// Too many retries without a valid signature
 	// -> fail with an error
 	memzero(&k, sizeof(k));
-	memzero(&randk, sizeof(randk));
 	memzero(&rng, sizeof(rng));
 	return -1;
 }
