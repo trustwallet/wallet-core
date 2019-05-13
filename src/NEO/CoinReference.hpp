@@ -4,6 +4,7 @@
 
 #include "ISerializable.h"
 #include "../uint256.h"
+#include "../UInt.hpp"
 #include "../Data.h"
 #include "../ReadData.h"
 
