@@ -12,6 +12,8 @@
 
 TW_EXTERN_C_BEGIN
 
+const uint32_t TWZilliqaTxVersion = 65537;
+
 /// Helper class to sign Zilliqa transactions.
 TW_EXPORT_CLASS
 struct TWZilliqaSigner;
