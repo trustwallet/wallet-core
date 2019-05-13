@@ -16,7 +16,7 @@ namespace TW::NEO {
         virtual ~TransactionOutput() {}
 
         int64_t size() const override {
-            return 32 + 8 + 20;
+            return store(assetId).size() + 8 + store<uint160_t>(scriptHash).size();
         }
 
         void deserialize(const Data &data, int initial_pos = 0) override {
