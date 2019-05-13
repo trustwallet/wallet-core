@@ -219,3 +219,11 @@ TEST(NEOTransaction, SerializeDeserialize) {
 }
 #undef CHECK_VEC
 #undef CHECK_DES
+
+TEST(NEOTransaction, GetHash) {
+    string block2tn = "0000d11f7a2800000000";
+    auto deserializedTransaction = Transaction();
+    deserializedTransaction.deserialize(parse_hex(block2tn));
+
+    ASSERT_EQ("0x8e3a32ba3a7e8bdb0ad9a2ad064713e45bd20eb0dab0d2e77df5b5ce985276d0", hex(deserializedTransaction.getHash()));
+}

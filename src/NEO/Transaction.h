@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../uint256.h"
 #include "../PublicKey.h"
 #include "ISerializable.h"
 #include "TransactionType.h"
@@ -30,6 +31,7 @@ namespace TW::NEO {
         Data serialize() const override;
 
         Data getHash() const;
+        uint256_t getHashUInt256() const;
     };
 
 } // namespace TW::NEO
