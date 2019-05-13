@@ -19,6 +19,8 @@ uint64_t readUInt64(const Data &from, int initial_pos = 0);
 int16_t readInt16(const Data &from, int initial_pos = 0);
 int32_t readInt32(const Data &from, int initial_pos = 0);
 int64_t readInt64(const Data &from, int initial_pos = 0);
+uint64_t readVarUInt(const TW::Data &from, uint64_t max, int initial_pos = 0);
+int64_t readVarInt(const TW::Data &from, uint64_t max, int initial_pos = 0);
 
 Data writeVarBytes(const Data &from, int initial_pos = 0);
 Data writeUshort(ushort v);
@@ -27,6 +29,8 @@ Data writeUlong(ulong v);
 Data writeShort(short v);
 Data writeInt(int v);
 Data writeLong(long v);
+Data writeVarUInt(ulong value);
+Data writeVarInt(long value);
 
 template<class T>
 static std::vector<T> concat(const std::vector<T>& v1, const std::vector<T>& v2) {
