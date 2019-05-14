@@ -168,8 +168,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Semux::Address::isValid(string);
             
     case TWCoinTypeMonetaryUnit:
-       // return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixMonetaryUnit}, {TWP2SHPrefixMonetaryUnit}});
-            continue;
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixMonetaryUnit}});
     }
 }
 
