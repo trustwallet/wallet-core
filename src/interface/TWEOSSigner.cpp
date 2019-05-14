@@ -86,5 +86,7 @@ TW_Proto_Result TWEOSSignerSign(TW_EOS_Proto_SigningInput input) {
         return createErrorResult(e.what());
     } catch (const std::logic_error& e) {
         return createErrorResult(e.what());
+    } catch (const std::runtime_error& e) {
+        return createErrorResult(e.what());
     }
 }
