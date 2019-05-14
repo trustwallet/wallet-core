@@ -281,7 +281,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(iotex, "https://iotexscan.io/action/123");
 
     auto zil = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZilliqa, txId));
-    assertStringsEqual(zil, "https://explorer.zilliqa.com/transactions/123");
+    assertStringsEqual(zil, "https://viewblock.io/zilliqa/tx/123");
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSemux, txId));
     assertStringsEqual(semux, "https://semux.info/explorer/transaction/123");

@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Address.h"
-#include "BinaryCoding.h"
 
 namespace TW::Semux {
 
@@ -49,10 +48,7 @@ class Transaction {
     std::vector<uint8_t> getHash() const;
 
   private:
-    void writeBytes(const Data &bytes, Data &buffer) const {
-        encodeVarInt(bytes.size(), buffer);
-        buffer.insert(buffer.end(), bytes.begin(), bytes.end());
-    }
+    void writeBytes(const Data &bytes, Data &buffer) const;
 };
 
 } // namespace TW::Semux

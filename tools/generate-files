@@ -35,6 +35,7 @@ fi
 
 # Generate internal Protobuf files
 "$PROTOC" -I=$PREFIX/include -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
+"$PROTOC" -I=$PREFIX/include -I=src/Zilliqa/Protobuf --cpp_out=src/Zilliqa/Protobuf src/Zilliqa/Protobuf/*.proto
 
 # Generate JS Protobuf files
 if [ -x "$(command -v npm)" ]; then

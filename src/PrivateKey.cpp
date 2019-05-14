@@ -13,6 +13,7 @@
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/secp256k1.h>
+#include <TrezorCrypto/schnorr.h>
 
 using namespace TW;
 
@@ -126,4 +127,24 @@ Data PrivateKey::signAsDER(const Data& digest, TWCurve curve) const {
     auto result = Data{};
     std::copy(resultBytes.begin(), resultBytes.begin() + size, std::back_inserter(result));
     return result;
+}
+
+Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
+    bool success = false;
+    Data sig(64);
+    switch (curve) {
+    case TWCurveSECP256k1: {
+        success = zil_schnorr_sign(&secp256k1, bytes.data(), message.data(), static_cast<uint32_t>(message.size()), sig.data()) == 0;
+    } break;
+
+    case TWCurveNIST256p1:
+    case TWCurveED25519:
+    case TWCurveED25519Blake2bNano: {
+        // not support
+    } break;
+    }
+    if (!success) {
+        return {};
+    }
+    return sig;
 }

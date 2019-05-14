@@ -38,6 +38,7 @@
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/rfc6979.h>
 #include <TrezorCrypto/secp256k1.h>
+#include <TrezorCrypto/schnorr.h>
 
 // Set cp2 = cp1
 void point_copy(const curve_point *cp1, curve_point *cp2)
@@ -283,13 +284,13 @@ void point_jacobian_add(const curve_point *p1, jacobian_curve_point *p2, const e
 	bn_multiply(&xz, &xz, prime); // xz = z2^2
 	yz = p2->z;
 	bn_multiply(&xz, &yz, prime); // yz = z2^3
-	
+
 	if (a != 0) {
 		az  = xz;
 		bn_multiply(&az, &az, prime);   // az = z2^4
 		bn_mult_k(&az, -a, prime);      // az = -az2^4
 	}
-	
+
 	bn_multiply(&p1->x, &xz, prime);        // xz = x1' = x1*z2^2;
 	h = xz;
 	bn_subtractmod(&h, &p2->x, &h, prime);
@@ -315,14 +316,14 @@ void point_jacobian_add(const curve_point *p1, jacobian_curve_point *p2, const e
 	r2 = p2->x;
 	bn_multiply(&r2, &r2, prime);
 	bn_mult_k(&r2, 3, prime);
-	
+
 	if (a != 0) {
 		// subtract -a z2^4, i.e, add a z2^4
 		bn_subtractmod(&r2, &az, &r2, prime);
 	}
 	bn_cmov(&r, is_doubling, &r2, &r);
 	bn_cmov(&h, is_doubling, &yz, &h);
-	
+
 
 	// hsqx = h^2
 	hsqx = h;
@@ -1010,7 +1011,7 @@ int ecdsa_verify(const ecdsa_curve *curve, HasherType hasher_sign, const uint8_t
 
 // Compute public key from signature and recovery id.
 // returns 0 if the key is successfully recovered
-int ecdsa_recover_pub_from_sig (const ecdsa_curve *curve, uint8_t *pub_key, const uint8_t *sig, const uint8_t *digest, int recid)
+int ecdsa_recover_pub_from_sig(const ecdsa_curve *curve, uint8_t *pub_key, const uint8_t *sig, const uint8_t *digest, int recid)
 {
 	bignum256 r, s, e;
 	curve_point cp, cp2;
@@ -1148,4 +1149,54 @@ int ecdsa_sig_to_der(const uint8_t *sig, uint8_t *der)
 
 	*len = *len1 + *len2 + 4;
 	return *len + 2;
+}
+
+int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *msg, const uint32_t msg_len, uint8_t *sig)
+{
+	int i;
+	bignum256 k;
+
+	uint8_t hash[32];
+	sha256_Raw(msg, msg_len, hash);
+
+	rfc6979_state rng;
+	init_rfc6979(priv_key, hash, &rng);
+
+	for (i = 0; i < 10000; i++) {
+		// generate K deterministically
+		generate_k_rfc6979(&k, &rng);
+		// if k is too big or too small, we don't like it
+		if (bn_is_zero(&k) || !bn_is_less(&k, &curve->order)) {
+			continue;
+		}
+
+		schnorr_sign_pair sign;
+		if (schnorr_sign(curve, priv_key, &k, msg, msg_len, &sign) != 0) {
+			continue;
+		}
+
+		// we're done
+		bn_write_be(&sign.r, sig);
+		bn_write_be(&sign.s, sig + 32);
+
+		memzero(&k, sizeof(k));
+		memzero(&rng, sizeof(rng));
+		memzero(&sign, sizeof(sign));
+		return 0;
+	}
+
+	// Too many retries without a valid signature
+	// -> fail with an error
+	memzero(&k, sizeof(k));
+	memzero(&rng, sizeof(rng));
+	return -1;
+}
+
+int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
+{
+	schnorr_sign_pair sign;
+	bn_read_be(sig, &sign.r);
+	bn_read_be(sig + 32, &sign.s);
+
+	return schnorr_verify(curve, pub_key, msg, msg_len, &sign);
 }

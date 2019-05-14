@@ -236,6 +236,16 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("DJRoWqKj6hVmZMEMPahJ7UsqaYCtEJ3xv9", address)
     }
 
+    func testDeriveZilliqa() {
+        let zil = CoinType.zilliqa
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: .zilliqa)
+        let address = zil.deriveAddress(privateKey: key)
+
+        XCTAssertEqual(key.data.hexString, "b49a9fb16cd2b46ee538be807f712073009ea528e407a25a4bf91a63c3e49f99")
+        XCTAssertEqual(address.description, "0x65E1a9341E08d10E6f3C00930CE879c5bF980319")
+    }
+
     func testSignHash() {
         let eth = CoinType.ethereum
         let wallet = HDWallet.test
