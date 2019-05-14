@@ -20,7 +20,7 @@ message SigningInput {
     // Recipient's address.
     string to_address = 5;
 
-    // Amount to send in wei (256-bit numner)
+    // Amount to send in wei (256-bit number)
     bytes amount = 6;
 
     // Optional payload

@@ -27,6 +27,7 @@ describe('CoinAddressDerivation', () => {
             case CoinType.BITCOINCASH: expect('bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70').to.equal(address); break;
             case CoinType.CALLISTO: expect('0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04').to.equal(address); break;
             case CoinType.DASH: expect('XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT').to.equal(address); break;
+            case CoinType.ELLAISM: expect('0x1Ae593CAdb8BAC47D0394617396650474c303F9C').to.equal(address); break;
             case CoinType.ETHEREUM: expect('0x8f348F300873Fd5DA36950B2aC75a26584584feE').to.equal(address); break;
             case CoinType.ETHEREUMCLASSIC: expect('0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c').to.equal(address); break;
             case CoinType.ETHERSOCIAL: expect('0x182dd55D97C1F8D3781CDaDFC275948Ac38Ea1fe').to.equal(address); break;
@@ -61,7 +62,7 @@ describe('CoinAddressDerivation', () => {
             case CoinType.LUX: expect('LYL6SZG8S6dyXRFT8Bw4FHUoVef3cWCoPi').to.equal(address); break;
             case CoinType.QTUM: expect('QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF').to.equal(address); break;
             case CoinType.NULS: expect('NsdtNvsfmPerWk4BhcapHTB3LptF8Sbe').to.equal(address); break;
-            case CoinType.ZILLIQA: expect('0xddb41006f7b6fa8e5fbf06a71c01f789febc66e8').to.equal(address); break;
+            case CoinType.ZILLIQA: expect('0xDdb41006F7B6FA8e5FBF06A71c01F789FeBC66e8').to.equal(address); break;
             case CoinType.SEMUX: expect('0xfe604170382452f77bc922bc19eb4b53504b09c2').to.equal(address); break;
         }
     };

@@ -50,7 +50,7 @@ TW_Proto_Result TWEOSSignerSign(TW_EOS_Proto_SigningInput input) {
         tx.actions.push_back(action);
 
         // get key type
-        TW::EOS::Type type;
+        TW::EOS::Type type = Type::Legacy;
         switch (in.private_key_type()) {
         case Proto::KeyType::LEGACY:
             type = Type::Legacy;
@@ -63,6 +63,7 @@ TW_Proto_Result TWEOSSignerSign(TW_EOS_Proto_SigningInput input) {
         case Proto::KeyType::MODERNR1:
             type = Type::ModernR1;
             break;
+        default: break;
         }
 
         // sign the transaction with a Signer

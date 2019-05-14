@@ -14,7 +14,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
 [![npm](https://img.shields.io/badge/npm-v0.1.0-blue.svg?style=flat-square&logo=npm)](https://www.npmjs.com/package/trust-wallet-core)
 
-### Supported Blockchains
+### Supported 40+ Blockchains
 
 <a href="https://bitcoin.org" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/0.png" width="32" /></a>
 <a href="https://litecoin.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2.png" width="32" /></a>
@@ -57,6 +57,10 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://eos.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/194.png" width="32" /></a>
 <a href="https://nano.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/165.png" width="32" /></a>
 <a href="https://semux.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/7562605.png" width="32" /></a>
+<a href="https://dexon.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/237.png" width="32" /></a>
+<a href="https://zel.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" /></a>
+<a href="https://zilliqa.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/313.png" width="32" /></a>
+<a href="https://iotex.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/304.png" width="32" /></a>
 
 # Usage
 
@@ -68,7 +72,7 @@ Add this dependency to build.gradle:
 
 ```groovy
 dependencies {
-    implementation 'com.trustwallet.walletcore:walletcore:0.4.0'
+    implementation 'com.trustwallet.walletcore:walletcore:0.10.0'
 }
 ```
 
@@ -91,8 +95,8 @@ npm install trust-wallet-core
 # Contributing
 
 The best way to submit feedback and report bugs is to [open a GitHub issue](https://github.com/TrustWallet/wallet-core/issues/new).
-If you want to contribute code please see [Contributing](docs/contributing.md).
-If you want to add support for a new blockchain also see [Adding Support for a New Blockchain](docs/newblockchain.md).
+If you want to contribute code please see [Contributing](https://developer.trustwallet.com/wallet-core/contributing).
+If you want to add support for a new blockchain also see [Adding Support for a New Blockchain](https://developer.trustwallet.com/wallet-core/newblockchain).
 
 Request for new blockchain? [🚀 here](https://github.com/TrustWallet/wallet-core/issues/new?template=new_blockchain.md&title=Add+support+for).
 

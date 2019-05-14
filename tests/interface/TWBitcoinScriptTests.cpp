@@ -15,7 +15,6 @@ TEST(BitcoinScript, ScriptHash) {
     auto pkData = DATA("cf5007e19af3641199f21f3fa54dff2fa2627471");
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKeyHash(pkData.get()));
 
-    auto size = TWBitcoinScriptSize(script.get());
     auto data = WRAPD(TWBitcoinScriptData(script.get()));
 
     auto scriptHex = WRAPS(TWStringCreateWithHexData(data.get()));
@@ -35,7 +34,6 @@ TEST(BitcoinScript, RedeemScript) {
 
     auto scriptPub1 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToScriptHash(scriptHash.get()));
 
-    auto size = TWBitcoinScriptSize(scriptPub1.get());
     auto data = WRAPD(TWBitcoinScriptData(scriptPub1.get()));
 
     auto hexData = WRAPS(TWStringCreateWithHexData(data.get()));

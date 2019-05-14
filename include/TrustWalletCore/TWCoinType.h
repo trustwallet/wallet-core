@@ -31,6 +31,7 @@ enum TWCoinType {
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
     TWCoinTypeDogecoin = 3,
+    TWCoinTypeEllaism = 163,
     TWCoinTypeEOS = 194,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
@@ -67,6 +68,8 @@ enum TWCoinType {
     TWCoinTypeZcoin = 136,
     TWCoinTypeZilliqa = 313,
     TWCoinTypeSemux = 7562605,
+    TWCoinTypeDEXON = 237,
+    TWCoinTypeZelcash = 19167,
 };
 
 /// Returns the blockchain for a coin type.

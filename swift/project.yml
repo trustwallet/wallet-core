@@ -101,6 +101,7 @@ targets:
       - trezor-crypto/src/ripple/base58.c
       - trezor-crypto/src/nist256p1.c
       - trezor-crypto/src/groestl.c
+      - trezor-crypto/src/schnorr.c
     settings:
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
 

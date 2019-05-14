@@ -31,6 +31,7 @@ class CoinAddressDerivationTests {
         BITCOINCASH -> assertEquals("bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70", address)
         CALLISTO -> assertEquals("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
+        ELLAISM -> assertEquals("0x1Ae593CAdb8BAC47D0394617396650474c303F9C", address)
         ETHEREUM -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         ETHEREUMCLASSIC -> assertEquals("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
         ETHERSOCIAL -> assertEquals("0x182dd55D97C1F8D3781CDaDFC275948Ac38Ea1fe", address)
@@ -70,7 +71,9 @@ class CoinAddressDerivationTests {
         STEEM -> assertEquals("STM6WSusVTidc1e7TbLjhqQPYctbsndTRwXHpi82gMuJyKEkJVLvg", address)
         EOS -> assertEquals("EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg", address)
         IOTEX -> assertEquals("io1qw9cccecw09q7p5kzyqtuhfhvah2mhfrc84jfk", address)
-        ZILLIQA -> assertEquals("0xddb41006f7b6fa8e5fbf06a71c01f789febc66e8", address)
+        ZILLIQA -> assertEquals("0xDdb41006F7B6FA8e5FBF06A71c01F789FeBC66e8", address)
         SEMUX -> assertEquals("0xfe604170382452f77bc922bc19eb4b53504b09c2", address)
+        DEXON -> assertEquals("0x6F3E6a6dDf2C2B4B32B8Bb452eA3F36B2BB489BF", address)
+        ZELCASH -> assertEquals("t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf", address)
     }
 }

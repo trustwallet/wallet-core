@@ -43,6 +43,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .dogecoin:
                     let expectedResult = "DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .ellaism:
+                    let expectedResult = "0x1Ae593CAdb8BAC47D0394617396650474c303F9C"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereum:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
@@ -152,10 +155,16 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "io1qw9cccecw09q7p5kzyqtuhfhvah2mhfrc84jfk"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zilliqa:
-                    let expectedResult = "0xddb41006f7b6fa8e5fbf06a71c01f789febc66e8"
+                    let expectedResult = "0xDdb41006F7B6FA8e5FBF06A71c01F789FeBC66e8"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .semux:
                     let expectedResult = "0xfe604170382452f77bc922bc19eb4b53504b09c2"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .dexon:
+                    let expectedResult = "0x6F3E6a6dDf2C2B4B32B8Bb452eA3F36B2BB489BF"
+                  AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .zelcash:
+                    let expectedResult = "t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }

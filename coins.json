@@ -116,6 +116,18 @@
         "explorer": "https://gastracker.io"
     },
     {
+        "id": "ellaism",
+        "name": "Ellaism",
+        "symbol": "ELLA",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivationPath": "m/44'/163'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "transactionPath": "/tx/",
+        "explorer": "https://explorer.ellaism.org"
+    },
+    {
         "id": "ethersocial",
         "name": "Ethersocial",
         "symbol": "ESN",
@@ -584,12 +596,12 @@
         "name": "Zilliqa",
         "symbol": "ZIL",
         "decimals": 12,
-        "blockchain": "Ethereum",
+        "blockchain": "Zilliqa",
         "derivationPath": "m/44'/313'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/transactions/",
-        "explorer": "https://explorer.zilliqa.com"
+        "transactionPath": "/tx/",
+        "explorer": "https://viewblock.io/zilliqa"
     },
     {
         "id": "semux",
@@ -602,5 +614,33 @@
         "publicKeyType": "ed25519",
         "transactionPath": "/transaction/",
         "explorer": "https://semux.info/explorer"
+    },
+    {
+        "id": "dexon",
+        "name": "DEXON",
+        "symbol": "DXN",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivationPath": "m/44'/237'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "transactionPath": "/transaction/",
+        "explorer": "https://dexonscan.app"
+    },
+    {
+        "id": "zelcash",
+        "name": "Zelcash",
+        "symbol": "ZEL",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/44'/19167'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "transactionPath": "/tx/",
+        "explorer": "https://explorer.zel.cash"
     }
 ]

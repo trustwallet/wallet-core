@@ -9,9 +9,11 @@ public enum ChainID: UInt32 {
     case go = 60
     case poa = 99
     case callisto = 820
+    case ellaism = 64
     case ethereumClassic = 61
     case veChain = 74
     case thunderToken = 18
     case tomoChain = 88
     case ethersocial = 31102
+    case dexon = 237
 }

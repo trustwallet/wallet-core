@@ -75,6 +75,9 @@ class PrivateKey {
     /// Signs a digest using the given ECDSA curve. The result is encoded with
     /// DER.
     Data signAsDER(const Data& digest, TWCurve curve) const;
+
+    /// Signs a digest using given ECDSA curve, returns schnorr signature
+    Data signSchnorr(const Data& message, TWCurve curve) const;
 };
 
 inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) {

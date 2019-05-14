@@ -1,4 +1,5 @@
 #include "Address.h"
+#include "AddressChecksum.h"
 #include "stdint.h"
 #include "../HexCoding.h"
 
@@ -29,6 +30,13 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(data.end() - Address::size, data.end(), bytes.begin());
 }
 
+Address::Address(const Data& data) {
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address data");
+    }
+    std::copy(data.begin(), data.end(), bytes.begin());
+}
+
 std::string Address::string() const {
-    return "0x" + hex(bytes);
+    return checksumed(*this);
 }

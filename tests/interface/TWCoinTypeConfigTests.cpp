@@ -118,6 +118,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSemux));
     assertStringsEqual(semux, "SEM");
+
+    auto ella = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEllaism));
+    assertStringsEqual(ella, "ELLA");
+
+    auto dexon = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDEXON));
+    assertStringsEqual(dexon, "DXN");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -127,6 +133,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCallisto), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDash), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEllaism), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthersocial), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGoChain), 18);
@@ -159,6 +166,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDEXON), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -273,10 +281,19 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(iotex, "https://iotexscan.io/action/123");
 
     auto zil = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZilliqa, txId));
-    assertStringsEqual(zil, "https://explorer.zilliqa.com/transactions/123");
+    assertStringsEqual(zil, "https://viewblock.io/zilliqa/tx/123");
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSemux, txId));
     assertStringsEqual(semux, "https://semux.info/explorer/transaction/123");
+
+    auto ella = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEllaism, txId));
+    assertStringsEqual(ella, "https://explorer.ellaism.org/tx/123");
+
+    auto dexon = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDEXON, txId));
+    assertStringsEqual(dexon, "https://dexonscan.app/transaction/123");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
+    assertStringsEqual(zel, "https://explorer.zel.cash/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -387,6 +404,15 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSemux));
     assertStringsEqual(semux, "semux");
+
+    auto ella = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEllaism));
+    assertStringsEqual(ella, "ellaism");
+
+    auto dexon = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDEXON));
+    assertStringsEqual(dexon, "dexon");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
+    assertStringsEqual(zel, "zelcash");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -500,4 +526,13 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSemux));
     assertStringsEqual(semux, "Semux");
+
+    auto ella = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEllaism));
+    assertStringsEqual(ella, "Ellaism");
+
+    auto dexon = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDEXON));
+    assertStringsEqual(dexon, "DEXON");
+
+    auto zel = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
+    assertStringsEqual(zel, "Zelcash");
 }

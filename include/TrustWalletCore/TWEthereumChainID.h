@@ -16,12 +16,14 @@ enum TWEthereumChainID {
     TWEthereumChainIDGo = 60,
     TWEthereumChainIDPOA = 99,
     TWEthereumChainIDCallisto = 820,
+    TWEthereumChainIDEllaism = 64,
     TWEthereumChainIDEthereumClassic = 61,
     TWEthereumChainIDEthersocial = 31102,
     TWEthereumChainIDVeChain = 74,
     TWEthereumChainIDThunderToken = 18,
     TWEthereumChainIDTomoChain = 88,
     TWEthereumChainIDXDai = 100,
+    TWEthereumChainIDDEXON = 237,
 };
 
 TW_EXTERN_C_END
