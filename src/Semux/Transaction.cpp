@@ -15,6 +15,11 @@
 using namespace TW;
 using namespace TW::Semux;
 
+void Transaction::writeBytes(const Data &bytes, Data &buffer) const {
+    encodeVarInt(bytes.size(), buffer);
+    buffer.insert(buffer.end(), bytes.begin(), bytes.end());
+}
+
 std::vector<uint8_t> Transaction::serialize() const {
     std::vector<uint8_t> buffer;
 
