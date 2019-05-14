@@ -61,6 +61,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://zel.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" /></a>
 <a href="https://zilliqa.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/313.png" width="32" /></a>
 <a href="https://iotex.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/304.png" width="32" /></a>
+<a href="https://monetaryunit.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/31.png" width="32" /></a>
 
 # Usage
 

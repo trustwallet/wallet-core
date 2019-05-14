@@ -166,6 +166,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeSemux:
         return Semux::Address::isValid(string);
+            
+    case TWCoinTypeMonetaryUnit:
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixMonetaryUnit}, {TWP2SHPrefixMonetaryUnit}});
     }
 }
 
@@ -286,6 +289,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeSemux:
         return Semux::Address(publicKey).string();
+            
+    case TWCoinTypeMonetaryUnit:
+        return Bitcoin::Address(publicKey, TWP2PKHPrefixMonetaryUnit).string();
     }
 }
 

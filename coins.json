@@ -642,5 +642,21 @@
         "xprv": "xprv",
         "transactionPath": "/tx/",
         "explorer": "https://explorer.zel.cash"
+    },
+    {
+        "id": "monetaryunit",
+        "name": "MonetaryUnit",
+        "symbol": "MUE",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/44'/31'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "transactionPath": "/tx/",
+        "explorer": "https://explorer.monetaryunit.org"
     }
 ]
