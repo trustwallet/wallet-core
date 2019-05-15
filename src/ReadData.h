@@ -11,47 +11,56 @@
 
 namespace TW {
 
-Data readBytes(const Data &from, int max, int initial_pos = 0);
-Data readVarBytes(const Data &from, int initial_pos = 0);
-uint16_t readUInt16(const Data &from, int initial_pos = 0);
-uint32_t readUInt32(const Data &from, int initial_pos = 0);
-uint64_t readUInt64(const Data &from, int initial_pos = 0);
-int16_t readInt16(const Data &from, int initial_pos = 0);
-int32_t readInt32(const Data &from, int initial_pos = 0);
-int64_t readInt64(const Data &from, int initial_pos = 0);
-uint64_t readVarUInt(const TW::Data &from, uint64_t max, int initial_pos = 0);
-int64_t readVarInt(const TW::Data &from, uint64_t max, int initial_pos = 0);
+    Data readBytes(const Data &from, int max, int initial_pos = 0);
+    Data readVarBytes(const Data &from, int initial_pos = 0);
 
-Data writeVarBytes(const Data &from, int initial_pos = 0);
-Data writeUshort(ushort v);
-Data writeUint(uint v);
-Data writeUlong(ulong v);
-Data writeShort(short v);
-Data writeInt(int v);
-Data writeLong(long v);
-Data writeVarUInt(ulong value);
-Data writeVarInt(long value);
+    template<class T> T readVar(const TW::Data &from, const T & max, int initial_pos = 0);
+    template<> int64_t readVar(const TW::Data &from, const int64_t & max, int initial_pos);
+    template<> uint64_t readVar(const TW::Data &from, const uint64_t & max, int initial_pos);
 
-template<class T>
-static std::vector<T> concat(const std::vector<T>& v1, const std::vector<T>& v2) {
-    std::vector<T> v(v1);
-    v.insert(v.end(), v2.begin(), v2.end());
-    return std::move(v);
-}
+    template<class T> T read(const TW::Data &from, int initial_pos = 0);
+    template<> int16_t read(const TW::Data &from, int initial_pos);
+    template<> int32_t read(const TW::Data &from, int initial_pos);
+    template<> int64_t read(const TW::Data &from, int initial_pos);
+    template<> uint16_t read(const TW::Data &from, int initial_pos);
+    template<> uint32_t read(const TW::Data &from, int initial_pos);
+    template<> uint64_t read(const TW::Data &from, int initial_pos);
 
-class types {
-public:
-    template <class T>
-    static T MaxValue()
-    {
-        return std::numeric_limits<T>::max();
+    Data writeVarBytes(const Data &from, int initial_pos = 0);
+
+    template<class T> Data writeVar(const T & value);
+    template<> Data writeVar(const int64_t & value);
+    template<> Data writeVar(const uint64_t & value);
+
+    template<class T> Data write(const T &v);
+    template<> Data write(const int16_t &v);
+    template<> Data write(const int32_t &v);
+    template<> Data write(const int64_t &v);
+    template<> Data write(const uint16_t &v);
+    template<> Data write(const uint32_t &v);
+    template<> Data write(const uint64_t &v);
+
+
+    template<class T>
+    static std::vector<T> concat(const std::vector<T>& v1, const std::vector<T>& v2) {
+        std::vector<T> v(v1);
+        v.insert(v.end(), v2.begin(), v2.end());
+        return std::move(v);
     }
 
-    template <class T>
-    static T MinValue()
-    {
-        return std::numeric_limits<T>::min();
-    }
-};
+    class types {
+    public:
+        template <class T>
+        static T MaxValue()
+        {
+            return std::numeric_limits<T>::max();
+        }
+
+        template <class T>
+        static T MinValue()
+        {
+            return std::numeric_limits<T>::min();
+        }
+    };
 
 } // namespace TW
