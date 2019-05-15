@@ -39,11 +39,36 @@ namespace TW::NEO {
             return resp;
         }
 
-        /*template<class T>
-        static inline Data deserialize(const Data &data, int initial_pos = 0) {
-            ulong size = readVarUInt(data, initial_pos);
-            return serialize(data.begin(), data.end());
-        }*/
+        template<class T>
+        static inline std::vector<T> deserialize(const Data &data, int initial_pos = 0) {
+            std::vector<T> resp;
+            deserialize(data, resp, initial_pos) ;
+            return resp;
+        }
+
+        template<class T>
+        static inline void deserialize(const Data &data, std::vector<T> &resp, int initial_pos = 0) {
+            uint64_t size = readVar<uint64_t>(data, initial_pos);
+            if (size < 0) {
+                throw std::invalid_argument("ISerializable::deserialize ArgumentOutOfRangeException");
+            }
+            if (size < 0xFD) {
+                initial_pos += 1;
+            } else if (size <= 0xFFFF) {
+                initial_pos += 2;
+            } else if (size <= 0xFFFFFFFF) {
+                initial_pos += 4;
+            } else {
+                initial_pos += 8;
+            }
+
+            for (uint64_t i = 0; i < size; ++i) {
+                T value;
+                value.deserialize(data, initial_pos);
+                resp.push_back(value);
+                initial_pos += value.size();
+            }
+        }
         
     };
 

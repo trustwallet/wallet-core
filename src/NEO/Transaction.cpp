@@ -1,3 +1,5 @@
+#include <ctype.h>
+
 #include "../uint256.h"
 #include "../UInt.hpp"
 #include "../Data.h"
@@ -25,7 +27,7 @@ int64_t Transaction::size() const {
 #undef SIZE_INC
 
 #define DESERIALIZE_V(SOURCE, P, TYPE, VEC) {\
-    auto vsize_ = readUInt64((SOURCE), (P)); \
+    auto vsize_ = read<uint64_t>((SOURCE), (P)); \
     (VEC).clear(); \
     (P) += 8; \
     for (int __i_ = 0; __i_ < vsize_; ++__i_) { \
@@ -47,7 +49,7 @@ void Transaction::deserialize(const Data &data, int initial_pos) {
 #undef DESERIALIZE_V
 
 #define SERIALIZE_V(R, V) { \
-    append((R), writeUlong((V).size())); \
+    append((R), write<uint64_t>((V).size())); \
     for (auto &__x_: (V)) { \
         append((R), __x_.serialize()); \
     } \
