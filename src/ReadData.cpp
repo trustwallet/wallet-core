@@ -9,51 +9,19 @@ TW::Data TW::readBytes(const TW::Data &from, int max, int initial_pos) {
 }
 
 TW::Data TW::readVarBytes(const Data &from, int initial_pos) {
-    int32_t size = readInt32(from, initial_pos);
+    int32_t size = read<int32_t>(from, initial_pos);
     return readBytes(from, size, initial_pos + 4);
 }
 
-uint16_t TW::readUInt16(const TW::Data &from, int initial_pos) {
-    TW::Data bytes = readBytes(from, 2, initial_pos);
-    uint16_t val = bytes[0] | (bytes[1] << 8);
-    return val;
-}
-
-uint32_t TW::readUInt32(const Data &from, int initial_pos)  {
-    TW::Data bytes = readBytes(from, 4, initial_pos);
-    uint32_t val = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
-    return val;
-}
-
-uint64_t TW::readUInt64(const TW::Data &from, int initial_pos)  {
-    TW::Data bytes = readBytes(from, 8, initial_pos);
-    uint32_t val1 = bytes[0] | (bytes[1]<<8) | (bytes[2]<<16) | (bytes[3]<<24);
-    uint64_t val2 = bytes[4] | (bytes[5]<<8) | (bytes[6]<<16) | (bytes[7]<<24);
-    uint64_t val = val1 | val2 << 32;
-    return val;
-}
-
-int16_t TW::readInt16(const TW::Data &from, int initial_pos) {
-    return (int16_t) readUInt16(from, initial_pos);
-}
-
-int32_t TW::readInt32(const Data &from, int initial_pos) {
-    return (int32_t) readUInt32(from, initial_pos);
-}
-
-int64_t TW::readInt64(const TW::Data &from, int initial_pos) {
-    return (int64_t) readUInt64(from, initial_pos);
-}
-
-uint64_t TW::readVarUInt(const TW::Data &from, uint64_t max, int initial_pos) {
+template<> uint64_t TW::readVar(const TW::Data &from, const uint64_t & max, int initial_pos) {
     byte fb = from[initial_pos];
     uint64_t value;
     if (fb == 0xFD) {
-        value = readUInt16(from, initial_pos + 1);
+        value = read<uint16_t>(from, initial_pos + 1);
     } else if (fb == 0xFE) {
-        value = readUInt32(from, initial_pos + 1);
+        value = read<uint32_t>(from, initial_pos + 1);
     } else if (fb == 0xFF) {
-        value = readUInt64(from, initial_pos + 1);
+        value = read<uint64_t>(from, initial_pos + 1);
     } else {
         value = fb;
     }
@@ -65,21 +33,52 @@ uint64_t TW::readVarUInt(const TW::Data &from, uint64_t max, int initial_pos) {
     return value;
 }
 
-int64_t TW::readVarInt(const TW::Data &from, uint64_t max, int initial_pos) {
-    return (int64_t) readVarUInt(from, max, initial_pos);
+template<> int64_t TW::readVar(const TW::Data &from, const int64_t & max, int initial_pos) {
+    return (int64_t) readVar<uint64_t>(from, uint64_t(max), initial_pos);
 }
 
+template<> uint16_t TW::read(const TW::Data &from, int initial_pos) {
+    TW::Data bytes = readBytes(from, 2, initial_pos);
+    uint16_t val = bytes[0] | (bytes[1] << 8);
+    return val;
+}
+
+template<> uint32_t TW::read(const TW::Data &from, int initial_pos) {
+    TW::Data bytes = readBytes(from, 4, initial_pos);
+    uint32_t val = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+    return val;
+}
+
+template<> uint64_t TW::read(const TW::Data &from, int initial_pos) {
+    TW::Data bytes = readBytes(from, 8, initial_pos);
+    uint32_t val1 = bytes[0] | (bytes[1]<<8) | (bytes[2]<<16) | (bytes[3]<<24);
+    uint64_t val2 = bytes[4] | (bytes[5]<<8) | (bytes[6]<<16) | (bytes[7]<<24);
+    uint64_t val = val1 | val2 << 32;
+    return val;
+}
+
+template<> int16_t TW::read(const TW::Data &from, int initial_pos) {
+    return (int16_t) read<uint16_t>(from, initial_pos);
+}
+
+template<> int32_t TW::read(const TW::Data &from, int initial_pos) {
+    return (int32_t) read<uint32_t>(from, initial_pos);
+}
+
+template<> int64_t TW::read(const TW::Data &from, int initial_pos) {
+    return (int64_t) read<uint64_t>(from, initial_pos);
+}
 
 
 TW::Data TW::writeVarBytes(const Data &from, int initial_pos) {
-    return concat(writeInt(from.size() - initial_pos), TW::Data(from.begin() + initial_pos, from.end()));
+    return concat(write<int32_t>(from.size() - initial_pos), TW::Data(from.begin() + initial_pos, from.end()));
 }
 
-TW::Data TW::writeUshort(ushort v) {
+template<> TW::Data TW::write(const uint16_t &v) {
     return TW::Data({(byte) (((v >> 0) << 8) >> 8), (byte) (((v >> 8) << 8) >> 8)});
 }
 
-TW::Data TW::writeUint(uint v) {
+template<> TW::Data TW::write(const uint32_t &v) {
     return Data({
         (byte) (((v >> 0) << 24) >> 24),
         (byte) (((v >> 8) << 24) >> 24),
@@ -88,7 +87,7 @@ TW::Data TW::writeUint(uint v) {
     });
 }
 
-TW::Data TW::writeUlong(ulong v) {
+template<> TW::Data TW::write(const uint64_t &v) {
     return Data({
         (byte) (((v >> 0) << 56) >> 56),
         (byte) (((v >> 8) << 56) >> 56),
@@ -101,33 +100,34 @@ TW::Data TW::writeUlong(ulong v) {
     });
 }
 
-TW::Data TW::writeShort(short v) {
-    return writeUshort(ushort(v));
+template<> TW::Data TW::write(const int16_t &v) {
+    return write(uint16_t(v));
 }
 
-TW::Data TW::writeInt(int v) {
-    return writeUint(uint(v));
+template<> TW::Data TW::write(const int32_t &v) {
+    return write(uint32_t(v));
 }
 
-TW::Data TW::writeLong(long v) {
-    return writeUlong(ulong(v));
+template<> TW::Data TW::write(const int64_t &v) {
+    return write(uint64_t(v));
 }
 
-TW::Data TW::writeVarUInt(ulong value) {
+
+template<> TW::Data TW::writeVar(const uint64_t & value) {
     if (value < 0) {
         throw std::invalid_argument("IBinaryWriter::WriteVarInt ArgumentOutOfRangeException");
     }
     if (value < 0xFD) {
         return Data({(byte) value});
     } else if (value <= 0xFFFF) {
-        return concat(Data({(byte) 0xFD}), writeUshort((ushort) value));
+        return concat(Data({(byte) 0xFD}), write((uint16_t) value));
     } else if (value <= 0xFFFFFFFF) {
-        return concat(Data({(byte) 0xFE}), writeUint((uint) value));
+        return concat(Data({(byte) 0xFE}), write((uint32_t) value));
     } else {
-        return concat(Data({(byte) 0xFF}), writeUlong(value));
+        return concat(Data({(byte) 0xFF}), write(value));
     }
 }
 
-TW::Data TW::writeVarInt(long value) {
-    return writeVarUInt((ulong) value);
+template<> TW::Data TW::writeVar(const int64_t & value) {
+    return writeVar((uint64_t) value);
 }
