@@ -1,6 +1,6 @@
 {
   "name": "trust-wallet-core",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "JavaScript wrapper for wallet-core",
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
@@ -30,6 +30,7 @@
     "wallet"
   ],
   "dependencies": {
+    "@types/node": "^12.0.0",
     "bindings": "^1.5.0",
     "long": "^4.0.0",
     "node-addon-api": "^1.6.3",
@@ -39,7 +40,6 @@
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^11.13.7",
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
     "ts-node": "^8.1.0",

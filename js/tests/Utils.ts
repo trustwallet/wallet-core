@@ -15,5 +15,5 @@ export const fromHexString = (hexString: string) => {
     if (match !== null) {
         return new Uint8Array(match.map(byte => parseInt(byte, 16)));
     }
-    return new Uint8Array();
+    return new Uint8Array(0);
 };
