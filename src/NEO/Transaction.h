@@ -30,8 +30,15 @@ namespace TW::NEO {
         void deserialize(const Data &data, int initial_pos = 0) override;
         Data serialize() const override;
 
+        bool operator==(const Transaction &other) const;
+
+        virtual int deserializeExclusiveData(const Data &data, int initial_pos = 0) { return initial_pos; }
+        virtual Data serializeExclusiveData() const { return Data(); }
+
         Data getHash() const;
         uint256_t getHashUInt256() const;
+
+        static Transaction * deserializeFrom(const Data &data, int initial_pos = 0);
     };
 
 } // namespace TW::NEO

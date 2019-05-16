@@ -7,8 +7,9 @@
 #pragma once
 
 #include <vector>
-#include <cstdint>
 #include <iterator>
+#include <cstdint>
+#include <climits>
 #include "../Data.h"
 #include "../ReadData.h"
 
@@ -22,17 +23,25 @@ namespace TW::NEO {
 
         template<class T>
         static inline Data serialize(const std::vector<T> & data) {
-            return serialize(data.begin(), data.end());
+            Data resp(writeVar<uint64_t>(data.size()));
+            for (auto it = data.begin(); it < data.end(); ++it) {
+                append(resp, it->serialize());
+            }
+            return resp;
         }
 
         template<class T>
         static inline Data serialize(const T* data, int size) {
-            return serialize(data, data + size);
+            Data resp(writeVar<uint64_t>(size));
+            for (int i = 0; i < size; ++i) {
+                append(resp, data[i].serialize());
+            }
+            return resp;
         }
 
         template<class T>
         static inline Data serialize(std::iterator<std::input_iterator_tag, T> begin, std::iterator<std::input_iterator_tag, T> end) {
-            Data resp(writeVarUInt(end - begin));
+            Data resp(writeVar<uint64_t>(end - begin));
             for (auto it = begin; it < end; ++it) {
                 append(resp, it->serialize());
             }
@@ -40,15 +49,8 @@ namespace TW::NEO {
         }
 
         template<class T>
-        static inline std::vector<T> deserialize(const Data &data, int initial_pos = 0) {
-            std::vector<T> resp;
-            deserialize(data, resp, initial_pos) ;
-            return resp;
-        }
-
-        template<class T>
-        static inline void deserialize(const Data &data, std::vector<T> &resp, int initial_pos = 0) {
-            uint64_t size = readVar<uint64_t>(data, initial_pos);
+        static inline int deserialize(std::vector<T> &resp, const Data &data, int initial_pos = 0) {
+            uint64_t size = readVar<uint64_t>(data, initial_pos, INT_MAX);
             if (size < 0) {
                 throw std::invalid_argument("ISerializable::deserialize ArgumentOutOfRangeException");
             }
@@ -68,6 +70,8 @@ namespace TW::NEO {
                 resp.push_back(value);
                 initial_pos += value.size();
             }
+
+            return initial_pos;
         }
         
     };
