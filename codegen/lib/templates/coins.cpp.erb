@@ -136,7 +136,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType coi
     switch (coin) {
 <%  coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-        url = "<%= coin['explorer'] %><%= coin['transactionPath'] %>" + txId;
+        url = "<%= coin['explorer'] %>" + txId;
         break;
 <% end -%>
     }

@@ -84,5 +84,9 @@ TW_Proto_Result TWEOSSignerSign(TW_EOS_Proto_SigningInput input) {
         return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
     } catch (const std::exception& e) {
         return createErrorResult(e.what());
+    } catch (const std::logic_error& e) {
+        return createErrorResult(e.what());
+    } catch (const std::runtime_error& e) {
+        return createErrorResult(e.what());
     }
 }
