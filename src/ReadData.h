@@ -10,13 +10,12 @@
 #include "Data.h"
 
 namespace TW {
-
     Data readBytes(const Data &from, int max, int initial_pos = 0);
     Data readVarBytes(const Data &from, int initial_pos = 0);
 
-    template<class T> T readVar(const TW::Data &from, const T & max, int initial_pos = 0);
-    template<> int64_t readVar(const TW::Data &from, const int64_t & max, int initial_pos);
-    template<> uint64_t readVar(const TW::Data &from, const uint64_t & max, int initial_pos);
+    template<class T> T readVar(const TW::Data &from, int initial_pos = 0, const T &max = INT_MAX);
+    template<> int64_t readVar(const TW::Data &from, int initial_pos, const int64_t &max);
+    template<> uint64_t readVar(const TW::Data &from, int initial_pos, const uint64_t &max);
 
     template<class T> T read(const TW::Data &from, int initial_pos = 0);
     template<> int16_t read(const TW::Data &from, int initial_pos);
@@ -49,18 +48,18 @@ namespace TW {
     }
 
     class types {
-    public:
-        template <class T>
-        static T MaxValue()
-        {
-            return std::numeric_limits<T>::max();
-        }
+        public:
+            template <class T>
+            static T MaxValue()
+            {
+                return std::numeric_limits<T>::max();
+            }
 
-        template <class T>
-        static T MinValue()
-        {
-            return std::numeric_limits<T>::min();
-        }
+            template <class T>
+            static T MinValue()
+            {
+                return std::numeric_limits<T>::min();
+            }
     };
 
 } // namespace TW
