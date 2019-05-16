@@ -8,7 +8,7 @@ namespace TW::NEO {
     public:
         Data invocationScript;
         Data verificationScript;
-    public:
+
         virtual ~Witness() {}
 
         int64_t size() const override {
@@ -22,6 +22,13 @@ namespace TW::NEO {
 
         Data serialize() const override {
             return concat(writeVarBytes(invocationScript), writeVarBytes(verificationScript));
+        }
+
+        bool operator==(const Witness &other) const {
+            return this->invocationScript.size() == other.invocationScript.size()
+                && this->verificationScript.size() == other.verificationScript.size()
+                && this->invocationScript == other.invocationScript
+                && this->verificationScript == other.verificationScript;
         }
     };
 }

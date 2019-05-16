@@ -28,5 +28,10 @@ namespace TW::NEO {
         Data serialize() const override {
             return concat(store(prevHash), write<uint16_t>(prevIndex));
         }
+
+        bool operator==(const CoinReference &other) const {
+            return this->prevHash == other.prevHash
+                && this->prevIndex == other.prevIndex;
+        }
     };
 }

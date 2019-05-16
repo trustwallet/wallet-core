@@ -44,5 +44,11 @@ namespace TW::NEO {
         Data serialize() const override {
             return concat(Data({static_cast<byte>(usage)}), data);
         }
+
+        bool operator==(const TransactionAttribute &other) const {
+            return this->usage == other.usage
+                && this->data.size() == other.data.size()
+                && this->data == other.data;
+        }
     };
 }
