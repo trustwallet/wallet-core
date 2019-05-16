@@ -6,7 +6,7 @@
 #include "../ReadData.h"
 #include "../HexCoding.h"
 #include "Transaction.h"
-#include "Transaction/MinerTransaction.hpp"
+#include "MinerTransaction.hpp"
 
 #include <iostream>
 using namespace std;

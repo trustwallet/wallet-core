@@ -24,6 +24,7 @@ namespace TW::NEO {
         Address getAddress() const;
 
         Data sign(Transaction &tx) const;
+        Data sign(const Data &data) const;
     };
 } // namespace TW::NEO
 
