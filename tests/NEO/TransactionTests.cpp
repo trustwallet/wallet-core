@@ -20,19 +20,6 @@ using namespace std;
 using namespace TW;
 using namespace TW::NEO;
 
-#define CHECK_VEC(F, D, VEC) { \
-    ASSERT_EQ(F.VEC.size(), D.VEC.size()); \
-    for (int __i_ = 0; __i_ < F.VEC.size(); ++__i_) { \
-        ASSERT_EQ(hex(F.VEC[__i_].serialize()), hex(D.VEC[__i_].serialize())); \
-    } \
-}
-#define CHECK_DES(F, D) { \
-    ASSERT_EQ((F).type, (D).type); \
-    ASSERT_EQ((F).version, (D).version); \
-    CHECK_VEC((F), (D), attributes); \
-    CHECK_VEC((F), (D), inInputs); \
-    CHECK_VEC((F), (D), outputs); \
-}
 TEST(NEOTransaction, SerializeDeserializeEmpty) {
     auto transaction = Transaction();
     ASSERT_EQ(0, transaction.attributes.size());
@@ -42,7 +29,7 @@ TEST(NEOTransaction, SerializeDeserializeEmpty) {
     
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 }
 
 TEST(NEOTransaction, SerializeDeserializeEmptyCollections) {
@@ -55,7 +42,7 @@ TEST(NEOTransaction, SerializeDeserializeEmptyCollections) {
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 }
 
 TEST(NEOTransaction, SerializeDeserializeAttribute) {
@@ -72,7 +59,7 @@ TEST(NEOTransaction, SerializeDeserializeAttribute) {
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 
     transaction.attributes.push_back(TransactionAttribute());
     transaction.attributes[1].usage = TransactionAttributeUsage::TAU_ECDH02;
@@ -86,7 +73,7 @@ TEST(NEOTransaction, SerializeDeserializeAttribute) {
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 }
 
 TEST(NEOTransaction, SerializeDeserializeInputs) {
@@ -103,7 +90,7 @@ TEST(NEOTransaction, SerializeDeserializeInputs) {
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 
     transaction.inInputs.push_back(CoinReference());
     transaction.inInputs[1].prevHash = load<uint256_t>(parse_hex("bdecbb623eee4f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
@@ -117,7 +104,7 @@ TEST(NEOTransaction, SerializeDeserializeInputs) {
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 }
 
 TEST(NEOTransaction, SerializeDeserializeOutputs) {
@@ -135,7 +122,7 @@ TEST(NEOTransaction, SerializeDeserializeOutputs) {
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 
     transaction.outputs.push_back(TransactionOutput());
     transaction.outputs[1].assetId = load<uint256_t>(parse_hex("bdecbb623eee6a9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
@@ -149,7 +136,7 @@ TEST(NEOTransaction, SerializeDeserializeOutputs) {
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 }
 
 TEST(NEOTransaction, SerializeDeserialize) {
@@ -180,7 +167,7 @@ TEST(NEOTransaction, SerializeDeserialize) {
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 
     transaction.outputs.push_back(TransactionOutput());
     transaction.outputs[1].assetId = load<uint256_t>(parse_hex("bdecbb623eee6a9a3e28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
@@ -196,7 +183,7 @@ TEST(NEOTransaction, SerializeDeserialize) {
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 
     transaction.inInputs.push_back(CoinReference());
     transaction.inInputs[1].prevHash = load<uint256_t>(parse_hex("bdecbb623e3e6f9ade28d5a8ff4fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
@@ -217,10 +204,8 @@ TEST(NEOTransaction, SerializeDeserialize) {
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
     deserializedTransaction.deserialize(serialized);
-    CHECK_DES(transaction, deserializedTransaction);
+    ASSERT_EQ(transaction, deserializedTransaction);
 }
-#undef CHECK_VEC
-#undef CHECK_DES
 
 TEST(NEOTransaction, SerializeDeserializeMiner) {
     string block2tn = "0000d11f7a2800000000";
@@ -230,8 +215,6 @@ TEST(NEOTransaction, SerializeDeserializeMiner) {
 
     ASSERT_EQ(*deserializedTransaction, *serializedTransaction);
 }
-
-
 
 TEST(NEOTransaction, GetHash) {
     string block2tn = "0000d11f7a2800000000";
