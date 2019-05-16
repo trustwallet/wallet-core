@@ -8,8 +8,7 @@
         "derivationPath": "m/44'/60'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/tx/",
-        "explorer": "https://etherscan.io"
+        "explorer": "https://etherscan.io/tx/"
     },
     {
         "id": "bitcoin",
@@ -24,8 +23,7 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "transactionPath": "/transaction/",
-        "explorer": "https://blockchair.com/bitcoin"
+        "explorer": "https://blockchair.com/bitcoin/transaction/"
     },
     {
         "id": "bitcoincash",
@@ -40,8 +38,7 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/transaction/",
-        "explorer": "https://blockchair.com/bitcoin-cash"
+        "explorer": "https://blockchair.com/bitcoin-cash/transaction/"
     },
     {
         "id": "callisto",
@@ -52,8 +49,7 @@
         "derivationPath": "m/44'/820'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/tx/",
-        "explorer": "https://explorer2.callisto.network"
+        "explorer": "https://explorer2.callisto.network/tx/"
     },
     {
         "id": "dash",
@@ -68,8 +64,7 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/transaction/",
-        "explorer": "https://blockchair.com/dash"
+        "explorer": "https://blockchair.com/dash/transaction/"
     },
     {
         "id": "decred",
@@ -84,8 +79,7 @@
         "base58Hasher": "blake256d",
         "xpub": "dpub",
         "xprv": "dprv",
-        "transactionPath": "/tx/",
-        "explorer": "https://mainnet.decred.org"
+        "explorer": "https://mainnet.decred.org/tx/"
     },
     {
         "id": "doge",
@@ -100,8 +94,7 @@
         "base58Hasher": "sha256d",
         "xpub": "dgub",
         "xprv": "dgpv",
-        "transactionPath": "/tx/",
-        "explorer": "https://live.blockcypher.com/doge"
+        "explorer": "https://live.blockcypher.com/doge/tx/"
     },
     {
         "id": "classic",
@@ -112,8 +105,7 @@
         "derivationPath": "m/44'/61'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/tx/",
-        "explorer": "https://gastracker.io"
+        "explorer": "https://gastracker.io/tx/"
     },
     {
         "id": "ellaism",
@@ -124,8 +116,7 @@
         "derivationPath": "m/44'/163'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/tx/",
-        "explorer": "https://explorer.ellaism.org"
+        "explorer": "https://explorer.ellaism.org/tx/"
     },
     {
         "id": "ethersocial",
@@ -136,8 +127,7 @@
         "derivationPath": "m/44'/31102'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/tx/",
-        "explorer": "https://ethersocial.net"
+        "explorer": "https://ethersocial.net/tx/"
     },
     {
         "id": "gochain",
@@ -148,8 +138,7 @@
         "derivationPath": "m/44'/6060'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/tx/",
-        "explorer": "https://explorer.gochain.io"
+        "explorer": "https://explorer.gochain.io/tx/"
     },
     {
         "id": "groestlcoin",
@@ -164,8 +153,7 @@
         "base58Hasher": "groestl512d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "transactionPath": "/grs/tx.dws?",
-        "explorer": "https://chainz.cryptoid.info"
+        "explorer": "https://chainz.cryptoid.info/grs/tx.dws?"
     },
     {
         "id": "icon",
@@ -176,8 +164,7 @@
         "derivationPath": "m/44'/74'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/transaction/",
-        "explorer": "https://tracker.icon.foundation"
+        "explorer": "https://tracker.icon.foundation/transaction/"
     },
     {
         "id": "iost",
@@ -188,8 +175,7 @@
         "derivationPath": "m/44'/291'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "transactionPath": "/tx/",
-        "explorer": "https://www.iostabc.com"
+        "explorer": "https://www.iostabc.com/tx/"
     },
     {
         "id": "iocoin",
@@ -204,8 +190,7 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/ioc/tx.dws?",
-        "explorer": "https://chainz.cryptoid.info"
+        "explorer": "https://chainz.cryptoid.info/ioc/tx.dws?"
     },
     {
         "id": "litecoin",
@@ -220,8 +205,7 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "transactionPath": "/transaction/",
-        "explorer": "https://blockchair.com/litecoin"
+        "explorer": "https://blockchair.com/litecoin/transaction/"
     },
     {
         "id": "ontology",
@@ -232,8 +216,7 @@
         "derivationPath": "m/44'/1024'/0'/0/0",
         "curve": "nist256p1",
         "publicKeyType": "nist256p1",
-        "transactionPath": "/transaction/",
-        "explorer": "https://explorer.ont.io"
+        "explorer": "https://explorer.ont.io/transaction/"
     },
     {
         "id": "viacoin",
@@ -248,8 +231,7 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "transactionPath": "/tx/",
-        "explorer": "https://explorer.viacoin.org"
+        "explorer": "https://explorer.viacoin.org/tx/"
     },
     {
         "id": "poa",
@@ -260,8 +242,7 @@
         "derivationPath": "m/44'/178'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/txid/search/",
-        "explorer": "https://poaexplorer.com"
+        "explorer": "https://poaexplorer.com/txid/search/"
     },
     {
         "id": "thundertoken",
@@ -272,8 +253,7 @@
         "derivationPath": "m/44'/1001'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/transactions/",
-        "explorer": "https://scan.thundercore.com"
+        "explorer": "https://scan.thundercore.com/transactions/"
     },
     {
         "id": "tomochain",
@@ -284,8 +264,7 @@
         "derivationPath": "m/44'/889'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/txs/",
-        "explorer": "https://scan.tomochain.com"
+        "explorer": "https://scan.tomochain.com/txs/"
     },
     {
         "id": "tron",
@@ -296,8 +275,7 @@
         "derivationPath": "m/44'/195'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/#/transaction/",
-        "explorer": "https://tronscan.org"
+        "explorer": "https://tronscan.org/#/transaction/"
     },
     {
         "id": "vechain",
@@ -308,8 +286,7 @@
         "derivationPath": "m/44'/818'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/transactions/",
-        "explorer": "https://explore.veforge.com"
+        "explorer": "https://explore.veforge.com/transactions/"
     },
     {
         "id": "wanchain",
@@ -320,8 +297,7 @@
         "derivationPath": "m/44'/5718350'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/tx/",
-        "explorer": "https://explorer.wanchain.org"
+        "explorer": "https://explorer.wanchain.org/tx/"
     },
     {
         "id": "xdai",
@@ -332,8 +308,7 @@
         "derivationPath": "m/44'/700'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/tx/",
-        "explorer": "https://blockscout.com/poa/dai"
+        "explorer": "https://blockscout.com/poa/dai/tx/"
     },
     {
         "id": "zcoin",
@@ -348,8 +323,7 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/tx/",
-        "explorer": "https://explorer.zcoin.io"
+        "explorer": "https://explorer.zcoin.io/tx/"
     },
     {
         "id": "zcash",
@@ -364,8 +338,7 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/tx/ZEC/",
-        "explorer": "https://chain.so"
+        "explorer": "https://chain.so/tx/ZEC/"
     },
     {
         "id": "binance",
@@ -376,8 +349,7 @@
         "derivationPath": "m/44'/714'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/tx/",
-        "explorer": "https://explorer.binance.org"
+        "explorer": "https://explorer.binance.org/tx/"
     },
     {
         "id": "ripple",
@@ -388,8 +360,7 @@
         "derivationPath": "m/44'/144'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/explorer/",
-        "explorer": "https://bithomp.com"
+        "explorer": "https://bithomp.com/explorer/"
     },
     {
         "id": "tezos",
@@ -400,8 +371,7 @@
         "derivationPath": "m/44'/1729'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "transactionPath": "/",
-        "explorer": "https://tzscan.io"
+        "explorer": "https://tzscan.io/"
     },
     {
         "id": "nimiq",
@@ -412,8 +382,7 @@
         "derivationPath": "m/44'/242'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "transactionPath": "/#",
-        "explorer": "https://nimiq.watch"
+        "explorer": "https://nimiq.watch/#"
     },
     {
         "id": "stellar",
@@ -424,8 +393,7 @@
         "derivationPath": "m/44'/148'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "transactionPath": "/transaction/",
-        "explorer": "https://stellarscan.io"
+        "explorer": "https://stellarscan.io/transaction/"
     },
     {
         "id": "aion",
@@ -436,8 +404,7 @@
         "derivationPath": "m/44'/425'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "transactionPath": "/#/transaction/",
-        "explorer": "https://mainnet.aion.network"
+        "explorer": "https://mainnet.aion.network/#/transaction/"
     },
     {
         "id": "cosmos",
@@ -448,8 +415,7 @@
         "derivationPath": "m/44'/118'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/txs/",
-        "explorer": "https://www.mintscan.io"
+        "explorer": "https://www.mintscan.io/txs/"
     },
     {
         "id": "neo",
@@ -460,8 +426,7 @@
         "derivationPath": "m/44'/888'/0'/0'/0'",
         "curve": "nist256p1",
         "publicKeyType": "nist256p1",
-        "transactionPath": "/transaction/",
-        "explorer": "https://neoscan.io"
+        "explorer": "https://neoscan.io/transaction/"
     },
     {
         "id": "kin",
@@ -472,8 +437,7 @@
         "derivationPath": "m/44'/2017'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "transactionPath": "/tx/",
-        "explorer": "https://kinexplorer.com"
+        "explorer": "https://kinexplorer.com/tx/"
     },
     {
         "id": "nuls",
@@ -484,8 +448,7 @@
         "derivationPath": "m/44'/8964'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/transactions/",
-        "explorer": "https://nuls.world"
+        "explorer": "https://nuls.world/transactions/"
     },
     {
         "id": "theta",
@@ -496,8 +459,7 @@
         "derivationPath": "m/44'/500'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/txs/",
-        "explorer": "https://explorer.thetatoken.org"
+        "explorer": "https://explorer.thetatoken.org/txs/"
     },
     {
         "id": "lux",
@@ -512,8 +474,7 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/#/tx/",
-        "explorer": "https://explorer.poswallet.io"
+        "explorer": "https://explorer.poswallet.io/#/tx/"
     },
     {
         "id": "qtum",
@@ -528,8 +489,7 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/tx/",
-        "explorer": "https://qtum.info"
+        "explorer": "https://qtum.info/tx/"
     },
     {
         "id": "bravocoin",
@@ -540,8 +500,7 @@
         "derivationPath": "m/44'/282'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/txid/",
-        "explorer": "https://explorer.bravocoin.com"
+        "explorer": "https://explorer.bravocoin.com/txid/"
     },
     {
         "id": "steem",
@@ -552,8 +511,7 @@
         "derivationPath": "m/44'/135'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/tx/",
-        "explorer": "https://steemblockexplorer.com"
+        "explorer": "https://steemblockexplorer.com/tx/"
     },
     {
         "id": "eos",
@@ -564,8 +522,7 @@
         "derivationPath": "m/44'/194'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/transaction/",
-        "explorer": "https://bloks.io"
+        "explorer": "https://bloks.io/transaction/"
     },
     {
         "id": "nano",
@@ -576,8 +533,7 @@
         "derivationPath": "m/44'/165'/0'",
         "curve": "ed25519Blake2bNano",
         "publicKeyType": "ed25519Blake2b",
-        "transactionPath": "/block/",
-        "explorer": "https://www.nanode.co"
+        "explorer": "https://www.nanode.co/block/"
     },
     {
         "id": "iotex",
@@ -588,8 +544,7 @@
         "derivationPath": "m/44'/304'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/action/",
-        "explorer": "https://iotexscan.io"
+        "explorer": "https://iotexscan.io/action/"
     },
     {
         "id": "zilliqa",
@@ -600,8 +555,7 @@
         "derivationPath": "m/44'/313'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/tx/",
-        "explorer": "https://viewblock.io/zilliqa"
+        "explorer": "https://viewblock.io/zilliqa/tx/"
     },
     {
         "id": "semux",
@@ -612,8 +566,7 @@
         "derivationPath": "m/44'/7562605'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "transactionPath": "/transaction/",
-        "explorer": "https://semux.info/explorer"
+        "explorer": "https://semux.info/explorer/transaction/"
     },
     {
         "id": "dexon",
@@ -624,8 +577,7 @@
         "derivationPath": "m/44'/237'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "transactionPath": "/transaction/",
-        "explorer": "https://dexonscan.app"
+        "explorer": "https://dexonscan.app/transaction/"
     },
     {
         "id": "zelcash",
@@ -640,7 +592,6 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "transactionPath": "/tx/",
-        "explorer": "https://explorer.zel.cash"
+        "explorer": "https://explorer.zel.cash/tx/"
     }
 ]
