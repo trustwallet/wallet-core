@@ -159,6 +159,13 @@ TEST(Coin, ValidateAddressSemux) {
     EXPECT_FALSE(validateAddress(TWCoinTypeSemux, "0x"));
     EXPECT_FALSE(validateAddress(TWCoinTypeSemux, ""));
 }
+    
+TEST(Coin, ValidateAddressMonetaryUnit) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeMonetaryUnit, "7UQUGq9UQD57R5Kn6hHoYrpaRjDdWtZWF7"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeMonetaryUnit, "7oBSZsdN6jDoEn2agojLuUqoZbjWBbcwCm"));
+
+    EXPECT_FALSE(validateAddress(TWCoinTypeMonetaryUnit, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
+}
 
 TEST(Coin, DeriveAddress) {
     const auto privateKey = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
