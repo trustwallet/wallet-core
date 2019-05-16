@@ -4,7 +4,12 @@
 #include "../UInt.hpp"
 #include "../Data.h"
 #include "../ReadData.h"
+#include "../HexCoding.h"
 #include "Transaction.h"
+#include "Transaction/MinerTransaction.hpp"
+
+#include <iostream>
+using namespace std;
 
 using namespace TW;
 using namespace TW::NEO;
@@ -26,47 +31,62 @@ int64_t Transaction::size() const {
 }
 #undef SIZE_INC
 
-#define DESERIALIZE_V(SOURCE, P, TYPE, VEC) {\
-    auto vsize_ = read<uint64_t>((SOURCE), (P)); \
-    (VEC).clear(); \
-    (P) += 8; \
-    for (int __i_ = 0; __i_ < vsize_; ++__i_) { \
-        TYPE ta; \
-        ta.deserialize((SOURCE), (P)); \
-        (P) += ta.size(); \
-        (VEC).push_back(ta); \
-    }\
-}
 void Transaction::deserialize(const Data &data, int initial_pos) {
-    type = (TransactionType) data[initial_pos];
-    version = data[initial_pos + 1];
-    int pos = initial_pos + 2;
-    DESERIALIZE_V(data, pos, TransactionAttribute, attributes);
-    DESERIALIZE_V(data, pos, CoinReference, inInputs);
-    DESERIALIZE_V(data, pos, TransactionOutput, outputs);
-    // DESERIALIZE_V(data, pos, Witness, witnesses); // witnessess is not serialized
-}
-#undef DESERIALIZE_V
+    type = (TransactionType) data[initial_pos++];
+    version = data[initial_pos++];
+    initial_pos = deserializeExclusiveData(data, initial_pos);
+    attributes.clear();
+    initial_pos = ISerializable::deserialize<TransactionAttribute>(attributes, data, initial_pos);
+    inInputs.clear();
+    initial_pos = ISerializable::deserialize<CoinReference>(inInputs, data, initial_pos);
+    outputs.clear();
+    initial_pos = ISerializable::deserialize<TransactionOutput>(outputs, data, initial_pos);
 
-#define SERIALIZE_V(R, V) { \
-    append((R), write<uint64_t>((V).size())); \
-    for (auto &__x_: (V)) { \
-        append((R), __x_.serialize()); \
-    } \
+    // witnesses.clear();
+    // initial_pos = ISerializable::deserialize<Witness>(witnesses, data, initial_pos);
 }
+
+Transaction * Transaction::deserializeFrom(const Data &data, int initial_pos) {
+    Transaction * resp = nullptr;
+    switch ((TransactionType) data[initial_pos]) {
+        case TransactionType::TT_MinerTransaction:
+            resp = new MinerTransaction();
+            break;    
+        default:
+            throw std::invalid_argument("Transaction::deserializeFrom Invalid transaction type");
+            break;
+    }
+    resp->deserialize(data, initial_pos);
+    return resp;
+}
+
 Data Transaction::serialize() const {
     Data resp;
     resp.push_back((byte) type);
     resp.push_back(version);
+    append(resp, serializeExclusiveData());
 
-    SERIALIZE_V(resp, attributes);
-    SERIALIZE_V(resp, inInputs);
-    SERIALIZE_V(resp, outputs);
-    // SERIALIZE_V(resp, witnesses); // witnessess is not serialized
+    append(resp, ISerializable::serialize(attributes));
+    append(resp, ISerializable::serialize(inInputs));
+    append(resp, ISerializable::serialize(outputs));
+    // append(resp, ISerializable::serialize(witnesses));
 
     return resp;
 }
-#undef SERIALIZE_V
+
+bool Transaction::operator==(const Transaction &other) const {
+    if (this == &other) {
+        return true;
+    }
+    return this->type == other.type
+        && this->version == other.version
+        && this->attributes.size() == other.attributes.size()
+        && this->inInputs.size() == other.inInputs.size()
+        && this->outputs.size() == other.outputs.size()
+        && this->attributes == other.attributes
+        && this->inInputs == other.inInputs
+        && this->outputs == other.outputs;
+}
 
 Data Transaction::getHash() const {
     return Hash::sha256(Hash::sha256(serialize()));

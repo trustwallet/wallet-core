@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <memory>
 #include <gtest/gtest.h>
 
 #include "ReadData.h"
@@ -14,6 +15,7 @@
 #include "NEO/TransactionAttributeUsage.h"
 #include "NEO/TransactionAttribute.hpp"
 
+#include <iostream>
 using namespace std;
 using namespace TW;
 using namespace TW::NEO;
@@ -25,11 +27,11 @@ using namespace TW::NEO;
     } \
 }
 #define CHECK_DES(F, D) { \
-    ASSERT_EQ(transaction.type, deserializedTransaction.type); \
-    ASSERT_EQ(transaction.version, deserializedTransaction.version); \
-    CHECK_VEC(transaction, deserializedTransaction, attributes); \
-    CHECK_VEC(transaction, deserializedTransaction, inInputs); \
-    CHECK_VEC(transaction, deserializedTransaction, outputs); \
+    ASSERT_EQ((F).type, (D).type); \
+    ASSERT_EQ((F).version, (D).version); \
+    CHECK_VEC((F), (D), attributes); \
+    CHECK_VEC((F), (D), inInputs); \
+    CHECK_VEC((F), (D), outputs); \
 }
 TEST(NEOTransaction, SerializeDeserializeEmpty) {
     auto transaction = Transaction();
@@ -47,9 +49,9 @@ TEST(NEOTransaction, SerializeDeserializeEmptyCollections) {
     auto transaction = Transaction();
     transaction.type = TransactionType::TT_EnrollmentTransaction;
     transaction.version = 0x07;
-    const string zeroLong = "0000000000000000";
+    const string zeroVarLong = "00";
     auto serialized = transaction.serialize();
-    ASSERT_EQ("2007" + zeroLong + zeroLong + zeroLong, hex(serialized));
+    ASSERT_EQ("2007" + zeroVarLong + zeroVarLong + zeroVarLong, hex(serialized));
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
@@ -60,13 +62,13 @@ TEST(NEOTransaction, SerializeDeserializeAttribute) {
     auto transaction = Transaction();
     transaction.type = TransactionType::TT_ContractTransaction;
     transaction.version = 0x07;
-    const string zeroLong = "0000000000000000";
-    const string oneLong = "0100000000000000";
+    const string zeroVarLong = "00";
+    const string oneVarLong = "01";
     transaction.attributes.push_back(TransactionAttribute());
     transaction.attributes[0].usage = TransactionAttributeUsage::TAU_ContractHash;
     transaction.attributes[0].data = parse_hex("bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a");
     auto serialized = transaction.serialize();
-    ASSERT_EQ("8007" + oneLong + hex(transaction.attributes[0].serialize()) + zeroLong + zeroLong, hex(serialized));
+    ASSERT_EQ("8007" + oneVarLong + hex(transaction.attributes[0].serialize()) + zeroVarLong + zeroVarLong, hex(serialized));
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
@@ -76,11 +78,11 @@ TEST(NEOTransaction, SerializeDeserializeAttribute) {
     transaction.attributes[1].usage = TransactionAttributeUsage::TAU_ECDH02;
     transaction.attributes[1].data = parse_hex("b7ecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a");
     serialized = transaction.serialize();
-    const string twoLong = "0200000000000000";
-    string expectedSerialized = "8007" + twoLong;
+    const string twoVarLong = "02";
+    string expectedSerialized = "8007" + twoVarLong;
     expectedSerialized += hex(transaction.attributes[0].serialize());
     expectedSerialized += hex(transaction.attributes[1].serialize());
-    expectedSerialized += zeroLong + zeroLong;
+    expectedSerialized += zeroVarLong + zeroVarLong;
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
     deserializedTransaction.deserialize(serialized);
@@ -91,13 +93,13 @@ TEST(NEOTransaction, SerializeDeserializeInputs) {
     auto transaction = Transaction();
     transaction.type = TransactionType::TT_ContractTransaction;
     transaction.version = 0x07;
-    const string zeroLong = "0000000000000000";
-    const string oneLong = "0100000000000000";
+    const string zeroVarLong = "00";
+    const string oneVarLong = "01";
     transaction.inInputs.push_back(CoinReference());
     transaction.inInputs[0].prevHash = load<uint256_t>(parse_hex("bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
     transaction.inInputs[0].prevIndex = 0xa;
     auto serialized = transaction.serialize();
-    ASSERT_EQ("8007" + zeroLong + oneLong + hex(transaction.inInputs[0].serialize()) + zeroLong, hex(serialized));
+    ASSERT_EQ("8007" + zeroVarLong + oneVarLong + hex(transaction.inInputs[0].serialize()) + zeroVarLong, hex(serialized));
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
@@ -107,11 +109,11 @@ TEST(NEOTransaction, SerializeDeserializeInputs) {
     transaction.inInputs[1].prevHash = load<uint256_t>(parse_hex("bdecbb623eee4f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
     transaction.inInputs[1].prevIndex = 0xbc;
     serialized = transaction.serialize();
-    const string twoLong = "0200000000000000";
-    string expectedSerialized = "8007" + zeroLong + twoLong;
+    const string twoVarLong = "02";
+    string expectedSerialized = "8007" + zeroVarLong + twoVarLong;
     expectedSerialized += hex(transaction.inInputs[0].serialize());
     expectedSerialized += hex(transaction.inInputs[1].serialize());
-    expectedSerialized += zeroLong;
+    expectedSerialized += zeroVarLong;
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
     deserializedTransaction.deserialize(serialized);
@@ -122,14 +124,14 @@ TEST(NEOTransaction, SerializeDeserializeOutputs) {
     auto transaction = Transaction();
     transaction.type = TransactionType::TT_ContractTransaction;
     transaction.version = 0x07;
-    const string zeroLong = "0000000000000000";
-    const string oneLong = "0100000000000000";
+    const string zeroVarLong = "00";
+    const string oneVarLong = "01";
     transaction.outputs.push_back(TransactionOutput());
     transaction.outputs[0].assetId = load<uint256_t>(parse_hex("bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
     transaction.outputs[0].scriptHash = load<uint160_t>(parse_hex("cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b"));
     transaction.outputs[0].value = 0x2;
     auto serialized = transaction.serialize();
-    ASSERT_EQ("8007" + zeroLong + zeroLong + oneLong + hex(transaction.outputs[0].serialize()), hex(serialized));
+    ASSERT_EQ("8007" + zeroVarLong + zeroVarLong + oneVarLong + hex(transaction.outputs[0].serialize()), hex(serialized));
 
     auto deserializedTransaction = Transaction();
     deserializedTransaction.deserialize(serialized);
@@ -140,8 +142,8 @@ TEST(NEOTransaction, SerializeDeserializeOutputs) {
     transaction.outputs[1].scriptHash = load<uint160_t>(parse_hex("cbb23e6f9a3e28d5a8ff3eac9d73af039e821b1b"));
     transaction.outputs[1].value = 0x2;
     serialized = transaction.serialize();
-    const string twoLong = "0200000000000000";
-    string expectedSerialized = "8007" + zeroLong + zeroLong + twoLong;
+    const string twoVarLong = "02";
+    string expectedSerialized = "8007" + zeroVarLong + zeroVarLong + twoVarLong;
     expectedSerialized += hex(transaction.outputs[0].serialize());
     expectedSerialized += hex(transaction.outputs[1].serialize());
     ASSERT_EQ(expectedSerialized, hex(serialized));
@@ -154,7 +156,7 @@ TEST(NEOTransaction, SerializeDeserialize) {
     auto transaction = Transaction();
     transaction.type = TransactionType::TT_ContractTransaction;
     transaction.version = 0x07;
-    const string oneLong = "0100000000000000";
+    const string oneVarLong = "01";
 
     transaction.attributes.push_back(TransactionAttribute());
     transaction.attributes[0].usage = TransactionAttributeUsage::TAU_ContractHash;
@@ -171,9 +173,9 @@ TEST(NEOTransaction, SerializeDeserialize) {
 
     auto serialized = transaction.serialize();
     string expectedSerialized = "8007";
-    expectedSerialized += oneLong + hex(transaction.attributes[0].serialize());
-    expectedSerialized += oneLong + hex(transaction.inInputs[0].serialize());
-    expectedSerialized += oneLong + hex(transaction.outputs[0].serialize());
+    expectedSerialized += oneVarLong + hex(transaction.attributes[0].serialize());
+    expectedSerialized += oneVarLong + hex(transaction.inInputs[0].serialize());
+    expectedSerialized += oneVarLong + hex(transaction.outputs[0].serialize());
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
     auto deserializedTransaction = Transaction();
@@ -185,11 +187,11 @@ TEST(NEOTransaction, SerializeDeserialize) {
     transaction.outputs[1].scriptHash = load<uint160_t>(parse_hex("cbb23e6f9a3e28d5a8ff3eac9da3af039e821b1b"));
     transaction.outputs[1].value = 0x2;
     serialized = transaction.serialize();
-    const string twoLong = "0200000000000000";
+    const string twoVarLong = "02";
     expectedSerialized = "8007";
-    expectedSerialized += oneLong + hex(transaction.attributes[0].serialize());
-    expectedSerialized += oneLong + hex(transaction.inInputs[0].serialize());
-    expectedSerialized += twoLong + hex(transaction.outputs[0].serialize());
+    expectedSerialized += oneVarLong + hex(transaction.attributes[0].serialize());
+    expectedSerialized += oneVarLong + hex(transaction.inInputs[0].serialize());
+    expectedSerialized += twoVarLong + hex(transaction.outputs[0].serialize());
     expectedSerialized += hex(transaction.outputs[1].serialize());
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
@@ -204,13 +206,13 @@ TEST(NEOTransaction, SerializeDeserialize) {
     transaction.inInputs[2].prevIndex = 0x1f;
 
     serialized = transaction.serialize();
-    const string threeLong = "0300000000000000";
+    const string threeVarLong = "03";
     expectedSerialized = "8007";
-    expectedSerialized += oneLong + hex(transaction.attributes[0].serialize());
-    expectedSerialized += threeLong + hex(transaction.inInputs[0].serialize());
+    expectedSerialized += oneVarLong + hex(transaction.attributes[0].serialize());
+    expectedSerialized += threeVarLong + hex(transaction.inInputs[0].serialize());
     expectedSerialized += hex(transaction.inInputs[1].serialize());
     expectedSerialized += hex(transaction.inInputs[2].serialize());
-    expectedSerialized += twoLong + hex(transaction.outputs[0].serialize());
+    expectedSerialized += twoVarLong + hex(transaction.outputs[0].serialize());
     expectedSerialized += hex(transaction.outputs[1].serialize());
     ASSERT_EQ(expectedSerialized, hex(serialized));
 
@@ -220,10 +222,24 @@ TEST(NEOTransaction, SerializeDeserialize) {
 #undef CHECK_VEC
 #undef CHECK_DES
 
+TEST(NEOTransaction, SerializeDeserializeMiner) {
+    string block2tn = "0000d11f7a2800000000";
+    std::unique_ptr<Transaction> deserializedTransaction(Transaction::deserializeFrom(parse_hex(block2tn)));
+    auto serialized = deserializedTransaction->serialize();
+    std::unique_ptr<Transaction> serializedTransaction(Transaction::deserializeFrom(serialized));
+
+    ASSERT_EQ(*deserializedTransaction, *serializedTransaction);
+}
+
+
+
 TEST(NEOTransaction, GetHash) {
     string block2tn = "0000d11f7a2800000000";
-    auto deserializedTransaction = Transaction();
-    deserializedTransaction.deserialize(parse_hex(block2tn));
+    std::unique_ptr<Transaction> deserializedTransaction(Transaction::deserializeFrom(parse_hex(block2tn)));
 
-    ASSERT_EQ("0x8e3a32ba3a7e8bdb0ad9a2ad064713e45bd20eb0dab0d2e77df5b5ce985276d0", hex(deserializedTransaction.getHash()));
+    Data hash = parse_hex("8e3a32ba3a7e8bdb0ad9a2ad064713e45bd20eb0dab0d2e77df5b5ce985276d0");
+    // It is flipped on the https://github.com/NeoResearch/neopt/blob/master/tests/ledger_Tests/Transaction.Test.cpp
+    hash = Data(hash.rbegin(), hash.rend());
+
+    ASSERT_EQ(hex(hash), hex(deserializedTransaction->getHash()));
 }
