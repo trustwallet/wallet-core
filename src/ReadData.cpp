@@ -1,6 +1,7 @@
 #include "Data.h"
 #include "ReadData.h"
 
+
 TW::Data TW::readBytes(const TW::Data &from, int max, int initial_pos) {
     if (from.size() - initial_pos < max) {
         throw std::invalid_argument("Data::Cannot read enough bytes!");
@@ -13,7 +14,7 @@ TW::Data TW::readVarBytes(const Data &from, int initial_pos) {
     return readBytes(from, size, initial_pos + 4);
 }
 
-template<> uint64_t TW::readVar(const TW::Data &from, const uint64_t & max, int initial_pos) {
+template<> uint64_t TW::readVar(const TW::Data &from, int initial_pos, const uint64_t &max) {
     byte fb = from[initial_pos];
     uint64_t value;
     if (fb == 0xFD) {
@@ -27,13 +28,13 @@ template<> uint64_t TW::readVar(const TW::Data &from, const uint64_t & max, int 
     }
     if (value > max) {
         // std::cout << "TOO HUGE VALUE: " << value << " max=" << max << std::endl;
-        throw std::invalid_argument("IBinaryReader::ReadVarInt error: Too huge value! FormatException");
+        throw std::invalid_argument("ReadData::ReadVarInt error: Too huge value! FormatException");
         return -1;
     }
     return value;
 }
 
-template<> int64_t TW::readVar(const TW::Data &from, const int64_t & max, int initial_pos) {
+template<> int64_t TW::readVar(const TW::Data &from, int initial_pos, const int64_t &max) {
     return (int64_t) readVar<uint64_t>(from, uint64_t(max), initial_pos);
 }
 
@@ -115,7 +116,7 @@ template<> TW::Data TW::write(const int64_t &v) {
 
 template<> TW::Data TW::writeVar(const uint64_t & value) {
     if (value < 0) {
-        throw std::invalid_argument("IBinaryWriter::WriteVarInt ArgumentOutOfRangeException");
+        throw std::invalid_argument("ReadData::WriteVarInt ArgumentOutOfRangeException");
     }
     if (value < 0xFD) {
         return Data({(byte) value});
