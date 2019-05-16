@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "../Transaction.h"
-#include "../../ReadData.h"
+#include "Transaction.h"
+#include "../ReadData.h"
 
 namespace TW::NEO {
     class MinerTransaction : public Transaction {

@@ -8,8 +8,6 @@
 #include "../HexCoding.h"
 #include "../Hash.h"
 
-#include <stdexcept>
-
 using namespace TW;
 using namespace TW::NEO;
 
@@ -32,7 +30,11 @@ Address Signer::getAddress() const {
 }
 
 Data Signer::sign(Transaction &tx) const {
-    auto signature = getPrivateKey().sign(Hash::sha256(tx.getHash()), TWCurveNIST256p1);
+    return sign(tx.getHash());
+}
+
+Data Signer::sign(const Data &data) const {
+    auto signature = getPrivateKey().sign(Hash::sha256(data), TWCurveNIST256p1);
     signature.pop_back();
     return signature;
 }
