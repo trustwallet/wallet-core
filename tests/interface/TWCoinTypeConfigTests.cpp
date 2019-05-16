@@ -136,6 +136,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWaves));
     assertStringsEqual(waves, "WAVES");
+
+    auto monero = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonero));
+    assertStringsEqual(monero, "XMR");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -183,6 +186,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonero), 12);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -322,6 +326,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWaves, txId));
     assertStringsEqual(waves, "https://wavesexplorer.com/tx/123");
+
+    auto monero = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonero, txId));
+    assertStringsEqual(monero, "https://moneroblocks.info/block/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -453,6 +460,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
     assertStringsEqual(waves, "waves");
+
+    auto monero = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonero));
+    assertStringsEqual(monero, "monero");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -587,6 +597,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
+
+    auto monero = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonero));
+    assertStringsEqual(monero, "Monero");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {

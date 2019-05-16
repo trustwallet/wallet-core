@@ -660,5 +660,16 @@
         "curve": "ed25519",
         "publicKeyType": "curve25519",
         "explorer": "https://wavesexplorer.com/tx/"
+    },
+    {
+        "id": "monero",
+        "name": "Monero",
+        "symbol":"XMR",
+        "decimals": 12,
+        "blockchain": "Monero",
+        "derivationPath": "m/44'/128'/0'/0/0",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "https://moneroblocks.info/block/"
     }
 ]

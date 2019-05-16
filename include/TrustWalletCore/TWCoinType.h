@@ -75,6 +75,7 @@ enum TWCoinType {
     TWCoinTypeMonetaryUnit = 31,
     TWCoinTypeRavencoin = 175,
     TWCoinTypeWaves = 5741564,
+    TWCoinTypeMonero = 128
 };
 
 /// Returns the blockchain for a coin type.
