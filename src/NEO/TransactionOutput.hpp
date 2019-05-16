@@ -28,5 +28,11 @@ namespace TW::NEO {
         Data serialize() const override {
             return concat(concat(store(assetId), write(value)), store<uint160_t>(scriptHash));
         }
+
+        bool operator==(const TransactionOutput &other) const {
+            return this->assetId == other.assetId
+                && this->value == other.value
+                && this->scriptHash == other.scriptHash;
+        }
     };
 }
