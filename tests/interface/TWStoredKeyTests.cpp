@@ -17,9 +17,11 @@
 TEST(TWStoredKey, importInvalidKey) {
     auto bytes = TW::parse_hex("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
     auto data = WRAPD(TWDataCreateWithBytes(bytes.data(), bytes.size()));
-    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(data.get()));
     auto name = WRAPS(TWStringCreateWithUTF8Bytes("test"));
 
-    auto key = TWStoredKeyImportPrivateKey(privateKey.get(), name.get(), name.get(), TWCoinTypeEthereum);
-    ASSERT_EQ(key, nullptr);
+    auto eth = TWStoredKeyImportPrivateKey(data.get(), name.get(), name.get(), TWCoinTypeEthereum);
+    auto tezos = TWStoredKeyImportPrivateKey(data.get(), name.get(), name.get(), TWCoinTypeTezos);
+
+    ASSERT_EQ(eth, nullptr);
+    ASSERT_NE(tezos, nullptr);
 }

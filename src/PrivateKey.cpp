@@ -50,7 +50,7 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve)
         };
     }
 
-    return false;
+    return true;
 }
 
 PrivateKey::~PrivateKey() {
