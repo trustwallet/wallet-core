@@ -74,7 +74,7 @@ make install
 
 if [ -x "$(command -v swift)" ]; then
     # Download Swift Protobuf sources
-    export SWIFT_PROTOBUF_VERSION=1.3.1
+    export SWIFT_PROTOBUF_VERSION=1.5.0
     SWIFT_PROTOBUF_DIR="$ROOT/build/swift-protobuf/staging"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
