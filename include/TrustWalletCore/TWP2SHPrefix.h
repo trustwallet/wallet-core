@@ -18,7 +18,6 @@ enum TWP2SHPrefix {
     TWP2SHPrefixDash = 0x10,
     TWP2SHPrefixDecred = 0x1a,
     TWP2SHPrefixDogecoin = 0x16,
-    TWP2SHPrefixDigiByte = 0x05,
     TWP2SHPrefixLitecoin = 0x32,
     TWP2SHPrefixViacoin = 0x21,
     TWP2SHPrefixIocoin = 0x55,

@@ -73,11 +73,11 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Decred::Address::isValid(string);
 
     case TWCoinTypeDogecoin:
-        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDogecoin}, {TWP2SHPrefixDogecoin}});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDogecoin_DigiByte}, {TWP2SHPrefixDogecoin}});
 
     case TWCoinTypeDigiByte:
         return Bitcoin::SegwitAddress::isValid(string, HRP_DIGIBYTE) ||
-               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDigiByte}, {TWP2SHPrefixDigiByte}});
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDogecoin_DigiByte}, {TWP2SHPrefixBitcoin}});
 
     case TWCoinTypeGroestlcoin:
         return Bitcoin::SegwitAddress::isValid(string, HRP_GROESTLCOIN) ||
@@ -202,10 +202,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Decred::Address(publicKey).string();
 
     case TWCoinTypeDogecoin:
-        return Bitcoin::Address(publicKey, TWP2PKHPrefixDogecoin).string();
+        return Bitcoin::Address(publicKey, TWP2PKHPrefixDogecoin_DigiByte).string();
 
     case TWCoinTypeDigiByte:
-        return Bitcoin::Address(publicKey, TWP2PKHPrefixDigiByte).string();
+        return Bitcoin::Address(publicKey, TWP2PKHPrefixDogecoin_DigiByte).string();
 
     case TWCoinTypeGroestlcoin:
         return Bitcoin::SegwitAddress(publicKey, 0, HRP_GROESTLCOIN).string();

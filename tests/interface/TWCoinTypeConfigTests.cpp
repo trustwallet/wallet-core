@@ -298,6 +298,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
     assertStringsEqual(zel, "https://explorer.zel.cash/tx/123");
+
+    auto dgb = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDigiByte, txId));
+    assertStringsEqual(dgb, "https://digiexplorer.info/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -417,6 +420,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
     assertStringsEqual(zel, "zelcash");
+
+    auto dgb = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDigiByte));
+    assertStringsEqual(dgb, "digibyte");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {

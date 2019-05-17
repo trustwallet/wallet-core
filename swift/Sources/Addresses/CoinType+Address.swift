@@ -12,7 +12,7 @@ public extension CoinType {
         switch self {
         case .binance, .cosmos:
             if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
-        case .bitcoin, .litecoin, .viacoin, .qtum:
+        case .bitcoin, .litecoin, .viacoin, .qtum, .digiByte:
             if let addr = SegwitAddress(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
@@ -113,7 +113,9 @@ public extension CoinType {
         case .qtum:
             return Set([P2PKHPrefix.qtum.rawValue])
         case .dogecoin:
-            return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin.rawValue])
+            return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin_DigiByte.rawValue])
+        case .digiByte:
+            return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.dogecoin_DigiByte.rawValue])
         case .viacoin:
             return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
         default:
