@@ -4,7 +4,7 @@ inhibit_all_warnings!
 target 'TrustWalletCore' do
   use_frameworks!
 
-  pod 'SwiftProtobuf', '~> 1.3.0'
+  pod 'SwiftProtobuf', '~> 1.5.0'
 
   target 'TrustWalletCoreTests'
 end
