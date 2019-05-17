@@ -30,6 +30,7 @@ enum TWCoinType {
     TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
+    TWCoinTypeDigiByte = 20,
     TWCoinTypeDogecoin = 3,
     TWCoinTypeEllaism = 163,
     TWCoinTypeEOS = 194,
