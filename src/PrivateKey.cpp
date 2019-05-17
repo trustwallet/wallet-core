@@ -14,8 +14,44 @@
 #include <TrezorCrypto/rand.h>
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/schnorr.h>
+#include <TrezorCrypto/memzero.h>
+#include <TrezorCrypto/bignum.h>
 
 using namespace TW;
+
+bool PrivateKey::isValid(const Data& data, TWCurve curve)
+{
+    // check size
+    bool valid = isValid(data);
+    if (!valid) {
+        return false;
+    }
+
+    const ecdsa_curve *ec_curve = nullptr;
+    switch (curve)
+    {
+    case TWCurveSECP256k1:
+        ec_curve = &secp256k1;
+        break;
+    case TWCurveNIST256p1:
+        ec_curve = &nist256p1;
+        break;
+    case TWCurveED25519:
+    case TWCurveED25519Blake2bNano:
+        break;
+    }
+
+    if (ec_curve != nullptr) {
+        bignum256 k;
+        bn_read_be(data.data(), &k);
+        if (!bn_is_less(&k, &ec_curve->order)) {
+            memzero(&k, sizeof(k));
+            return false;
+        };
+    }
+
+    return true;
+}
 
 PrivateKey::~PrivateKey() {
     std::fill(bytes.begin(), bytes.end(), 0);
