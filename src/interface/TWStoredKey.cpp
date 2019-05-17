@@ -34,7 +34,8 @@ struct TWStoredKey *_Nonnull TWStoredKeyCreate(TWString *_Nonnull name, TWString
 
 struct TWStoredKey *_Nullable TWStoredKeyImportPrivateKey(TWData *_Nonnull privateKey, TWString *_Nonnull name, TWString *_Nonnull password, enum TWCoinType coin) {
     auto& privateKeyData = *reinterpret_cast<const TW::Data*>(privateKey);
-    if (!TW::PrivateKey::isValid(privateKeyData)) {
+    auto curve = TW::curve(coin);
+    if (!TW::PrivateKey::isValid(privateKeyData, curve)) {
         return nullptr;
     }
 

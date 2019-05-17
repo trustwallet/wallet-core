@@ -8,6 +8,7 @@
 
 #include "PrivateKey.h"
 #include "PublicKey.h"
+#include "HexCoding.h"
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
@@ -29,6 +30,13 @@ TEST(PrivateKeyTests, AllZeros) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(data.get()));
 
     ASSERT_EQ(privateKey.get(), nullptr);
+}
+
+TEST(PrivateKeyTests, Invalid) {
+    auto bytes = TW::parse_hex("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
+    auto valid = TW::PrivateKey::isValid(bytes, TWCurveSECP256k1);
+
+    ASSERT_EQ(valid, false);
 }
 
 TEST(PrivateKeyTests, IsValid) {
