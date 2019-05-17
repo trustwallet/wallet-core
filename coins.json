@@ -540,7 +540,7 @@
         "name": "IoTeX",
         "symbol": "IOTX",
         "decimals": 18,
-        "blockchain": "Ethereum",
+        "blockchain": "IoTeX",
         "derivationPath": "m/44'/304'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
