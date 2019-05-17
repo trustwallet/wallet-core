@@ -20,8 +20,10 @@ TEST(TWStoredKey, importInvalidKey) {
     auto name = WRAPS(TWStringCreateWithUTF8Bytes("test"));
 
     auto eth = TWStoredKeyImportPrivateKey(data.get(), name.get(), name.get(), TWCoinTypeEthereum);
+    auto ont = TWStoredKeyImportPrivateKey(data.get(), name.get(), name.get(), TWCoinTypeOntology);
     auto tezos = TWStoredKeyImportPrivateKey(data.get(), name.get(), name.get(), TWCoinTypeTezos);
 
     ASSERT_EQ(eth, nullptr);
+    ASSERT_EQ(ont, nullptr);
     ASSERT_NE(tezos, nullptr);
 }
