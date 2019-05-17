@@ -536,3 +536,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto zel = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
     assertStringsEqual(zel, "Zelcash");
 }
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoin));
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeLitecoin));
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereum));
+    ASSERT_EQ(TWBlockchainIoTeX, TWCoinTypeBlockchain(TWCoinTypeIoTeX));    
+}
