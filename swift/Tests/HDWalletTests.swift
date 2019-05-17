@@ -59,7 +59,7 @@ class HDWalletTests: XCTestCase {
         let key = wallet.getKeyForCoin(coin: bitcoin)
         let address = bitcoin.deriveAddress(privateKey: key)
 
-        XCTAssertEqual("DEvEfWqQvBqvcrmCjKqdFJXMEuPH87Jega", address)
+        XCTAssertEqual("D65LXaYVkK4HKKNeKPNyZzQV9fqT2pesRd", address)
     }
 
     func testDeriveEthereum() {
