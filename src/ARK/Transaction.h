@@ -3,34 +3,41 @@
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
+
 #pragma once
 
-#include "../Data.h"
 #include "Address.h"
+#include "../Data.h"
 
 namespace TW::ARK {
 
-  class Transaction {
-    public:
-      
-      uint8_t type;
-      Data publicKey;
-      Address recipientId;
-      uint64_t amount;
-      uint64_t fee;    
+class Transaction {
+  public:
+    byte type;
+    uint64_t amount;
+    uint64_t fee;
+    uint32_t timestamp;
+    Address to;
+    Data publicKey;
 
-      /// Transaction signature.
-      Data signature;
+    /// Transaction signature.
+    Data signature;
 
-      Transaction();
+    Transaction(byte type, uint64_t amount, uint64_t fee, uint32_t timestamp, Address to,
+                Data publicKey)
+        : type(type)
+        , amount(amount)
+        , fee(fee)
+        , timestamp(timestamp)
+        , to(to)
+        , publicKey(publicKey) {}
 
-      /// Encodes the transaction.
-      Data encoded();
-      std::string toJson();
-      void setTimestamp(uint32_t &timestamp);
-      uint32_t getTimestamp();
-    
-    private:
-      uint32_t timestamp;
-  };
-}
+  public:
+    /// Encodes the transaction.
+    Data encoded() const;
+
+    /// Encodes the transaction as json string.
+    std::string encodedJson() const;
+};
+
+} // namespace TW::ARK

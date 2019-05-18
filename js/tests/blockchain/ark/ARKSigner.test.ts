@@ -9,22 +9,21 @@ import { TW, ARKSigner } from '../../../lib';
 describe('ARKSigner', () => {
 
     it('test sign ARKSigner', () => {
-        let privateKey = fromHexString("a76fa06ec56a720cdaa4b4764c7685833c7ffbcc03d193963c01d6890388376f");
-        let amount = Long.fromNumber(1000000);
-        let timestamp = 1557956100;
-        let recipientId = "ARjdsayeC5q6xRo432Ru3F9Zcb73A5dfME";
-        
+        let privateKey = fromHexString("d8839c2432bfd0a67ef10a804ba991eabba19f154a3d707917681d45822a5712");
+
         let input = TW.ARK.Proto.SigningInput.create({
+            type: TW.ARK.Proto.TransactionType.Transfer,
             privateKey: privateKey,
-            amount: amount,
-            timestamp: timestamp,
-            recipientId: recipientId
+            amount: Long.fromNumber(123123123),
+            fee: Long.fromNumber(10000000),
+            timestamp: 67447770,
+            toAddress: "ARkMaRcjcwRgr6vmDtAWo7bFqUgy9wG3NU"
         });
 
         let output = ARKSigner.sign(input);
-        let outputObj = JSON.parse(output.json);
-        expect(outputObj.signature).to.equal("304402201622f95ee73fd645763ebefbad87f74352028cd11ca313b739e6bdef243804d902201d7897acc12bd031d90b9f850a05a195679747f049b3c15cfe40772634687224");
-        expect(outputObj.senderPublicKey).to.equal("02ceb971ddabd391df62f4762ba45def3e2b36d002d8344ebbb4be9a941071c332");
+
+        expect(bufToHex(output.signature)).to.equal("0x304402205e6365f4c3b49c28f03afd89d308736dca56671ea707dd3dd5af42272a0cc8ed02207fa7fc015fba7ae527d22a058cc4ebd8e9867c563ace7effc2dbaad2af8976c3");
+        expect(output.encoded).to.equal("{\"amount\":123123123,\"asset\":{},\"fee\":10000000,\"id\":\"219b1cc99ec804df02230a9e913ccb45edb7819f22328e3cd15030174a8c4167\",\"recipientId\":\"ARkMaRcjcwRgr6vmDtAWo7bFqUgy9wG3NU\",\"senderPublicKey\":\"034151a3ec46b5670a682b0a63394f863587d1bc97483b1b6c70eb58e7f0aed192\",\"signature\":\"304402205e6365f4c3b49c28f03afd89d308736dca56671ea707dd3dd5af42272a0cc8ed02207fa7fc015fba7ae527d22a058cc4ebd8e9867c563ace7effc2dbaad2af8976c3\",\"timestamp\":67447770,\"type\":0}");
     });
 
 });

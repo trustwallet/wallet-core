@@ -9,29 +9,30 @@ import XCTest
 class ARKTests: XCTestCase {
     
     func testAddress() {
-        let privateKey = PrivateKey(data: Data(hexString: "db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9")!)!
+        let data = "this is a top secret passphrase".data(using: .utf8)!
+        let hashed = Hash.sha256(data: data)
+        let privateKey = PrivateKey(data: hashed)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true);
         let address = ARKAddress(publicKey: publicKey)
-        XCTAssertEqual(address.description, "AHqJoKaLeEAeJ6e3dk9DXgbNUpxGJebSvt")
+
+        XCTAssertEqual(hashed.hexString, "d8839c2432bfd0a67ef10a804ba991eabba19f154a3d707917681d45822a5712")
+        XCTAssertEqual(address.description, "AGeYmgbg2LgGxRW2vNNJvQ88PknEJsYizC")
     }
     
     func testSigner() throws {
         let input = ARKSigningInput.with {
-            $0.amount = 1000000000
+            $0.type = .transfer
+            $0.amount = 123123123
+            $0.fee = 10000000
             $0.privateKey = Data(hexString: "d8839c2432bfd0a67ef10a804ba991eabba19f154a3d707917681d45822a5712")!
-            $0.timestamp = 50686854
-            $0.recipientID = "ANBkoGqWeTSiaEVgVzSKZd3jS7UWzv9PSo"
+            $0.timestamp = 67447770
+            $0.toAddress = "ARkMaRcjcwRgr6vmDtAWo7bFqUgy9wG3NU"
         }
         
         let output = ARKSigner.sign(input: input)
 
-        let jsonArray = try JSONSerialization.jsonObject(with: output.json.data(using: .utf8)!, options: .allowFragments) as? Dictionary<String,Any>
-        
-        let signature = jsonArray!["signature"] as! String
-        let senderPublicKey = jsonArray!["senderPublicKey"] as! String
-
-        XCTAssertEqual(signature, "304402201ace9afcaf9d0ec64a31fd98c589767c76b5360d5b22dfe3cde2dfffdfef61dc022026d276a6140e6abbd80775541479cc71cf52590895bd24c0c577a9c57ecae581")
-        XCTAssertEqual(senderPublicKey, "034151a3ec46b5670a682b0a63394f863587d1bc97483b1b6c70eb58e7f0aed192")
+        XCTAssertEqual(output.signature.hexString, "304402205e6365f4c3b49c28f03afd89d308736dca56671ea707dd3dd5af42272a0cc8ed02207fa7fc015fba7ae527d22a058cc4ebd8e9867c563ace7effc2dbaad2af8976c3")
+        XCTAssertEqual(output.encoded, "{\"amount\":123123123,\"asset\":{},\"fee\":10000000,\"id\":\"219b1cc99ec804df02230a9e913ccb45edb7819f22328e3cd15030174a8c4167\",\"recipientId\":\"ARkMaRcjcwRgr6vmDtAWo7bFqUgy9wG3NU\",\"senderPublicKey\":\"034151a3ec46b5670a682b0a63394f863587d1bc97483b1b6c70eb58e7f0aed192\",\"signature\":\"304402205e6365f4c3b49c28f03afd89d308736dca56671ea707dd3dd5af42272a0cc8ed02207fa7fc015fba7ae527d22a058cc4ebd8e9867c563ace7effc2dbaad2af8976c3\",\"timestamp\":67447770,\"type\":0}")
     }
     
 }
