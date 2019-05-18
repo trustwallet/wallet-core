@@ -603,6 +603,6 @@
         "derivationPath": "m/44'/111'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "explorer": "https://explorer.ark.io/api/v2/transactions"
+        "explorer": "https://explorer.ark.io/transaction/"
     }
 ]
