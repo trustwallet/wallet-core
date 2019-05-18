@@ -205,7 +205,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Bitcoin::Address(publicKey, TWP2PKHPrefixDogecoin_DigiByte).string();
 
     case TWCoinTypeDigiByte:
-        return Bitcoin::Address(publicKey, TWP2PKHPrefixDogecoin_DigiByte).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, HRP_DIGIBYTE).string();
 
     case TWCoinTypeGroestlcoin:
         return Bitcoin::SegwitAddress(publicKey, 0, HRP_GROESTLCOIN).string();

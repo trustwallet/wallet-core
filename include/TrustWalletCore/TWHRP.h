@@ -21,6 +21,7 @@ enum TWHRP {
     TWHRPBitcoinCash /* "bitcoincash" */,
     TWHRPBinance     /* "bnb" */,
     TWHRPCosmos      /* "cosmos" */,
+    TWHRPDigiByte    /* "dgb" */,
     TWHRPGroestlcoin /* "grs" */,
     TWHRPQtum        /* "qtum" */,
 };

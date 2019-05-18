@@ -44,7 +44,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .digiByte:
-                    let expectedResult = "DAyLZvxyyHSaAtC7LctNjmVeSd824giiKf"
+                    let expectedResult = "dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ellaism:
                     let expectedResult = "0x1Ae593CAdb8BAC47D0394617396650474c303F9C"

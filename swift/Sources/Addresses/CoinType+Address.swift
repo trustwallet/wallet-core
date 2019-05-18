@@ -134,6 +134,8 @@ public extension CoinType {
             return .binance
         case .cosmos:
             return .cosmos
+        case .digiByte:
+            return .digiByte
         case .litecoin:
             return .litecoin
         case .groestlcoin:
