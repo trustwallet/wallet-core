@@ -7,6 +7,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 [![Linux status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20Linux)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build/latest?definitionId=24)
 [![JavaScript status](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_apis/build/status/Wallet%20Core%20JavaScript)](https://dev.azure.com/TrustWallet/Trust%20Wallet%20Core/_build?definitionId=29)
 
+
 ![Codecov](https://codecov.io/gh/TrustWallet/wallet-core/branch/master/graph/badge.svg)
 ![GitHub](https://img.shields.io/github/license/TrustWallet/wallet-core.svg)
 ![Maven Central](https://img.shields.io/maven-central/v/com.trustwallet.walletcore/walletcore.svg)
@@ -61,6 +62,8 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 <a href="https://zel.network/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" /></a>
 <a href="https://zilliqa.com/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/313.png" width="32" /></a>
 <a href="https://iotex.io/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/304.png" width="32" /></a>
+<a href="https://ellaism.org/" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/163.png" width="32" /></a>
+<a href="http://ark.io" target="_blank"><img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/111.png" width="32" /></a>
 
 # Usage
 
