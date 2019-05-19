@@ -593,5 +593,16 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://explorer.zel.cash/tx/"
+    },
+    {
+        "id": "ark",
+        "name": "ARK",
+        "symbol": "ARK",
+        "decimals": 8,
+        "blockchain": "Ark",
+        "derivationPath": "m/44'/111'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "explorer": "https://explorer.ark.io/transaction/"
     }
 ]

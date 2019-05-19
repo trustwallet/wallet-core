@@ -75,5 +75,6 @@ class CoinAddressDerivationTests {
         SEMUX -> assertEquals("0xfe604170382452f77bc922bc19eb4b53504b09c2", address)
         DEXON -> assertEquals("0x6F3E6a6dDf2C2B4B32B8Bb452eA3F36B2BB489BF", address)
         ZELCASH -> assertEquals("t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf", address)
+        ARK -> assertEquals("Ac49m5pu5YpMMNgEbSYeZUEpRMHcSK3DfV", address)
     }
 }
