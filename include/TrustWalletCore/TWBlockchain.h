@@ -34,6 +34,9 @@ enum TWBlockchain {
     TWBlockchainIOST = 19,
     TWBlockchainSemux = 20,
     TWBlockchainNano = 21,
+    TWBlockchainNEO = 22,
+    TWBlockchainSteem = 23,
+    TWBlockchainNULS = 24,
 };
 
 TW_EXTERN_C_END
