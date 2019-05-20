@@ -13,10 +13,10 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_ENUM(uint32_t)
 enum TWBlockchain {
     TWBlockchainBitcoin = 0,
-    TWBlockchainTron = 1,
-    TWBlockchainEthereum = 2,
-    TWBlockchainWanchain = 3,
-    TWBlockchainVechain = 4,
+    TWBlockchainEthereum = 1,
+    TWBlockchainWanchain = 2,
+    TWBlockchainVechain = 3,
+    TWBlockchainTron = 4,
     TWBlockchainIcon = 5,
     TWBlockchainBinance = 6,
     TWBlockchainRipple = 7,
@@ -29,7 +29,11 @@ enum TWBlockchain {
     TWBlockchainOntology = 14,
     TWBlockchainZilliqa = 15,
     TWBlockchainIoTeX = 16,
-    TWBlockchainArk = 17
+    TWBlockchainArk = 17,
+    TWBlockchainEOS = 18,
+    TWBlockchainIOST = 19,
+    TWBlockchainSemux = 20,
+    TWBlockchainNano = 21,
 };
 
 TW_EXTERN_C_END
