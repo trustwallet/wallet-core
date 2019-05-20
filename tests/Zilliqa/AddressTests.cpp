@@ -22,6 +22,8 @@ TEST(ZilliqaAddress, FromPrivateKey) {
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey);
     auto expectedAddress = "zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg";
+
+    ASSERT_EQ(address.hrp, hrpForString(TWHRPZilliqa));
     ASSERT_EQ(address.string(), expectedAddress);
 }
 

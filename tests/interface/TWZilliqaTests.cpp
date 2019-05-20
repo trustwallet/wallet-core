@@ -26,6 +26,10 @@ TEST(Zilliqa, Address) {
 
     EXPECT_FALSE(TWZilliqaAddressIsValidString(STRING("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C").get()));
     EXPECT_FALSE(TWZilliqaAddressIsValidString(STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get()));
+
+    auto address = TWZilliqaAddressCreateWithString(STRING("zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6").get());
+    auto desc = WRAPS(TWZilliqaAddressDescription(address));
+    assertStringsEqual(desc, "zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6");
 }
 
 TEST(Zilliqa, Signing) {

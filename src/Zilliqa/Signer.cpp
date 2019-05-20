@@ -31,11 +31,6 @@ Data Signer::getPreImage(const Proto::SigningInput& input) noexcept {
 
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     const auto address = Cosmos::Address::decode(input.to_address());
-
-    if (!address.second) {
-        return {};
-    }
-
     const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     internal.set_version(input.version());
