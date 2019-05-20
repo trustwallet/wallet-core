@@ -565,4 +565,5 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeBravoCoin));
     ASSERT_EQ(TWBlockchainNano, TWCoinTypeBlockchain(TWCoinTypeNano));
     ASSERT_EQ(TWBlockchainSemux, TWCoinTypeBlockchain(TWCoinTypeSemux));
+    ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
 }

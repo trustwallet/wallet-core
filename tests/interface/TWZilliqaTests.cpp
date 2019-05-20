@@ -10,19 +10,25 @@
 #include "PublicKey.h"
 #include "HexCoding.h"
 
+#include "Zilliqa/Address.h"
+
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBlockchain.h>
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWZilliqaAddress.h>
 
 #include <gtest/gtest.h>
 
-TEST(ZilliqaTests, Config) {
-    ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
+TEST(Zilliqa, Address) {
+    EXPECT_TRUE(TWZilliqaAddressIsValidString(STRING("zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6").get()));
+
+    EXPECT_FALSE(TWZilliqaAddressIsValidString(STRING("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C").get()));
+    EXPECT_FALSE(TWZilliqaAddressIsValidString(STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get()));
 }
 
-TEST(ZilliqaTests, Sign) {
+TEST(Zilliqa, Signing) {
 
     uint8_t bytes[] = {0xaf, 0xee, 0xfc, 0xa7, 0x4d, 0x9a, 0x32, 0x5c, 0xf1, 0xd6, 0xb6, 0x91, 0x1d, 0x61, 0xa6, 0x5c, 0x32, 0xaf, 0xa8, 0xe0, 0x2b, 0xd5, 0xe7, 0x8e, 0x2e, 0x4a, 0xc2, 0x91, 0x0b, 0xab, 0x45, 0xf5};
     auto keyData = WRAPD(TWDataCreateWithBytes(bytes, 32));

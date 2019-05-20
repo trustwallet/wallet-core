@@ -243,7 +243,7 @@ class HDWalletTests: XCTestCase {
         let address = zil.deriveAddress(privateKey: key)
 
         XCTAssertEqual(key.data.hexString, "b49a9fb16cd2b46ee538be807f712073009ea528e407a25a4bf91a63c3e49f99")
-        XCTAssertEqual(address.description, "0x65E1a9341E08d10E6f3C00930CE879c5bF980319")
+        XCTAssertEqual(address.description, "zil1vhs6jdq7prgsumeuqzfse6recklesqcesfe685")
     }
 
     func testSignHash() {
