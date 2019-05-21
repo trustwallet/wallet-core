@@ -95,13 +95,15 @@ class BitcoinAddressTests: XCTestCase {
         let addressString = "dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
 
         XCTAssertEqual(HRP.digiByte, SegwitAddress(string: addressString)?.hrp)
-        XCTAssertTrue(SegwitAddress.isValidString(string: addressString), "'\(addressString)' should be a valid Bech32 address")
+        XCTAssertTrue(SegwitAddress.isValidString(string: addressString),
+                      "'\(addressString)' should be a valid Bech32 address")
     }
 
     func testValidDigiByteBitcoinAddress() {
         let addressString = "DTPQ92zp96TwpG2pRuUB3oEA3kWGRZPGhg"
 
         XCTAssertEqual(0x1e, BitcoinAddress(string: addressString)?.prefix)
-        XCTAssertTrue(BitcoinAddress.isValidString(string: addressString), "'\(addressString)' should be a valid Bitcoin address")
+        XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
+                      "'\(addressString)' should be a valid Bitcoin address")
     }
 }
