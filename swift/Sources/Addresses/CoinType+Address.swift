@@ -87,6 +87,8 @@ public extension CoinType {
             return ZilliqaAddress(string: string)
         case .semux:
             return SemuxAddress(string: string)
+        case .ark:
+            return ARKAddress(string: string)
         }
         return .none
     }

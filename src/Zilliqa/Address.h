@@ -7,45 +7,38 @@
 #pragma once
 
 #include "../PublicKey.h"
+#include "../Cosmos/Address.h"
+
+#include <TrustWalletCore/TWHRP.h>
 
 #include <string>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+
 namespace TW::Zilliqa {
 
-class Address {
-  public:
-    /// Number of bytes in an address.
-    static const size_t size = 20;
+  static bool isValidAddress(const std::string& address) {
+    return Cosmos::Address::isValid(address, HRP_ZILLIQA);
+  }
 
-    /// Address data followed by the public key
-    std::array<uint8_t, size> bytes;
+  static Cosmos::Address Address(const PublicKey& publicKey) {
+    const auto hashed = Hash::sha256(publicKey.bytes);
+    auto keyHash = Data(20);
+    std::copy(hashed.end() - 20, hashed.end(), keyHash.begin());
 
-    /// Determines whether a collection of bytes makes a valid  address.
-    static bool isValid(const Data& data) { return data.size() == size; }
+    return Cosmos::Address(HRP_ZILLIQA, keyHash);
+  }
 
-    /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string& string);
-
-    /// Initializes an address from a string representation.
-    explicit Address(const std::string& string);
-
-    /// Initializes an address with a collection of bytes.
-    explicit Address(const Data& data);
-
-    /// Initializes an address from a public key.
-    explicit Address(const PublicKey& publicKey);
-
-    /// Returns a string representation of the address. 20-bytes hex-encoded
-    std::string string() const;
-};
-
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
-}
+  static Cosmos::Address Address(const Data& keyHash) {
+    return Cosmos::Address(HRP_ZILLIQA, keyHash);
+  }
 
 } // namespace TW::Zilliqa
 
+#pragma clang diagnostic pop
+
 /// Wrapper for C interface.
 struct TWZilliqaAddress {
-    TW::Zilliqa::Address impl;
+    TW::Cosmos::Address impl;
 };

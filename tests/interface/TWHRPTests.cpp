@@ -19,6 +19,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPCosmos), "cosmos");
     ASSERT_STREQ(stringForHRP(TWHRPGroestlcoin), "grs");
     ASSERT_STREQ(stringForHRP(TWHRPQtum), "qc");
+    ASSERT_STREQ(stringForHRP(TWHRPZilliqa), "zil");
 }
 
 TEST(TWHRP, HRPForString) {
@@ -30,4 +31,5 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("cosmos"), TWHRPCosmos);
     ASSERT_EQ(hrpForString("grs"), TWHRPGroestlcoin);
     ASSERT_EQ(hrpForString("qc"), TWHRPQtum);
+    ASSERT_EQ(hrpForString("zil"), TWHRPZilliqa);
 }

@@ -24,15 +24,17 @@ bool TWZilliqaAddressEqual(struct TWZilliqaAddress *_Nonnull lhs, struct TWZilli
 
 bool TWZilliqaAddressIsValidString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    return Address::isValid(*s);
+    return Zilliqa::isValidAddress(*s);
 }
 
 struct TWZilliqaAddress *_Nullable TWZilliqaAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    if (!Address::isValid(*s)) {
+    auto dec = Cosmos::Address::decode(*s);
+    if (!dec.second || dec.first.hrp != HRP_ZILLIQA) {
         return nullptr;
     }
-    return new TWZilliqaAddress{ Address(*s) };
+
+    return new TWZilliqaAddress{ Address(dec.first.keyHash) };
 }
 
 struct TWZilliqaAddress *_Nonnull TWZilliqaAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
@@ -47,3 +49,7 @@ TWString *_Nonnull TWZilliqaAddressDescription(struct TWZilliqaAddress *_Nonnull
     const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
+
+TWData *_Nonnull TWZilliqaAddressKeyHash(struct TWZilliqaAddress *_Nonnull address) {
+    return TWDataCreateWithBytes(address->impl.keyHash.data(), address->impl.keyHash.size());
+ }

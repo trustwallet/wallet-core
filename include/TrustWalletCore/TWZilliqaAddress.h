@@ -41,4 +41,8 @@ void TWZilliqaAddressDelete(struct TWZilliqaAddress *_Nonnull address);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWZilliqaAddressDescription(struct TWZilliqaAddress *_Nonnull address);
 
+/// Returns the key hash.
+TW_EXPORT_PROPERTY
+TWData *_Nonnull TWZilliqaAddressKeyHash(struct TWZilliqaAddress *_Nonnull address);
+
 TW_EXTERN_C_END

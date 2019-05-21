@@ -34,6 +34,7 @@
 #include "IoTeX/Address.h"
 #include "Zilliqa/Address.h"
 #include "Semux/Address.h"
+#include "ARK/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -149,7 +150,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, TWP2PKHPrefixZcashT}, {Zcash::TAddress::staticPrefix, TWP2SHPrefixZcashT}});
 
     case TWCoinTypeZilliqa:
-        return Zilliqa::Address::isValid(string);
+        return Zilliqa::isValidAddress(string);
 
     case TWCoinTypeNano:
         return Nano::Address::isValid(string);
@@ -170,6 +171,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeSemux:
         return Semux::Address::isValid(string);
+
+    case TWCoinTypeARK:
+        return ARK::Address::isValid(string);
     }
 }
 
@@ -293,6 +297,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeSemux:
         return Semux::Address(publicKey).string();
+
+    case TWCoinTypeARK:
+        return ARK::Address(publicKey).string();
     }
 }
 
