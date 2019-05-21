@@ -25,11 +25,12 @@ TEST(ZilliqaSigner, PreImage) {
     auto gasPrice = uint256_t(1000000000);
     auto amountData = store(amount);
     auto gasData = store(gasPrice);
+    auto toAddress = Address(parse_hex("0x9Ca91EB535Fb92Fda5094110FDaEB752eDb9B039"));
 
     auto input = Proto::SigningInput();
     input.set_version(65537);
     input.set_nonce(4);
-    input.set_to_address("0x9Ca91EB535Fb92Fda5094110FDaEB752eDb9B039");
+    input.set_to_address(toAddress.string());
     input.set_amount(amountData.data(), amountData.size());
     input.set_gas_price(gasData.data(), gasData.size());
     input.set_gas_limit(uint64_t(1));
@@ -52,11 +53,12 @@ TEST(ZilliqaSigner, Signing) {
     auto gasPrice = uint256_t(1000000000);
     auto amountData = store(amount);
     auto gasData = store(gasPrice);
+    auto toAddress = Address(parse_hex("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C"));
 
     auto input = Proto::SigningInput();
     input.set_version(65537);
     input.set_nonce(2);
-    input.set_to_address("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C");
+    input.set_to_address(toAddress.string());
     input.set_amount(amountData.data(), amountData.size());
     input.set_gas_price(gasData.data(), gasData.size());
     input.set_gas_limit(uint64_t(1));

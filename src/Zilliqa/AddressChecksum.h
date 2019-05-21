@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include "Address.h"
+#include "../Data.h"
 #include <string>
 
 namespace TW::Zilliqa {
 
-std::string checksumed(const Address& address);
+std::string checksumed(const Data& address);
 
-} // namespace TW::Ethereum
+} // namespace TW::Zilliqa

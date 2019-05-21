@@ -155,7 +155,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "io1qw9cccecw09q7p5kzyqtuhfhvah2mhfrc84jfk"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zilliqa:
-                    let expectedResult = "0xDdb41006F7B6FA8e5FBF06A71c01F789FeBC66e8"
+                    let expectedResult = "zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .semux:
                     let expectedResult = "0xfe604170382452f77bc922bc19eb4b53504b09c2"

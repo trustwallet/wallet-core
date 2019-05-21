@@ -12,7 +12,8 @@
 namespace TW {
 
 TEST(Coin, ValidateAddressZilliqa) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeZilliqa, "0x91cddcebe846ce4d47712287eee53cf17c2cfb77"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeZilliqa, "zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeZilliqa, "0x91cddcebe846ce4d47712287eee53cf17c2cfb77"));
     EXPECT_FALSE(validateAddress(TWCoinTypeZilliqa, "91cddcebe846ce4d47712287eee53cf17c2cfb77"));
     EXPECT_FALSE(validateAddress(TWCoinTypeZilliqa, "0x"));
     EXPECT_FALSE(validateAddress(TWCoinTypeZilliqa, ""));
