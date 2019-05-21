@@ -22,14 +22,20 @@
 #include <gtest/gtest.h>
 
 TEST(Zilliqa, Address) {
-    EXPECT_TRUE(TWZilliqaAddressIsValidString(STRING("zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6").get()));
+
+    auto string = STRING("zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6");
+    EXPECT_TRUE(TWZilliqaAddressIsValidString(string.get()));
 
     EXPECT_FALSE(TWZilliqaAddressIsValidString(STRING("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C").get()));
     EXPECT_FALSE(TWZilliqaAddressIsValidString(STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get()));
+    EXPECT_FALSE(TWZilliqaAddressCreateWithString(STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get()) != NULL);
 
-    auto address = TWZilliqaAddressCreateWithString(STRING("zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6").get());
-    auto desc = WRAPS(TWZilliqaAddressDescription(address));
+    auto address = WRAP(TWZilliqaAddress, TWZilliqaAddressCreateWithString(string.get()));
+    auto desc = WRAPS(TWZilliqaAddressDescription(address.get()));
+    auto keyHash = WRAPD(TWZilliqaAddressKeyHash(address.get()));
+
     assertStringsEqual(desc, "zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6");
+    assertHexEqual(keyHash, "ddb41006f7b6fa8e5fbf06a71c01f789febc66e8");
 }
 
 TEST(Zilliqa, Signing) {
