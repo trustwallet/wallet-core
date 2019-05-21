@@ -92,8 +92,8 @@
         "publicKeyType": "secp256k1",
         "publicKeyHasher": "sha256ripemd",
         "base58Hasher": "sha256d",
-        "xpub": "xpub",
-        "xprv": "xprv",
+        "xpub": "zpub",
+        "xprv": "zprv",
         "explorer": "https://digiexplorer.info/tx/"
     },
     {
