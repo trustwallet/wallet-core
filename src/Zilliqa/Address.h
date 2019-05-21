@@ -13,6 +13,9 @@
 
 #include <string>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+
 namespace TW::Zilliqa {
 
   static bool isValidAddress(const std::string& address) {
@@ -32,6 +35,8 @@ namespace TW::Zilliqa {
   }
 
 } // namespace TW::Zilliqa
+
+#pragma clang diagnostic pop
 
 /// Wrapper for C interface.
 struct TWZilliqaAddress {
