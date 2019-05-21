@@ -718,5 +718,17 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://www.aeknow.org/block/transaction/"
+    },
+    {
+        "id": "terra",
+        "name": "Terra",
+        "symbol": "LUNA",
+        "decimals": 6,
+        "blockchain": "Cosmos",
+        "derivationPath": "m/44'/330'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "hrp": "terra",
+        "explorer": "https://terra.stake.id/?#/tx/"
     }
 ]
