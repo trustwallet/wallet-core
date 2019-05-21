@@ -29,9 +29,11 @@ TEST(ZilliqaAddress, FromPrivateKey) {
 
 
 TEST(ZilliqaAddress, FromKeyhash) {
-   const auto hash = "0x91cdDcEBE846ce4d47712287EEe53cF17c2cfB77";
-   const auto address = Address(parse_hex(hash));
+   const auto address = Address(parse_hex("0x91cdDcEBE846ce4d47712287EEe53cF17c2cfB77"));
+   const auto address2 = Address(parse_hex("1d19918a737306218b5cbb3241fcdcbd998c3a72"));
+
    ASSERT_EQ(address.string(), "zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg");
+   ASSERT_EQ(address2.string(), "zil1r5verznnwvrzrz6uhveyrlxuhkvccwnju4aehf");
 }
 
 TEST(ZilliqaAddress, Validation) {
