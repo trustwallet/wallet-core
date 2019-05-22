@@ -42,6 +42,9 @@ class PrivateKey {
         return false;
     }
 
+    /// Determines if a collection of bytes and curve make a valid private key.
+    static bool isValid(const Data& data, TWCurve curve);
+
     /// Initializes a private key with a collection of bytes.
     template <typename T>
     explicit PrivateKey(const T& data) {

@@ -6,11 +6,17 @@
 
 #pragma once
 
-#include "../Data.h"
-#include <string>
+#include "TWBase.h"
+#include "TWData.h"
+#include "TWARKProto.h"
 
-namespace TW::Zilliqa {
+TW_EXTERN_C_BEGIN
 
-std::string checksumed(const Data& address);
+TW_EXPORT_CLASS
+struct TWARKSigner;
 
-} // namespace TW::Zilliqa
+/// Signs a transaction.
+TW_EXPORT_STATIC_METHOD
+TW_ARK_Proto_SigningOutput TWARKSignerSign(TW_ARK_Proto_SigningInput input);
+
+TW_EXTERN_C_END

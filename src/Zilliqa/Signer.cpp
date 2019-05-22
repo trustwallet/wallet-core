@@ -30,13 +30,12 @@ Data Signer::getPreImage(const Proto::SigningInput& input) noexcept {
     auto internal = ZilliqaMessage::ProtoTransactionCoreInfo();
 
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    const auto address = Address(input.to_address());
-
+    const auto address = Cosmos::Address::decode(input.to_address());
     const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     internal.set_version(input.version());
     internal.set_nonce(input.nonce());
-    internal.set_toaddr(address.bytes.data(), address.bytes.size());
+    internal.set_toaddr(address.first.keyHash.data(), address.first.keyHash.size());
 
     auto sender = new ZilliqaMessage::ByteArray();
     sender->set_data(pubKey.bytes.data(), pubKey.bytes.size());

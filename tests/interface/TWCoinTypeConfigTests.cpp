@@ -124,7 +124,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto dexon = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDEXON));
     assertStringsEqual(dexon, "DXN");
-    
+
+    auto ark = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeARK));
+    assertStringsEqual(ark, "ARK");
+
     auto mue = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonetaryUnit));
     assertStringsEqual(mue, "MUE");
 }
@@ -170,6 +173,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDEXON), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
 }
 
@@ -298,7 +302,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
     assertStringsEqual(zel, "https://explorer.zel.cash/tx/123");
-    
+
+    auto ark = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeARK, txId));
+    assertStringsEqual(ark, "https://explorer.ark.io/transaction/123");
+  
     auto mue = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonetaryUnit, txId));
     assertStringsEqual(mue, "https://explorer.monetaryunit.org/tx/123");
 }
@@ -420,7 +427,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
     assertStringsEqual(zel, "zelcash");
-    
+
+    auto ark = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeARK));
+    assertStringsEqual(ark, "ark");
+      
     auto mue = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonetaryUnit));
     assertStringsEqual(mue, "monetaryunit");
 }
@@ -545,7 +555,28 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
     assertStringsEqual(zel, "Zelcash");
-    
+
+    auto ark = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
+    assertStringsEqual(ark, "ARK");
+  
     auto mue = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonetaryUnit));
     assertStringsEqual(mue, "MonetaryUnit");
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoin));
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeLitecoin));
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereum));
+    ASSERT_EQ(TWBlockchainIoTeX, TWCoinTypeBlockchain(TWCoinTypeIoTeX));
+    ASSERT_EQ(TWBlockchainArk, TWCoinTypeBlockchain(TWCoinTypeARK));
+    ASSERT_EQ(TWBlockchainOntology, TWCoinTypeBlockchain(TWCoinTypeOntology));
+    ASSERT_EQ(TWBlockchainNEO, TWCoinTypeBlockchain(TWCoinTypeNEO));
+    ASSERT_EQ(TWBlockchainIOST, TWCoinTypeBlockchain(TWCoinTypeIOST));
+    ASSERT_EQ(TWBlockchainNULS, TWCoinTypeBlockchain(TWCoinTypeNULS));
+    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeEOS));
+    ASSERT_EQ(TWBlockchainSteem, TWCoinTypeBlockchain(TWCoinTypeSteem));
+    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeBravoCoin));
+    ASSERT_EQ(TWBlockchainNano, TWCoinTypeBlockchain(TWCoinTypeNano));
+    ASSERT_EQ(TWBlockchainSemux, TWCoinTypeBlockchain(TWCoinTypeSemux));
+    ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
 }

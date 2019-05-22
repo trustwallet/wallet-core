@@ -300,10 +300,15 @@ Script Script::buildForAddress(const std::string& string) {
         }
     } else if (Zcash::TAddress::isValid(string)) {
         auto address = Zcash::TAddress(string);
+        auto prefix = address.bytes[1];
         auto data = std::vector<uint8_t>();
         data.reserve(Address::size - 2);
         std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
-        return buildPayToPublicKeyHash(data);
+        if (prefix == TWP2PKHPrefixZcashT) {
+            return buildPayToPublicKeyHash(data);
+        } else if (prefix == TWP2SHPrefixZcashT) {
+            return buildPayToScriptHash(data);
+        }
     }
     return {};
 }

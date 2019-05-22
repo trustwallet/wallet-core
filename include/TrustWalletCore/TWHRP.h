@@ -23,6 +23,7 @@ enum TWHRP {
     TWHRPCosmos      /* "cosmos" */,
     TWHRPGroestlcoin /* "grs" */,
     TWHRPQtum        /* "qtum" */,
+    TWHRPZilliqa     /* "zilliqa" */,
 };
 
 static const char *_Nonnull HRP_BINANCE = "bnb";
@@ -33,6 +34,7 @@ static const char *_Nonnull HRP_COSMOS = "cosmos";
 static const char *_Nonnull HRP_GROESTLCOIN = "grs";
 static const char *_Nonnull HRP_VIACOIN = "via";
 static const char *_Nonnull HRP_QTUM = "qc";
+static const char *_Nonnull HRP_ZILLIQA = "zil";
 
 const char *_Nullable stringForHRP(enum TWHRP hrp);
 enum TWHRP hrpForString(const char *_Nonnull string);
