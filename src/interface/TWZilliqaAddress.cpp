@@ -37,6 +37,11 @@ struct TWZilliqaAddress *_Nullable TWZilliqaAddressCreateWithString(TWString *_N
     return new TWZilliqaAddress{ Address(dec.first.keyHash) };
 }
 
+struct TWZilliqaAddress *_Nullable TWZilliqaAddressCreateWithKeyHash(TWData *_Nonnull keyHash) {
+    auto data = reinterpret_cast<const std::vector<uint8_t>*>(keyHash);
+    return new TWZilliqaAddress{ Address(*data) };
+}
+
 struct TWZilliqaAddress *_Nonnull TWZilliqaAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
     return new TWZilliqaAddress{ Address(publicKey->impl) };
 }

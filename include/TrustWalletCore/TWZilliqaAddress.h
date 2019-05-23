@@ -30,6 +30,10 @@ bool TWZilliqaAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWZilliqaAddress *_Nullable TWZilliqaAddressCreateWithString(TWString *_Nonnull string);
 
+/// Creates an address from key hash.
+TW_EXPORT_STATIC_METHOD
+struct TWZilliqaAddress *_Nullable TWZilliqaAddressCreateWithKeyHash(TWData *_Nonnull keyHash);
+
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWZilliqaAddress *_Nonnull TWZilliqaAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
