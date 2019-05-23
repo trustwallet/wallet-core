@@ -7,6 +7,15 @@ import XCTest
 import TrustWalletCore
 
 class ZilliqaTests: XCTestCase {
+    let coin = CoinType.zilliqa
+
+    func testConfig() {
+        XCTAssertEqual(coin.hrp, .zilliqa)
+        let address1 = coin.address(string: "0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C")
+        let address2 = coin.address(string: "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz")
+
+        XCTAssertEqual(address1?.description, address2?.description)
+    }
 
     func testAddress() {
         let data = Data(hexString: "029d25b68a18442590e113132a34bb524695c4291d2c49abf2e4cdd7d98db862c3")!
