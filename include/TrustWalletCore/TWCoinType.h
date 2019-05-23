@@ -47,6 +47,7 @@ enum TWCoinType {
     TWCoinTypeNULS = 8964,
     TWCoinTypeLux = 3003,
     TWCoinTypeNano = 165,
+    TWCoinTypeNEM = 43,
     TWCoinTypeNEO = 888,
     TWCoinTypeNimiq = 242,
     TWCoinTypeOntology = 1024,

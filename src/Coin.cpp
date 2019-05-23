@@ -18,6 +18,7 @@
 #include "Iocoin/Address.h"
 #include "Nano/Address.h"
 #include "NEO/Address.h"
+#include "NEM/Address.h"
 #include "Nimiq/Address.h"
 #include "Ontology/Address.h"
 #include "Ripple/Address.h"
@@ -170,6 +171,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeARK:
         return ARK::Address::isValid(string);
+
+    case TWCoinTypeNEM:
+        return NEM::Address::isValid(string);
     }
 }
 
@@ -293,6 +297,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeARK:
         return ARK::Address(publicKey).string();
+
+    case TWCoinTypeNEM:
+        return NEM::Address(publicKey).string();
     }
 }
 
