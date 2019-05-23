@@ -604,5 +604,16 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "explorer": "https://explorer.ark.io/transaction/"
+    },
+    {
+        "id": "nem",
+        "name": "NEM",
+        "symbol": "XEM",
+        "decimals": 6,
+        "blockchain": "NEM",
+        "derivationPath": "m/44'/43'/0'/0/0",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "http://chain.nem.ninja/transfer/"
     }
 ]

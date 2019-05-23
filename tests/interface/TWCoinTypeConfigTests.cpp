@@ -127,6 +127,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
+
+    auto nem = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNEM));
+    assertStringsEqual(nem, "XEM");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -171,6 +174,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDEXON), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEM), 6);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -301,6 +305,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeARK, txId));
     assertStringsEqual(ark, "https://explorer.ark.io/transaction/123");
+
+    auto nem = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNEM, txId));
+    assertStringsEqual(nem, "http://chain.nem.ninja/transfer/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -423,6 +430,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeARK));
     assertStringsEqual(ark, "ark");
+
+    auto nem = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEM));
+    assertStringsEqual(nem, "nem");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -548,6 +558,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
+
+    auto nem = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEM));
+    assertStringsEqual(nem, "NEM");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
