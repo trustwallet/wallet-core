@@ -55,6 +55,7 @@ TWString *_Nonnull TWZilliqaAddressDescription(struct TWZilliqaAddress *_Nonnull
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
-TWData *_Nonnull TWZilliqaAddressKeyHash(struct TWZilliqaAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.keyHash.data(), address->impl.keyHash.size());
+TWString *_Nonnull TWZilliqaAddressKeyHash(struct TWZilliqaAddress *_Nonnull address) {
+    const auto string = Zilliqa::checkSum(address->impl.keyHash);
+    return TWStringCreateWithUTF8Bytes(string.c_str());
  }

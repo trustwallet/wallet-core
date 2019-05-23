@@ -20,10 +20,10 @@ class ZilliqaTests: XCTestCase {
     func testAddress() {
         let data = Data(hexString: "029d25b68a18442590e113132a34bb524695c4291d2c49abf2e4cdd7d98db862c3")!
         let pubKey = PublicKey(data: data, type: .secp256k1)!
-        let keyHash = Data(hexString: "7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C")!
+        let keyHash = "0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C"
         let address = ZilliqaAddress(publicKey: pubKey)
         let address2 = ZilliqaAddress(string: "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz")!
-        let address3 = ZilliqaAddress(keyHash: keyHash)!
+        let address3 = ZilliqaAddress(keyHash: Data(hexString: keyHash)!)!
 
         XCTAssertEqual(address.keyHash, keyHash)
         XCTAssertEqual(address.description, address2.description)
