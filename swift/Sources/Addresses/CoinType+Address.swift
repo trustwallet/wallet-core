@@ -84,7 +84,11 @@ public extension CoinType {
         case .ioTeX:
             return IoTeXAddress(string: string)
         case .zilliqa:
-            return ZilliqaAddress(string: string)
+            if string.starts(with: "0x"), let keyHash = Data(hexString: string) {
+                return ZilliqaAddress(keyHash: keyHash)
+            } else {
+                return ZilliqaAddress(string: string)
+            }
         case .semux:
             return SemuxAddress(string: string)
         case .ark:
@@ -142,6 +146,8 @@ public extension CoinType {
             return .viacoin
         case .qtum:
             return .qtum
+        case .zilliqa:
+            return .zilliqa
         default:
             return HRP.unknown
         }
