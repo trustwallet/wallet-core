@@ -251,7 +251,7 @@ public final class KeyStore {
         defer {
             privateKeyData.resetBytes(in: 0 ..< privateKeyData.count)
         }
-        
+
         let coins = wallet.accounts.map({ $0.coin })
         guard !coins.isEmpty else {
             throw Error.accountNotFound
