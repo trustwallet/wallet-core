@@ -3,6 +3,7 @@
 //
 
 #include "Signer.h"
+#include "Base64.h"
 #include "../Cosmos/Signer.h"
 #include <google/protobuf/util/json_util.h>
 
@@ -17,17 +18,18 @@ enum StringSignErrorCode {
 
 Proto::SigningOutput Signer::sign(TWCoinType coinType, const std::string &transaction,
                                   const std::string &privateKey) const noexcept {
-    auto protoOutput = Proto::SigningOutput();
+    auto output = Proto::SigningOutput();
+    auto privateKeyData = TW::Base64::decode(privateKey);
 
     switch (coinType)
     {
         case TWCoinTypeCosmos: {
             TW::Cosmos::Proto::SigningInput input;
-            parse(transaction, &input, protoOutput);
-            if (!protoOutput.has_error()) {
-                input.set_private_key(privateKey);
-                auto output = TW::Cosmos::Signer(std::move(input)).build();
-                protoOutput.set_json(output.json());
+            parse(transaction, &input, output);
+            if (!output.has_error()) {
+                input.set_private_key(privateKeyData.data(), privateKeyData.size());
+                auto signerOutput = TW::Cosmos::Signer(std::move(input)).build();
+                output.set_json(signerOutput.json());
             }
             break;
         }
@@ -35,8 +37,10 @@ Proto::SigningOutput Signer::sign(TWCoinType coinType, const std::string &transa
             auto error = Proto::SigningOutput_Error();
             error.set_code(StringSignErrorCodeNotSupported);
             error.set_description("Network not supported");
-            protoOutput.set_allocated_error(&error);
+            output.set_allocated_error(&error);
     }
+
+    return output;
 }
 
 void Signer::parse(const std::string &transaction, google::protobuf::Message *message,
