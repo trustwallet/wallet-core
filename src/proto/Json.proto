@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package TW.Json.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message SigningOutput {
+    message Error {
+        uint32 code = 1;
+        string description = 2;
+    }
+
+    oneof output {
+        Error error = 1;
+        string json = 2;
+        string encoded = 3;
+    }
+}
