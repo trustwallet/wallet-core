@@ -65,6 +65,20 @@ TEST(IoTeXAddress, FromPrivateKey) {
     }, std::invalid_argument);
 }
 
+TEST(IoTeXAddress, EthConformance) {
+    // private key coming from /tests/Ethereum/AddressTests.cpp
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
+    const auto address = Address(publicKey);
+
+    // key hash coming from /tests/Ethereum/AddressTests.cpp
+    const auto keyHash = parse_hex("Ac1ec44E4f0ca7D172B7803f6836De87Fb72b309");
+    const auto address1 = Address(keyHash);
+
+    ASSERT_EQ(address.string(), "io14s0vgnj0pjnazu4hsqlksdk7slah9vcfscn9ks");
+    ASSERT_EQ(address1.string(), "io14s0vgnj0pjnazu4hsqlksdk7slah9vcfscn9ks");
+}
+
 TEST(IoTeXAddress, FromKeyHash) {
     const auto keyHash = parse_hex("3f9c20bcec9de520d88d98cbe07ee7b5ded0dac4");
     const auto address = Address(keyHash);
