@@ -264,7 +264,7 @@ public final class KeyStore {
         } else {
             throw Error.invalidKey
         }
-        
+
         _ = try wallets[index].getAccounts(password: newPassword, coins: coins)
     }
 
