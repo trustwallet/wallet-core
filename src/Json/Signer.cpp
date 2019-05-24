@@ -11,11 +11,6 @@ using namespace TW;
 using namespace TW::Json;
 using namespace google::protobuf::util;
 
-enum StringSignErrorCode {
-    StringSignErrorCodeNotSupported = 1,
-    StringSignErrorCodeJsonParseError = 2,
-};
-
 Proto::SigningOutput Signer::sign(TWCoinType coinType, const std::string &transaction,
                                   const std::string &privateKey) const noexcept {
     auto output = Proto::SigningOutput();
@@ -34,10 +29,10 @@ Proto::SigningOutput Signer::sign(TWCoinType coinType, const std::string &transa
             break;
         }
         default:
-            auto error = Proto::SigningOutput_Error();
-            error.set_code(StringSignErrorCodeNotSupported);
-            error.set_description("Network not supported");
-            output.set_allocated_error(&error);
+            auto error = new Proto::SigningOutput_Error();
+            error->set_code(JsonSignErrorCodeNotSupported);
+            error->set_description("Network not supported");
+            output.set_allocated_error(error);
     }
 
     return output;
@@ -52,9 +47,9 @@ void Signer::parse(const std::string &transaction, google::protobuf::Message *me
     auto result = JsonStringToMessage(transaction, message, options);
 
     if (!result.ok()) {
-        auto error = Proto::SigningOutput_Error();
-        error.set_code(StringSignErrorCodeJsonParseError);
-        error.set_description(result.error_message());
-        output.set_allocated_error(&error);
+        auto error = new Proto::SigningOutput_Error();
+        error->set_code(JsonSignErrorCodeJsonParseError);
+        error->set_description(result.error_message());
+        output.set_allocated_error(error);
     }
 }

@@ -7,6 +7,11 @@
 #include "../PrivateKey.h"
 #include "../proto/Json.pb.h"
 
+enum JsonSignErrorCode {
+    JsonSignErrorCodeNotSupported = 1,
+    JsonSignErrorCodeJsonParseError = 2,
+};
+
 namespace TW::Json {
 /// Helper class to perform json signing
 class Signer {
