@@ -61,9 +61,9 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
     case TWPublicKeyTypeNIST256p1Extended:
         return ecdsa_verify_digest(&nist256p1, bytes.data(), signature.data(), message.data()) == 0;
     case TWPublicKeyTypeED25519:
-        return ed25519_sign_open(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
+        return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeED25519Blake2b:
-        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data() + 1, signature.data()) == 0;
+        return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     }
 }
 
