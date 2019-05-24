@@ -82,13 +82,17 @@ class KeyStoreTests: XCTestCase {
 
     func testUpdateKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
-        let wallet = keyStore.keyWallet!
-        try keyStore.update(wallet: wallet, password: "testpassword", newPassword: "password")
-        let data = wallet.key.decryptPrivateKey(password: "password")
-        let privateKey = PrivateKey(data: data!)
-
+        let wallet = try keyStore.createWallet(name: "name", password: "password", coins: [.ethereum, .callisto, .poanetwork])
+        
+        try keyStore.update(wallet: wallet, password: "password", newPassword: "testpassword")
+        
+        let data = wallet.key.decryptPrivateKey(password: "testpassword")
+        let mnemonic = String(data: data!, encoding: .ascii)
+        
+        XCTAssertEqual(wallet.accounts.count, 3)
         XCTAssertNotNil(data)
-        XCTAssertNotNil(privateKey)
+        XCTAssertNotNil(mnemonic)
+        XCTAssert(HDWallet.isValid(mnemonic: mnemonic!))
     }
 
     func testAddAccounts() throws {
