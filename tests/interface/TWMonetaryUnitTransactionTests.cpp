@@ -33,7 +33,6 @@ using namespace Bitcoin;
 TEST(MonetaryUnitTransaction, SignTransaction) {
     const int64_t utxo_amount = 336855835;
     const int64_t amount = 236853579;
-    const int64_t fee = 2256;
     
     auto input = Bitcoin::Proto::SigningInput();
     input.set_hash_type(TWSignatureHashTypeFork | TWSignatureHashTypeAll);
