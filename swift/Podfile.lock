@@ -1,16 +1,20 @@
 PODS:
+  - SwiftLint (0.32.0)
   - SwiftProtobuf (1.5.0)
 
 DEPENDENCIES:
+  - SwiftLint
   - SwiftProtobuf (~> 1.5.0)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
+    - SwiftLint
     - SwiftProtobuf
 
 SPEC CHECKSUMS:
+  SwiftLint: 009a898ef2a1c851f45e1b59349bf6ff2ddc990d
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
 
-PODFILE CHECKSUM: db6188a3c50d568fcf19b1eb4229416872b98070
+PODFILE CHECKSUM: cbcc5bab5b64fa9f7863e62cc106d25d3fc1dfc5
 
 COCOAPODS: 1.6.1

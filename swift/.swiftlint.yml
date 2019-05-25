@@ -1,0 +1,27 @@
+disabled_rules:
+  - identifier_name
+  - cyclomatic_complexity
+opt_in_rules:
+included:
+  - Sources/ 
+excluded:
+  - Sources/Generated/
+function_parameter_count:
+  warning: 10
+  error: 15
+line_length:
+  warning: 180
+  error: 250
+large_tuple:
+  warning: 4
+type_body_length:
+  warning: 300
+  error: 350
+function_body_length: 80
+file_length:
+  warning: 400
+  error: 800
+trailing_comma:
+  mandatory_comma: true
+reporter: "xcode"
+
