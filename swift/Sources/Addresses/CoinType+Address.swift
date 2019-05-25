@@ -12,7 +12,8 @@ public extension CoinType {
         switch self {
         case .binance, .cosmos:
             if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
-        case .bitcoin, .litecoin, .viacoin, .qtum:
+        case .bitcoin, .litecoin,
+             .viacoin, .qtum:
             if let addr = SegwitAddress(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
@@ -22,18 +23,12 @@ public extension CoinType {
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .dash, .dogecoin, .zcoin, .lux:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
-        case .callisto,
-             .ellaism,
-             .ethereum,
-             .ethereumClassic,
-             .ethersocial,
-             .goChain,
-             .poanetwork,
-             .theta,
-             .thunderToken,
-             .tomoChain,
-             .veChain,
-             .xdai,
+        case .callisto, .ellaism,
+             .ethereum, .ethereumClassic,
+             .ethersocial, .goChain,
+             .poanetwork, .theta,
+             .thunderToken, .tomoChain,
+             .veChain, .xdai,
              .dexon:
             return EthereumAddress(string: string)
         case .wanchain:

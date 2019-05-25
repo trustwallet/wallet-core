@@ -37,6 +37,10 @@ targets:
       gatherCoverageData: true
     settings:
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
+    postCompileScripts:
+      - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml
+        name: SwiftLint
+
   TrustWalletCoreTests:
     type: bundle.unit-test
     platform: iOS
