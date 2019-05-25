@@ -12,7 +12,8 @@ public extension CoinType {
         switch self {
         case .binance, .cosmos:
             if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
-        case .bitcoin, .litecoin, .viacoin, .qtum:
+        case .bitcoin, .litecoin,
+             .viacoin, .qtum:
             if let addr = SegwitAddress(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
@@ -22,18 +23,12 @@ public extension CoinType {
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         case .dash, .dogecoin, .zcoin, .lux, .monetaryUnit:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
-        case .callisto,
-             .ellaism,
-             .ethereum,
-             .ethereumClassic,
-             .ethersocial,
-             .goChain,
-             .poanetwork,
-             .theta,
-             .thunderToken,
-             .tomoChain,
-             .veChain,
-             .xdai,
+        case .callisto, .ellaism,
+             .ethereum, .ethereumClassic,
+             .ethersocial, .goChain,
+             .poanetwork, .theta,
+             .thunderToken, .tomoChain,
+             .veChain, .xdai,
              .dexon:
             return EthereumAddress(string: string)
         case .wanchain:
@@ -84,7 +79,11 @@ public extension CoinType {
         case .ioTeX:
             return IoTeXAddress(string: string)
         case .zilliqa:
-            return ZilliqaAddress(string: string)
+            if string.starts(with: "0x"), let keyHash = Data(hexString: string) {
+                return ZilliqaAddress(keyHash: keyHash)
+            } else {
+                return ZilliqaAddress(string: string)
+            }
         case .semux:
             return SemuxAddress(string: string)
         case .ark:
@@ -144,6 +143,8 @@ public extension CoinType {
             return .viacoin
         case .qtum:
             return .qtum
+        case .zilliqa:
+            return .zilliqa
         default:
             return HRP.unknown
         }
