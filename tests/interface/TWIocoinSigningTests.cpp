@@ -15,7 +15,6 @@
 #include "proto/Iocoin.pb.h"
 #include "TWTestUtilities.h"
 #include "Iocoin/Address.h"
-#include <TrustWalletCore/TWBech32Address.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWBitcoinTransactionSigner.h>
 #include <TrustWalletCore/TWHash.h>
