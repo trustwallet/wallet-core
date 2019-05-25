@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include "../Coin.h"
-#include "../PrivateKey.h"
 #include "../proto/Json.pb.h"
 
 enum JsonSignErrorCode {
@@ -19,7 +17,11 @@ namespace TW::Json {
 /// Helper class to perform json signing
 class Signer {
 public:
-    Proto::SigningOutput sign(TWCoinType coinType, const std::string &transaction, const std::string &privateKey) const noexcept;
+    const Proto::SigningInput& input;
+
+    explicit Signer(const Proto::SigningInput& input) : input(input) {}
+
+    Proto::SigningOutput sign() const noexcept;
 private:
     void parse(const std::string &transaction, google::protobuf::Message *message, Proto::SigningOutput &output) const noexcept;
 };

@@ -4,28 +4,34 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWCoinType.h>
+#include <google/protobuf/util/json_util.h>
+
 #include "Signer.h"
 #include "Base64.h"
+#include "Data.h"
+#include "PrivateKey.h"
 #include "../Cosmos/Signer.h"
-#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 using namespace TW::Json;
 using namespace google::protobuf::util;
 
-Proto::SigningOutput Signer::sign(TWCoinType coinType, const std::string &transaction,
-                                  const std::string &privateKey) const noexcept {
+Proto::SigningOutput Signer::sign() const noexcept {
+    const auto coinType = (TWCoinType) input.network();
+    const auto transaction = input.transaction();
+    const auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+
     auto output = Proto::SigningOutput();
-    auto privateKeyData = TW::Base64::decode(privateKey);
 
     switch (coinType)
     {
         case TWCoinTypeCosmos: {
-            TW::Cosmos::Proto::SigningInput input;
-            parse(transaction, &input, output);
+            TW::Cosmos::Proto::SigningInput message;
+            parse(transaction, &message, output);
             if (!output.has_error()) {
-                input.set_private_key(privateKeyData.data(), privateKeyData.size());
-                auto signerOutput = TW::Cosmos::Signer(std::move(input)).build();
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = TW::Cosmos::Signer(std::move(message)).build();
                 output.set_json(signerOutput.json());
             }
             break;
@@ -40,8 +46,8 @@ Proto::SigningOutput Signer::sign(TWCoinType coinType, const std::string &transa
     return output;
 }
 
-void Signer::parse(const std::string &transaction, google::protobuf::Message *message,
-                   TW::Json::Proto::SigningOutput &output) const noexcept {
+void Signer::parse(const std::string& transaction, google::protobuf::Message* message,
+                   TW::Json::Proto::SigningOutput& output) const noexcept {
     JsonParseOptions options;
     options.case_insensitive_enum_parsing = true;
     options.ignore_unknown_fields = true;

@@ -4,22 +4,27 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWJsonSigner.h>
-#include <string>
+#include <TrustWalletCore/TWCoinType.h>
 
 #include "../proto/Json.pb.h"
-
-#include "Data.h"
+#include "../Json/Signer.h"
+#include "PrivateKey.h"
 #include "Coin.h"
 
 using namespace TW;
 using namespace TW::Json;
 using namespace TW::Json::Proto;
-using namespace google::protobuf::util;
 
-
-TW_Json_Proto_SigningOutput TWJsonSignerSign(enum TWCoinType coin, TWString *_Nonnull transaction, TWString *_Nonnull privateKey)
+TW_Json_Proto_SigningOutput TWJsonSignerSign(TW_Json_Proto_SigningInput data)
 {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
+    auto privateKey = PrivateKey(input.private_key());
+    auto signer = new TWJsonSigner{ Signer(input) };
+    Proto::SigningOutput output = signer->impl.sign();
+
+    auto serialized = output.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
