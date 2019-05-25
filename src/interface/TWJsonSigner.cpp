@@ -5,23 +5,17 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWJsonSigner.h>
-#include <TrustWalletCore/TWCoinType.h>
 
-#include "../proto/Json.pb.h"
-#include "../Json/Signer.h"
-#include "PrivateKey.h"
-#include "Coin.h"
+#include "Json/Signer.h"
 
 using namespace TW;
 using namespace TW::Json;
-using namespace TW::Json::Proto;
 
 TW_Json_Proto_SigningOutput TWJsonSignerSign(TW_Json_Proto_SigningInput data)
 {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto privateKey = PrivateKey(input.private_key());
     auto signer = new TWJsonSigner{ Signer(input) };
     Proto::SigningOutput output = signer->impl.sign();
 

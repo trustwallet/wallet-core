@@ -3,19 +3,15 @@
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
-
-#include <TrustWalletCore/TWCoinType.h>
-#include <gtest/gtest.h>
-#include <google/protobuf/util/json_util.h>
-#include <stdexcept>
-
 #include "./Json/Signer.h"
-#include "PrivateKey.h"
+#include "Coin.h"
 #include "Base64.h"
+
+#include <stdexcept>
+#include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Json;
-using namespace google::protobuf::util;
 
 TEST(JsonSigner, CosmosTransactionSign) {
     auto transaction = "{\"accountNumber\":\"8733\",\"chainId\":\"cosmoshub-2\",\"fee\":{\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"5000\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"sendCoinsMessage\":{\"fromAddress\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"toAddress\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\",\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"995000\"}]}}";

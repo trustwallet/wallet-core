@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../proto/Json.pb.h"
+#include "proto/Json.pb.h"
 
 enum JsonSignErrorCode {
     JsonSignErrorCodeNotSupported = 1,
