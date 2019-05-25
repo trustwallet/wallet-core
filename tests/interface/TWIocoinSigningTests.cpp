@@ -27,7 +27,7 @@ using namespace TW::Iocoin;
 
 TEST(IocoinSigner, KeyTest) {
   auto  privateKey = PrivateKey(parse_hex("6a8e59ea2d81bf4b83db2783643a709d2eb68871e1da7f5637ce3f68a1bc9918"));
-	const auto publicKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
+	const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     const auto address = TW::Iocoin::Address(publicKey, 0x67);
     ASSERT_EQ(address.string(), "iWDSWNtGwcGAsaQPdJtu5STX8wVz5THTd2"); 
@@ -71,7 +71,7 @@ input.set_change_address("imoDDjYUVZa5fJadaLjsENNS6nunGTo5AD");
  input.set_time(1558212449);
  auto  utxoKey = parse_hex("36c39b26f6c5481d99056482d3a3698d41ea1dca342ae486e004d5f890f0c101");
   auto  privateKey = PrivateKey(utxoKey);
- const auto publicKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
+ const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
  const auto address = TW::Iocoin::Address(publicKey, 0x67);
  ASSERT_EQ(address.string(), "iWwzWG5BqGfNHWmBodsGtKzXjFNNUmQ7TN"); 
@@ -103,7 +103,7 @@ input.set_change_address("ieAeT6f4PnBeCYCZeQrhsGEph5wGpg15Tk");
  input.set_time(1558307035);
  auto  utxoKey = parse_hex("5f65dac0c634e78fe0d84e96278449385b47d44a431a8bf96f054f0b553d085e");
   auto  privateKey = PrivateKey(utxoKey);
- const auto publicKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
+ const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
  const auto address = TW::Iocoin::Address(publicKey, 0x67);
  ASSERT_EQ(address.string(), "iX52LUtQiFMTW5nqEPg9wNCxS5X6yQtgu8"); 
@@ -138,7 +138,7 @@ input.set_change_address("ibPvdeVwmpeyVLsk4p4n5ngCPdzF24S9kg");
 
  auto  utxoKey1 = parse_hex("18702dcddff023581b9ef2b84864af50d3974066dfc56c21fa6dee637245698b");
   auto  privateKey1 = PrivateKey(utxoKey1);
- const auto publicKey1 = privateKey1.getPublicKey(PublicKeyType::secp256k1);
+ const auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
  const auto address1 = TW::Iocoin::Address(publicKey1, 0x67);
  ASSERT_EQ(address1.string(), "ieAeT6f4PnBeCYCZeQrhsGEph5wGpg15Tk"); 
  input.add_private_key(utxoKey1.data(), utxoKey1.size());
@@ -153,7 +153,7 @@ input.set_change_address("ibPvdeVwmpeyVLsk4p4n5ngCPdzF24S9kg");
 
  auto  utxoKey2 = parse_hex("0b97a9a5f658c52bb0897e1b9edb5f8d5cc61fdabb38fdf628113707bf69714c");
   auto  privateKey2 = PrivateKey(utxoKey2);
- const auto publicKey2 = privateKey2.getPublicKey(PublicKeyType::secp256k1);
+ const auto publicKey2 = privateKey2.getPublicKey(TWPublicKeyTypeSECP256k1);
  const auto address2 = TW::Iocoin::Address(publicKey2, 0x67);
 ASSERT_EQ(address2.string(), "iaRR5dtiFb2TLrYk6ok6bUsULx8jze2DFA"); 
   input.add_private_key(utxoKey2.data(), utxoKey2.size());
@@ -168,7 +168,7 @@ ASSERT_EQ(address2.string(), "iaRR5dtiFb2TLrYk6ok6bUsULx8jze2DFA");
 
  auto  utxoKey3 = parse_hex("e648eb192038fff1dc5371606eb7d117fe4c3455c039d16e331fe8d8cf51d6de");
   auto  privateKey3 = PrivateKey(utxoKey3);
- const auto publicKey3 = privateKey3.getPublicKey(PublicKeyType::secp256k1);
+ const auto publicKey3 = privateKey3.getPublicKey(TWPublicKeyTypeSECP256k1);
  const auto address3 = TW::Iocoin::Address(publicKey3, 0x67);
  ASSERT_EQ(address3.string(), "iW9UPDmw2u25TCzGpvYsp1otiGV9ZLhNNw"); 
   input.add_private_key(utxoKey3.data(), utxoKey3.size());
@@ -201,7 +201,7 @@ TEST(IocoinSigning, SignP2PKH_5) {
 
   auto utxoKey1 = parse_hex("cc4f404144cfb7512a2570648a5a1418a52760c7a18bdbe17a155b1fecf838e9");
   auto  privateKey1 = PrivateKey(utxoKey1);
-  const auto publicKey1 = privateKey1.getPublicKey(PublicKeyType::secp256k1);
+  const auto publicKey1 = privateKey1.getPublicKey(TWPublicKeyTypeSECP256k1);
   const auto address1 = TW::Iocoin::Address(publicKey1, 0x67);
   ASSERT_EQ(address1.string(), "icktHUr4KZLNrhBHmpvHazmLKpFuSjyEXD"); 
 
@@ -217,7 +217,7 @@ TEST(IocoinSigning, SignP2PKH_5) {
 
   auto utxoKey2 = parse_hex("0108ab5536142a64f67682311afd3add5ccf064c1607e84f905b3300cc2f1769");
   auto  privateKey2 = PrivateKey(utxoKey2);
-  const auto publicKey2 = privateKey2.getPublicKey(PublicKeyType::secp256k1);
+  const auto publicKey2 = privateKey2.getPublicKey(TWPublicKeyTypeSECP256k1);
   const auto address2 = TW::Iocoin::Address(publicKey2, 0x67);
   ASSERT_EQ(address2.string(), "ihYvDKcnroAzREPb92A7k4zcYghxgUq2mb"); 
 
@@ -233,7 +233,7 @@ TEST(IocoinSigning, SignP2PKH_5) {
 
   auto utxoKey3 = parse_hex("76133ba9bf2847140560ee516d0ddc8909aec8098a609feb9ce807bb8e5d53ab");
   auto  privateKey3 = PrivateKey(utxoKey3);
-  const auto publicKey3 = privateKey3.getPublicKey(PublicKeyType::secp256k1);
+  const auto publicKey3 = privateKey3.getPublicKey(TWPublicKeyTypeSECP256k1);
   const auto address3 = TW::Iocoin::Address(publicKey3, 0x67);
   ASSERT_EQ(address3.string(), "idGY3z15RCN2fvEPkGDbEBduXpbJrJkCau"); 
 
