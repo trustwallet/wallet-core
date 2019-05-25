@@ -145,7 +145,7 @@ public final class KeyStore {
         }
         let url = makeAccountURL()
         let wallet = Wallet(keyURL: url, key: newKey)
-        let _ = try wallet.getAccount(password: password, coin: coin)
+        _ = try wallet.getAccount(password: password, coin: coin)
         wallets.append(wallet)
 
         try save(wallet: wallet)
@@ -324,6 +324,10 @@ public final class KeyStore {
         }
 
         let components = Calendar(identifier: .iso8601).dateComponents(in: timeZone, from: date)
-        return String(format: "%04d-%02d-%02dT%02d-%02d-%02d.%09d%@", components.year!, components.month!, components.day!, components.hour!, components.minute!, components.second!, components.nanosecond!, tz)
+        return String(format: "%04d-%02d-%02dT%02d-%02d-%02d.%09d%@",
+                      components.year!, components.month!,
+                      components.day!, components.hour!,
+                      components.minute!, components.second!,
+                      components.nanosecond!, tz)
     }
 }
