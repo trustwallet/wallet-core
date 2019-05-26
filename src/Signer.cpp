@@ -22,7 +22,7 @@ using namespace TW;
 using namespace google::protobuf;
 
 Proto::SigningOutput Signer::sign() const noexcept {
-    const auto coinType = (TWCoinType) input.network();
+    const auto coinType = (TWCoinType) input.coin_type();
     const auto transaction = input.transaction();
     const auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 

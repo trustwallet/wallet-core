@@ -19,7 +19,7 @@ TEST(Signer, CosmosTransactionSign) {
     auto input = Proto::SigningInput();
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_transaction(transaction);
-    input.set_network(TWCoinTypeCosmos);
+    input.set_coin_type(TWCoinTypeCosmos);
 
     auto signer = Signer(input);
     auto output = signer.sign();
@@ -36,7 +36,7 @@ TEST(Signer, NetworkNotSupported) {
     auto input = Proto::SigningInput();
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_transaction(transaction);
-    input.set_network(TWCoinTypeBitcoinCash);
+    input.set_coin_type(TWCoinTypeBitcoinCash);
 
     auto signer = Signer(input);
     auto output = signer.sign();
@@ -52,7 +52,7 @@ TEST(Signer, InvalidJsonFormat) {
     auto input = Proto::SigningInput();
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_transaction(transaction);
-    input.set_network(TWCoinTypeCosmos);
+    input.set_coin_type(TWCoinTypeCosmos);
 
     auto signer = Signer(input);
     auto output = signer.sign();
