@@ -3,7 +3,8 @@
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
-#include "./Json/Signer.h"
+
+#include "Signer.h"
 #include "Coin.h"
 #include "Base64.h"
 
@@ -11,9 +12,8 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Json;
 
-TEST(JsonSigner, CosmosTransactionSign) {
+TEST(Signer, CosmosTransactionSign) {
     auto transaction = "{\"accountNumber\":\"8733\",\"chainId\":\"cosmoshub-2\",\"fee\":{\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"5000\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"sendCoinsMessage\":{\"fromAddress\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"toAddress\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\",\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"995000\"}]}}";
     auto privateKey = Base64::decode("ybCic4MZMapKX40aVw1QId2pHTMZvTgZvs2qv7e0Tjs=");
     auto input = Proto::SigningInput();
@@ -21,7 +21,7 @@ TEST(JsonSigner, CosmosTransactionSign) {
     input.set_transaction(transaction);
     input.set_network(TWCoinTypeCosmos);
 
-    auto signer = TW::Json::Signer(input);
+    auto signer = Signer(input);
     auto output = signer.sign();
 
     ASSERT_FALSE(output.has_error());
@@ -30,7 +30,7 @@ TEST(JsonSigner, CosmosTransactionSign) {
             output.json());
 }
 
-TEST(JsonSigner, NetworkNotSupported) {
+TEST(Signer, NetworkNotSupported) {
     auto transaction = "{\"accountNumber\":\"8733\",\"chainId\":\"cosmoshub-2\",\"fee\":{\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"5000\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"sendCoinsMessage\":{\"fromAddress\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"toAddress\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\",\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"995000\"}]}}";
     auto privateKey = Base64::decode("ybCic4MZMapKX40aVw1QId2pHTMZvTgZvs2qv7e0Tjs=");
     auto input = Proto::SigningInput();
@@ -38,7 +38,7 @@ TEST(JsonSigner, NetworkNotSupported) {
     input.set_transaction(transaction);
     input.set_network(TWCoinTypeBitcoinCash);
 
-    auto signer = TW::Json::Signer(input);
+    auto signer = Signer(input);
     auto output = signer.sign();
 
     ASSERT_TRUE(output.has_error());
@@ -46,7 +46,7 @@ TEST(JsonSigner, NetworkNotSupported) {
     ASSERT_EQ("Network not supported", output.error().description());
 }
 
-TEST(JsonSigner, InvalidJsonFormat) {
+TEST(Signer, InvalidJsonFormat) {
     auto transaction = "{\"accountNumber\":\"8733\"\"chainId\":\"cosmoshub-2\"}";
     auto privateKey = Base64::decode("ybCic4MZMapKX40aVw1QId2pHTMZvTgZvs2qv7e0Tjs=");
     auto input = Proto::SigningInput();
@@ -54,7 +54,7 @@ TEST(JsonSigner, InvalidJsonFormat) {
     input.set_transaction(transaction);
     input.set_network(TWCoinTypeCosmos);
 
-    auto signer = TW::Json::Signer(input);
+    auto signer = Signer(input);
     auto output = signer.sign();
 
     ASSERT_TRUE(output.has_error());

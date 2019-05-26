@@ -8,12 +8,11 @@
 #include "Coin.h"
 #include "PrivateKey.h"
 #include "Signer.h"
-#include "../Cosmos/Signer.h"
+#include "Cosmos/Signer.h"
 
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
-using namespace TW::Json;
 using namespace google::protobuf;
 
 Proto::SigningOutput Signer::sign() const noexcept {

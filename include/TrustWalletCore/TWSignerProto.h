@@ -8,5 +8,5 @@
 
 #include "TWData.h"
 
-typedef TWData *_Nonnull TW_Json_Proto_SigningInput;
-typedef TWData *_Nonnull TW_Json_Proto_SigningOutput;
+typedef TWData *_Nonnull TW_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Proto_SigningOutput;

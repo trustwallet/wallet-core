@@ -4,14 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWJsonSigner.h>
+#include <TrustWalletCore/TWSigner.h>
 
-#include "Json/Signer.h"
+#include "Signer.h"
 
 using namespace TW;
-using namespace TW::Json;
 
-TW_Json_Proto_SigningOutput TWJsonSignerSign(TW_Json_Proto_SigningInput data)
+TW_Proto_SigningOutput TSignerSign(TW_Proto_SigningInput data)
 {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
