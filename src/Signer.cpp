@@ -57,8 +57,10 @@ Proto::SigningOutput Signer::sign() const noexcept {
             if (!output.has_error()) {
                 message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                 auto signerOutput = Ethereum::Signer(load(message.chain_id())).sign(message);
-                output.set_encoded(signerOutput.encoded());
+                auto encoded = signerOutput.encoded();
+                output.set_encoded(hex(encoded.begin(), encoded.end()));
             }
+            break;
         }
         default:
             auto error = new Proto::SigningOutput_Error();

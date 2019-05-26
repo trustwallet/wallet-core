@@ -45,6 +45,22 @@ TEST(Signer, BinanceTransactionSign) {
             output.encoded());
 }
 
+TEST(Signer, EthereumTransactionSign) {
+    auto transaction = "{\"chainId\":\"AQ==\",\"gasPrice\":\"1pOkAA==\",\"gasLimit\":\"Ugg=\",\"toAddress\":\"0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1\",\"amount\":\"A0i8paFgAA==\"}";
+    auto input = Proto::SigningInput();
+    input.set_private_key("17209af590a86462395d5881e60d11c7fa7d482cfb02b5a01b93c2eeef243543");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeEthereum);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_FALSE(output.has_error());
+    ASSERT_EQ("", output.json());
+    ASSERT_EQ("f86a8084d693a400825208947d8bf18c7ce84b3e175b339c4ca93aed1dd166f1870348bca5a160008025a0fe5802b49e04c6b1705088310e133605ed8b549811a18968ad409ea02ad79f21a05bf845646fb1e1b9365f63a7fd5eb5e984094e3ed35c3bed7361aebbcbf41f10",
+              output.encoded());
+}
+
 TEST(Signer, NetworkNotSupported) {
     auto transaction = "{\"accountNumber\":\"8733\",\"chainId\":\"cosmoshub-2\",\"fee\":{\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"5000\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"sendCoinsMessage\":{\"fromAddress\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"toAddress\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\",\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"995000\"}]}}";
     auto input = Proto::SigningInput();
