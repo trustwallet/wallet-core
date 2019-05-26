@@ -8,7 +8,7 @@
 #include "Coin.h"
 #include "PrivateKey.h"
 #include "Signer.h"
-#include "Base64.h"
+#include "HexCoding.h"
 #include "Cosmos/Signer.h"
 #include "Binance/Signer.h"
 #include "Ethereum/Signer.h"
@@ -24,7 +24,8 @@ using namespace google::protobuf;
 Proto::SigningOutput Signer::sign() const noexcept {
     const auto coinType = (TWCoinType) input.coin_type();
     const auto transaction = input.transaction();
-    const auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    const auto privateKeyData = parse_hex(input.private_key());
+    const auto privateKey = PrivateKey(privateKeyData);
 
     auto output = Proto::SigningOutput();
 

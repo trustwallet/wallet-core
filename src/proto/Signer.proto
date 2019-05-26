@@ -8,8 +8,8 @@ message SigningInput {
     uint32 coin_type   = 1;
     // JSON transaction
     string transaction = 2;
-    // Private Key
-    bytes  private_key = 3;
+    // Private Key in HEX format
+    string  private_key = 3;
 }
 
 message SigningOutput {

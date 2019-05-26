@@ -15,7 +15,7 @@ namespace TW {
 using byte = std::uint8_t;
 using Data = std::vector<byte>;
 
-inline Data create(const std::string& data) {
+inline Data data(const std::string& data) {
     return std::vector<byte>(data.begin(), data.end());
 }
 

@@ -15,9 +15,8 @@ using namespace TW;
 
 TEST(Signer, CosmosTransactionSign) {
     auto transaction = "{\"accountNumber\":\"8733\",\"chainId\":\"cosmoshub-2\",\"fee\":{\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"5000\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"sendCoinsMessage\":{\"fromAddress\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"toAddress\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\",\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"995000\"}]}}";
-    auto privateKey = Base64::decode("ybCic4MZMapKX40aVw1QId2pHTMZvTgZvs2qv7e0Tjs=");
     auto input = Proto::SigningInput();
-    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeCosmos);
 
@@ -32,9 +31,8 @@ TEST(Signer, CosmosTransactionSign) {
 
 TEST(Signer, NetworkNotSupported) {
     auto transaction = "{\"accountNumber\":\"8733\",\"chainId\":\"cosmoshub-2\",\"fee\":{\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"5000\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"sendCoinsMessage\":{\"fromAddress\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"toAddress\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\",\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"995000\"}]}}";
-    auto privateKey = Base64::decode("ybCic4MZMapKX40aVw1QId2pHTMZvTgZvs2qv7e0Tjs=");
     auto input = Proto::SigningInput();
-    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeBitcoinCash);
 
@@ -48,9 +46,8 @@ TEST(Signer, NetworkNotSupported) {
 
 TEST(Signer, InvalidJsonFormat) {
     auto transaction = "{\"accountNumber\":\"8733\"\"chainId\":\"cosmoshub-2\"}";
-    auto privateKey = Base64::decode("ybCic4MZMapKX40aVw1QId2pHTMZvTgZvs2qv7e0Tjs=");
     auto input = Proto::SigningInput();
-    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeCosmos);
 
