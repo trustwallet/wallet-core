@@ -8,9 +8,9 @@
 
 #include "proto/Signer.pb.h"
 
-enum JsonSignErrorCode {
-    JsonSignErrorCodeNotSupported = 1,
-    JsonSignErrorCodeJsonParseError = 2,
+enum SignerErrorCode {
+    SignerErrorCodeNotSupported = 1,
+    SignerErrorCodeInvalidJson = 2,
 };
 
 namespace TW {

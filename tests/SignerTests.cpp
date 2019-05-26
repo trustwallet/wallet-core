@@ -42,7 +42,7 @@ TEST(Signer, NetworkNotSupported) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.has_error());
-    ASSERT_EQ(JsonSignErrorCodeNotSupported, output.error().code());
+    ASSERT_EQ(SignerErrorCodeNotSupported, output.error().code());
     ASSERT_EQ("Network not supported", output.error().description());
 }
 
@@ -58,5 +58,5 @@ TEST(Signer, InvalidJsonFormat) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.has_error());
-    ASSERT_EQ(JsonSignErrorCodeJsonParseError, output.error().code());
+    ASSERT_EQ(SignerErrorCodeInvalidJson, output.error().code());
 }

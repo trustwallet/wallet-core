@@ -36,7 +36,7 @@ Proto::SigningOutput Signer::sign() const noexcept {
         }
         default:
             auto error = new Proto::SigningOutput_Error();
-            error->set_code(JsonSignErrorCodeNotSupported);
+            error->set_code(SignerErrorCodeNotSupported);
             error->set_description("Network not supported");
             output.set_allocated_error(error);
     }
@@ -54,7 +54,7 @@ void Signer::parse(const std::string& transaction, Message* message,
 
     if (!result.ok()) {
         auto error = new Proto::SigningOutput_Error();
-        error->set_code(JsonSignErrorCodeJsonParseError);
+        error->set_code(SignerErrorCodeInvalidJson);
         error->set_description(result.error_message());
         output.set_allocated_error(error);
     }
