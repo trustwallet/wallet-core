@@ -29,6 +29,22 @@ TEST(Signer, CosmosTransactionSign) {
             output.json());
 }
 
+TEST(Signer, BinanceTransactionSign) {
+    auto transaction = "{\"chainId\":\"Binance-Chain-Tigris\",\"accountNumber\":\"13186\",\"source\":\"2\",\"memo\":\"Testing\",\"sendOrder\":{\"inputs\":[{\"address\":\"EuZU7e+eUIuDNzaph9Bp2lqJrts=\",\"coins\":[{\"denom\":\"BNB\",\"amount\":\"1345227\"}]}],\"outputs\":[{\"address\":\"M7vzB7mBRvE9IGk8+UbC13pMryg=\",\"coins\":[{\"denom\":\"BNB\",\"amount\":\"1345227\"}]}]}}";
+    auto input = Proto::SigningInput();
+    input.set_private_key("f947b3554a1c2fa70e1caa9de53fbda353348d1e856c593848f3a29737d31f11");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeBinance);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_FALSE(output.has_error());
+    ASSERT_EQ("", output.json());
+    ASSERT_EQ("ca01f0625dee0a4a2a2c87fa0a210a1412e654edef9e508b833736a987d069da5a89aedb12090a03424e4210cb8d5212210a1433bbf307b98146f13d20693cf946c2d77a4caf2812090a03424e4210cb8d52126d0a26eb5ae9872102e58176f271a9796b4288908be85094a2ac978e25535fd59a37b58626e3a84d9e1240015b4beb3d6ef366a7a92fd283f66b8f0d8cdb6b152a9189146b27f84f507f047e248517cf691a36ebc2b7f3b7f64e27585ce1c40f1928d119c31af428efcf3e1882671a0754657374696e672002",
+            output.encoded());
+}
+
 TEST(Signer, NetworkNotSupported) {
     auto transaction = "{\"accountNumber\":\"8733\",\"chainId\":\"cosmoshub-2\",\"fee\":{\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"5000\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"sendCoinsMessage\":{\"fromAddress\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"toAddress\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\",\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"995000\"}]}}";
     auto input = Proto::SigningInput();

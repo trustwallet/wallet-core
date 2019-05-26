@@ -47,7 +47,7 @@ Proto::SigningOutput Signer::sign() const noexcept {
             if (!output.has_error()) {
                 message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                 auto signerOutput = Binance::Signer(std::move(message)).build();
-                output.set_encoded(std::string(signerOutput.begin(), signerOutput.end()));
+                output.set_encoded(hex(signerOutput.begin(), signerOutput.end()));
             }
             break;
         }
