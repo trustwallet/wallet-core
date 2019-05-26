@@ -37,7 +37,7 @@ TEST(DigiByteTransaction, SignTransaction) {
     const int64_t fee = 1000;
 
     auto input = Bitcoin::Proto::SigningInput();
-    input.set_hash_type(TWSignatureHashTypeFork | TWSignatureHashTypeAll);
+    input.set_hash_type(TWSignatureHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("D7pvLVQyJSqKpYPtpkfydjeFizNrafHcrT");
@@ -55,13 +55,18 @@ TEST(DigiByteTransaction, SignTransaction) {
     auto utxoKey0 = DATA("b00420bab8b663f0870ee8e46435743ba9588eb88d8d31410ed54afa67602e8d");
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
+    auto plan = Bitcoin::TransactionBuilder::plan(input);
+    plan.amount = amount;
+    plan.fee = fee;
+    plan.change = utxo_amount - amount - fee;
+
     // Sign
-    auto signer = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input));
+    auto signer = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input), plan);
     auto result = signer.sign();
     auto signedTx = result.payload();
 
     ASSERT_TRUE(result);
-    //ASSERT_EQ(fee, signer.plan.fee);
+    ASSERT_EQ(fee, signer.plan.fee);
 
     Data serialized;
     signedTx.encode(false, serialized);
@@ -75,7 +80,10 @@ TEST(DigiByteTransaction, SignTransaction) {
             "473044022009a77c264da0758b47d8401dadd2803228e557bb83f95e429596ffaa63fe464102207552823b3faff1c7ec45434fd409aa3642b13fb5c47814593dac73f316aece330121024e525e582452cece7b869532d9e354cfec58b71cbed76f7238c91274a64b2116"
             "ffffffff"
         "02"
-            "b8191f3200000000160014bb8eeaa3532471203f4c876057475a25a721602300e1f505000000001976a9141d785f831292ad918302633fa98c089fc647324b88ac"
+            "b8191f3200000000""16"
+            "0014bb8eeaa3532471203f4c876057475a25a7216023"
+            "00e1f50500000000""19"
+            "76a9141d785f831292ad918302633fa98c089fc647324b88ac"
         "00000000"
     ); 
 }
