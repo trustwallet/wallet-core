@@ -257,9 +257,11 @@ public final class KeyStore {
             throw Error.accountNotFound
         }
 
-        if let mnemonic = checkMnemonic(privateKeyData), let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: wallet.key.name, password: newPassword, coin: coins[0]) {
+        if let mnemonic = checkMnemonic(privateKeyData),
+            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: wallet.key.name, password: newPassword, coin: coins[0]) {
             wallets[index].key = key
-        } else if let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: wallet.key.name, password: newPassword, coin: coins[0]) {
+        } else if let key = StoredKey.importPrivateKey(
+                privateKey: privateKeyData, name: wallet.key.name, password: newPassword, coin: coins[0]) {
             wallets[index].key = key
         } else {
             throw Error.invalidKey
