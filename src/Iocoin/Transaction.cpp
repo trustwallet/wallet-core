@@ -131,7 +131,7 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Bitcoin::Script& script
    
     Transaction tmp(*this);
 
-    for(int i=0; i<tmp.inputs.size(); i++)
+    for(unsigned long i=0; i<tmp.inputs.size(); i++)
       tmp.inputs[i].script = Bitcoin::Script();
 
     tmp.inputs[index].script = scriptCode;
@@ -139,7 +139,7 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Bitcoin::Script& script
     if((hashType & 0x1f) == TWSignatureHashTypeNone)
     {
       tmp.outputs.clear();
-      for(int i=0; i<tmp.inputs.size(); i++)
+      for(unsigned long i=0; i<tmp.inputs.size(); i++)
       {
         if(i != index) 
           tmp.inputs[i].sequence = 0;
@@ -152,12 +152,12 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Bitcoin::Script& script
     
       int indexOut = index;
       tmp.outputs.resize(indexOut+1);
-      for(int i=0; i<indexOut; i++)
+      for(unsigned long i=0; i<indexOut; i++)
       {
         tmp.outputs[i].SetNull();
       }
       
-      for(int i=0; i<tmp.inputs.size(); i++)
+      for(unsigned long i=0; i<tmp.inputs.size(); i++)
       {
         if(i != index) 
           tmp.inputs[i].sequence=0;
