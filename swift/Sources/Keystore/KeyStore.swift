@@ -252,17 +252,22 @@ public final class KeyStore {
             privateKeyData.resetBytes(in: 0 ..< privateKeyData.count)
         }
 
-        guard let coin = wallet.key.account(index: 0)?.coin else {
+        let coins = wallet.accounts.map({ $0.coin })
+        guard !coins.isEmpty else {
             throw Error.accountNotFound
         }
 
-        if let mnemonic = checkMnemonic(privateKeyData), let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: wallet.key.name, password: newPassword, coin: coin) {
+        if let mnemonic = checkMnemonic(privateKeyData),
+            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: wallet.key.name, password: newPassword, coin: coins[0]) {
             wallets[index].key = key
-        } else if let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: wallet.key.name, password: newPassword, coin: coin) {
+        } else if let key = StoredKey.importPrivateKey(
+                privateKey: privateKeyData, name: wallet.key.name, password: newPassword, coin: coins[0]) {
             wallets[index].key = key
         } else {
             throw Error.invalidKey
         }
+
+        _ = try wallets[index].getAccounts(password: newPassword, coins: coins)
     }
 
     /// Deletes an account including its key if the password is correct.

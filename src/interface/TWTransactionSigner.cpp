@@ -4,22 +4,21 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWEthereumSigner.h>
+#include <TrustWalletCore/TWTransactionSigner.h>
 
-#include "../Ethereum/Signer.h"
-#include "../proto/Ethereum.pb.h"
-#include "../uint256.h"
+#include "TransactionSigner.h"
 
 using namespace TW;
-using namespace TW::Ethereum;
+using namespace TW::Signer;
 
-TW_Ethereum_Proto_SigningOutput TWEthereumSignerSign(TW_Ethereum_Proto_SigningInput data) {
+TW_Signer_Proto_SigningOutput TWTransactionSignerSign(TW_Signer_Proto_SigningInput data)
+{
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto signer = Signer(load(input.chain_id()));
-    auto protoOutput = signer.sign(input);
+    auto signer = new TWSigner{ TransactionSigner(input) };
+    Proto::SigningOutput output = signer->impl.sign();
 
-    auto serialized = protoOutput.SerializeAsString();
+    auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
