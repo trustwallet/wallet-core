@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include "../PublicKey.h"
+#include "AddressChecksum.h"
 #include "../Cosmos/Address.h"
+#include "../PublicKey.h"
 
 #include <TrustWalletCore/TWHRP.h>
 
@@ -18,21 +19,25 @@
 
 namespace TW::Zilliqa {
 
-  static bool isValidAddress(const std::string& address) {
+static bool isValidAddress(const std::string &address) {
     return Cosmos::Address::isValid(address, HRP_ZILLIQA);
-  }
+}
 
-  static Cosmos::Address Address(const PublicKey& publicKey) {
+static Cosmos::Address Address(const PublicKey &publicKey) {
     const auto hashed = Hash::sha256(publicKey.bytes);
     auto keyHash = Data(20);
     std::copy(hashed.end() - 20, hashed.end(), keyHash.begin());
 
     return Cosmos::Address(HRP_ZILLIQA, keyHash);
-  }
+}
 
-  static Cosmos::Address Address(const Data& keyHash) {
+static Cosmos::Address Address(const Data &keyHash) {
     return Cosmos::Address(HRP_ZILLIQA, keyHash);
-  }
+}
+
+static std::string checkSum(const Data &keyHash) {
+    return checksumed(keyHash);
+}
 
 } // namespace TW::Zilliqa
 

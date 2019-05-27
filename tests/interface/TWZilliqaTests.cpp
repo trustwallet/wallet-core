@@ -32,10 +32,13 @@ TEST(Zilliqa, Address) {
 
     auto address = WRAP(TWZilliqaAddress, TWZilliqaAddressCreateWithString(string.get()));
     auto desc = WRAPS(TWZilliqaAddressDescription(address.get()));
-    auto keyHash = WRAPD(TWZilliqaAddressKeyHash(address.get()));
+    auto keyHashString = WRAPS(TWZilliqaAddressKeyHash(address.get()));
+    auto keyHash = WRAPD(TWDataCreateWithHexString(keyHashString.get()));
+    auto addressFromKeyHash = WRAP(TWZilliqaAddress, TWZilliqaAddressCreateWithKeyHash(keyHash.get()));
 
     assertStringsEqual(desc, "zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6");
-    assertHexEqual(keyHash, "ddb41006f7b6fa8e5fbf06a71c01f789febc66e8");
+    assertStringsEqual(keyHashString, "0xDdb41006F7B6FA8e5FBF06A71c01F789FeBC66e8");
+    EXPECT_TRUE(TWZilliqaAddressEqual(address.get(), addressFromKeyHash.get()));
 }
 
 TEST(Zilliqa, Signing) {
