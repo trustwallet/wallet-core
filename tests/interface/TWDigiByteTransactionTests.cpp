@@ -85,3 +85,15 @@ TEST(DigiByteTransaction, SignTransaction) {
         "00000000"
     ); 
 }
+
+TEST(DigiByteTransaction, LockScripts) {
+    // https://dgb2.trezor.io/tx/966b80caa754148158339a0fa70363996f15819599adf72de0eb3590c3bd63ea
+    
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp4").get()));
+    auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
+    assertHexEqual(scriptData, "76a91447825943ca6a936b177fdc7c9dc05251640169c288ac");
+
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("dgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3d").get()));
+    auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
+    assertHexEqual(scriptData2, "0014885534ab5dc680b68d95c0af49ec2acc2e9915c4");
+}
