@@ -26,7 +26,7 @@ struct S_H
 {
   Data sig;
   std::string hashStr = "T1";
-  auto hashSize=0;
+  unsigned long hashSize=0;
 };
 
 /// Helper class that performs Iocoin transaction signing.
