@@ -12,6 +12,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../uint256.h"
+#include "../proto/Ethereum.pb.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
@@ -27,6 +28,9 @@ class Signer {
 
     /// Initializes a signer with a chain identifier.
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
+
+    /// Signs a Proto::SigningInput transaction
+    Proto::SigningOutput sign(const Proto::SigningInput& input) const noexcept;
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package TW.Signer.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message SigningInput {
+    // BIP44 network ID
+    uint32 coin_type   = 1;
+    // JSON transaction
+    string transaction = 2;
+    // Private Key in HEX format
+    string  private_key = 3;
+}
+
+message SigningOutput {
+    message Error {
+        // Error code
+        uint32 code        = 1;
+        // Error description
+        string description = 2;
+    }
+
+    oneof output {
+        // Signing error
+        Error  error  = 1;
+        // Signing output as JSON
+        string json   = 2;
+        // Signing output encoded
+        string encoded = 3;
+    }
+}
