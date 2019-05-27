@@ -10,7 +10,7 @@
 
 using namespace TW;
 
-TW_Proto_SigningOutput TWSignerSign(TW_Proto_SigningInput data)
+TW_Signer_Proto_SigningOutput TWSignerSign(TW_Signer_Proto_SigningInput data)
 {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));

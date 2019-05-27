@@ -16,7 +16,7 @@ struct TWSigner;
 
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
-TW_Proto_SigningOutput TWSignerSign(TW_Proto_SigningInput input);
+TW_Signer_Proto_SigningOutput TWSignerSign(TW_Signer_Proto_SigningInput input);
 
 
 TW_EXTERN_C_END
