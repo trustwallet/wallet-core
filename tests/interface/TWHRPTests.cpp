@@ -17,6 +17,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPBitcoinCash), "bitcoincash");
     ASSERT_STREQ(stringForHRP(TWHRPBinance), "bnb");
     ASSERT_STREQ(stringForHRP(TWHRPCosmos), "cosmos");
+    ASSERT_STREQ(stringForHRP(TWHRPDigiByte), "dgb");
     ASSERT_STREQ(stringForHRP(TWHRPGroestlcoin), "grs");
     ASSERT_STREQ(stringForHRP(TWHRPQtum), "qc");
     ASSERT_STREQ(stringForHRP(TWHRPZilliqa), "zil");
@@ -29,6 +30,7 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("bitcoincash"), TWHRPBitcoinCash);
     ASSERT_EQ(hrpForString("bnb"), TWHRPBinance);
     ASSERT_EQ(hrpForString("cosmos"), TWHRPCosmos);
+    ASSERT_EQ(hrpForString("dgb"), TWHRPDigiByte);
     ASSERT_EQ(hrpForString("grs"), TWHRPGroestlcoin);
     ASSERT_EQ(hrpForString("qc"), TWHRPQtum);
     ASSERT_EQ(hrpForString("zil"), TWHRPZilliqa);
