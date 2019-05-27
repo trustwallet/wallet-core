@@ -243,7 +243,7 @@ public final class KeyStore {
     public func update(wallet: Wallet, password: String, newPassword: String) throws {
         try update(wallet: wallet, password: password, newPassword: newPassword, newName: wallet.key.name)
     }
-    
+
     /// Updates the name of an existing account.
     ///
     /// - Parameters:
