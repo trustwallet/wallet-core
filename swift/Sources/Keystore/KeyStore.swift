@@ -253,7 +253,7 @@ public final class KeyStore {
     public func update(wallet: Wallet, password: String, newName: String) throws {
         try update(wallet: wallet, password: password, newPassword: password, newName: newName)
     }
-    
+
     private func update(wallet: Wallet, password: String, newPassword: String, newName: String) throws {
         guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")

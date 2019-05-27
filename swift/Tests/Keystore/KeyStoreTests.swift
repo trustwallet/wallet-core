@@ -106,7 +106,7 @@ class KeyStoreTests: XCTestCase {
         
         let data = wallet.key.decryptPrivateKey(password: "password")
         let mnemonic = String(data: data!, encoding: .ascii)
-        
+
         XCTAssertEqual(wallet.accounts.count, coins.count)
         XCTAssertNotNil(data)
         XCTAssertNotNil(mnemonic)
