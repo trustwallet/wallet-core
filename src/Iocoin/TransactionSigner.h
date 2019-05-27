@@ -70,7 +70,7 @@ class TransactionSigner {
 
     Data sig() { return s_h.sig; }
     std::string sighash() { return s_h.hashStr; }
-    int sighashSize() { return s_h.hashSize; }
+    unsigned long sighashSize() { return s_h.hashSize; }
 
     S_H s_h;
   private:
