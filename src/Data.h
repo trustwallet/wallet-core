@@ -8,11 +8,16 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 
 namespace TW {
 
 using byte = std::uint8_t;
 using Data = std::vector<byte>;
+
+inline Data data(const std::string& data) {
+    return std::vector<byte>(data.begin(), data.end());
+}
 
 inline void append(Data& data, const Data& suffix) {
     data.insert(data.end(), suffix.begin(), suffix.end());
