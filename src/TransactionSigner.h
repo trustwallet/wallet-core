@@ -15,21 +15,21 @@ enum SignerErrorCode {
 
 namespace TW {
 /// Helper class to perform json signing
-class Signer {
+class TransactionSigner {
 public:
-    explicit Signer(const Proto::SigningInput& input) : input(input) {}
+    explicit TransactionSigner(const Signer::Proto::SigningInput& input) : input(input) {}
 
-    Proto::SigningOutput sign() const noexcept;
+    Signer::Proto::SigningOutput sign() const noexcept;
 private:
-    const Proto::SigningInput& input;
+    const Signer::Proto::SigningInput& input;
 
-    void parse(const std::string &transaction, google::protobuf::Message *message, Proto::SigningOutput &output) const noexcept;
+    void parse(const std::string &transaction, google::protobuf::Message *message, Signer::Proto::SigningOutput &output) const noexcept;
 };
 
 }
 
 /// Wrapper for C interface.
-struct TWJsonSigner {
-    TW::Signer impl;
+struct TWSigner {
+    TW::TransactionSigner impl;
 };
 

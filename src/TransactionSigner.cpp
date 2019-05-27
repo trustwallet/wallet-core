@@ -7,7 +7,7 @@
 #include "Data.h"
 #include "Coin.h"
 #include "PrivateKey.h"
-#include "Signer.h"
+#include "TransactionSigner.h"
 #include "HexCoding.h"
 #include "Cosmos/Signer.h"
 #include "Binance/Signer.h"
@@ -19,9 +19,10 @@
 #include <google/protobuf/util/json_util.h>
 
 using namespace TW;
+using namespace TW::Signer;
 using namespace google::protobuf;
 
-Proto::SigningOutput Signer::sign() const noexcept {
+Proto::SigningOutput TransactionSigner::sign() const noexcept {
     const auto coinType = (TWCoinType) input.coin_type();
     const auto transaction = input.transaction();
     const auto privateKeyData = parse_hex(input.private_key());
@@ -72,7 +73,7 @@ Proto::SigningOutput Signer::sign() const noexcept {
     return output;
 }
 
-void Signer::parse(const std::string& transaction, Message* message,
+void TransactionSigner::parse(const std::string& transaction, Message* message,
                    Proto::SigningOutput& output) const noexcept {
     util::JsonParseOptions options;
     options.case_insensitive_enum_parsing = true;
