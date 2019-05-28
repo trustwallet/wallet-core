@@ -241,6 +241,20 @@ public final class KeyStore {
     ///   - password: current password
     ///   - newPassword: new password
     public func update(wallet: Wallet, password: String, newPassword: String) throws {
+        try update(wallet: wallet, password: password, newPassword: newPassword, newName: wallet.key.name)
+    }
+
+    /// Updates the name of an existing account.
+    ///
+    /// - Parameters:
+    ///   - wallet: wallet to update
+    ///   - password: current password
+    ///   - newName: new name
+    public func update(wallet: Wallet, password: String, newName: String) throws {
+        try update(wallet: wallet, password: password, newPassword: password, newName: newName)
+    }
+
+    private func update(wallet: Wallet, password: String, newPassword: String, newName: String) throws {
         guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")
         }
@@ -258,10 +272,10 @@ public final class KeyStore {
         }
 
         if let mnemonic = checkMnemonic(privateKeyData),
-            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: wallet.key.name, password: newPassword, coin: coins[0]) {
+            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: newName, password: newPassword, coin: coins[0]) {
             wallets[index].key = key
         } else if let key = StoredKey.importPrivateKey(
-                privateKey: privateKeyData, name: wallet.key.name, password: newPassword, coin: coins[0]) {
+                privateKey: privateKeyData, name: newName, password: newPassword, coin: coins[0]) {
             wallets[index].key = key
         } else {
             throw Error.invalidKey
