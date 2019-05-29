@@ -19,7 +19,7 @@
 
 using namespace TW::Iocoin;
 
-struct TWIocoinSigner *_Nonnull TWIocoinCreate(TW_Iocoin_Proto_SigningInput data) {
+struct TWIocoinSigner *_Nonnull TWIocoinSignerCreate(TW_Iocoin_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     return new TWIocoinSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input)) };
