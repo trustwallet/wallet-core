@@ -91,6 +91,6 @@ class TransactionSigner {
 } // namespace TW::Iocoin
 
 /// Wrapper for C interface.
-struct TWIocoinTransactionSigner {
+struct TWIocoinSigner {
     TW::Iocoin::TransactionSigner<TW::Iocoin::Transaction> impl;
 };
