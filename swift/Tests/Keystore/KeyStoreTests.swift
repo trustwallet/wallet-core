@@ -87,31 +87,37 @@ class KeyStoreTests: XCTestCase {
 
         try keyStore.update(wallet: wallet, password: "password", newPassword: "testpassword")
 
-        let data = wallet.key.decryptPrivateKey(password: "testpassword")
+        let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
+        let savedWallet = savedKeyStore.wallets.first(where: { $0.identifier == wallet.identifier })!
+        
+        let data = savedWallet.key.decryptPrivateKey(password: "testpassword")
         let mnemonic = String(data: data!, encoding: .ascii)
 
-        XCTAssertEqual(wallet.accounts.count, coins.count)
+        XCTAssertEqual(savedWallet.accounts.count, coins.count)
         XCTAssertNotNil(data)
         XCTAssertNotNil(mnemonic)
         XCTAssert(HDWallet.isValid(mnemonic: mnemonic!))
-        XCTAssertEqual(wallet.key.name, "name")
+        XCTAssertEqual(savedWallet.key.name, "name")
     }
 
     func testUpdateName() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let coins = [CoinType.ethereum, .callisto, .poanetwork]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
-
+        
         try keyStore.update(wallet: wallet, password: "password", newName: "testname")
 
-        let data = wallet.key.decryptPrivateKey(password: "password")
+        let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
+        let savedWallet = savedKeyStore.wallets.first(where: { $0.identifier == wallet.identifier })!
+        
+        let data = savedWallet.key.decryptPrivateKey(password: "password")
         let mnemonic = String(data: data!, encoding: .ascii)
 
-        XCTAssertEqual(wallet.accounts.count, coins.count)
+        XCTAssertEqual(savedWallet.accounts.count, coins.count)
         XCTAssertNotNil(data)
         XCTAssertNotNil(mnemonic)
         XCTAssert(HDWallet.isValid(mnemonic: mnemonic!))
-        XCTAssertEqual(wallet.key.name, "testname")
+        XCTAssertEqual(savedWallet.key.name, "testname")
     }
 
     func testAddAccounts() throws {
