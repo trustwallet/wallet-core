@@ -282,6 +282,7 @@ public final class KeyStore {
         }
 
         _ = try wallets[index].getAccounts(password: newPassword, coins: coins)
+        try save(wallet: wallets[index])
     }
 
     /// Deletes an account including its key if the password is correct.
