@@ -13,7 +13,7 @@
 #include "../proto/Iocoin.pb.h"
 #include "../proto/Common.pb.h"
 
-#include <TrustWalletCore/TWIocoinTransactionSigner.h>
+#include <TrustWalletCore/TWIocoinSigner.h>
 
 #include <algorithm>
 
