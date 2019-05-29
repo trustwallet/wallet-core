@@ -22,8 +22,8 @@ TW_EXPORT_STATIC_METHOD
 struct TWIocoinSigner *_Nonnull TWIocoinSignerCreate(TW_Iocoin_Proto_SigningInput input);
 
 /// Creates a transaction signer with input data (serialized from Proto::SigningInput) and plan
-TW_EXPORT_STATIC_METHOD
-struct TWIocoinSigner *_Nonnull TWIocoinSignerCreateWithPlan(TW_Iocoin_Proto_SigningInput input, TW_Iocoin_Proto_TransactionPlan plan);
+//TW_EXPORT_STATIC_METHOD
+//struct TWIocoinSigner *_Nonnull TWIocoinSignerCreateWithPlan(TW_Iocoin_Proto_SigningInput input, TW_Iocoin_Proto_TransactionPlan plan);
 
 TW_EXPORT_METHOD
 void TWIocoinSignerDelete(struct TWIocoinSigner *_Nonnull signer);

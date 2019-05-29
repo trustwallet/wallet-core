@@ -25,14 +25,6 @@ struct TWIocoinSigner *_Nonnull TWIocoinCreate(TW_Iocoin_Proto_SigningInput data
     return new TWIocoinSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input)) };
 }
 
-struct TWIocoinSigner *_Nonnull TWIocoinSignerCreateWithPlan(TW_Iocoin_Proto_SigningInput data, TW_Iocoin_Proto_TransactionPlan planData) {
-    Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    Proto::TransactionPlan plan;
-    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
-    return new TWIocoinSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input), std::move(plan)) };
-}
-
 void TWIocoinSignerDelete(struct TWIocoinSigner *_Nonnull signer) {
     delete signer;
 }
