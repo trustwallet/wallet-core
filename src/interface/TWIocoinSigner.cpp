@@ -19,31 +19,31 @@
 
 using namespace TW::Iocoin;
 
-struct TWIocoinTransactionSigner *_Nonnull TWIocoinTransactionSignerCreate(TW_Iocoin_Proto_SigningInput data) {
+struct TWIocoinSigner *_Nonnull TWIocoinCreate(TW_Iocoin_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    return new TWIocoinTransactionSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input)) };
+    return new TWIocoinSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input)) };
 }
 
-struct TWIocoinTransactionSigner *_Nonnull TWIocoinTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
+struct TWIocoinSigner *_Nonnull TWIocoinSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     Proto::TransactionPlan plan;
     plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
-    return new TWIocoinTransactionSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input), std::move(plan)) };
+    return new TWIocoinSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input), std::move(plan)) };
 }
 
-void TWIocoinTransactionSignerDelete(struct TWIocoinTransactionSigner *_Nonnull signer) {
+void TWIocoinSignerDelete(struct TWIocoinSigner *_Nonnull signer) {
     delete signer;
 }
 
-TW_Bitcoin_Proto_TransactionPlan TWIocoinTransactionSignerPlan(struct TWIocoinTransactionSigner *_Nonnull signer) {
+TW_Bitcoin_Proto_TransactionPlan TWIocoinSignerPlan(struct TWIocoinSigner *_Nonnull signer) {
     auto result = signer->impl.plan.proto();
     auto serialized = result.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TW_Proto_Result TWIocoinTransactionSignerSign(struct TWIocoinTransactionSigner *_Nonnull signer) {
+TW_Proto_Result TWIocoinSignerSign(struct TWIocoinSigner *_Nonnull signer) {
     auto result = signer->impl.sign();
     auto protoResult = TW::Proto::Result();
     if (!result) {
@@ -58,15 +58,8 @@ TW_Proto_Result TWIocoinTransactionSignerSign(struct TWIocoinTransactionSigner *
     *protoOutput.mutable_transaction() = tx.proto();
 
     TW::Data encoded;
-    auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
-    tx.encode(hasWitness, encoded);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
 
     TW::Data txHashData = encoded;
-    if (hasWitness) {
-        txHashData.clear();
-        tx.encode(false, txHashData);
-    }
     auto txHash = TW::Hash::sha256(txHashData);
     std::reverse(txHash.begin(), txHash.end());
     protoOutput.set_transaction_id(TW::hex(txHash));
