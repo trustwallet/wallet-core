@@ -89,7 +89,7 @@ class KeyStoreTests: XCTestCase {
 
         let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
         let savedWallet = savedKeyStore.wallets.first(where: { $0.identifier == wallet.identifier })!
-        
+
         let data = savedWallet.key.decryptPrivateKey(password: "testpassword")
         let mnemonic = String(data: data!, encoding: .ascii)
 
@@ -104,12 +104,12 @@ class KeyStoreTests: XCTestCase {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let coins = [CoinType.ethereum, .callisto, .poanetwork]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
-        
+
         try keyStore.update(wallet: wallet, password: "password", newName: "testname")
 
         let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
         let savedWallet = savedKeyStore.wallets.first(where: { $0.identifier == wallet.identifier })!
-        
+
         let data = savedWallet.key.decryptPrivateKey(password: "password")
         let mnemonic = String(data: data!, encoding: .ascii)
 
