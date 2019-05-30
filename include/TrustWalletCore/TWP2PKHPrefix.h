@@ -17,7 +17,7 @@ enum TWP2PKHPrefix {
     TWP2PKHPrefixBitcoin = 0x00,
     TWP2PKHPrefixDash = 0x4C,
     TWP2PKHPrefixDecred = 0x3f,
-    TWP2PKHPrefixD = 0x1e, // Dogecoin / DigiByte
+    TWP2PKHPrefixD = 0x1e, // Dogecoin and DigiByte
     TWP2PKHPrefixGroestlcoin = 0x24,
     TWP2PKHPrefixLitecoin = 0x30,
     TWP2PKHPrefixQtum = 0x3a,
@@ -25,6 +25,7 @@ enum TWP2PKHPrefix {
     TWP2PKHPrefixIocoin = 0x67,
     TWP2PKHPrefixZcashT = 0xB8,
     TWP2PKHPrefixZcoin = 0x52,
+    TWP2PKHPrefixMonetaryUnit = 0x10,
 };
 
 TW_EXTERN_C_END

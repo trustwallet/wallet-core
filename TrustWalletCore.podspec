@@ -129,6 +129,8 @@ Pod::Spec.new do |s|
     "#{protobuf_dir}/src/google/protobuf/wire_format_lite.cc",
     "#{protobuf_dir}/src/google/protobuf/wire_format.cc",
     "#{protobuf_dir}/src/google/protobuf/wrappers.pb.cc",
+    "#{protobuf_dir}/src/google/protobuf/port_def.inc",
+    "#{protobuf_dir}/src/google/protobuf/port_undef.inc",
   s.exclude_files =
     'trezor-crypto/src/rand.c'
   s.public_header_files =
