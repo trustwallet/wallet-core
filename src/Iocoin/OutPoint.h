@@ -32,7 +32,7 @@ class OutPoint {
     }
 
     /// Initializes an out-point from a Protobuf out-point.
-    OutPoint(const Bitcoin::Proto::OutPoint& other) {
+    OutPoint(const Proto::OutPoint& other) {
         assert(other.hash().size() == 32);
         std::copy(other.hash().begin(), other.hash().end(), hash.begin());
         index = other.index();
