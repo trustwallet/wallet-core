@@ -10,7 +10,8 @@
 #include "TransactionInput.h"
 #include "../Bitcoin/TransactionOutput.h"
 #include "../Hash.h"
-
+//XXXX
+#include "../proto/Iocoin.pb.h"
 #include <TrustWalletCore/TWBitcoin.h>
 #include <vector>
 
