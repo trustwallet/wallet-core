@@ -8,7 +8,8 @@
 
 #include "Bitcoin/Script.h"
 #include "TransactionInput.h"
-#include "TransactionOutput.h"
+//XXXX #include "TransactionOutput.h"
+#include "../Bitcoin/TransactionOutput.h"
 #include "../Hash.h"
 
 #include <TrustWalletCore/TWBitcoin.h>
@@ -37,7 +38,7 @@ struct Transaction {
     std::vector<TransactionInput> inputs;
 
     /// A list of 1 or more transaction outputs or destinations for coins
-    std::vector<TransactionOutput> outputs;
+    std::vector<Bitcoin::TransactionOutput> outputs;
 
     TW::Hash::Hasher hasher = TW::Hash::sha256d;
 

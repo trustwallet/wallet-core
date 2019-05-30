@@ -182,7 +182,7 @@ std::vector<uint8_t> Transaction::getSignatureHash_(const Bitcoin::Script& scrip
     encodeVarInt(serializedOutputCount, data);
     for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
-            auto output = TransactionOutput(-1, {});
+            auto output = Bitcoin::TransactionOutput(-1, {});
             output.encode(data);
         } else {
             outputs[subindex].encode(data);

@@ -7,7 +7,8 @@
 #pragma once
 
 #include "Transaction.h"
-#include "TransactionOutput.h"
+//XXXX #include "TransactionOutput.h"
+#include "../Bitcoin/TransactionOutput.h"
 #include "TransactionPlan.h"
 #include "UnspentSelector.h"
 #include "../proto/Iocoin.pb.h"
@@ -71,11 +72,11 @@ struct TransactionBuilder {
 
         Transaction tx;
 	tx.nTime = plan.time;
-        tx.outputs.push_back(TransactionOutput(plan.amount, lockingScriptTo));
+        tx.outputs.push_back(Bitcoin::TransactionOutput(plan.amount, lockingScriptTo));
 
         if (plan.change > 0) {
             auto lockingScriptChange = Bitcoin::Script::buildForAddress(changeAddress);
-            tx.outputs.push_back(TransactionOutput(plan.change, lockingScriptChange));
+            tx.outputs.push_back(Bitcoin::TransactionOutput(plan.change, lockingScriptChange));
         }
 
         const auto emptyScript = Bitcoin::Script();
