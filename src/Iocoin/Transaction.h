@@ -41,7 +41,7 @@ struct Transaction {
 
     TW::Hash::Hasher hasher = TW::Hash::sha256d;
 
-    //Transaction() = default;
+    Transaction() = default;
 
     Transaction(const Transaction& other)
       : version(other.version), lockTime(other.lockTime), nTime(other.nTime), inputs(other.inputs), outputs(other.outputs)
