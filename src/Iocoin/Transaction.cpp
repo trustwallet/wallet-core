@@ -144,7 +144,8 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Bitcoin::Script& script
       tmp.outputs.resize(indexOut+1);
       for(auto i=0; i<indexOut; i++)
       {
-        tmp.outputs[i].SetNull();
+        //XXXX tmp.outputs[i].SetNull();
+        tmp.outputs[i] = Bitcoin::TransactionOutput(-1,{});
       }
       
       for(auto i=0; i<tmp.inputs.size(); i++)
