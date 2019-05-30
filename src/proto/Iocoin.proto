@@ -40,7 +40,8 @@ message OutPoint {
     uint32 index = 2;
 
     // Transaction version as defined by the sender.
-    //uint32 sequence = 3;
+    //XXXX
+    uint32 sequence = 3;
 }
 
 // Bitcoin transaction output.
