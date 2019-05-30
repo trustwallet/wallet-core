@@ -43,13 +43,13 @@ struct Transaction {
 
     Transaction() = default;
 
-    Transaction(const Transaction& other)
+    Transaction(const Transaction& other);
       //: version(other.version), lockTime(other.lockTime), inputs(other.inputs), outputs(other.outputs)
-      : version(other.version), lockTime(other.lockTime)
+      : version(other.version), lockTime(other.lockTime), nTime(other.nTime)
      {
 	     this->inputs = other.inputs;
 	     this->outputs = other.outputs;
-	     this->hasher = TW::Hash::sha256d;
+	     //this->hasher = TW::Hash::sha256d;
      }
 
     Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
