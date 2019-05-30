@@ -14,16 +14,6 @@
 
 using namespace TW::Iocoin;
 
-Transaction::Transaction(const Transaction& other)
-{
-  this->version = other.version;
-  this->nTime = other.nTime;
-  this->inputs = other.inputs;
-  this->outputs = other.outputs;
-  this->lockTime = other.lockTime;
-  this->hasher = other.hasher;
-}
-
 std::vector<uint8_t> Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
                                               uint32_t hashType, uint64_t amount) const {
     assert(index < inputs.size());
