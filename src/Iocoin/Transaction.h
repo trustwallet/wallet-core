@@ -41,15 +41,12 @@ struct Transaction {
 
     TW::Hash::Hasher hasher = TW::Hash::sha256d;
 
-    Transaction() = default;
+    //Transaction() = default;
 
     Transaction(const Transaction& other)
       : version(other.version), lockTime(other.lockTime), nTime(other.nTime), inputs(other.inputs), outputs(other.outputs)
      {
      }
-
-    //Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
-    //    : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
 
     /// Whether the transaction is empty.
     bool empty() const { return inputs.empty() && outputs.empty(); }
