@@ -11,7 +11,6 @@
 #include "../Bitcoin/TransactionOutput.h"
 #include "../Hash.h"
 #include "../proto/Iocoin.pb.h"
-#include "../proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWBitcoin.h>
 #include <vector>
 
