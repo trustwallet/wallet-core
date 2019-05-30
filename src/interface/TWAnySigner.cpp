@@ -4,19 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWTransactionSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 
-#include "TransactionSigner.h"
+#include "AnySigner.h"
 
 using namespace TW;
 using namespace TW::Signer;
 
-TW_Signer_Proto_SigningOutput TWTransactionSignerSign(TW_Signer_Proto_SigningInput data)
+TW_Signer_Proto_SigningOutput TWAnySignerSign(TW_Signer_Proto_SigningInput data)
 {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto signer = new TWSigner{ TransactionSigner(input) };
+    auto signer = new TWAnySigner{ AnySigner(input) };
     Proto::SigningOutput output = signer->impl.sign();
 
     auto serialized = output.SerializeAsString();

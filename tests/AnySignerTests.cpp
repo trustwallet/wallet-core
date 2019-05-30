@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "TransactionSigner.h"
+#include "AnySigner.h"
 #include "Coin.h"
 #include "Base64.h"
 
@@ -21,7 +21,7 @@ TEST(Signer, CosmosTransactionSign) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeCosmos);
 
-    auto signer = TransactionSigner(input);
+    auto signer = AnySigner(input);
     auto output = signer.sign();
 
     ASSERT_FALSE(output.has_error());
@@ -37,7 +37,7 @@ TEST(Signer, BinanceTransactionSign) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeBinance);
 
-    auto signer = TransactionSigner(input);
+    auto signer = AnySigner(input);
     auto output = signer.sign();
 
     ASSERT_FALSE(output.has_error());
@@ -53,7 +53,7 @@ TEST(Signer, EthereumTransactionSign) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeEthereum);
 
-    auto signer = TransactionSigner(input);
+    auto signer = AnySigner(input);
     auto output = signer.sign();
 
     ASSERT_FALSE(output.has_error());
@@ -69,7 +69,7 @@ TEST(Signer, NetworkNotSupported) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeBitcoinCash);
 
-    auto signer = TransactionSigner(input);
+    auto signer = AnySigner(input);
     auto output = signer.sign();
 
     ASSERT_TRUE(output.has_error());
@@ -84,7 +84,7 @@ TEST(Signer, InvalidJsonFormat) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeCosmos);
 
-    auto signer = TransactionSigner(input);
+    auto signer = AnySigner(input);
     auto output = signer.sign();
 
     ASSERT_TRUE(output.has_error());
