@@ -13,63 +13,6 @@
 #include <cassert>
 
 using namespace TW::Iocoin;
-/*
-std::vector<uint8_t> Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
-                                              uint32_t hashType, uint64_t amount) const {
-    assert(index < inputs.size());
-
-    auto data = std::vector<uint8_t>{};
-
-    // Version
-    encode32LE(version, data);
-
-    // Input prevouts (none/all, depending on flags)
-    if ((hashType & TWSignatureHashTypeAnyoneCanPay) == 0) {
-        auto hashPrevouts = getPrevoutHash();
-        std::copy(std::begin(hashPrevouts), std::end(hashPrevouts), std::back_inserter(data));
-    } else {
-        std::fill_n(back_inserter(data), 32, 0);
-    }
-
-    // Input nSequence (none/all, depending on flags)
-    if ((hashType & TWSignatureHashTypeAnyoneCanPay) == 0 &&
-        !TWSignatureHashTypeIsSingle(hashType) && !TWSignatureHashTypeIsNone(hashType)) {
-        auto hashSequence = getSequenceHash();
-        std::copy(std::begin(hashSequence), std::end(hashSequence), std::back_inserter(data));
-    } else {
-        std::fill_n(back_inserter(data), 32, 0);
-    }
-
-    // The input being signed (replacing the scriptSig with scriptCode + amount)
-    // The prevout may already be contained in hashPrevout, and the nSequence
-    // may already be contain in hashSequence.
-    reinterpret_cast<const TW::Iocoin::OutPoint&>(inputs[index].previousOutput).encode(data);
-    scriptCode.encode(data);
-
-    encode64LE(amount, data);
-
-    // Outputs (none/one/all, depending on flags)
-    if (!TWSignatureHashTypeIsSingle(hashType) && !TWSignatureHashTypeIsNone(hashType)) {
-        auto hashOutputs = getOutputsHash();
-        copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
-    } else if (TWSignatureHashTypeIsSingle(hashType) && index < outputs.size()) {
-        auto outputData = std::vector<uint8_t>{};
-        outputs[index].encode(outputData);
-        auto hashOutputs = TW::Hash::hash(hasher, outputData);
-        copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
-    } else {
-        fill_n(back_inserter(data), 32, 0);
-    }
-
-    // Locktime
-    encode32LE(lockTime, data);
-
-    // Sighash type
-    encode32LE(hashType, data);
-
-    return data;
-}
-*/
 std::vector<uint8_t> Transaction::getPrevoutHash() const {
     auto data = std::vector<uint8_t>{};
     for (auto& input : inputs) {
@@ -189,8 +132,8 @@ void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptC
     }
 }
 
-Proto::Transaction Transaction::proto() const {
-    auto protoTx = Proto::Transaction();
+Bitcoin::Proto::Transaction Transaction::proto() const {  //XXXX
+    auto protoTx = Bitcoin::Proto::Transaction(); //XXXX
     protoTx.set_version(version);
     //XXXX protoTx.set_time(nTime);
 

@@ -8,6 +8,7 @@
 
 #include "Bitcoin/Script.h"
 #include "TransactionInput.h"
+#include "../proto/Bitcoin.pb.h" //XXXX
 #include "../Bitcoin/TransactionOutput.h"
 #include "../Hash.h"
 #include "../proto/Iocoin.pb.h"
@@ -69,7 +70,7 @@ struct Transaction {
                         std::vector<uint8_t>& data) const;
 
     /// Converts to Protobuf model
-    Proto::Transaction proto() const;
+    Bitcoin::Proto::Transaction proto() const; //XXXX
 
 };
 
