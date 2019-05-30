@@ -13,7 +13,7 @@
 #include <cassert>
 
 using namespace TW::Iocoin;
-
+/*
 std::vector<uint8_t> Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
                                               uint32_t hashType, uint64_t amount) const {
     assert(index < inputs.size());
@@ -69,7 +69,7 @@ std::vector<uint8_t> Transaction::getPreImage(const Bitcoin::Script& scriptCode,
 
     return data;
 }
-
+*/
 std::vector<uint8_t> Transaction::getPrevoutHash() const {
     auto data = std::vector<uint8_t>{};
     for (auto& input : inputs) {
