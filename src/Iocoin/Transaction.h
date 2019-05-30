@@ -49,6 +49,7 @@ struct Transaction {
      {
 	     this->inputs = other.inputs;
 	     this->outputs = other.outputs;
+	     this->hasher = TW::Hash::sha256d;
      }
 
     Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
