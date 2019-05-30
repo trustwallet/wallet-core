@@ -7,7 +7,6 @@
 #include "TransactionSigner.h"
 
 #include "TransactionInput.h"
-//XXXX #include "TransactionOutput.h"
 #include "UnspentSelector.h"
 
 #include "../BinaryCoding.h"

@@ -8,7 +8,6 @@
 
 #include "Bitcoin/Script.h"
 #include "TransactionInput.h"
-//XXXX #include "TransactionOutput.h"
 #include "../Bitcoin/TransactionOutput.h"
 #include "../Hash.h"
 

@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Transaction.h"
-//XXXX #include "TransactionOutput.h"
 #include "../Bitcoin/TransactionOutput.h"
 #include "TransactionPlan.h"
 #include "UnspentSelector.h"
