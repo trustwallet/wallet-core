@@ -127,6 +127,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
+
+    auto mue = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(mue, "MUE");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -171,6 +174,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDEXON), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -301,6 +305,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeARK, txId));
     assertStringsEqual(ark, "https://explorer.ark.io/transaction/123");
+  
+    auto mue = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonetaryUnit, txId));
+    assertStringsEqual(mue, "https://explorer.monetaryunit.org/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -423,6 +430,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeARK));
     assertStringsEqual(ark, "ark");
+      
+    auto mue = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(mue, "monetaryunit");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -548,6 +558,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
+  
+    auto mue = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonetaryUnit));
+    assertStringsEqual(mue, "MonetaryUnit");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
