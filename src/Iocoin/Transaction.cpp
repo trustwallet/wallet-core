@@ -73,8 +73,7 @@ std::vector<uint8_t> Transaction::getPreImage(const Bitcoin::Script& scriptCode,
 std::vector<uint8_t> Transaction::getPrevoutHash() const {
     auto data = std::vector<uint8_t>{};
     for (auto& input : inputs) {
-        //XXXX auto& outpoint = reinterpret_cast<const TW::Iocoin::OutPoint&>(input.previousOutput);
-        auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(input.previousOutput);
+        auto& outpoint = reinterpret_cast<const TW::Iocoin::OutPoint&>(input.previousOutput);
         outpoint.encode(data);
     }
     auto hash = TW::Hash::hash(hasher, data);
@@ -208,8 +207,7 @@ void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptC
         subindex = index;
     }
 
-    //XXXX reinterpret_cast<const TW::Iocoin::OutPoint&>(inputs[subindex].previousOutput).encode(data);
-    reinterpret_cast<const TW::Bitcoin::OutPoint&>(inputs[subindex].previousOutput).encode(data);
+    reinterpret_cast<const TW::Iocoin::OutPoint&>(inputs[subindex].previousOutput).encode(data);
 
     // Serialize the script
     if (subindex != index) {

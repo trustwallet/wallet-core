@@ -6,8 +6,7 @@
 
 #pragma once
 
-//XXXX #include "OutPoint.h"
-#include "../Bitcoin/OutPoint.h"
+#include "OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "../Data.h"
 
@@ -27,10 +26,8 @@ class TransactionInput {
     uint32_t sequence;
     /// Initializes a transaction input with a previous output, a script and a
     /// sequence number.
-    //XXXX TransactionInput(OutPoint previousOutput, Bitcoin::Script script)
-    //XXXX     : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(4294967295) {}
-    TransactionInput(Bitcoin::OutPoint previousOutput, Bitcoin::Script script)
-         : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(4294967295) {}
+    TransactionInput(OutPoint previousOutput, Bitcoin::Script script)
+      : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(4294967295) {}
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
