@@ -131,7 +131,7 @@ void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptC
     } else {
     }
 }
-
+/*
 Bitcoin::Proto::Transaction Transaction::proto() const {  //XXXX
     auto protoTx = Bitcoin::Proto::Transaction(); //XXXX
     protoTx.set_version(version);
@@ -154,4 +154,4 @@ Bitcoin::Proto::Transaction Transaction::proto() const {  //XXXX
     protoTx.set_locktime(lockTime);
 
     return protoTx;
-}
+} */
