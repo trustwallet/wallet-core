@@ -19,7 +19,7 @@ namespace TW::Iocoin {
 class TransactionInput {
   public:
     /// Reference to the previous transaction's output.
-    OutPoint previousOutput;
+	  Bitcoin::OutPoint previousOutput;
 
     /// Computational Script for confirming transaction authorization.
     Bitcoin::Script script;
@@ -27,8 +27,10 @@ class TransactionInput {
     uint32_t sequence;
     /// Initializes a transaction input with a previous output, a script and a
     /// sequence number.
-    TransactionInput(OutPoint previousOutput, Bitcoin::Script script)
-        : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(4294967295) {}
+    //XXXX TransactionInput(OutPoint previousOutput, Bitcoin::Script script)
+    //XXXX     : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(4294967295) {}
+    TransactionInput(Bitcoin::OutPoint previousOutput, Bitcoin::Script script)
+         : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(4294967295) {}
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;
