@@ -43,7 +43,7 @@ struct Transaction {
 
     Transaction() = default;
 
-    Transaction(const Transaction& other);
+    Transaction(const Transaction& other)
       //: version(other.version), lockTime(other.lockTime), inputs(other.inputs), outputs(other.outputs)
       : version(other.version), lockTime(other.lockTime), nTime(other.nTime), inputs(other.inputs), outputs(other.outputs)
      {
