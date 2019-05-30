@@ -10,7 +10,8 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "../proto/Iocoin.pb.h"
+//XXXX #include "../proto/Iocoin.pb.h"
+#include "../proto/Bitcoin.pb.h"
 #include "../proto/Common.pb.h"
 
 #include <TrustWalletCore/TWIocoinSigner.h>
