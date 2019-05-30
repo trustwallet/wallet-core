@@ -8,6 +8,7 @@
 
 #include "../Data.h"
 //XXXX #include "../proto/Iocoin.pb.h"
+#include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
 #include <array>
