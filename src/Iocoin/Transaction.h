@@ -64,8 +64,6 @@ struct Transaction {
     /// Generates the signature hash for this transaction.
     std::vector<uint8_t> getSignatureHash(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType
                                           ) const;
-    std::vector<uint8_t> getSignatureHash_(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType
-                                          ) const;
 
     void serializeInput(size_t subindex, const Bitcoin::Script&, size_t index, uint32_t hashType,
                         std::vector<uint8_t>& data) const;

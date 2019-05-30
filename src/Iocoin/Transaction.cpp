@@ -160,44 +160,6 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Bitcoin::Script& script
     auto hash = TW::Hash::hash(hasher, data);
     return hash;
 }
-std::vector<uint8_t> Transaction::getSignatureHash_(const Bitcoin::Script& scriptCode, size_t index,
-                                                       uint32_t hashType) const {
-    assert(index < inputs.size());
-
-    auto data = std::vector<uint8_t>{};
-
-    encode32LE(version, data);
-    encode32LE(nTime, data);
-
-    auto serializedInputCount =
-        (hashType & TWSignatureHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
-    encodeVarInt(serializedInputCount, data);
-    for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
-        serializeInput(subindex, scriptCode, index, hashType, data);
-    }
-
-    auto hashNone = (hashType & 0x1f) == TWSignatureHashTypeNone;
-    auto hashSingle = (hashType & 0x1f) == TWSignatureHashTypeSingle;
-    auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index + 1 : outputs.size());
-    encodeVarInt(serializedOutputCount, data);
-    for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
-        if (hashSingle && subindex != index) {
-            auto output = Bitcoin::TransactionOutput(-1, {});
-            output.encode(data);
-        } else {
-            outputs[subindex].encode(data);
-        }
-    }
-
-    // Locktime
-    encode32LE(lockTime, data);
-
-    // Sighash type
-    encode32LE(hashType, data);
-
-    auto hash = TW::Hash::hash(hasher, data);
-    return hash;
-}
 
 void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptCode, size_t index,
                                  uint32_t hashType, std::vector<uint8_t>& data) const {
