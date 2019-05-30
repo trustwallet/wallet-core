@@ -48,8 +48,8 @@ struct Transaction {
      {
      }
 
-    Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
-        : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
+    //Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
+    //    : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
 
     /// Whether the transaction is empty.
     bool empty() const { return inputs.empty() && outputs.empty(); }
