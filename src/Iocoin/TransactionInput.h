@@ -18,7 +18,7 @@ namespace TW::Iocoin {
 class TransactionInput {
   public:
     /// Reference to the previous transaction's output.
-	  Bitcoin::OutPoint previousOutput;
+    OutPoint previousOutput;
 
     /// Computational Script for confirming transaction authorization.
     Bitcoin::Script script;
