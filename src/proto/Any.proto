@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package TW.Signer.Proto;
+package TW.Any.Proto;
 option java_package = "wallet.core.jni.proto";
 
 message SigningInput {

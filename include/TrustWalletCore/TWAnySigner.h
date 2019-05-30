@@ -7,7 +7,7 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWTransactionSignerProto.h"
+#include "TWAnyProto.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -16,7 +16,7 @@ struct TWAnySigner;
 
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
-TW_Signer_Proto_SigningOutput TWAnySignerSign(TW_Signer_Proto_SigningInput input);
+TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput input);
 
 
 TW_EXTERN_C_END
