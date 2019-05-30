@@ -100,7 +100,7 @@ public extension CoinType {
         case .litecoin:
             return Set([P2SHPrefix.litecoin.rawValue, P2PKHPrefix.litecoin.rawValue])
         case .lux:
-            return Set([P2SHPrefix.lux.rawValue, P2PKHPrefix.litecoin.rawValue])
+            return Set([P2SHPrefix.s.rawValue, P2PKHPrefix.litecoin.rawValue])
         case .groestlcoin:
             return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.groestlcoin.rawValue])
         case .dash:
@@ -115,7 +115,7 @@ public extension CoinType {
         case .dogecoin:
             return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.d.rawValue])
         case .digiByte:
-            return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.d.rawValue])
+            return Set([P2SHPrefix.bitcoin.rawValue, P2SHPrefix.s.rawValue, P2PKHPrefix.d.rawValue])
         case .viacoin:
             return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
         case .monetaryUnit:

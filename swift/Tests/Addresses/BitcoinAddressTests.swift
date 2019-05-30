@@ -91,19 +91,23 @@ class BitcoinAddressTests: XCTestCase {
         }
     }
 
-    func testValidDigiByteSegwitAddress() {
-        let addressString = "dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
-
-        XCTAssertEqual(HRP.digiByte, SegwitAddress(string: addressString)?.hrp)
-        XCTAssertTrue(SegwitAddress.isValidString(string: addressString),
-                      "'\(addressString)' should be a valid Bech32 address")
-    }
-
-    func testValidDigiByteBitcoinAddress() {
+    func testValidDigiByteAddress() {
         let addressString = "DTPQ92zp96TwpG2pRuUB3oEA3kWGRZPGhg"
 
-        XCTAssertEqual(0x1e, BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertEqual(P2PKHPrefix.d.rawValue, BitcoinAddress(string: addressString)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
-                      "'\(addressString)' should be a valid Bitcoin address")
+                      "'\(addressString)' should be a valid DigiByte address")
+
+        let addressString2 = "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVo"
+
+        XCTAssertEqual(P2SHPrefix.s.rawValue, BitcoinAddress(string: addressString2)?.prefix)
+        XCTAssertTrue(BitcoinAddress.isValidString(string: addressString2),
+                      "'\(addressString2)' should be a valid DigiByte address")
+
+        let addressString3 = "dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
+
+        XCTAssertEqual(HRP.digiByte, SegwitAddress(string: addressString3)?.hrp)
+        XCTAssertTrue(SegwitAddress.isValidString(string: addressString3),
+                      "'\(addressString3)' should be a valid DigiByte Bech32 address")
     }
 }

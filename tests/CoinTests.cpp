@@ -179,8 +179,11 @@ TEST(Coin, ValidateAddressARK){
 TEST(Coin, ValidateAddressDGB){
     EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp4"));
     EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "dgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3d"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp5"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "dgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3e"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVo")); 
+    
+    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kpx"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "dgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3x"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVx"));
 }
 
 TEST(Coin, DeriveAddress) {

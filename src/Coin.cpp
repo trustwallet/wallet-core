@@ -78,7 +78,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeDigiByte:
         return Bitcoin::SegwitAddress::isValid(string, HRP_DIGIBYTE) ||
-               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixD}, {TWP2SHPrefixBitcoin}});
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixD}, {TWP2SHPrefixBitcoin}, {TWP2SHPrefixS}});
 
     case TWCoinTypeGroestlcoin:
         return Bitcoin::SegwitAddress::isValid(string, HRP_GROESTLCOIN) ||
@@ -160,7 +160,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeLux:
         // same p2pkh prefix as litecoin
-        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLux}});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixS}});
 
     case TWCoinTypeNULS:
         return NULS::Address::isValid(string);
