@@ -15,9 +15,9 @@ enum SignerErrorCode {
 
 namespace TW {
 /// Helper class to perform json signing
-class TransactionSigner {
+class AnySigner {
 public:
-    explicit TransactionSigner(const Signer::Proto::SigningInput& input) : input(input) {}
+    explicit AnySigner(const Signer::Proto::SigningInput& input) : input(input) {}
 
     Signer::Proto::SigningOutput sign() const noexcept;
 private:
@@ -29,7 +29,7 @@ private:
 }
 
 /// Wrapper for C interface.
-struct TWSigner {
-    TW::TransactionSigner impl;
+struct TWAnySigner {
+    TW::AnySigner impl;
 };
 
