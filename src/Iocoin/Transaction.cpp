@@ -230,7 +230,7 @@ void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptC
 Proto::Transaction Transaction::proto() const {
     auto protoTx = Proto::Transaction();
     protoTx.set_version(version);
-    protoTx.set_time(nTime);
+    //XXXX protoTx.set_time(nTime);
 
     for (const auto& input : inputs) {
         auto protoInput = protoTx.add_inputs();
