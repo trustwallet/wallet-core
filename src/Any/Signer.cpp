@@ -12,8 +12,6 @@
 #include "Cosmos/Signer.h"
 #include "Binance/Signer.h"
 #include "Ethereum/Signer.h"
-#include "Ethereum/Address.h"
-#include "proto/Ethereum.pb.h"
 
 #include <string>
 #include <google/protobuf/util/json_util.h>

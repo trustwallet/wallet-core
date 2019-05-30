@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "proto/Signer.pb.h"
+#include "proto/Any.pb.h"
 
 enum SignerErrorCode {
     SignerErrorCodeNotSupported = 1,

@@ -11,7 +11,7 @@
 using namespace TW;
 using namespace TW::Any;
 
-TW_Any_Signer_Proto_SigningOutput TWAnySignerSign(TW_Any_Signer_Proto_SigningInput data)
+TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput data)
 {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
