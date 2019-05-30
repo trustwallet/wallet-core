@@ -6,12 +6,11 @@
 
 #pragma once
 
-#include "OutPoint.h"
+//XXXX #include "OutPoint.h"
+#include "../Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "../Data.h"
 
-//XXXX
-#include "../proto/Iocoin.pb.h"
 #include <vector>
 
 namespace TW::Iocoin {
