@@ -23,7 +23,7 @@ struct TransactionBuilder {
     static Bitcoin::TransactionPlan plan(const Iocoin::Proto::SigningInput& input) {
         auto plan = Bitcoin::TransactionPlan();
         plan.amount = input.amount();
-	plan.time = input.time();
+	//XXXX plan.time = input.time();
 
         auto output_size = 2;
         auto calculator =
