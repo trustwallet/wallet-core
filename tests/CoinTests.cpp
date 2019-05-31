@@ -186,6 +186,57 @@ TEST(Coin, ValidateAddressDGB){
     EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVx"));
 }
 
+TEST(Coin, validateAddressIocoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeIocoin, "ik6V522aupkj3kMtJZi6eDw6v3eLgMbXY8"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeIocoin, "xk6V522aupkj3kMtJZi6eDw6v3eLgMbXY8"));
+}
+
+TEST(Coin, validateAddressWanchain) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeWanchain, "0x9D8a62F656A8D1615c1294FD71E9cfB3e4855a4f"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeWanchain, "xx9D8a62F656A8D1615c1294FD71E9cfB3e4855a4f"));
+}
+
+TEST(Coin, validateAddressICON) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeICON, "hx4728fc65c31728f0d3538b8783b5394b31a136b9"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeICON, "cx4728fc65c31728f0d3538b8783b5394b31a136b9"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeICON, "xx4728fc65c31728f0d3538b8783b5394b31a136bx"));
+}
+
+TEST(Coin, validateAddressNimiq) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeNimiq, "NQ74 D40G N3M0 9EJD ET56 UPLR 02VC X6DU 8G1E"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeNimiq, "XQ74 D40G N3M0 9EJD ET56 UPLR 02VC X6DU 8G1E"));
+}
+
+TEST(Coin, validateAddressXRP) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeXRP, "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQ"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeXRP, "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQX"));
+}
+
+TEST(Coin, validateAddressKin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeKin, "GDXJHJHWN6GRNOAZXON6XH74ZX6NYFAS5B7642RSJQVJTIPA4ZYUQLEB"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeKin, "GDXJHJHWN6GRNOAZXON6XH74ZX6NYFAS5B7642RSJQVJTIPA4ZYUQLEBX"));
+}
+
+TEST(Coin, validateAddressTron) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeTron, "TQLCsShbQNXMTVCjprY64qZmEA4rBarpQp"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTron, "XQLCsShbQNXMTVCjprY64qZmEA4rBarpQp"));
+}
+
+TEST(Coin, validateAddressZcoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeZcoin, "aHzpPjmY132KseS4nkiQTbDahTEXqesY89"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeZcoin, "xHzpPjmY132KseS4nkiQTbDahTEXqesY89"));
+}
+
+TEST(Coin, validateAddressLitecoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeLitecoin, "ltc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tamvsu"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeLitecoin, "xtc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tamvsu"));
+}
+
+TEST(Coin, validateAddressCosmos) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeCosmos, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeCosmos, "xosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+}
+
 TEST(Coin, DeriveAddress) {
     const auto privateKey = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeAion, privateKey), "0xa0010b0ea04ba4d76ca6e5e9900bacf19bc4402eaec7e36ea7ddd8eed48f60f3");
@@ -193,6 +244,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBitcoin, privateKey), "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBitcoinCash, privateKey), "bitcoincash:qz7eyzytkl5z6cg6nw20hd62pyyp22mcfuardfd2vn");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeCallisto, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeCosmos, privateKey), "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeDash, privateKey), "XsyCV5yojxF4y3bYeEiVYqarvRgsWFELZL");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeDecred, privateKey), "Dsp4u8xxTHSZU2ELWTQLQP77xJhgeWrTsGK");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeDigiByte, privateKey), "dgb1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0c69ssz");
@@ -202,6 +254,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeGoChain, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeGroestlcoin, privateKey), "grs1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0jsaf3d");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeICON, privateKey), "hx4728fc65c31728f0d3538b8783b5394b31a136b9");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeIocoin, privateKey), "ik6V522aupkj3kMtJZi6eDw6v3eLgMbXY8");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeIOST, privateKey), "H4JcMPicKkHcxxDjkyyrLoQj7Kcibd9t815ak4UvTr9M");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeIoTeX, privateKey), "io1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0zgdt6h");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeLitecoin, privateKey), "ltc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tamvsu");
@@ -234,6 +287,9 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeEllaism, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeDEXON, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeARK, privateKey), "AdZWxCcQVG871gpb3Qd6EP2PEKAKKRJ1pY");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeDogecoin, privateKey), "DNRTC6GZ5evmM7BZWwPqF54fyDqUqULMyu");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeSemux, privateKey), "0x1574f7f969f41e030a75677af25bd9373b9c87f1");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeZilliqa, privateKey), "zil1j2cvtd7j9n7fnxfv2r3neucjw8tp4xz9sp07v4");    
 }
 
 } // namespace TW
