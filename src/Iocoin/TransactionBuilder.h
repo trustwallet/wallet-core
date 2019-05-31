@@ -64,7 +64,7 @@ struct TransactionBuilder {
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
-    static Transaction build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
+    static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
                              const std::string& changeAddress) {
         auto lockingScriptTo = Bitcoin::Script::buildForAddress(toAddress);
         if (lockingScriptTo.empty()) {
