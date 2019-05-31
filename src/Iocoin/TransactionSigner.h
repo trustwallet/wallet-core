@@ -46,6 +46,7 @@ class TransactionSigner {
         : input(input), plan(TransactionBuilder::plan(input)) {
         transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(),
                                                              input.change_address());
+	transaction.nTime = input.time();
     }
 
     /// Signs the transaction.

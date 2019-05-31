@@ -72,7 +72,7 @@ struct TransactionBuilder {
         }
 
         Transaction tx;
-	tx.nTime = plan.time;
+	//XXXX tx.nTime = plan.time;
         tx.outputs.push_back(Bitcoin::TransactionOutput(plan.amount, lockingScriptTo));
 
         if (plan.change > 0) {
