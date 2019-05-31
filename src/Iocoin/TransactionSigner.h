@@ -11,7 +11,8 @@
 #include "Bitcoin/TransactionPlan.h"
 #include "Transaction.h"
 #include "TransactionBuilder.h"
-#include "TransactionInput.h"
+//XXXX #include "TransactionInput.h"
+#include "Bitcoin/TransactionInput.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../Result.h"
@@ -28,7 +29,8 @@ template <typename Transaction>
 class TransactionSigner {
   private:
     /// Private key and redeem script provider for signing.
-    Proto::SigningInput input;
+    //XXXX Proto::SigningInput input;
+	  Bitcoin::Proto::SigningInput input;
 
   public:
     /// Transaction plan.
@@ -43,7 +45,8 @@ class TransactionSigner {
 
   public:
     /// Initializes a transaction signer with signing input.
-    TransactionSigner(Iocoin::Proto::SigningInput&& input)
+    //XXXX TransactionSigner(Iocoin::Proto::SigningInput&& input)
+    TransactionSigner(Bitcoin::Proto::SigningInput&& input)
         : input(input), plan(TransactionBuilder::plan(input)) {
         transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(),
                                                              input.change_address());
