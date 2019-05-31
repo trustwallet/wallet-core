@@ -20,7 +20,7 @@ namespace TW::Iocoin {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
-    static Bitcoin::TransactionPlan plan(const Iocoin::Proto::SigningInput& input) {
+    static TransactionPlan plan(const Iocoin::Proto::SigningInput& input) {
         auto plan = Bitcoin::TransactionPlan();
         plan.amount = input.amount();
 	//XXXX plan.time = input.time();
