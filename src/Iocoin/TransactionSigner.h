@@ -22,13 +22,6 @@
 
 namespace TW::Iocoin {
 
-struct S_H
-{
-  Data sig;
-  std::string hashStr = "T1";
-  unsigned long hashSize=0;
-};
-
 /// Helper class that performs Iocoin transaction signing.
 template <typename Transaction>
 class TransactionSigner {
@@ -60,11 +53,6 @@ class TransactionSigner {
     /// \returns the signed transaction or an error.
     Result<Transaction> sign();
 
-    Data sig() { return s_h.sig; }
-    std::string sighash() { return s_h.hashStr; }
-    unsigned long sighashSize() { return s_h.hashSize; }
-
-    S_H s_h;
   private:
     Result<void> sign(Bitcoin::Script script, size_t index, const Proto::UnspentTransaction& utxo);
     Result<std::vector<Data>> signStep(Bitcoin::Script script, size_t index,
