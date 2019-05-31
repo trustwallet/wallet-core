@@ -4807,8 +4807,13 @@ START_TEST(test_schnorr_sign_verify) {
 
   const ecdsa_curve *curve = &secp256k1;
   bignum256 k;
-  uint8_t priv_key[32], buf_raw[32];
+  uint8_t priv_key[32];
+  uint8_t pub_key[33];
+  uint8_t buf_raw[32];
   schnorr_sign_pair result;
+  schnorr_sign_pair expected;
+  int res;
+
   for (size_t i = 0; i < sizeof(test_cases) / sizeof(*test_cases); i++) {
     memcpy(priv_key, fromhex(test_cases[i].priv_key), 32);
     memcpy(&buf_raw, fromhex(test_cases[i].k_hex), 32);
@@ -4816,20 +4821,14 @@ START_TEST(test_schnorr_sign_verify) {
     schnorr_sign(curve, priv_key, &k, (const uint8_t *)test_cases[i].message,
                  strlen(test_cases[i].message), &result);
 
-    schnorr_sign_pair expected;
-
-    memcpy(&buf_raw, fromhex(test_cases[i].s_hex), 32);
-    bn_read_be(buf_raw, &expected.s);
-    memcpy(&buf_raw, fromhex(test_cases[i].r_hex), 32);
-    bn_read_be(buf_raw, &expected.r);
+    memcpy(&expected.s, fromhex(test_cases[i].s_hex), 32);
+    memcpy(&expected.r, fromhex(test_cases[i].r_hex), 32);
 
     ck_assert_mem_eq(&expected.r, &result.r, 32);
     ck_assert_mem_eq(&expected.s, &result.s, 32);
 
-    uint8_t pub_key[33];
     ecdsa_get_public_key33(curve, priv_key, pub_key);
-    int res =
-        schnorr_verify(curve, pub_key, (const uint8_t *)test_cases[i].message,
+    res = schnorr_verify(curve, pub_key, (const uint8_t *)test_cases[i].message,
                        strlen(test_cases[i].message), &result);
     ck_assert_int_eq(res, 0);
   }
@@ -4853,61 +4852,89 @@ START_TEST(test_schnorr_fail_verify) {
 
   const ecdsa_curve *curve = &secp256k1;
   bignum256 k;
-  uint8_t priv_key[32], buf_raw[32];
+  bignum256 bn_temp;
+  uint8_t priv_key[32];
+  uint8_t pub_key[33];
+  uint8_t buf_raw[32];
+  schnorr_sign_pair result;
+  schnorr_sign_pair bad_result;
+  int res;
+
   memcpy(priv_key, fromhex(test_case.priv_key), 32);
   memcpy(&buf_raw, fromhex(test_case.k_hex), 32);
   bn_read_be(buf_raw, &k);
 
-  schnorr_sign_pair result;
   schnorr_sign(curve, priv_key, &k, (const uint8_t *)test_case.message,
                strlen(test_case.message), &result);
-  uint8_t pub_key[33];
+  
   ecdsa_get_public_key33(curve, priv_key, pub_key);
 
-  // OK
-  int res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+  // Test result = 0 (OK)
+  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
                            strlen(test_case.message), &result);
   ck_assert_int_eq(res, 0);
 
+  // Test result = 1 (empty message)
   res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message, 0,
                        &result);
   ck_assert_int_eq(res, 1);
 
-  schnorr_sign_pair bad_result;
-
-  bn_copy(&result.s, &bad_result.s);
-  bn_zero(&bad_result.r);
-  // r == 0
+  // Test result = 2 (r = 0)
+  bn_zero(&bn_temp);
+  bn_write_be(&bn_temp, bad_result.r);
+  memcpy(bad_result.s, result.s, 32);
   res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 2);
 
-  bn_copy(&result.r, &bad_result.r);
-  bn_zero(&bad_result.s);
-  // s == 0
+  // Test result = 3 (s = 0)
+  memcpy(bad_result.r, result.r, 32);
+  bn_zero(&bn_temp);
+  bn_write_be(&bn_temp, bad_result.s);
   res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 3);
 
-  bn_copy(&result.s, &bad_result.s);
-  bn_copy(&curve->order, &bad_result.r);
-  bn_addi(&bad_result.r, 1);
-  // r == curve->order + 1
+  // Test result = 4 (curve->order < r)
+  bn_copy(&curve->order, &bn_temp);
+  bn_addi(&bn_temp, 1);
+  bn_write_be(&bn_temp, bad_result.r);
+  memcpy(bad_result.s, result.s, 32);
   res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 4);
 
-  bn_copy(&result.r, &bad_result.r);
-  bn_copy(&curve->order, &bad_result.s);
-  bn_addi(&bad_result.s, 1);
-  // s == curve->order + 1
+  // Test result = 5 (curve->order < s)
+  memcpy(bad_result.r, result.r, 32);
+  bn_copy(&curve->order, &bn_temp);
+  bn_addi(&bn_temp, 1);
+  bn_write_be(&bn_temp, bad_result.s);
   res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);
   ck_assert_int_eq(res, 5);
 
-  bn_copy(&result.r, &bad_result.r);
-  bn_copy(&result.s, &bad_result.s);
-  // change message
+  // Test result = 6 (curve->order = r)
+  bn_copy(&curve->order, &bn_temp);
+  bn_write_be(&bn_temp, bad_result.r);
+  memcpy(bad_result.s, result.s, 32);
+  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+                       strlen(test_case.message), &bad_result);
+  ck_assert_int_eq(res, 6);
+
+  // Test result = 7 (curve->order = s)
+  memcpy(bad_result.r, result.r, 32);
+  bn_copy(&curve->order, &bn_temp);
+  bn_write_be(&bn_temp, bad_result.s);
+  res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
+                       strlen(test_case.message), &bad_result);
+  ck_assert_int_eq(res, 7);
+
+  // Test result = 8 (failed ecdsa_read_pubkey)
+  // TBD
+
+  // Test result = 10 (r != r')
+  memcpy(bad_result.r, result.r, 32);
+  memcpy(bad_result.s, result.s, 32);
   test_case.message = "12";
   res = schnorr_verify(curve, pub_key, (const uint8_t *)test_case.message,
                        strlen(test_case.message), &bad_result);

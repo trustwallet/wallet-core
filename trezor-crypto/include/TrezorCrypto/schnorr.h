@@ -32,7 +32,8 @@ extern "C"
 
 // result of sign operation
 typedef struct {
-  bignum256 r, s;
+  uint8_t r[32];
+  uint8_t s[32];
 } schnorr_sign_pair;
 
 // sign/verify returns 0 if operation succeeded
@@ -44,9 +45,6 @@ int schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key,
 int schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key,
                    const uint8_t *msg, const uint32_t msg_len,
                    const schnorr_sign_pair *sign);
-
-void schnorr_to_hex_str(const schnorr_sign_pair *sign, char hex_str[128]);
-void schnorr_from_hex_str(const char hex_str[128], schnorr_sign_pair *sign);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
