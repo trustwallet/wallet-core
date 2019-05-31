@@ -666,10 +666,10 @@
         "name": "Bitshares",
         "symbol": "BTS",
         "decimals": 5,
+        "blockchain": "EOS",
         "derivationPath": "m/44'/308'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "transactionPath": "/tx/",
-        "explorer": "https://cryptofresh.com"
+        "explorer": "https://cryptofresh.com/tx/"
     }
 ]
