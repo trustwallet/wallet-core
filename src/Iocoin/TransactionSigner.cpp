@@ -160,15 +160,12 @@ Data TransactionSigner<Transaction>::createSignature(const Transaction& transact
                                                      ) {
     auto sighash = transaction.getSignatureHash(script, index, input.hash_type()
                                                 );
-    s_h.hashSize = sighash.size();
-    s_h.hashStr = hex(sighash.begin(), sighash.end());
     auto pk = PrivateKey(key);
     auto sig = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
     if (sig.empty()) {
         return {};
     }
     sig.push_back(static_cast<uint8_t>(input.hash_type()));
-    s_h.sig = sig;
     return sig;
 }
 
