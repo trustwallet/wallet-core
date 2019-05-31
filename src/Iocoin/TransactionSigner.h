@@ -8,6 +8,7 @@
 
 #include "Bitcoin/Amount.h"
 #include "Bitcoin/Script.h"
+#include "Bitcoin/TransactionPlan.h"
 #include "Transaction.h"
 #include "TransactionBuilder.h"
 #include "TransactionInput.h"
@@ -31,7 +32,7 @@ class TransactionSigner {
 
   public:
     /// Transaction plan.
-    TransactionPlan plan;
+    Bitcoin::TransactionPlan plan;
 
     /// Transaction being signed.
     Transaction transaction;
