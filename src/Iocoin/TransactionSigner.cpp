@@ -71,7 +71,7 @@ Result<void> TransactionSigner<Transaction>::sign(Bitcoin::Script script, size_t
     }
 
     signedInputs[index] =
-        TransactionInput(txin.previousOutput, Bitcoin::Script(pushAll(results)));
+        Bitcoin::TransactionInput(txin.previousOutput, Bitcoin::Script(pushAll(results)));
     return Result<void>::success();
 }
 
