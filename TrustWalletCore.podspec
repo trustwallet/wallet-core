@@ -155,7 +155,8 @@ Pod::Spec.new do |s|
     'GCC_WARN_UNUSED_FUNCTION' => 'NO',
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
-    'OTHER_CFLAGS' => '-DHAVE_PTHREAD=1'
+    'OTHER_CFLAGS' => '-DHAVE_PTHREAD=1',
+    'OTHER_CPLUSPLUSFLAGS' => '$(OTHER_CFLAGS) -fno-aligned-allocation'
   }
   s.pod_target_xcconfig = {
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
