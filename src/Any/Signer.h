@@ -6,30 +6,30 @@
 
 #pragma once
 
-#include "proto/Signer.pb.h"
+#include "proto/Any.pb.h"
 
 enum SignerErrorCode {
     SignerErrorCodeNotSupported = 1,
     SignerErrorCodeInvalidJson = 2,
 };
 
-namespace TW {
+namespace TW::Any {
 /// Helper class to perform json signing
-class AnySigner {
+class Signer {
 public:
-    explicit AnySigner(const Signer::Proto::SigningInput& input) : input(input) {}
+    explicit Signer(const Proto::SigningInput& input) : input(input) {}
 
-    Signer::Proto::SigningOutput sign() const noexcept;
+    Proto::SigningOutput sign() const noexcept;
 private:
-    const Signer::Proto::SigningInput& input;
+    const Proto::SigningInput& input;
 
-    void parse(const std::string &transaction, google::protobuf::Message *message, Signer::Proto::SigningOutput &output) const noexcept;
+    void parse(const std::string &transaction, google::protobuf::Message *message, Proto::SigningOutput &output) const noexcept;
 };
 
 }
 
 /// Wrapper for C interface.
 struct TWAnySigner {
-    TW::AnySigner impl;
+    TW::Any::Signer impl;
 };
 

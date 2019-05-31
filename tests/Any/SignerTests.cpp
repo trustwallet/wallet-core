@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "AnySigner.h"
+#include "Any/Signer.h"
 #include "Coin.h"
 #include "Base64.h"
 
@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Signer;
+using namespace TW::Any;
 
 TEST(Signer, CosmosTransactionSign) {
     auto transaction = "{\"accountNumber\":\"8733\",\"chainId\":\"cosmoshub-2\",\"fee\":{\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"5000\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"sendCoinsMessage\":{\"fromAddress\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"toAddress\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\",\"amounts\":[{\"denom\":\"uatom\",\"amount\":\"995000\"}]}}";
@@ -21,7 +21,7 @@ TEST(Signer, CosmosTransactionSign) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeCosmos);
 
-    auto signer = AnySigner(input);
+    auto signer = Signer(input);
     auto output = signer.sign();
 
     ASSERT_FALSE(output.has_error());
@@ -37,7 +37,7 @@ TEST(Signer, BinanceTransactionSign) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeBinance);
 
-    auto signer = AnySigner(input);
+    auto signer = Signer(input);
     auto output = signer.sign();
 
     ASSERT_FALSE(output.has_error());
@@ -53,7 +53,7 @@ TEST(Signer, EthereumTransactionSign) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeEthereum);
 
-    auto signer = AnySigner(input);
+    auto signer = Signer(input);
     auto output = signer.sign();
 
     ASSERT_FALSE(output.has_error());
@@ -69,7 +69,7 @@ TEST(Signer, NetworkNotSupported) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeBitcoinCash);
 
-    auto signer = AnySigner(input);
+    auto signer = Signer(input);
     auto output = signer.sign();
 
     ASSERT_TRUE(output.has_error());
@@ -84,7 +84,7 @@ TEST(Signer, InvalidJsonFormat) {
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeCosmos);
 
-    auto signer = AnySigner(input);
+    auto signer = Signer(input);
     auto output = signer.sign();
 
     ASSERT_TRUE(output.has_error());
