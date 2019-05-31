@@ -9,7 +9,8 @@
 #include "Transaction.h"
 #include "../Bitcoin/TransactionOutput.h"
 #include "TransactionPlan.h"
-#include "UnspentSelector.h"
+//XXXX #include "UnspentSelector.h"
+#include "../Bitcoin/UnspentSelector.h"
 #include "../proto/Iocoin.pb.h"
 
 #include <algorithm>
@@ -26,8 +27,8 @@ struct TransactionBuilder {
         auto output_size = 2;
         auto calculator =
             UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
-        auto unspentSelector = UnspentSelector(calculator);
-        if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
+        auto unspentSelector = Bitcoin::UnspentSelector(calculator);
+        if (input.use_max_amount() && Bitcoin::UnspentSelector::sum(input.utxo()) == plan.amount) {
             output_size = 1;
             auto newAmount = 0;
             auto input_size = 0;
@@ -50,7 +51,7 @@ struct TransactionBuilder {
         plan.fee =
             unspentSelector.calculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
 
-        plan.availableAmount = UnspentSelector::sum(plan.utxos);
+        plan.availableAmount = Bitcoin::UnspentSelector::sum(plan.utxos);
 
         if (plan.amount > plan.availableAmount - plan.fee) {
             plan.amount = std::max(Bitcoin::Amount(0), plan.availableAmount - plan.fee);
