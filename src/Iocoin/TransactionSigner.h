@@ -55,14 +55,6 @@ class TransactionSigner {
                                                              input.change_address());
     }
 
-    /// Initializes a transaction signer with signing input, a transaction, and
-    /// a hash type.
-    TransactionSigner(Iocoin::Proto::SigningInput&& input, const TransactionPlan& plan)
-        : input(input), plan(plan) {
-        transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(),
-                                                             input.change_address());
-    }
-
     /// Signs the transaction.
     ///
     /// \returns the signed transaction or an error.
