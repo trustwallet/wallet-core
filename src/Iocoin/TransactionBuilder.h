@@ -9,8 +9,7 @@
 #include "Transaction.h"
 #include "../Bitcoin/TransactionOutput.h"
 #include "TransactionPlan.h"
-//XXXX #include "UnspentSelector.h"
-#include "../Bitcoin/UnspentSelector.h"
+#include "UnspentSelector.h"
 #include "../proto/Iocoin.pb.h"
 //XXXX #include "../proto/Bitcoin.pb.h"
 
@@ -27,7 +26,7 @@ struct TransactionBuilder {
 
         auto output_size = 2;
         auto calculator =
-            Bitcoin::UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
+            UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
         auto unspentSelector = Bitcoin::UnspentSelector(calculator);
         if (input.use_max_amount() && Bitcoin::UnspentSelector::sum(input.utxo()) == plan.amount) {
             output_size = 1;
