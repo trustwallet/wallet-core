@@ -1,6 +1,5 @@
 ## Full list
 
-
 | Index | Name | Symbol | Logo | URL |
 |--------|------|--------|------| --- |
 | 0 | Bitcoin | BTC | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/0.png" width="32" />| https://bitcoin.org
@@ -51,3 +50,4 @@
 | 31102 | Ethersocial | ESN | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/31102.png" width="32" />| https://ethersocial.org/
 | 163 | Ellaism | ELLA | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/163.png" width="32" />| https://ellaism.org/
 | 111 | Ark | ARK | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/111.png" width="32" />| http://ark.io
+| 20 | DigiByte | DGB | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/20.png" width="32" />| https://www.digibyte.io

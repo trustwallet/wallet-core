@@ -12,8 +12,7 @@ public extension CoinType {
         switch self {
         case .binance, .cosmos:
             if let addr = CosmosAddress(string: string), addr.hrp == hrp { return addr }
-        case .bitcoin, .litecoin,
-             .viacoin, .qtum:
+        case .bitcoin, .litecoin, .viacoin, .qtum, .digiByte:
             if let addr = SegwitAddress(string: string), addr.hrp == hrp {
                 return addr
             } else if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
@@ -101,7 +100,7 @@ public extension CoinType {
         case .litecoin:
             return Set([P2SHPrefix.litecoin.rawValue, P2PKHPrefix.litecoin.rawValue])
         case .lux:
-            return Set([P2SHPrefix.lux.rawValue, P2PKHPrefix.litecoin.rawValue])
+            return Set([P2SHPrefix.s.rawValue, P2PKHPrefix.litecoin.rawValue])
         case .groestlcoin:
             return Set([P2SHPrefix.bitcoin.rawValue, P2PKHPrefix.groestlcoin.rawValue])
         case .dash:
@@ -114,7 +113,9 @@ public extension CoinType {
         case .qtum:
             return Set([P2PKHPrefix.qtum.rawValue])
         case .dogecoin:
-            return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.dogecoin.rawValue])
+            return Set([P2SHPrefix.dogecoin.rawValue, P2PKHPrefix.d.rawValue])
+        case .digiByte:
+            return Set([P2SHPrefix.bitcoin.rawValue, P2SHPrefix.s.rawValue, P2PKHPrefix.d.rawValue])
         case .viacoin:
             return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
         case .monetaryUnit:
@@ -135,6 +136,8 @@ public extension CoinType {
             return .binance
         case .cosmos:
             return .cosmos
+        case .digiByte:
+            return .digiByte
         case .litecoin:
             return .litecoin
         case .groestlcoin:

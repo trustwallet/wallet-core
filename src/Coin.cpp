@@ -74,7 +74,11 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Decred::Address::isValid(string);
 
     case TWCoinTypeDogecoin:
-        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDogecoin}, {TWP2SHPrefixDogecoin}});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixD}, {TWP2SHPrefixDogecoin}});
+
+    case TWCoinTypeDigiByte:
+        return Bitcoin::SegwitAddress::isValid(string, HRP_DIGIBYTE) ||
+               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixD}, {TWP2SHPrefixBitcoin}, {TWP2SHPrefixS}});
 
     case TWCoinTypeGroestlcoin:
         return Bitcoin::SegwitAddress::isValid(string, HRP_GROESTLCOIN) ||
@@ -156,7 +160,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeLux:
         // same p2pkh prefix as litecoin
-        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLux}});
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixS}});
 
     case TWCoinTypeNULS:
         return NULS::Address::isValid(string);
@@ -186,9 +190,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeBinance:
         return Cosmos::Address(HRP_BINANCE, publicKey).string();
 
-    case TWCoinTypeCosmos:
-        return Cosmos::Address(HRP_COSMOS, publicKey).string();
-
     case TWCoinTypeBitcoin:
         return Bitcoin::SegwitAddress(publicKey, 0, HRP_BITCOIN).string();
 
@@ -198,6 +199,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeBravoCoin:
         return Bravo::Address(publicKey).string();
 
+    case TWCoinTypeCosmos:
+        return Cosmos::Address(HRP_COSMOS, publicKey).string();
+
     case TWCoinTypeDash:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixDash).string();
 
@@ -205,7 +209,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Decred::Address(publicKey).string();
 
     case TWCoinTypeDogecoin:
-        return Bitcoin::Address(publicKey, TWP2PKHPrefixDogecoin).string();
+        return Bitcoin::Address(publicKey, TWP2PKHPrefixD).string();
+
+    case TWCoinTypeDigiByte:
+        return Bitcoin::SegwitAddress(publicKey, 0, HRP_DIGIBYTE).string();
 
     case TWCoinTypeGroestlcoin:
         return Bitcoin::SegwitAddress(publicKey, 0, HRP_GROESTLCOIN).string();

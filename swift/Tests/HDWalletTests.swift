@@ -53,6 +53,15 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("bc1qumwjg8danv2vm29lp5swdux4r60ezptzz7ce85", address)
     }
 
+    func testDeriveDigiByte() {
+        let digibye = CoinType.digiByte
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: digibye)
+        let address = digibye.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("dgb1q7qk2vvetgldgq0eeh3ytsky2380l9wuessmhe3", address)
+    }
+
     func testDeriveEthereum() {
         let ethereum = CoinType.ethereum
         let key = HDWallet.test.getKeyForCoin(coin: ethereum)
