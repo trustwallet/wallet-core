@@ -11,7 +11,6 @@
 #include "TransactionPlan.h"
 #include "UnspentSelector.h"
 #include "../proto/Iocoin.pb.h"
-//XXXX #include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
 
@@ -22,7 +21,6 @@ struct TransactionBuilder {
     static TransactionPlan plan(const Iocoin::Proto::SigningInput& input) {
         auto plan = TransactionPlan();
         plan.amount = input.amount();
-	//XXXX plan.time = input.time();
 
         auto output_size = 2;
         auto calculator =
@@ -71,7 +69,6 @@ struct TransactionBuilder {
         }
 
         Transaction tx;
-	//XXXX tx.nTime = plan.time;
         tx.outputs.push_back(Bitcoin::TransactionOutput(plan.amount, lockingScriptTo));
 
         if (plan.change > 0) {
