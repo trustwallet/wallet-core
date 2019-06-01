@@ -22,6 +22,7 @@ struct TransactionBuilder {
         auto plan = TransactionPlan();
         plan.amount = input.amount();
 
+	assert(input.coin_type() == 295);
         auto output_size = 2;
         auto calculator =
           Bitcoin::UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
