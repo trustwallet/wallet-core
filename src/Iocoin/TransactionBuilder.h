@@ -22,10 +22,10 @@ struct TransactionBuilder {
         auto plan = TransactionPlan();
         plan.amount = input.amount();
 
-	assert(input.coin_type() == 295);
+	//assert(input.coin_type() == 295);
         auto output_size = 2;
         auto calculator =
-          Bitcoin::UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
+          Bitcoin::UnspentCalculator::getCalculator(static_cast<TWCoinType>(TWCoinTypeIocoin));
         auto unspentSelector = UnspentSelector(calculator);
         if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
             output_size = 1;
