@@ -9,7 +9,7 @@
 #include <numeric>
 #include <vector>
 //XXXX
-#include "UnspentCalculator.h"
+#include "Bitcoin/UnspentCalculator.h"
 #include "../proto/Iocoin.pb.h"
 
 namespace TW::Iocoin {
@@ -27,9 +27,9 @@ class UnspentSelector {
     std::vector<Proto::UnspentTransaction> select(const T& utxos, int64_t targetValue,
                                                   int64_t byteFee, int64_t numOutputs = 2);
 //XXXX
-    UnspentCalculator calculator;
+    //Bitcoin::UnspentCalculator calculator;
 
-    UnspentSelector() : calculator(UnspentCalculator()) {}
+    //UnspentSelector() : calculator(UnspentCalculator()) {}
     explicit UnspentSelector(UnspentCalculator calculator) : calculator(std::move(calculator)) {}
 
   public:
