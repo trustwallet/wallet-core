@@ -9,6 +9,7 @@
 #include "Transaction.h"
 #include "TransactionPlan.h"
 #include "UnspentSelector.h" //XXXX
+#include "Bitcoin/UnspentCalculator.h" //XXXX
 #include "../proto/Iocoin.pb.h"
 
 #include <algorithm>
