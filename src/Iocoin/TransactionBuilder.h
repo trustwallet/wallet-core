@@ -49,7 +49,7 @@ struct TransactionBuilder {
         plan.fee =
             unspentSelector.calculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
          
-	plan.fee = 1000 * (plan.fee / 1024 + plan.fee)
+	plan.fee = 1000 * (plan.fee / 1024 + plan.fee);
         plan.availableAmount = UnspentSelector::sum(plan.utxos);
 
         if (plan.amount > plan.availableAmount - plan.fee) {
