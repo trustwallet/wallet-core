@@ -7,7 +7,7 @@ using namespace TW::Bravo;
 
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction, int(*canonicalChecker)(uint8_t by, uint8_t sig[64])) const {
     if (!transaction.isValid()) {
-        throw std::invalid_argument("Invalid Transaction!");;
+        throw std::invalid_argument("Invalid Transaction!");
     }
 
     Data result = privateKey.sign(hash(transaction), TWCurveSECP256k1, canonicalChecker);
