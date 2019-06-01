@@ -9,7 +9,7 @@
 #include <numeric>
 #include <vector>
 //XXXX
-#include "Bitcoin/UnspentCalculator.h"
+#include "UnspentCalculator.h"
 #include "../proto/Iocoin.pb.h"
 
 namespace TW::Iocoin {
