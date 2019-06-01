@@ -5,12 +5,26 @@ using namespace TW::Bitcoin;
 
 UnspentCalculator UnspentCalculator::getCalculator(TWCoinType coinType) {
     switch (coinType) {
-    default: {
+    case TWCoinTypeZelcash:
+    case TWCoinTypeZcash: {
+        auto calc = [](size_t inputs, size_t outputs, int64_t byteFee) -> int64_t { return 10000; };
+        auto calcInput = [](int64_t byteFee) -> int64_t { return 0; };
+        return UnspentCalculator(calc, calcInput);
+    }
+    case TWCoinTypeGroestlcoin: {
+        auto calc = [](size_t inputs, size_t outputs, int64_t byteFee) -> int64_t { return 20000; };
+        auto calcInput = [](int64_t byteFee) -> int64_t { return 0; };
+        return UnspentCalculator(calc, calcInput);
+    }
+    case TWCoinTypeIocoin: {
         auto calc = [](size_t inputs, size_t outputs, int64_t byteFee) -> int64_t { 
     const auto txsize = ((148 * inputs) + (34 * outputs) + 10);
     return ((int64_t(txsize) / 1024) * byteFee + byteFee) * 1000; };
+        //XXXX auto calcInput = [](int64_t byteFee) -> int64_t { return 0; };
         return UnspentCalculator(calc, calculateSingleInputFee);
     }
+    default:
+        return UnspentCalculator();
     }
 }
 
