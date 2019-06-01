@@ -24,8 +24,7 @@ struct TransactionBuilder {
 
         auto output_size = 2;
         auto calculator =
-          //Bitcoin::UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
-          Bitcoin::UnspentCalculator::getCalculator(static_cast<TWCoinType>(295));
+          Bitcoin::UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
         auto unspentSelector = UnspentSelector(calculator);
         if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
             output_size = 1;
