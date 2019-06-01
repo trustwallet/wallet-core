@@ -28,8 +28,8 @@ class Address {
 
   private:
 
-    static bool checkType(const std::string& type);
-    static bool checkPayload(const std::string& payload);
+    static bool checkType(const std::string &type);
+    static bool checkPayload(const std::string &payload);
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {

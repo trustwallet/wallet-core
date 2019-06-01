@@ -19,7 +19,7 @@ class Signer {
     static Data parseRawTransaction(const std::string &transaction);
     static Data buildRlpTxRaw(Data &txRaw, Data &sigRaw);
     static Data buildMessageToSign(Data &txRaw);
-    static Proto::SigningOutput createProtoOutput(std::string signature, const std::string& signedTx);
+    static Proto::SigningOutput createProtoOutput(std::string &signature, const std::string &signedTx);
 };
 
 } // namespace TW::Aeternity

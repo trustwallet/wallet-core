@@ -18,7 +18,7 @@ bool TW::Aeternity::Address::isValid(const std::string &string) {
     if (string.empty()) {
         return false;
     } else {
-        uint8_t prefixSize = Identifiers::prefixAccountPubkey.size();
+        auto prefixSize = Identifiers::prefixAccountPubkey.size();
         auto type = string.substr(0, prefixSize);
         auto payload = string.substr(prefixSize, string.size() - 1);
         return checkType(type) && checkPayload(payload);

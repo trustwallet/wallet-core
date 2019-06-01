@@ -32,7 +32,7 @@ std::string TW::Aeternity::Transaction::encode() {
 
 //// buildIDTag assemble an id() object
 //// see https://github.com/aeternity/protocol/blob/epoch-v0.22.0/serializations.md#the-id-type
-TW::Data TW::Aeternity::Transaction::buildTag(std::string &address) {
+TW::Data TW::Aeternity::Transaction::buildTag(const std::string &address) {
     auto payload = address.substr(Identifiers::prefixTransaction.size(), address.size());
 
     auto data = Data();

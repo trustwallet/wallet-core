@@ -18,14 +18,12 @@ class ChecksumEncoder {
 
     /// Encode a byte array into base64 with checksum and a prefix
     static std::string encode(const std::string &prefix, const TW::Data &rawTx) {
-        auto hexRawTx = hex(rawTx);
-        std::vector<unsigned char> arrayOfByte(checkSumSize);
         auto checksum = Hash::sha256(Hash::sha256(rawTx));
-        std::copy(std::begin(checksum), std::end(checksum), std::begin(arrayOfByte));
+        std::vector<unsigned char> checksumPart(checksum.begin(), checksum.begin() + 4);
 
         auto data = Data();
         append(data, rawTx);
-        append(data, arrayOfByte);
+        append(data, checksumPart);
 
         return prefix + TW::Base64::encode(data);
     }

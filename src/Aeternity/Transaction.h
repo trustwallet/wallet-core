@@ -18,27 +18,27 @@ class Transaction {
 
   public:
     /// sender address
-    std::string sender_id;
+    std::string &sender_id;
     /// recepient address
-    std::string recipient_id;
+    std::string &recipient_id;
 
     uint64_t amount;
 
     uint64_t fee;
 
     /// message
-    std::string payload;
+    std::string &payload;
 
     /// the block time that tx live on the mempool, you can use 0 by default, or >latest block
     uint64_t ttl;
     uint64_t nonce;
 
     Transaction(
-        std::string sender_id, //todo
-        std::string recipientId,
+        std::string &sender_id,
+        std::string &recipientId,
         uint64_t amount,
         uint64_t fee,
-        std::string payload,
+        std::string &payload,
         uint64_t ttl,
         uint64_t nonce
     )
@@ -52,7 +52,7 @@ class Transaction {
 
     std::string encode();
 
-    static Data buildTag(std::string &address);
+    static Data buildTag(const std::string &address);
 };
 
 } // namespace TW::Aeternity

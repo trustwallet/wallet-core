@@ -71,14 +71,10 @@ Data Signer::buildMessageToSign(Data &txRaw) {
     return data;
 }
 
-Proto::SigningOutput Signer::createProtoOutput(std::string signature, const std::string& signedTx) {
+Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std::string& signedTx) {
     auto output = Proto::SigningOutput();
 
-    Data sigData(signature.begin(), signature.end());
-    output.set_signature(sigData.data(), sigData.size());
-
-    const Data txData(signedTx.begin(), signedTx.end());
-    output.set_encoded(txData.data(), txData.size());
-
+    output.set_signature(signature);
+    output.set_encoded(signedTx);
     return output;
 }
