@@ -48,7 +48,7 @@ struct TransactionBuilder {
         plan.fee =
             unspentSelector.calculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
          
-        plan.availableAmount = UnspentSelector::sum(plan.utxos);
+        plan.availableAmount = Bitcoin::UnspentSelector::sum(plan.utxos);
 
         if (plan.amount > plan.availableAmount - plan.fee) {
             plan.amount = std::max(Bitcoin::Amount(0), plan.availableAmount - plan.fee);
