@@ -30,7 +30,7 @@ class UnspentSelector {
     //Bitcoin::UnspentCalculator calculator;
 
     //UnspentSelector() : calculator(UnspentCalculator()) {}
-    explicit UnspentSelector(UnspentCalculator calculator) : calculator(std::move(calculator)) {}
+    explicit UnspentSelector(Bitcoin::UnspentCalculator calculator) : calculator(std::move(calculator)) {}
 
   public:
     template <typename T>
