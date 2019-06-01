@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
 
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.0'
 
