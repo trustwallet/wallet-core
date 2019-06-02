@@ -7,11 +7,10 @@
 #pragma once
 
 #include "Transaction.h"
-#include "Bitcoin/TransactionPlan.h" //XXXX
-#include "Bitcoin/UnspentSelector.h" //XXXX
+#include "TransactionPlan.h" //XXXX
+#include "UnspentSelector.h" //XXXX
 #include "Bitcoin/UnspentCalculator.h" //XXXX
 #include "../proto/Iocoin.pb.h"
-#include "../proto/Bitcoin.pb.h" //XXXX
 
 #include <algorithm>
 
@@ -19,16 +18,15 @@ namespace TW::Iocoin {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
-    static Bitcoin::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
-        auto plan = Bitcoin::TransactionPlan();
+    static TransactionPlan plan(const Proto::SigningInput& input) {
+        auto plan = TransactionPlan();
         plan.amount = input.amount();
 
-	//assert(input.coin_type() == 295);
         auto output_size = 2;
         auto calculator =
           Bitcoin::UnspentCalculator::getCalculator(static_cast<TWCoinType>(TWCoinTypeIocoin));
-        auto unspentSelector = Bitcoin::UnspentSelector(calculator);
-        if (input.use_max_amount() && Bitcoin::UnspentSelector::sum(input.utxo()) == plan.amount) {
+        auto unspentSelector = UnspentSelector(calculator);
+        if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
             output_size = 1;
             auto newAmount = 0;
             auto input_size = 0;
@@ -51,7 +49,7 @@ struct TransactionBuilder {
         plan.fee =
             unspentSelector.calculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
          
-        plan.availableAmount = Bitcoin::UnspentSelector::sum(plan.utxos);
+        plan.availableAmount = UnspentSelector::sum(plan.utxos);
 
         if (plan.amount > plan.availableAmount - plan.fee) {
             plan.amount = std::max(Bitcoin::Amount(0), plan.availableAmount - plan.fee);
@@ -63,7 +61,7 @@ struct TransactionBuilder {
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
-    static Transaction build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
+    static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
                              const std::string& changeAddress) {
         auto lockingScriptTo = Bitcoin::Script::buildForAddress(toAddress);
         if (lockingScriptTo.empty()) {
