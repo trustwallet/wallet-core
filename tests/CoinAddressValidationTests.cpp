@@ -237,4 +237,9 @@ TEST(Coin, validateAddressCosmos) {
     EXPECT_FALSE(validateAddress(TWCoinTypeCosmos, "xosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
 }
 
+TEST(Coin, validateAddressRavencoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeRavencoin, "RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeRavencoin, "XHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"));
+}
+
 } // namespace TW

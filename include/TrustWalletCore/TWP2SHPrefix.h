@@ -25,6 +25,7 @@ enum TWP2SHPrefix {
     TWP2SHPrefixZcoin = 0x07,
     TWP2SHPrefixS = 0x3F, // Lux and DigiByte
     TWP2SHPrefixMonetaryUnit = 0x4C,
+    TWP2SHPrefixRavencoin = 0x7a,
 };
 
 // Do not export TWP2SHPrefixGroestlcoin because it the same to
