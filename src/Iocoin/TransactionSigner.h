@@ -44,11 +44,16 @@ class TransactionSigner {
 
   public:
     /// Initializes a transaction signer with signing input.
+    TransactionSigner(Bitcoin::Proto::SigningInput&& input, uint32_t t)
+        : input(input), plan(TransactionBuilder::plan(input)) {
+        transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(),
+                                                             input.change_address());
+	transaction.nTime = t;
+    }
     TransactionSigner(Bitcoin::Proto::SigningInput&& input)
         : input(input), plan(TransactionBuilder::plan(input)) {
         transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(),
                                                              input.change_address());
-	transaction.nTime = input.time();
     }
 
     /// Signs the transaction.

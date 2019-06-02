@@ -54,7 +54,7 @@ input.set_change_address("in2MDub2nA6oT5evFXhEqk7dJdr1GzLmt1");
  auto hash = parse_hex("e6ea7a6b17f605a526938f45ce702ef4283f172b0d958c2d7f9a0bb4281a0ad5");
     utxo->mutable_out_point()->set_hash(hash.data(), hash.size());
 	    utxo->mutable_out_point()->set_index(0);
-  auto result = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input)).sign();
+  auto result = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input), 1557670493).sign();
       ASSERT_TRUE(result) << result.error();
     Data serialized;
     auto signedTx = result.payload();
