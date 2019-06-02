@@ -32,7 +32,7 @@ class TransactionSigner {
 
   public:
     /// Transaction plan.
-    Bitcoin::TransactionPlan plan;
+    TransactionPlan plan;
 
     /// Transaction being signed.
     Transaction transaction;
