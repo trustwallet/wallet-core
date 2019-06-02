@@ -11,6 +11,7 @@
 #include "UnspentSelector.h" //XXXX
 #include "Bitcoin/UnspentCalculator.h" //XXXX
 #include "../proto/Iocoin.pb.h"
+#include "../proto/Bitcoin.pb.h" //XXXX
 
 #include <algorithm>
 
@@ -18,7 +19,7 @@ namespace TW::Iocoin {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
-    static TransactionPlan plan(const Proto::SigningInput& input) {
+    static TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
         auto plan = TransactionPlan();
         plan.amount = input.amount();
 

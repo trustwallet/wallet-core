@@ -13,6 +13,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "proto/Iocoin.pb.h"
+#include "proto/Bitcoin.pb.h" //XXXX
 #include "TWTestUtilities.h"
 #include "Iocoin/Address.h"
 #include <TrustWalletCore/TWBitcoinScript.h>
@@ -34,7 +35,7 @@ TEST(IocoinSigner, KeyTest) {
 }
 
 TEST(IocoinSigning, SignP2PKH_1) {
-  Proto::SigningInput input;
+	Bitcoin::Proto::SigningInput input;
   input.set_hash_type(TWSignatureHashTypeAll);
  input.set_amount(100000000);
  input.set_byte_fee(100);
@@ -62,7 +63,7 @@ input.set_change_address("in2MDub2nA6oT5evFXhEqk7dJdr1GzLmt1");
 }
 
 TEST(IocoinSigning, SignP2PKH_2) {
-  Proto::SigningInput input;
+	Bitcoin::Proto::SigningInput input;
   input.set_hash_type(TWSignatureHashTypeAll);
  input.set_amount(50000000);
  input.set_byte_fee(100);
@@ -94,7 +95,7 @@ input.set_change_address("imoDDjYUVZa5fJadaLjsENNS6nunGTo5AD");
  ASSERT_EQ(hex(serialized), "01000000616fe05c01e3a07961c2044b0ac449c883717df4837406168e771fa6f8dba15c018b0483f6000000006b483045022100e4dc0073faf0735441fc85e1bac91fbbbda98622db0af927e5481360bd81a7ef02205f8917109a7c2c2539e52a0c8f7dbd2e5c7d1118ba551971013b86fe2c2ebe770121034d58f0a26ca65949a188b3d8d262f915c0e71ea31b14f9dd878557527aee1cbdffffffff0280f0fa02000000001976a914537559437955b94d415fc40728e359ae5349ac7988ace069f902000000001976a914d03dfba0277dbf161ffb13e30bb0e647855cf7d388ac00000000");
 }
 TEST(IocoinSigning, SignP2PKH_3) {
-  Proto::SigningInput input;
+	Bitcoin::Proto::SigningInput input;
   input.set_hash_type(TWSignatureHashTypeAll);
  input.set_amount(10000000);
  input.set_byte_fee(100);
@@ -128,7 +129,7 @@ input.set_change_address("ieAeT6f4PnBeCYCZeQrhsGEph5wGpg15Tk");
 }
 
 TEST(IocoinSigning, SignP2PKH_4) {
-  Proto::SigningInput input;
+	Bitcoin::Proto::SigningInput input;
   input.set_hash_type(TWSignatureHashTypeAll);
  input.set_amount(10000000);
  input.set_byte_fee(100);
@@ -191,7 +192,7 @@ ASSERT_EQ(address2.string(), "iaRR5dtiFb2TLrYk6ok6bUsULx8jze2DFA");
 }
 
 TEST(IocoinSigning, SignP2PKH_5) {
-  Proto::SigningInput input;
+	Bitcoin::Proto::SigningInput input;
   input.set_hash_type(TWSignatureHashTypeAll);
   input.set_amount(25000000);
   input.set_byte_fee(100);
