@@ -7,7 +7,7 @@
 #pragma once
 
 #include "../Data.h"
-#include "../proto/Iocoin.pb.h"
+//XXXX #include "../proto/Iocoin.pb.h"
 #include "../proto/Bitcoin.pb.h" //XXXX
 
 #include <algorithm>

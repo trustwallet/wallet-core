@@ -10,7 +10,7 @@
 #include "Bitcoin/TransactionPlan.h" //XXXX
 #include "Bitcoin/UnspentSelector.h" //XXXX
 #include "Bitcoin/UnspentCalculator.h" //XXXX
-#include "../proto/Iocoin.pb.h"
+//XXXX #include "../proto/Iocoin.pb.h"
 #include "../proto/Bitcoin.pb.h" //XXXX
 
 #include <algorithm>

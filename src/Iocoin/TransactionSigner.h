@@ -15,7 +15,7 @@
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../Result.h"
-#include "../proto/Iocoin.pb.h"
+//XXXX #include "../proto/Iocoin.pb.h"
 #include "../proto/Bitcoin.pb.h"
 
 #include <memory>
