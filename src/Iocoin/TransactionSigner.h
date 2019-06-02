@@ -16,6 +16,7 @@
 #include "../PrivateKey.h"
 #include "../Result.h"
 #include "../proto/Iocoin.pb.h"
+#include "../proto/Bitcoin.pb.h"
 
 #include <memory>
 #include <string>
@@ -43,7 +44,7 @@ class TransactionSigner {
 
   public:
     /// Initializes a transaction signer with signing input.
-    TransactionSigner(Proto::SigningInput&& input)
+    TransactionSigner(Bitoin::Proto::SigningInput&& input)
         : input(input), plan(TransactionBuilder::plan(input)) {
         transaction = TransactionBuilder::build<Transaction>(plan, input.to_address(),
                                                              input.change_address());
