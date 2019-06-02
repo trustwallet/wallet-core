@@ -77,7 +77,7 @@ Result<void> TransactionSigner<Transaction>::sign(Bitcoin::Script script, size_t
 
 template <typename Transaction>
 Result<std::vector<Data>> TransactionSigner<Transaction>::signStep(
-    Bitcoin::Script script, size_t index, const Iocoin::Proto::UnspentTransaction& utxo) {
+    Bitcoin::Script script, size_t index, const Bitcoin::Proto::UnspentTransaction& utxo) {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs = signedInputs;
     transactionToSign.outputs = transaction.outputs;
