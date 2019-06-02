@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "Bitcoin/OutPoint.h" //XXXX
+#include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "../Data.h"
 
