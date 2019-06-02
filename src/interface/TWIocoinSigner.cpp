@@ -18,12 +18,12 @@
 
 #include <algorithm>
 
-using namespace TW::Bitcoin;
+using namespace TW::Iocoin;
 
 struct TWIocoinSigner *_Nonnull TWIocoinSignerCreate(TW_Iocoin_Proto_SigningInput data) {
-	Bitcoin::Proto::SigningInput input;
+	TW::Bitcoin::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    return new TWIocoinSigner{ TransactionSigner<TW::Bitcoin::Transaction>(std::move(input)) };
+    return new TWIocoinSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input)) };
 }
 
 void TWIocoinSignerDelete(struct TWIocoinSigner *_Nonnull signer) {
