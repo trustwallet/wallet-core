@@ -12,8 +12,7 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-#include "proto/Iocoin.pb.h"
-#include "proto/Bitcoin.pb.h" //XXXX
+#include "proto/Bitcoin.pb.h"
 #include "TWTestUtilities.h"
 #include "Iocoin/Address.h"
 #include <TrustWalletCore/TWBitcoinScript.h>
@@ -69,7 +68,6 @@ TEST(IocoinSigning, SignP2PKH_2) {
  input.set_byte_fee(100);
  input.set_to_address("iaRR5dtiFb2TLrYk6ok6bUsULx8jze2DFA");
 input.set_change_address("imoDDjYUVZa5fJadaLjsENNS6nunGTo5AD");
- //XXXX input.set_time(1558212449);
  auto  utxoKey = parse_hex("36c39b26f6c5481d99056482d3a3698d41ea1dca342ae486e004d5f890f0c101");
   auto  privateKey = PrivateKey(utxoKey);
  const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -101,7 +99,6 @@ TEST(IocoinSigning, SignP2PKH_3) {
  input.set_byte_fee(100);
  input.set_to_address("iYhZVFoFtp1XVL7TPSYNeeJi7x9WJsHxYz");
 input.set_change_address("ieAeT6f4PnBeCYCZeQrhsGEph5wGpg15Tk");
- //XXXX input.set_time(1558307035);
  auto  utxoKey = parse_hex("5f65dac0c634e78fe0d84e96278449385b47d44a431a8bf96f054f0b553d085e");
   auto  privateKey = PrivateKey(utxoKey);
  const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -135,7 +132,6 @@ TEST(IocoinSigning, SignP2PKH_4) {
  input.set_byte_fee(100);
  input.set_to_address("ik4PotegQBUL574VtWvJgX2RoYcwGKVrQH");
 input.set_change_address("ibPvdeVwmpeyVLsk4p4n5ngCPdzF24S9kg");
- //XXXX input.set_time(1558620026);
 
  auto  utxoKey1 = parse_hex("18702dcddff023581b9ef2b84864af50d3974066dfc56c21fa6dee637245698b");
   auto  privateKey1 = PrivateKey(utxoKey1);
@@ -198,7 +194,6 @@ TEST(IocoinSigning, SignP2PKH_5) {
   input.set_byte_fee(100);
   input.set_to_address("ir7z3i3XfyDbzDNwgFg939eGiXvrXwoz6R");
   input.set_change_address("if7Mj9RNtctB4PtvingfqT7EyhagyrGxFp");
-  //XXXX input.set_time(1558693088);
 
   auto utxoKey1 = parse_hex("cc4f404144cfb7512a2570648a5a1418a52760c7a18bdbe17a155b1fecf838e9");
   auto  privateKey1 = PrivateKey(utxoKey1);
