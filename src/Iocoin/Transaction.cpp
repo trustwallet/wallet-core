@@ -8,7 +8,7 @@
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 
-#include <TrustWalletCore/TWBitcoin.h>
+//#include <TrustWalletCore/TWBitcoin.h>
 
 #include <cassert>
 
@@ -117,7 +117,7 @@ void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptC
     // Serialize the script
     if (subindex != index) {
         //encodeVarInt(0, data);
-	    Bitcoin::Script s;
+        Bitcoin::Script s;
         s.encode(data);
     } else {
         scriptCode.encode(data);
@@ -128,12 +128,11 @@ void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptC
     auto hashSingle = (hashType & 0x1f) == TWSignatureHashTypeSingle;
     if (subindex != index && (hashSingle || hashNone)) {
         encode32LE(0, data);
-    } else {
     }
 }
 
-TW::Iocoin::Proto::Transaction Transaction::proto() const { 
-    auto protoTx = TW::Iocoin::Proto::Transaction(); 
+Proto::Transaction Transaction::proto() const { 
+    auto protoTx = Proto::Transaction(); 
     protoTx.set_version(version);
 
     for (const auto& input : inputs) {
@@ -153,4 +152,4 @@ TW::Iocoin::Proto::Transaction Transaction::proto() const {
     protoTx.set_locktime(lockTime);
 
     return protoTx;
-} 
+}
