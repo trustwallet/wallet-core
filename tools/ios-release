@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
 
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.0'
 
@@ -69,7 +69,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'ARCHS[sdk=iphonesimulator*]' => '$(ARCHS_STANDARD_64_BIT)'
   }
-  s.dependency 'SwiftProtobuf', '~> 1.3.0'
+  s.dependency 'SwiftProtobuf', '~> 1.5.0'
 end
 PODSPEC
 file = File.new('build/TrustWalletCore.podspec', 'w')
