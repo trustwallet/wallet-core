@@ -41,7 +41,7 @@ TEST(IocoinSigning, SignP2PKH_1) {
  input.set_byte_fee(100);
  input.set_to_address("iZPDYnh31Qt9syqga7hYjxy5G6q4WHWBTK");
 input.set_change_address("in2MDub2nA6oT5evFXhEqk7dJdr1GzLmt1");
- input.set_time(1557670493);
+ //input.set_time(1557670493);
   auto  utxoKey = parse_hex("6a8e59ea2d81bf4b83db2783643a709d2eb68871e1da7f5637ce3f68a1bc9918");
 
   input.add_private_key(utxoKey.data(), utxoKey.size());
