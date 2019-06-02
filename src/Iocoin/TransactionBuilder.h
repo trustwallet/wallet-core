@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Transaction.h"
-#include "TransactionPlan.h"
+#include "Bitcoin/TransactionPlan.h" //XXXX
 #include "Bitcoin/UnspentSelector.h" //XXXX
 #include "Bitcoin/UnspentCalculator.h" //XXXX
 #include "../proto/Iocoin.pb.h"
@@ -19,8 +19,8 @@ namespace TW::Iocoin {
 
 struct TransactionBuilder {
     /// Plans a transaction by selecting UTXOs and calculating fees.
-    static TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
-        auto plan = TransactionPlan();
+    static Bitcoin::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
+        auto plan = Bitcoin::TransactionPlan();
         plan.amount = input.amount();
 
 	//assert(input.coin_type() == 295);
@@ -63,7 +63,7 @@ struct TransactionBuilder {
 
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
-    static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
+    static Transaction build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
                              const std::string& changeAddress) {
         auto lockingScriptTo = Bitcoin::Script::buildForAddress(toAddress);
         if (lockingScriptTo.empty()) {
