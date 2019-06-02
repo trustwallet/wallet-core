@@ -28,9 +28,8 @@ TEST(RavencoinTransaction, SignTransaction) {
         m/44'/175'/0'/0/0 Address - RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS
         m/44'/175'/0'/0/0 Private key in Base58 encoding - L1At2vQpaHCmbiu333N3kD4nbDzJgvb8hxNp5S8bQApocFYuW1rx
         m/44'/175'/0'/0/0 Private key in bytes - 75e4c520c92b3836e77dfe2715da469b71f7df86fc11ef328870735a700551fa
-        utxo in json - https://ravencoin.network/api/tx/0c7e82b44eec71d634c013e2db3cb4fa26f87fbc90eb8734da93807d23605544
-        tx in json - https://ravencoin.network/api/tx/3717b528eb4925461d9de5a596d2eefe175985740b4fda153255e10135f236a6
-        tx raw - https://explorer.ravencoin.world/api/getrawtransaction?txid=3717b528eb4925461d9de5a596d2eefe175985740b4fda153255e10135f236a6
+        utxo - https://blockbook.ravencoin.org/tx/0c7e82b44eec71d634c013e2db3cb4fa26f87fbc90eb8734da93807d23605544
+        tx - https://blockbook.ravencoin.org/tx/3717b528eb4925461d9de5a596d2eefe175985740b4fda153255e10135f236a6
     */
 
     const int64_t utxo_amount = 100000000;
@@ -78,7 +77,7 @@ TEST(RavencoinTransaction, SignTransaction) {
 }
 
 TEST(RavencoinTransaction, LockScripts) {
-    // https://ravencoin.network/api/tx/3717b528eb4925461d9de5a596d2eefe175985740b4fda153255e10135f236a6
+    // https://blockbook.ravencoin.org/tx/3717b528eb4925461d9de5a596d2eefe175985740b4fda153255e10135f236a6
     
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("RNoSGCX8SPFscj8epDaJjqEpuZa2B5in88").get()));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));

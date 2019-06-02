@@ -110,4 +110,40 @@ class BitcoinAddressTests: XCTestCase {
         XCTAssertTrue(SegwitAddress.isValidString(string: addressString3),
                       "'\(addressString3)' should be a valid DigiByte Bech32 address")
     }
+
+    func testInvalidDigiByteAddress() {
+        let addressString = "DTPQ92zp96TwpG2pRuUB3oEA3kWGRZPGhX"
+
+        XCTAssertNil(BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertFalse(BitcoinAddress.isValidString(string: addressString),
+                      "'\(addressString)' should be an invalid DigiByte address")
+
+        let addressString2 = "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVX"
+
+        XCTAssertNil(BitcoinAddress(string: addressString2)?.prefix)
+        XCTAssertFalse(BitcoinAddress.isValidString(string: addressString2),
+                      "'\(addressString2)' should be an invalid DigiByte address")
+
+        let addressString3 = "xgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
+
+        XCTAssertNil(SegwitAddress(string: addressString3)?.hrp)
+        XCTAssertFalse(SegwitAddress.isValidString(string: addressString3),
+                      "'\(addressString3)' should be an invalid DigiByte Bech32 address")
+    }
+
+    func testValidRavencoinAddress() {
+        let addressString = "RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"
+
+        XCTAssertEqual(P2PKHPrefix.ravencoin.rawValue, BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
+                      "'\(addressString)' should be a valid Ravencoin address")
+    }
+
+    func testInvalidRavencoinAddress() {
+        let addressString = "XHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"
+
+        XCTAssertNil(BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertFalse(BitcoinAddress.isValidString(string: addressString),
+                      "'\(addressString)' should be an invalid Ravencoin address")
+    }
 }
