@@ -29,7 +29,7 @@ template <typename Transaction>
 class TransactionSigner {
   private:
     /// Private key and redeem script provider for signing.
-    Proto::SigningInput input;
+	  Bitcoin::Proto::SigningInput input;
 
   public:
     /// Transaction plan.
