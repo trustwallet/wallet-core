@@ -29,7 +29,7 @@ struct TransactionPlan {
 	Bitcoin::Amount change = 0;
 
     /// Selected unspent transaction outputs.
-    std::vector<Iocoin::Proto::UnspentTransaction> utxos;
+    std::vector<Bitcoin::Proto::UnspentTransaction> utxos;
 
     TransactionPlan() = default;
 
