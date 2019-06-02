@@ -62,7 +62,7 @@ class TransactionSigner {
     Result<Transaction> sign();
 
   private:
-    Result<void> sign(Bitcoin::Script script, size_t index, const Proto::UnspentTransaction& utxo);
+    Result<void> sign(Bitcoin::Script script, size_t index, const Bitcoin::Proto::UnspentTransaction& utxo);
     Result<std::vector<Data>> signStep(Bitcoin::Script script, size_t index,
                                        const Proto::UnspentTransaction& utxo);
     Data createSignature(const Transaction& transaction, const Bitcoin::Script& script, const Data& key,

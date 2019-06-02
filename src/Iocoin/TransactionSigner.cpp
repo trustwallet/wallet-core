@@ -43,7 +43,7 @@ Result<Transaction> TransactionSigner<Transaction>::sign() {
 
 template <typename Transaction>
 Result<void> TransactionSigner<Transaction>::sign(Bitcoin::Script script, size_t index,
-                                                  const Iocoin::Proto::UnspentTransaction& utxo) {
+                                                  const Bitcoin::Proto::UnspentTransaction& utxo) {
 	Bitcoin::Script redeemScript;
     std::vector<Data> results;
 
