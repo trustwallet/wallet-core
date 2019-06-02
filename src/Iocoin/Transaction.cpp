@@ -132,7 +132,7 @@ void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptC
     }
 }
 
-TW::Bitcoin::Proto::Transaction Transaction::proto() const { 
+TW::Iocoin::Proto::Transaction Transaction::proto() const { 
     auto protoTx = TW::Bitcoin::Proto::Transaction(); 
     protoTx.set_version(version);
 

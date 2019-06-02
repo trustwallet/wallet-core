@@ -69,7 +69,7 @@ struct Transaction {
                         std::vector<uint8_t>& data) const;
 
     /// Converts to Protobuf model
-    Bitcoin::Proto::Transaction proto() const; 
+    Iocoin::Proto::Transaction proto() const; 
 
 };
 
