@@ -7,11 +7,10 @@
 #pragma once
 
 #include "Transaction.h"
-#include "Bitcoin/TransactionPlan.h" //XXXX
-#include "Bitcoin/UnspentSelector.h" //XXXX
-#include "Bitcoin/UnspentCalculator.h" //XXXX
-//XXXX #include "../proto/Iocoin.pb.h"
-#include "../proto/Bitcoin.pb.h" //XXXX
+#include "Bitcoin/TransactionPlan.h" 
+#include "Bitcoin/UnspentSelector.h" 
+#include "Bitcoin/UnspentCalculator.h" 
+#include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
 

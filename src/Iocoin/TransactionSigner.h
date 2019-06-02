@@ -8,14 +8,13 @@
 
 #include "Bitcoin/Amount.h"
 #include "Bitcoin/Script.h"
-#include "Bitcoin/TransactionPlan.h" //XXXX
+#include "Bitcoin/TransactionPlan.h"
 #include "Transaction.h"
 #include "TransactionBuilder.h"
 #include "TransactionInput.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../Result.h"
-//XXXX #include "../proto/Iocoin.pb.h"
 #include "../proto/Bitcoin.pb.h"
 
 #include <memory>
