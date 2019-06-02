@@ -11,25 +11,26 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../proto/Iocoin.pb.h"
+#include "../proto/Bitcoin.pb.h"
 #include "../proto/Common.pb.h"
 
 #include <TrustWalletCore/TWIocoinSigner.h>
 
 #include <algorithm>
 
-using namespace TW::Iocoin;
+using namespace TW::Bitcoin;
 
 struct TWIocoinSigner *_Nonnull TWIocoinSignerCreate(TW_Iocoin_Proto_SigningInput data) {
-    Proto::SigningInput input;
+	Bitcoin::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    return new TWIocoinSigner{ TransactionSigner<TW::Iocoin::Transaction>(std::move(input)) };
+    return new TWIocoinSigner{ TransactionSigner<TW::Bitcoin::Transaction>(std::move(input)) };
 }
 
 void TWIocoinSignerDelete(struct TWIocoinSigner *_Nonnull signer) {
     delete signer;
 }
 
-TW_Iocoin_Proto_TransactionPlan TWIocoinSignerPlan(struct TWIocoinSigner *_Nonnull signer) {
+TW_Bitcoin_Proto_TransactionPlan TWIocoinSignerPlan(struct TWIocoinSigner *_Nonnull signer) {
     auto result = signer->impl.plan.proto();
     auto serialized = result.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
