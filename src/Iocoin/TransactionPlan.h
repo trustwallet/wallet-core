@@ -8,8 +8,9 @@
 
 #include "Bitcoin/Amount.h"
 #include "../proto/Iocoin.pb.h"
+#include "../proto/Bitcoin.pb.h"
 
-namespace TW::Iocoin {
+namespace TW::Bitcoin { //XXXX
 
 /// Describes a preliminary transaction plan.
 struct TransactionPlan {
