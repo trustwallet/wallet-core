@@ -7,8 +7,6 @@ message Transaction {
     // Transaction data format version.
     sint32 version = 1;
 
-    //XXXX uint32 time = 2;
-
     // A list of 1 or more transaction inputs or sources for coins.
     repeated TransactionInput inputs = 3;
 
