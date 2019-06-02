@@ -61,7 +61,7 @@ input.set_change_address("in2MDub2nA6oT5evFXhEqk7dJdr1GzLmt1");
     signedTx.encode(serialized);
  ASSERT_EQ(hex(serialized), "010000005d2ad85c01e6ea7a6b17f605a526938f45ce702ef4283f172b0d958c2d7f9a0bb4281a0ad5000000006a47304402204ecd97fcbe5535cbff45782f7a6751569dd94f8baa246e768f461cd4f04ab0370220489ae246667462de3980716965eb90108ab7b59242eb0c0d4f94c696f18cabaf0121030321d3b8aef78d1b325741b42218ba4c68085896d996e040d0b7054cad995422ffffffff0200e1f505000000001976a9144812c3c0ca31ee1b4d09904ed3548976ab47ba7b88ac605af405000000001976a914d2ba122b36087eed245087ff5a378bbca0b6e8b388ac00000000");
 }
-/*
+
 TEST(IocoinSigning, SignP2PKH_2) {
 	Bitcoin::Proto::SigningInput input;
   input.set_hash_type(TWSignatureHashTypeAll);
@@ -69,7 +69,7 @@ TEST(IocoinSigning, SignP2PKH_2) {
  input.set_byte_fee(100);
  input.set_to_address("iaRR5dtiFb2TLrYk6ok6bUsULx8jze2DFA");
 input.set_change_address("imoDDjYUVZa5fJadaLjsENNS6nunGTo5AD");
- input.set_time(1558212449);
+ //XXXX input.set_time(1558212449);
  auto  utxoKey = parse_hex("36c39b26f6c5481d99056482d3a3698d41ea1dca342ae486e004d5f890f0c101");
   auto  privateKey = PrivateKey(utxoKey);
  const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -87,7 +87,7 @@ input.set_change_address("imoDDjYUVZa5fJadaLjsENNS6nunGTo5AD");
  auto hash = parse_hex("e3a07961c2044b0ac449c883717df4837406168e771fa6f8dba15c018b0483f6");
     utxo->mutable_out_point()->set_hash(hash.data(), hash.size());
 	    utxo->mutable_out_point()->set_index(0);
-  auto result = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input)).sign();
+  auto result = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input),1558212449).sign();
       ASSERT_TRUE(result) << result.error();
     Data serialized;
     auto signedTx = result.payload();
@@ -101,7 +101,7 @@ TEST(IocoinSigning, SignP2PKH_3) {
  input.set_byte_fee(100);
  input.set_to_address("iYhZVFoFtp1XVL7TPSYNeeJi7x9WJsHxYz");
 input.set_change_address("ieAeT6f4PnBeCYCZeQrhsGEph5wGpg15Tk");
- input.set_time(1558307035);
+ //XXXX input.set_time(1558307035);
  auto  utxoKey = parse_hex("5f65dac0c634e78fe0d84e96278449385b47d44a431a8bf96f054f0b553d085e");
   auto  privateKey = PrivateKey(utxoKey);
  const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -119,7 +119,7 @@ input.set_change_address("ieAeT6f4PnBeCYCZeQrhsGEph5wGpg15Tk");
  auto hash = parse_hex("17fd5cbcfbfb8c803e9538bea7a8ead7528614a02db9d6c22c660584cbcd7ec3");
     utxo->mutable_out_point()->set_hash(hash.data(), hash.size());
 	    utxo->mutable_out_point()->set_index(0);
-  auto ts = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input));
+  auto ts = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input),1558307035);
   auto result = ts.sign();
       ASSERT_TRUE(result) << result.error();
     Data serialized;
@@ -135,7 +135,7 @@ TEST(IocoinSigning, SignP2PKH_4) {
  input.set_byte_fee(100);
  input.set_to_address("ik4PotegQBUL574VtWvJgX2RoYcwGKVrQH");
 input.set_change_address("ibPvdeVwmpeyVLsk4p4n5ngCPdzF24S9kg");
- input.set_time(1558620026);
+ //XXXX input.set_time(1558620026);
 
  auto  utxoKey1 = parse_hex("18702dcddff023581b9ef2b84864af50d3974066dfc56c21fa6dee637245698b");
   auto  privateKey1 = PrivateKey(utxoKey1);
@@ -181,7 +181,7 @@ ASSERT_EQ(address2.string(), "iaRR5dtiFb2TLrYk6ok6bUsULx8jze2DFA");
   auto hash3 = parse_hex("17fd5cbcfbfb8c803e9538bea7a8ead7528614a02db9d6c22c660584cbcd7ec3"); 
   utxo3->mutable_out_point()->set_hash(hash3.data(), hash3.size());
 
-  auto ts = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input));
+  auto ts = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input),1558620026);
   auto result = ts.sign();
       ASSERT_TRUE(result) << result.error();
     Data serialized;
@@ -198,7 +198,7 @@ TEST(IocoinSigning, SignP2PKH_5) {
   input.set_byte_fee(100);
   input.set_to_address("ir7z3i3XfyDbzDNwgFg939eGiXvrXwoz6R");
   input.set_change_address("if7Mj9RNtctB4PtvingfqT7EyhagyrGxFp");
-  input.set_time(1558693088);
+  //XXXX input.set_time(1558693088);
 
   auto utxoKey1 = parse_hex("cc4f404144cfb7512a2570648a5a1418a52760c7a18bdbe17a155b1fecf838e9");
   auto  privateKey1 = PrivateKey(utxoKey1);
@@ -248,7 +248,7 @@ TEST(IocoinSigning, SignP2PKH_5) {
   utxo3->mutable_out_point()->set_hash(hash3.data(), hash3.size());
   utxo3->mutable_out_point()->set_index(1);
 
-  auto ts = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input));
+  auto ts = TW::Iocoin::TransactionSigner<Iocoin::Transaction>(std::move(input), 1558693088);
   auto result = ts.sign();
   ASSERT_TRUE(result) << result.error();
   Data serialized;
@@ -256,4 +256,4 @@ TEST(IocoinSigning, SignP2PKH_5) {
   signedTx.encode(serialized);
 
   ASSERT_EQ(hex(serialized), "01000000e0c4e75c03c197b6ba826a74f9972c2302717faba945c5479f5f1366618e65cf2570f0f687010000006a47304402201c00c1fa1c2a428759a4348264581e415ecb419c314c9b335dde4811a336ba8a022051e1d175ac5b0eea7a99bf5dbafdc6bd5b57898e4554bbb1b25427fca49b480501210380f29ee6d85fd34f83c3808c537b24379260434f9235113cff28ca6c7063ca0effffffffaf1b8a68c0d51a27b0d85547efd4ef525571bbf7e2fe8f205b07f7c293eb05a6010000006a4730440220237eef66950bbcc75eae396490c27d5c293abcb0604c1bf2e4ff2b3bfc8cbcce02201fdd428601cf4955fd72df0c87172293c9cd568135ed9e77ad92bb34247a7c80012103579929d95d77d3ecbdd7868f3228bf464fe48de1e6a1df3445af360564cc1801ffffffff589745340e1a6545d6a55124b97b91c5836491665d25529ea0abe0c0094cffab010000006a47304402205b0af77cdea7c3dea8cdbbb9f187a08f4fdc61a23a446ed66ce5e91bfdd63234022009ec02ee975656e7026b6ac9e0640749b5baba4d86080fbf62e59802675d52df012102aa1373393c10dfd53e348d07698584ab75c3326be33ca1675328cca1bd524ed6ffffffff0240787d01000000001976a914ffab64a6f1551b738f6824421cdb7f59d3b6027088aca0c44a00000000001976a91486e3b0ec539000d443a673106a5144fc14cea13f88ac00000000");
-}*/
+}
