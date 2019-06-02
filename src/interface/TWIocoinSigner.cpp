@@ -15,6 +15,7 @@
 #include "../proto/Common.pb.h"
 
 #include <TrustWalletCore/TWIocoinSigner.h>
+#include <TrustWalletCore/TWBitcoinProto.h>
 
 #include <algorithm>
 
