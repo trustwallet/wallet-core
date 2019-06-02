@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "OutPoint.h"
+#include "Bitcoin/OutPoint.h" //XXXX
 #include "Bitcoin/Script.h"
 #include "../Data.h"
 
@@ -18,7 +18,7 @@ namespace TW::Iocoin {
 class TransactionInput {
   public:
     /// Reference to the previous transaction's output.
-    OutPoint previousOutput;
+	  Bitcoin::OutPoint previousOutput;
 
     /// Computational Script for confirming transaction authorization.
     Bitcoin::Script script;
@@ -26,7 +26,7 @@ class TransactionInput {
     uint32_t sequence;
     /// Initializes a transaction input with a previous output, a script and a
     /// sequence number.
-    TransactionInput(OutPoint previousOutput, Bitcoin::Script script)
+    TransactionInput(Bitcoin::OutPoint previousOutput, Bitcoin::Script script)
       : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(4294967295) {}
 
     /// Encodes the transaction into the provided buffer.

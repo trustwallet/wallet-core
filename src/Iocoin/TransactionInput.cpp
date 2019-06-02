@@ -11,7 +11,8 @@
 using namespace TW::Iocoin;
 
 void TransactionInput::encode(Data& data) const {
-    auto& outpoint = reinterpret_cast<const TW::Iocoin::OutPoint&>(previousOutput);
+    //XXXX auto& outpoint = reinterpret_cast<const TW::Iocoin::OutPoint&>(previousOutput);
+    auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(previousOutput);
     outpoint.encode(data);
     script.encode(data);
     encode32LE(sequence, data);
