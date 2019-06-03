@@ -7,7 +7,7 @@ set -e
 
 echo -e "\n\nBuilding for iOS Device..."
 mkdir -p build/ios-dev
-cmake -H. -Bbuild/ios-dev -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake -DIOS_PLATFORM=OS -DIOS_DEPLOYMENT_TARGET=11.0 -DCMAKE_BUILD_TYPE=Release
+cmake -H. -Bbuild/ios-dev -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake -DIOS_PLATFORM=OS64 -DIOS_DEPLOYMENT_TARGET=11.0 -DCMAKE_BUILD_TYPE=Release
 make -C build/ios-dev
 
 echo -e "\nBuilding for iOS Simulator..."
