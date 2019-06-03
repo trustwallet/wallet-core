@@ -26,8 +26,8 @@ class TransactionInput {
     uint32_t sequence;
     /// Initializes a transaction input with a previous output, a script and a
     /// sequence number.
-    TransactionInput(Bitcoin::OutPoint previousOutput, Bitcoin::Script script)
-      : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(4294967295) {}
+    TransactionInput(Bitcoin::OutPoint previousOutput, Bitcoin::Script script, uint32_t seq=4294967295)
+      : previousOutput(std::move(previousOutput)), script(std::move(script)), sequence(seq) {}
 
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data) const;

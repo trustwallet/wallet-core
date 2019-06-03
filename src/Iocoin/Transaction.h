@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Bitcoin/Script.h"
-#include "Bitcoin/TransactionInput.h" //XXXX
+#include "TransactionInput.h" 
 #include "../Bitcoin/TransactionOutput.h"
 #include "../Hash.h"
 #include "../proto/Iocoin.pb.h"
@@ -34,7 +34,7 @@ struct Transaction {
 
     uint32_t nTime = 0;
     /// A list of 1 or more transaction inputs or sources for coins
-    std::vector<Bitcoin::TransactionInput> inputs;
+    std::vector<TransactionInput> inputs;
 
     /// A list of 1 or more transaction outputs or destinations for coins
     std::vector<Bitcoin::TransactionOutput> outputs;

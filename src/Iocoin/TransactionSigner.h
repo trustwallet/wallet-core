@@ -11,7 +11,7 @@
 #include "Bitcoin/TransactionPlan.h"
 #include "Transaction.h"
 #include "TransactionBuilder.h"
-#include "Bitcoin/TransactionInput.h" //XXXX
+#include "TransactionInput.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 #include "../Result.h"
@@ -39,7 +39,7 @@ class TransactionSigner {
 
   private:
     /// List of signed inputs.
-    std::vector<Bitcoin::TransactionInput> signedInputs;
+    std::vector<TransactionInput> signedInputs;
 
   public:
     /// Initializes a transaction signer with signing input.
