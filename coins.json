@@ -648,6 +648,6 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://blockbook.ravencoin.org/tx/"
+        "explorer": "https://ravencoin.network/tx/"
     }
 ]
