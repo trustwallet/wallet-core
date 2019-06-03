@@ -35,6 +35,7 @@
 #include "Zilliqa/Address.h"
 #include "Semux/Address.h"
 #include "ARK/Address.h"
+#include "Waves/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
@@ -180,6 +181,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeRavencoin:
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixRavencoin}, {TWP2SHPrefixRavencoin}});
+
+    case TWCoinTypeWaves:
+        return Waves::Address::isValid(string);
     }
 }
 
@@ -312,6 +316,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeRavencoin:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixRavencoin).string();
+
+    case TWCoinTypeWaves:
+        return Waves::Address(publicKey).string();
     }
 }
 

@@ -89,6 +89,8 @@ public extension CoinType {
             return ARKAddress(string: string)
         case .ravencoin:
             if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
+        case .waves:
+            return WavesAddress(string: string)
         }
         return .none
     }

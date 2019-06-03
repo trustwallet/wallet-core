@@ -178,6 +178,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .ravencoin:
                     let expectedResult = "RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .waves:
+                    let expectedResult = "3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }
