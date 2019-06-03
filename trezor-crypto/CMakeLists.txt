@@ -10,6 +10,7 @@ add_library(TrezorCrypto
     src/ed25519-donna/curve25519-donna-32bit.c src/ed25519-donna/curve25519-donna-helpers.c src/ed25519-donna/modm-donna-32bit.c
     src/ed25519-donna/ed25519-donna-basepoint-table.c src/ed25519-donna/ed25519-donna-32bit-tables.c src/ed25519-donna/ed25519-donna-impl-base.c
     src/ed25519-donna/ed25519.c src/ed25519-donna/curve25519-donna-scalarmult-base.c src/ed25519-donna/ed25519-sha3.c src/ed25519-donna/ed25519-keccak.c src/ed25519-donna/ed25519-blake2b.c
+    src/sodium/private/fe_25_5/fe.c src/sodium/private/ed25519_ref10.c src/sodium/private/ed25519_ref10_fe_25_5.c src/sodium/keypair.c
     src/monero/base58.c
     src/monero/serialize.c
     src/monero/xmr.c

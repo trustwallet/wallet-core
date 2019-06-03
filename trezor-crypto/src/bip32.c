@@ -46,6 +46,7 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
+#include <TrezorCrypto/sodium/keypair.h>
 
 const curve_info ed25519_info = {
 	.bip32_name = "ed25519 seed",
@@ -620,29 +621,33 @@ int hdnode_sign(HDNode *node, const uint8_t *msg, uint32_t msg_len, HasherType h
 {
 	if (node->curve->params) {
 		return ecdsa_sign(node->curve->params, hasher_sign, node->private_key, msg, msg_len, sig, pby, is_canonical);
-	} else if (node->curve == &curve25519_info) {
-		return 1;  // signatures are not supported
-	} else {
-		hdnode_fill_public_key(node);
-		if (node->curve == &ed25519_info) {
-			ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
+        } else {
+            hdnode_fill_public_key(node);
+            if (node->curve == &ed25519_info) {
+                ed25519_sign(msg, msg_len, node->private_key, node->public_key + 1, sig);
 		} else if (node->curve == &ed25519_blake2b_nano_info) {
 			ed25519_sign_blake2b(msg, msg_len, node->private_key, node->public_key + 1, sig);
 		} else if (node->curve == &ed25519_sha3_info) {
 			ed25519_sign_sha3(msg, msg_len, node->private_key, node->public_key + 1, sig);
 		} else if (node->curve == &ed25519_keccak_info) {
 			ed25519_sign_keccak(msg, msg_len, node->private_key, node->public_key + 1, sig);
-		}
-		return 0;
-	}
+                } else if (node->curve == &curve25519_info) {
+                    uint8_t ed25519_public_key[32];
+                    memset(ed25519_public_key, 0, 32);
+                    curve25519_pk_to_ed25519(ed25519_public_key, node->public_key + 1);
+                    ed25519_sign(msg, msg_len, node->private_key, ed25519_public_key, sig);
+                    const uint8_t sign_bit = ed25519_public_key[31] & 0x80;
+                    sig[63] = sig[63] & 127;
+                    sig[63] |= sign_bit;
+                }
+                return 0;
+        }
 }
 
 int hdnode_sign_digest(HDNode *node, const uint8_t *digest, uint8_t *sig, uint8_t *pby, int (*is_canonical)(uint8_t by, uint8_t sig[64]))
 {
 	if (node->curve->params) {
 		return ecdsa_sign_digest(node->curve->params, node->private_key, digest, sig, pby, is_canonical);
-	} else if (node->curve == &curve25519_info) {
-		return 1;  // signatures are not supported
 	} else {
 		return hdnode_sign(node, digest, 32, 0, sig, pby, is_canonical);
 	}

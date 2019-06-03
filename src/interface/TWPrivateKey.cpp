@@ -91,6 +91,10 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPri
     return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Blake2b) };
 }
 
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk) {
+    return new TWPublicKey{pk->impl.getPublicKey(TWPublicKeyTypeCURVE25519)};
+}
+
 TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {
     auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.sign(d, curve);

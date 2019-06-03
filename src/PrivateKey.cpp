@@ -8,14 +8,15 @@
 
 #include "PublicKey.h"
 
+#include <TrezorCrypto/bignum.h>
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/ed25519-donna/ed25519-blake2b.h>
+#include <TrezorCrypto/memzero.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/rand.h>
-#include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/schnorr.h>
-#include <TrezorCrypto/memzero.h>
-#include <TrezorCrypto/bignum.h>
+#include <TrezorCrypto/secp256k1.h>
+#include <TrezorCrypto/sodium/keypair.h>
 
 using namespace TW;
 
@@ -38,6 +39,7 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve)
         break;
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
+    case TWCurveCurve25519:
         break;
     }
 
@@ -84,6 +86,11 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         result.resize(PublicKey::ed25519Size);
         ed25519_publickey_blake2b(bytes.data(), result.data());
         break;
+    case TWPublicKeyTypeCURVE25519:
+        result.resize(PublicKey::ed25519Size);
+        PublicKey ed25519PublicKey = getPublicKey(TWPublicKeyTypeED25519);
+        ed25519_pk_to_curve25519(result.data(), ed25519PublicKey.bytes.data());
+        break;
     }
     return PublicKey(result, type);
 }
@@ -107,6 +114,15 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Blake2b);
         ed25519_sign_blake2b(digest.data(), digest.size(), bytes.data(),
                              publicKey.bytes.data(), result.data());
+    } break;
+    case TWCurveCurve25519: {
+        result.resize(64);
+        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519);
+        ed25519_sign(digest.data(), digest.size(), bytes.data(), publicKey.bytes.data(),
+                     result.data());
+        const auto sign_bit = publicKey.bytes[31] & 0x80;
+        result[63] = result[63] & 127;
+        result[63] |= sign_bit;
     } break;
     case TWCurveNIST256p1: {
         result.resize(65);
@@ -132,6 +148,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(
     } break;
     case TWCurveED25519: // not supported
     case TWCurveED25519Blake2bNano: // not supported
+    case TWCurveCurve25519:         // not supported
         break;
     case TWCurveNIST256p1: {
         result.resize(65);
@@ -175,7 +192,8 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
 
     case TWCurveNIST256p1:
     case TWCurveED25519:
-    case TWCurveED25519Blake2bNano: {
+    case TWCurveED25519Blake2bNano:
+    case TWCurveCurve25519: {
         // not support
     } break;
     }

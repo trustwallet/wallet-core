@@ -18,6 +18,7 @@ enum TWPublicKeyType {
     TWPublicKeyTypeNIST256p1Extended = 3,
     TWPublicKeyTypeED25519 = 4,
     TWPublicKeyTypeED25519Blake2b = 5,
+    TWPublicKeyTypeCURVE25519 = 6,
 };
 
 TW_EXTERN_C_END

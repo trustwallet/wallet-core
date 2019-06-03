@@ -36,21 +36,25 @@ bool TWPrivateKeyIsValid(TWData *_Nonnull data);
 TW_EXPORT_PROPERTY
 TWData *_Nonnull TWPrivateKeyData(struct TWPrivateKey *_Nonnull pk);
 
-/// Returns the public key associated with this pirvate key.
+/// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeySecp256k1(struct TWPrivateKey *_Nonnull pk, bool compressed);
 
-/// Returns the public key associated with this pirvate key.
+/// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyNist256p1(struct TWPrivateKey *_Nonnull pk);
 
-/// Returns the public key associated with this pirvate key.
+/// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519(struct TWPrivateKey *_Nonnull pk);
 
-/// Returns the public key associated with this pirvate key.
+/// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPrivateKey *_Nonnull pk);
+
+/// Returns the public key associated with this private key.
+TW_EXPORT_METHOD
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk);
 
 /// Signs a digest using ECDSA and given curve.
 TW_EXPORT_METHOD
