@@ -37,6 +37,7 @@ enum TWBlockchain {
     TWBlockchainNEO = 22,
     TWBlockchainSteem = 23,
     TWBlockchainNULS = 24,
+    TWBlockchainWaves = 25,
 };
 
 TW_EXTERN_C_END
