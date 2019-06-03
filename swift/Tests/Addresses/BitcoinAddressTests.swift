@@ -158,5 +158,12 @@ class BitcoinAddressTests: XCTestCase {
         XCTAssertNil(BitcoinAddress(string: addressString)?.prefix)
         XCTAssertFalse(BitcoinAddress.isValidString(string: addressString),
                       "'\(addressString)' should be an invalid Ravencoin address")
+
+        // testnet address
+        let addressString2 = "mwJAu1BWcRSQhepZ71wiGoSwsD6hnB5B7G"
+
+        XCTAssertFalse(CoinType.ravencoin.validate(address: addressString2),
+                      "'\(addressString2)' should be an invalid Ravencoin address")
+
     }
 }
