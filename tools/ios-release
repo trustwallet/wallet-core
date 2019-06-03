@@ -76,4 +76,6 @@ file = File.new('build/TrustWalletCore.podspec', 'w')
 file.write(podspec)
 file.close
 
-puts "Done. Please run 'pod trunk push --allow-warnings #{file.path}'"
+puts "Done. running 'pod trunk push --allow-warnings #{file.path}'"
+
+system("pod trunk push --allow-warnings #{file.path}")
