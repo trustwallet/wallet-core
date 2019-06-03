@@ -87,6 +87,8 @@ public extension CoinType {
             return SemuxAddress(string: string)
         case .ark:
             return ARKAddress(string: string)
+        case .ravencoin:
+            if let addr = BitcoinAddress(string: string), prefixSet.contains(addr.prefix) { return addr }
         }
         return .none
     }
@@ -120,6 +122,8 @@ public extension CoinType {
             return Set([P2SHPrefix.viacoin.rawValue, P2PKHPrefix.viacoin.rawValue])
         case .monetaryUnit:
             return Set([P2SHPrefix.monetaryUnit.rawValue, P2PKHPrefix.monetaryUnit.rawValue])
+        case .ravencoin:
+            return Set([P2SHPrefix.ravencoin.rawValue, P2PKHPrefix.ravencoin.rawValue])
         default:
             return Set()
         }

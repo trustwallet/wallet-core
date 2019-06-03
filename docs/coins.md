@@ -51,3 +51,4 @@
 | 163 | Ellaism | ELLA | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/163.png" width="32" />| https://ellaism.org/
 | 111 | Ark | ARK | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/111.png" width="32" />| http://ark.io
 | 20 | DigiByte | DGB | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/20.png" width="32" />| https://www.digibyte.io
+| 175 | Ravencoin | RVN | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/175.png" width="32" />| https://ravencoin.org
