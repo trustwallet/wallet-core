@@ -83,7 +83,7 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Bitcoin::Script& script
       if(index >= tmp.outputs.size())
         throw std::invalid_argument("Iocoin::Transaction index out of range.");
     
-      int indexOut = index;
+      unsigned long indexOut = index;
       tmp.outputs.resize(indexOut+1);
       for(auto i=0; i<indexOut; i++)
       {
