@@ -137,9 +137,22 @@ class BitcoinAddressTests: XCTestCase {
         XCTAssertEqual(P2PKHPrefix.ravencoin.rawValue, BitcoinAddress(string: addressString)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
                       "'\(addressString)' should be a valid Ravencoin address")
+
+        let addressString2 = "rPWwn5h4QFZNaz1XmY39rc73sdYGGDdmq1"
+
+        XCTAssertEqual(P2SHPrefix.ravencoin.rawValue, BitcoinAddress(string: addressString2)?.prefix)
+        XCTAssertTrue(BitcoinAddress.isValidString(string: addressString2),
+                      "'\(addressString2)' should be a valid Ravencoin address")
+
+        // testnet address
+        let addressString3 = "mwJAu1BWcRSQhepZ71wiGoSwsD6hnB5B7G"
+
+        XCTAssertTrue(BitcoinAddress.isValidString(string: addressString3),
+                       "'\(addressString3)' should be a valid Ravencoin testnet address")
     }
 
     func testInvalidRavencoinAddress() {
+        // bad address
         let addressString = "XHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"
 
         XCTAssertNil(BitcoinAddress(string: addressString)?.prefix)
