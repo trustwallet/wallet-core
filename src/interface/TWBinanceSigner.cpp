@@ -9,9 +9,6 @@
 #include "../Binance/Signer.h"
 #include "../proto/Binance.pb.h"
 
-const int64_t TWBinanceChainSource = 2;
-const char *TWBinanceChainId = "Binance-Chain-Tigris";
-
 using namespace TW;
 using namespace TW::Binance;
 
