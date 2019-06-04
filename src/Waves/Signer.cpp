@@ -12,7 +12,11 @@ using namespace TW;
 using namespace TW::Waves;
 
 Data Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexcept {
-    auto bytesToSign = transaction.serializeToSign();
-    auto signature = privateKey.sign(bytesToSign, TWCurveCurve25519);
-    return signature;
+    try {
+        auto bytesToSign = transaction.serializeToSign();
+        auto signature = privateKey.sign(bytesToSign, TWCurveCurve25519);
+        return signature;
+    } catch (...) {
+        return Data();
+    }
 }

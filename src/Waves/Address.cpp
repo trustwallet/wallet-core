@@ -69,7 +69,7 @@ Address::Address(const PublicKey &publicKey) {
         throw std::invalid_argument("Invalid public key type");
     }
     const auto pkdata = Data(publicKey.bytes.begin(), publicKey.bytes.end());
-    const auto keyhash = Hash::keccak256(Hash::blake2b(pkdata, 32));
+    const auto keyhash = Address::secureHash(pkdata);
     bytes[0] = v1;
     bytes[1] = mainnet;
     std::copy(keyhash.begin(), keyhash.begin() + 20, bytes.begin() + 2);

@@ -30,10 +30,6 @@ bool TWWavesAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWWavesAddress *_Nullable TWWavesAddressCreateWithString(TWString *_Nonnull string);
 
-/// Creates an address from a key hash.
-TW_EXPORT_STATIC_METHOD
-struct TWWavesAddress *_Nullable TWWavesAddressCreateWithKeyHash(TWData *_Nonnull keyHash);
-
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWWavesAddress *_Nonnull TWWavesAddressCreateWithPublicKey(

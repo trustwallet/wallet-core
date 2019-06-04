@@ -36,15 +36,6 @@ struct TWWavesAddress *_Nullable TWWavesAddressCreateWithString(TWString *_Nonnu
     }
 }
 
-struct TWWavesAddress *_Nullable TWWavesAddressCreateWithKeyHash(TWData *_Nonnull keyHash) {
-    auto d = reinterpret_cast<const Data *>(keyHash);
-    try {
-        return new TWWavesAddress{Address(*d)};
-    } catch (...) {
-        return nullptr;
-    }
-}
-
 struct TWWavesAddress *_Nonnull TWWavesAddressCreateWithPublicKey(
     struct TWPublicKey *_Nonnull publicKey) {
     return new TWWavesAddress{Address(publicKey->impl)};
