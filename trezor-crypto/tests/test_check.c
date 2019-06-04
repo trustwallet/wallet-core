@@ -4741,18 +4741,18 @@ END_TEST
 
 #include "test_check_nano.h"
 
-START_TEST(test_ed25519_pk_to_curve25519) {
+START_TEST(test_curve25519_pk_to_ed25519) {
         uint8_t ed25519_pk[32], curve25519_pk[32];
         memcpy(curve25519_pk, fromhex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"), 32);
-        ed25519_pk_to_curve25519(ed25519_pk, curve25519_pk);
+        curve25519_pk_to_ed25519(ed25519_pk, curve25519_pk);
         ck_assert_mem_eq(ed25519_pk, fromhex("ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ce56"), sizeof(ed25519_pk));
 }
 END_TEST
 
-START_TEST(test_curve25519_pk_to_ed25519) {
+START_TEST(test_ed25519_pk_to_curve25519) {
         uint8_t ed25519_pk[32], curve25519_pk[32];
         memcpy(ed25519_pk, fromhex("ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ce56"), 32);
-        curve25519_pk_to_ed25519(curve25519_pk, ed25519_pk);
+        ed25519_pk_to_curve25519(curve25519_pk, ed25519_pk);
         ck_assert_mem_eq(curve25519_pk, fromhex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"), sizeof(curve25519_pk));
 }
 END_TEST
