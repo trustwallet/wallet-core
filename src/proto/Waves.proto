@@ -15,6 +15,7 @@ message SigningInput {
 
     string to = 5;
 
+    // any 140 bytes payload, will be displayed to the client as utf-8 string
     bytes attachment = 6;
 
     int64 timestamp = 7;
