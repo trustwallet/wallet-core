@@ -338,4 +338,13 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(pubkey.data.hexString, "039fdd3652495d01b6a363f8db8b3adce09f83ea5c43ff872ad0a39192340256b0")
         XCTAssertEqual(address.description, "bc1qearv5ezm3xfgy2t98denkzxwst4f35fvz608wa")
     }
+
+    func testDeriveRavencoin() {
+        let ravencoin = CoinType.ravencoin
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: ravencoin)
+        let address = ravencoin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("RHQmrg7nNFnRUwg2mH7GafhRY3ZaF6FB2x", address)
+    }
 }

@@ -181,9 +181,12 @@ TEST(Coin, ValidateAddressDGB){
     EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "dgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3d"));
     EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVo")); 
     
-    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kpx"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "dgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3x"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVx"));
+    // bad address
+    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "XBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp4"));
+    // bad bech32 address
+    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "xgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3d"));
+    // testnet address
+    EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "ztijPBZmzdAkF6y79LHYGmqNm2CVfaoLqtz"));
 }
 
 TEST(Coin, validateAddressIocoin) {
@@ -235,6 +238,16 @@ TEST(Coin, validateAddressLitecoin) {
 TEST(Coin, validateAddressCosmos) {
     EXPECT_TRUE(validateAddress(TWCoinTypeCosmos, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
     EXPECT_FALSE(validateAddress(TWCoinTypeCosmos, "xosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+}
+
+TEST(Coin, validateAddressRavencoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeRavencoin, "RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeRavencoin, "rPWwn5h4QFZNaz1XmY39rc73sdYGGDdmq1"));
+    
+    // bad address
+    EXPECT_FALSE(validateAddress(TWCoinTypeRavencoin, "XHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"));
+    // testnet address
+    EXPECT_FALSE(validateAddress(TWCoinTypeRavencoin, "mwJAu1BWcRSQhepZ71wiGoSwsD6hnB5B7G"));
 }
 
 } // namespace TW

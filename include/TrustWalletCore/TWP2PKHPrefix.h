@@ -26,6 +26,7 @@ enum TWP2PKHPrefix {
     TWP2PKHPrefixZcashT = 0xB8,
     TWP2PKHPrefixZcoin = 0x52,
     TWP2PKHPrefixMonetaryUnit = 0x10,
+    TWP2PKHPrefixRavencoin = 0x3c,
 };
 
 TW_EXTERN_C_END
