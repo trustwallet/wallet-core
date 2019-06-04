@@ -23,7 +23,7 @@ void fe25519_invert(fe25519 out, const fe25519 z);
  Representations:
  ge25519_p2 (projective): (X:Y:Z) satisfying x=X/Z, y=Y/Z
  ge25519_p3 (extended): (X:Y:Z:T) satisfying x=X/Z, y=Y/Z, XY=ZT
- ge25519_p1p1 (completed): ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T
+ ge25519_p1p1_1 (completed): ((X:Z),(Y:T)) satisfying x=X/Z, y=Y/T
  ge25519_precomp (Duif): (y+x,y-x,2dxy)
  */
 
@@ -45,7 +45,7 @@ typedef struct {
     fe25519 Y;
     fe25519 Z;
     fe25519 T;
-} ge25519_p1p1;
+} ge25519_p1p1_1;
 
 typedef struct {
     fe25519 yplusx;
@@ -68,11 +68,11 @@ int ge25519_frombytes_negate_vartime(ge25519_p3 *h, const unsigned char *s);
 
 void ge25519_p3_to_cached(ge25519_cached *r, const ge25519_p3 *p);
 
-void ge25519_p1p1_to_p3(ge25519_p3 *r, const ge25519_p1p1 *p);
+void ge25519_p1p1_to_p3(ge25519_p3 *r, const ge25519_p1p1_1 *p);
 
-void ge25519_add2(ge25519_p1p1 *r, const ge25519_p3 *p, const ge25519_cached *q);
+void ge25519_add2(ge25519_p1p1_1 *r, const ge25519_p3 *p, const ge25519_cached *q);
 
-void ge25519_sub(ge25519_p1p1 *r, const ge25519_p3 *p, const ge25519_cached *q);
+void ge25519_sub(ge25519_p1p1_1 *r, const ge25519_p3 *p, const ge25519_cached *q);
 
 int ge25519_is_on_main_subgroup(const ge25519_p3 *p);
 

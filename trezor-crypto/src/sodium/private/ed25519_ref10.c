@@ -130,7 +130,7 @@ void fe25519_pow22523(fe25519 out, const fe25519 z) {
  r = p + q
  */
 
-void ge25519_add2(ge25519_p1p1 *r, const ge25519_p3 *p, const ge25519_cached *q) {
+void ge25519_add2(ge25519_p1p1_1 *r, const ge25519_p3 *p, const ge25519_cached *q) {
     fe25519 t0;
 
     fe25519_add(r->X, p->Y, p->X);
@@ -193,7 +193,7 @@ int ge25519_frombytes_negate_vartime(ge25519_p3 *h, const unsigned char *s) {
  r = p
  */
 
-void ge25519_p1p1_to_p3(ge25519_p3 *r, const ge25519_p1p1 *p) {
+void ge25519_p1p1_to_p3(ge25519_p3 *r, const ge25519_p1p1_1 *p) {
     fe25519_mul(r->X, p->X, p->T);
     fe25519_mul(r->Y, p->Y, p->Z);
     fe25519_mul(r->Z, p->Z, p->T);
@@ -204,7 +204,7 @@ void ge25519_p1p1_to_p3(ge25519_p3 *r, const ge25519_p1p1 *p) {
  r = 2 * p
  */
 
-void ge25519_p2_dbl(ge25519_p1p1 *r, const ge25519_p2 *p) {
+void ge25519_p2_dbl(ge25519_p1p1_1 *r, const ge25519_p2 *p) {
     fe25519 t0;
 
     fe25519_sq(r->X, p->X);
@@ -269,7 +269,7 @@ void ge25519_p3_tobytes(unsigned char *s, const ge25519_p3 *h) {
  r = 2 * p
  */
 
-void ge25519_p3_dbl(ge25519_p1p1 *r, const ge25519_p3 *p) {
+void ge25519_p3_dbl(ge25519_p1p1_1 *r, const ge25519_p3 *p) {
     ge25519_p2 q;
     ge25519_p3_to_p2(&q, p);
     ge25519_p2_dbl(r, &q);
@@ -319,7 +319,7 @@ void ge25519_cmov_cached(ge25519_cached *t, const ge25519_cached *u, unsigned ch
  r = p - q
  */
 
-void ge25519_sub(ge25519_p1p1 *r, const ge25519_p3 *p, const ge25519_cached *q) {
+void ge25519_sub(ge25519_p1p1_1 *r, const ge25519_p3 *p, const ge25519_cached *q) {
     fe25519 t0;
 
     fe25519_add(r->X, p->Y, p->X);
@@ -362,7 +362,7 @@ void ge25519_mul_l(ge25519_p3 *r, const ge25519_p3 *A) {
         0,  0,   0, 0, 0, 0,  0,   0, 0,  0,  0,   0, 0, 0,  0,  0,  0, 0,  0, 0,  0,  0, 0,
         0,  0,   0, 0, 0, 0,  0,   0, 0,  0,  0,   0, 0, 0,  0,  0,  0, 0,  0, 0,  0,  0, 1};
     ge25519_cached Ai[8];
-    ge25519_p1p1 t;
+    ge25519_p1p1_1 t;
     ge25519_p3 u;
     ge25519_p3 A2;
     int i;
