@@ -21,42 +21,6 @@
  */
 
 #include <TrezorCrypto/schnorr.h>
-#include <TrezorCrypto/memzero.h>
-#include "stdio.h"
-
- static void hex_to_raw_bignum(const char *str, uint8_t bn_raw[32]) {
-  for (size_t i = 0; i < 32; i++) {
-    uint8_t c = 0;
-    if (str[i * 2] >= '0' && str[i * 2] <= '9') c += (str[i * 2] - '0') << 4;
-    if ((str[i * 2] & ~0x20) >= 'A' && (str[i * 2] & ~0x20) <= 'F')
-      c += (10 + (str[i * 2] & ~0x20) - 'A') << 4;
-    if (str[i * 2 + 1] >= '0' && str[i * 2 + 1] <= '9')
-      c += (str[i * 2 + 1] - '0');
-    if ((str[i * 2 + 1] & ~0x20) >= 'A' && (str[i * 2 + 1] & ~0x20) <= 'F')
-      c += (10 + (str[i * 2 + 1] & ~0x20) - 'A');
-    bn_raw[i] = c;
-  }
-}
-
-static void bn_be_to_hex_string(const bignum256 *b, char result[64]) {
-  uint8_t raw_number[32] = {0};
-  bn_write_be(b, raw_number);
-  for (int i = 0; i < 32; ++i)
-    sprintf(result + i * 2, "%02x", ((unsigned char *)raw_number)[i]);
-}
-
-void schnorr_to_hex_str(const schnorr_sign_pair *sign, char hex_str[128]) {
-  bn_be_to_hex_string(&sign->r, hex_str);
-  bn_be_to_hex_string(&sign->s, hex_str + 64);
-}
-
-void schnorr_from_hex_str(const char hex_str[128], schnorr_sign_pair *sign) {
-  uint8_t buf[32];
-  hex_to_raw_bignum(hex_str, buf);
-  bn_read_be(buf, &sign->r);
-  hex_to_raw_bignum(hex_str + 64, buf);
-  bn_read_be(buf, &sign->s);
-}
 
 // r = H(Q, kpub, m)
 static void calc_r(const curve_point *Q, const uint8_t pub_key[33],
@@ -71,69 +35,101 @@ static void calc_r(const curve_point *Q, const uint8_t pub_key[33],
   sha256_Update(&ctx, pub_key, 33);
   sha256_Update(&ctx, msg, msg_len);
   sha256_Final(&ctx, digest);
+
+  // Convert the raw bigendian 256 bit value to a normalized, partly reduced bignum
   bn_read_be(digest, r);
 }
 
-// returns 0 if signing succeeded
+// Returns 0 if signing succeeded
 int schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key,
                  const bignum256 *k, const uint8_t *msg, const uint32_t msg_len,
                  schnorr_sign_pair *result) {
-  bignum256 private_key_scalar;
-  bn_read_be(priv_key, &private_key_scalar);
   uint8_t pub_key[33];
+  curve_point Q;
+  bignum256 private_key_scalar;
+  bignum256 r_temp;
+  bignum256 s_temp;
+  bignum256 r_kpriv_result;
+
+  bn_read_be(priv_key, &private_key_scalar);
   ecdsa_get_public_key33(curve, priv_key, pub_key);
 
-  /* Q = kG */
-  curve_point Q;
-  scalar_multiply(curve, k, &Q);
+  // Compute commitment Q = kG
+  point_multiply(curve, k, &curve->G, &Q);
 
-  /* r = H(Q, kpub, m) */
-  calc_r(&Q, pub_key, msg, msg_len, &result->r);
+  // Compute challenge r = H(Q, kpub, m)
+  calc_r(&Q, pub_key, msg, msg_len, &r_temp);
+  
+  // Fully reduce the bignum
+  bn_mod(&r_temp, &curve->order);
 
-  /* s = k - r*kpriv mod(order) */
-  bignum256 s_temp;
-  bn_copy(&result->r, &s_temp);
-  bn_multiply(&private_key_scalar, &s_temp, &curve->order);
-  bn_subtractmod(k, &s_temp, &result->s, &curve->order);
-  memzero(&private_key_scalar, sizeof(private_key_scalar));
+  // Convert the normalized, fully reduced bignum to a raw bigendian 256 bit value
+  bn_write_be(&r_temp, result->r);
 
-  while (bn_is_less(&curve->order, &result->s)) {
-    bn_mod(&result->s, &curve->order);
-  }
+  // Compute s = k - r*kpriv
+  bn_copy(&r_temp, &r_kpriv_result);
 
-  if (bn_is_zero(&result->s) || bn_is_zero(&result->r)) {
-    return 1;
-  }
+  // r*kpriv result is partly reduced
+  bn_multiply(&private_key_scalar, &r_kpriv_result, &curve->order);
+
+  // k - r*kpriv result is normalized but not reduced
+  bn_subtractmod(k, &r_kpriv_result, &s_temp, &curve->order);
+
+  // Partly reduce the result
+  bn_fast_mod(&s_temp, &curve->order);
+
+  // Fully reduce the result
+  bn_mod(&s_temp, &curve->order);
+
+  // Convert the normalized, fully reduced bignum to a raw bigendian 256 bit value
+  bn_write_be(&s_temp, result->s);
+
+  if (bn_is_zero(&r_temp) || bn_is_zero(&s_temp)) return 1;
 
   return 0;
 }
 
-// returns 0 if verification succeeded
+// Returns 0 if verification succeeded
 int schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key,
                    const uint8_t *msg, const uint32_t msg_len,
                    const schnorr_sign_pair *sign) {
-  if (msg_len == 0) return 1;
-  if (bn_is_zero(&sign->r)) return 2;
-  if (bn_is_zero(&sign->s)) return 3;
-  if (bn_is_less(&curve->order, &sign->r)) return 4;
-  if (bn_is_less(&curve->order, &sign->s)) return 5;
-
   curve_point pub_key_point;
+  curve_point sG, Q;
+  bignum256 r_temp;
+  bignum256 s_temp;
+  bignum256 r_computed;
+
+  if (msg_len == 0) return 1;
+
+  // Convert the raw bigendian 256 bit values to normalized, partly reduced bignums
+  bn_read_be(sign->r, &r_temp);
+  bn_read_be(sign->s, &s_temp);
+
+  // Check if r,s are in [1, ..., order-1]
+  if (bn_is_zero(&r_temp)) return 2;
+  if (bn_is_zero(&s_temp)) return 3;
+  if (bn_is_less(&curve->order, &r_temp)) return 4;
+  if (bn_is_less(&curve->order, &s_temp)) return 5;
+  if (bn_is_equal(&curve->order, &r_temp)) return 6;
+  if (bn_is_equal(&curve->order, &s_temp)) return 7;
+
   if (!ecdsa_read_pubkey(curve, pub_key, &pub_key_point)) {
-    return 6;
+    return 8;
   }
 
   // Compute Q = sG + r*kpub
-  curve_point sG, Q;
-  scalar_multiply(curve, &sign->s, &sG);
-  point_multiply(curve, &sign->r, &pub_key_point, &Q);
+  point_multiply(curve, &s_temp, &curve->G, &sG);
+  point_multiply(curve, &r_temp, &pub_key_point, &Q);
   point_add(curve, &sG, &Q);
 
-  /* r = H(Q, kpub, m) */
-  bignum256 r;
-  calc_r(&Q, pub_key, msg, msg_len, &r);
+  // Compute r' = H(Q, kpub, m)
+  calc_r(&Q, pub_key, msg, msg_len, &r_computed);
 
-  if (bn_is_equal(&r, &sign->r)) return 0;  // success
+  // Fully reduce the bignum
+  bn_mod(&r_computed, &curve->order);
+
+  // Check r == r'
+  if (bn_is_equal(&r_temp, &r_computed)) return 0;  // success
 
   return 10;
 }

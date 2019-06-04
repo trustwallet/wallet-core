@@ -1176,8 +1176,8 @@ int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const ui
 		}
 
 		// we're done
-		bn_write_be(&sign.r, sig);
-		bn_write_be(&sign.s, sig + 32);
+		memcpy(sig, sign.r, 32);
+		memcpy(sig + 32, sign.s, 32);
 
 		memzero(&k, sizeof(k));
 		memzero(&rng, sizeof(rng));
@@ -1195,8 +1195,9 @@ int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const ui
 int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
 {
 	schnorr_sign_pair sign;
-	bn_read_be(sig, &sign.r);
-	bn_read_be(sig + 32, &sign.s);
+	
+	memcpy(sign.r, sig, 32);
+	memcpy(sign.s, sig + 32, 32);
 
 	return schnorr_verify(curve, pub_key, msg, msg_len, &sign);
 }
