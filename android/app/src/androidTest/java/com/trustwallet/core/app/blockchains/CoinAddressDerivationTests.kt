@@ -79,5 +79,6 @@ class CoinAddressDerivationTests {
         ARK -> assertEquals("Ac49m5pu5YpMMNgEbSYeZUEpRMHcSK3DfV", address)
         MONETARYUNIT -> assertEquals("7W3QRu8FttKzmYtRbXNKopeHweAKWuun2q", address)
         RAVENCOIN -> assertEquals("RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS", address)
+        WAVES -> assertEquals("3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n", address)
     }
 }

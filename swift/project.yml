@@ -106,6 +106,10 @@ targets:
       - trezor-crypto/src/nist256p1.c
       - trezor-crypto/src/groestl.c
       - trezor-crypto/src/schnorr.c
+      - trezor-crypto/src/sodium/private/fe_25_5/fe.c
+      - trezor-crypto/src/sodium/private/ed25519_ref10.c
+      - trezor-crypto/src/sodium/private/ed25519_ref10_fe_25_5.c
+      - trezor-crypto/src/sodium/keypair.c
     settings:
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
 

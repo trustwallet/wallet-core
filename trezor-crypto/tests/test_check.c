@@ -63,6 +63,7 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
+#include <TrezorCrypto/sodium/keypair.h>
 
 #if VALGRIND
 /*
@@ -4740,6 +4741,22 @@ END_TEST
 
 #include "test_check_nano.h"
 
+START_TEST(test_curve25519_pk_to_ed25519) {
+        uint8_t ed25519_pk[32], curve25519_pk[32];
+        memcpy(curve25519_pk, fromhex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"), 32);
+        curve25519_pk_to_ed25519(ed25519_pk, curve25519_pk);
+        ck_assert_mem_eq(ed25519_pk, fromhex("ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ce56"), sizeof(ed25519_pk));
+}
+END_TEST
+
+START_TEST(test_ed25519_pk_to_curve25519) {
+        uint8_t ed25519_pk[32], curve25519_pk[32];
+        memcpy(ed25519_pk, fromhex("ff84c4bfc095df25b01e48807715856d95af93d88c5b57f30cb0ce567ca4ce56"), 32);
+        ed25519_pk_to_curve25519(curve25519_pk, ed25519_pk);
+        ck_assert_mem_eq(curve25519_pk, fromhex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"), sizeof(curve25519_pk));
+}
+END_TEST
+
 // define test suite and cases
 Suite *test_suite(void)
 {
@@ -5045,6 +5062,11 @@ Suite *test_suite(void)
 	tcase_add_test(tc, test_nano_get_address);
 	tcase_add_test(tc, test_nano_validate_address);
 	suite_add_tcase(s, tc);
+
+        tc = tcase_create("curve25519_conversions");
+        tcase_add_test(tc, test_ed25519_pk_to_curve25519);
+        tcase_add_test(tc, test_curve25519_pk_to_ed25519);
+        suite_add_tcase(s, tc);
 
 	return s;
 }

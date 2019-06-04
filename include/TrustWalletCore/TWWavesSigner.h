@@ -5,20 +5,19 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
+
 #include "TWBase.h"
+#include "TWData.h"
+#include "TWWavesProto.h"
 
 TW_EXTERN_C_BEGIN
 
-/// Public key types
-TW_EXPORT_ENUM(uint32_t)
-enum TWPublicKeyType {
-    TWPublicKeyTypeSECP256k1 = 0,
-    TWPublicKeyTypeSECP256k1Extended = 1,
-    TWPublicKeyTypeNIST256p1 = 2,
-    TWPublicKeyTypeNIST256p1Extended = 3,
-    TWPublicKeyTypeED25519 = 4,
-    TWPublicKeyTypeED25519Blake2b = 5,
-    TWPublicKeyTypeCURVE25519 = 6,
-};
+/// Helper class to sign Waves transactions.
+TW_EXPORT_CLASS
+struct TWWavesSigner;
+
+/// Signs a transaction.
+TW_EXPORT_STATIC_METHOD
+TW_Waves_Proto_SigningOutput TWWavesSignerSign(TW_Waves_Proto_SigningInput input);
 
 TW_EXTERN_C_END
