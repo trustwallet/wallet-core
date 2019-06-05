@@ -39,7 +39,7 @@
 | 282     | Bravocoin     | BRAVO  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/282.png" width="32" />     | <https://bravocoin.com/>     |
 | 135     | Steem         | STEEM  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/135.png" width="32" />     | <http://steem.io>            |
 | 194     | EOS           | EOS    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/194.png" width="32" />     | <https://eos.io/>            |
-| 165     | Nano          | NANO   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/165.png" width="32" />     | <https://iocoin.io/>         |
+| 165     | Nano          | NANO   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/165.png" width="32" />     | <https://nano.org/>          |
 | 7562605 | Semux         | SEM    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/7562605.png" width="32" /> | <https://semux.org/>         |
 | 237     | DEXON         | DXN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/237.png" width="32" />     | <https://dexon.org/>         |
 | 19167   | Zelcash       | ZEL    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" />   | <https://zel.network/>       |
