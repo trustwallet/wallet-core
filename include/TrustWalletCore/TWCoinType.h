@@ -114,6 +114,7 @@ TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivat
 TW_EXPORT_METHOD
 TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, struct TWPublicKey *_Nonnull publicKey);
 
+/// HRP for this coin type
 TW_EXPORT_PROPERTY
 enum TWHRP TWCoinTypeHRP(enum TWCoinType coin);
 
