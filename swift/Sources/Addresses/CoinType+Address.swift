@@ -130,34 +130,6 @@ public extension CoinType {
             return Set()
         }
     }
-
-    /// HRP for this coin type.
-    var hrp: HRP {
-        switch self {
-        case .bitcoin:
-            return .bitcoin
-        case .bitcoinCash:
-            return .bitcoinCash
-        case .binance:
-            return .binance
-        case .cosmos:
-            return .cosmos
-        case .digiByte:
-            return .digiByte
-        case .litecoin:
-            return .litecoin
-        case .groestlcoin:
-            return .groestlcoin
-        case .viacoin:
-            return .viacoin
-        case .qtum:
-            return .qtum
-        case .zilliqa:
-            return .zilliqa
-        default:
-            return HRP.unknown
-        }
-    }
 }
 
 extension IOSTAccount: Address {}
