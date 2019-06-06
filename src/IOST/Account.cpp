@@ -4,16 +4,24 @@
 using namespace TW;
 using namespace TW::IOST;
 
-bool Account::isValid(const std::string& s) {
-    if (s.size() < 5 || s.size() > 11) { 
-        return false; 
+bool isAccountValid(const std::string& account) {
+    if (account.size() < 5 || account.size() > 11) {
+        return false;
     }
-    for (char ch : s) {
+    for (char ch : account) {
         if ((ch < 'a' || ch > 'z') && (ch < '0' || ch > '9') && ch != '_') {
             return false;
         }
     }
     return true;
+}
+
+bool Account::isValid(const std::string& s) {
+    if (s.size() == 44) {
+        return true;
+    } else {
+        return isAccountValid(s);
+    }
 }
 
 std::string Account::encodePubKey(const PublicKey& publicKey) {

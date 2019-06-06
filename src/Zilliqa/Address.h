@@ -20,11 +20,7 @@
 namespace TW::Zilliqa {
 
 static bool isValidAddress(const std::string &address) {
-    if (address.rfind("0x", 0) == 0) {
-        return true;
-    } else {
-        return Cosmos::Address::isValid(address, HRP_ZILLIQA);
-    }
+    return Cosmos::Address::isValid(address, HRP_ZILLIQA);
 }
 
 static Cosmos::Address Address(const PublicKey &publicKey) {
