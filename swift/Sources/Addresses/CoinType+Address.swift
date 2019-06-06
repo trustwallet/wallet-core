@@ -28,7 +28,7 @@ public extension CoinType {
             } else {
                 return BitcoinAddress(string: string)
             }
-        case .dash, .dogecoin, .zcoin, .lux, .monetaryUnit:
+        case .dash, .dogecoin, .zcoin, .lux, .monetaryUnit, .ravencoin:
             return BitcoinAddress(string: string)
         case .callisto, .ellaism, .ethereum, .ethereumClassic,
              .ethersocial, .goChain, .poanetwork, .theta,
@@ -90,8 +90,6 @@ public extension CoinType {
             return SemuxAddress(string: string)
         case .ark:
             return ARKAddress(string: string)
-        case .ravencoin:
-            return BitcoinAddress(string: string)
         case .waves:
             return WavesAddress(string: string)
         }

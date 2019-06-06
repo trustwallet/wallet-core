@@ -14,6 +14,7 @@ using namespace TW::IOST;
 TEST(IOSTAddress, ValidateAccount) {
     // https://www.iostabc.com/tx/DnR4QuRDJAjUZ2qfJK9MT92p95BBub2FnyigeXn2Z1es
     ASSERT_TRUE(Account::isValid("12345xusong"));
+    ASSERT_TRUE(Account::isValid("EKRQPgX7nKt8hJABwm9m3BKWGj7kcSECkJnCBauHQWin"));
 
     ASSERT_FALSE(Account::isValid("1234"));
     ASSERT_FALSE(Account::isValid("12345xusong6"));

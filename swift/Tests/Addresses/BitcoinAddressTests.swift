@@ -14,11 +14,34 @@ class BitcoinAddressTests: XCTestCase {
         XCTAssertNil(BitcoinAddress(string: "175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W"))
     }
 
+    func testInvalidByCoinType() {
+        XCTAssertNil(CoinType.bitcoin.address(string: "abc"))
+        XCTAssertNil(CoinType.bitcoin.address(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"))
+        XCTAssertNil(CoinType.bitcoin.address(string: "175tWpb8K1S7NmH4Zx6rewF9WQrcZv245W"))
+        XCTAssertNil(CoinType.bitcoin.address(string: "bx1q03h6k5lt6pzfjaanz5mlnmuc7aha2t3nkz7gh0"))
+        XCTAssertNil(CoinType.bitcoin.address(string: "bc1q03h6k5lt6pzfjaanz5mlnmuc7aha2t3nkz7gh0x"))
+    }
+
     func testInitWithString() {
         let address = BitcoinAddress(string: "1AC4gh14wwZPULVPCdxUkgqbtPvC92PQPN")
-
-        XCTAssertNotNil(address)
         XCTAssertEqual(address!.description, "1AC4gh14wwZPULVPCdxUkgqbtPvC92PQPN")
+
+        let address2 = BitcoinAddress(string: "396BPtVBUXqigCS2RCbUs4LFuA4QWW9djN")
+        XCTAssertEqual(address2!.description, "396BPtVBUXqigCS2RCbUs4LFuA4QWW9djN")
+
+        let address3 = SegwitAddress(string: "bc1q03h6k5lt6pzfjaanz5mlnmuc7aha2t3nkz7gh0")
+        XCTAssertEqual(address3!.description, "bc1q03h6k5lt6pzfjaanz5mlnmuc7aha2t3nkz7gh0")
+    }
+
+    func testInitWithStringByCoinType() {
+        let address1 = CoinType.bitcoin.address(string: "1AC4gh14wwZPULVPCdxUkgqbtPvC92PQPN")
+        XCTAssertEqual(address1!.description, "1AC4gh14wwZPULVPCdxUkgqbtPvC92PQPN")
+
+        let address2 = CoinType.bitcoin.address(string: "396BPtVBUXqigCS2RCbUs4LFuA4QWW9djN")
+        XCTAssertEqual(address2!.description, "396BPtVBUXqigCS2RCbUs4LFuA4QWW9djN")
+
+        let address3 = CoinType.bitcoin.address(string: "bc1q03h6k5lt6pzfjaanz5mlnmuc7aha2t3nkz7gh0")
+        XCTAssertEqual(address3!.description, "bc1q03h6k5lt6pzfjaanz5mlnmuc7aha2t3nkz7gh0")
     }
 
     func testFromPrivateKey() {
