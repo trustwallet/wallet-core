@@ -1,5 +1,6 @@
 #include "Account.h"
 #include "../Base58.h"
+#include "../Base58Address.h"
 
 using namespace TW;
 using namespace TW::IOST;
@@ -16,12 +17,13 @@ bool isAccountValid(const std::string& account) {
     return true;
 }
 
+bool isBase58AddressValid(const std::string& address) {
+    auto decoded = Base58::bitcoin.decode(address);
+    return decoded.size() == Base58Address<32>::size;
+}
+
 bool Account::isValid(const std::string& s) {
-    if (s.size() == 44) {
-        return true;
-    } else {
-        return isAccountValid(s);
-    }
+    return isAccountValid(s) ? true : isBase58AddressValid(s);
 }
 
 std::string Account::encodePubKey(const PublicKey& publicKey) {
