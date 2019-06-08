@@ -92,7 +92,7 @@ class TestBitShares {
         val signatures = jsonObj.getJSONArray("signatures")
         assertNotNull("Error parsing JSON result", signatures)
 
-        val signatureValue: String = signatures.get(0) as String;
+        val signatureValue = signatures.getString(0)
         assertNotNull("Error parsing JSON result", signatureValue)
         assertEquals(
             "1f0ee91e5f9cdd04629d4db71a6d5f0d75c282669bbaf84c184b6c18f04fe75dfb560969a9d8360f31bdd93b90c40dfe5fed601094433962205b4c49e925b51b24",
@@ -107,24 +107,25 @@ class TestBitShares {
         var badinput = signingInput()
         badinput.asset = getAssetBuilder(0, 0).build();
         var result = BitsharesSigner.sign(badinput.build())
-        assertFalse("Expected error but signing suceeded!", result.success)
+        val errorMessage = "Expected error but signing suceeded!"
+        assertFalse(errorMessage, result.success)
 
 
         badinput = signingInput()
         badinput.fee = getFeeBuilder(-1, 0).build()
         result = BitsharesSigner.sign(badinput.build())
-        assertFalse("Expected error but signing suceeded!", result.success)
+        assertFalse(errorMessage, result.success)
 
 
         badinput = signingInput()
         badinput.senderId = badinput.recipientId
         result = BitsharesSigner.sign(badinput.build())
-        assertFalse("Expected error but signing suceeded!", result.success)
+        assertFalse(errorMessage, result.success)
 
         badinput = signingInput()
         badinput.referenceBlockId = ByteString.copyFrom("0000086bf9e7704509aa41311a66fa0a1b479c".toHexByteArray())
         result = BitsharesSigner.sign(badinput.build())
-        assertFalse("Expected error but signing suceeded!", result.success)
+        assertFalse(errorMessage, result.success)
     }
 
 

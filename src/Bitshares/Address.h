@@ -15,5 +15,5 @@ const std::string AddressPrefix = "BTS";
 // Bitshares address class is similar to Bravo. 
 // Just creating TWBitsharesAddress struct for C interface 
 struct TWBitsharesAddress {
-	TW::Bravo::Address impl;
+    TW::Bravo::Address impl;
 };

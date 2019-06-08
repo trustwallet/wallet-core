@@ -15,7 +15,7 @@ TW_EXTERN_C_BEGIN
 
 struct TWPublicKey;
 
-/// Represents a Bravo address.
+/// Represents a Bitshares address.
 TW_EXPORT_CLASS
 struct TWBitsharesAddress;
 
@@ -34,10 +34,6 @@ struct TWBitsharesAddress *_Nullable TWBitsharesAddressCreateWithString(TWString
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWBitsharesAddress *_Nonnull TWBitsharesAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
-
-/// Creates an address from a key hash.
-TW_EXPORT_STATIC_METHOD
-struct TWBitsharesAddress *_Nullable TWBitsharesAddressCreateWithKeyHash(TWData *_Nonnull keyHash);
 
 TW_EXPORT_METHOD
 void TWBitsharesAddressDelete(struct TWBitsharesAddress *_Nonnull address);

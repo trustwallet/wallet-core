@@ -11,16 +11,9 @@
 using namespace TW::Bitshares;
 using json = nlohmann::json;
 
-TransferOperation::TransferOperation(uint64_t senderId, 
-                                    uint64_t recipientId,
-                                    const Asset& amount,
-                                    const Asset& fee,
-                                    Memo *memo) 
-                                    : from({1, 2, senderId}),
-                                      to({1, 2, recipientId}),
-                                      memo(memo),
-                                      amount(amount),
-                                      fee(fee) {
+TransferOperation::TransferOperation(uint64_t senderId, uint64_t recipientId, const Asset &amount,
+                                     const Asset &fee, Memo *memo)
+    : from({1, 2, senderId}), to({1, 2, recipientId}), memo(memo), amount(amount), fee(fee) {
     validate();
 }
 
