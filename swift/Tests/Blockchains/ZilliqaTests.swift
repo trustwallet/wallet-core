@@ -11,10 +11,12 @@ class ZilliqaTests: XCTestCase {
 
     func testConfig() {
         XCTAssertEqual(coin.hrp, .zilliqa)
-        let address1 = coin.address(string: "0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C")
-        let address2 = coin.address(string: "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz")
 
-        XCTAssertEqual(address1?.description, address2?.description)
+        let address1 = coin.address(string: "0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C")
+        XCTAssertNil(address1)
+
+        let address2 = coin.address(string: "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz")
+        XCTAssertEqual("zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz", address2?.description)
     }
 
     func testAddress() {
