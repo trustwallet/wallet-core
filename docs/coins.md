@@ -19,7 +19,7 @@
 | 195     | TRON          | TRX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/195.png" width="32" />     | <https://tron.network/>        |
 | 889     | TomoChain     | TOMO   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/889.png" width="32" />     | <https://tomochain.com/>       |
 | 6060    | GoChain       | GO     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/6060.png" width="32" />    | <https://gochain.io/>          |
-| 242     | Nimiq         | NMQ    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/242.png" width="32" />     | <https://nimiq.com/>           |
+| 242     | Nimiq         | NIM    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/242.png" width="32" />     | <https://nimiq.com/>           |
 | 1729    | Tezos         | XTZ    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1729.png" width="32" />    | <https://tezos.com/>           |
 | 425     | AION          | AION   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/425.png" width="32" />     | <https://aion.network/>        |
 | 148     | Stellar       | XLM    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/148.png" width="32" />     | <https://stellar.org/>         |
