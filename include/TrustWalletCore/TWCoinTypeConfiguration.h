@@ -36,13 +36,16 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type);
 TW_EXPORT_STATIC_METHOD
 TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type);
 
+/// Returns P2PKH prefix of coin
 TW_EXPORT_STATIC_METHOD
-uint8_t TWCoinTypeConfigurationGetP2PKHPrefix(enum TWCoinType coin);
+TWData *_Nonnull TWCoinTypeConfigurationGetP2PKHPrefix(enum TWCoinType type);
 
+/// Returns P2SH prefix of coin
 TW_EXPORT_STATIC_METHOD
-uint8_t TWCoinTypeConfigurationGetP2SHPrefix(enum TWCoinType coin);
+TWData *_Nonnull TWCoinTypeConfigurationGetP2SHPrefix(enum TWCoinType type);
 
+/// Returns HRP prefix of coin
 TW_EXPORT_STATIC_METHOD
-TWString *_Nonnull TWCoinTypeConfigurationGetHRPPrefix(enum TWCoinType coin);
+TWString *_Nonnull TWCoinTypeConfigurationGetHRPPrefix(enum TWCoinType type);
 
 TW_EXTERN_C_END

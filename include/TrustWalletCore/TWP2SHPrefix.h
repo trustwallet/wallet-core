@@ -14,18 +14,18 @@ TW_EXTERN_C_BEGIN
 /// - SeeAlso: https://en.bitcoin.it/wiki/List_of_address_prefixes
 TW_EXPORT_ENUM(uint8_t)
 enum TWP2SHPrefix {
-    TWP2SHPrefixBitcoin = 0x05,
-    TWP2SHPrefixDash = 0x10,
-    TWP2SHPrefixDecred = 0x1a,
-    TWP2SHPrefixDogecoin = 0x16,
-    TWP2SHPrefixLitecoin = 0x32,
-    TWP2SHPrefixViacoin = 0x21,
-    TWP2SHPrefixIocoin = 0x55,
-    TWP2SHPrefixZcashT = 0xBD,
-    TWP2SHPrefixZcoin = 0x07,
-    TWP2SHPrefixS = 0x3F, // Lux and DigiByte
-    TWP2SHPrefixMonetaryUnit = 0x4C,
-    TWP2SHPrefixRavencoin = 0x7a,
+    TWP2SHPrefixBitcoin = 0x05, // 5
+    TWP2SHPrefixDash = 0x10, // 16
+    TWP2SHPrefixDecred = 0x1a, // 26
+    TWP2SHPrefixDogecoin = 0x16, // 22
+    TWP2SHPrefixLitecoin = 0x32, // 50
+    TWP2SHPrefixViacoin = 0x21, // 33
+    TWP2SHPrefixIocoin = 0x55, // 85
+    TWP2SHPrefixZcashT = 0xBD, // 189
+    TWP2SHPrefixZcoin = 0x07, // 7
+    TWP2SHPrefixS = 0x3F, // Lux and DigiByte 63
+    TWP2SHPrefixMonetaryUnit = 0x4C, // 76
+    TWP2SHPrefixRavencoin = 0x7a, // 122
 };
 
 // Do not export TWP2SHPrefixGroestlcoin because it the same to

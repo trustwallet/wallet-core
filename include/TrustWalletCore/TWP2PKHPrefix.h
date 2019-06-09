@@ -14,19 +14,19 @@ TW_EXTERN_C_BEGIN
 /// - SeeAlso: https://dash-docs.github.io/en/developer-reference#address-conversion
 TW_EXPORT_ENUM(uint8_t)
 enum TWP2PKHPrefix {
-    TWP2PKHPrefixBitcoin = 0x00,
-    TWP2PKHPrefixDash = 0x4C,
-    TWP2PKHPrefixDecred = 0x3f,
-    TWP2PKHPrefixD = 0x1e, // Dogecoin and DigiByte
-    TWP2PKHPrefixGroestlcoin = 0x24,
-    TWP2PKHPrefixLitecoin = 0x30,
-    TWP2PKHPrefixQtum = 0x3a,
-    TWP2PKHPrefixViacoin = 0x47,
-    TWP2PKHPrefixIocoin = 0x67,
-    TWP2PKHPrefixZcashT = 0xB8,
-    TWP2PKHPrefixZcoin = 0x52,
-    TWP2PKHPrefixMonetaryUnit = 0x10,
-    TWP2PKHPrefixRavencoin = 0x3c,
+    TWP2PKHPrefixBitcoin = 0x00, // 0
+    TWP2PKHPrefixDash = 0x4C, // 76
+    TWP2PKHPrefixDecred = 0x3f, // 63
+    TWP2PKHPrefixD = 0x1e, // Dogecoin and DigiByte 30
+    TWP2PKHPrefixGroestlcoin = 0x24, // 36
+    TWP2PKHPrefixLitecoin = 0x30, // 48
+    TWP2PKHPrefixQtum = 0x3a, // 58
+    TWP2PKHPrefixViacoin = 0x47, // 71
+    TWP2PKHPrefixIocoin = 0x67, // 103
+    TWP2PKHPrefixZcashT = 0xB8, // 184
+    TWP2PKHPrefixZcoin = 0x52, // 82
+    TWP2PKHPrefixMonetaryUnit = 0x10, // 16
+    TWP2PKHPrefixRavencoin = 0x3c, // 60
 };
 
 TW_EXTERN_C_END

@@ -8,8 +8,9 @@
         "derivationPath": "m/44'/60'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://etherscan.io/tx/"
     },
     {
@@ -25,9 +26,9 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "bc",
+        "p2pkhPrefix": [0],
+        "p2shPrefix": [5],
+        "hrp": ["bc"],
         "explorer": "https://blockchair.com/bitcoin/transaction/"
     },
     {
@@ -43,9 +44,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "bitcoincash",
+        "p2pkhPrefix": [0],
+        "p2shPrefix": [5],
+        "hrp": ["bitcoincash"],
         "explorer": "https://blockchair.com/bitcoin-cash/transaction/"
     },
     {
@@ -57,8 +58,9 @@
         "derivationPath": "m/44'/820'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explorer2.callisto.network/tx/"
     },
     {
@@ -74,8 +76,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [76],
+        "p2shPrefix": [16],
+        "hrp": [],
         "explorer": "https://blockchair.com/dash/transaction/"
     },
     {
@@ -91,8 +94,9 @@
         "base58Hasher": "blake256d",
         "xpub": "dpub",
         "xprv": "dprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://mainnet.decred.org/tx/"
     },
     {
@@ -108,9 +112,9 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "dgb",
+        "p2pkhPrefix": [30, 0],
+        "p2shPrefix": [63],
+        "hrp": ["dgb"],
         "explorer": "https://digiexplorer.info/tx/"
     },
     {
@@ -126,8 +130,9 @@
         "base58Hasher": "sha256d",
         "xpub": "dgub",
         "xprv": "dgpv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [30],
+        "p2shPrefix": [22],
+        "hrp": [],
         "explorer": "https://live.blockcypher.com/doge/tx/"
     },
     {
@@ -139,8 +144,9 @@
         "derivationPath": "m/44'/61'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://gastracker.io/tx/"
     },
     {
@@ -152,8 +158,9 @@
         "derivationPath": "m/44'/163'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explorer.ellaism.org/tx/"
     },
     {
@@ -165,8 +172,9 @@
         "derivationPath": "m/44'/31102'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://ethersocial.net/tx/"
     },
     {
@@ -178,8 +186,9 @@
         "derivationPath": "m/44'/6060'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explorer.gochain.io/tx/"
     },
     {
@@ -195,9 +204,9 @@
         "base58Hasher": "groestl512d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "grs",
+        "p2pkhPrefix": [36],
+        "p2shPrefix": [5],
+        "hrp": ["grs"],
         "explorer": "https://chainz.cryptoid.info/grs/tx.dws?"
     },
     {
@@ -209,8 +218,9 @@
         "derivationPath": "m/44'/74'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://tracker.icon.foundation/transaction/"
     },
     {
@@ -222,8 +232,9 @@
         "derivationPath": "m/44'/291'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://www.iostabc.com/tx/"
     },
     {
@@ -239,8 +250,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [103],
+        "p2shPrefix": [85],
+        "hrp": [],
         "explorer": "https://chainz.cryptoid.info/ioc/tx.dws?"
     },
     {
@@ -256,9 +268,9 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "ltc",
+        "p2pkhPrefix": [48],
+        "p2shPrefix": [50],
+        "hrp": ["ltc"],
         "explorer": "https://blockchair.com/litecoin/transaction/"
     },
     {
@@ -270,8 +282,9 @@
         "derivationPath": "m/44'/1024'/0'/0/0",
         "curve": "nist256p1",
         "publicKeyType": "nist256p1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explorer.ont.io/transaction/"
     },
     {
@@ -287,9 +300,9 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "via",
+        "p2pkhPrefix": [71],
+        "p2shPrefix": [33],
+        "hrp": ["via"],
         "explorer": "https://explorer.viacoin.org/tx/"
     },
     {
@@ -301,8 +314,9 @@
         "derivationPath": "m/44'/178'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://poaexplorer.com/txid/search/"
     },
     {
@@ -314,8 +328,9 @@
         "derivationPath": "m/44'/1001'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://scan.thundercore.com/transactions/"
     },
     {
@@ -327,8 +342,9 @@
         "derivationPath": "m/44'/889'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://scan.tomochain.com/txs/"
     },
     {
@@ -340,8 +356,9 @@
         "derivationPath": "m/44'/195'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://tronscan.org/#/transaction/"
     },
     {
@@ -353,8 +370,9 @@
         "derivationPath": "m/44'/818'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explore.veforge.com/transactions/"
     },
     {
@@ -366,8 +384,9 @@
         "derivationPath": "m/44'/5718350'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explorer.wanchain.org/tx/"
     },
     {
@@ -379,8 +398,9 @@
         "derivationPath": "m/44'/700'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://blockscout.com/poa/dai/tx/"
     },
     {
@@ -396,8 +416,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [82],
+        "p2shPrefix": [7],
+        "hrp": [],
         "explorer": "https://explorer.zcoin.io/tx/"
     },
     {
@@ -413,8 +434,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [28, 184],
+        "p2shPrefix": [28, 189],
+        "hrp": [],
         "explorer": "https://chain.so/tx/ZEC/"
     },
     {
@@ -426,9 +448,9 @@
         "derivationPath": "m/44'/714'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "bnb",
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": ["bnb"],
         "explorer": "https://explorer.binance.org/tx/"
     },
     {
@@ -440,8 +462,9 @@
         "derivationPath": "m/44'/144'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://bithomp.com/explorer/"
     },
     {
@@ -453,8 +476,9 @@
         "derivationPath": "m/44'/1729'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://tzscan.io/"
     },
     {
@@ -466,8 +490,9 @@
         "derivationPath": "m/44'/242'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://nimiq.watch/#"
     },
     {
@@ -479,8 +504,9 @@
         "derivationPath": "m/44'/148'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://stellarscan.io/transaction/"
     },
     {
@@ -492,8 +518,9 @@
         "derivationPath": "m/44'/425'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://mainnet.aion.network/#/transaction/"
     },
     {
@@ -505,9 +532,9 @@
         "derivationPath": "m/44'/118'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "cosmos",
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": ["cosmos"],
         "explorer": "https://www.mintscan.io/txs/"
     },
     {
@@ -519,8 +546,9 @@
         "derivationPath": "m/44'/888'/0'/0'/0'",
         "curve": "nist256p1",
         "publicKeyType": "nist256p1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://neoscan.io/transaction/"
     },
     {
@@ -532,8 +560,9 @@
         "derivationPath": "m/44'/2017'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://kinexplorer.com/tx/"
     },
     {
@@ -545,8 +574,9 @@
         "derivationPath": "m/44'/8964'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://nuls.world/transactions/"
     },
     {
@@ -558,8 +588,9 @@
         "derivationPath": "m/44'/500'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explorer.thetatoken.org/txs/"
     },
     {
@@ -575,8 +606,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [48],
+        "p2shPrefix": [63],
+        "hrp": [],
         "explorer": "https://explorer.poswallet.io/#/tx/"
     },
     {
@@ -592,9 +624,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "qc",
+        "p2pkhPrefix": [58],
+        "p2shPrefix": [],
+        "hrp": ["qc"],
         "explorer": "https://qtum.info/tx/"
     },
     {
@@ -606,8 +638,9 @@
         "derivationPath": "m/44'/282'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explorer.bravocoin.com/txid/"
     },
     {
@@ -619,8 +652,9 @@
         "derivationPath": "m/44'/135'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": ["STM", "TST"],
         "explorer": "https://steemblockexplorer.com/tx/"
     },
     {
@@ -632,8 +666,9 @@
         "derivationPath": "m/44'/194'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://bloks.io/transaction/"
     },
     {
@@ -645,8 +680,9 @@
         "derivationPath": "m/44'/165'/0'",
         "curve": "ed25519Blake2bNano",
         "publicKeyType": "ed25519Blake2b",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://www.nanode.co/block/"
     },
     {
@@ -658,8 +694,9 @@
         "derivationPath": "m/44'/304'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://iotexscan.io/action/"
     },
     {
@@ -671,9 +708,9 @@
         "derivationPath": "m/44'/313'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
-        "hrp": "zil",
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": ["zil"],
         "explorer": "https://viewblock.io/zilliqa/tx/"
     },
     {
@@ -685,8 +722,9 @@
         "derivationPath": "m/44'/7562605'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://semux.info/explorer/transaction/"
     },
     {
@@ -698,8 +736,9 @@
         "derivationPath": "m/44'/237'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://dexonscan.app/transaction/"
     },
     {
@@ -715,8 +754,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [28, 184],
+        "p2shPrefix": [28, 189],
+        "hrp": [],
         "explorer": "https://explorer.zel.cash/tx/"
     },
     {
@@ -728,8 +768,9 @@
         "derivationPath": "m/44'/111'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://explorer.ark.io/transaction/"
     },
     {
@@ -745,8 +786,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [16],
+        "p2shPrefix": [76],
+        "hrp": [],
         "explorer": "https://explorer.monetaryunit.org/tx/"
     },
     {
@@ -762,8 +804,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [60],
+        "p2shPrefix": [122],
+        "hrp": [],
         "explorer": "https://ravencoin.network/tx/"
     },
     {
@@ -775,8 +818,9 @@
         "derivationPath": "m/44'/5741564'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "curve25519",
-        "p2pkhPrefix": 5,
-        "p2shPrefix": 6,
+        "p2pkhPrefix": [],
+        "p2shPrefix": [],
+        "hrp": [],
         "explorer": "https://wavesexplorer.com/tx/"
     }
 ]
