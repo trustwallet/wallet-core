@@ -40,6 +40,7 @@
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWP2SHPrefix.h>
+#include <TrustWalletCore/TWCoinTypeConfiguration.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic fatal "-Wswitch"
@@ -47,15 +48,17 @@
 using namespace TW;
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
+    auto& hrp = *reinterpret_cast<const std::string*>(TWCoinTypeConfigurationGetHRPPrefix(coin));
+
     switch (coin) {
     case TWCoinTypeAion:
         return Aion::Address::isValid(string);
 
     case TWCoinTypeBinance:
-        return Cosmos::Address::isValid(string, HRP_BINANCE);
+        return Cosmos::Address::isValid(string, hrp);
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::SegwitAddress::isValid(string, HRP_BITCOIN) ||
+        return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
 
     case TWCoinTypeBitcoinCash:
@@ -66,7 +69,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bravo::Address::isValid(string);
 
     case TWCoinTypeCosmos:
-        return Cosmos::Address::isValid(string, HRP_COSMOS);
+        return Cosmos::Address::isValid(string, hrp);
 
     case TWCoinTypeDash:
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDash}, {TWP2SHPrefixDash}});
@@ -78,11 +81,11 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixD}, {TWP2SHPrefixDogecoin}});
 
     case TWCoinTypeDigiByte:
-        return Bitcoin::SegwitAddress::isValid(string, HRP_DIGIBYTE) ||
+        return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixD}, {TWP2SHPrefixBitcoin}, {TWP2SHPrefixS}});
 
     case TWCoinTypeGroestlcoin:
-        return Bitcoin::SegwitAddress::isValid(string, HRP_GROESTLCOIN) ||
+        return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Groestlcoin::Address::isValid(string, {TWP2PKHPrefixGroestlcoin, TWP2SHPrefixGroestlcoin});
 
     case TWCoinTypeIocoin:
@@ -114,11 +117,11 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeIoTeX:
         return IoTeX::Address::isValid(string);
     case TWCoinTypeLitecoin:
-        return Bitcoin::SegwitAddress::isValid(string, HRP_LITECOIN) ||
+        return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixLitecoin}, {TWP2SHPrefixLitecoin}});
 
     case TWCoinTypeViacoin:
-        return Bitcoin::SegwitAddress::isValid(string, HRP_VIACOIN) ||
+        return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixViacoin}, {TWP2SHPrefixViacoin}});
 
     case TWCoinTypeOntology:
@@ -167,7 +170,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return NULS::Address::isValid(string);
 
     case TWCoinTypeQtum:
-        return Bitcoin::SegwitAddress::isValid(string, HRP_QTUM) ||
+        return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Bitcoin::Address::isValid(string, {{TWP2PKHPrefixQtum}});
 
     case TWCoinTypeSemux:

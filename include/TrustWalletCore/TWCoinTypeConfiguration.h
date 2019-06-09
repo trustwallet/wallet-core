@@ -36,4 +36,13 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type);
 TW_EXPORT_STATIC_METHOD
 TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type);
 
+TW_EXPORT_STATIC_METHOD
+uint8_t TWCoinTypeConfigurationGetP2PKHPrefix(enum TWCoinType coin);
+
+TW_EXPORT_STATIC_METHOD
+uint8_t TWCoinTypeConfigurationGetP2SHPrefix(enum TWCoinType coin);
+
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWCoinTypeConfigurationGetHRPPrefix(enum TWCoinType coin);
+
 TW_EXTERN_C_END
