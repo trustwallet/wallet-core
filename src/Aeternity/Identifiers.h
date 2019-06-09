@@ -17,7 +17,6 @@ static const std::string networkId = "ae_mainnet";
 /// Base58 prefixes
 static const std::string prefixAccountPubkey = "ak_";
 static const std::string prefixSignature = "sg_";
-static const std::string prefixTransactionHash = "th_";
 
 /// Base 64 encoded transactions
 static const std::string prefixTransaction = "tx_";

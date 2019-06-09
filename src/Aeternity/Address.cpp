@@ -13,7 +13,6 @@
 using namespace TW::Aeternity;
 
 /// Determines whether a string makes a valid address.
-/// copied from \see https://github.com/aeternity/aepp-sdk-js/blob/develop/es/utils/crypto.js
 bool TW::Aeternity::Address::isValid(const std::string &string) {
     if (string.empty()) {
         return false;
@@ -40,7 +39,7 @@ TW::Aeternity::Address::Address(const std::string &string) {
         throw std::invalid_argument("Invalid address");
     }
 
-    auto payload = string.substr(Identifiers::prefixTransaction.size(), string.size());
+    auto payload = string.substr(Identifiers::prefixAccountPubkey.size(), string.size());
     bytes = Base58::bitcoin.decodeCheck(payload);
 }
 

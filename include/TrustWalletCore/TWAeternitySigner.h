@@ -9,6 +9,7 @@
 
 TW_EXTERN_C_BEGIN
 
+/// Helper class to sign Aeternity transactions.
 TW_EXPORT_CLASS
 struct TWAeternitySigner;
 
