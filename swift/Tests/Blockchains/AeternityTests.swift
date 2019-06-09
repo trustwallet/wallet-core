@@ -9,9 +9,15 @@ import XCTest
 
 class AeternityTests: XCTestCase {
 
-    func testAddress() {
+    func testAddressFromPublicKey() {
         let publicKey = PublicKey(data: Data(hexString: "ee93a4f66f8d16b819bb9beb9ffccdfcdc1412e87fee6a324c2a99a1e0e67148")!, type: PublicKeyType.ed25519)!
         let address = AeternityAddress(publicKey: publicKey)
+        XCTAssertEqual(address!.description, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
+    }
+
+    func testAddressFromString() {
+        let addressString = "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw"
+        let address = AeternityAddress(string: addressString)
         XCTAssertEqual(address!.description, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
     }
 
@@ -30,7 +36,7 @@ class AeternityTests: XCTestCase {
         let output = AeternitySigner.sign(input: input)
 
         XCTAssertEqual(output.signature, "sg_2dlw1eTrh79Yri5+urBSwVMJ86dSvCVtWc/nxIJrhIehxLzbtEdddjNyGJFc700p09KSd01oVTrpoCfiFsFvB3kDla0=")
-        
+
         // swiftlint:disable:next line_length
         XCTAssertEqual(output.encoded, "tx_+KkLAfhCuEDZ2XDV5OuHv1iuLn66sFLBUwnzp1K8JW1Zz+fEgmuEh6HEvNu0R112M3IYkVzvTSnT0pJ3TWhVOumgJ+IWwW8HuGH4XwwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKMKhhIwnOVAAIMBQ0Uxi0hlbGxvIFdvcmxkDZqNSg==")
     }

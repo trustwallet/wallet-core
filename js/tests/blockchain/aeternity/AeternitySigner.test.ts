@@ -15,10 +15,10 @@ describe('AeternitySigner', () => {
             amount: Long.fromNumber(10),
             fee: Long.fromNumber(2e13),
             fromAddress: "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw",
-            toAddress: "ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v",
             nonce: Long.fromNumber(49),
             payload: "Hello World",
             privateKey: privateKey,
+            toAddress: "ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v",
             ttl: Long.fromNumber(82757),
         });
 

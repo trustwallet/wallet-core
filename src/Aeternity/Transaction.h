@@ -14,15 +14,15 @@ namespace TW::Aeternity {
 class Transaction {
 
   public:
-    std::string &sender_id;
+    std::string sender_id;
 
-    std::string &recipient_id;
+    std::string recipient_id;
 
     uint64_t amount;
 
     uint64_t fee;
 
-    std::string &payload;
+    std::string payload;
 
     /// the block time that tx live on the mempool, you can use 0 by default, or >latest block
     uint64_t ttl;

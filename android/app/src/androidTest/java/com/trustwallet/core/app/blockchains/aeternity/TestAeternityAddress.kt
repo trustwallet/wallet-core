@@ -21,5 +21,12 @@ class TestAeternityAddress {
         assertEquals(address.description(), "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
     }
 
+    @Test
+    fun testAddressFromString() {
+        val addressString = "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw"
+        val address = AeternityAddress(addressString)
+        assertEquals(address.description(), addressString)
+    }
+
 }
 

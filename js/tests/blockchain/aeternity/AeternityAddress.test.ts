@@ -13,4 +13,9 @@ describe('AeternityAddress', () => {
         expect(address.description()).to.equal('ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw');
     });
 
+    it('test address from String', () => {
+        const address = AeternityAddress.createWithString("ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw");
+        expect(address.description()).to.equal('ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw');
+    });
+
 });

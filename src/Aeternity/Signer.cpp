@@ -14,7 +14,7 @@
 #include <Ethereum/RLP.h>
 
 using namespace TW;
-using namespace Aeternity;
+using namespace TW::Aeternity;
 
 /// implementation copied from
 /// https://github.com/aeternity/aepp-sdk-go/blob/07aa8a77e5/aeternity/helpers.go#L367

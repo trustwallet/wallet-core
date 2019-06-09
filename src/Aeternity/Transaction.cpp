@@ -12,8 +12,11 @@
 #include <Ethereum/RLP.h>
 #include <Hash.h>
 
+using namespace TW;
+using namespace TW::Aeternity;
+
 /// RLP returns a byte serialized representation
-std::string TW::Aeternity::Transaction::encode() {
+std::string Transaction::encode() {
     auto encoded = Data();
     append(encoded, Ethereum::RLP::encode(Identifiers::objectTagSpendTransaction));
     append(encoded, Ethereum::RLP::encode(Identifiers::rlpMessageVersion));
@@ -32,7 +35,7 @@ std::string TW::Aeternity::Transaction::encode() {
 
 //// buildIDTag assemble an id() object
 //// see https://github.com/aeternity/protocol/blob/epoch-v0.22.0/serializations.md#the-id-type
-TW::Data TW::Aeternity::Transaction::buildTag(const std::string &address) {
+TW::Data Transaction::buildTag(const std::string &address) {
     auto payload = address.substr(Identifiers::prefixTransaction.size(), address.size());
 
     auto data = Data();

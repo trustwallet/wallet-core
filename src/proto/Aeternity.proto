@@ -5,13 +5,24 @@ option java_package = "wallet.core.jni.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
+    //Address of the sender with "ak_" prefix
     string from_address = 1;
+
+    //Address of the recipient with "ak_" prefix
     string to_address = 2;
+
     uint64 amount = 3;
+
     uint64 fee = 4;
-    string payload = 5; //optional
+
+    //Message, optional
+    string payload = 5;
+
+    //Time to live
     uint64 ttl = 6;
+
     uint64 nonce = 7;
+
     bytes private_key = 8;
 }
 

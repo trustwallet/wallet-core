@@ -13,19 +13,19 @@
 using namespace TW::Aeternity;
 
 /// Determines whether a string makes a valid address.
-bool TW::Aeternity::Address::isValid(const std::string &string) {
+bool Address::isValid(const std::string &string) {
     if (string.empty()) {
         return false;
-    } else {
-        auto prefixSize = Identifiers::prefixAccountPubkey.size();
-        auto type = string.substr(0, prefixSize);
-        auto payload = string.substr(prefixSize, string.size() - 1);
-        return checkType(type) && checkPayload(payload);
     }
+
+    auto prefixSize = Identifiers::prefixAccountPubkey.size();
+    auto type = string.substr(0, prefixSize);
+    auto payload = string.substr(prefixSize, string.size() - 1);
+    return checkType(type) && checkPayload(payload);
 }
 
 /// Initializes an address from a public key.
-TW::Aeternity::Address::Address(const PublicKey &publicKey) {
+Address::Address(const PublicKey &publicKey) {
     if (publicKey.type != TWPublicKeyTypeED25519) {
         throw std::invalid_argument("Invalid public key type");
     }
@@ -34,7 +34,7 @@ TW::Aeternity::Address::Address(const PublicKey &publicKey) {
 }
 
 /// Initializes an address from a string representation.
-TW::Aeternity::Address::Address(const std::string &string) {
+Address::Address(const std::string &string) {
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address");
     }
