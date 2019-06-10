@@ -10,7 +10,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://etherscan.io/tx/"
     },
     {
@@ -28,7 +28,7 @@
         "xprv": "zprv",
         "p2pkhPrefix": [0],
         "p2shPrefix": [5],
-        "hrp": ["bc"],
+        "hrp": "bc",
         "explorer": "https://blockchair.com/bitcoin/transaction/"
     },
     {
@@ -46,7 +46,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [0],
         "p2shPrefix": [5],
-        "hrp": ["bitcoincash"],
+        "hrp": "bitcoincash",
         "explorer": "https://blockchair.com/bitcoin-cash/transaction/"
     },
     {
@@ -60,7 +60,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer2.callisto.network/tx/"
     },
     {
@@ -78,7 +78,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [76],
         "p2shPrefix": [16],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://blockchair.com/dash/transaction/"
     },
     {
@@ -96,7 +96,7 @@
         "xprv": "dprv",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://mainnet.decred.org/tx/"
     },
     {
@@ -114,7 +114,7 @@
         "xprv": "zprv",
         "p2pkhPrefix": [30, 0],
         "p2shPrefix": [63],
-        "hrp": ["dgb"],
+        "hrp": "dgb",
         "explorer": "https://digiexplorer.info/tx/"
     },
     {
@@ -132,7 +132,7 @@
         "xprv": "dgpv",
         "p2pkhPrefix": [30],
         "p2shPrefix": [22],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://live.blockcypher.com/doge/tx/"
     },
     {
@@ -146,7 +146,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://gastracker.io/tx/"
     },
     {
@@ -160,7 +160,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.ellaism.org/tx/"
     },
     {
@@ -174,7 +174,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://ethersocial.net/tx/"
     },
     {
@@ -188,7 +188,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.gochain.io/tx/"
     },
     {
@@ -206,7 +206,7 @@
         "xprv": "zprv",
         "p2pkhPrefix": [36],
         "p2shPrefix": [5],
-        "hrp": ["grs"],
+        "hrp": "grs",
         "explorer": "https://chainz.cryptoid.info/grs/tx.dws?"
     },
     {
@@ -220,7 +220,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://tracker.icon.foundation/transaction/"
     },
     {
@@ -234,7 +234,7 @@
         "publicKeyType": "ed25519",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://www.iostabc.com/tx/"
     },
     {
@@ -252,7 +252,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [103],
         "p2shPrefix": [85],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://chainz.cryptoid.info/ioc/tx.dws?"
     },
     {
@@ -270,7 +270,7 @@
         "xprv": "zprv",
         "p2pkhPrefix": [48],
         "p2shPrefix": [50],
-        "hrp": ["ltc"],
+        "hrp": "ltc",
         "explorer": "https://blockchair.com/litecoin/transaction/"
     },
     {
@@ -284,7 +284,7 @@
         "publicKeyType": "nist256p1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.ont.io/transaction/"
     },
     {
@@ -302,7 +302,7 @@
         "xprv": "zprv",
         "p2pkhPrefix": [71],
         "p2shPrefix": [33],
-        "hrp": ["via"],
+        "hrp": "via",
         "explorer": "https://explorer.viacoin.org/tx/"
     },
     {
@@ -316,7 +316,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://poaexplorer.com/txid/search/"
     },
     {
@@ -330,7 +330,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://scan.thundercore.com/transactions/"
     },
     {
@@ -344,7 +344,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://scan.tomochain.com/txs/"
     },
     {
@@ -358,7 +358,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://tronscan.org/#/transaction/"
     },
     {
@@ -372,7 +372,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explore.veforge.com/transactions/"
     },
     {
@@ -386,7 +386,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.wanchain.org/tx/"
     },
     {
@@ -400,7 +400,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://blockscout.com/poa/dai/tx/"
     },
     {
@@ -418,7 +418,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [82],
         "p2shPrefix": [7],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.zcoin.io/tx/"
     },
     {
@@ -436,7 +436,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [28, 184],
         "p2shPrefix": [28, 189],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://chain.so/tx/ZEC/"
     },
     {
@@ -450,7 +450,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": ["bnb"],
+        "hrp": "bnb",
         "explorer": "https://explorer.binance.org/tx/"
     },
     {
@@ -464,7 +464,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://bithomp.com/explorer/"
     },
     {
@@ -478,7 +478,7 @@
         "publicKeyType": "ed25519",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://tzscan.io/"
     },
     {
@@ -492,7 +492,7 @@
         "publicKeyType": "ed25519",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://nimiq.watch/#"
     },
     {
@@ -506,7 +506,7 @@
         "publicKeyType": "ed25519",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://stellarscan.io/transaction/"
     },
     {
@@ -520,7 +520,7 @@
         "publicKeyType": "ed25519",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://mainnet.aion.network/#/transaction/"
     },
     {
@@ -534,7 +534,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": ["cosmos"],
+        "hrp": "cosmos",
         "explorer": "https://www.mintscan.io/txs/"
     },
     {
@@ -548,7 +548,7 @@
         "publicKeyType": "nist256p1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://neoscan.io/transaction/"
     },
     {
@@ -562,7 +562,7 @@
         "publicKeyType": "ed25519",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://kinexplorer.com/tx/"
     },
     {
@@ -576,7 +576,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://nuls.world/transactions/"
     },
     {
@@ -590,7 +590,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.thetatoken.org/txs/"
     },
     {
@@ -608,7 +608,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [48],
         "p2shPrefix": [63],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.poswallet.io/#/tx/"
     },
     {
@@ -626,7 +626,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [58],
         "p2shPrefix": [],
-        "hrp": ["qc"],
+        "hrp": "qc",
         "explorer": "https://qtum.info/tx/"
     },
     {
@@ -640,7 +640,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.bravocoin.com/txid/"
     },
     {
@@ -654,7 +654,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": ["STM", "TST"],
+        "hrp": "STM",
         "explorer": "https://steemblockexplorer.com/tx/"
     },
     {
@@ -668,7 +668,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://bloks.io/transaction/"
     },
     {
@@ -682,7 +682,7 @@
         "publicKeyType": "ed25519Blake2b",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://www.nanode.co/block/"
     },
     {
@@ -696,7 +696,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://iotexscan.io/action/"
     },
     {
@@ -710,7 +710,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": ["zil"],
+        "hrp": "zil",
         "explorer": "https://viewblock.io/zilliqa/tx/"
     },
     {
@@ -724,7 +724,7 @@
         "publicKeyType": "ed25519",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://semux.info/explorer/transaction/"
     },
     {
@@ -738,7 +738,7 @@
         "publicKeyType": "secp256k1Extended",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://dexonscan.app/transaction/"
     },
     {
@@ -756,7 +756,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [28, 184],
         "p2shPrefix": [28, 189],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.zel.cash/tx/"
     },
     {
@@ -770,7 +770,7 @@
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.ark.io/transaction/"
     },
     {
@@ -788,7 +788,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [16],
         "p2shPrefix": [76],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://explorer.monetaryunit.org/tx/"
     },
     {
@@ -806,7 +806,7 @@
         "xprv": "xprv",
         "p2pkhPrefix": [60],
         "p2shPrefix": [122],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://ravencoin.network/tx/"
     },
     {
@@ -820,7 +820,7 @@
         "publicKeyType": "curve25519",
         "p2pkhPrefix": [],
         "p2shPrefix": [],
-        "hrp": [],
+        "hrp": "",
         "explorer": "https://wavesexplorer.com/tx/"
     }
 ]
