@@ -182,7 +182,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .aeternity:
-                    let expectedResult = "ak_2ma7fvMp52vKrw8TzNhPFeCyvPNZLELQPnsin4x4qmEK4FCJHR"
+                    let expectedResult = "ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
