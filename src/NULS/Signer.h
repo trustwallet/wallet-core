@@ -7,7 +7,7 @@
 #include "../proto/NULS.pb.h"
 
 #include <stdint.h>
-#include <vector>
+#include "Data.h"
 
 namespace TW::NULS {
 
@@ -21,7 +21,7 @@ class Signer {
     /// Signs the transaction.
     ///
     /// \returns the transaction signature or an empty vector if there is an error.
-    std::vector<uint8_t> sign() const;
+    Data sign() const;
 };
 
 } // namespace TW::NULS

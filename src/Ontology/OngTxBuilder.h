@@ -17,15 +17,15 @@ namespace TW::Ontology {
 class OngTxBuilder {
 
   public:
-    static TW_Ontology_Proto_SigningOutput decimals(const Ontology::Proto::SigningInput &input);
+    static Data decimals(const Ontology::Proto::SigningInput &input);
 
-    static TW_Ontology_Proto_SigningOutput balanceOf(const Ontology::Proto::SigningInput& input);
+    static Data balanceOf(const Ontology::Proto::SigningInput& input);
 
-    static TW_Ontology_Proto_SigningOutput transfer(const Ontology::Proto::SigningInput& input);
+    static Data transfer(const Ontology::Proto::SigningInput& input);
 
-    static TW_Ontology_Proto_SigningOutput withdraw(const Ontology::Proto::SigningInput& input);
+    static Data withdraw(const Ontology::Proto::SigningInput& input);
 
-    static TW_Ontology_Proto_SigningOutput build(const Ontology::Proto::SigningInput& input);
+    static Data build(const Ontology::Proto::SigningInput& input);
 };
 
 } // namespace TW::Ontology

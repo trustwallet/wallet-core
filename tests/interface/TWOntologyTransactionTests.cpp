@@ -21,16 +21,13 @@ TEST(TWOntologySignerSign, OntBalanceOf) {
     // http://polaris2.ont.io:20334/api/v1/transaction?preExec=1
     //
     // {"Action":"sendrawtransaction","Desc":"SUCCESS","Error":0,"Result":{"State":1,"Gas":20000,"Result":"00","Notify":[]},"Version":"1.0.0"}
-    auto input = Ontology::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_contract("ONT");
     input.set_method("balanceOf");
     input.set_query_address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
     input.set_nonce(3959576200);
     auto data = OntTxBuilder::build(input);
-    std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.ParseFromString(serialized);
-    auto rawTx = hex(protoOutput.encoded());
+    auto rawTx = hex(data);
     EXPECT_EQ("00d1885602ec000000000000000000000000000000000000000000000000000000000000000000000000"
               "4d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f6614000000000000000000"
               "00000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b650000",
@@ -43,15 +40,12 @@ TEST(TWOntologySignerSign, OntDecimals) {
     // http://polaris2.ont.io:20334/api/v1/transaction?preExec=1
     //
     //{"Action":"sendrawtransaction","Desc":"SUCCESS","Error":0,"Result":{"State":1,"Gas":20000,"Result":"","Notify":[]},"Version":"1.0.0"}
-    auto input = Ontology::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_contract("ONT");
     input.set_method("decimals");
     input.set_nonce(1210761661);
     auto data = OntTxBuilder::build(input);
-    std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.ParseFromString(serialized);
-    auto rawTx = hex(protoOutput.encoded());
+    auto rawTx = hex(data);
     EXPECT_EQ("00d1bdc12a48000000000000000000000000000000000000000000000000000000000000000000000000"
               "380008646563696d616c731400000000000000000000000000000000000000010068164f6e746f6c6f67"
               "792e4e61746976652e496e766f6b650000",
@@ -65,7 +59,7 @@ TEST(TWOntologySignerSign, OntTransfer) {
         parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
     auto payerPrivateKey =
         parse_hex("4646464646464646464646464646464646464646464646464646464646464652");
-    auto input = Ontology::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_contract("ONT");
     input.set_method("transfer");
     input.set_nonce(2338116610);
@@ -76,10 +70,7 @@ TEST(TWOntologySignerSign, OntTransfer) {
     input.set_gas_price(500);
     input.set_gas_limit(20000);
     auto data = OntTxBuilder::build(input);
-    std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.ParseFromString(serialized);
-    auto rawTx = hex(protoOutput.encoded());
+    auto rawTx = hex(data);
     EXPECT_EQ("00d102d45c8bf401000000000000204e00000000000057e9d1a61f9aafa798b6c7fbeae35639681d7df6"
               "7100c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed299ea06fcb94aba"
               "c41aaf3ead76586a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
@@ -98,15 +89,12 @@ TEST(TWOntologySignerSign, OngDecimals) {
     // http://polaris2.ont.io:20334/api/v1/transaction?preExec=1
     //
     // {"Action":"sendrawtransaction","Desc":"SUCCESS","Error":0,"Result":{"State":1,"Gas":20000,"Result":"09","Notify":[]},"Version":"1.0.0"}
-    auto input = Ontology::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_contract("ONG");
     input.set_method("decimals");
     input.set_nonce(2045178595);
     auto data = OngTxBuilder::build(input);
-    std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.ParseFromString(serialized);
-    auto rawTx = hex(protoOutput.encoded());
+    auto rawTx = hex(data);
     EXPECT_EQ("00d1e3f2e679000000000000000000000000000000000000000000000000000000000000000000000000"
               "380008646563696d616c731400000000000000000000000000000000000000020068164f6e746f6c6f67"
               "792e4e61746976652e496e766f6b650000",
@@ -119,16 +107,13 @@ TEST(TWOntologySignerSign, OngBalanceOf) {
     // http://polaris2.ont.io:20334/api/v1/transaction?preExec=1
     //
     //{"Action":"sendrawtransaction","Desc":"SUCCESS","Error":0,"Result":{"State":1,"Gas":20000,"Result":"27e74d240609","Notify":[]},"Version":"1.0.0"}
-    auto input = Ontology::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_contract("ONG");
     input.set_method("balanceOf");
     input.set_query_address("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD");
     input.set_nonce(3486522027);
     auto data = OngTxBuilder::build(input);
-    std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.ParseFromString(serialized);
-    auto rawTx = hex(protoOutput.encoded());
+    auto rawTx = hex(data);
     EXPECT_EQ("00d1ab1ad0cf000000000000000000000000000000000000000000000000000000000000000000000000"
               "4d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f6614000000000000000000"
               "00000000000000000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b650000",
@@ -142,7 +127,7 @@ TEST(TWOntologySignerSign, OngTransfer) {
         parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
     auto payerPrivateKey =
         parse_hex("4646464646464646464646464646464646464646464646464646464646464652");
-    auto input = Ontology::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_contract("ONG");
     input.set_method("transfer");
     input.set_owner_private_key(ownerPrivateKey.data(), ownerPrivateKey.size());
@@ -153,10 +138,7 @@ TEST(TWOntologySignerSign, OngTransfer) {
     input.set_gas_limit(20000);
     input.set_nonce(2827104669);
     auto data = OngTxBuilder::build(input);
-    std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.ParseFromString(serialized);
-    auto rawTx = hex(protoOutput.encoded());
+    auto rawTx = hex(data);
     EXPECT_EQ("00d19d3182a8f401000000000000204e00000000000057e9d1a61f9aafa798b6c7fbeae35639681d7df6"
               "7100c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed299ea06fcb94aba"
               "c41aaf3ead76586a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
@@ -176,7 +158,7 @@ TEST(TWOntologySignerSign, OngWithdraw) {
         parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
     auto payerPrivateKey =
         parse_hex("4646464646464646464646464646464646464646464646464646464646464652");
-    auto input = Ontology::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_contract("ONG");
     input.set_method("withdraw");
     input.set_owner_private_key(ownerPrivateKey.data(), ownerPrivateKey.size());
@@ -187,10 +169,7 @@ TEST(TWOntologySignerSign, OngWithdraw) {
     input.set_gas_limit(20000);
     input.set_nonce(3784713724);
     auto data = OngTxBuilder::build(input);
-    std::string serialized(TWDataBytes(data), TWDataBytes(data) + TWDataSize(data));
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.ParseFromString(serialized);
-    auto rawTx = hex(protoOutput.encoded());
+    auto rawTx = hex(data);
     EXPECT_EQ(
         "00d1fc2596e1f401000000000000204e00000000000057e9d1a61f9aafa798b6c7fbeae35639681d7df68b00c6"
         "6b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc81400000000000000000000000000000000000000"
