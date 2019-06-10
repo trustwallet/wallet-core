@@ -169,30 +169,30 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
 
 TWData *_Nonnull TWCoinTypeConfigurationGetP2PKHPrefix(enum TWCoinType coin) {
     auto data = Data();
-    return TWDataCreateWithBytes(data.data(), data.size());
-
-/*
     switch (coin) {
 <%  coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-        return <%= coin['p2pkhPrefix'] %>;
+    <% coin['p2pkhPrefix'].each do |prefix| -%>
+    data.push_back(<%= prefix %>);
+    <% end -%>
+    break;
 <% end -%>
     }
-*/
+    return TWDataCreateWithBytes(data.data(), data.size());
 }
 
 TWData *_Nonnull TWCoinTypeConfigurationGetP2SHPrefix(enum TWCoinType coin) {
     auto data = Data();
-    return TWDataCreateWithBytes(data.data(), data.size());
-
-/*
     switch (coin) {
 <%  coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-        return <%= coin['p2shPrefix'] %>;
+    <% coin['p2shPrefix'].each do |prefix| -%>
+    data.push_back(<%= prefix %>);
+    <% end -%>
+    break;
 <% end -%>
     }
-*/
+    return TWDataCreateWithBytes(data.data(), data.size());
 }
 
 TWString *_Nonnull TWCoinTypeConfigurationGetHRPPrefix(enum TWCoinType coin) {
