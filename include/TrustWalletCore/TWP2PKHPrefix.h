@@ -27,6 +27,7 @@ enum TWP2PKHPrefix {
     TWP2PKHPrefixZcoin = 0x52,
     TWP2PKHPrefixMonetaryUnit = 0x10,
     TWP2PKHPrefixRavencoin = 0x3c,
+    TWP2PKHPrefixNebulas = 0x19,
 };
 
 TW_EXTERN_C_END

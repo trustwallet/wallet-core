@@ -1,0 +1,190 @@
+var TW.ARK.Proto = TW.ARK.Proto || exports || {}, exports;
+var ByteBuffer = ByteBuffer || require("bytebuffer");
+TW.ARK.Proto.Long = ByteBuffer.Long;
+
+(function(undefined) {
+
+  function pushTemporaryLength(buffer) {
+    var length = buffer.readVarint32();
+    var limit = buffer.limit;
+    buffer.limit = buffer.offset + length;
+    return limit;
+  }
+
+  function skipUnknownField(buffer, type) {
+    switch (type) {
+      case 0: while (buffer.readByte() & 0x80) {} break;
+      case 2: buffer.skip(buffer.readVarint32()); break;
+      case 5: buffer.skip(4); break;
+      case 1: buffer.skip(8); break;
+      default: throw new Error("Unimplemented type: " + type);
+    }
+  }
+
+  function coerceLong(value) {
+    if (!(value instanceof ByteBuffer.Long) && "low" in value && "high" in value)
+      value = new ByteBuffer.Long(value.low, value.high, value.unsigned);
+    return value;
+  }
+
+  TW.ARK.Proto["encodeTransactionType"] = {
+    "Transfer": 0
+  };
+
+  TW.ARK.Proto["decodeTransactionType"] = {
+    "0": "Transfer"
+  };
+
+  TW.ARK.Proto["encodeSigningInput"] = function(message) {
+    var buffer = new ByteBuffer(undefined, true);
+
+    // optional TransactionType type = 1;
+    var value = message["type"];
+    if (value !== undefined) {
+      buffer.writeVarint32(8);
+      buffer.writeVarint32(TW.ARK.Proto["encodeTransactionType"][value]);
+    }
+
+    // optional uint64 amount = 2;
+    var value = message["amount"];
+    if (value !== undefined) {
+      buffer.writeVarint32(16);
+      buffer.writeVarint64(coerceLong(value));
+    }
+
+    // optional uint64 fee = 3;
+    var value = message["fee"];
+    if (value !== undefined) {
+      buffer.writeVarint32(24);
+      buffer.writeVarint64(coerceLong(value));
+    }
+
+    // optional string to_address = 4;
+    var value = message["to_address"];
+    if (value !== undefined) {
+      buffer.writeVarint32(34);
+      var nested = new ByteBuffer(undefined, true);
+      nested.writeUTF8String(value), buffer.writeVarint32(nested.flip().limit), buffer.append(nested);
+    }
+
+    // optional uint32 timestamp = 5;
+    var value = message["timestamp"];
+    if (value !== undefined) {
+      buffer.writeVarint32(40);
+      buffer.writeVarint32(value);
+    }
+
+    // optional bytes private_key = 6;
+    var value = message["private_key"];
+    if (value !== undefined) {
+      buffer.writeVarint32(50);
+      buffer.writeVarint32(value.length), buffer.append(value);
+    }
+
+    return buffer.flip().toBuffer();
+  };
+
+  TW.ARK.Proto["decodeSigningInput"] = function(buffer) {
+    var message = {};
+
+    if (!(buffer instanceof ByteBuffer))
+      buffer = new ByteBuffer.fromBinary(buffer, true);
+
+    end_of_message: while (buffer.remaining() > 0) {
+      var tag = buffer.readVarint32();
+
+      switch (tag >>> 3) {
+      case 0:
+        break end_of_message;
+
+      // optional TransactionType type = 1;
+      case 1:
+        message["type"] = TW.ARK.Proto["decodeTransactionType"][buffer.readVarint32()];
+        break;
+
+      // optional uint64 amount = 2;
+      case 2:
+        message["amount"] = buffer.readVarint64().toUnsigned();
+        break;
+
+      // optional uint64 fee = 3;
+      case 3:
+        message["fee"] = buffer.readVarint64().toUnsigned();
+        break;
+
+      // optional string to_address = 4;
+      case 4:
+        message["to_address"] = buffer.readUTF8String(buffer.readVarint32(), "b");
+        break;
+
+      // optional uint32 timestamp = 5;
+      case 5:
+        message["timestamp"] = buffer.readVarint32() >>> 0;
+        break;
+
+      // optional bytes private_key = 6;
+      case 6:
+        message["private_key"] = buffer.readBytes(buffer.readVarint32()).toBuffer();
+        break;
+
+      default:
+        skipUnknownField(buffer, tag & 7);
+      }
+    }
+
+    return message;
+  };
+
+  TW.ARK.Proto["encodeSigningOutput"] = function(message) {
+    var buffer = new ByteBuffer(undefined, true);
+
+    // optional string encoded = 1;
+    var value = message["encoded"];
+    if (value !== undefined) {
+      buffer.writeVarint32(10);
+      var nested = new ByteBuffer(undefined, true);
+      nested.writeUTF8String(value), buffer.writeVarint32(nested.flip().limit), buffer.append(nested);
+    }
+
+    // optional bytes signature = 2;
+    var value = message["signature"];
+    if (value !== undefined) {
+      buffer.writeVarint32(18);
+      buffer.writeVarint32(value.length), buffer.append(value);
+    }
+
+    return buffer.flip().toBuffer();
+  };
+
+  TW.ARK.Proto["decodeSigningOutput"] = function(buffer) {
+    var message = {};
+
+    if (!(buffer instanceof ByteBuffer))
+      buffer = new ByteBuffer.fromBinary(buffer, true);
+
+    end_of_message: while (buffer.remaining() > 0) {
+      var tag = buffer.readVarint32();
+
+      switch (tag >>> 3) {
+      case 0:
+        break end_of_message;
+
+      // optional string encoded = 1;
+      case 1:
+        message["encoded"] = buffer.readUTF8String(buffer.readVarint32(), "b");
+        break;
+
+      // optional bytes signature = 2;
+      case 2:
+        message["signature"] = buffer.readBytes(buffer.readVarint32()).toBuffer();
+        break;
+
+      default:
+        skipUnknownField(buffer, tag & 7);
+      }
+    }
+
+    return message;
+  };
+
+})();
