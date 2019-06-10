@@ -49,6 +49,8 @@ using namespace TW;
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto& hrp = *reinterpret_cast<const std::string*>(TWCoinTypeConfigurationGetHRPPrefix(coin));
+    uint8_t p2pkhPrefix = TWCoinTypeConfigurationGetP2PKHPrefix(coin);
+    uint8_t p2shPrefix = TWCoinTypeConfigurationGetP2SHPrefix(coin);
 
     switch (coin) {
     case TWCoinTypeAion:
@@ -59,7 +61,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeBitcoin:
         return Bitcoin::SegwitAddress::isValid(string, hrp) ||
-               Bitcoin::Address::isValid(string, {{TWP2PKHPrefixBitcoin}, {TWP2SHPrefixBitcoin}});
+               Bitcoin::Address::isValid(string, {{p2pkhPrefix}, {p2shPrefix}});
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress::isValid(string) ||

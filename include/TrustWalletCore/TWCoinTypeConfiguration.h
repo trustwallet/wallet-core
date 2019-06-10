@@ -38,11 +38,11 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType type);
 
 /// Returns P2PKH prefix of coin
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWCoinTypeConfigurationGetP2PKHPrefix(enum TWCoinType type);
+uint8_t TWCoinTypeConfigurationGetP2PKHPrefix(enum TWCoinType type);
 
 /// Returns P2SH prefix of coin
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWCoinTypeConfigurationGetP2SHPrefix(enum TWCoinType type);
+uint8_t TWCoinTypeConfigurationGetP2SHPrefix(enum TWCoinType type);
 
 /// Returns HRP prefix of coin
 TW_EXPORT_STATIC_METHOD
