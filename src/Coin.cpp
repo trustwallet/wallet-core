@@ -196,12 +196,14 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
+    auto& hrp = *reinterpret_cast<const std::string*>(TWCoinTypeConfigurationGetHRPPrefix(coin));
+
     switch (coin) {
     case TWCoinTypeBinance:
-        return Cosmos::Address(HRP_BINANCE, publicKey).string();
+        return Cosmos::Address(hrp, publicKey).string();
 
     case TWCoinTypeBitcoin:
-        return Bitcoin::SegwitAddress(publicKey, 0, HRP_BITCOIN).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(publicKey).string();
@@ -210,7 +212,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Bravo::Address(publicKey).string();
 
     case TWCoinTypeCosmos:
-        return Cosmos::Address(HRP_COSMOS, publicKey).string();
+        return Cosmos::Address(hrp, publicKey).string();
 
     case TWCoinTypeDash:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixDash).string();
@@ -222,10 +224,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Bitcoin::Address(publicKey, TWP2PKHPrefixD).string();
 
     case TWCoinTypeDigiByte:
-        return Bitcoin::SegwitAddress(publicKey, 0, HRP_DIGIBYTE).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
 
     case TWCoinTypeGroestlcoin:
-        return Bitcoin::SegwitAddress(publicKey, 0, HRP_GROESTLCOIN).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
 
     case TWCoinTypeIocoin:
         return Iocoin::Address(publicKey, TWP2PKHPrefixIocoin).string();
@@ -257,9 +259,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeIoTeX:
         return IoTeX::Address(publicKey).string();
     case TWCoinTypeLitecoin:
-        return Bitcoin::SegwitAddress(publicKey, 0, HRP_LITECOIN).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
     case TWCoinTypeViacoin:
-        return Bitcoin::SegwitAddress(publicKey, 0, HRP_VIACOIN).string();
+        return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
     case TWCoinTypeOntology:
         return Ontology::Address(publicKey).string();
     case TWCoinTypeNimiq:
