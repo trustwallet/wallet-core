@@ -4,6 +4,8 @@
 #include "../proto/Bravo.pb.h"
 #include "../proto/Common.pb.h"
 
+#include <boost/exception/diagnostic_information.hpp>
+
 using namespace TW::Bravo;
 
 static TW_Proto_Result createErrorResult(const std::string& description) {
@@ -53,11 +55,7 @@ TW_Proto_Result TWBravoSignerSign(TW_Bravo_Proto_SigningInput input) {
         result.add_objects()->PackFrom(out);
         auto serialized = result.SerializeAsString();
         return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
-    } catch (const std::exception& e) {
-        return createErrorResult(e.what());
-    } catch (const std::logic_error& e) {
-        return createErrorResult(e.what());
-    } catch (const std::runtime_error& e) {
-        return createErrorResult(e.what());
+    } catch (...) {
+        return createErrorResult(boost::current_exception_diagnostic_information());
     }
 }

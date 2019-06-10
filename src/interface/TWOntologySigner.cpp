@@ -13,15 +13,22 @@ using namespace TW;
 using namespace TW::Ontology;
 
 TW_Ontology_Proto_SigningOutput TWOntologySignerSign(TW_Ontology_Proto_SigningInput data) {
-    Ontology::Proto::SigningInput input;
+    Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     auto contract = std::string(input.contract().begin(), input.contract().end());
-    if (contract == "ONT") {
-        return OntTxBuilder::build(input);
+    auto output = Proto::SigningOutput();
+    try {
+        if (contract == "ONT") {
+            auto encoded = OntTxBuilder::build(input);
+            output.set_encoded(encoded.data(), encoded.size());
+        } else if (contract == "ONG") {
+            auto encoded = OngTxBuilder::build(input);
+            output.set_encoded(encoded.data(), encoded.size());
+        }
+    } catch (...) {
     }
-    if (contract == "ONG") {
-        return OngTxBuilder::build(input);
-    }
-    std::vector<uint8_t> nullData;
-    return TWDataCreateWithBytes(nullData.data(), nullData.size());
+
+    auto serialized = output.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),
+                                 serialized.size());
 }

@@ -29,9 +29,13 @@ TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose 
 TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_TransactionPlan data) {
     Proto::TransactionPlan plan;
     plan.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-
-    const auto signer = Signer(plan);
-    const auto output = signer.sign();
-
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(output.data()), output.size());
+    auto output = Proto::SigningOutput();
+    try {
+        const auto signer = Signer(plan);
+        const auto data = signer.sign();
+        output.set_encoded(data.data(), data.size());
+    }
+    catch(...) {}
+    auto serialized = output.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
 }
