@@ -297,8 +297,8 @@ class HDWalletTests: XCTestCase {
         let xpub9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: bitcoin, account: 0, change: 0, address: 9))!
 
 
-        let xpubAddr2 = BitcoinAddress(publicKey: xpub2, prefix: CoinTypeConfiguration.getP2PKHPrefix(type: CoinType.bitcoin))!
-        let xpubAddr9 = BitcoinAddress(publicKey: xpub9, prefix: CoinTypeConfiguration.getP2PKHPrefix(type: CoinType.bitcoin))!
+        let xpubAddr2 = BitcoinAddress(publicKey: xpub2, prefix: CoinTypeConfiguration.getP2PKHPrefix(type: .bitcoin))!
+        let xpubAddr9 = BitcoinAddress(publicKey: xpub9, prefix: CoinTypeConfiguration.getP2PKHPrefix(type: .bitcoin))!
 
         XCTAssertEqual(xpubAddr2.description,  "1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb")
         XCTAssertEqual(xpubAddr9.description, "1DUrqK4hj6vNNUTWXADpbqyjVWUYFD7xTZ")
@@ -311,8 +311,8 @@ class HDWalletTests: XCTestCase {
         let ypub3 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: bitcoin, account: 0, change: 0, address: 3))!
         let ypub10 = HDWallet.derive(from: ypub, at: DerivationPath(purpose: .bip49, coinType: bitcoin, account: 0, change: 0, address: 10))!
 
-        let ypubAddr3 = BitcoinAddress.compatibleAddress(publicKey: ypub3, prefix: P2SHPrefix.bitcoin.rawValue)
-        let ypubAddr10 = BitcoinAddress.compatibleAddress(publicKey: ypub10, prefix: P2SHPrefix.bitcoin.rawValue)
+        let ypubAddr3 = BitcoinAddress.compatibleAddress(publicKey: ypub3, prefix: CoinTypeConfiguration.getP2SHPrefix(type: .bitcoin))
+        let ypubAddr10 = BitcoinAddress.compatibleAddress(publicKey: ypub10, prefix: CoinTypeConfiguration.getP2SHPrefix(type: .bitcoin))
         XCTAssertEqual(ypubAddr3.description, "38CahkVftQneLonbWtfWxiiaT2fdnzsEAN")
         XCTAssertEqual(ypubAddr10.description, "38mWd5D48ShYPJMZngtmxPQVYhQR5DGgfF")
     }
