@@ -201,7 +201,8 @@ TWString *_Nonnull TWCoinTypeConfigurationGetHRPPrefix(enum TWCoinType coin) {
         break;
 <% end end -%>
     default:
-        return "";
+        string = ""
+        break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }

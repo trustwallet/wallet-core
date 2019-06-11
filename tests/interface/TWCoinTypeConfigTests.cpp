@@ -607,3 +607,80 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
     ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
 }
+
+TEST(TWCoinTypeConfiguration, P2PKHPrefix) {
+    ASSERT_EQ(0xFF, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeEthereum));
+    ASSERT_EQ(0, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeBitcoin));
+    ASSERT_EQ(0, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeBitcoinCash));
+    ASSERT_EQ(76, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeDash));
+    ASSERT_EQ(30, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeDigiByte));
+    ASSERT_EQ(30, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeDogecoin));
+    ASSERT_EQ(36, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeGroestlcoin));
+    ASSERT_EQ(103, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeIocoin));
+    ASSERT_EQ(48, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeLitecoin));
+    ASSERT_EQ(71, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeViacoin));
+    ASSERT_EQ(82, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeZcoin));
+    ASSERT_EQ(184, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeZcash));
+    ASSERT_EQ(48, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeLux));
+    ASSERT_EQ(58, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeQtum));
+    ASSERT_EQ(184, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeZelcash));
+    ASSERT_EQ(16, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeMonetaryUnit));
+    ASSERT_EQ(60, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeRavencoin));
+}
+
+TEST(TWCoinTypeConfiguration, P2SHPrefix) {
+    ASSERT_EQ(0xFF, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeEthereum));
+    ASSERT_EQ(5, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeBitcoin));
+    ASSERT_EQ(5, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeBitcoinCash));
+    ASSERT_EQ(16, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeDash));
+    ASSERT_EQ(63, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeDigiByte));
+    ASSERT_EQ(22, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeDogecoin));
+    ASSERT_EQ(5, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeGroestlcoin));
+    ASSERT_EQ(85, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeIocoin));
+    ASSERT_EQ(50, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeLitecoin));
+    ASSERT_EQ(33, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeViacoin));
+    ASSERT_EQ(7, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeZcoin));
+    ASSERT_EQ(189, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeZcash));
+    ASSERT_EQ(63, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeLux));
+    ASSERT_EQ(189, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeZelcash));
+    ASSERT_EQ(76, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeMonetaryUnit));
+    ASSERT_EQ(122, TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeRavencoin));
+}
+
+TEST(TWCoinTypeConfiguration, HRP) {
+    auto hrpEthereum = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeEthereum));
+    assertStringsEqual(hrpEthereum, "");
+
+    auto hrpBitcoin = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeBitcoin));
+    assertStringsEqual(hrpBitcoin, "bc");
+
+    auto hrpBitcoinCash = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeBitcoinCash));
+    assertStringsEqual(hrpBitcoinCash, "bitcoincash");
+
+    auto hrpDigiByte = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeDigiByte));
+    assertStringsEqual(hrpDigiByte, "dgb");
+
+    auto hrpGroestlcoin = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeGroestlcoin));
+    assertStringsEqual(hrpGroestlcoin, "grs");
+
+    auto hrpLitecoin = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeLitecoin));
+    assertStringsEqual(hrpLitecoin, "ltc");
+
+    auto hrpViacoin = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeViacoin));
+    assertStringsEqual(hrpViacoin, "via");
+
+    auto hrpBinance = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeBinance));
+    assertStringsEqual(hrpBinance, "bnb");
+
+    auto hrpCosmos = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeCosmos));
+    assertStringsEqual(hrpCosmos, "cosmos");
+
+    auto hrpQtum = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeQtum));
+    assertStringsEqual(hrpQtum, "qc");
+
+    auto hrpSteem = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeSteem));
+    assertStringsEqual(hrpSteem, "STM");
+
+    auto hrpZilliqa = WRAPS(TWCoinTypeConfigurationGetHRPPrefix(TWCoinTypeZilliqa));
+    assertStringsEqual(hrpZilliqa, "zil");
+}
