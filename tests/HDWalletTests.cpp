@@ -13,7 +13,6 @@
 #include "Hash.h"
 #include "Base58.h"
 
-#include <TrustWalletCore/TWP2SHPrefix.h>
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 
 #include <gtest/gtest.h>
@@ -39,7 +38,7 @@ TEST(HDWallet, privateKeyFromMptv) {
     auto keyHash = Hash::sha256ripemd(publicKey.bytes.data(), publicKey.bytes.data() + 33);
     witness.insert(witness.end(), keyHash.begin(), keyHash.end());
 
-    auto prefix = Data{TWP2SHPrefixLitecoin};
+    auto prefix = Data{TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeLitecoin)};
     auto redeemScript = Hash::sha256ripemd(witness.data(), witness.data() + witness.size());
     prefix.insert(prefix.end(), redeemScript.begin(), redeemScript.end());
 

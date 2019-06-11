@@ -8,7 +8,6 @@
 
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
-#include <TrustWalletCore/TWP2SHPrefix.h>
 
 #include <array>
 #include <cassert>

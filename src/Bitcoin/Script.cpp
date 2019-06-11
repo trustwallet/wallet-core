@@ -17,13 +17,12 @@
 #include "../PublicKey.h"
 #include "../Zcash/TAddress.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
-#include <TrustWalletCore/TWP2SHPrefix.h>
-
 #include <algorithm>
 #include <cassert>
+
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
+#include <TrustWalletCore/TWBitcoinOpCodes.h>
 
 using namespace TW::Bitcoin;
 
@@ -312,7 +311,7 @@ Script Script::buildForAddress(const std::string& string) {
         if (address.bytes[0] == TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeGroestlcoin)) {
             return buildPayToPublicKeyHash(data);
         }
-        if (address.bytes[0] == TWP2SHPrefixGroestlcoin) {
+        if (address.bytes[0] == TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeGroestlcoin)) {
             return buildPayToScriptHash(data);
         }
     } else if (Zcash::TAddress::isValid(string)) {

@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <array>
+
 #include "HDWallet.h"
 
 #include "Base58.h"
@@ -19,9 +21,6 @@
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
 #include <TrustWalletCore/TWHRP.h>
-#include <TrustWalletCore/TWP2SHPrefix.h>
-
-#include <array>
 
 using namespace TW;
 
