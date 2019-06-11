@@ -7,7 +7,6 @@
 #include "Signer.h"
 #include "Address.h"
 #include "Base64.h"
-#include "ChecksumEncoder.h"
 #include "HexCoding.h"
 #include "Identifiers.h"
 #include <Data.h>
@@ -18,36 +17,23 @@ using namespace TW::Aeternity;
 
 /// implementation copied from
 /// https://github.com/aeternity/aepp-sdk-go/blob/07aa8a77e5/aeternity/helpers.go#L367
-Proto::SigningOutput Aeternity::Signer::sign(const TW::PrivateKey &privateKey, Transaction &transaction) {
-    const std::string &txString = transaction.encode();
-    auto txRaw = parseRawTransaction(txString);
+Proto::SigningOutput Signer::sign(const TW::PrivateKey &privateKey, Transaction &transaction) {
+    auto txRlp = transaction.encode();
 
     /// append networkId and txRaw
-    auto msg = buildMessageToSign(txRaw);
+    auto msg = buildMessageToSign(txRlp);
 
     /// sign ed25519
     auto sigRaw = privateKey.sign(msg, TWCurveED25519);
-    auto signature = ChecksumEncoder::encode(Identifiers::prefixSignature, sigRaw);
+    auto signature = finalize(Identifiers::prefixSignature, sigRaw);
 
     /// encode the message using rlp
-    auto rlpTxRaw = buildRlpTxRaw(txRaw, sigRaw);
+    auto rlpTxRaw = buildRlpTxRaw(txRlp, sigRaw);
 
     /// encode the rlp message with the prefix
-    auto signedEncodedTx = ChecksumEncoder::encode(Identifiers::prefixTransaction, rlpTxRaw);
+    auto signedEncodedTx = finalize(Identifiers::prefixTransaction, rlpTxRaw);
 
     return createProtoOutput(signature, signedEncodedTx);
-}
-
-Data TW::Aeternity::Signer::parseRawTransaction(const std::string &transaction) {
-    auto trimPrefix = transaction.substr(Identifiers::prefixTransaction.size(), transaction.size() - 1);
-    auto txWithChecksum = TW::Base64::decode(trimPrefix);
-
-    /// trimChecksum
-    auto start = txWithChecksum.begin();
-    auto end = txWithChecksum.end() - ChecksumEncoder::checkSumSize;
-    Data txRaw(start, end);
-
-    return txRaw;
 }
 
 Data Signer::buildRlpTxRaw(Data &txRaw, Data &sigRaw) {
@@ -71,10 +57,22 @@ Data Signer::buildMessageToSign(Data &txRaw) {
     return data;
 }
 
-Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std::string& signedTx) {
+Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std::string &signedTx) {
     auto output = Proto::SigningOutput();
 
     output.set_signature(signature);
     output.set_encoded(signedTx);
     return output;
+}
+
+/// Encode a byte array into base64 with checksum and a prefix
+std::string Signer::finalize(const std::string &prefix, const TW::Data &rawTx) {
+    auto checksum = Hash::sha256(Hash::sha256(rawTx));
+    std::vector<unsigned char> checksumPart(checksum.begin(), checksum.begin() + checkSumSize);
+
+    auto data = Data();
+    append(data, rawTx);
+    append(data, checksumPart);
+
+    return prefix + TW::Base64::encode(data);
 }

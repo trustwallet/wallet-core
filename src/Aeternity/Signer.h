@@ -16,10 +16,16 @@ class Signer {
     static Proto::SigningOutput sign(const PrivateKey &privateKey, Transaction &transaction);
 
   private:
-    static Data parseRawTransaction(const std::string &transaction);
+    static const uint8_t checkSumSize = 4;
+
     static Data buildRlpTxRaw(Data &txRaw, Data &sigRaw);
+
     static Data buildMessageToSign(Data &txRaw);
+
     static Proto::SigningOutput createProtoOutput(std::string &signature, const std::string &signedTx);
+
+    /// Encode a byte array into base64 with checksum and a prefix
+    static std::string finalize(const std::string &prefix, const TW::Data &rawTx);
 };
 
 } // namespace TW::Aeternity

@@ -5,8 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Transaction.h"
-#include "Base64.h"
-#include "ChecksumEncoder.h"
 #include "Identifiers.h"
 #include <Base58.h>
 #include <Ethereum/RLP.h>
@@ -16,7 +14,7 @@ using namespace TW;
 using namespace TW::Aeternity;
 
 /// RLP returns a byte serialized representation
-std::string Transaction::encode() {
+Data Transaction::encode() {
     auto encoded = Data();
     append(encoded, Ethereum::RLP::encode(Identifiers::objectTagSpendTransaction));
     append(encoded, Ethereum::RLP::encode(Identifiers::rlpMessageVersion));
@@ -29,8 +27,7 @@ std::string Transaction::encode() {
     append(encoded, Ethereum::RLP::encode(payload));
 
     const Data &raw = Ethereum::RLP::encodeList(encoded);
-
-    return ChecksumEncoder::encode(Identifiers::prefixTransaction, raw);
+    return raw;
 }
 
 //// buildIDTag assemble an id() object

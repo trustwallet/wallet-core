@@ -46,9 +46,10 @@ class Transaction {
         , ttl(ttl)
         , nonce(nonce){};
 
-    std::string encode();
+    Data encode();
 
     static Data buildTag(const std::string &address);
+
 };
 
 } // namespace TW::Aeternity

@@ -26,7 +26,8 @@ TEST(AeternityTransaction, EncodeRlp) {
 
     auto tx = Transaction(sender_id, recipient_id, amount, fee, payload, ttl, nonce);
     auto encodedTx = tx.encode();
+    auto encodedTxHex = hex(encodedTx);
 
-    ASSERT_EQ(encodedTx, "tx_+F8MAaEBzqet5HDJ+Z2dTkAIgKhvHUm7REti8Rqeu2S7z+tz/vOhAR8To7CL8AFABmKmi2nYdfeAPOxMCGR/btXYTHiXvVCjCoYSMJzlQACDAUNFMYtIZWxsbyBXb3JsZNM5B3Q=");
+    ASSERT_EQ(encodedTxHex, "f85f0c01a101cea7ade470c9f99d9d4e400880a86f1d49bb444b62f11a9ebb64bbcfeb73fef3a1011f13a3b08bf001400662a68b69d875f7803cec4c08647f6ed5d84c7897bd50a30a8612309ce5400083014345318b48656c6c6f20576f726c64");
 }
 
