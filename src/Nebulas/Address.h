@@ -18,9 +18,9 @@ class Address {
   public:
     /// Number of bytes in an address.
     static const size_t size = 26;
-    static const u_int8_t AddressPrefix = 25;
-    static const u_int8_t NormalType = 87;
-    static const u_int8_t ContractType = 88;
+    static const uint8_t AddressPrefix = 25;
+    static const uint8_t NormalType = 87;
+    static const uint8_t ContractType = 88;
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.

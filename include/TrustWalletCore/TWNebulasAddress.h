@@ -36,7 +36,7 @@ struct TWNebulasAddress *_Nullable TWNebulasAddressCreateWithKeyHash(TWData *_No
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
-struct TWNebulasAddress *_Nonnull TWNebulasAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix);
+struct TWNebulasAddress *_Nonnull TWNebulasAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
 
 TW_EXPORT_METHOD
 void TWNebulasAddressDelete(struct TWNebulasAddress *_Nonnull address);
