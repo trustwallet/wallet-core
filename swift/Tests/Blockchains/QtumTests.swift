@@ -12,7 +12,7 @@ class QtumTests: XCTestCase {
         let privateKey1 = PrivateKey(data: Data(hexString: "a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730")!)!
         let publicKey1 = privateKey1.getPublicKeySecp256k1(compressed: true)
 
-        let legacyAddress = BitcoinAddress(publicKey: publicKey1, prefix: P2PKHPrefix.qtum.rawValue)!
+        let legacyAddress = BitcoinAddress(publicKey: publicKey1, prefix: CoinType.qtum.p2pkhPrefix)!
         XCTAssertEqual(BitcoinAddress(string: "QWVNLCXwhJqzut9YCLxbeMTximr2hmw7Vr")!.description, legacyAddress.description)
 
         let privateKey2 = PrivateKey(data: Data(hexString: "55f9cbb0376c422946fa28397c1219933ac60b312ede41bfacaf701ecd546625")!)!
@@ -58,8 +58,8 @@ class QtumTests: XCTestCase {
         let xpubAddr2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: qtum.purpose, coinType: qtum, account: 0, change: 0, address: 2))!
         let xpubAddr9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: qtum.purpose, coinType: qtum, account: 0, change: 0, address: 9))!
 
-        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: P2PKHPrefix.qtum.rawValue)!.description, "QStYeAAfiYKxsABzY9yugHDpm5bsynYPqc")
-        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: P2PKHPrefix.qtum.rawValue)!.description, "QfbKFChfhx1s4VXS9BzaVJgyKw5a1hnFg4")
+        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr2, prefix: CoinType.qtum.p2pkhPrefix)!.description, "QStYeAAfiYKxsABzY9yugHDpm5bsynYPqc")
+        XCTAssertEqual(BitcoinAddress(publicKey: xpubAddr9, prefix: CoinType.qtum.p2pkhPrefix)!.description, "QfbKFChfhx1s4VXS9BzaVJgyKw5a1hnFg4")
     }
 
     func testDeriveFromZPub() {

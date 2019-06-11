@@ -40,6 +40,7 @@ TEST(DigiByteTransaction, SignTransaction) {
     input.set_byte_fee(1);
     input.set_to_address("D9Gv7jWSVsS9Y5q98C79WyfEj6P2iM5Nzs");
     input.set_change_address("DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp4");
+    input.set_coin_type(TWCoinTypeDigiByte);
 
     auto hash0 = DATA("ea63bdc39035ebe02df7ad999581156f996303a70f9a3358811454a7ca806b96");
     auto utxo0 = input.add_utxo();

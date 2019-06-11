@@ -15,10 +15,18 @@ end
 json_string = File.read('coins.json')
 coins = JSON.parse(json_string).sort_by { |x| x['name'] }
 
-path = File.expand_path('coins.cpp.erb', File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
-template = ERB.new(File.read(path), nil, '-')
-result = template.result(binding)
+erbs = [
+  {'template' => 'coins.cpp.erb', 'folder' => 'src/Generated', 'file' => 'Coins.cpp'},
+  {'template' => 'hrp.cpp.erb', 'folder' => 'src/Generated', 'file' => 'TWHRP.cpp'},
+  {'template' => 'hrp.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWHRP.h'}
+]
 
 FileUtils.mkdir_p File.join('src', 'Generated')
-path = File.join('src', 'Generated', 'Coins.cpp')
-File.write(path, result)
+erbs.each do |erb|
+  path = File.expand_path(erb['template'], File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
+  template = ERB.new(File.read(path), nil, '-')
+  result = template.result(binding)
+
+  path = File.join(erb['folder'], erb['file'])
+  File.write(path, result)
+end

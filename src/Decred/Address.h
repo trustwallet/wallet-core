@@ -30,9 +30,6 @@ class Address {
 
     /// Returns a string representation of the address.
     std::string string() const;
-
-  private:
-    static std::array<byte, 4> checksum(const std::array<byte, 20>& keyhash);
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
