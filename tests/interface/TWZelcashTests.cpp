@@ -57,10 +57,11 @@ TEST(Zelcash, DerivePubkeyFromXpub) {
     auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/19167'/0'/0/3").get());
     auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/19167'/0'/0/5").get());
 
-    auto address3 = TWZcashTAddressCreateWithPublicKey(pubKey3, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeZcash));
+    auto p2pkhPrefix = TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeZcash);
+    auto address3 = TWZcashTAddressCreateWithPublicKey(pubKey3, p2pkhPrefix);
     auto address3String = WRAPS(TWZcashTAddressDescription(address3));
 
-    auto address5 = TWZcashTAddressCreateWithPublicKey(pubKey5, TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeZcash));
+    auto address5 = TWZcashTAddressCreateWithPublicKey(pubKey5, p2pkhPrefix);
     auto address5String = WRAPS(TWZcashTAddressDescription(address5));
 
     assertStringsEqual(address3String, "t1NdSKKkBXV3GBDMcPvpWu12qcNwAZwB4hD");

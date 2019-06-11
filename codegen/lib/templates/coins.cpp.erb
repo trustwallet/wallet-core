@@ -12,6 +12,9 @@
 
 using namespace TW;
 
+static const int UNDEFINED_P2H_PREFIX = -1;
+static const std::string UNDEFINED_HRP_PREFIX = "";
+
 TWBlockchain TW::blockchain(TWCoinType coin) {
     switch (coin) {
 <% coins.each do |coin| -%>
@@ -175,7 +178,7 @@ uint8_t TWCoinTypeConfigurationGetP2PKHPrefix(enum TWCoinType coin) {
         return <%= coin['p2pkhPrefix'] %>;
 <% end end -%>
     default:
-        return -1;
+        return UNDEFINED_P2H_PREFIX;
     }
 }
 
@@ -187,7 +190,7 @@ uint8_t TWCoinTypeConfigurationGetP2SHPrefix(enum TWCoinType coin) {
         return <%= coin['p2shPrefix'] %>;
 <% end end -%>
     default:
-        return -1;
+        return UNDEFINED_P2H_PREFIX;
     }
 }
 
@@ -201,7 +204,7 @@ TWString *_Nonnull TWCoinTypeConfigurationGetHRPPrefix(enum TWCoinType coin) {
         break;
 <% end end -%>
     default:
-        string = ""
+        string = UNDEFINED_HRP_PREFIX;
         break;
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
