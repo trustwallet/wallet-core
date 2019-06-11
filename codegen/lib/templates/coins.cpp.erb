@@ -170,18 +170,24 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
 uint8_t TWCoinTypeConfigurationGetP2PKHPrefix(enum TWCoinType coin) {
     switch (coin) {
 <%  coins.each do |coin| -%>
+<% if (coin['p2pkhPrefix'] != nil) then -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['p2pkhPrefix'] %>;
-<% end -%>
+<% end end -%>
+    default:
+        return -1;
     }
 }
 
 uint8_t TWCoinTypeConfigurationGetP2SHPrefix(enum TWCoinType coin) {
     switch (coin) {
 <%  coins.each do |coin| -%>
+<% if (coin['p2shPrefix'] != nil) then -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['p2shPrefix'] %>;
-<% end -%>
+<% end end -%>
+    default:
+        return -1;
     }
 }
 
@@ -189,10 +195,13 @@ TWString *_Nonnull TWCoinTypeConfigurationGetHRPPrefix(enum TWCoinType coin) {
     std::string string;
     switch (coin) {
 <%  coins.each do |coin| -%>
+<% if (coin['hrp'] != nil) then -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         string = "<%= coin['hrp'] %>";
         break;
-<% end -%>
+<% end end -%>
+    default:
+        return "";
     }
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
