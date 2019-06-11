@@ -67,7 +67,7 @@ class BitcoinAddressTests: XCTestCase {
         let privateKey = PrivateKey(data: data)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
-        let address = BitcoinAddress(publicKey: publicKey, prefix: P2PKHPrefix.bitcoin.rawValue)!
+        let address = BitcoinAddress(publicKey: publicKey, prefix: CoinTypeConfiguration.getP2PKHPrefix(type: CoinType.bitcoin))!
 
         XCTAssertEqual(address.description, BitcoinAddress(string: "1PeUvjuxyf31aJKX6kCXuaqxhmG78ZUdL1")!.description)
     }
@@ -117,7 +117,7 @@ class BitcoinAddressTests: XCTestCase {
     func testValidDigiByteAddress() {
         let addressString = "DTPQ92zp96TwpG2pRuUB3oEA3kWGRZPGhg"
 
-        XCTAssertEqual(P2PKHPrefix.d.rawValue, BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertEqual(CoinTypeConfiguration.getP2PKHPrefix(type: CoinType.digiByte), BitcoinAddress(string: addressString)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
                       "'\(addressString)' should be a valid DigiByte address")
 
@@ -157,7 +157,7 @@ class BitcoinAddressTests: XCTestCase {
     func testValidRavencoinAddress() {
         let addressString = "RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"
 
-        XCTAssertEqual(P2PKHPrefix.ravencoin.rawValue, BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertEqual(CoinTypeConfiguration.getP2PKHPrefix(type: CoinType.ravencoin), BitcoinAddress(string: addressString)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
                       "'\(addressString)' should be a valid Ravencoin address")
 
