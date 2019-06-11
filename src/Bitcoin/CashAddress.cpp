@@ -14,6 +14,8 @@
 #include <array>
 #include <cassert>
 #include <cstring>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWCoinTypeConfiguration.h>
 
 using namespace TW::Bitcoin;
 
@@ -94,9 +96,9 @@ Address CashAddress::legacyAddress() const {
     cash_data_to_addr(result.data(), &outlen, bytes.data(), CashAddress::size);
     assert(outlen == 21 && "Invalid length");
     if (result[0] == p2khVersion) {
-        result[0] = TWP2PKHPrefixBitcoin;
+        result[0] = TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeBitcoin);
     } else if (result[0] == p2shVersion) {
-        result[0] = TWP2SHPrefixBitcoin;
+        result[0] = TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeBitcoin);
     }
     return Address(result);
 }

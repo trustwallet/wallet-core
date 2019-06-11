@@ -23,6 +23,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWCoinTypeConfiguration.h>
 
 using namespace TW::Bitcoin;
 
@@ -251,15 +253,28 @@ void Script::encode(std::vector<uint8_t>& data) const {
 }
 
 Script Script::buildForAddress(const std::string& string) {
-    static const std::vector<uint8_t> p2pkhPrefixes = {TWP2PKHPrefixBitcoin, TWP2PKHPrefixIocoin, TWP2PKHPrefixLitecoin,
-                                                       TWP2PKHPrefixDash, TWP2PKHPrefixZcoin, TWP2PKHPrefixViacoin,
-                                                       TWP2PKHPrefixD, TWP2PKHPrefixQtum, TWP2PKHPrefixMonetaryUnit,
-                                                       TWP2PKHPrefixRavencoin};
+    static const std::vector<uint8_t> p2pkhPrefixes = {TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeBitcoin),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeIocoin),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeLitecoin),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeDash),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeZcoin),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeViacoin),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeDigiByte),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeQtum),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeMonetaryUnit),
+                                                       TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeRavencoin)};
 
-    static const std::vector<uint8_t> p2shPrefixes = {TWP2SHPrefixBitcoin, TWP2SHPrefixIocoin, TWP2SHPrefixLitecoin,
-                                                      TWP2SHPrefixDash, TWP2SHPrefixZcoin, TWP2SHPrefixViacoin,
-                                                      TWP2SHPrefixDogecoin, TWP2SHPrefixS, TWP2SHPrefixMonetaryUnit,
-                                                      TWP2SHPrefixRavencoin};
+    static const std::vector<uint8_t> p2shPrefixes = {TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeBitcoin),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeIocoin),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeLitecoin),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeDash),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeZcoin),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeViacoin),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeDogecoin),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeDigiByte),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeMonetaryUnit),
+                                                      TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeRavencoin)};
+
     if (Address::isValid(string)) {
         auto address = Address(string);
         auto p2pkh = std::find(p2pkhPrefixes.begin(), p2pkhPrefixes.end(), address.bytes[0]);
@@ -295,7 +310,7 @@ Script Script::buildForAddress(const std::string& string) {
         auto data = std::vector<uint8_t>();
         data.reserve(Address::size - 1);
         std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
-        if (address.bytes[0] == TWP2PKHPrefixGroestlcoin) {
+        if (address.bytes[0] == TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeGroestlcoin)) {
             return buildPayToPublicKeyHash(data);
         }
         if (address.bytes[0] == TWP2SHPrefixGroestlcoin) {
@@ -307,9 +322,9 @@ Script Script::buildForAddress(const std::string& string) {
         auto data = std::vector<uint8_t>();
         data.reserve(Address::size - 2);
         std::copy(address.bytes.begin() + 2, address.bytes.end(), std::back_inserter(data));
-        if (prefix == TWP2PKHPrefixZcashT) {
+        if (prefix == TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeZcash)) {
             return buildPayToPublicKeyHash(data);
-        } else if (prefix == TWP2SHPrefixZcashT) {
+        } else if (prefix == TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeZcash)) {
             return buildPayToScriptHash(data);
         }
     }
