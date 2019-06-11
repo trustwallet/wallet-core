@@ -38,16 +38,14 @@ struct TWNebulasAddress *_Nullable TWNebulasAddressCreateWithString(TWString *_N
     }
 }
 
-struct TWNebulasAddress *_Nonnull TWNebulasAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
-    const NormalType = 87;
-    const ContractType = 88;
-    return new TWNebulasAddress{ Address(publicKey->impl, prefix) };
+struct TWNebulasAddress *_Nonnull TWNebulasAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
+    return new TWNebulasAddress{ Address(publicKey->impl) };
 }
 
-struct TWNebulasAddress *_Nullable TWNebulasAddressCreateWithKeyHash(TWData *_Nonnull keyHash, enum TWNebulasKeyType type) {
+struct TWNebulasAddress *_Nullable TWNebulasAddressCreateWithKeyHash(TWData *_Nonnull keyHash) {
     auto d = reinterpret_cast<const Data *>(keyHash);
     try {
-        return new TWNebulasAddress{ Address(*d, translateType(type)) };
+        return new TWNebulasAddress{ Address(*d) };
     } catch (...) {
         return nullptr;
     }
