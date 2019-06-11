@@ -24,7 +24,7 @@ Signer::Signer(Proto::TransactionPlan& plan) : plan(plan) {
     *tx.mutable_outputs() = *plan.mutable_outputs();
 }
 
-std::vector<uint8_t> Signer::sign() const {
+Data Signer::sign() const {
     if (plan.private_key().empty()) {
         throw std::invalid_argument("Must have private key string");
     } else if (tx.inputs_size() == 0) {
