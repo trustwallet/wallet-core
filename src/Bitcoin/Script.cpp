@@ -311,7 +311,7 @@ Script Script::buildForAddress(const std::string& string) {
         if (address.bytes[0] == TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeGroestlcoin)) {
             return buildPayToPublicKeyHash(data);
         }
-        if (address.bytes[0] == TWCoinTypeConfigurationGetP2PKHPrefix(TWCoinTypeGroestlcoin)) {
+        if (address.bytes[0] == TWCoinTypeConfigurationGetP2SHPrefix(TWCoinTypeGroestlcoin)) {
             return buildPayToScriptHash(data);
         }
     } else if (Zcash::TAddress::isValid(string)) {
