@@ -22,6 +22,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPGroestlcoin), "grs");
     ASSERT_STREQ(stringForHRP(TWHRPQtum), "qc");
     ASSERT_STREQ(stringForHRP(TWHRPZilliqa), "zil");
+    ASSERT_STREQ(stringForHRP(TWHRPViacoin), "via");
 }
 
 TEST(TWHRP, HRPForString) {
@@ -35,6 +36,7 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("grs"), TWHRPGroestlcoin);
     ASSERT_EQ(hrpForString("qc"), TWHRPQtum);
     ASSERT_EQ(hrpForString("zil"), TWHRPZilliqa);
+    ASSERT_EQ(hrpForString("via"), TWHRPViacoin);
 }
 
 TEST(TWHPR, HPRByCoinType) {

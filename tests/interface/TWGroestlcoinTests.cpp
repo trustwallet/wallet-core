@@ -12,7 +12,6 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
-#include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
@@ -20,7 +19,7 @@
 TEST(Groestlcoin, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("3c3385ddc6fd95ba7282051aeb440bc75820b8c10db5c83c052d7586e3e98e84").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWGroestlcoinAddress, TWGroestlcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixGroestlcoin));
+    auto address = WRAP(TWGroestlcoinAddress, TWGroestlcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeGroestlcoin)));
     auto addressString = WRAPS(TWGroestlcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
 

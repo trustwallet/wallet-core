@@ -5,7 +5,7 @@ ARG CMAKE_VERSION=3.13.4
 ARG PROTOBUF_VERSION=3.7.0
 
 # Install the basics
-RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils ruby-full
+RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev
 
 # Make latest NodeJS available
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
@@ -22,6 +22,14 @@ RUN apt-get install -y \
     nodejs \
     pkg-config \
     unzip
+
+# Install ruby 2.6
+RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv \
+    && cd ~/.rbenv && src/configure && make -C src \
+    && mkdir -p ~/.rbenv/plugins && git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build \
+    && echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc && echo 'eval "$(rbenv init -)"' >> ~/.bashrc && . ~/.bashrc \
+    && rbenv install 2.6.3 && rbenv global 2.6.3 \
+    && ruby -v
 
 # Install clang
 ENV CLANG_VERSION=$CLANG_VERSION

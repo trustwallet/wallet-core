@@ -5,11 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "CashAddress.h"
+#include "../Coin.h"
 
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
-#include <TrustWalletCore/TWP2SHPrefix.h>
-#include <TrustWalletCore/TWP2PKHPrefix.h>
 
 #include <array>
 #include <cassert>
@@ -94,9 +93,9 @@ Address CashAddress::legacyAddress() const {
     cash_data_to_addr(result.data(), &outlen, bytes.data(), CashAddress::size);
     assert(outlen == 21 && "Invalid length");
     if (result[0] == p2khVersion) {
-        result[0] = TWP2PKHPrefixBitcoin;
+        result[0] = TW::p2pkhPrefix(TWCoinTypeBitcoinCash);
     } else if (result[0] == p2shVersion) {
-        result[0] = TWP2SHPrefixBitcoin;
+        result[0] = TW::p2shPrefix(TWCoinTypeBitcoinCash);
     }
     return Address(result);
 }

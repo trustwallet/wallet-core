@@ -8,8 +8,6 @@
 
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWP2PKHPrefix.h>
-#include <TrustWalletCore/TWP2SHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPurpose.h>
@@ -20,7 +18,7 @@
 TEST(MonetaryUnit, TransparentAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixMonetaryUnit);
+    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeMonetaryUnit));
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
     assertStringsEqual(addressString, "7cJ2ye1qsjPCZgHuAiyDH62vHb2QsEj2BX");
 }
@@ -34,7 +32,7 @@ TEST(MonetaryUnit, DeriveTransparentAddress) {
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), derivationPath.get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), true);
 
-    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixMonetaryUnit);
+    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeMonetaryUnit));
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
 
     assertStringsEqual(addressString, "7nwu4fU9umfz4DajrPyQh3AQ8ESTywniZc");
@@ -58,10 +56,10 @@ TEST(MonetaryUnit, DerivePubkeyFromXpub) {
     auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/31'/0'/0/3").get());
     auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/31'/0'/0/5").get());
 
-    auto address3 = TWBitcoinAddressCreateWithPublicKey(pubKey3, TWP2PKHPrefixMonetaryUnit);
+    auto address3 = TWBitcoinAddressCreateWithPublicKey(pubKey3, TWCoinTypeP2pkhPrefix(TWCoinTypeMonetaryUnit));
     auto address3String = WRAPS(TWBitcoinAddressDescription(address3));
 
-    auto address5 = TWBitcoinAddressCreateWithPublicKey(pubKey5, TWP2PKHPrefixMonetaryUnit);
+    auto address5 = TWBitcoinAddressCreateWithPublicKey(pubKey5, TWCoinTypeP2pkhPrefix(TWCoinTypeMonetaryUnit));
     auto address5String = WRAPS(TWBitcoinAddressDescription(address5));
 
     assertStringsEqual(address3String, "7XAV4j6ev3fgfWY6rDLVXCHWRnsBBv4o5i");
