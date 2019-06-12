@@ -15,7 +15,7 @@ namespace TW::NEO {
         uint32_t nonce;
 
         virtual int deserializeExclusiveData(const Data &data, int initial_pos = 0) {
-            nonce = read<uint32_t>(data, initial_pos);
+            nonce = readNumber<uint32_t>(data, initial_pos);
             return initial_pos + 4;
         }
 

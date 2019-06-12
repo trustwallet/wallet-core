@@ -10,7 +10,7 @@ TW::Data TW::readBytes(const TW::Data &from, int max, int initial_pos) {
 }
 
 TW::Data TW::readVarBytes(const Data &from, int initial_pos) {
-    int32_t size = read<int32_t>(from, initial_pos);
+    int32_t size = readNumber<int32_t>(from, initial_pos);
     return readBytes(from, size, initial_pos + 4);
 }
 
@@ -18,11 +18,11 @@ template<> uint64_t TW::readVar(const TW::Data &from, int initial_pos, const uin
     byte fb = from[initial_pos];
     uint64_t value;
     if (fb == 0xFD) {
-        value = read<uint16_t>(from, initial_pos + 1);
+        value = readNumber<uint16_t>(from, initial_pos + 1);
     } else if (fb == 0xFE) {
-        value = read<uint32_t>(from, initial_pos + 1);
+        value = readNumber<uint32_t>(from, initial_pos + 1);
     } else if (fb == 0xFF) {
-        value = read<uint64_t>(from, initial_pos + 1);
+        value = readNumber<uint64_t>(from, initial_pos + 1);
     } else {
         value = fb;
     }
@@ -38,44 +38,36 @@ template<> int64_t TW::readVar(const TW::Data &from, int initial_pos, const int6
     return (int64_t) readVar<uint64_t>(from, uint64_t(max), initial_pos);
 }
 
-template<> uint16_t TW::read(const TW::Data &from, int initial_pos) {
+template<> uint16_t TW::readNumber(const TW::Data &from, int initial_pos) {
     TW::Data bytes = readBytes(from, 2, initial_pos);
     uint16_t val = bytes[0] | (bytes[1] << 8);
     return val;
 }
 
-template<> uint32_t TW::read(const TW::Data &from, int initial_pos) {
-    const int data_size = 4;
-    if (from.size() < initial_pos + data_size) {
-        throw std::invalid_argument("Data::Cannot read enough bytes!");
-    }
-    TW::Data bytes = readBytes(from, data_size, initial_pos);
+template<> uint32_t TW::readNumber(const TW::Data &from, int initial_pos) {
+    TW::Data bytes = readBytes(from, 4, initial_pos);
     uint32_t val = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
     return val;
 }
 
-template<> uint64_t TW::read(const TW::Data &from, int initial_pos) {
-    const int data_size = 8;
-    if (from.size() < initial_pos + data_size) {
-        throw std::invalid_argument("Data::Cannot read enough bytes!");
-    }
-    TW::Data bytes = readBytes(from, data_size, initial_pos);
+template<> uint64_t TW::readNumber(const TW::Data &from, int initial_pos) {
+    TW::Data bytes = readBytes(from, 8, initial_pos);
     uint32_t val1 = bytes[0] | (bytes[1]<<8) | (bytes[2]<<16) | (bytes[3]<<24);
     uint64_t val2 = bytes[4] | (bytes[5]<<8) | (bytes[6]<<16) | (bytes[7]<<24);
     uint64_t val = val1 | val2 << 32;
     return val;
 }
 
-template<> int16_t TW::read(const TW::Data &from, int initial_pos) {
-    return (int16_t) read<uint16_t>(from, initial_pos);
+template<> int16_t TW::readNumber(const TW::Data &from, int initial_pos) {
+    return (int16_t) readNumber<uint16_t>(from, initial_pos);
 }
 
-template<> int32_t TW::read(const TW::Data &from, int initial_pos) {
-    return (int32_t) read<uint32_t>(from, initial_pos);
+template<> int32_t TW::readNumber(const TW::Data &from, int initial_pos) {
+    return (int32_t) readNumber<uint32_t>(from, initial_pos);
 }
 
-template<> int64_t TW::read(const TW::Data &from, int initial_pos) {
-    return (int64_t) read<uint64_t>(from, initial_pos);
+template<> int64_t TW::readNumber(const TW::Data &from, int initial_pos) {
+    return (int64_t) readNumber<uint64_t>(from, initial_pos);
 }
 
 

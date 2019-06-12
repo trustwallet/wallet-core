@@ -22,7 +22,7 @@ namespace TW::NEO {
 
         void deserialize(const Data &data, int initial_pos = 0) override {
             prevHash = load<uint256_t>(readBytes(data, 32, initial_pos));
-            prevIndex = read<uint16_t>(data, initial_pos + 32);
+            prevIndex = readNumber<uint16_t>(data, initial_pos + 32);
         }
 
         Data serialize() const override {
