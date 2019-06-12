@@ -59,6 +59,9 @@ Hash::Hasher publicKeyHasher(TWCoinType coin);
 /// Hasher to use for base 58 checksums.
 Hash::Hasher base58Hasher(TWCoinType coin);
 
+/// Returns static prefix for a coin type.
+byte staticPrefix(TWCoinType coin);
+
 /// Returns P2PKH prefix for a coin type.
 byte p2pkhPrefix(TWCoinType coin);
 

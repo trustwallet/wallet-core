@@ -17,7 +17,7 @@ namespace TW::Decred {
 class Address {
   public:
     /// Public key hash.
-    std::array<byte, 20> keyhash;
+    std::array<byte, 22> bytes;
 
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string) noexcept;
@@ -33,7 +33,7 @@ class Address {
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.keyhash == rhs.keyhash;
+    return lhs.bytes == rhs.bytes;
 }
 
 } // namespace TW::Decred
