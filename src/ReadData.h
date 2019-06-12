@@ -17,13 +17,13 @@ namespace TW {
     template<> int64_t readVar(const TW::Data &from, int initial_pos, const int64_t &max);
     template<> uint64_t readVar(const TW::Data &from, int initial_pos, const uint64_t &max);
 
-    template<class T> T read(const TW::Data &from, int initial_pos = 0);
-    template<> int16_t read(const TW::Data &from, int initial_pos);
-    template<> int32_t read(const TW::Data &from, int initial_pos);
-    template<> int64_t read(const TW::Data &from, int initial_pos);
-    template<> uint16_t read(const TW::Data &from, int initial_pos);
-    template<> uint32_t read(const TW::Data &from, int initial_pos);
-    template<> uint64_t read(const TW::Data &from, int initial_pos);
+    template<class T> T readNumber(const TW::Data &from, int initial_pos = 0);
+    template<> int16_t readNumber(const TW::Data &from, int initial_pos);
+    template<> int32_t readNumber(const TW::Data &from, int initial_pos);
+    template<> int64_t readNumber(const TW::Data &from, int initial_pos);
+    template<> uint16_t readNumber(const TW::Data &from, int initial_pos);
+    template<> uint32_t readNumber(const TW::Data &from, int initial_pos);
+    template<> uint64_t readNumber(const TW::Data &from, int initial_pos);
 
     Data writeVarBytes(const Data &from, int initial_pos = 0);
 
