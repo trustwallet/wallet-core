@@ -11,6 +11,11 @@
 
 namespace TW {
 
+TEST(Coin, ValidateAddressAion) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeAion, "0xa0d5b10ee59fb918f7c7d0ba96387e4b1539fa8c7466625c39efdac2286cdfa1"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeAion, "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89"));
+}
+
 TEST(Coin, ValidateAddressZilliqa) {
     EXPECT_TRUE(validateAddress(TWCoinTypeZilliqa, "zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg"));
     EXPECT_FALSE(validateAddress(TWCoinTypeZilliqa, "0x91cddcebe846ce4d47712287eee53cf17c2cfb77"));
@@ -65,6 +70,14 @@ TEST(Coin, ValidateAddressDogecoin) {
     EXPECT_FALSE(validateAddress(TWCoinTypeDogecoin, "NmH7tmeJUmHcncBDvpr7aJNEBk7rp5zYsB1qt"));
     EXPECT_FALSE(validateAddress(TWCoinTypeDogecoin, "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3AAAA"));
     EXPECT_FALSE(validateAddress(TWCoinTypeDogecoin, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
+}
+
+TEST(Coin, ValidateAddressDecred) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeDecred, "DsZgSbMPgKKJVm2j9Vuk3VEUBykkw72a56D"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeDecred, "Dcur2mcGjmENx4DhNqDctW5wJCVyT3Qeqkx"));
+
+    EXPECT_FALSE(validateAddress(TWCoinTypeDecred, "tz1d1qQL3mYVuiH4JPFvuikEpFwaDm85oabM"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeDecred, "DHKM6NDUUv9kaHAGi1QU7MRBNKfQiAdP3F"));
 }
 
 TEST(Coin, ValidateAddressTezos) {

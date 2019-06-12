@@ -50,28 +50,17 @@ TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, st
 }
 
 enum TWHRP TWCoinTypeHRP(enum TWCoinType coin) {
-    switch (coin) {
-        case TWCoinTypeBitcoin:
-            return TWHRPBitcoin;
-        case TWCoinTypeBitcoinCash:
-            return TWHRPBitcoinCash;
-        case TWCoinTypeBinance:
-            return TWHRPBinance;
-        case TWCoinTypeCosmos:
-            return TWHRPCosmos;
-        case TWCoinTypeDigiByte:
-            return TWHRPDigiByte;
-        case TWCoinTypeLitecoin:
-            return TWHRPLitecoin;
-        case TWCoinTypeGroestlcoin:
-            return TWHRPGroestlcoin;
-        case TWCoinTypeViacoin:
-            return TWHRPViacoin;
-        case TWCoinTypeQtum:
-            return TWHRPQtum;
-        case TWCoinTypeZilliqa:
-            return TWHRPZilliqa;
-        default:
-            return TWHRPUnknown;
-    }
+    return TW::hrp(coin);
+}
+
+uint8_t TWCoinTypeP2pkhPrefix(enum TWCoinType coin) {
+    return TW::p2pkhPrefix(coin);
+}
+
+uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin) {
+    return TW::p2shPrefix(coin);
+}
+
+uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin) {
+    return TW::staticPrefix(coin);
 }

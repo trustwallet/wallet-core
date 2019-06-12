@@ -12,7 +12,6 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
-#include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
@@ -20,7 +19,7 @@
 TEST(Viacoin, LegacyAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixViacoin);
+    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin));
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
     assertStringsEqual(addressString, "VjtD8cQgvesPYWxfWoHjwz1BuLCHwDn7PA");
 }
@@ -78,10 +77,10 @@ TEST(Viacoin, DeriveFromXpub) {
     auto pubKey2 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/14'/0'/0/2").get());
     auto pubKey9 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/14'/0'/0/9").get());
 
-    auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2, TWP2PKHPrefixViacoin);
+    auto address2 = TWBitcoinAddressCreateWithPublicKey(pubKey2, TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin));
     auto address2String = WRAPS(TWBitcoinAddressDescription(address2));
 
-    auto address9 = TWBitcoinAddressCreateWithPublicKey(pubKey9, TWP2PKHPrefixViacoin);
+    auto address9 = TWBitcoinAddressCreateWithPublicKey(pubKey9, TWCoinTypeP2pkhPrefix(TWCoinTypeViacoin));
     auto address9String = WRAPS(TWBitcoinAddressDescription(address9));
 
     assertStringsEqual(address2String, "VvN4z8c2zQA9gNnTTdxZkgYqagpVjkdb8z");

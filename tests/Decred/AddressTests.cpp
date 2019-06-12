@@ -23,10 +23,12 @@ TEST(DecredAddress, FromPublicKey) {
 
 TEST(DecredAddress, Valid) {
     ASSERT_TRUE(Address::isValid("DsmcYVbP1Nmag2H4AS17UTvmWXmGeA7nLDx"));
+    ASSERT_TRUE(Address::isValid("Dcur2mcGjmENx4DhNqDctW5wJCVyT3Qeqkx"));
 }
 
 TEST(DecredAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("rnBFvgZphmN39GWzUJeUitaP22Fr9be75H"));
+    ASSERT_FALSE(Address::isValid("t3gQDEavk5VzAAHK8TrQu2BWDLxEiF1unBm"));
 }
 
 TEST(DecredAddress, FromString) {

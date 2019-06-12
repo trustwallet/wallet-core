@@ -42,6 +42,7 @@ TEST(RavencoinTransaction, SignTransaction) {
     input.set_byte_fee(1);
     input.set_to_address("RNoSGCX8SPFscj8epDaJjqEpuZa2B5in88");
     input.set_change_address("RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS");
+    input.set_coin_type(TWCoinTypeRavencoin);
 
     auto hash0 = DATA("445560237d8093da3487eb90bc7ff826fab43cdbe213c034d671ec4eb4827e0c");
     auto utxo0 = input.add_utxo();

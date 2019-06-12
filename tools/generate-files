@@ -20,11 +20,11 @@ rm -rf swift/Sources/Generated
 rm -rf jni/java
 rm -rf jni/cpp/generated
 
-# Generate interface code
-codegen/bin/codegen
-
 # Generate coins info from coins.json
 codegen/bin/coins
+
+# Generate interface code
+codegen/bin/codegen
 
 # Generate Java, C++ and Swift Protobuf files
 if [ -x "$(command -v protoc-gen-swift)" ]; then

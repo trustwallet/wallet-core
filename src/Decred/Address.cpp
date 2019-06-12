@@ -8,13 +8,13 @@
 
 #include "../Base58.h"
 #include "../Hash.h"
+#include "../Coin.h"
 
 #include <stdexcept>
 
 using namespace TW;
 using namespace TW::Decred;
 
-static const std::array<byte, 2> prefix = {0x07, 0x3f};
 static const auto keyhashSize = Hash::ripemdSize;
 static const auto addressDataSize = keyhashSize + 2;
 
@@ -23,8 +23,12 @@ bool Address::isValid(const std::string& string) noexcept {
     if (data.size() != addressDataSize) {
         return false;
     }
+    if (data[0] != TW::staticPrefix(TWCoinTypeDecred)) {
+        return false;
+    }
 
-    return true;
+    return (data[1] == TW::p2pkhPrefix(TWCoinTypeDecred) || 
+            data[1] == TW::p2shPrefix(TWCoinTypeDecred));
 }
 
 Address::Address(const std::string& string) {
@@ -33,7 +37,7 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
 
-    std::copy(data.begin() + 2, data.end(), keyhash.begin());
+    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
@@ -41,14 +45,11 @@ Address::Address(const PublicKey& publicKey) {
         throw std::invalid_argument("Invalid publid key type");
     }
     const auto hash = Hash::ripemd(Hash::blake256(publicKey.bytes));
-    std::copy(hash.begin(), hash.end(), keyhash.begin());
+    std::copy(hash.begin(), hash.end(), bytes.begin() + 2);
+    bytes[0] = TW::staticPrefix(TWCoinTypeDecred);
+    bytes[1] = TW::p2pkhPrefix(TWCoinTypeDecred);
 }
 
 std::string Address::string() const {
-    auto addressPreimage = Data();
-    addressPreimage.reserve(addressDataSize);
-    addressPreimage.insert(addressPreimage.end(), prefix.begin(), prefix.end());
-    addressPreimage.insert(addressPreimage.end(), keyhash.begin(), keyhash.end());
-
-    return Base58::bitcoin.encodeCheck(addressPreimage, Hash::blake256d);
+    return Base58::bitcoin.encodeCheck(bytes, Hash::blake256d);
 }

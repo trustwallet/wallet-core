@@ -39,6 +39,7 @@ TEST(MonetaryUnitTransaction, SignTransaction) {
     input.set_byte_fee(1);
     input.set_to_address("7bH5T6e99x2xssC8thzqJcxvpQMVFeaAht");
     input.set_change_address("7XUdVpjrhY31uChwLEBUirUkKQNj8nvcrT");
+    input.set_coin_type(TWCoinTypeMonetaryUnit);
     
     auto hash0 = DATA("170f786b94e0e287c1cce0214c78006b8c0080382304be67bc6f248ef7f29af1");
     auto utxo0 = input.add_utxo();
