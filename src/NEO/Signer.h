@@ -18,7 +18,7 @@ namespace TW::NEO {
         TW::PrivateKey privateKey;
         std::string address;
     public:
-        explicit Signer(TW::PrivateKey priKey);
+        explicit Signer(const TW::PrivateKey &priKey);
         PrivateKey getPrivateKey() const;
         PublicKey getPublicKey() const;
         Address getAddress() const;

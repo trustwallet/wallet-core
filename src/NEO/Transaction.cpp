@@ -40,7 +40,7 @@ void Transaction::deserialize(const Data &data, int initial_pos) {
     inInputs.clear();
     initial_pos = ISerializable::deserialize<CoinReference>(inInputs, data, initial_pos);
     outputs.clear();
-    initial_pos = ISerializable::deserialize<TransactionOutput>(outputs, data, initial_pos);
+    ISerializable::deserialize<TransactionOutput>(outputs, data, initial_pos);
 
     // witnesses.clear();
     // initial_pos = ISerializable::deserialize<Witness>(witnesses, data, initial_pos);
