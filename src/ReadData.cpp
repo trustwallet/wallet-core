@@ -45,13 +45,21 @@ template<> uint16_t TW::read(const TW::Data &from, int initial_pos) {
 }
 
 template<> uint32_t TW::read(const TW::Data &from, int initial_pos) {
-    TW::Data bytes = readBytes(from, 4, initial_pos);
+    const int data_size = 4;
+    if (from.size() < initial_pos + data_size) {
+        throw std::invalid_argument("Data::Cannot read enough bytes!");
+    }
+    TW::Data bytes = readBytes(from, data_size, initial_pos);
     uint32_t val = bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
     return val;
 }
 
 template<> uint64_t TW::read(const TW::Data &from, int initial_pos) {
-    TW::Data bytes = readBytes(from, 8, initial_pos);
+    const int data_size = 8;
+    if (from.size() < initial_pos + data_size) {
+        throw std::invalid_argument("Data::Cannot read enough bytes!");
+    }
+    TW::Data bytes = readBytes(from, data_size, initial_pos);
     uint32_t val1 = bytes[0] | (bytes[1]<<8) | (bytes[2]<<16) | (bytes[3]<<24);
     uint64_t val2 = bytes[4] | (bytes[5]<<8) | (bytes[6]<<16) | (bytes[7]<<24);
     uint64_t val = val1 | val2 << 32;
