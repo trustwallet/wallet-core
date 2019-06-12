@@ -49,6 +49,10 @@ TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, st
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
+enum TWHRP TWCoinTypeHRP(enum TWCoinType coin) {
+    return TW::hrp(coin);
+}
+
 uint8_t TWCoinTypeP2pkhPrefix(enum TWCoinType coin) {
     return TW::p2pkhPrefix(coin);
 }
@@ -57,6 +61,6 @@ uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin) {
     return TW::p2shPrefix(coin);
 }
 
-enum TWHRP TWCoinTypeHRP(enum TWCoinType coin) {
-    return TW::hrp(coin);
+uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin) {
+    return TW::staticPrefix(coin);
 }

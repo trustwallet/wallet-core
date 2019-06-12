@@ -126,4 +126,8 @@ uint8_t TWCoinTypeP2pkhPrefix(enum TWCoinType coin);
 TW_EXPORT_PROPERTY
 uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin);
 
+/// Static prefix for this coin type
+TW_EXPORT_PROPERTY
+uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin);
+
 TW_EXTERN_C_END

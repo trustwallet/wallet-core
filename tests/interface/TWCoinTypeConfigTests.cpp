@@ -607,3 +607,27 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
     ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
 }
+
+
+TEST(TWCoinTypeConfiguration, P2SHPrefix) {
+    ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeBitcoin));
+    ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinCash));
+    ASSERT_EQ(0x10, TWCoinTypeP2shPrefix(TWCoinTypeDash));
+    ASSERT_EQ(0x1a, TWCoinTypeP2shPrefix(TWCoinTypeDecred));
+    ASSERT_EQ(0x16, TWCoinTypeP2shPrefix(TWCoinTypeDogecoin));
+    ASSERT_EQ(0x32, TWCoinTypeP2shPrefix(TWCoinTypeLitecoin));
+    ASSERT_EQ(0x21, TWCoinTypeP2shPrefix(TWCoinTypeViacoin));
+    ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZcash));
+    ASSERT_EQ(0x07, TWCoinTypeP2shPrefix(TWCoinTypeZcoin));
+    ASSERT_EQ(0x3F, TWCoinTypeP2shPrefix(TWCoinTypeDigiByte));
+    ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
+    ASSERT_EQ(0x4c, TWCoinTypeP2shPrefix(TWCoinTypeMonetaryUnit));
+    ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
+}
+
+TEST(TWCoinTypeConfiguration, StaticPrefix) {
+    ASSERT_EQ(0, TWCoinTypeStaticPrefix(TWCoinTypeBitcoin));
+    ASSERT_EQ(0x07, TWCoinTypeStaticPrefix(TWCoinTypeDecred));
+    ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZcash));
+    ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZcash));
+}
