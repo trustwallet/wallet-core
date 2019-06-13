@@ -44,8 +44,7 @@ TEST(NEOAddress, validation) {
 }
 
 TEST(NEOAddress, fromPubKey) {
-    auto address = Address(
-            PublicKey(parse_hex("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486")));
+    auto address = Address(PublicKey(parse_hex("031bec1250aa8f78275f99a6663688f31085848d0ed92f1203e447125f927b7486"), TWPublicKeyTypeNIST256p1));
     EXPECT_EQ("AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5", address.string());
 }
 
@@ -56,15 +55,3 @@ TEST(NEOAddress, fromString) {
     auto errB58Str = "AATxeseHT5khTWhtWX1pFFP1mbQrd4q1zz";
     ASSERT_THROW(new Address(errB58Str), std::invalid_argument);
 }
-
-/*
-TEST(NEOAddress, fromMultiPubKeys) {
-    auto signer1 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
-    auto signer2 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464652")));
-    auto signer3 = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464658")));
-    std::vector<Data> pubKeys{signer1.getPublicKey().bytes, signer2.getPublicKey().bytes, signer3.getPublicKey().bytes};
-    uint8_t m = 2;
-    auto multiAddress = Address(m, pubKeys);
-    EXPECT_EQ("AYGWgijVZnrUa2tRoCcydsHUXR1111DgdW", multiAddress.string());
-}
-*/
