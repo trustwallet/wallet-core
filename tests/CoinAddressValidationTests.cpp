@@ -271,4 +271,12 @@ TEST(Coin, ValidateAddressWaves) {
     EXPECT_FALSE(validateAddress(TWCoinTypeWaves, "3P7WTh6kLKa8pAy4ynrSHm8TN8PVrdR7M1Q"));
 }
 
+TEST(Coin, ValidateAddressAeternity) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeAeternity, "ak_11111111111111111111111111111111273Yts"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeAeternity, "ak_11111111111111111111111111111111273Ytt"));// wrong checksum
+    EXPECT_FALSE(validateAddress(TWCoinTypeAeternity,"ka_11111111111111111111111111111111273Yts")); // wrong prefix
+    EXPECT_FALSE(validateAddress(TWCoinTypeAeternity,"ak_111111111111111111111111111111111173Yts")); // wrong size
+    EXPECT_FALSE(validateAddress(TWCoinTypeAeternity, "")); // empty address
+}
+
 } // namespace TW

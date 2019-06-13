@@ -136,6 +136,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWaves));
     assertStringsEqual(waves, "WAVES");
+
+    auto ae = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
+    assertStringsEqual(ae, "AE");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -183,6 +186,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -322,6 +326,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWaves, txId));
     assertStringsEqual(waves, "https://wavesexplorer.com/tx/123");
+
+    auto ae = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
+    assertStringsEqual(ae, "https://www.aeknow.org/block/transaction/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -453,6 +460,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
     assertStringsEqual(waves, "waves");
+
+    auto ae = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
+    assertStringsEqual(ae, "aeternity");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -581,7 +591,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
-  
+
     auto mue = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonetaryUnit));
     assertStringsEqual(mue, "MonetaryUnit");
 
@@ -606,6 +616,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainSemux, TWCoinTypeBlockchain(TWCoinTypeSemux));
     ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
     ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
+    ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
 }
 
 

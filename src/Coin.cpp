@@ -6,6 +6,7 @@
 
 #include "Coin.h"
 
+#include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/SegwitAddress.h"
@@ -49,6 +50,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2sh = TW::p2shPrefix(coin);
     auto hrp = stringForHRP(TW::hrp(coin));
     switch (coin) {
+    case TWCoinTypeAeternity:
+        return Aeternity::Address::isValid(string);
+
     case TWCoinTypeAion:
         return Aion::Address::isValid(string);
 
@@ -175,6 +179,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     auto hrp = stringForHRP(TW::hrp(coin));
 
     switch (coin) {
+    case TWCoinTypeAeternity:
+        return Aeternity::Address(publicKey).string();
+
     case TWCoinTypeBinance:
         return Cosmos::Address(HRP_BINANCE, publicKey).string();
 

@@ -65,6 +65,7 @@ describe('CoinAddressDerivation', () => {
             case CoinType.ZILLIQA: expect('zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6').to.equal(address); break;
             case CoinType.SEMUX: expect('0xfe604170382452f77bc922bc19eb4b53504b09c2').to.equal(address); break;
             case CoinType.WAVES: expect('3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n').to.equal(address); break;
+            case CoinType.AETERNITY: expect('ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN').to.equal(address); break;
         }
     };
 

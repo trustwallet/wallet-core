@@ -707,5 +707,16 @@
         "curve": "ed25519",
         "publicKeyType": "curve25519",
         "explorer": "https://wavesexplorer.com/tx/"
+    },
+    {
+        "id": "aeternity",
+        "name": "Aeternity",
+        "symbol": "AE",
+        "decimals": 18,
+        "blockchain": "Aeternity",
+        "derivationPath": "m/44'/457'/0'/0'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "https://www.aeknow.org/block/transaction/"
     }
 ]
