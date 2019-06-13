@@ -17,7 +17,7 @@ namespace TW::NEO {
 
         void deserialize(const Data &data, int initial_pos = 0) override {
             invocationScript = readVarBytes(data, initial_pos);
-            verificationScript = readVarBytes(data, initial_pos + 4 + invocationScript.size());
+            verificationScript = readVarBytes(data, initial_pos + 4 + int(invocationScript.size()));
         }
 
         Data serialize() const override {
