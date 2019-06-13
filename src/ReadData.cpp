@@ -35,13 +35,12 @@ template<> uint64_t TW::readVar(const TW::Data &from, int initial_pos, const uin
 }
 
 template<> int64_t TW::readVar(const TW::Data &from, int initial_pos, const int64_t &max) {
-    return (int64_t) readVar<uint64_t>(from, uint64_t(max), initial_pos);
+    return (int64_t) readVar<uint64_t>(from, initial_pos, uint64_t(max));
 }
 
 template<> uint16_t TW::readNumber(const TW::Data &from, int initial_pos) {
     TW::Data bytes = readBytes(from, 2, initial_pos);
-    uint16_t val = bytes[0] | (bytes[1] << 8);
-    return val;
+    return uint16_t(bytes[0] | (bytes[1] << 8));
 }
 
 template<> uint32_t TW::readNumber(const TW::Data &from, int initial_pos) {
@@ -72,7 +71,7 @@ template<> int64_t TW::readNumber(const TW::Data &from, int initial_pos) {
 
 
 TW::Data TW::writeVarBytes(const Data &from, int initial_pos) {
-    return concat(write<int32_t>(from.size() - initial_pos), TW::Data(from.begin() + initial_pos, from.end()));
+    return concat(write<int32_t>(int32_t(from.size()) - initial_pos), TW::Data(from.begin() + initial_pos, from.end()));
 }
 
 template<> TW::Data TW::write(const uint16_t &v) {
