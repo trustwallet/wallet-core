@@ -77,13 +77,10 @@ class CoinAddressDerivationTests {
         DEXON -> assertEquals("0x6F3E6a6dDf2C2B4B32B8Bb452eA3F36B2BB489BF", address)
         ZELCASH -> assertEquals("t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf", address)
         ARK -> assertEquals("Ac49m5pu5YpMMNgEbSYeZUEpRMHcSK3DfV", address)
-<<<<<<< master
         MONETARYUNIT -> assertEquals("7W3QRu8FttKzmYtRbXNKopeHweAKWuun2q", address)
         RAVENCOIN -> assertEquals("RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS", address)
         WAVES -> assertEquals("3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n", address)
         AETERNITY -> assertEquals("ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN", address)
-=======
         TERRA -> assertEquals("terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug", address)
->>>>>>> HEAD~1
     }
 }
