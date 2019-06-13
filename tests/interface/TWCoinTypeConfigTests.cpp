@@ -131,7 +131,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto ark = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
 
-<<<<<<< master
     auto mue = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonetaryUnit));
     assertStringsEqual(mue, "MUE");
 
@@ -140,10 +139,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto ae = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
     assertStringsEqual(ae, "AE");
-=======
+
     auto terra = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra));
     assertStringsEqual(terra, "LUNA");
->>>>>>> HEAD~3
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -189,13 +187,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDEXON), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDigiByte), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
-<<<<<<< master
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
-=======
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
->>>>>>> HEAD~3
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -330,7 +325,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto ark = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeARK, txId));
     assertStringsEqual(ark, "https://explorer.ark.io/transaction/123");
 
-<<<<<<< master
     auto mue = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonetaryUnit, txId));
     assertStringsEqual(mue, "https://explorer.monetaryunit.org/tx/123");
 
@@ -339,10 +333,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto ae = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
     assertStringsEqual(ae, "https://www.aeknow.org/block/transaction/123");
-=======
+
     auto terra = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra, txId));
     assertStringsEqual(terra, "https://terra.stake.id/?#/tx/123");
->>>>>>> HEAD~3
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -469,7 +462,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto ark = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeARK));
     assertStringsEqual(ark, "ark");
 
-<<<<<<< master
     auto mue = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonetaryUnit));
     assertStringsEqual(mue, "monetaryunit");
 
@@ -478,10 +470,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto ae = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     assertStringsEqual(ae, "aeternity");
-=======
+
     auto terra = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
     assertStringsEqual(terra, "terra");
->>>>>>> HEAD~3
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {

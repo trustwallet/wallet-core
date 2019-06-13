@@ -26,6 +26,7 @@ enum TWHRP {
     TWHRPGroestlcoin     /* "grs" */,
     TWHRPLitecoin     /* "ltc" */,
     TWHRPQtum     /* "qc" */,
+    TWHRPTerra     /* "terra" */,
     TWHRPViacoin     /* "via" */,
     TWHRPZilliqa     /* "zil" */,
 };
@@ -38,6 +39,7 @@ static const char *_Nonnull HRP_DIGIBYTE = "dgb";
 static const char *_Nonnull HRP_GROESTLCOIN = "grs";
 static const char *_Nonnull HRP_LITECOIN = "ltc";
 static const char *_Nonnull HRP_QTUM = "qc";
+static const char *_Nonnull HRP_TERRA = "terra";
 static const char *_Nonnull HRP_VIACOIN = "via";
 static const char *_Nonnull HRP_ZILLIQA = "zil";
 

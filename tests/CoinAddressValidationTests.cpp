@@ -250,7 +250,8 @@ TEST(Coin, validateAddressLitecoin) {
 
 TEST(Coin, validateAddressCosmos) {
     EXPECT_TRUE(validateAddress(TWCoinTypeCosmos, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeCosmos, "xosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeCosmos, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvq"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeCosmos, "ltc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z0tamvsu"));
 }
 
 TEST(Coin, validateAddressRavencoin) {
@@ -277,6 +278,12 @@ TEST(Coin, ValidateAddressAeternity) {
     EXPECT_FALSE(validateAddress(TWCoinTypeAeternity,"ka_11111111111111111111111111111111273Yts")); // wrong prefix
     EXPECT_FALSE(validateAddress(TWCoinTypeAeternity,"ak_111111111111111111111111111111111173Yts")); // wrong size
     EXPECT_FALSE(validateAddress(TWCoinTypeAeternity, "")); // empty address
+}
+
+TEST(Coin, ValidateAddressTerra) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeTerra, "terra1krl5p2fak3nl4ph0w8tsr6y85qwczlzykv7pt7"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTerra, "terravaloper1eutun6vh83lmyq0wmyf9vgghvurze2xanl9sq6"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeAeternity, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
 }
 
 } // namespace TW
