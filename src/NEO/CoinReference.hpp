@@ -12,7 +12,7 @@ namespace TW::NEO {
     class CoinReference : public ISerializable {
     public:
         uint256_t prevHash;
-        ushort prevIndex;
+        uint8_t prevIndex;
 
         virtual ~CoinReference() {}
 
