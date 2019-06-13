@@ -34,8 +34,7 @@ namespace TW::NEO {
                 this->data = readBytes(data, 1, initial_pos + 1);
             } else if (usage == TransactionAttributeUsage::TAU_Description ||
                        usage >= TransactionAttributeUsage::TAU_Remark) {
-//                this->data = readBytes(data, types::MaxValue<ushort>(), initial_pos + 1);
-                this->data = readBytes(data, data.size() - 1 - initial_pos, initial_pos + 1);
+                this->data = readBytes(data, int(data.size()) - 1 - initial_pos, initial_pos + 1);
             } else {
                 throw std::invalid_argument("TransactionAttribute Deserialize FormatException");
             }
