@@ -9,9 +9,14 @@
 #include "../proto/Cosmos.pb.h"
 #include <nlohmann/json.hpp>
 
+extern const std::string AMINO_PREFIX_SEND_COIN_MESSAGE;
+extern const std::string AMINO_PREFIX_STAKE_MESSAGE;
+extern const std::string AMINO_PREFIX_TRANSACTION;
+extern const std::string AMINO_PREFIX_PUBLIC_KEY;
+
 namespace TW::Cosmos {
 
 nlohmann::json signaturePreimageJSON(const Proto::SigningInput& input);
-nlohmann::json transactionJSON(const Proto::Transaction& transaction);
+nlohmann::json transactionJSON(const Proto::Transaction& transaction, std::string type_prefix);
 
 } // namespace
