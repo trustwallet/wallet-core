@@ -139,6 +139,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto ae = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
     assertStringsEqual(ae, "AE");
+
+    auto terra = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra));
+    assertStringsEqual(terra, "LUNA");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -187,6 +190,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -329,6 +333,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto ae = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
     assertStringsEqual(ae, "https://www.aeknow.org/block/transaction/123");
+
+    auto terra = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra, txId));
+    assertStringsEqual(terra, "https://terra.stake.id/?#/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -463,6 +470,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto ae = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     assertStringsEqual(ae, "aeternity");
+
+    auto terra = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
+    assertStringsEqual(terra, "terra");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -597,6 +607,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
+
+    auto terra = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
+    assertStringsEqual(terra, "Terra");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
@@ -617,8 +630,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
     ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
+    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
 }
-
 
 TEST(TWCoinTypeConfiguration, P2SHPrefix) {
     ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeBitcoin));
