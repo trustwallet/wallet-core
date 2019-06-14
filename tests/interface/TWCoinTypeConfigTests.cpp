@@ -619,7 +619,6 @@ TEST(TWCoinTypeConfiguration, P2SHPrefix) {
     ASSERT_EQ(0x07, TWCoinTypeP2shPrefix(TWCoinTypeZcoin));
     ASSERT_EQ(0x3F, TWCoinTypeP2shPrefix(TWCoinTypeDigiByte));
     ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
-    ASSERT_EQ(0x4c, TWCoinTypeP2shPrefix(TWCoinTypeMonetaryUnit));
     ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
 }
 
