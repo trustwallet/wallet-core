@@ -16,7 +16,6 @@
 #include "Groestlcoin/Address.h"
 #include "IOST/Account.h"
 #include "Icon/Address.h"
-#include "Iocoin/Address.h"
 #include "Nano/Address.h"
 #include "NEO/Address.h"
 #include "Nimiq/Address.h"

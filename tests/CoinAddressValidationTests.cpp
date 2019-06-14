@@ -173,13 +173,6 @@ TEST(Coin, ValidateAddressSemux) {
     EXPECT_FALSE(validateAddress(TWCoinTypeSemux, "0x"));
     EXPECT_FALSE(validateAddress(TWCoinTypeSemux, ""));
 }
-    
-TEST(Coin, ValidateAddressMonetaryUnit) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeMonetaryUnit, "7UQUGq9UQD57R5Kn6hHoYrpaRjDdWtZWF7"));
-    EXPECT_TRUE(validateAddress(TWCoinTypeMonetaryUnit, "7oBSZsdN6jDoEn2agojLuUqoZbjWBbcwCm"));
-
-    EXPECT_FALSE(validateAddress(TWCoinTypeMonetaryUnit, "2BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
-}
 
 TEST(Coin, ValidateAddressARK){
     EXPECT_TRUE(validateAddress(TWCoinTypeARK, "AewxfHQobSc49a4radHp74JZCGP8LRe4xA"));
@@ -200,11 +193,6 @@ TEST(Coin, ValidateAddressDGB){
     EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "xgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3d"));
     // testnet address
     EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "ztijPBZmzdAkF6y79LHYGmqNm2CVfaoLqtz"));
-}
-
-TEST(Coin, validateAddressIocoin) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeIocoin, "ik6V522aupkj3kMtJZi6eDw6v3eLgMbXY8"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeIocoin, "xk6V522aupkj3kMtJZi6eDw6v3eLgMbXY8"));
 }
 
 TEST(Coin, validateAddressWanchain) {
