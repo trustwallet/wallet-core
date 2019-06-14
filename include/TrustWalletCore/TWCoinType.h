@@ -41,7 +41,6 @@ enum TWCoinType {
     TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
     TWCoinTypeIOST = 291,
-    TWCoinTypeIocoin = 295,
     TWCoinTypeIoTeX = 304,
     TWCoinTypeKin = 2017,
     TWCoinTypeLitecoin = 2,
@@ -72,7 +71,6 @@ enum TWCoinType {
     TWCoinTypeDEXON = 237,
     TWCoinTypeZelcash = 19167,
     TWCoinTypeARK = 111,
-    TWCoinTypeMonetaryUnit = 31,
     TWCoinTypeRavencoin = 175,
     TWCoinTypeWaves = 5741564,
 };

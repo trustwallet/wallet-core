@@ -37,7 +37,6 @@
 | 2301 | Qtum | QTUM | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2301.png" width="32" />| https://qtum.org/
 | 291 | IOST | IOST | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/291.png" width="32" />| https://iost.io/
 | 8964 | Nuls | NULS | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/8964.png" width="32" />| https://nuls.io/
-| 295 | IO coin | IOC | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/295.png" width="32" />| https://iocoin.io/
 | 282 | Bravocoin | BRAVO | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/282.png" width="32" />| https://bravocoin.com/
 | 135 | Steem | STEEM | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/135.png" width="32" />| http://steem.io
 | 194 | EOS | EOS | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/194.png" width="32" />| https://eos.io/

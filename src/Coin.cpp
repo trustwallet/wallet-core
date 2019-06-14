@@ -15,7 +15,6 @@
 #include "Groestlcoin/Address.h"
 #include "IOST/Account.h"
 #include "Icon/Address.h"
-#include "Iocoin/Address.h"
 #include "Nano/Address.h"
 #include "NEO/Address.h"
 #include "Nimiq/Address.h"
@@ -85,8 +84,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::SegwitAddress::isValid(string, HRP_GROESTLCOIN) ||
                Groestlcoin::Address::isValid(string, {TWP2PKHPrefixGroestlcoin, TWP2SHPrefixGroestlcoin});
 
-    case TWCoinTypeIocoin:
-        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixIocoin}, {TWP2SHPrefixIocoin}});
     case TWCoinTypeCallisto:
     case TWCoinTypeEllaism:
     case TWCoinTypeEthereum:
@@ -175,9 +172,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeARK:
         return ARK::Address::isValid(string);
-                    
-    case TWCoinTypeMonetaryUnit:
-        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixMonetaryUnit}, {TWP2SHPrefixMonetaryUnit}});
 
     case TWCoinTypeRavencoin:
         return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixRavencoin}, {TWP2SHPrefixRavencoin}});
@@ -223,9 +217,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeGroestlcoin:
         return Bitcoin::SegwitAddress(publicKey, 0, HRP_GROESTLCOIN).string();
-
-    case TWCoinTypeIocoin:
-        return Iocoin::Address(publicKey, TWP2PKHPrefixIocoin).string();
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEllaism:
@@ -310,9 +301,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeARK:
         return ARK::Address(publicKey).string();
-        
-    case TWCoinTypeMonetaryUnit:
-        return Bitcoin::Address(publicKey, TWP2PKHPrefixMonetaryUnit).string();
 
     case TWCoinTypeRavencoin:
         return Bitcoin::Address(publicKey, TWP2PKHPrefixRavencoin).string();
