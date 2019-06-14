@@ -20,6 +20,7 @@ jni/cpp/generated
 jni/java
 swift/Sources/Generated
 src/Generated
+include/TrustWalletCore/TWHRP.h
 
 # Code coverage files
 coverage.info
