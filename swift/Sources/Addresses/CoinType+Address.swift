@@ -28,7 +28,7 @@ public extension CoinType {
             } else {
                 return BitcoinAddress(string: string)
             }
-        case .dash, .dogecoin, .zcoin, .lux, .monetaryUnit, .ravencoin:
+        case .dash, .dogecoin, .zcoin, .lux, .ravencoin:
             return BitcoinAddress(string: string)
         case .callisto, .ellaism, .ethereum, .ethereumClassic,
              .ethersocial, .goChain, .poanetwork, .theta,
@@ -60,8 +60,6 @@ public extension CoinType {
             return NEOAddress(string: string)
         case .decred:
             return DecredAddress(string: string)
-        case .iocoin:
-            return IocoinAddress(string: string)
         case .groestlcoin:
             if let segwitAddress = SegwitAddress(string: string) {
                 return segwitAddress

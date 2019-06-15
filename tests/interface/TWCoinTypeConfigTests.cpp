@@ -56,62 +56,59 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto vet = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeVeChain));
     assertStringsEqual(vet, "VET");
 
-    auto wan = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcoin));
-    assertStringsEqual(wan, "XZC");
+    auto zcoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcoin));
+    assertStringsEqual(zcoin, "XZC");
 
-    auto xzc = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinance));
-    assertStringsEqual(xzc, "BNB");
+    auto bnb = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinance));
+    assertStringsEqual(bnb, "BNB");
 
-    auto bnb = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
-    assertStringsEqual(bnb, "XTZ");
+    auto xtz = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
+    assertStringsEqual(xtz, "XTZ");
 
-    auto eth9 = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
-    assertStringsEqual(eth9, "XLM");
+    auto xlm = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
+    assertStringsEqual(xlm, "XLM");
 
-    auto zec = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
-    assertStringsEqual(zec, "xDAI");
+    auto xdai = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
+    assertStringsEqual(xdai, "xDAI");
 
-    auto xtz = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
-    assertStringsEqual(xtz, "AION");
+    auto aion = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
+    assertStringsEqual(aion, "AION");
 
-    auto xlm = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeKin));
-    assertStringsEqual(xlm, "KIN");
+    auto kin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeKin));
+    assertStringsEqual(kin, "KIN");
 
-    auto xdai = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCosmos));
-    assertStringsEqual(xdai, "ATOM");
+    auto atom = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCosmos));
+    assertStringsEqual(atom, "ATOM");
 
-    auto aion = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTheta));
-    assertStringsEqual(aion, "THETA");
+    auto theta = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTheta));
+    assertStringsEqual(theta, "THETA");
 
-    auto kin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
-    assertStringsEqual(kin, "GRS");
+    auto grs = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
+    assertStringsEqual(grs, "GRS");
 
-    auto atom = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLux));
-    assertStringsEqual(atom, "LUX");
+    auto lux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLux));
+    assertStringsEqual(lux, "LUX");
 
-    auto theta = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
-    assertStringsEqual(theta, "QTUM");
+    auto qtum = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
+    assertStringsEqual(qtum, "QTUM");
 
-    auto grs = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthersocial));
-    assertStringsEqual(grs, "ESN");
+    auto esn = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthersocial));
+    assertStringsEqual(esn, "ESN");
 
-    auto doge = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIocoin));
-    assertStringsEqual(doge, "IOC");
+    auto bravo = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBravoCoin));
+    assertStringsEqual(bravo, "BRAVO");
 
-    auto lux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBravoCoin));
-    assertStringsEqual(lux, "BRAVO");
+    auto steem = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSteem));
+    assertStringsEqual(steem, "STEEM");
 
-    auto qtum = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSteem));
-    assertStringsEqual(qtum, "STEEM");
+    auto eos = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
+    assertStringsEqual(eos, "EOS");
 
-    auto ets = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
-    assertStringsEqual(ets, "EOS");
+    auto nano = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNano));
+    assertStringsEqual(nano, "NANO");
 
-    auto iocoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNano));
-    assertStringsEqual(iocoin, "NANO");
-
-    auto bravo = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIoTeX));
-    assertStringsEqual(bravo, "IOTX");
+    auto iotex = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIoTeX));
+    assertStringsEqual(iotex, "IOTX");
 
     auto zil = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZilliqa));
     assertStringsEqual(zil, "ZIL");
@@ -130,9 +127,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
-
-    auto mue = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonetaryUnit));
-    assertStringsEqual(mue, "MUE");
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWaves));
     assertStringsEqual(waves, "WAVES");
@@ -157,7 +151,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGoChain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIocoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOANetwork), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderToken), 18);
@@ -187,7 +180,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDEXON), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDigiByte), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
@@ -286,9 +278,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto ets = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthersocial, txId));
     assertStringsEqual(ets, "https://ethersocial.net/tx/123");
 
-    auto iocoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIocoin, txId));
-    assertStringsEqual(iocoin, "https://chainz.cryptoid.info/ioc/tx.dws?123");
-
     auto bravo = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBravoCoin, txId));
     assertStringsEqual(bravo, "https://explorer.bravocoin.com/txid/123");
 
@@ -324,9 +313,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeARK, txId));
     assertStringsEqual(ark, "https://explorer.ark.io/transaction/123");
-
-    auto mue = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonetaryUnit, txId));
-    assertStringsEqual(mue, "https://explorer.monetaryunit.org/tx/123");
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWaves, txId));
     assertStringsEqual(waves, "https://wavesexplorer.com/tx/123");
@@ -423,9 +409,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto ets = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthersocial));
     assertStringsEqual(ets, "ethersocial");
 
-    auto iocoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIocoin));
-    assertStringsEqual(iocoin, "iocoin");
-
     auto bravo = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBravoCoin));
     assertStringsEqual(bravo, "bravocoin");
 
@@ -461,9 +444,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeARK));
     assertStringsEqual(ark, "ark");
-
-    auto mue = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonetaryUnit));
-    assertStringsEqual(mue, "monetaryunit");
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
     assertStringsEqual(waves, "waves");
@@ -563,9 +543,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto ets = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthersocial));
     assertStringsEqual(ets, "Ethersocial");
 
-    auto iocoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIocoin));
-    assertStringsEqual(iocoin, "Iocoin");
-
     auto bravo = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBravoCoin));
     assertStringsEqual(bravo, "BravoCoin");
 
@@ -601,10 +578,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
-
-    auto mue = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonetaryUnit));
-    assertStringsEqual(mue, "MonetaryUnit");
-
+  
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
 
@@ -645,7 +619,6 @@ TEST(TWCoinTypeConfiguration, P2SHPrefix) {
     ASSERT_EQ(0x07, TWCoinTypeP2shPrefix(TWCoinTypeZcoin));
     ASSERT_EQ(0x3F, TWCoinTypeP2shPrefix(TWCoinTypeDigiByte));
     ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
-    ASSERT_EQ(0x4c, TWCoinTypeP2shPrefix(TWCoinTypeMonetaryUnit));
     ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
 }
 

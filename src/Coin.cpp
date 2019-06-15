@@ -16,7 +16,6 @@
 #include "Groestlcoin/Address.h"
 #include "IOST/Account.h"
 #include "Icon/Address.h"
-#include "Iocoin/Address.h"
 #include "Nano/Address.h"
 #include "NEO/Address.h"
 #include "Nimiq/Address.h"
@@ -78,9 +77,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
-    case TWCoinTypeIocoin:
     case TWCoinTypeLux:
-    case TWCoinTypeMonetaryUnit:
     case TWCoinTypeRavencoin:
     case TWCoinTypeZcoin:
         return Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
@@ -203,9 +200,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
-    case TWCoinTypeIocoin:
     case TWCoinTypeLux:
-    case TWCoinTypeMonetaryUnit:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
     case TWCoinTypeZcoin:

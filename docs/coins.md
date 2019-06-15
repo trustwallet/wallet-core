@@ -48,8 +48,7 @@
 | 31102   | Ethersocial   | ESN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/31102.png" width="32" />   | <https://ethersocial.org/>     |
 | 163     | Ellaism       | ELLA   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/163.png" width="32" />     | <https://ellaism.org/>         |
 | 111     | Ark           | ARK    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/111.png" width="32" />     | <http://ark.io>                |
-| 31      | MonetaryUnit  | MUE    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/31.png" width="32" />      | <https://www.monetaryunit.org> |
 | 20      | DigiByte      | DGB    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/20.png" width="32" />      | <https://www.digibyte.io>      |
 | 175     | Ravencoin     | RVN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/175.png" width="32" />     | <https://ravencoin.org>        |
 | 5741564 | Waves         | WAVES  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5741564.png" width="32" /> | <https://wavesplatform.com/>   |
-| 457 | Aeternity     | AE     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/457.png" width="32" />     | <https://aeternity.com/>       |
+| 457     | Aeternity     | AE     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/457.png" width="32" />     | <https://aeternity.com/>       |
