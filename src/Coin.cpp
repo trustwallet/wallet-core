@@ -94,6 +94,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeEthersocial:
+    case TWCoinTypeExpanse:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:
@@ -214,6 +215,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeEthersocial:
+    case TWCoinTypeExpanse:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:

@@ -19,6 +19,7 @@ class SlipTests: XCTestCase {
         XCTAssertEqual(CoinType.callisto.rawValue, 820)
         XCTAssertEqual(CoinType.ellaism.rawValue, 163)
         XCTAssertEqual(CoinType.ethereumClassic.rawValue, 61)
+        XCTAssertEqual(CoinType.expanse.rawValue, 40)
         XCTAssertEqual(CoinType.goChain.rawValue, 6060)
         XCTAssertEqual(CoinType.ontology.rawValue, 1024)
         XCTAssertEqual(CoinType.poanetwork.rawValue, 178)

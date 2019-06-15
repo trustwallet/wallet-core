@@ -119,6 +119,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto ella = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEllaism));
     assertStringsEqual(ella, "ELLA");
 
+    auto expanse = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeExpanse));
+    assertStringsEqual(expanse, "EXP");
+
     auto dexon = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDEXON));
     assertStringsEqual(dexon, "DXN");
 
@@ -148,6 +151,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEllaism), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthersocial), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeExpanse), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGoChain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
@@ -302,6 +306,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto ella = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEllaism, txId));
     assertStringsEqual(ella, "https://explorer.ellaism.org/tx/123");
 
+    auto expanse = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeExpanse, txId));
+    assertStringsEqual(expanse, "https://gander.tech/tx/123");
+
     auto dexon = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDEXON, txId));
     assertStringsEqual(dexon, "https://dexonscan.app/transaction/123");
 
@@ -432,6 +439,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto ella = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEllaism));
     assertStringsEqual(ella, "ellaism");
+
+    auto expanse = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeExpanse));
+    assertStringsEqual(expanse, "expanse");
 
     auto dexon = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDEXON));
     assertStringsEqual(dexon, "dexon");
@@ -566,6 +576,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto ella = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEllaism));
     assertStringsEqual(ella, "Ellaism");
+
+    auto expanse = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeExpanse));
+    assertStringsEqual(expanse, "Expanse");
 
     auto dexon = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDEXON));
     assertStringsEqual(dexon, "DEXON");

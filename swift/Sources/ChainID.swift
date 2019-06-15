@@ -11,6 +11,7 @@ public enum ChainID: UInt32 {
     case callisto = 820
     case ellaism = 64
     case ethereumClassic = 61
+    case expanse = 2
     case veChain = 74
     case thunderToken = 18
     case tomoChain = 88

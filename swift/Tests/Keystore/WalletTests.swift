@@ -17,8 +17,9 @@ class WalletTests: XCTestCase {
         _ = try wallet.getAccount(password: "password", coin: .poanetwork)
         _ = try wallet.getAccount(password: "password", coin: .ethersocial)
         _ = try wallet.getAccount(password: "password", coin: .ellaism)
+        _ = try wallet.getAccount(password: "password", coin: .expanse)
 
-        XCTAssertEqual(wallet.key.accountCount, 5)
+        XCTAssertEqual(wallet.key.accountCount, 6)
     }
 
     func testIdentifier() throws {
