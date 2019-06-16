@@ -57,5 +57,9 @@ void TWNebulasAddressDelete(struct TWNebulasAddress *_Nonnull address) {
 
 TWString *_Nonnull TWNebulasAddressDescription(struct TWNebulasAddress *_Nonnull address) {
     const auto string = address->impl.string();
-    return TWStringCreateWithUTF8Bytes(string.c_str());
+    return TWStringCreateWithUTF8Bytes(string.c_str());;
+}
+
+TWData *_Nonnull TWNebulasAddressKeyHash(struct TWNebulasAddress *_Nonnull address) {
+    return TWDataCreateWithBytes(address->impl.bytes.data(), address->impl.bytes.size());
 }

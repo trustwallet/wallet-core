@@ -24,6 +24,10 @@ namespace TW::Nebulas {
 class Signer {
   public:
     uint256_t chainID;
+    
+    static const char* TxPayloadBinaryType;
+    static const char* TxPayloadDeployType;
+    static const char* TxPayloadCallType;
 
     /// Initializes a signer with a chain identifier.
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
@@ -31,7 +35,7 @@ class Signer {
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 
-    static Data toBigEndian(const uint256_t& value,uint32_t digit);
+    static void appendBigEndian(Data& data, const uint256_t& value,uint32_t digit);
 
   protected:
     /// Computes the transaction hash.

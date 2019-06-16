@@ -56,7 +56,7 @@ fi
 unzip -d "$PREFIX" -o include.zip
 
 # Download Protobuf sources
-export PROTOBUF_VERSION=3.7.0
+export PROTOBUF_VERSION=3.7.1
 PROTOBUF_DIR="$ROOT/build/protobuf/staging"
 mkdir -p "$PROTOBUF_DIR"
 cd "$PROTOBUF_DIR"

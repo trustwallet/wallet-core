@@ -5,11 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Nebulas/Address.h"
+#include "../src/Base58.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 
 #include <gtest/gtest.h>
 
+using namespace std;
 using namespace TW;
 using namespace TW::Nebulas;
 
@@ -20,12 +22,9 @@ TEST(NebulasAddress, Invalid) {
 }
 
 TEST(NebulasAddress, String) {
-    ASSERT_EQ(
-        Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").string(),
-        "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY"
-    );
-    ASSERT_EQ(
-        Address(Base58::bitcoin.decode("n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv")).string(),
+    ASSERT_EQ(Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").string(),
+        "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
+    ASSERT_EQ(Address(Base58::bitcoin.decode("n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv")).string(),
         "n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv"
     );
     
@@ -34,7 +33,7 @@ TEST(NebulasAddress, String) {
 }
 
 TEST(NebulasAddress, FromPrivateKey) {
-    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     const auto address = Address(publicKey);
 

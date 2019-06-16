@@ -39,10 +39,6 @@ message SigningInput {
 
 // Transaction signing output.
 message SigningOutput {
-    // Signed and encoded transaction bytes.
-    bytes encoded = 1;
-
-    bytes v = 2;
-    bytes r = 3;
-    bytes s = 4;
+    uint32 alg = 1;
+    bytes sign = 2;
 }

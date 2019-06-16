@@ -137,8 +137,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto waves = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWaves));
     assertStringsEqual(waves, "WAVES");
 
-    auto waves = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNebulas));
-    assertStringsEqual(waves, "NAS");
+    auto nas = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNebulas));
+    assertStringsEqual(nas, "NAS");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -327,8 +327,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto waves = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWaves, txId));
     assertStringsEqual(waves, "https://wavesexplorer.com/tx/123");
 
-    auto waves = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNebulas, txId));
-    assertStringsEqual(waves, "https://explorer.nebulas.io/#/tx/123");
+    auto nas = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNebulas, txId));
+    assertStringsEqual(nas, "https://explorer.nebulas.io/#/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -460,6 +460,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
     assertStringsEqual(waves, "waves");
+
+    auto nas = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
+    assertStringsEqual(nas, "nebulas");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -595,8 +598,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
 
-    auto Nebulas = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
-    assertStringsEqual(waves, "Nabulas");
+    auto nas = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
+    assertStringsEqual(nas, "Nebulas");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
