@@ -42,15 +42,6 @@ struct TWNebulasAddress *_Nonnull TWNebulasAddressCreateWithPublicKey(struct TWP
     return new TWNebulasAddress{ Address(publicKey->impl) };
 }
 
-struct TWNebulasAddress *_Nullable TWNebulasAddressCreateWithKeyHash(TWData *_Nonnull keyHash) {
-    auto d = reinterpret_cast<const Data *>(keyHash);
-    try {
-        return new TWNebulasAddress{ Address(*d) };
-    } catch (...) {
-        return nullptr;
-    }
-}
-
 void TWNebulasAddressDelete(struct TWNebulasAddress *_Nonnull address) {
     delete address;
 }

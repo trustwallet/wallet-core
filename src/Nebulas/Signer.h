@@ -35,8 +35,6 @@ class Signer {
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 
-    static void appendBigEndian(Data& data, const uint256_t& value,uint32_t digit);
-
   protected:
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
