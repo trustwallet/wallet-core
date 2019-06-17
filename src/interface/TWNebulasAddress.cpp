@@ -18,9 +18,9 @@
 using namespace TW;
 using namespace TW::Nebulas;
 
-
-bool TWNebulasAddressEqual(struct TWNebulasAddress *_Nonnull lhs, struct TWNebulasAddress *_Nonnull rhs) {
-   return lhs->impl == rhs->impl;
+bool TWNebulasAddressEqual(struct TWNebulasAddress *_Nonnull lhs,
+                           struct TWNebulasAddress *_Nonnull rhs) {
+    return lhs->impl == rhs->impl;
 }
 
 bool TWNebulasAddressIsValidString(TWString *_Nonnull string) {
@@ -29,17 +29,18 @@ bool TWNebulasAddressIsValidString(TWString *_Nonnull string) {
 }
 
 struct TWNebulasAddress *_Nullable TWNebulasAddressCreateWithString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string*>(string);
+    auto s = reinterpret_cast<const std::string *>(string);
 
     try {
-        return new TWNebulasAddress{ Address(*s) };
+        return new TWNebulasAddress{Address(*s)};
     } catch (...) {
         return nullptr;
     }
 }
 
-struct TWNebulasAddress *_Nonnull TWNebulasAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
-    return new TWNebulasAddress{ Address(publicKey->impl) };
+struct TWNebulasAddress *_Nonnull TWNebulasAddressCreateWithPublicKey(
+    struct TWPublicKey *_Nonnull publicKey) {
+    return new TWNebulasAddress{Address(publicKey->impl)};
 }
 
 void TWNebulasAddressDelete(struct TWNebulasAddress *_Nonnull address) {
@@ -48,7 +49,7 @@ void TWNebulasAddressDelete(struct TWNebulasAddress *_Nonnull address) {
 
 TWString *_Nonnull TWNebulasAddressDescription(struct TWNebulasAddress *_Nonnull address) {
     const auto string = address->impl.string();
-    return TWStringCreateWithUTF8Bytes(string.c_str());;
+    return TWStringCreateWithUTF8Bytes(string.c_str());
 }
 
 TWData *_Nonnull TWNebulasAddressKeyHash(struct TWNebulasAddress *_Nonnull address) {
