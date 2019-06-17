@@ -19,8 +19,8 @@ class TestNebulasAddress {
         val address = NebulasAddress("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")
         assertEquals(address.description(), "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")
 
-        val address = NebulasAddress("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39")
-        assertEquals(address.description(), "n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39")
+        val addressOfATP = NebulasAddress("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39")
+        assertEquals(addressOfATP.description(), "n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39")
     }
 
     @Test
