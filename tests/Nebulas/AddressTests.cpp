@@ -19,7 +19,10 @@ TEST(NebulasAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_FALSE(Address::isValid("a1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv"));
     ASSERT_FALSE(Address::isValid("n2TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv"));
+    // normal address test
     ASSERT_TRUE(Address::isValid("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY"));
+    // contract address test
+    ASSERT_TRUE(Address::isValid("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39"));
 }
 
 TEST(NebulasAddress, String) {
