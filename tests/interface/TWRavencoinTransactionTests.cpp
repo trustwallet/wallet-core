@@ -81,14 +81,14 @@ TEST(RavencoinTransaction, LockScripts) {
     // P2PKH    
     // https://blockbook.ravencoin.org/tx/3717b528eb4925461d9de5a596d2eefe175985740b4fda153255e10135f236a6
     
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("RNoSGCX8SPFscj8epDaJjqEpuZa2B5in88").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("RNoSGCX8SPFscj8epDaJjqEpuZa2B5in88").get(), TWCoinTypeRavencoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a9149451f4546e09fc2e49ef9b5303924712ec2b038e88ac");
 
     // P2SH
     // https://ravencoin.network/api/tx/f600d07814677d1f60545c8f7f71260238595c4928d6fb87caa0f9dd732e9bb5
     
-    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("rPWwn5h4QFZNaz1XmY39rc73sdYGGDdmq1").get()));
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("rPWwn5h4QFZNaz1XmY39rc73sdYGGDdmq1").get(), TWCoinTypeRavencoin));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
     assertHexEqual(scriptData2, "a914bd92088bb7e82d611a9b94fbb74a0908152b784f87");
 }
