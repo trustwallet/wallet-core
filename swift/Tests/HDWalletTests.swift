@@ -355,4 +355,13 @@ class HDWalletTests: XCTestCase {
 
         XCTAssertEqual(address, "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe")
     }
+
+    func testDerivePivx() {
+        let pivx = CoinType.pivx
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: pivx)
+        let address = pivx.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("DSwC481pHsCfKrPJc9R1U2DnuEQT7aoqVG", address)
+    }
 }

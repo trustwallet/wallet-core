@@ -804,5 +804,22 @@
         "explorer": "https://terra.stake.id/?#/tx/",
         "url": "https://terra.money",
         "rpcNodeInfo": "https://github.com/terra-project/core"
+    },
+    {
+        "id": "pivx",
+        "name": "Pivx",
+        "symbol": "PIVX",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/44'/119'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "p2pkhPrefix": 30,
+        "p2shPrefix": 13,
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "ppub",
+        "xprv": "pprv",
+        "explorer": "https://mainnet-explorer.pivx.org/tx/"
     }
 ]

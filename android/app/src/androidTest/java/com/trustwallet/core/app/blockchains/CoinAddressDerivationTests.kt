@@ -80,5 +80,6 @@ class CoinAddressDerivationTests {
         WAVES -> assertEquals("3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n", address)
         AETERNITY -> assertEquals("ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN", address)
         TERRA -> assertEquals("terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug", address)
+        PIVX -> assertEquals("D81AqC8zKma3Cht4TbVuh4jyVVyLkZULCm", address)
     }
 }

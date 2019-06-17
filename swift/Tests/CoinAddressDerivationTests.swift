@@ -181,6 +181,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .terra:
                     let expectedResult = "terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .pivx:
+                    let expectedResult = "D81AqC8zKma3Cht4TbVuh4jyVVyLkZULCm"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }

@@ -78,6 +78,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeLux:
+    case TWCoinTypePivx:
     case TWCoinTypeRavencoin:
     case TWCoinTypeZcoin:
         return Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
@@ -201,6 +202,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeLux:
+    case TWCoinTypePivx:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
     case TWCoinTypeZcoin:

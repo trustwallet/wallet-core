@@ -28,7 +28,7 @@ public extension CoinType {
             } else {
                 return BitcoinAddress(string: string)
             }
-        case .dash, .dogecoin, .zcoin, .lux, .ravencoin:
+        case .dash, .dogecoin, .zcoin, .lux, .ravencoin, .pivx:
             return BitcoinAddress(string: string)
         case .callisto, .ellaism, .ethereum, .ethereumClassic,
              .ethersocial, .goChain, .poanetwork, .theta,
