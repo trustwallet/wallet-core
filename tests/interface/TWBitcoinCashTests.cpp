@@ -53,6 +53,10 @@ TEST(BitcoinCash, LockScript) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKeyHash(keyHash.get()));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a9146cfa0e96c34fce09c0e4e671fcd43338c14812e588ac");
+
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("pzukqjmcyzrkh3gsqzdcy3e3d39cqxhl3g0f405k5l").get(), TWCoinTypeBitcoinCash));
+    auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
+    assertHexEqual(scriptData2, "a914b9604b7820876bc510009b8247316c4b801aff8a87");
 }
 
 TEST(BitcoinCash, ExtendedKeys) {
