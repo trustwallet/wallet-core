@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../PublicKey.h"
+#include "../Base58Address.h"
 
 #include <array>
 #include <cstdint>
@@ -14,20 +15,12 @@
 
 namespace TW::Nebulas {
 
-class Address {
+class Address :public Base58Address<26> {
   public:
     /// Number of bytes in an address.
-    static const size_t size = 26;
     static const uint8_t AddressPrefix = 25;
     static const uint8_t NormalType = 87;
     static const uint8_t ContractType = 88;
-
-    /// Address data consisting of a prefix byte followed by the public key
-    /// hash.
-    std::array<uint8_t, size> bytes;
-
-    /// Determines whether a collection of bytes makes a valid  address.
-    static bool isValid(const Data& data) { return data.size() == size; }
 
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string& string);

@@ -13,7 +13,7 @@ using namespace TW::Nebulas;
 
 bool Address::isValid(const std::string &string) {
     auto data = Base58::bitcoin.decode(string);
-    if (data.size() != Address::size) {
+    if (data.size() != (size_t)Address::size) {
         return false;
     }
 
@@ -40,7 +40,7 @@ Address::Address(const std::string &string) {
 }
 
 Address::Address(const Data &data) {
-    if (!isValid(data)) {
+    if (!Base58Address::isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
