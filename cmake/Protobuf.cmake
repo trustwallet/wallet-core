@@ -1,4 +1,4 @@
-set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/protobuf/staging/protobuf-3.7.1)
+set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/protobuf/staging/protobuf-3.7.0)
 
 set(protobuf_SOURCE_FILES
     ${protobuf_SOURCE_DIR}/src/google/protobuf/stubs/bytestream.cc
