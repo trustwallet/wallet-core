@@ -19,8 +19,6 @@
 #include <TrezorCrypto/bip39.h>
 #include <TrezorCrypto/curves.h>
 #include <TrustWalletCore/TWHRP.h>
-#include <TrustWalletCore/TWP2PKHPrefix.h>
-#include <TrustWalletCore/TWP2SHPrefix.h>
 
 #include <array>
 

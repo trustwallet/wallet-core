@@ -83,6 +83,70 @@ enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
     }
 }
 
+byte TW::staticPrefix(TWCoinType coin) {
+    switch (coin) {
+<%  coins.filter{ |coin| coin.has_key?('staticPrefix') }.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return <%= coin['staticPrefix'] %>;
+<% end -%>
+    default: return 0;
+    }
+}
+
+byte TW::p2pkhPrefix(TWCoinType coin) {
+    switch (coin) {
+<%  coins.filter{ |coin| coin.has_key?('p2pkhPrefix') }.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return <%= coin['p2pkhPrefix'] %>;
+<% end -%>
+    default: return 0;
+    }
+}
+
+std::set<byte> TW::p2pkhPrefixes() {
+    return std::set<byte>({
+<%  coins.filter{ |coin| coin.has_key?('p2pkhPrefix') && !coin.has_key?('staticPrefix') }
+        .map{ |coin| coin['p2pkhPrefix'] }
+        .uniq
+        .each do |prefix|
+-%>
+        <%= prefix %>,
+<% end -%>
+    });
+}
+
+byte TW::p2shPrefix(TWCoinType coin) {
+    switch (coin) {
+<%  coins.filter{ |coin| coin.has_key?('p2shPrefix') }.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return <%= coin['p2shPrefix'] %>;
+<% end -%>
+    default: return 0;
+    }
+}
+
+std::set<byte> TW::p2shPrefixes() {
+    return std::set<byte>({
+<%  coins.filter{ |coin| coin.has_key?('p2shPrefix') && !coin.has_key?('staticPrefix') }
+        .map{ |coin| coin['p2shPrefix'] }
+        .uniq
+        .each do |prefix|
+-%>
+        <%= prefix %>,
+<% end -%>
+    });
+}
+
+enum TWHRP TW::hrp(TWCoinType coin) {
+    switch (coin) {
+<%  coins.filter{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return TWHRP<%= format_name(coin['name']) %>;
+<% end -%>
+    default: return TWHRPUnknown;
+    }
+}
+
 Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     switch (coin) {
 <%  coins.each do |coin| -%>

@@ -10,6 +10,7 @@
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWDecredAddress.h>
+#include <TrustWalletCore/TWBitcoinScript.h>
 
 #include <gtest/gtest.h>
 
@@ -32,4 +33,14 @@ TEST(Decred, DerivePubkeyFromDpub) {
     auto address0 = WRAPS(TWCoinTypeDeriveAddressFromPublicKey(TWCoinTypeDecred, pubKey0));
 
     assertStringsEqual(address0, "DsksmLD2wDoA8g8QfFvm99ASg8KsZL8eJFd");
+}
+
+TEST(Decred, Lockscripts) {
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Dcur2mcGjmENx4DhNqDctW5wJCVyT3Qeqkx").get()));
+    auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
+    assertHexEqual(scriptData, "a914f5916158e3e2c4551c1796708db8367207ed13bb87");
+
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("DsfD7KYsJtRraYXPZM61ui7779oYJCakYvH").get()));
+    auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
+    assertHexEqual(scriptData2, "76a9149c417596dea6570f8e546674555b5ce5087ce2c288ac");
 }

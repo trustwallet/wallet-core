@@ -19,6 +19,7 @@
 #include <TrustWalletCore/TWPurpose.h>
 
 #include <string>
+#include <set>
 
 namespace TW {
 
@@ -57,5 +58,23 @@ Hash::Hasher publicKeyHasher(TWCoinType coin);
 
 /// Hasher to use for base 58 checksums.
 Hash::Hasher base58Hasher(TWCoinType coin);
+
+/// Returns static prefix for a coin type.
+byte staticPrefix(TWCoinType coin);
+
+/// Returns P2PKH prefix for a coin type.
+byte p2pkhPrefix(TWCoinType coin);
+
+/// Returns all P2PKH prefixes
+std::set<byte> p2pkhPrefixes();
+
+/// Returns P2SH prefix for a coin type.
+byte p2shPrefix(TWCoinType coin);
+
+/// Returns all P2SH prefixes
+std::set<byte> p2shPrefixes();
+
+/// Returns human readable part for a coin type.
+enum TWHRP hrp(TWCoinType coin);
 
 } // namespace TW

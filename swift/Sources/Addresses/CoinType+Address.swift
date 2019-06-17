@@ -14,7 +14,7 @@ public extension CoinType {
         }
 
         switch self {
-        case .binance, .cosmos:
+        case .binance, .cosmos, .terra:
             return CosmosAddress(string: string)
         case .bitcoin, .litecoin, .viacoin, .qtum, .digiByte:
             if let segwitAddress = SegwitAddress(string: string) {
@@ -28,7 +28,7 @@ public extension CoinType {
             } else {
                 return BitcoinAddress(string: string)
             }
-        case .dash, .dogecoin, .zcoin, .lux, .monetaryUnit, .ravencoin:
+        case .dash, .dogecoin, .zcoin, .lux, .ravencoin:
             return BitcoinAddress(string: string)
         case .callisto, .ellaism, .ethereum, .ethereumClassic,
              .ethersocial, .goChain, .poanetwork, .theta,
@@ -62,8 +62,6 @@ public extension CoinType {
             return NEOAddress(string: string)
         case .decred:
             return DecredAddress(string: string)
-        case .iocoin:
-            return IocoinAddress(string: string)
         case .groestlcoin:
             if let segwitAddress = SegwitAddress(string: string) {
                 return segwitAddress
@@ -94,6 +92,8 @@ public extension CoinType {
             return ARKAddress(string: string)
         case .waves:
             return WavesAddress(string: string)
+        case .aeternity:
+            return AeternityAddress(string: string)
         }
     }
 }

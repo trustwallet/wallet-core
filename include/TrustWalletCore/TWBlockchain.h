@@ -38,7 +38,8 @@ enum TWBlockchain {
     TWBlockchainSteem = 23,
     TWBlockchainNULS = 24,
     TWBlockchainWaves = 25,
-    TWBlockchainNebulas = 26,
+    TWBlockchainAeternity = 26,
+    TWBlockchainNebulas = 27,
 };
 
 TW_EXTERN_C_END
