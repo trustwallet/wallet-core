@@ -32,7 +32,7 @@ bool Address::isValid(const std::string& string) {
 
 Address::Address(const std::string& string) {
     if (!isValid(string)) {
-        throw std::invalid_argument("Invalid address data");
+        throw std::invalid_argument("Invalid address string");
     }
     
     auto data = Base58::bitcoin.decode(string);
