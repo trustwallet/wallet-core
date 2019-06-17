@@ -5,7 +5,7 @@ option java_package = "wallet.core.jni.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Recipient's address.
+    // sender's address.
     string from_address = 1;
 
     // Chain identifier (256-bit number)
@@ -24,7 +24,7 @@ message SigningInput {
     // Recipient's address.
     string to_address = 6;
 
-    // Amount to send in wei (256-bit number)
+    // Amount to send in wei, 1 NAS = 10^18 Wei (256-bit number)
     bytes amount = 7;
 
     // Timestamp to create transaction (256-bit number)
@@ -39,6 +39,6 @@ message SigningInput {
 
 // Transaction signing output.
 message SigningOutput {
-    uint32 alg = 1;
-    bytes sign = 2;
+    uint32 algorithm = 1;
+    bytes signature = 2;
 }

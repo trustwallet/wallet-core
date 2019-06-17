@@ -20,8 +20,8 @@ describe('NebulasSigner', () => {
         });
         const output: TW.Nebulas.Proto.SigningOutput = NebulasSigner.sign(signingInput);
 
-        expect(output.alg == 1);
-        expect(bufToHex(output.sign)).to.equal('0xf53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500');
+        expect(output.algorithm == 1);
+        expect(bufToHex(output.signature)).to.equal('0xf53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500');
     });
 
 });

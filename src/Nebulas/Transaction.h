@@ -23,8 +23,8 @@ class Transaction {
     std::vector<uint8_t> payload;
 
     // Signature values
-    Data sign;
-    uint32_t alg=1;
+    Data signature;
+    uint32_t algorithm=1;
 
     Transaction(Address from, uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, uint256_t timestamp, Data payload)
         : from(std::move(from))

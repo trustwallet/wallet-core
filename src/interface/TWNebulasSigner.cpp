@@ -32,8 +32,8 @@ TW_Nebulas_Proto_SigningOutput TWNebulasSignerSign(TW_Nebulas_Proto_SigningInput
     signer.sign(key,tx);
 
     auto protoOutput = Proto::SigningOutput();
-    protoOutput.set_alg(tx.alg);
-    protoOutput.set_sign(reinterpret_cast<const char *>(tx.sign.data()), tx.sign.size());
+    protoOutput.set_algorithm(tx.algorithm);
+    protoOutput.set_signature(reinterpret_cast<const char *>(tx.signature.data()), tx.signature.size());
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
