@@ -18,7 +18,7 @@ class NebulasTests: XCTestCase {
     }
 
     func testSigner() {
-        let arr:[Int8] = [10,6,98,105,110,97,114,121]
+        let arr:[Int8] = [10, 6, 98, 105, 110, 97, 114, 121]
         let input = NebulasSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.fromAddress = "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY"
