@@ -137,8 +137,8 @@ struct TWBitcoinScript *TWBitcoinScriptBuildPayToWitnessScriptHash(TWData *scrip
     return new TWBitcoinScript{ .impl = script };
 }
 
-struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildForAddress(TWString *_Nonnull address) {
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildForAddress(TWString *_Nonnull address, enum TWCoinType coin) {
     auto s = reinterpret_cast<const std::string*>(address);
-    auto script = Script::buildForAddress(*s);
+    auto script = Script::buildForAddress(*s, coin);
     return new TWBitcoinScript{ .impl = script };
 }
