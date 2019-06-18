@@ -52,3 +52,4 @@
 | 175     | Ravencoin     | RVN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/175.png" width="32" />     | <https://ravencoin.org>        |
 | 5741564 | Waves         | WAVES  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5741564.png" width="32" /> | <https://wavesplatform.com/>   |
 | 457     | Aeternity     | AE     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/457.png" width="32" />     | <https://aeternity.com/>       |
+| 2718    | Nebulas       | NAS    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2718.png" width="32" />    | <https://nebulas.io/>          |
