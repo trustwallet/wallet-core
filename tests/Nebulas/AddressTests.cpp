@@ -26,6 +26,7 @@ TEST(NebulasAddress, Invalid) {
 }
 
 TEST(NebulasAddress, String) {
+    ASSERT_THROW(Address("abc"), std::invalid_argument);
     ASSERT_EQ(Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").string(),
         "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
     ASSERT_EQ(Address(Base58::bitcoin.decode("n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv")).string(),
@@ -37,14 +38,17 @@ TEST(NebulasAddress, String) {
 }
 
 TEST(NebulasAddress, Data) {
+    Data data;
+    EXPECT_THROW(Address(data).string(), std::invalid_argument);
     ASSERT_EQ(Address(Base58::bitcoin.decode("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")).string(),
         "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
 }
 
 TEST(NebulasAddress, FromPrivateKey) {
     const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
-    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
     const auto address = Address(publicKey);
-
     ASSERT_EQ(address.string(), "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
+
+    EXPECT_THROW(Address(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1)), std::invalid_argument);
 }
