@@ -9,6 +9,7 @@
 #include "TWBase.h"
 #include "TWData.h"
 #include "TWPublicKey.h"
+#include "TWCoinType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -107,6 +108,6 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWDa
 
 /// Builds a pay-to-public-key-hash (P2PKH) script appropriate for the given address.
 TW_EXPORT_STATIC_METHOD
-struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildForAddress(TWString *_Nonnull address);
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildForAddress(TWString *_Nonnull address, enum TWCoinType coin);
 
 TW_EXTERN_C_END

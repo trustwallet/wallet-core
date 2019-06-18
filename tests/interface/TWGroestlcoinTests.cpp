@@ -31,19 +31,19 @@ TEST(Groestlcoin, Address) {
 }
 
 TEST(Groestlcoin, BuildForLegacyAddress) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM").get(), TWCoinTypeGroestlcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a91498af0aaca388a7e1024f505c033626d908e3b54a88ac");
 }
 
 TEST(Groestlcoin, BuildForSegwitP2SHAddress) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P").get(), TWCoinTypeGroestlcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "a9140055b0c94df477ee6b9f75185dfc9aa8ce2e52e487");
 }
 
 TEST(Groestlcoin, BuildForNativeSegwitAddress) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne").get(), TWCoinTypeGroestlcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "00147557920fbc32a1ef4ef26bae5e8ce3f95abf09ce");
 }
