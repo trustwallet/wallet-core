@@ -267,7 +267,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(grs, "https://chainz.cryptoid.info/grs/tx.dws?123");
 
     auto doge = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
-    assertStringsEqual(doge, "https://live.blockcypher.com/doge/tx/123");
+    assertStringsEqual(doge, "https://blockchair.com/dogecoin/transaction/123");
 
     auto lux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
     assertStringsEqual(lux, "https://explorer.poswallet.io/#/tx/123");

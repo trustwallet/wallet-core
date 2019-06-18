@@ -125,7 +125,7 @@
         "base58Hasher": "sha256d",
         "xpub": "dgub",
         "xprv": "dgpv",
-        "explorer": "https://live.blockcypher.com/doge/tx/"
+        "explorer": "https://blockchair.com/dogecoin/transaction/"
     },
     {
         "id": "classic",
