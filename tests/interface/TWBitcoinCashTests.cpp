@@ -53,6 +53,10 @@ TEST(BitcoinCash, LockScript) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKeyHash(keyHash.get()));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a9146cfa0e96c34fce09c0e4e671fcd43338c14812e588ac");
+
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("pzukqjmcyzrkh3gsqzdcy3e3d39cqxhl3g0f405k5l").get(), TWCoinTypeBitcoinCash));
+    auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
+    assertHexEqual(scriptData2, "a914b9604b7820876bc510009b8247316c4b801aff8a87");
 }
 
 TEST(BitcoinCash, ExtendedKeys) {
@@ -137,6 +141,6 @@ TEST(BitcoinCash, ValidAddress) {
     auto address = TWBitcoinCashAddress();
     TWBitcoinCashAddressInitWithString(&address, STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4").get());
 
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("bitcoincash:qqa2qx0d8tegw32xk8u75ws055en4x3h2u0e6k46y4").get(), TWCoinTypeBitcoinCash));
     ASSERT_FALSE(TWBitcoinScriptSize(script.get()) == 0);
 }
