@@ -27,13 +27,14 @@ class TestNebulasSigner {
             gasLimit = ByteString.copyFrom("0x030d40".toHexByteArray()) //200000
             amount = ByteString.copyFrom("0x98a7d9b8314c0000".toHexByteArray())    //11000000000000000000
             timestamp = ByteString.copyFrom("0x5cfc84ca".toHexByteArray())   //1560052938
-            payload = ByteString.copyFrom(byteArrayOf(10,6,98,105,110,97,114,121))
+            payload = ByteString.copyFrom("\n\u0006binary".toByteArray())   //{10, 6, 98, 105, 110, 97, 114, 121}
             privateKey = ByteString.copyFrom(PrivateKey("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b".toHexByteArray()).data())
         }
 
         val output: Nebulas.SigningOutput = NebulasSigner.sign(signingInput.build())
 
-        assertEquals(output.algorithm,1)
-        assertEquals(output.signature.toByteArray().toHex(),"0xf53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500")
+        assertEquals(output.algorithm, 1)
+        assertEquals(output.signature.toByteArray().toHex(), 
+            "0xf53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500")
     }
 }

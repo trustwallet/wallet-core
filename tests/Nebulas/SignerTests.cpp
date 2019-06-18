@@ -21,6 +21,7 @@ class SignerExposed : public Signer {
     using Signer::hash;
 };
 
+const char* payloadString = "\n\6binary";   //{10, 6, 98, 105, 110, 97, 114, 121}
 TEST(Signer, Hash) {
     auto from = Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
     auto to = Address("n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17");
@@ -32,7 +33,7 @@ TEST(Signer, Hash) {
         /* to: */ to,
         /* amount: */ 11000000000000000000ULL,
         /* timestamp: */ 1560052938,
-        /* payload: */ {10, 6, 98, 105, 110, 97, 114, 121});
+        /* payload: */ Data(payloadString,payloadString+8));
     auto signer = SignerExposed(1);
     auto hash = signer.hash(transaction);
 
@@ -50,7 +51,7 @@ TEST(Signer, Sign) {
         /* to: */ to,
         /* amount: */ 11000000000000000000ULL,
         /* timestamp: */ 1560052938,
-        /* payload: */ {10, 6, 98, 105, 110, 97, 114, 121});
+        /* payload: */ Data(payloadString,payloadString+8));
 
     auto key = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
     auto signer = SignerExposed(1);
