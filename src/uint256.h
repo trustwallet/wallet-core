@@ -50,7 +50,7 @@ inline Data store(const uint256_t& v) {
 
 // Append a uint256_t value as a big-endian byte array into the provided buffer, and limit
 // the array size by digit/8.
-inline void appendBigEndian(Data &data, const uint256_t &value, uint32_t digit) {
+inline void encode256BE(Data &data, const uint256_t &value, uint32_t digit) {
     Data bytes = store(value);
     Data buff(digit / 8);
 
