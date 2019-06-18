@@ -9,9 +9,9 @@ describe('NebulasSigner', () => {
         const signingInput = TW.Nebulas.Proto.SigningInput.create({
             amount: fromHexString("0x98a7d9b8314c0000"),    //11000000000000000000
             chainId: fromHexString('0x1'),  //1
+            fromAddress: 'n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY',
             gasLimit: fromHexString('0x030d40'), //200000
             gasPrice: fromHexString('0x0f4240'), //1000000
-            fromAddress: 'n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY',
             nonce: fromHexString('0x7'),    //7
             payload: new Uint8Array([10, 6, 98, 105, 110, 97, 114, 121]),
             privateKey: PrivateKey.createWithData(fromHexString("0xd2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")).data(),
