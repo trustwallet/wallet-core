@@ -11,30 +11,29 @@ class NebulasTests: XCTestCase {
 
     func testAddressFromPublicKey() {
         let privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!)!
-        let publicKey = privateKey.getPublicKeySecp256k1(compressed:false)
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
         let address = NebulasAddress(publicKey: publicKey)
 
         XCTAssertEqual(address.description, "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")
     }
 
     func testSigner() {
-        let arr:[Int8] = [10, 6, 98, 105, 110, 97, 114, 121]
+        let arr: [Int8] = [10, 6, 98, 105, 110, 97, 114, 121]
         let input = NebulasSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.fromAddress = "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY"
-            $0.nonce = Data(hexString:"07")!
-            $0.gasPrice = Data(hexString:"0f4240")!     //1000000
-            $0.gasLimit = Data(hexString:"030d40")!     //200000
+            $0.nonce = Data(hexString: "07")!
+            $0.gasPrice = Data(hexString: "0f4240")!     //1000000
+            $0.gasLimit = Data(hexString: "030d40")!     //200000
             $0.toAddress = "n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17"
-            $0.amount = Data(hexString:"98a7d9b8314c0000")!  //11000000000000000000ULL
-            $0.timestamp = Data(hexString:"5cfc84ca")!   //1560052938
-            $0.payload = Data(bytes:arr,count: 8)
+            $0.amount = Data(hexString: "98a7d9b8314c0000")!  //11000000000000000000ULL
+            $0.timestamp = Data(hexString: "5cfc84ca")!   //1560052938
+            $0.payload = Data(bytes: arr, count: 8)
             $0.privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!)!.data
         }
-        
         let output = NebulasSigner.sign(input: input)
-    XCTAssertEqual(output.signature, 1)
-        XCTAssertEqual(output.algorithm.hexString, "f53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500")
+        XCTAssertEqual(output.signature, 1)
+        XCTAssertEqual(output.algorithm.hexString,
+            "f53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500")
     }
-
 }
