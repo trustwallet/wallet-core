@@ -26,7 +26,6 @@ Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
     );
     
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto hash = this->hash(tx);
     sign(privateKey, tx);
 
     auto protoOutput = Proto::SigningOutput();
