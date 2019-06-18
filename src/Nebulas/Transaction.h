@@ -24,7 +24,7 @@ class Transaction {
 
     // Signature values
     Data signature;
-    uint32_t algorithm=1;
+    uint32_t algorithm;
 
     Transaction(Address from, uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, uint256_t timestamp, Data payload)
         : from(std::move(from))
