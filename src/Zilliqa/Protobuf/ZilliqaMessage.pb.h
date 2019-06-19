@@ -1661,3 +1661,4 @@ inline void ProtoTransactionWithReceipt::set_allocated_receipt(::ZilliqaMessage:
 
 #include <google/protobuf/port_undef.inc>
 #endif  // PROTOBUF_INCLUDED_ZilliqaMessage_2eproto
+

@@ -2214,3 +2214,4 @@ inline const EnumDescriptor* GetEnumDescriptor< ::protocol::Transaction_Contract
 
 #include <google/protobuf/port_undef.inc>
 #endif  // PROTOBUF_INCLUDED_TronInternal_2eproto
+
