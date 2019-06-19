@@ -39,3 +39,18 @@ TEST(NEOSigner, SigningData) {
 
    EXPECT_EQ(verScript, hex(signer.sign(parse_hex(invocationScript))));
 }
+
+TEST(NEOSigner, SigningTransaction) {
+   auto signer = Signer(PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646")));
+   auto transaction = Transaction();
+   transaction.type = TransactionType::TT_EnrollmentTransaction;
+   transaction.version = 0x07;
+   const string zeroVarLong = "00";
+   auto verSerialized = "2007" + zeroVarLong + zeroVarLong + zeroVarLong;
+   EXPECT_EQ(verSerialized, hex(transaction.serialize()));
+   auto hashVerSerialized = Hash::sha256(Hash::sha256(parse_hex(verSerialized)));
+   EXPECT_EQ(hex(hashVerSerialized), hex(transaction.getHash()));
+
+   EXPECT_EQ(hex(signer.sign(hashVerSerialized)), hex(signer.sign(transaction)));
+   EXPECT_EQ(signer.sign(hashVerSerialized), signer.sign(transaction));
+}

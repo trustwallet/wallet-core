@@ -7,7 +7,6 @@
 #include "Hash.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
-
 #include "NEO/Signer.h"
 
 #include <gtest/gtest.h>

@@ -4,13 +4,13 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "ReadData.h"
+#include "UInt.h"
+#include "HexCoding.h"
+#include "NEO/TransactionOutput.h"
+
 #include <iostream>
 #include <gtest/gtest.h>
-
-#include "ReadData.h"
-#include "UInt.hpp"
-#include "HexCoding.h"
-#include "NEO/TransactionOutput.hpp"
 
 using namespace std;
 using namespace TW;
@@ -23,10 +23,10 @@ TEST(NEOTransactionOutput, Serialize) {
     transactionOutput.value = 1L;
     transactionOutput.assetId = load<uint256_t>(parse_hex(assetId));
     transactionOutput.scriptHash = load<uint160_t>(parse_hex(scriptHash));
-    ASSERT_EQ(assetId + "0100000000000000" + scriptHash, hex(transactionOutput.serialize()));
+    EXPECT_EQ(assetId + "0100000000000000" + scriptHash, hex(transactionOutput.serialize()));
 
     transactionOutput.value = 0xff01;
-    ASSERT_EQ(assetId + "01ff000000000000" + scriptHash, hex(transactionOutput.serialize()));
+    EXPECT_EQ(assetId + "01ff000000000000" + scriptHash, hex(transactionOutput.serialize()));
 }
 
 TEST(NEOTransactionOutput, Deserialize) {
@@ -34,12 +34,12 @@ TEST(NEOTransactionOutput, Deserialize) {
     string scriptHash = "cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b";
     auto transactionOutput = TransactionOutput();
     transactionOutput.deserialize(parse_hex(assetId + "0100000000000000" + scriptHash));
-    ASSERT_EQ(1, transactionOutput.value);
-    ASSERT_EQ(assetId, hex(store(transactionOutput.assetId)));
-    ASSERT_EQ(scriptHash, hex(store(transactionOutput.scriptHash)));
+    EXPECT_EQ(1, transactionOutput.value);
+    EXPECT_EQ(assetId, hex(store(transactionOutput.assetId)));
+    EXPECT_EQ(scriptHash, hex(store(transactionOutput.scriptHash)));
 
     transactionOutput.deserialize(parse_hex(assetId + "01ff000000000000" + scriptHash));
-    ASSERT_EQ(0xff01, transactionOutput.value);
-    ASSERT_EQ(assetId, hex(store(transactionOutput.assetId)));
-    ASSERT_EQ(scriptHash, hex(store(transactionOutput.scriptHash)));
+    EXPECT_EQ(0xff01, transactionOutput.value);
+    EXPECT_EQ(assetId, hex(store(transactionOutput.assetId)));
+    EXPECT_EQ(scriptHash, hex(store(transactionOutput.scriptHash)));
 }

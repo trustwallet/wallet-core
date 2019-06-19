@@ -1,12 +1,18 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 #include <ctype.h>
 
 #include "../uint256.h"
-#include "../UInt.hpp"
+#include "../UInt.h"
 #include "../Data.h"
 #include "../ReadData.h"
 #include "../HexCoding.h"
 #include "Transaction.h"
-#include "MinerTransaction.hpp"
+#include "MinerTransaction.h"
 
 #include <iostream>
 using namespace std;
@@ -14,22 +20,9 @@ using namespace std;
 using namespace TW;
 using namespace TW::NEO;
 
-#define SIZE_INC(V, X) {\
-    (V) += 8; \
-    for (auto &__x_ : (X)) { \
-        (V) += __x_.size(); \
-    } \
-}
 int64_t Transaction::size() const {
-    auto resp = 1 + 1; // sizeof(type) + sizeof(version);
-    SIZE_INC(resp, attributes);
-    SIZE_INC(resp, inInputs);
-    SIZE_INC(resp, outputs);
-//    SIZE_INC(resp, witnesses); // witnessess is not serialized
-
-    return resp;
+    return serialize().size();
 }
-#undef SIZE_INC
 
 void Transaction::deserialize(const Data &data, int initial_pos) {
     type = (TransactionType) data[initial_pos++];
@@ -41,9 +34,6 @@ void Transaction::deserialize(const Data &data, int initial_pos) {
     initial_pos = ISerializable::deserialize<CoinReference>(inInputs, data, initial_pos);
     outputs.clear();
     ISerializable::deserialize<TransactionOutput>(outputs, data, initial_pos);
-
-    // witnesses.clear();
-    // initial_pos = ISerializable::deserialize<Witness>(witnesses, data, initial_pos);
 }
 
 Transaction * Transaction::deserializeFrom(const Data &data, int initial_pos) {
@@ -69,7 +59,6 @@ Data Transaction::serialize() const {
     append(resp, ISerializable::serialize(attributes));
     append(resp, ISerializable::serialize(inInputs));
     append(resp, ISerializable::serialize(outputs));
-    // append(resp, ISerializable::serialize(witnesses));
 
     return resp;
 }

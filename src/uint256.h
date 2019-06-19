@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Data.h"
-#include "UInt.hpp"
+#include "UInt.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 

@@ -10,35 +10,36 @@
 #include "../PublicKey.h"
 #include "ISerializable.h"
 #include "TransactionType.h"
-#include "TransactionAttribute.hpp"
-#include "TransactionOutput.hpp"
-#include "CoinReference.hpp"
-#include "Witness.hpp"
+#include "TransactionAttribute.h"
+#include "TransactionOutput.h"
+#include "CoinReference.h"
+#include "Witness.h"
 
 namespace TW::NEO {
-    class Transaction : public ISerializable {
-    public:
-        TransactionType type;
-        byte version;
-        std::vector<TransactionAttribute> attributes;
-        std::vector<CoinReference> inInputs;
-        std::vector<TransactionOutput> outputs;
-        std::vector<Witness> witnesses;
 
-        virtual ~Transaction() {}
-        int64_t size() const override;
-        void deserialize(const Data &data, int initial_pos = 0) override;
-        Data serialize() const override;
+class Transaction : public ISerializable {
+  public:
+    TransactionType type;
+    byte version;
+    std::vector<TransactionAttribute> attributes;
+    std::vector<CoinReference> inInputs;
+    std::vector<TransactionOutput> outputs;
+    std::vector<Witness> witnesses;
 
-        bool operator==(const Transaction &other) const;
+    virtual ~Transaction() {}
+    int64_t size() const override;
+    void deserialize(const Data &data, int initial_pos = 0) override;
+    Data serialize() const override;
 
-        virtual int deserializeExclusiveData(const Data &data, int initial_pos = 0) { return initial_pos; }
-        virtual Data serializeExclusiveData() const { return Data(); }
+    bool operator==(const Transaction &other) const;
 
-        Data getHash() const;
-        uint256_t getHashUInt256() const;
+    virtual int deserializeExclusiveData(const Data &data, int initial_pos = 0) { return initial_pos; }
+    virtual Data serializeExclusiveData() const { return Data(); }
 
-        static Transaction * deserializeFrom(const Data &data, int initial_pos = 0);
-    };
+    Data getHash() const;
+    uint256_t getHashUInt256() const;
+
+    static Transaction * deserializeFrom(const Data &data, int initial_pos = 0);
+};
 
 } // namespace TW::NEO

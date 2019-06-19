@@ -12,20 +12,22 @@
 #include "../Data.h"
 
 namespace TW::NEO {
-    class Signer {
-    private:
-        Data publicKey;
-        TW::PrivateKey privateKey;
-        std::string address;
-    public:
-        explicit Signer(const TW::PrivateKey &priKey);
-        PrivateKey getPrivateKey() const;
-        PublicKey getPublicKey() const;
-        Address getAddress() const;
 
-        Data sign(Transaction &tx) const;
-        Data sign(const Data &data) const;
-    };
+class Signer {
+  private:
+    Data publicKey;
+    TW::PrivateKey privateKey;
+    std::string address;
+  public:
+    explicit Signer(const TW::PrivateKey &priKey);
+    PrivateKey getPrivateKey() const;
+    PublicKey getPublicKey() const;
+    Address getAddress() const;
+
+    Data sign(Transaction &tx) const;
+    Data sign(const Data &data) const;
+};
+
 } // namespace TW::NEO
 
 /// Wrapper for C interface.

@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "HexCoding.h"
-#include "UInt.hpp"
+#include "UInt.h"
 #include "uint256.h"
 #include "Data.h"
 

@@ -19,28 +19,28 @@ using namespace TW::NEO;
      const auto publicKey = PublicKey(parse_hex("0222b2277d039d67f4197a638dd5a1d99c290b17aa8c4a16ccee5165fe612de66a"), TWPublicKeyTypeSECP256k1);
      const auto address = Address(publicKey);
      auto str = hex(address.bytes);
-     ASSERT_EQ(string("AKmrAHRD9ZDUnu4m3vWWonpsojo4vgSuqp"), address.string());
+     EXPECT_EQ(string("AKmrAHRD9ZDUnu4m3vWWonpsojo4vgSuqp"), address.string());
  }
 
  TEST(NEOAddress, FromString) {
      string neoAddress = "AXkgwcMJTy9wTAXHsbyhauxh7t2Tt31MmC";
      const auto address = Address(neoAddress);
-     ASSERT_EQ(address.string(), neoAddress);
+     EXPECT_EQ(address.string(), neoAddress);
  }
 
 TEST(NEOAddress, isValid) {
     string neoAddress = "AQAsqiyHS4SSVWZ4CmMmnCxWg7vJ84GEj4";
     string bitcoinAddress = "1Ma2DrB78K7jmAwaomqZNRMCvgQrNjE2QC";
 
-    ASSERT_TRUE(Address::isValid(neoAddress));
-    ASSERT_FALSE(Address::isValid(bitcoinAddress));
+    EXPECT_TRUE(Address::isValid(neoAddress));
+    EXPECT_FALSE(Address::isValid(bitcoinAddress));
 }
 
 TEST(NEOAddress, validation) {
-    ASSERT_FALSE(Address::isValid("abc"));
-    ASSERT_FALSE(Address::isValid("abeb60f3e94c1b9a09f33669435e7ef12eacd"));
-    ASSERT_FALSE(Address::isValid("abcb60f3e94c9b9a09f33669435e7ef1beaedads"));
-    ASSERT_TRUE(Address::isValid("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"));
+    EXPECT_FALSE(Address::isValid("abc"));
+    EXPECT_FALSE(Address::isValid("abeb60f3e94c1b9a09f33669435e7ef12eacd"));
+    EXPECT_FALSE(Address::isValid("abcb60f3e94c9b9a09f33669435e7ef1beaedads"));
+    EXPECT_TRUE(Address::isValid("ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"));
 }
 
 TEST(NEOAddress, fromPubKey) {
@@ -53,5 +53,5 @@ TEST(NEOAddress, fromString) {
     auto address = Address(b58Str);
     EXPECT_EQ(b58Str, address.string());
     auto errB58Str = "AATxeseHT5khTWhtWX1pFFP1mbQrd4q1zz";
-    ASSERT_THROW(new Address(errB58Str), std::invalid_argument);
+    EXPECT_THROW(new Address(errB58Str), std::invalid_argument);
 }
