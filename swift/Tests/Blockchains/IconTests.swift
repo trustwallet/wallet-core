@@ -7,16 +7,17 @@
 import TrustWalletCore
 import XCTest
 
-class IconAddressTests: XCTestCase {
+class IconTests: XCTestCase {
 
     func testInvalid() {
         XCTAssertNil(IconAddress(string: "abc"))
         XCTAssertNil(IconAddress(string: "dshadghasdghsadadsadjsad"))
+
+        XCTAssertFalse(IconAddress.isValidString(string: "abc"))
+        XCTAssertFalse(IconAddress.isValidString(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"))
     }
 
     func testIsValid() {
-        XCTAssertFalse(IconAddress.isValidString(string: "abc"))
-        XCTAssertFalse(IconAddress.isValidString(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"))
         XCTAssertTrue(IconAddress.isValidString(string: "hx116f042497e5f34268b1b91e742680f84cf4e9f3"))
         XCTAssertTrue(IconAddress.isValidString(string: "cx116f042497e5f34268b1b91e742680f84cf4e9f3"))
     }
@@ -30,5 +31,26 @@ class IconAddressTests: XCTestCase {
     func testDescription() {
         let address = IconAddress(string: "hx116f042497e5f34268b1b91e742680f84cf4e9f3")!
         XCTAssertEqual(address.description, "hx116f042497e5f34268b1b91e742680f84cf4e9f3")
+    }
+
+    func testSigning() {
+        let privateKey = PrivateKey(data: Data(hexString: "2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79")!)!
+        let input = IconSigningInput.with {
+            $0.fromAddress = "hxbe258ceb872e08851f1f59694dac2558708ece11"
+            $0.toAddress = "hx5bfdb090f43a808005ffc27c25b213145e80b7cd"
+            $0.value = Data(hexString: "0de0b6b3a7640000")!
+            $0.stepLimit = Data(hexString: "012345")!
+            $0.networkID = Data([0x1])
+            $0.timestamp = 1516942975500598
+            $0.privateKey = privateKey.data
+            $0.nonce = Data([0x1])
+        }
+        let output = IconSigner.sign(input: input)
+        // swiftlint:disable line_length
+        let expected = """
+{"from":"hxbe258ceb872e08851f1f59694dac2558708ece11","nid":"0x1","nonce":"0x1","signature":"xR6wKs+IA+7E91bT8966jFKlK5mayutXCvayuSMCrx9KB7670CsWa0B7LQzgsxU0GLXaovlAT2MLs1XuDiSaZQE=","stepLimit":"0x12345","timestamp":"0x563a6cf330136","to":"hx5bfdb090f43a808005ffc27c25b213145e80b7cd","value":"0xde0b6b3a7640000","version":"0x3"}
+"""
+        // swiftlint:enable line_length
+        XCTAssertEqual(output.encoded, expected)
     }
 }

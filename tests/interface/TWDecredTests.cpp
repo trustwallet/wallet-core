@@ -36,11 +36,11 @@ TEST(Decred, DerivePubkeyFromDpub) {
 }
 
 TEST(Decred, Lockscripts) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Dcur2mcGjmENx4DhNqDctW5wJCVyT3Qeqkx").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Dcur2mcGjmENx4DhNqDctW5wJCVyT3Qeqkx").get(), TWCoinTypeDecred));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "a914f5916158e3e2c4551c1796708db8367207ed13bb87");
 
-    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("DsfD7KYsJtRraYXPZM61ui7779oYJCakYvH").get()));
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("DsfD7KYsJtRraYXPZM61ui7779oYJCakYvH").get(), TWCoinTypeDecred));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
     assertHexEqual(scriptData2, "76a9149c417596dea6570f8e546674555b5ce5087ce2c288ac");
 }

@@ -125,7 +125,7 @@
         "base58Hasher": "sha256d",
         "xpub": "dgub",
         "xprv": "dgpv",
-        "explorer": "https://live.blockcypher.com/doge/tx/"
+        "explorer": "https://blockchair.com/dogecoin/transaction/"
     },
     {
         "id": "classic",
@@ -210,23 +210,6 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://www.iostabc.com/tx/"
-    },
-    {
-        "id": "iocoin",
-        "name": "Iocoin",
-        "symbol": "IOC",
-        "decimals": 8,
-        "blockchain": "Bitcoin",
-        "derivationPath": "m/44'/295'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 103,
-        "p2shPrefix": 85,
-        "publicKeyHasher": "sha256ripemd",
-        "base58Hasher": "sha256d",
-        "xpub": "xpub",
-        "xprv": "xprv",
-        "explorer": "https://chainz.cryptoid.info/ioc/tx.dws?"
     },
     {
         "id": "litecoin",
@@ -662,23 +645,6 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "explorer": "https://explorer.ark.io/transaction/"
-    },
-    {
-        "id": "monetaryunit",
-        "name": "MonetaryUnit",
-        "symbol": "MUE",
-        "decimals": 8,
-        "blockchain": "Bitcoin",
-        "derivationPath": "m/44'/31'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 16,
-        "p2shPrefix": 76,
-        "publicKeyHasher": "sha256ripemd",
-        "base58Hasher": "sha256d",
-        "xpub": "xpub",
-        "xprv": "xprv",
-        "explorer": "https://explorer.monetaryunit.org/tx/"
     },
     {
         "id": "ravencoin",
