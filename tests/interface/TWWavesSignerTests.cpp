@@ -27,7 +27,7 @@ TEST(TWWavesSigner, Sign) {
     const auto publicKeyCurve25519 = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
 
     input.set_amount(int64_t(100000000));
-    input.set_amount_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
+    input.set_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
     input.set_fee(int64_t(100000));
     input.set_fee_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
     input.set_to("3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx");
@@ -47,7 +47,7 @@ TEST(TWWavesSigner, Sign) {
 
     auto transaction = Waves::Transaction(
         /* amount */ input.amount(),
-        /* amount_asset */ input.amount_asset(),
+        /* asset */ input.asset(),
         /* fee */ input.fee(),
         /* fee_asset */ input.fee_asset(),
         /* to */ Waves::Address(input.to()),

@@ -30,11 +30,11 @@ Data Transaction::serializeToSign() const {
     data[1] = static_cast<byte>(TransactionVersion::V2);
     append(data, pub_key);
 
-    if (amount_asset == WAVES) {
+    if (asset == WAVES) {
         data.push_back(static_cast<uint8_t>(0));
     } else {
         data.push_back(static_cast<uint8_t>(1));
-        append(data, Base58::bitcoin.decode(amount_asset));
+        append(data, Base58::bitcoin.decode(asset));
     }
 
     if (fee_asset == WAVES) {
@@ -62,8 +62,8 @@ json Transaction::buildJson(Data signature) const {
     jsonTx["timestamp"] = timestamp;
     jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)}).dump();
     jsonTx["recipient"] = Address(to).string();
-    if (amount_asset != WAVES) {
-        jsonTx["assetId"] = amount_asset;
+    if (asset != WAVES) {
+        jsonTx["assetId"] = asset;
     }
     if (fee_asset != WAVES) {
         jsonTx["feeAssetId"] = fee_asset;

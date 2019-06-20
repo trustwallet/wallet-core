@@ -21,7 +21,7 @@ class TestWavesTransactionSigner {
         val signingInput = Waves.SigningInput.newBuilder()
         signingInput.apply {
             amount = 100_000_000
-            amountAsset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
+            asset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             fee = 100_000
             feeAsset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             to = "3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx"

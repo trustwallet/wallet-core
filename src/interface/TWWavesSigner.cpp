@@ -21,7 +21,7 @@ TW_Waves_Proto_SigningOutput TWWavesSignerSign(TW_Waves_Proto_SigningInput data)
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
     auto transaction = Transaction(
         /* amount */ input.amount(),
-        /* amount_asset */ input.amount_asset(),
+        /* asset */ input.asset(),
         /* fee */ input.fee(),
         /* fee_asset */ input.fee_asset(),
         /* to */ Address(input.to()),
@@ -33,7 +33,7 @@ TW_Waves_Proto_SigningOutput TWWavesSignerSign(TW_Waves_Proto_SigningInput data)
 
     Proto::SigningOutput protoOutput = Proto::SigningOutput();
     protoOutput.set_signature(reinterpret_cast<const char *>(signature.data()), signature.size());
-    protoOutput.set_transactionjson(transaction.buildJson(signature).dump());
+    protoOutput.set_json(transaction.buildJson(signature).dump());
     std::string serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),
                                  serialized.size());

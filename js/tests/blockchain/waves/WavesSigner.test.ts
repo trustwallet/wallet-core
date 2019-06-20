@@ -11,7 +11,7 @@ describe('WavesSigner', () => {
     it('test Waves transaction signing', () => {
         const signingInput = TW.Waves.Proto.SigningInput.create({
                 amount: Long.fromString('100000000'),
-                amountAsset: 'DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq',
+                asset: 'DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq',
                 attachment: fromHexString('68656c6c6f'),
                 fee: Long.fromString('100000'),
                 feeAsset: 'DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq',

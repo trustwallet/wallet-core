@@ -7,7 +7,7 @@ option java_package = "wallet.core.jni.proto";
 message SigningInput {
     int64 amount = 1;
 
-    string amount_asset = 2;
+    string asset = 2;
 
     // minimum 0.001 Waves (100000 Wavelets) for now
     int64 fee = 3;
@@ -28,5 +28,5 @@ message SigningInput {
 // Transaction signing output.
 message SigningOutput {
     bytes signature = 1;
-    string transactionJson = 2;
+    string json = 2;
 }
