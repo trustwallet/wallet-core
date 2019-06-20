@@ -13,6 +13,8 @@
 using namespace TW;
 using namespace TW::Waves;
 
+using json = nlohmann::json;
+
 const std::string Transaction::WAVES = "WAVES";
 
 Data Transaction::serializeToSign() const {
@@ -48,4 +50,26 @@ Data Transaction::serializeToSign() const {
     append(data, Data(std::begin(to.bytes), std::end(to.bytes)));
     encodeDynamicLengthBytes(attachment, data);
     return data;
+}
+
+json Transaction::buildJson(Data signature) const {
+    json jsonTx;
+
+    jsonTx["type"] = TransactionType::transfer;
+    jsonTx["version"] = TransactionVersion::V2;
+    jsonTx["fee"] = fee;
+    jsonTx["senderPublicKey"] = Base58::bitcoin.encode(pub_key);
+    jsonTx["timestamp"] = timestamp;
+    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)}).dump();
+    jsonTx["recipient"] = Address(to).string();
+    if (amount_asset != WAVES) {
+        jsonTx["assetId"] = amount_asset;
+    }
+    if (fee_asset != WAVES) {
+        jsonTx["feeAssetId"] = fee_asset;
+    }
+    jsonTx["amount"] = amount;
+    jsonTx["attachment"] = Base58::bitcoin.encode(attachment);
+
+    return jsonTx;
 }

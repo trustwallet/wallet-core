@@ -9,6 +9,7 @@
 #include "Address.h"
 #include "../Data.h"
 #include "../proto/Waves.pb.h"
+#include <nlohmann/json.hpp>
 
 namespace TW::Waves {
 
@@ -51,6 +52,7 @@ class Transaction {
 
   public:
     Data serializeToSign() const;
+    nlohmann::json buildJson(Data signature) const;
 };
 
 } // namespace TW::Waves

@@ -34,7 +34,6 @@ TEST(TWWavesSigner, Sign) {
     input.set_attachment("hello");
     input.set_timestamp(int64_t(1559146613));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_public_key(publicKeyCurve25519.bytes.data(), publicKeyCurve25519.bytes.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
@@ -54,7 +53,7 @@ TEST(TWWavesSigner, Sign) {
         /* to */ Waves::Address(input.to()),
         /* attachment */ Data(input.attachment().begin(), input.attachment().end()),
         /* timestamp */ input.timestamp(),
-        /* pub_key */ Data(input.public_key().begin(), input.public_key().end()));
+        /* pub_key */ publicKeyCurve25519.bytes);
 
     ASSERT_TRUE(publicKeyCurve25519.verify(
         Data(output.signature().begin(), output.signature().end()), transaction.serializeToSign()));
