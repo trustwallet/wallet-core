@@ -8,7 +8,9 @@
         "derivationPath": "m/44'/60'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://etherscan.io/tx/"
+        "explorer": "https://etherscan.io/tx/",
+        "url": "https://ethereum.org",
+        "rpcNodeInfo": "https://github.com/ethereum/go-ethereum"
     },
     {
         "id": "bitcoin",
@@ -26,7 +28,9 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "explorer": "https://blockchair.com/bitcoin/transaction/"
+        "explorer": "https://blockchair.com/bitcoin/transaction/",
+        "url": "https://bitcoin.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "bitcoincash",
@@ -44,7 +48,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://blockchair.com/bitcoin-cash/transaction/"
+        "explorer": "https://blockchair.com/bitcoin-cash/transaction/",
+        "url": "https://bitcoincash.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "callisto",
@@ -55,7 +61,9 @@
         "derivationPath": "m/44'/820'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explorer2.callisto.network/tx/"
+        "explorer": "https://explorer2.callisto.network/tx/",
+        "url": "https://callisto.network",
+        "rpcNodeInfo": "https://github.com/EthereumCommonwealth/go-callisto"
     },
     {
         "id": "dash",
@@ -72,7 +80,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://blockchair.com/dash/transaction/"
+        "explorer": "https://blockchair.com/dash/transaction/",
+        "url": "https://dash.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "decred",
@@ -90,7 +100,9 @@
         "base58Hasher": "blake256d",
         "xpub": "dpub",
         "xprv": "dprv",
-        "explorer": "https://mainnet.decred.org/tx/"
+        "explorer": "https://mainnet.decred.org/tx/",
+        "url": "https://decred.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "digibyte",
@@ -108,7 +120,9 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "explorer": "https://digiexplorer.info/tx/"
+        "explorer": "https://digiexplorer.info/tx/",
+        "url": "https://www.digibyte.io",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "doge",
@@ -125,7 +139,9 @@
         "base58Hasher": "sha256d",
         "xpub": "dgub",
         "xprv": "dgpv",
-        "explorer": "https://blockchair.com/dogecoin/transaction/"
+        "explorer": "https://blockchair.com/dogecoin/transaction/",
+        "url": "https://dogecoin.com",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "classic",
@@ -136,7 +152,9 @@
         "derivationPath": "m/44'/61'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://gastracker.io/tx/"
+        "explorer": "https://gastracker.io/tx/",
+        "url": "https://ethereumclassic.org/",
+        "rpcNodeInfo": "https://github.com/ethereumclassic/go-ethereum"
     },
     {
         "id": "ellaism",
@@ -147,7 +165,9 @@
         "derivationPath": "m/44'/163'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explorer.ellaism.org/tx/"
+        "explorer": "https://explorer.ellaism.org/tx/",
+        "url": "https://ellaism.org",
+        "rpcNodeInfo": "https://github.com/ellaism/go-ellaism"
     },
     {
         "id": "ethersocial",
@@ -158,7 +178,9 @@
         "derivationPath": "m/44'/31102'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://ethersocial.net/tx/"
+        "explorer": "https://ethersocial.net/tx/",
+        "url": "https://ethersocial.org",
+        "rpcNodeInfo": "https://github.com/Ethersocial/go-ethersocial"
     },
     {
         "id": "gochain",
@@ -169,7 +191,9 @@
         "derivationPath": "m/44'/6060'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explorer.gochain.io/tx/"
+        "explorer": "https://explorer.gochain.io/tx/",
+        "url": "https://gochain.io",
+        "rpcNodeInfo": "https://github.com/gochain-io/gochain"
     },
     {
         "id": "groestlcoin",
@@ -187,7 +211,9 @@
         "base58Hasher": "groestl512d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "explorer": "https://chainz.cryptoid.info/grs/tx.dws?"
+        "explorer": "https://chainz.cryptoid.info/grs/tx.dws?",
+        "url": "https://www.groestlcoin.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "icon",
@@ -198,7 +224,9 @@
         "derivationPath": "m/44'/74'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://tracker.icon.foundation/transaction/"
+        "explorer": "https://tracker.icon.foundation/transaction/",
+        "url": "https://icon.foundation",
+        "rpcNodeInfo": "https://github.com/icon-project/icon-rpc-server"
     },
     {
         "id": "iost",
@@ -209,7 +237,9 @@
         "derivationPath": "m/44'/291'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://www.iostabc.com/tx/"
+        "explorer": "https://www.iostabc.com/tx/",
+        "url": "https://iost.io",
+        "rpcNodeInfo": "https://github.com/iost-official/go-iost"
     },
     {
         "id": "litecoin",
@@ -227,7 +257,9 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "explorer": "https://blockchair.com/litecoin/transaction/"
+        "explorer": "https://blockchair.com/litecoin/transaction/",
+        "url": "https://litecoin.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "ontology",
@@ -238,7 +270,9 @@
         "derivationPath": "m/44'/1024'/0'/0/0",
         "curve": "nist256p1",
         "publicKeyType": "nist256p1",
-        "explorer": "https://explorer.ont.io/transaction/"
+        "explorer": "https://explorer.ont.io/transaction/",
+        "url": "https://ont.io",
+        "rpcNodeInfo": "https://github.com/ontio/ontology"
     },
     {
         "id": "viacoin",
@@ -256,7 +290,9 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "explorer": "https://explorer.viacoin.org/tx/"
+        "explorer": "https://explorer.viacoin.org/tx/",
+        "url": "https://viacoin.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "poa",
@@ -267,7 +303,9 @@
         "derivationPath": "m/44'/178'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://poaexplorer.com/txid/search/"
+        "explorer": "https://poaexplorer.com/txid/search/",
+        "url": "https://poa.network",
+        "rpcNodeInfo": "https://github.com/poanetwork/parity-ethereum"
     },
     {
         "id": "thundertoken",
@@ -278,7 +316,9 @@
         "derivationPath": "m/44'/1001'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://scan.thundercore.com/transactions/"
+        "explorer": "https://scan.thundercore.com/transactions/",
+        "url": "https://decred.org/",
+        "rpcNodeInfo": "https://github.com/thundercore/pala"
     },
     {
         "id": "tomochain",
@@ -289,7 +329,9 @@
         "derivationPath": "m/44'/889'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://scan.tomochain.com/txs/"
+        "explorer": "https://scan.tomochain.com/txs/",
+        "url": "https://tomochain.com",
+        "rpcNodeInfo": "https://github.com/tomochain/tomochain"
     },
     {
         "id": "tron",
@@ -300,7 +342,9 @@
         "derivationPath": "m/44'/195'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://tronscan.org/#/transaction/"
+        "explorer": "https://tronscan.org/#/transaction/",
+        "url": "https://tron.network",
+        "rpcNodeInfo": "https://github.com/tronprotocol/java-tron"
     },
     {
         "id": "vechain",
@@ -311,7 +355,9 @@
         "derivationPath": "m/44'/818'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explore.veforge.com/transactions/"
+        "explorer": "https://explore.veforge.com/transactions/",
+        "url": "https://vechain.org",
+        "rpcNodeInfo": "https://github.com/vechain/thor"
     },
     {
         "id": "wanchain",
@@ -322,7 +368,9 @@
         "derivationPath": "m/44'/5718350'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explorer.wanchain.org/tx/"
+        "explorer": "https://explorer.wanchain.org/tx/",
+        "url": "https://wanchain.org",
+        "rpcNodeInfo": "https://github.com/wanchain/go-wanchain"
     },
     {
         "id": "xdai",
@@ -333,7 +381,9 @@
         "derivationPath": "m/44'/700'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://blockscout.com/poa/dai/tx/"
+        "explorer": "https://blockscout.com/poa/dai/tx/",
+        "url": "https://poa.network/xdai",
+        "rpcNodeInfo": "https://github.com/poanetwork/parity-ethereum"
     },
     {
         "id": "zcoin",
@@ -350,7 +400,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://explorer.zcoin.io/tx/"
+        "explorer": "https://explorer.zcoin.io/tx/",
+        "url": "https://zcoin.io",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "zcash",
@@ -368,7 +420,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://chain.so/tx/ZEC/"
+        "explorer": "https://chain.so/tx/ZEC/",
+        "url": "https://z.cash",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "binance",
@@ -380,7 +434,9 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "hrp": "bnb",
-        "explorer": "https://explorer.binance.org/tx/"
+        "explorer": "https://explorer.binance.org/tx/",
+        "url": "https://binance.org",
+        "rpcNodeInfo": "https://github.com/binance-chain/node-binary"
     },
     {
         "id": "ripple",
@@ -391,7 +447,9 @@
         "derivationPath": "m/44'/144'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "explorer": "https://bithomp.com/explorer/"
+        "explorer": "https://bithomp.com/explorer/",
+        "url": "https://ripple.com/xrp",
+        "rpcNodeInfo": "https://github.com/ripple/rippled"
     },
     {
         "id": "tezos",
@@ -402,7 +460,9 @@
         "derivationPath": "m/44'/1729'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://tzscan.io/"
+        "explorer": "https://tzscan.io/",
+        "url": "https://tezos.com",
+        "rpcNodeInfo": "https://gitlab.com/tezos/tezos"
     },
     {
         "id": "nimiq",
@@ -413,7 +473,9 @@
         "derivationPath": "m/44'/242'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://nimiq.watch/#"
+        "explorer": "https://nimiq.watch/#",
+        "url": "https://nimiq.com",
+        "rpcNodeInfo": "https://github.com/nimiq/core-rs"
     },
     {
         "id": "stellar",
@@ -424,7 +486,9 @@
         "derivationPath": "m/44'/148'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://stellarscan.io/transaction/"
+        "explorer": "https://stellarscan.io/transaction/",
+        "url": "https://stellar.org",
+        "rpcNodeInfo": "https://github.com/stellar/go"
     },
     {
         "id": "aion",
@@ -435,7 +499,9 @@
         "derivationPath": "m/44'/425'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://mainnet.aion.network/#/transaction/"
+        "explorer": "https://mainnet.aion.network/#/transaction/",
+        "url": "https://aion.network",
+        "rpcNodeInfo": "https://github.com/aionnetwork/aion"
     },
     {
         "id": "cosmos",
@@ -447,7 +513,9 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "hrp": "cosmos",
-        "explorer": "https://www.mintscan.io/txs/"
+        "explorer": "https://www.mintscan.io/txs/",
+        "url": "https://cosmos.network",
+        "rpcNodeInfo": "https://github.com/cosmos/cosmos-sdk"
     },
     {
         "id": "neo",
@@ -458,7 +526,9 @@
         "derivationPath": "m/44'/888'/0'/0'/0'",
         "curve": "nist256p1",
         "publicKeyType": "nist256p1",
-        "explorer": "https://neoscan.io/transaction/"
+        "explorer": "https://neoscan.io/transaction/",
+        "url": "https://neo.org",
+        "rpcNodeInfo": "https://github.com/neo-project/neo"
     },
     {
         "id": "kin",
@@ -469,7 +539,9 @@
         "derivationPath": "m/44'/2017'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://kinexplorer.com/tx/"
+        "explorer": "https://kinexplorer.com/tx/",
+        "url": "https://www.kin.org",
+        "rpcNodeInfo": "https://github.com/kinecosystem/go"
     },
     {
         "id": "nuls",
@@ -480,7 +552,9 @@
         "derivationPath": "m/44'/8964'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "explorer": "https://nuls.world/transactions/"
+        "explorer": "https://nuls.world/transactions/",
+        "url": "https://nuls.io",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "theta",
@@ -491,7 +565,9 @@
         "derivationPath": "m/44'/500'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explorer.thetatoken.org/txs/"
+        "explorer": "https://explorer.thetatoken.org/txs/",
+        "url": "https://www.thetatoken.org",
+        "rpcNodeInfo": "https://github.com/thetatoken/theta-protocol-ledger"
     },
     {
         "id": "lux",
@@ -508,7 +584,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://explorer.poswallet.io/#/tx/"
+        "explorer": "https://explorer.poswallet.io/#/tx/",
+        "url": "https://luxcore.io/",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "qtum",
@@ -526,7 +604,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://qtum.info/tx/"
+        "explorer": "https://qtum.info/tx/",
+        "url": "https://qtum.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "bravocoin",
@@ -537,7 +617,9 @@
         "derivationPath": "m/44'/282'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "explorer": "https://explorer.bravocoin.com/txid/"
+        "explorer": "https://explorer.bravocoin.com/txid/",
+        "url": "https://bravocoin.com",
+        "rpcNodeInfo": "https://github.com/bravo-project/bravo"
     },
     {
         "id": "steem",
@@ -548,7 +630,9 @@
         "derivationPath": "m/44'/135'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "explorer": "https://steemblockexplorer.com/tx/"
+        "explorer": "https://steemblockexplorer.com/tx/",
+        "url": "http://steem.io",
+        "rpcNodeInfo": "https://github.com/steemit/steem"
     },
     {
         "id": "eos",
@@ -559,7 +643,9 @@
         "derivationPath": "m/44'/194'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "explorer": "https://bloks.io/transaction/"
+        "explorer": "https://bloks.io/transaction/",
+        "url": "http://eos.io",
+        "rpcNodeInfo": "https://github.com/eosio/eos"
     },
     {
         "id": "nano",
@@ -570,7 +656,9 @@
         "derivationPath": "m/44'/165'/0'",
         "curve": "ed25519Blake2bNano",
         "publicKeyType": "ed25519Blake2b",
-        "explorer": "https://www.nanode.co/block/"
+        "explorer": "https://www.nanode.co/block/",
+        "url": "https://nano.org",
+        "rpcNodeInfo": "https://github.com/nanocurrency/nano-node"
     },
     {
         "id": "iotex",
@@ -581,7 +669,9 @@
         "derivationPath": "m/44'/304'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://iotexscan.io/action/"
+        "explorer": "https://iotexscan.io/action/",
+        "url": "https://iotex.io",
+        "rpcNodeInfo": "https://github.com/iotexproject/iotex-core"
     },
     {
         "id": "zilliqa",
@@ -593,7 +683,9 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "hrp": "zil",
-        "explorer": "https://viewblock.io/zilliqa/tx/"
+        "explorer": "https://viewblock.io/zilliqa/tx/",
+        "url": "https://zilliqa.com",
+        "rpcNodeInfo": "https://github.com/Zilliqa/Zilliqa"
     },
     {
         "id": "semux",
@@ -604,7 +696,9 @@
         "derivationPath": "m/44'/7562605'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://semux.info/explorer/transaction/"
+        "explorer": "https://semux.info/explorer/transaction/",
+        "url": "https://www.semux.org",
+        "rpcNodeInfo": "https://github.com/semuxproject/semux-core"
     },
     {
         "id": "dexon",
@@ -615,7 +709,9 @@
         "derivationPath": "m/44'/237'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://dexonscan.app/transaction/"
+        "explorer": "https://dexonscan.app/transaction/",
+        "url": "https://dexon.org",
+        "rpcNodeInfo": "https://dexon.org"
     },
     {
         "id": "zelcash",
@@ -633,7 +729,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://explorer.zel.cash/tx/"
+        "explorer": "https://explorer.zel.cash/tx/",
+        "url": "https://zel.cash",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "ark",
@@ -644,7 +742,9 @@
         "derivationPath": "m/44'/111'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "explorer": "https://explorer.ark.io/transaction/"
+        "explorer": "https://explorer.ark.io/transaction/",
+        "url": "http://ark.io",
+        "rpcNodeInfo": "https://github.com/ArkEcosystem/core"
     },
     {
         "id": "ravencoin",
@@ -661,7 +761,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://ravencoin.network/tx/"
+        "explorer": "https://ravencoin.network/tx/",
+        "url": "https://ravencoin.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "waves",
@@ -672,7 +774,9 @@
         "derivationPath": "m/44'/5741564'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "curve25519",
-        "explorer": "https://wavesexplorer.com/tx/"
+        "explorer": "https://wavesexplorer.com/tx/",
+        "url": "https://wavesplatform.com",
+        "rpcNodeInfo": "https://github.com/wavesplatform/Waves"
     },
     {
         "id": "aeternity",
@@ -683,7 +787,9 @@
         "derivationPath": "m/44'/457'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://www.aeknow.org/block/transaction/"
+        "explorer": "https://www.aeknow.org/block/transaction/",
+        "url": "https://aeternity.com",
+        "rpcNodeInfo": "https://github.com/aeternity/aeternity"
     },
     {
         "id": "terra",
@@ -695,6 +801,8 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "hrp": "terra",
-        "explorer": "https://terra.stake.id/?#/tx/"
+        "explorer": "https://terra.stake.id/?#/tx/",
+        "url": "https://terra.money",
+        "rpcNodeInfo": "https://github.com/terra-project/core"
     }
 ]
