@@ -11,12 +11,11 @@ describe('WavesSigner', () => {
     it('test Waves transaction signing', () => {
         const signingInput = TW.Waves.Proto.SigningInput.create({
                 amount: Long.fromString('100000000'),
-                amountAsset: 'DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq',
+                asset: 'DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq',
                 attachment: fromHexString('68656c6c6f'),
                 fee: Long.fromString('100000'),
                 feeAsset: 'DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq',
                 privateKey: fromHexString('68b7a9adb4a655b205f43dac413803785921e22cd7c4d05857b203a62621075f'),
-                publicKey: fromHexString('794e8429ddf58353eacab99b4c2b3b71c8c1b5927980db2d6f8db52744dd103d'),
                 timestamp: Long.fromString('1559146613'),
                 to: '3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx',
         });
