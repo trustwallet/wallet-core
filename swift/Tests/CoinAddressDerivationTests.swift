@@ -127,9 +127,6 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .groestlcoin:
                     let expectedResult = "grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .iocoin:
-                    let expectedResult = "ieCTzUZhc8a5T8Y8suosPw7eMgTtN5PE1H"
-                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .iost:
                     let expectedResult = "EKRQPgX7nKt8hJABwm9m3BKWGj7kcSECkJnCBauHQWin"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
@@ -172,14 +169,17 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .ark:
                     let expectedResult = "Ac49m5pu5YpMMNgEbSYeZUEpRMHcSK3DfV"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .monetaryUnit:
-                    let expectedResult = "7W3QRu8FttKzmYtRbXNKopeHweAKWuun2q"
-                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ravencoin:
                     let expectedResult = "RHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .waves:
                     let expectedResult = "3P63vkaHhyE9pPv9EfsjwGKqmZYcCRHys4n"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .aeternity:
+                    let expectedResult = "ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .terra:
+                    let expectedResult = "terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }

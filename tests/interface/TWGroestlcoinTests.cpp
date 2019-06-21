@@ -12,7 +12,6 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
-#include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
@@ -20,7 +19,7 @@
 TEST(Groestlcoin, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("3c3385ddc6fd95ba7282051aeb440bc75820b8c10db5c83c052d7586e3e98e84").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = WRAP(TWGroestlcoinAddress, TWGroestlcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixGroestlcoin));
+    auto address = WRAP(TWGroestlcoinAddress, TWGroestlcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeGroestlcoin)));
     auto addressString = WRAPS(TWGroestlcoinAddressDescription(address.get()));
     assertStringsEqual(addressString, "Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
 
@@ -32,19 +31,19 @@ TEST(Groestlcoin, Address) {
 }
 
 TEST(Groestlcoin, BuildForLegacyAddress) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM").get(), TWCoinTypeGroestlcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a91498af0aaca388a7e1024f505c033626d908e3b54a88ac");
 }
 
 TEST(Groestlcoin, BuildForSegwitP2SHAddress) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P").get(), TWCoinTypeGroestlcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "a9140055b0c94df477ee6b9f75185dfc9aa8ce2e52e487");
 }
 
 TEST(Groestlcoin, BuildForNativeSegwitAddress) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("grs1qw4teyraux2s77nhjdwh9ar8rl9dt7zww8r6lne").get(), TWCoinTypeGroestlcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "00147557920fbc32a1ef4ef26bae5e8ce3f95abf09ce");
 }

@@ -8,5 +8,5 @@
 
 #include "TWData.h"
 
-typedef TWData *_Nonnull TW_Any_Proto_SigningInput;
-typedef TWData *_Nonnull TW_Any_Proto_SigningOutput;
+typedef TWData *_Nonnull TW_Aeternity_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Aeternity_Proto_SigningOutput;

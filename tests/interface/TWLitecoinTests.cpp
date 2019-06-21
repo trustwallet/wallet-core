@@ -12,7 +12,6 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
-#include <TrustWalletCore/TWP2PKHPrefix.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
@@ -20,7 +19,7 @@
 TEST(Litecoin, LegacyAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("a22ddec5c567b4488bb00f69b6146c50da2ee883e2c096db098726394d585730").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWP2PKHPrefixLitecoin);
+    auto address = TWBitcoinAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeLitecoin));
     auto addressString = WRAPS(TWBitcoinAddressDescription(address));
     assertStringsEqual(addressString, "LV7LV7Z4bWDEjYkfx9dQo6k6RjGbXsg6hS");
 }
@@ -35,13 +34,13 @@ TEST(Litecoin, Address) {
 }
 
 TEST(Litecoin, BuildForAddressL) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("LgKiekick9Ka7gYoYzAWGrEq8rFBJzYiyf").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("LgKiekick9Ka7gYoYzAWGrEq8rFBJzYiyf").get(), TWCoinTypeLitecoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a914e771c6695c5dd189ccc4ef00cd0f3db3096d79bd88ac");
 }
 
 TEST(Litecoin, BuildForAddressM) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("MHhghmmCTASDnuwpgsPUNJVPTFaj61GzaG").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("MHhghmmCTASDnuwpgsPUNJVPTFaj61GzaG").get(), TWCoinTypeLitecoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "a9146b85b3dac9340f36b9d32bbacf2ffcb0851ef17987");
 }
@@ -89,15 +88,15 @@ TEST(Litecoin, DeriveFromZpub) {
 }
 
 TEST(Litecoin, LockScripts) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("ltc1qs32zgdhe2tpzcnz55r7d9jvhce33063sfht3q0").get()));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("ltc1qs32zgdhe2tpzcnz55r7d9jvhce33063sfht3q0").get(), TWCoinTypeLitecoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "001484542436f952c22c4c54a0fcd2c997c66317ea30");
 
-    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("MHhghmmCTASDnuwpgsPUNJVPTFaj61GzaG").get()));
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("MHhghmmCTASDnuwpgsPUNJVPTFaj61GzaG").get(), TWCoinTypeLitecoin));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
     assertHexEqual(scriptData2, "a9146b85b3dac9340f36b9d32bbacf2ffcb0851ef17987");
 
-    auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("LgKiekick9Ka7gYoYzAWGrEq8rFBJzYiyf").get()));
+    auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("LgKiekick9Ka7gYoYzAWGrEq8rFBJzYiyf").get(), TWCoinTypeLitecoin));
     auto scriptData3 = WRAPD(TWBitcoinScriptData(script3.get()));
     assertHexEqual(scriptData3, "76a914e771c6695c5dd189ccc4ef00cd0f3db3096d79bd88ac");
 }

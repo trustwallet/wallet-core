@@ -13,24 +13,27 @@
 using namespace TW;
 using namespace TW::Icon;
 
-TEST(IconAddress, Invalid) {
+TEST(IconAddress, Validation) {
+    ASSERT_TRUE(Address::isValid("cx116f042497e5f34268b1b91e742680f84cf4e9f3"));
+    ASSERT_TRUE(Address::isValid("hx116f042497e5f34268b1b91e742680f84cf4e9f3"));
+
     ASSERT_FALSE(Address::isValid("abc"));
-    ASSERT_FALSE(Address::isValid("aaeb60f3e94c9b9a09f33669435e7ef1beaed"));
+    ASSERT_FALSE(Address::isValid("dshadghasdghsadadsadjsad"));
+    ASSERT_FALSE(Address::isValid("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"));
 }
 
-TEST(IconAddress, Valid) {
-    ASSERT_TRUE(Address::isValid("hx116f042497e5f34268b1b91e742680f84cf4e9f3"));
-    ASSERT_TRUE(Address::isValid("cx116f042497e5f34268b1b91e742680f84cf4e9f3"));
+TEST(IconAddress, String) {
+    const auto address = Address("hx116f042497e5f34268b1b91e742680f84cf4e9f3");
+    ASSERT_EQ(address.string(), "hx116f042497e5f34268b1b91e742680f84cf4e9f3");
+
+    const auto address2 = Address("cx116f042497e5f34268b1b91e742680f84cf4e9f3");
+    ASSERT_EQ(address2.string(), "cx116f042497e5f34268b1b91e742680f84cf4e9f3");
 }
 
 TEST(IconAddress, FromPrivateKey) {
     const auto privateKey = PrivateKey(parse_hex("94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     const auto address = Address(publicKey, TWIconAddressTypeAddress);
-    ASSERT_EQ(address.string(), "hx98c0832ca5bd8e8bf355ca9491888aa9725c2c48");
-}
 
-TEST(IconAddress, String) {
-    const auto address = Address("hx116f042497e5f34268b1b91e742680f84cf4e9f3");
-    ASSERT_EQ(address.string(), "hx116f042497e5f34268b1b91e742680f84cf4e9f3");
+    ASSERT_EQ(address.string(), "hx98c0832ca5bd8e8bf355ca9491888aa9725c2c48");
 }

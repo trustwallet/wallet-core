@@ -12,6 +12,8 @@
 #include "../proto/Bitcoin.pb.h"
 #include "../proto/Decred.pb.h"
 
+#include <TrustWalletCore/TWCoinType.h>
+
 #include <algorithm>
 
 namespace TW::Decred {
@@ -63,7 +65,8 @@ struct TransactionBuilder {
     /// Builds a transaction by selecting UTXOs and calculating fees.
     static Transaction build(const Bitcoin::TransactionPlan& plan, const std::string& toAddress,
                              const std::string& changeAddress) {
-        auto lockingScriptTo = Bitcoin::Script::buildForAddress(toAddress);
+        auto coin = TWCoinTypeDecred;                                 
+        auto lockingScriptTo = Bitcoin::Script::buildForAddress(toAddress, coin);
         if (lockingScriptTo.empty()) {
             return {};
         }
@@ -72,7 +75,7 @@ struct TransactionBuilder {
         tx.outputs.emplace_back(TransactionOutput(plan.amount, /* version: */ 0, lockingScriptTo));
 
         if (plan.change > 0) {
-            auto lockingScriptChange = Bitcoin::Script::buildForAddress(changeAddress);
+            auto lockingScriptChange = Bitcoin::Script::buildForAddress(changeAddress, coin);
             tx.outputs.emplace_back(
                 TransactionOutput(plan.change, /* version: */ 0, lockingScriptChange));
         }

@@ -22,6 +22,7 @@ TW_EXTERN_C_BEGIN
 /// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 TW_EXPORT_ENUM(uint32_t)
 enum TWCoinType {
+    TWCoinTypeAeternity = 457,
     TWCoinTypeAion = 425,
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
@@ -42,7 +43,6 @@ enum TWCoinType {
     TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
     TWCoinTypeIOST = 291,
-    TWCoinTypeIocoin = 295,
     TWCoinTypeIoTeX = 304,
     TWCoinTypeKin = 2017,
     TWCoinTypeLitecoin = 2,
@@ -73,9 +73,9 @@ enum TWCoinType {
     TWCoinTypeDEXON = 237,
     TWCoinTypeZelcash = 19167,
     TWCoinTypeARK = 111,
-    TWCoinTypeMonetaryUnit = 31,
     TWCoinTypeRavencoin = 175,
     TWCoinTypeWaves = 5741564,
+    TWCoinTypeTerra = 330,
     TWCoinTypeDeepOnion = 305,
 };
 
@@ -118,5 +118,17 @@ TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, st
 /// HRP for this coin type
 TW_EXPORT_PROPERTY
 enum TWHRP TWCoinTypeHRP(enum TWCoinType coin);
+
+/// P2PKH prefix for this coin type
+TW_EXPORT_PROPERTY
+uint8_t TWCoinTypeP2pkhPrefix(enum TWCoinType coin);
+
+/// P2SH prefix for this coin type
+TW_EXPORT_PROPERTY
+uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin);
+
+/// Static prefix for this coin type
+TW_EXPORT_PROPERTY
+uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin);
 
 TW_EXTERN_C_END

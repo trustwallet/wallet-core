@@ -20,6 +20,8 @@ message SendCoinsMessage {
     string from_address = 1;
     string to_address = 2;
     repeated Amount amounts = 3;
+    // default is cosmos-sdk/MsgSend
+    string type_prefix = 4;
 }
 
 // Message for staking.
@@ -27,6 +29,8 @@ message StakeMessage {
     string delegator_address = 1;
     string validator_address = 2;
     Amount amount = 3;
+    // default is cosmos-sdk/MsgDelegate
+    string type_prefix = 4;
 }
 
 // Signature
@@ -61,6 +65,8 @@ message SigningInput {
         SendCoinsMessage send_coins_message = 7;
         StakeMessage stake_message = 8;
     }
+    // default is cosmos-sdk/MsgSend
+    string type_prefix = 9;
 }
 
 // Transaction signing output.

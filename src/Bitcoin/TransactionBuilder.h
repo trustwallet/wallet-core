@@ -10,6 +10,7 @@
 #include "TransactionPlan.h"
 #include "UnspentSelector.h"
 #include "../proto/Bitcoin.pb.h"
+#include <TrustWalletCore/TWCoinType.h>
 
 #include <algorithm>
 
@@ -62,8 +63,8 @@ struct TransactionBuilder {
     /// Builds a transaction by selecting UTXOs and calculating fees.
     template <typename Transaction>
     static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
-                             const std::string& changeAddress) {
-        auto lockingScriptTo = Script::buildForAddress(toAddress);
+                             const std::string& changeAddress, enum TWCoinType coin) {
+        auto lockingScriptTo = Script::buildForAddress(toAddress, coin);
         if (lockingScriptTo.empty()) {
             return {};
         }
@@ -72,7 +73,7 @@ struct TransactionBuilder {
         tx.outputs.push_back(TransactionOutput(plan.amount, lockingScriptTo));
 
         if (plan.change > 0) {
-            auto lockingScriptChange = Script::buildForAddress(changeAddress);
+            auto lockingScriptChange = Script::buildForAddress(changeAddress, coin);
             tx.outputs.push_back(TransactionOutput(plan.change, lockingScriptChange));
         }
 

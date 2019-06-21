@@ -89,21 +89,21 @@ message SigningInput {
     uint32 coin_type = 14;
 }
 
-/// Describes a preliminary transaction plan.
+// Describes a preliminary transaction plan.
 message TransactionPlan {
-    /// Amount to be received at the other end.
+    // Amount to be received at the other end.
     int64 amount = 1;
 
-    /// Maximum available amount.
+    // Maximum available amount.
     int64 available_amount = 2;
 
-    /// Estimated transaction fee.
+    // Estimated transaction fee.
     int64 fee = 3;
 
-    /// Change.
+    // Change.
     int64 change = 4;
 
-    /// Selected unspent transaction outputs.
+    // Selected unspent transaction outputs.
     repeated UnspentTransaction utxos = 5;
 };
 
