@@ -66,6 +66,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeSemux, privateKey), "0x1574f7f969f41e030a75677af25bd9373b9c87f1");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeZilliqa, privateKey), "zil1j2cvtd7j9n7fnxfv2r3neucjw8tp4xz9sp07v4");    
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeRavencoin, privateKey), "RSZYjMDCP4q3t7NAFXPPnqEGrMZn971pdB");    
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeDeepOnion, privateKey), "Dmm4BCZqnqPeAYKeYMj9jCLTbj6RafQmAU");
 }
 
 } // namespace TW

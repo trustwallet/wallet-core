@@ -258,4 +258,9 @@ TEST(Coin, ValidateAddressWaves) {
     EXPECT_FALSE(validateAddress(TWCoinTypeWaves, "3P7WTh6kLKa8pAy4ynrSHm8TN8PVrdR7M1Q"));
 }
 
+TEST(Coin, validateAddressDeepOnion) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeDeepOnion, "DcUvw7yP8dhVPGHMj7hPWderRfeVQByqrA"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeDeepOnion, "XHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"));
+}
+
 } // namespace TW

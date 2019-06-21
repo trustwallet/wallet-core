@@ -136,6 +136,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWaves));
     assertStringsEqual(waves, "WAVES");
+
+    auto onion = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDeepOnion));
+    assertStringsEqual(onion, "ONION");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -183,6 +186,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonetaryUnit), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDeepOnion), 8);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -322,6 +326,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWaves, txId));
     assertStringsEqual(waves, "https://wavesexplorer.com/tx/123");
+
+    auto onion = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDeepOnion, txId));
+    assertStringsEqual(onion, "https://www.blockexperts.com/onion/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -453,6 +460,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
     assertStringsEqual(waves, "waves");
+
+    auto onion = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDeepOnion));
+    assertStringsEqual(onion, "deeponion");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -587,6 +597,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
+
+    auto onion = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDeepOnion));
+    assertStringsEqual(onion, "DeepOnion");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
@@ -606,4 +619,5 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainSemux, TWCoinTypeBlockchain(TWCoinTypeSemux));
     ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
     ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
+    ASSERT_EQ(TWBlockchainDeepOnion, TWCoinTypeBlockchain(TWCoinTypeDeepOnion));
 }

@@ -660,5 +660,22 @@
         "curve": "ed25519",
         "publicKeyType": "curve25519",
         "explorer": "https://wavesexplorer.com/tx/"
+    },
+    {
+        "id": "deeponion",
+        "name": "DeepOnion",
+        "symbol": "ONION",
+        "decimals": 8,
+        "blockchain": "DeepOnion",
+        "derivationPath": "m/44'/305'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "p2pkhPrefix": 31,
+        "p2shPrefix": 78,
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "explorer": "https://www.blockexperts.com/onion/tx/"
     }
 ]

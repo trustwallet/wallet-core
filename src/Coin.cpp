@@ -184,6 +184,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeWaves:
         return Waves::Address::isValid(string);
+
+    case TWCoinTypeDeepOnion:
+        return Bitcoin::Address::isValid(string, {{TWP2PKHPrefixDeepOnion}, {TWP2SHPrefixDeepOnion}});
     }
 }
 
@@ -319,6 +322,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeWaves:
         return Waves::Address(publicKey).string();
+
+    case TWCoinTypeDeepOnion:
+        return Bitcoin::Address(publicKey, TWP2PKHPrefixDeepOnion).string();
     }
 }
 
