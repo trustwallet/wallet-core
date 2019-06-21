@@ -103,7 +103,7 @@ const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& passw
     case StoredKeyType::mnemonicPhrase: {
         const auto wallet = this->wallet(password);
         const auto account = *this->account(coin, &wallet);
-        return wallet.getKey(account.derivationPath);
+        return wallet.getKey(coin, account.derivationPath);
     }
     case StoredKeyType::privateKey:
         return PrivateKey(payload.decrypt(password));
@@ -119,7 +119,7 @@ void StoredKey::fixAddresses(const std::string& password) {
                 continue;
             }
             const auto& derivationPath = account.derivationPath;
-            const auto key = wallet.getKey(derivationPath);
+            const auto key = wallet.getKey(account.coin(), derivationPath);
             account.address = TW::deriveAddress(derivationPath.coin(), key);
         }
     }

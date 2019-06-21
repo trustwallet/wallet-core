@@ -59,7 +59,7 @@ class HDWallet {
     virtual ~HDWallet();
 
     /// Returns the private key at the given derivation path.
-    PrivateKey getKey(const DerivationPath& derivationPath) const;
+    PrivateKey getKey(enum TWCoinType coin, const DerivationPath& derivationPath) const;
 
     /// Derives the address for a coin.
     std::string deriveAddress(TWCoinType coin) const;

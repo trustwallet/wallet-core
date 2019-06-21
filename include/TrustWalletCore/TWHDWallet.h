@@ -55,7 +55,7 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *_Nonnul
 
 /// Generates the private key for the specified derivation path.
 TW_EXPORT_METHOD
-struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, TWString *_Nonnull derivationPath);
+struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, TWString *_Nonnull derivationPath);
 
 /// Generates the private key for the specified BIP44 path.
 ///

@@ -66,8 +66,8 @@ HDWallet::~HDWallet() {
     std::fill(passphrase.begin(), passphrase.end(), 0);
 }
 
-PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
-    const auto curve = TWCoinTypeCurve(derivationPath.coin());
+PrivateKey HDWallet::getKey(enum TWCoinType coin, const DerivationPath& derivationPath) const {
+    auto curve = TW::curve(coin);
     auto node = getNode(*this, curve, derivationPath);
     auto data = Data(node.private_key, node.private_key + PrivateKey::size);
     return PrivateKey(data);
@@ -75,7 +75,7 @@ PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
 
 std::string HDWallet::deriveAddress(TWCoinType coin) const {
     const auto derivationPath = TW::derivationPath(coin);
-    return TW::deriveAddress(coin, getKey(derivationPath));
+    return TW::deriveAddress(coin, getKey(coin, derivationPath));
 }
 
 std::string HDWallet::getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const {

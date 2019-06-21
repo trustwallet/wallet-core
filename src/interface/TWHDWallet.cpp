@@ -42,17 +42,17 @@ TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
 
 struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
     auto derivationPath = TW::derivationPath(coin);
-    return new TWPrivateKey{ wallet->impl.getKey(derivationPath) };
+    return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
 }
 
-struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, TWString *_Nonnull derivationPath) {
+struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, TWString *_Nonnull derivationPath) {
     auto& s = *reinterpret_cast<const std::string*>(derivationPath);
-    return new TWPrivateKey{ wallet->impl.getKey( TW::DerivationPath(s)) };
+    return new TWPrivateKey{ wallet->impl.getKey(coin, TW::DerivationPath(s)) };
 }
 
 struct TWPrivateKey *_Nonnull TWHDWalletGetKeyBIP44(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, uint32_t account, uint32_t change, uint32_t address) {
     const auto derivationPath = DerivationPath(TW::purpose(coin), coin, account, change, address);
-    return new TWPrivateKey{ wallet->impl.getKey(derivationPath) };
+    return new TWPrivateKey{ wallet->impl.getKey(coin, derivationPath) };
 }
 
 TWString *_Nonnull TWHDWalletGetExtendedPrivateKey(struct TWHDWallet *wallet, TWPurpose purpose, TWCoinType coin, TWHDVersion version) {

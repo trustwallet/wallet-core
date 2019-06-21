@@ -49,7 +49,7 @@ TEST(TWSemuxAddress, HDWallet) {
             STRING(passphrase).get()
     ));
 
-    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeDerivationPath(TWCoinTypeSemux));
+    auto privateKey = TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeSemux);
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
     auto address = TWSemuxAddressCreateWithPublicKey(publicKey);
     auto addressStr = WRAPS(TWSemuxAddressDescription(address));

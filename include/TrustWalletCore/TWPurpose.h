@@ -17,6 +17,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_ENUM(uint32_t)
 enum TWPurpose {
     TWPurposeBIP44 = 44,
+    TWPurposeBIP48 = 48, // SLIP-0048 Deterministic Key Hierarchy for Graphene-based Networks
     TWPurposeBIP49 = 49, // Derivation scheme for P2WPKH-nested-in-P2SH
     TWPurposeBIP84 = 84, // Derivation scheme for P2WPKH
 };

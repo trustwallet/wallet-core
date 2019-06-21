@@ -21,6 +21,7 @@ jni/java
 swift/Sources/Generated
 src/Generated
 include/TrustWalletCore/TWHRP.h
+include/TrustWalletCore/TWBlockchain.h
 
 # Code coverage files
 coverage.info
