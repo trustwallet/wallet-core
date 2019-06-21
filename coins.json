@@ -807,6 +807,8 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://www.blockexperts.com/onion/tx/"
+    },
+    {
         "id": "terra",
         "name": "Terra",
         "symbol": "LUNA",
