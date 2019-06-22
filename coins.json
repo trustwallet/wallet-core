@@ -820,6 +820,8 @@
         "base58Hasher": "sha256d",
         "xpub": "ppub",
         "xprv": "pprv",
-        "explorer": "https://mainnet-explorer.pivx.org/tx/"
+        "explorer": "https://mainnet-explorer.pivx.org/tx/",
+        "url": "https://pivx.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     }
 ]
