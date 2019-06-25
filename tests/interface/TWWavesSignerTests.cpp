@@ -27,14 +27,13 @@ TEST(TWWavesSigner, Sign) {
     const auto publicKeyCurve25519 = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
 
     input.set_amount(int64_t(100000000));
-    input.set_amount_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
+    input.set_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
     input.set_fee(int64_t(100000));
     input.set_fee_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
     input.set_to("3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx");
     input.set_attachment("hello");
     input.set_timestamp(int64_t(1559146613));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_public_key(publicKeyCurve25519.bytes.data(), publicKeyCurve25519.bytes.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
@@ -48,13 +47,13 @@ TEST(TWWavesSigner, Sign) {
 
     auto transaction = Waves::Transaction(
         /* amount */ input.amount(),
-        /* amount_asset */ input.amount_asset(),
+        /* asset */ input.asset(),
         /* fee */ input.fee(),
         /* fee_asset */ input.fee_asset(),
         /* to */ Waves::Address(input.to()),
         /* attachment */ Data(input.attachment().begin(), input.attachment().end()),
         /* timestamp */ input.timestamp(),
-        /* pub_key */ Data(input.public_key().begin(), input.public_key().end()));
+        /* pub_key */ publicKeyCurve25519.bytes);
 
     ASSERT_TRUE(publicKeyCurve25519.verify(
         Data(output.signature().begin(), output.signature().end()), transaction.serializeToSign()));
