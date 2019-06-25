@@ -13,9 +13,9 @@
 
 #include <cassert>
 
-using namespace TW::Bitcoin;
+using namespace TW::DeepOnion;
 
-std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t index,
+std::vector<uint8_t> Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index,
                                               uint32_t hashType, uint64_t amount) const {
     assert(index < inputs.size());
 
@@ -133,7 +133,7 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
     encode32LE(lockTime, data);
 }
 
-std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, size_t index,
+std::vector<uint8_t> Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
                                                    uint32_t hashType, uint64_t amount,
                                                    TWBitcoinSignatureVersion version) const {
     switch (version) {
@@ -145,7 +145,7 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, siz
 }
 
 /// Generates the signature hash for Witness version 0 scripts.
-std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
+std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Bitcoin::Script& scriptCode, size_t index,
                                                             uint32_t hashType,
                                                             uint64_t amount) const {
     auto preimage = getPreImage(scriptCode, index, hashType, amount);
@@ -154,7 +154,7 @@ std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Script& script
 }
 
 /// Generates the signature hash for for scripts other than witness scripts.
-std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode, size_t index,
+std::vector<uint8_t> Transaction::getSignatureHashBase(const Bitcoin::Script& scriptCode, size_t index,
                                                        uint32_t hashType) const {
     assert(index < inputs.size());
 
@@ -177,7 +177,7 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     encodeVarInt(serializedOutputCount, data);
     for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
         if (hashSingle && subindex != index) {
-            auto output = TransactionOutput(-1, {});
+            auto output = Bitcoin::TransactionOutput(-1, {});
             output.encode(data);
         } else {
             outputs[subindex].encode(data);
@@ -194,7 +194,7 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     return hash;
 }
 
-void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size_t index,
+void Transaction::serializeInput(size_t subindex, const Bitcoin::Script& scriptCode, size_t index,
                                  uint32_t hashType, std::vector<uint8_t>& data) const {
     // In case of SIGHASH_ANYONECANPAY, only the input being signed is
     // serialized
