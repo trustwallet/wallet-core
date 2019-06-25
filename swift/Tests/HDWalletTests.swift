@@ -357,11 +357,11 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveDeepOnion() {
-        let deepOnion = CoinType.deepOnion
+        let deepOnion = CoinType.deeponion
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: deepOnion)
         let address = deepOnion.deriveAddress(privateKey: key)
 
-        XCTAssertEqual("DXd8XxpoY3cXx5j6PXhFbzJ2Ame9Bdgjd9", address)
+        XCTAssertEqual("DpE8P91Sgjy8UasUFpLSciT2DAT7ucZBhj", address)
     }
 }

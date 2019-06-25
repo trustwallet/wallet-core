@@ -40,6 +40,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .dash:
                     let expectedResult = "XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .deeponion:
+                    let expectedResult = "Dp4BaHYEW4MLR3GEoejiSk6zdUJzvLRuzv"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .dogecoin:
                     let expectedResult = "DJRFZNg8jkUtjcpo2zJd92FUAzwRjitw6f"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
