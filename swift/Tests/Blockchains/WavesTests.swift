@@ -30,6 +30,9 @@ class WavesTests: XCTestCase {
             return
         }
         XCTAssertNotNil(json["proofs"] as? [String])
+        // swiftlint:disable line_length
+        XCTAssertEqual(output.json, "{\"amount\":100000000,\"assetId\":\"DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq\",\"attachment\":\"Cn8eVZg\",\"fee\":100000,\"feeAssetId\":\"DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq\",\"proofs\":[\"2sKtLEXdvK3Yy94S7ypdVyCkUc7BT7RgG6xzLd8qr1NUE24iXcnu1MYF4HKMXRsxnP3akgVS25V3Xet9auv1evte\"],\"recipient\":\"3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx\",\"senderPublicKey\":\"9AXmkhYSNGev6iUfR1oJ9X1SjqKsqp518TriHiLLHuKA\",\"timestamp\":1559146613,\"type\":4,\"version\":2}")
         XCTAssertEqual(output.signature.hexString, "5d6a77b1fd9b53d9735cd2543ba94215664f2b07d6c7befb081221fcd49f5b6ad6b9ac108582e8d3e74943bdf35fd80d985edf4b4de1fb1c5c427e84d0879f8f");
+        // swiftlint:enable line_length
     }
 }
