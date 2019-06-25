@@ -60,7 +60,7 @@ json Transaction::buildJson(Data signature) const {
     jsonTx["fee"] = fee;
     jsonTx["senderPublicKey"] = Base58::bitcoin.encode(pub_key);
     jsonTx["timestamp"] = timestamp;
-    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)}).dump();
+    jsonTx["proofs"] = json::array({Base58::bitcoin.encode(signature)});
     jsonTx["recipient"] = Address(to).string();
     if (asset != WAVES) {
         jsonTx["assetId"] = asset;
