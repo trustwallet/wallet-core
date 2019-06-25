@@ -10,7 +10,10 @@
 #include "Waves/Address.h"
 #include "Waves/Transaction.h"
 
+#include <Waves/Signer.h>
 #include <gtest/gtest.h>
+
+using json = nlohmann::json;
 
 using namespace std;
 using namespace TW;
@@ -67,4 +70,43 @@ TEST(WavesTransaction, failedSerialize) {
         /* pub_key */
         parse_hex("d528aabec35ca100d87c7b7a128632faf19cd44531819457445113a32a21ef22"));
     EXPECT_THROW(tx1.serializeToSign(), invalid_argument);
+}
+
+TEST(WavesTransaction, jsonSerialize) {
+    const auto privateKey =
+        PrivateKey(parse_hex("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+    const auto publicKeyCurve25519 = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
+    ASSERT_EQ(hex(Data(publicKeyCurve25519.bytes.begin(), publicKeyCurve25519.bytes.end())),
+              "559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d");
+    // 3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds
+    const auto address = Address(publicKeyCurve25519);
+
+    auto tx1 = Transaction(
+        /* amount */ 10000000,
+        /* amount asset */ "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq",
+        /* fee */ 100000000,
+        /* fee asset*/ "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD82zq",
+        /* to */ address,
+        /* attachment */ parse_hex("66616c6166656c"),
+        /* timestamp */ 1526641218066,
+        /* pub_key */
+        parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
+
+    auto signature = Signer::sign(privateKey, tx1);
+
+    auto json = tx1.buildJson(signature);
+
+    ASSERT_EQ(json["type"], TransactionType::transfer);
+    ASSERT_EQ(json["version"], TransactionVersion::V2);
+    ASSERT_EQ(json["fee"], 100000000);
+    ASSERT_EQ(json["senderPublicKey"], "6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU");
+    ASSERT_EQ(json["timestamp"], 1526641218066);
+    ASSERT_EQ(json["proofs"], "[\"5ynN2NUiFHkQzw9bK8R7dZcNfTWMAtcWRJsrMvFFM6dUT3fSnPCCX7CTajNU8bJCB"
+                              "H69vU1mnwfx4zpDtF1SkzKg\"]");
+    ASSERT_EQ(json["recipient"], "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds");
+    ASSERT_EQ(json["assetId"], "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
+    ASSERT_EQ(json["feeAssetId"], "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD82zq");
+    ASSERT_EQ(json["amount"], 10000000);
+    ASSERT_EQ(json["attachment"], "4t2Xazb2SX");
+    ASSERT_EQ(json.dump(), "{\"amount\":10000000,\"assetId\":\"DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq\",\"attachment\":\"4t2Xazb2SX\",\"fee\":100000000,\"feeAssetId\":\"DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD82zq\",\"proofs\":\"[\\\"5ynN2NUiFHkQzw9bK8R7dZcNfTWMAtcWRJsrMvFFM6dUT3fSnPCCX7CTajNU8bJCBH69vU1mnwfx4zpDtF1SkzKg\\\"]\",\"recipient\":\"3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds\",\"senderPublicKey\":\"6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU\",\"timestamp\":1526641218066,\"type\":4,\"version\":2}");
 }

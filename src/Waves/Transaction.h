@@ -9,6 +9,7 @@
 #include "Address.h"
 #include "../Data.h"
 #include "../proto/Waves.pb.h"
+#include <nlohmann/json.hpp>
 
 namespace TW::Waves {
 
@@ -23,7 +24,7 @@ class Transaction {
     static const std::string WAVES;
 
     int64_t amount;
-    std::string amount_asset;
+    std::string asset;
     int64_t fee;
     std::string fee_asset;
     Address to;
@@ -31,7 +32,7 @@ class Transaction {
     int64_t timestamp;
     Data pub_key;
 
-    Transaction(int64_t amount, std::string amount_asset, int64_t fee, std::string fee_asset,
+    Transaction(int64_t amount, std::string asset, int64_t fee, std::string fee_asset,
                 Address to, Data attachment, int64_t timestamp, Data pub_key)
         : amount(std::move(amount))
         , fee(std::move(fee))
@@ -39,10 +40,10 @@ class Transaction {
         , attachment(std::move(attachment))
         , timestamp(std::move(timestamp))
         , pub_key(std::move(pub_key)) {
-        if (amount_asset.empty()) {
-            amount_asset = WAVES;
+        if (asset.empty()) {
+            asset = WAVES;
         }
-        this->amount_asset = amount_asset;
+        this->asset = asset;
         if (fee_asset.empty()) {
             fee_asset = WAVES;
         }
@@ -51,6 +52,7 @@ class Transaction {
 
   public:
     Data serializeToSign() const;
+    nlohmann::json buildJson(Data signature) const;
 };
 
 } // namespace TW::Waves
