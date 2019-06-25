@@ -34,6 +34,7 @@ This list is generated from `src/coins.json`
 | 282     | BravoCoin        | BRAVO  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/282.png" width="32" />     | <https://bravocoin.com>       > |
 | 291     | IOST             | IOST   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/291.png" width="32" />     | <https://iost.io>             > |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/304.png" width="32" />     | <https://iotex.io>            > |
+| 305     | DeepOnion        | ONION  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/305.png" width="32" />     | <https://deeponion.org>       > |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/313.png" width="32" />     | <https://zilliqa.com>         > |
 | 330     | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/330.png" width="32" />     | <https://terra.money>         > |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/425.png" width="32" />     | <https://aion.network>        > |
@@ -55,7 +56,6 @@ This list is generated from `src/coins.json`
 | 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/8964.png" width="32" />    | <https://nuls.io>             > |
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" />   | <https://zel.cash>            > |
 | 31102   | Ethersocial      | ESN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/31102.png" width="32" />   | <https://ethersocial.org>     > |
-| 305     | DeepOnion        | ONION  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/305.png" width="32" />     | <https://deeponion.org/>       |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5718350.png" width="32" /> | <https://wanchain.org>        > |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/5741564.png" width="32" /> | <https://wavesplatform.com>   > |
 | 7562605 | Semux            | SEM    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/7562605.png" width="32" /> | <https://www.semux.org>       > |

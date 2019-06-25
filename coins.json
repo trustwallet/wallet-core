@@ -806,7 +806,9 @@
         "base58Hasher": "sha256d",
         "xpub": "xpub",
         "xprv": "xprv",
-        "explorer": "https://www.blockexperts.com/onion/tx/"
+        "explorer": "https://www.blockexperts.com/onion/tx/",
+        "url": "https://deeponion.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
     {
         "id": "terra",
