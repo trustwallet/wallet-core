@@ -50,6 +50,7 @@ This list is generated from `src/coins.json`
 | 1729    | Tezos            | XTZ    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1729.png" width="32" />    | <https://tezos.com>           > |
 | 2017    | Kin              | KIN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2017.png" width="32" />    | <https://www.kin.org>         > |
 | 2301    | Qtum             | QTUM   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2301.png" width="32" />    | <https://qtum.org>            > |
+| 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2718.png" width="32" />    | <https://nebulas.io>          > |
 | 3003    | Lux              | LUX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/3003.png" width="32" />    | <https://luxcore.io/>         > |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/6060.png" width="32" />    | <https://gochain.io>          > |
 | 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/8964.png" width="32" />    | <https://nuls.io>             > |

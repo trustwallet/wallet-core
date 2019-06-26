@@ -162,6 +162,11 @@ inline Data sha256ripemd(const byte* begin, const byte* end) {
     return ripemd(sha256(begin, end));
 }
 
+/// Computes the ripemd hash of the SHA256 hash.
+inline Data sha3_256ripemd(const byte* begin, const byte* end) {
+    return ripemd(sha3_256(begin, end));
+}
+
 /// Computes the Blake256 hash of the Blake256 hash.
 inline Data blake256d(const byte* begin, const byte* end) {
     return blake256(blake256(begin, end));
