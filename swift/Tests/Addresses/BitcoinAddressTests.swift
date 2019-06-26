@@ -193,7 +193,7 @@ class BitcoinAddressTests: XCTestCase {
     func testValidDeepOnionAddress() {
         let addressString = "DYfaNhhPiGjd5vjXXuWrhQtEYRQYhHf4pi"
 
-        XCTAssertEqual(CoinType.deeponion.p2pkhPrefix, BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertEqual(CoinType.deepOnion.p2pkhPrefix, BitcoinAddress(string: addressString)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
                       "'\(addressString)' should be a valid DeepOnion address")
 
@@ -215,7 +215,7 @@ class BitcoinAddressTests: XCTestCase {
         // bad address
         let addressString2 = "mwJAu1BWcRSQhepZ71wiGoSwsD6hnB5B7G"
 
-        XCTAssertFalse(CoinType.deeponion.validate(address: addressString2),
+        XCTAssertFalse(CoinType.deepOnion.validate(address: addressString2),
                       "'\(addressString2)' should be an invalid DeepOnion address")
 
     }
