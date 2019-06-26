@@ -101,12 +101,12 @@ TEST(WavesTransaction, jsonSerialize) {
     ASSERT_EQ(json["fee"], 100000000);
     ASSERT_EQ(json["senderPublicKey"], "6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU");
     ASSERT_EQ(json["timestamp"], 1526641218066);
-    ASSERT_EQ(json["proofs"], "[\"5ynN2NUiFHkQzw9bK8R7dZcNfTWMAtcWRJsrMvFFM6dUT3fSnPCCX7CTajNU8bJCB"
+    ASSERT_EQ(json["proofs"].dump(), "[\"5ynN2NUiFHkQzw9bK8R7dZcNfTWMAtcWRJsrMvFFM6dUT3fSnPCCX7CTajNU8bJCB"
                               "H69vU1mnwfx4zpDtF1SkzKg\"]");
     ASSERT_EQ(json["recipient"], "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds");
     ASSERT_EQ(json["assetId"], "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
     ASSERT_EQ(json["feeAssetId"], "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD82zq");
     ASSERT_EQ(json["amount"], 10000000);
     ASSERT_EQ(json["attachment"], "4t2Xazb2SX");
-    ASSERT_EQ(json.dump(), "{\"amount\":10000000,\"assetId\":\"DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq\",\"attachment\":\"4t2Xazb2SX\",\"fee\":100000000,\"feeAssetId\":\"DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD82zq\",\"proofs\":\"[\\\"5ynN2NUiFHkQzw9bK8R7dZcNfTWMAtcWRJsrMvFFM6dUT3fSnPCCX7CTajNU8bJCBH69vU1mnwfx4zpDtF1SkzKg\\\"]\",\"recipient\":\"3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds\",\"senderPublicKey\":\"6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU\",\"timestamp\":1526641218066,\"type\":4,\"version\":2}");
+    ASSERT_EQ(json.dump(), "{\"amount\":10000000,\"assetId\":\"DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq\",\"attachment\":\"4t2Xazb2SX\",\"fee\":100000000,\"feeAssetId\":\"DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD82zq\",\"proofs\":[\"5ynN2NUiFHkQzw9bK8R7dZcNfTWMAtcWRJsrMvFFM6dUT3fSnPCCX7CTajNU8bJCBH69vU1mnwfx4zpDtF1SkzKg\"],\"recipient\":\"3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds\",\"senderPublicKey\":\"6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU\",\"timestamp\":1526641218066,\"type\":4,\"version\":2}");
 }
