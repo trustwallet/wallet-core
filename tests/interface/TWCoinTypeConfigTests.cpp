@@ -131,6 +131,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto waves = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWaves));
     assertStringsEqual(waves, "WAVES");
 
+    auto nas = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNebulas));
+    assertStringsEqual(nas, "NAS");
     auto ae = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
     assertStringsEqual(ae, "AE");
     
@@ -184,6 +186,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDigiByte), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebulas), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDeepOnion), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
@@ -321,6 +324,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto waves = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWaves, txId));
     assertStringsEqual(waves, "https://wavesexplorer.com/tx/123");
 
+    auto nas = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNebulas, txId));
+    assertStringsEqual(nas, "https://explorer.nebulas.io/#/tx/123");
     auto ae = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
     assertStringsEqual(ae, "https://www.aeknow.org/block/transaction/123");
     
@@ -455,6 +460,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto waves = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
     assertStringsEqual(waves, "waves");
 
+    auto nas = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
+    assertStringsEqual(nas, "nebulas");
     auto ae = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     assertStringsEqual(ae, "aeternity");
     
@@ -591,7 +598,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
   
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
-
+    auto nas = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
+    assertStringsEqual(nas, "Nebulas");
     auto terra = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
     assertStringsEqual(terra, "Terra");
     
@@ -616,6 +624,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainSemux, TWCoinTypeBlockchain(TWCoinTypeSemux));
     ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
     ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
+    ASSERT_EQ(TWBlockchainNebulas, TWCoinTypeBlockchain(TWCoinTypeNebulas));
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
     ASSERT_EQ(TWBlockchainDeepOnion, TWCoinTypeBlockchain(TWCoinTypeDeepOnion));
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
