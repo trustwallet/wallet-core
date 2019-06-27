@@ -820,7 +820,7 @@
     },
     {
         "id": "hpb",
-        "name": "High Performance Blockchain",
+        "name": "HPB",
         "symbol": "HPB",
         "decimals": 18,
         "blockchain": "Ethereum",
