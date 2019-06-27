@@ -224,7 +224,7 @@
         "base58Hasher": "groestl512d",
         "xpub": "zpub",
         "xprv": "zprv",
-        "explorer": "https://chainz.cryptoid.info/grs/tx.dws?",
+        "explorer": "https://blockchair.com/groestlcoin/transaction/",
         "url": "https://www.groestlcoin.org",
         "rpcNodeInfo": "https://github.com/trezor/blockbook"
     },
