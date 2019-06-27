@@ -32,5 +32,6 @@ class SlipTests: XCTestCase {
         XCTAssertEqual(CoinType.ethersocial.rawValue, 31102)
         XCTAssertEqual(CoinType.dexon.rawValue, 237)
         XCTAssertEqual(CoinType.nebulas.rawValue, 2718)
+        XCTAssertEqual(CoinType.hpb.rawValue, 269)
     }
 }

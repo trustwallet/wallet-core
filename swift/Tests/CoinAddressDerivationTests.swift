@@ -166,6 +166,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .dexon:
                     let expectedResult = "0x6F3E6a6dDf2C2B4B32B8Bb452eA3F36B2BB489BF"
                   AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .hpb:
+                    let expectedResult = "0xE277F0DB7BE519082460630a991566032904b2d2"
+                  AssetCoinDerivation(coin, expectedResult, derivedAddress, address)                  
                 case .zelcash:
                     let expectedResult = "t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)

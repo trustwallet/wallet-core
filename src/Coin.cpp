@@ -103,6 +103,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeXDai:
     case TWCoinTypeTheta:
     case TWCoinTypeDEXON:
+    case TWCoinTypeHPB:
         return Ethereum::Address::isValid(string);
 
     case TWCoinTypeEOS:
@@ -226,6 +227,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeXDai:
     case TWCoinTypeTheta:
     case TWCoinTypeDEXON:
+    case TWCoinTypeHPB:
         return Ethereum::Address(publicKey).string();
 
     case TWCoinTypeEOS:

@@ -817,5 +817,18 @@
         "explorer": "https://terra.stake.id/?#/tx/",
         "url": "https://terra.money",
         "rpcNodeInfo": "https://github.com/terra-project/core"
+    },
+    {
+        "id": "hpb",
+        "name": "High Performance Blockchain",
+        "symbol": "HPB",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivationPath": "m/44'/269'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": "https://hpbscan.org/tx/",
+        "url": "https://hpb.io",
+        "rpcNodeInfo": "https://github.com/hpb-project/go-hpb"
     }
 ]

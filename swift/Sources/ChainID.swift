@@ -17,4 +17,5 @@ public enum ChainID: UInt32 {
     case ethersocial = 31102
     case dexon = 237
     case waves = 5741564
+    case hpb = 269
 }

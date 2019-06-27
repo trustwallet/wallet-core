@@ -92,6 +92,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZcoin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeSemux));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDEXON));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeHPB));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZelcash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeARK));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeRavencoin));

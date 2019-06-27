@@ -32,7 +32,8 @@ public extension CoinType {
             return BitcoinAddress(string: string)
         case .callisto, .ellaism, .ethereum, .ethereumClassic,
              .ethersocial, .goChain, .poanetwork, .theta,
-             .thunderToken, .tomoChain, .veChain, .xdai, .dexon:
+             .thunderToken, .tomoChain, .veChain, .xdai, .dexon,
+             .hpb:
             return EthereumAddress(string: string)
         case .wanchain:
             return WanchainAddress(string: string)
