@@ -168,7 +168,7 @@ class CoinAddressDerivationTests: XCTestCase {
                   AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .hpb:
                     let expectedResult = "0xE277F0DB7BE519082460630a991566032904b2d2"
-                  AssetCoinDerivation(coin, expectedResult, derivedAddress, address)                  
+                  AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zelcash:
                     let expectedResult = "t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
