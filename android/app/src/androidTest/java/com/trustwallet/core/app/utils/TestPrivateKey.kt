@@ -37,17 +37,19 @@ class TestPrivateKey {
     @Test
     fun isValidForInvalidData() {
         val bytes = byteArrayOf(0xde.toByte(), 0xad.toByte(), 0xbe.toByte(), 0xef.toByte())
-        assertFalse(PrivateKey.isValid(bytes))
+        assertFalse(PrivateKey.isValid(bytes, Curve.SECP256K1))
+        assertFalse(PrivateKey.isValid(bytes, Curve.ED25519))
     }
 
     @Test
     fun isValidForValidData() {
-        assertTrue(PrivateKey.isValid(validPrivateKeyData))
+        assertTrue(PrivateKey.isValid(validPrivateKeyData, Curve.SECP256K1))
+        assertTrue(PrivateKey.isValid(validPrivateKeyData, Curve.ED25519))
     }
 
     @Test
     fun testValid() {
-        assertTrue(PrivateKey.isValid(validPrivateKeyData))
+        assertTrue(PrivateKey.isValid(validPrivateKeyData, Curve.SECP256K1))
         var privateKey: PrivateKey? = null
         try {
             privateKey = PrivateKey(validPrivateKeyData)

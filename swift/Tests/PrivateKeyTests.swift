@@ -12,7 +12,8 @@ class PrivateKeyTests: XCTestCase {
         let privateKey = PrivateKey()
 
         XCTAssertEqual(privateKey.data.count, TWPrivateKeySize)
-        XCTAssertTrue(PrivateKey.isValid(data: privateKey.data))
+        XCTAssertTrue(PrivateKey.isValid(data: privateKey.data, curve: .secp256k1))
+        XCTAssertTrue(PrivateKey.isValid(data: privateKey.data, curve: .ed25519))
     }
 
     func testCreateFromInvalid() {
@@ -21,9 +22,10 @@ class PrivateKeyTests: XCTestCase {
     }
 
     func testIsValidString() {
-        let valid = PrivateKey.isValid(data: Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!)
+        let data = Data(hexString: "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")!
 
-        XCTAssert(valid)
+        XCTAssertTrue(PrivateKey.isValid(data: data, curve: .secp256k1))
+        XCTAssertTrue(PrivateKey.isValid(data: data, curve: .ed25519))
     }
 
     func testPublicKey() {
