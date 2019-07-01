@@ -271,7 +271,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(theta, "https://explorer.thetatoken.org/txs/123");
 
     auto grs = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
-    assertStringsEqual(grs, "https://chainz.cryptoid.info/grs/tx.dws?123");
+    assertStringsEqual(grs, "https://blockchair.com/groestlcoin/transaction/123");
 
     auto doge = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
     assertStringsEqual(doge, "https://blockchair.com/dogecoin/transaction/123");
@@ -326,6 +326,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto nas = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNebulas, txId));
     assertStringsEqual(nas, "https://explorer.nebulas.io/#/tx/123");
+
     auto ae = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
     assertStringsEqual(ae, "https://www.aeknow.org/block/transaction/123");
     
@@ -462,6 +463,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto nas = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
     assertStringsEqual(nas, "nebulas");
+
     auto ae = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     assertStringsEqual(ae, "aeternity");
     
@@ -598,8 +600,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
   
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
+
     auto nas = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
     assertStringsEqual(nas, "Nebulas");
+
     auto terra = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
     assertStringsEqual(terra, "Terra");
     
