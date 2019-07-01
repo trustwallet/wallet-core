@@ -34,7 +34,7 @@ This list is generated from `src/coins.json`
 | 282     | BravoCoin        | BRAVO  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/282.png" width="32" />     | <https://bravocoin.com>        |
 | 291     | IOST             | IOST   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/291.png" width="32" />     | <https://iost.io>              |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/304.png" width="32" />     | <https://iotex.io>             |
-| 305     | DeepOnion        | ONION  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/305.png" width="32" />     | <https://deeponion.org>       > |
+| 305     | DeepOnion        | ONION  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/305.png" width="32" />     | <https://deeponion.org>        |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/313.png" width="32" />     | <https://zilliqa.com>          |
 | 330     | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/330.png" width="32" />     | <https://terra.money>          |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/425.png" width="32" />     | <https://aion.network>         |
