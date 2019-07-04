@@ -817,5 +817,25 @@
         "explorer": "https://terra.stake.id/?#/tx/",
         "url": "https://terra.money",
         "rpcNodeInfo": "https://github.com/terra-project/core"
+    },
+    {
+        "id": "monacoin",
+        "name": "Monacoin",
+        "symbol": "MONA",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/44'/22'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "p2pkhPrefix": 50,
+        "p2shPrefix": 55,
+        "hrp": "mona",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "explorer": "https://blockbook.electrum-mona.org/tx/",
+        "url": "https://monacoin.org",
+        "rpcNodeInfo": "https://github.com/trezor/blockbook"
     }
 ]
