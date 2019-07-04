@@ -24,6 +24,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPZilliqa), "zil");
     ASSERT_STREQ(stringForHRP(TWHRPViacoin), "via");
     ASSERT_STREQ(stringForHRP(TWHRPTerra), "terra");
+    ASSERT_STREQ(stringForHRP(TWHRPMonacoin), "mona");
 }
 
 TEST(TWHRP, HRPForString) {
@@ -39,6 +40,7 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("zil"), TWHRPZilliqa);
     ASSERT_EQ(hrpForString("via"), TWHRPViacoin);
     ASSERT_EQ(hrpForString("terra"), TWHRPTerra);
+    ASSERT_EQ(hrpForString("mona"), TWHRPMonacoin);
 }
 
 TEST(TWHPR, HPRByCoinType) {
@@ -53,6 +55,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPQtum, TWCoinTypeHRP(TWCoinTypeQtum));
     ASSERT_EQ(TWHRPZilliqa, TWCoinTypeHRP(TWCoinTypeZilliqa));
     ASSERT_EQ(TWHRPTerra, TWCoinTypeHRP(TWCoinTypeTerra));
+    ASSERT_EQ(TWHRPMonacoin, TWCoinTypeHRP(TWCoinTypeMonacoin));
 
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeAion));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeBravoCoin));
