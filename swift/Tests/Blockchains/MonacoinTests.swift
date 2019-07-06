@@ -43,20 +43,20 @@ class MonacoinTests: XCTestCase {
         let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .monacoin, version: .xprv)
         let xpub = wallet.getExtendedPubKey(purpose: .bip44, coin: .monacoin, version: .xpub)
 
-        XCTAssertEqual(xprv, "xprv9yZ9qiUHr5eCpSp87jUR4KBHA1rhLx8fqSMGHK9CTfUgwt1QwYdwh9Csf7BsUWT53CDWdcYVFaqYF79QDYJ9NsoM6RE5nTz9VvLBCntdbTQ")
-        XCTAssertEqual(xpub, "xpub6CYWFE1BgTCW2vtbDm1RRT81i3hBkQrXCfGs5hYp211fpgLZV5xCEwXMWPAL3LgaBA9koXpLZSUo7rTyJ8q1JwqKhvzVpdzBKRGyyGb31KF")
+        XCTAssertEqual(xprv, "xprv9ySV9MzJnFMm7bi5qVTcqva3oDJojNsMYuASBcj9yC4QRe4kehWYeGfUVYFiJQipELCHmiutHJVxosR7eSovWHrWCUTdhf49D1N7MGKVcUZ")
+        XCTAssertEqual(xpub, "xpub6CRqYsXCccv4L5nYwWzdD4WnMF9J8qbCv862z18mXXbPJSPuCEpoC4yxLn5N81V5GWNuBsJ8g6tYsBb1V9hCipGn4WR6bc9FLUtyyRvDFse")
 
         // .bip49
         let yprv = wallet.getExtendedPrivateKey(purpose: .bip49, coin: .monacoin, version: .yprv)
         let ypub = wallet.getExtendedPubKey(purpose: .bip49, coin: .monacoin, version: .ypub)
-        XCTAssertEqual(yprv, "yprvAKLGJBFEsPizw5w8vvS1cVjuYd9am9nL8E1sd5NaaiSkDZ7sLfA7W3cRiGywGEBy51nFmn3pbmHvUyn1sqD2ZXx3xgXvEd22LnBAPaTJtz4")
-        XCTAssertEqual(ypub, "ypub6YKchgn8hmHJ9a1c2wy1ydge6ez5AcWBVSwURTnC93yj6MT1tCUN3qvuZZPsA1CwZVh5qEGhMWhDZEK43jQqWtHBzME91ws9KD6WU9n8Nau")
+        XCTAssertEqual(yprv, "yprvAJL1swHSWeFvfKdupcrsAvTCrtAiKUhLrUjteTj8JGCzD53YrJgiVbsChMPi5h119cn5tVVk1QAFSJtcnMSSxjGCNDXg8YaWbe4Hhc5bUfL")
+        XCTAssertEqual(ypub, "ypub6XKNHSpLM1pDsoiNvePsY4PwQv1CiwRCDhfVSr8jrbjy5sNhPqzy3QBgYdCayJhq5st63XZTWrea8So84QYbPgP2EvVR5dhSrW18ud4GZaT")
 
         // .bip84
         let zprv = wallet.getExtendedPrivateKey(purpose: .bip84, coin: .monacoin, version: .zprv)
         let zpub = wallet.getExtendedPubKey(purpose: .bip84, coin: .monacoin, version: .zpub)
-        XCTAssertEqual(zprv, "zprvAdQQxghvhQnbhhP6sAymw5uMrU8hAmcp8JB9cFkvLDhBNY64Sxuw4EAZEAdMgD7hiEXxwhr7zGqoPWYd2f6zCABBCv6UpXsp6dTJgpckG95")
-        XCTAssertEqual(zpub, "zpub6rPmNCEpXnLtvBTZyCWnJDr6QVyBaELfVX6kQeAXtZEAFLRCzWEBc2V35UHUQKJh1SpSNCtAtCx8KhRg5AWFnKrMCsxX4J2Zee21FQ5YS4n")
+        XCTAssertEqual(zprv, "zprvAdi4KQxm5ofVJqh1Y5KxSTuC1CSEibkz3Ei4dnNMzyLt6FiW3rMPTgKUCiwv1cw4rVeDW9ju82ChFz27UNG2kxvtFsngJCYtHjDYURsefzX")
+        XCTAssertEqual(zpub, "zpub6rhQivVevBDnXKmUe6rxobqvZEGj84UqQTdfSAmyZJsry43ebPfe1Udx3zUNDB3cHu2ozNCDhsy8BuNCjCvStNmodzdR2E2wWAsLyNFu5i1")
     }
 
     func testDeriveFromXpub() {

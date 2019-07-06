@@ -194,19 +194,19 @@ class BitcoinAddressTests: XCTestCase {
 
         XCTAssertEqual(CoinType.monacoin.p2pkhPrefix, BitcoinAddress(string: addressString)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
-                      "'\(addressString)' should be a valid Monacoin address")
+                      "'\(addressString)' should be an valid Monacoin address")
 
         let addressString2 = "PHjTKtgYLTJ9D2Bzw2f6xBB41KBm2HeGfg"
 
         XCTAssertEqual(CoinType.monacoin.p2shPrefix, BitcoinAddress(string: addressString2)?.prefix)
         XCTAssertTrue(BitcoinAddress.isValidString(string: addressString2),
-                      "'\(addressString2)' should be a valid Monacoin address")
+                      "'\(addressString2)' should be an valid Monacoin address")
 
         let addressString3 = "mona1qp8f842ywwr9h5rdxyzggex7q3trvvvaarfssxccju52rj6htfzfsqr79j2"
 
-        XCTAssertNil(SegwitAddress(string: addressString3)?.hrp)
-        XCTAssertFalse(SegwitAddress.isValidString(string: addressString3),
-                      "'\(addressString3)' should be an invalid Monacoin Bech32 address")
+        XCTAssertEqual(HRP.monacoin, SegwitAddress(string: addressString3)?.hrp)
+        XCTAssertTrue(SegwitAddress.isValidString(string: addressString3),
+                      "'\(addressString3)' should be an valid Monacoin Bech32 address")
     }
 
     func testInvalidMonacoinAddress() {
@@ -225,8 +225,7 @@ class BitcoinAddressTests: XCTestCase {
 
         let addressString3 = "tmona1qfj8lu0rafk2mpvk7jj62q8eerjpex3xlcadtupkrkhh5a73htmhs68e55m"
 
-        XCTAssertNil(SegwitAddress(string: addressString3)?.hrp)
-        XCTAssertFalse(SegwitAddress.isValidString(string: addressString3),
+        XCTAssertFalse(CoinType.monacoin.validate(address: addressString3),
                       "'\(addressString3)' should be an invalid Monacoin Bech32 address")
     }
 }
