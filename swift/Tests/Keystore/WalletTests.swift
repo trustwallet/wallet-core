@@ -14,14 +14,16 @@ class WalletTests: XCTestCase {
         let wallet = Wallet(keyURL: url, key: key)
         _ = try wallet.getAccount(password: "password", coin: .ethereum)
         _ = try wallet.getAccount(password: "password", coin: .callisto)
-        _ = try wallet.getAccount(password: "password", coin: .poa)
+        _ = try wallet.getAccount(password: "password", coin: .poanetwork)
+        _ = try wallet.getAccount(password: "password", coin: .ethersocial)
+        _ = try wallet.getAccount(password: "password", coin: .ellaism)
 
-        XCTAssertEqual(wallet.key.accountCount, 3)
+        XCTAssertEqual(wallet.key.accountCount, 5)
     }
 
     func testIdentifier() throws {
         let url = URL(string: "UTC--2018-07-23T15-42-07.380692005-42000--6E199F01-FA96-4ADF-9A4B-36EE4B1E08C7")!
-        let key = StoredKey(password: "password")
+        let key = StoredKey(name: "name", password: "password")
         let wallet = Wallet(keyURL: url, key: key)
         XCTAssertEqual(wallet.identifier, "UTC--2018-07-23T15-42-07.380692005-42000--6E199F01-FA96-4ADF-9A4B-36EE4B1E08C7")
     }

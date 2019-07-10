@@ -83,7 +83,7 @@ inline Data parse_hex(const Iter begin, const Iter end) {
         }
         it += 1;
 
-        result.push_back((std::get<0>(high) << 4) | std::get<0>(low));
+        result.push_back(static_cast<uint8_t>((std::get<0>(high) << 4) | std::get<0>(low)));
     }
 
     return result;

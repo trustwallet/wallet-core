@@ -1,0 +1,45 @@
+syntax = "proto2";
+
+package ZilliqaMessage;
+
+// ============================================================================
+// Primitives
+// ============================================================================
+
+message ByteArray
+{
+    required bytes data = 1;
+}
+
+message ProtoTransactionCoreInfo
+{
+    optional uint32 version         = 1;
+    optional uint64 nonce           = 2;
+    optional bytes toaddr           = 3;
+    optional ByteArray senderpubkey = 4;
+    optional ByteArray amount       = 5;
+    optional ByteArray gasprice     = 6;
+    optional uint64 gaslimit        = 7;
+    optional bytes code             = 8;
+    optional bytes data             = 9;
+}
+
+message ProtoTransaction
+{
+    optional bytes tranid                  = 1;
+    optional ProtoTransactionCoreInfo info = 2;
+    optional ByteArray signature           = 3;
+}
+
+message ProtoTransactionReceipt
+{
+    optional bytes receipt    = 1;
+    optional uint64 cumgas = 2;
+}
+
+message ProtoTransactionWithReceipt
+{
+    optional ProtoTransaction transaction    = 1;
+    optional ProtoTransactionReceipt receipt = 2;
+}
+

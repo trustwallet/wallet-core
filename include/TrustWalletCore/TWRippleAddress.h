@@ -31,10 +31,6 @@ bool TWRippleAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWRippleAddress *_Nullable TWRippleAddressCreateWithString(TWString *_Nonnull string);
 
-/// Creates an address from a raw data representaion.
-TW_EXPORT_STATIC_METHOD
-struct TWRippleAddress *_Nullable TWRippleAddressCreateWithData(TWData *_Nonnull data);
-
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWRippleAddress *_Nonnull TWRippleAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);

@@ -26,10 +26,6 @@ bool TWOntologyAddressEqual(struct TWOntologyAddress *_Nonnull lhs, struct TWOnt
 TW_EXPORT_STATIC_METHOD
 bool TWOntologyAddressIsValidString(TWString *_Nonnull string);
 
-/// Creates an address from a TWDara representaion.
-TW_EXPORT_STATIC_METHOD
-struct TWOntologyAddress *_Nullable TWOntologyAddressCreateWithData(TWData *_Nonnull data);
-
 /// Creates an address from a string representaion.
 TW_EXPORT_STATIC_METHOD
 struct TWOntologyAddress *_Nullable TWOntologyAddressCreateWithString(TWString *_Nonnull string);

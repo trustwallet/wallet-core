@@ -31,7 +31,7 @@ std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs,
                                const Bitcoin::Script& signScript);
 } // namespace
 
-Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, int index,
+Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, size_t index,
                                        uint32_t hashType) const {
     assert(index < inputs.size());
 

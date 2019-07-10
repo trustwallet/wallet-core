@@ -53,13 +53,13 @@ class Parser
   # Parses a type.
   def parse_type
     @buffer.skip(/\s*/)
-    if @buffer.scan(/(const )?struct TW(\w+) \*(_Nullable|_Nonnull)/)
+    if @buffer.scan(/(const )?struct TW(\w+)\s?\*\s?(_Nullable|_Nonnull)/)
       return TypeDecl.new(name: @buffer[2], is_class: true, is_nullable: @buffer[3] == '_Nullable', is_inout: @buffer[1].nil?)
     elsif @buffer.scan(/(const )?struct TW(\w+)/)
       return TypeDecl.new(name: @buffer[2], is_struct: true)
-    elsif @buffer.scan(/TWData \*(_Nullable|_Nonnull)/)
+    elsif @buffer.scan(/TWData\s?\*\s?(_Nullable|_Nonnull)/)
       return TypeDecl.new(name: :data, is_nullable: @buffer[1] == '_Nullable', is_inout: false)
-    elsif @buffer.scan(/TWString \*(_Nullable|_Nonnull)/)
+    elsif @buffer.scan(/TWString\s?\*\s?(_Nullable|_Nonnull)/)
       return TypeDecl.new(name: :string, is_nullable: @buffer[1] == '_Nullable', is_inout: false)
     elsif @buffer.scan(/enum TW(\w+)/)
       return TypeDecl.new(name: @buffer[1], is_enum: true)

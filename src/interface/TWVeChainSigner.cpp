@@ -15,17 +15,17 @@ using namespace TW::VeChain;
 
 TW_VeChain_Proto_SigningOutput TWVeChainSignerSign(TW_VeChain_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction();
-    transaction.chainTag = input.chain_tag();
+    transaction.chainTag = static_cast<uint8_t>(input.chain_tag());
     transaction.blockRef = input.block_ref();
     transaction.expiration = input.expiration();
     for (auto& clause : input.clauses()) {
         transaction.clauses.emplace_back(clause);
     }
-    transaction.gasPriceCoef = input.gas_price_coef();
+    transaction.gasPriceCoef = static_cast<uint8_t>(input.gas_price_coef());
     transaction.gas = input.gas();
     transaction.dependsOn = Data(input.depends_on().begin(), input.depends_on().end());
     transaction.nonce = input.nonce();

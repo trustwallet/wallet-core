@@ -2,7 +2,7 @@
 // Created by Dusan Klinec on 02/05/2018.
 //
 
-#include "serialize.h"
+#include <TrezorCrypto/monero/serialize.h>
 
 int xmr_size_varint(uint64_t num){
 	int ctr = 1;

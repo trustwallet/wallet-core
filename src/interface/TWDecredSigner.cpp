@@ -21,15 +21,15 @@ using namespace TW::Decred;
 
 struct TWDecredSigner *_Nonnull TWDecredSignerCreate(TW_Bitcoin_Proto_SigningInput data) {
     Bitcoin::Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     return new TWDecredSigner{ Signer(std::move(input)) };
 }
 
 struct TWDecredSigner *_Nonnull TWDecredSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
     Bitcoin::Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     Bitcoin::Proto::TransactionPlan plan;
-    plan.ParseFromArray(TWDataBytes(planData), TWDataSize(planData));
+    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
     return new TWDecredSigner{ Signer(std::move(input), std::move(plan)) };
 }
 

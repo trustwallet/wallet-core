@@ -12,9 +12,6 @@
 
 TW_EXTERN_C_BEGIN
 
-extern const int64_t TWBinanceChainSource;
-extern const char *TWBinanceChainId;
-
 /// Helper class to sign Binance transactions.
 TW_EXPORT_CLASS
 struct TWBinanceSigner;

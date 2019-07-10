@@ -25,7 +25,7 @@ class Signer {
         std::vector<uint8_t> pubkeyInternal;
         pubkeyInternal.push_back(0x01); // Code for Ed25519
         pubkeyInternal.insert(pubkeyInternal.end(), data.begin(), data.end());
-        return PublicKey(std::move(pubkeyInternal));
+        return PublicKey(std::move(pubkeyInternal), TWPublicKeyTypeED25519);
     }
 };
 

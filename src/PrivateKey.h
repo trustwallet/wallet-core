@@ -42,10 +42,13 @@ class PrivateKey {
         return false;
     }
 
+    /// Determines if a collection of bytes and curve make a valid private key.
+    static bool isValid(const Data& data, TWCurve curve);
+
     /// Initializes a private key with a collection of bytes.
     template <typename T>
     explicit PrivateKey(const T& data) {
-        if (data.size() != size) {
+        if (!isValid(data)) {
             throw std::invalid_argument("Invalid private key data");
         }
         std::copy(std::begin(data), std::end(data), std::begin(bytes));
@@ -63,14 +66,21 @@ class PrivateKey {
     virtual ~PrivateKey();
 
     /// Returns the public key for this private key.
-    PublicKey getPublicKey(PublicKeyType type) const;
+    PublicKey getPublicKey(enum TWPublicKeyType type) const;
 
     /// Signs a digest using the given ECDSA curve.
     Data sign(const Data& digest, TWCurve curve) const;
 
+    /// Signs a digest using the given ECDSA curve and prepends the recovery id (a la graphene)
+    /// Only a sig that passes canonicalChecker is returned
+    Data sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(uint8_t by, uint8_t sig[64])) const;
+
     /// Signs a digest using the given ECDSA curve. The result is encoded with
     /// DER.
     Data signAsDER(const Data& digest, TWCurve curve) const;
+
+    /// Signs a digest using given ECDSA curve, returns schnorr signature
+    Data signSchnorr(const Data& message, TWCurve curve) const;
 };
 
 inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) {

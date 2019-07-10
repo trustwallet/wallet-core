@@ -16,17 +16,19 @@ using namespace TW;
 using namespace TW::Decred;
 
 TEST(DecredAddress, FromPublicKey) {
-    const auto publicKey = PublicKey(parse_hex("0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"));
+    const auto publicKey = PublicKey(parse_hex("0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798"), TWPublicKeyTypeSECP256k1);
     const auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "DsmcYVbP1Nmag2H4AS17UTvmWXmGeA7nLDx");
 }
 
 TEST(DecredAddress, Valid) {
     ASSERT_TRUE(Address::isValid("DsmcYVbP1Nmag2H4AS17UTvmWXmGeA7nLDx"));
+    ASSERT_TRUE(Address::isValid("Dcur2mcGjmENx4DhNqDctW5wJCVyT3Qeqkx"));
 }
 
 TEST(DecredAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("rnBFvgZphmN39GWzUJeUitaP22Fr9be75H"));
+    ASSERT_FALSE(Address::isValid("t3gQDEavk5VzAAHK8TrQu2BWDLxEiF1unBm"));
 }
 
 TEST(DecredAddress, FromString) {

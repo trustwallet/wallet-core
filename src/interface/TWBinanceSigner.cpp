@@ -9,15 +9,12 @@
 #include "../Binance/Signer.h"
 #include "../proto/Binance.pb.h"
 
-const int64_t TWBinanceChainSource = 2;
-const char *TWBinanceChainId = "Binance-Chain-Nile";
-
 using namespace TW;
 using namespace TW::Binance;
 
 TW_Binance_Proto_SigningOutput TWBinanceSignerSign(TW_Binance_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto signer = new TWBinanceSigner{ Signer(std::move(input)) };
     auto encoded = signer->impl.build();

@@ -13,7 +13,7 @@
 
 TWData *_Nullable TWAESCBCEncrypt(TWData *_Nonnull key, TWData *_Nonnull data, TWData *_Nonnull iv) {
     aes_encrypt_ctx ctx;
-    if (aes_encrypt_key(TWDataBytes(key), TWDataSize(key), &ctx) == EXIT_FAILURE) {
+    if (aes_encrypt_key(TWDataBytes(key), static_cast<int>(TWDataSize(key)), &ctx) == EXIT_FAILURE) {
         return nullptr;
     }
 
@@ -36,7 +36,7 @@ TWData *_Nullable TWAESCBCDecrypt(TWData *_Nonnull key, TWData *_Nonnull data, T
     assert((TWDataSize(data) % 16) == 0);
 
     aes_decrypt_ctx ctx;
-    if (aes_decrypt_key(TWDataBytes(key), TWDataSize(key), &ctx) == EXIT_FAILURE) {
+    if (aes_decrypt_key(TWDataBytes(key), static_cast<int>(TWDataSize(key)), &ctx) == EXIT_FAILURE) {
         return nullptr;
     }
 
@@ -50,7 +50,7 @@ TWData *_Nullable TWAESCBCDecrypt(TWData *_Nonnull key, TWData *_Nonnull data, T
 
 TWData *_Nullable TWAESCTREncrypt(TWData *_Nonnull key, TWData *_Nonnull data, TWData *_Nonnull iv) {
 	aes_encrypt_ctx ctx;
-    if (aes_encrypt_key(TWDataBytes(key), TWDataSize(key), &ctx) == EXIT_FAILURE) {
+    if (aes_encrypt_key(TWDataBytes(key), static_cast<int>(TWDataSize(key)), &ctx) == EXIT_FAILURE) {
         return nullptr;
     }
 
@@ -62,7 +62,7 @@ TWData *_Nullable TWAESCTREncrypt(TWData *_Nonnull key, TWData *_Nonnull data, T
 
 TWData *_Nullable TWAESCTRDecrypt(TWData *_Nonnull key, TWData *_Nonnull data, TWData *_Nonnull iv) {
     aes_encrypt_ctx ctx;
-    if (aes_encrypt_key(TWDataBytes(key), TWDataSize(key), &ctx) == EXIT_FAILURE) {
+    if (aes_encrypt_key(TWDataBytes(key), static_cast<int>(TWDataSize(key)), &ctx) == EXIT_FAILURE) {
         return nullptr;
     }
 

@@ -154,6 +154,18 @@ TEST(UnspentSelector, SelectZcashUnpsents) {
     ASSERT_TRUE(selected.size() > 0);
 }
 
+TEST(UnspentSelector, SelectGroestlUnpsents) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    utxos.push_back(buildUTXO(transactionOutPoint, 499971976));
+
+    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeGroestlcoin);
+    auto selector = UnspentSelector(calculator);
+    auto selected = selector.select(utxos, 499951976, 1, 2);
+
+    ASSERT_EQ(sum(selected), 499971976);
+    ASSERT_TRUE(selected.size() > 0);
+}
+
 TEST(UnspentSelector, SelectZcashMaxUnpsents) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     utxos.push_back(buildUTXO(transactionOutPoint, 100000));

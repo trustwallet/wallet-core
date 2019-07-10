@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "CashAddress.h"
+#include "../Coin.h"
 
 #include <TrezorCrypto/cash_addr.h>
 #include <TrezorCrypto/ecdsa.h>
@@ -17,6 +18,11 @@ using namespace TW::Bitcoin;
 
 /// Cash address human-readable part
 static const std::string cashHRP = "bitcoincash";
+
+/// From https://github.com/bitcoincashorg/bitcoincash.org/blob/master/spec/cashaddr.md
+
+static const uint8_t p2khVersion = 0x00;
+static const uint8_t p2shVersion = 0x08;
 
 static constexpr size_t maxHRPSize = 20;
 static constexpr size_t maxDataSize = 104;
@@ -63,7 +69,7 @@ CashAddress::CashAddress(const std::vector<uint8_t>& data) {
 }
 
 CashAddress::CashAddress(const PublicKey& publicKey) {
-    if (publicKey.type() != PublicKeyType::secp256k1) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1) {
         throw std::invalid_argument("CashAddress needs a compressed SECP256k1 public key.");
     }
     std::array<uint8_t, 21> payload;
@@ -86,5 +92,10 @@ Address CashAddress::legacyAddress() const {
     size_t outlen = 0;
     cash_data_to_addr(result.data(), &outlen, bytes.data(), CashAddress::size);
     assert(outlen == 21 && "Invalid length");
+    if (result[0] == p2khVersion) {
+        result[0] = TW::p2pkhPrefix(TWCoinTypeBitcoinCash);
+    } else if (result[0] == p2shVersion) {
+        result[0] = TW::p2shPrefix(TWCoinTypeBitcoinCash);
+    }
     return Address(result);
 }

@@ -81,7 +81,7 @@ std::vector<uint8_t> Signer::encodeOrder() const {
 
 std::vector<uint8_t> Signer::encodeSignature(const std::vector<uint8_t>& signature) const {
     auto key = PrivateKey(input.private_key());
-    auto publicKey = key.getPublicKey(PublicKeyType::secp256k1);
+    auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     auto encodedPublicKey = pubKeyPrefix;
     encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.bytes.size()));
@@ -113,8 +113,8 @@ std::vector<uint8_t> Signer::aminoWrap(const std::string& raw,
         if (prefixWithSize) {
             cos.WriteVarint64(contentsSize);
         }
-        cos.WriteRaw(typePrefix.data(), typePrefix.size());
-        cos.WriteRaw(raw.data(), raw.size());
+        cos.WriteRaw(typePrefix.data(), static_cast<int>(typePrefix.size()));
+        cos.WriteRaw(raw.data(), static_cast<int>(raw.size()));
     }
 
     return std::vector<uint8_t>(msg.begin(), msg.end());

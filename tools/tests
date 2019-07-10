@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# This script runs all the tests on all supported platforms.
+
+set -e
+
+cmake -H. -Bbuild
+make -Cbuild tests TrezorCryptoTests
+
+export CK_TIMEOUT_MULTIPLIER=4
+build/trezor-crypto/tests/TrezorCryptoTests
+
+build/tests/tests tests
+
+tools/ios-test
+tools/android-test
+tools/js-test

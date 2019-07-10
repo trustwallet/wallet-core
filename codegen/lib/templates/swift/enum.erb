@@ -9,13 +9,13 @@ public enum <%= entity.name %>: <%= type %>, CaseIterable<% if has_string %>, Cu
 <%- entity.properties.each do |property| -%>
 
     public var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {
-<%=   render('swift/method_forward.erb', { method: property, arguments: ['TWCoinType(rawValue: rawValue)'] }) -%>
+<%=   render('swift/method_forward.erb', { method: property, arguments: ["TW#{entity.name}(rawValue: rawValue)"] }) -%>
     }
 <%- end -%>
 <%# Methods -%>
 <% entity.methods.each do |method| -%>
 
-<%   arguments = ['TWCoinType(rawValue: rawValue)'] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
+<%   arguments = ["TW#{entity.name}(rawValue: rawValue)"] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
 <%=  render('swift/method.erb', { method: method, arguments: arguments }) %>
 <% end -%>
 <%# Description -%>

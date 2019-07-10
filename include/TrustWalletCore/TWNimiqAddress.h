@@ -29,10 +29,6 @@ bool TWNimiqAddressIsValidString(TWString *_Nonnull string);
 TW_EXPORT_STATIC_METHOD
 struct TWNimiqAddress *_Nullable TWNimiqAddressCreateWithString(TWString *_Nonnull string);
 
-/// Creates an address from a raw data representaion.
-TW_EXPORT_STATIC_METHOD
-struct TWNimiqAddress *_Nullable TWNimiqAddressCreateWithData(TWData *_Nonnull data);
-
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWNimiqAddress *_Nonnull TWNimiqAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);

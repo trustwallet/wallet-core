@@ -16,7 +16,7 @@ static const int64_t fullyCanonical = 0x80000000;
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
     /// See https://github.com/trezor/trezor-core/blob/master/src/apps/ripple/sign_tx.py#L59
     transaction.flags |= fullyCanonical;
-    transaction.pub_key = privateKey.getPublicKey(PublicKeyType::secp256k1).bytes;
+    transaction.pub_key = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1).bytes;
 
     auto unsignedTx = transaction.getPreImage();
     auto hash = Hash::sha512(unsignedTx);

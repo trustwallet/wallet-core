@@ -5,19 +5,26 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
+        classpath 'com.android.tools.build:gradle:3.4.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
+}
+
+plugins {
+    id 'io.codearte.nexus-staging' version '0.20.0'
+}
+
+nexusStaging {
+    packageGroup 'com.trustwallet.walletcore'
+    stagingProfileId '9a3971ae7360bf'
 }
 
 allprojects {
     repositories {
         google()
         jcenter()
-        
     }
 }
 

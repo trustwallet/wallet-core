@@ -27,32 +27,12 @@ bool Address::isValid(const std::string& string) {
     return true;
 }
 
-Address::Address(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
-    if (decoded.size() != Address::size || decoded[0] != prefix) {
-        throw std::invalid_argument("Invalid address string");
-    }
-
-    std::copy(decoded.begin(), decoded.end(), bytes.begin());
-}
-
-Address::Address(const Data& data) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
-}
-
 Address::Address(const PublicKey& publicKey) {
-    if (publicKey.type() != PublicKeyType::secp256k1Extended) {
+    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
         throw std::invalid_argument("Invalid public key type");
     }
     const auto pkdata = Data(publicKey.bytes.begin() + 1, publicKey.bytes.end());
     const auto keyhash = Hash::keccak256(pkdata);
     bytes[0] = prefix;
     std::copy(keyhash.end() - size + 1, keyhash.end(), bytes.begin() + 1);
-}
-
-std::string Address::string() const {
-    return Base58::bitcoin.encodeCheck(bytes);
 }

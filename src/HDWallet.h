@@ -8,6 +8,7 @@
 
 #include "Data.h"
 #include "DerivationPath.h"
+#include "Hash.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 
@@ -64,17 +65,16 @@ class HDWallet {
     std::string deriveAddress(TWCoinType coin) const;
 
     /// Returns the extended private key.
-    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin,
-                                      TWHDVersion version) const;
+    std::string getExtendedPrivateKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
     /// Returns the exteded public key.
     std::string getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, TWHDVersion version) const;
 
     /// Computes the public key from an exteded public key representation.
-    static PublicKey getPublicKeyFromExtended(const std::string& extended, TWCurve curve,
-                                              enum TWHDVersion versionPublic,
-                                              enum TWHDVersion versionPrivate, uint32_t change,
-                                              uint32_t address);
+    static std::optional<PublicKey> getPublicKeyFromExtended(const std::string &extended, const DerivationPath& path);
+
+    /// Computes the private key from an exteded private key representation.
+    static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path);
 };
 
 } // namespace TW

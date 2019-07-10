@@ -26,7 +26,7 @@ inline void encodeType(FieldType type, int key, std::vector<uint8_t>& data) {
 }
 
 /// Encodes a variable length.
-inline void encodeVariableLength(int length, std::vector<uint8_t>& data) {
+inline void encodeVariableLength(size_t length, std::vector<uint8_t>& data) {
     if (length <= 192) {
         data.push_back(static_cast<unsigned char>(length));
     } else if (length <= 12480) {

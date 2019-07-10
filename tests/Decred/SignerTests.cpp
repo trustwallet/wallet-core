@@ -21,7 +21,7 @@ using namespace TW::Decred;
 
 TEST(DecredSigner, Sign) {
     const auto privateKey = PrivateKey(parse_hex("22a47fa09a223f2aa079edf85a7c2d4f8720ee63e502ee2869afab7de234b80c"));
-    const auto publicKey = privateKey.getPublicKey(PublicKeyType::secp256k1);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto keyhash = Hash::ripemd(Hash::blake256(publicKey.bytes));
 
     const auto address = Address(publicKey);

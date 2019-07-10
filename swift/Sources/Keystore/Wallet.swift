@@ -7,7 +7,7 @@
 import Foundation
 
 /// Coin wallet.
-public final class Wallet: Hashable {
+public final class Wallet: Hashable, Equatable {
     /// Unique wallet identifier.
     public let identifier: String
 

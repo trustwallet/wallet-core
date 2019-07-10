@@ -27,6 +27,10 @@ bool TWTezosAddressEqual(struct TWTezosAddress *_Nonnull lhs, struct TWTezosAddr
 TW_EXPORT_STATIC_METHOD
 bool TWTezosAddressIsValidString(TWString *_Nonnull string);
 
+/// Derives an originated account from the given inputs.
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWTezosAddressDeriveOriginatedAddress(TWString *_Nonnull operationHash, int operationIndex);
+
 /// Creates an address from a string representaion.
 TW_EXPORT_STATIC_METHOD
 struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnull string);

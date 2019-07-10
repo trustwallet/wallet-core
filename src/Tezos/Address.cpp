@@ -9,6 +9,7 @@
 #include "Forging.h"
 
 #include "../Base58.h"
+#include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
@@ -17,6 +18,12 @@
 using namespace TW;
 using namespace TW::Tezos;
 
+/// Address prefixes.
+const std::array<byte, 3> tz1Prefix{6, 161, 159};
+const std::array<byte, 3> tz2Prefix{6, 161, 161};
+const std::array<byte, 3> tz3Prefix{6, 161, 164};
+const std::array<byte, 3> kt1Prefix{2, 90, 121};
+
 bool Address::isValid(const std::string& string) {
     const auto decoded = Base58::bitcoin.decodeCheck(string);
     if (decoded.size() != Address::size) {
@@ -24,35 +31,18 @@ bool Address::isValid(const std::string& string) {
     }
 
     // verify prefix
-    std::array<byte, 3> prefix{6, 161, 159};
-    if (!std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
-        return false;
+    if (std::equal(tz1Prefix.begin(), tz1Prefix.end(), decoded.begin()) ||
+        std::equal(tz2Prefix.begin(), tz2Prefix.end(), decoded.begin()) ||
+        std::equal(tz3Prefix.begin(), tz3Prefix.end(), decoded.begin()) ||
+        std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
+        return true;
     }
 
-    return true;
-}
-
-Address::Address(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decodeCheck(string);
-    if (decoded.size() != Address::size) {
-        throw std::invalid_argument("Invalid address string");
-    }
-    std::copy(decoded.begin(), decoded.end(), bytes.begin());
-}
-
-Address::Address(const std::vector<uint8_t>& data) {
-    // TODO: isValid(bytes)
-    if (data.size() != size) {
-        throw std::invalid_argument("Invalid address data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
+    return false;
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto publicKeySize = publicKey.ed25519Size;
-
-    // Drop first byte of the public key which is a tag.
-    auto encoded = Data(publicKey.bytes.begin() + 1, publicKey.bytes.begin() + publicKeySize);
+    auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.end());
     auto hash = Hash::blake2b(encoded, 20);
     auto addressData = Data({6, 161, 159});
     append(addressData, hash);
@@ -61,8 +51,18 @@ Address::Address(const PublicKey& publicKey) {
     std::copy(addressData.data(), addressData.data() + Address::size, bytes.begin());
 }
 
-std::string Address::string() const {
-    return Base58::bitcoin.encodeCheck(bytes);
+std::string Address::deriveOriginatedAddress(const std::string& operationHash, int operationIndex) {
+    // Decode and remove 2 byte prefix.
+    auto decoded = Base58::bitcoin.decodeCheck(operationHash);
+    decoded.erase(decoded.begin(), decoded.begin() + 2);
+    TW::encode32BE(operationIndex, decoded);
+
+    auto hash = Hash::blake2b(decoded, 20);
+
+    auto prefix = Data({2, 90, 121});
+    prefix.insert(prefix.end(), hash.begin(), hash.end());
+
+    return Base58::bitcoin.encodeCheck(prefix);
 }
 
 Data Address::forge() const {
@@ -70,13 +70,12 @@ Data Address::forge() const {
     std::string s = string();
 
     if (s[0] == 'K') {
-        std::array<byte, 3> prefix = {2, 90, 121};
         const auto decoded = Base58::bitcoin.decodeCheck(s);
-        if (decoded.size() != 23 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        if (decoded.size() != 23 || !std::equal(kt1Prefix.begin(), kt1Prefix.end(), decoded.begin())) {
             throw std::invalid_argument("Invalid Address For forge");
         }
         data.push_back(0x01);
-        data.insert(data.end(), decoded.begin() + prefix.size(), decoded.end());
+        data.insert(data.end(), decoded.begin() + kt1Prefix.size(), decoded.end());
         data.push_back(0x00);
         return data;
     }

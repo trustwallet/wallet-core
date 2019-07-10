@@ -42,7 +42,7 @@ struct Transaction {
     bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    Data getPreImage(const Bitcoin::Script& scriptCode, int index, uint32_t hashType,
+    Data getPreImage(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType,
                      uint64_t amount) const;
     Data getPrevoutHash() const;
     Data getSequenceHash() const;

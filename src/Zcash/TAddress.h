@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../Base58Address.h"
 #include "../PublicKey.h"
 
 #include <array>
@@ -14,39 +15,18 @@
 
 namespace TW::Zcash {
 
-class TAddress {
+class TAddress : public TW::Base58Address<22> {
   public:
-    /// Number of bytes in an address.
-    static const size_t size = 22;
-
-    /// Address data consisting of a prefix byte followed by the public key
-    /// hash.
-    std::array<uint8_t, size> bytes;
-
-    /// Determines whether a collection of bytes makes a valid  address.
-    template <typename T>
-    static bool isValid(const T& data) {
-        return data.size() == size;
-    }
-
-    /// Determines whether a string makes a valid  address.
-    static bool isValid(const std::string& string);
-
-    /// Determines whether a string makes a valid address, and the prefix is
-    /// within the valid set.
-    static bool isValid(const std::string& string, const std::vector<byte>& validPrefixes);
+    static const byte staticPrefix = 0x1c;
 
     /// Initializes a  address with a string representation.
-    explicit TAddress(const std::string& string);
+    explicit TAddress(const std::string& string) : TW::Base58Address<size>(string) {}
 
     /// Initializes a  address with a collection of bytes.
-    explicit TAddress(const std::vector<uint8_t>& data);
+    explicit TAddress(const Data& data) : TW::Base58Address<size>(data) {}
 
     /// Initializes a  address with a public key and a prefix.
-    TAddress(const PublicKey& publicKey, uint8_t prefix);
-
-    /// Returns a string representation of the address.
-    std::string string() const;
+    TAddress(const PublicKey& publicKey, uint8_t prefix) : TW::Base58Address<size>(publicKey, {staticPrefix, prefix}) {}
 
   private:
     TAddress() = default;

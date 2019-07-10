@@ -9,6 +9,9 @@ $LOAD_PATH.unshift(File.join(CurrentDir, '..', 'lib'))
 require 'code_generator'
 require 'parser'
 
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+
 options = OpenStruct.new
 # default input / output path
 options.input = "#{CurrentDir}/../../include/TrustWalletCore"
@@ -17,6 +20,9 @@ options.swift = true
 options.java = true
 options.jni_h = true
 options.jni_c = true
+options.napi_h = true
+options.napi_cpp = true
+options.javascript = true
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: codegen [options]'
@@ -39,6 +45,15 @@ OptionParser.new do |opts|
   opts.on('-c', '--jnic', "Generate JNI code. Default: #{options.jni_c}") do |v|
     options.jni_c = v
   end
+  opts.on('-t', '--ts', "Generate JavaScript code. Default: #{options.javascript}") do |v|
+    options.javascript = v
+  end
+  opts.on('-n', '--napih', "Generate Napi headers. Default: #{options.napi_h}") do |v|
+    options.napi_h = v
+  end
+  opts.on('-m', '--napicpp', "Generate Napi code. Default: #{options.napi_cpp}") do |v|
+    options.napi_cpp = v
+  end
   opts.on_tail('-h', '--help', 'Show this message') do
     puts opts
     exit
@@ -48,7 +63,7 @@ end.parse!
 entities = []
 files = []
 Dir.foreach(options.input) do |item|
-  next if ['.', '..'].include?(item)
+  next if ['.', '..', '.DS_Store'].include?(item)
 
   entity = Parser.new(path: File.expand_path(File.join(options.input, item))).parse
   next if entity.nil?
@@ -69,4 +84,13 @@ if options.jni_h
 end
 if options.jni_c
   generator.render_jni_c
+end
+if options.javascript
+  generator.render_js
+end
+if options.napi_h
+  generator.render_napi_h
+end
+if options.napi_cpp
+  generator.render_napi_cpp
 end

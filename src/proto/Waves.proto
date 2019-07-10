@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package TW.Waves.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    int64 amount = 1;
+
+    string asset = 2;
+
+    // minimum 0.001 Waves (100000 Wavelets) for now
+    int64 fee = 3;
+
+    string fee_asset = 4;
+
+    string to = 5;
+
+    // any 140 bytes payload, will be displayed to the client as utf-8 string
+    bytes attachment = 6;
+
+    // in millis
+    int64 timestamp = 7;
+
+    bytes private_key = 8;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    bytes signature = 1;
+    string json = 2;
+}

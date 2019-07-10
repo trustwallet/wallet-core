@@ -5,11 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "../PublicKey.h"
+#include "../proto/Tezos.pb.h"
+
 #include <string>
 
 using namespace TW;
+using namespace TW::Tezos::Proto;
 
 Data forgeBool(bool input);
+Data forgeOperation(const Operation& operation);
 Data forgePublicKeyHash(const std::string& publicKeyHash);
 Data forgePublicKey(PublicKey publicKey);
 Data forgeZarith(uint64_t input);

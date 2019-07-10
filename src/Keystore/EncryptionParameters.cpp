@@ -10,8 +10,10 @@
 #include "../HexCoding.h"
 
 #include <TrezorCrypto/aes.h>
+#include <TrezorCrypto/pbkdf2.h>
 #include <TrezorCrypto/scrypt.h>
 
+#include <boost/variant/get.hpp>
 #include <cassert>
 
 using namespace TW;
@@ -27,10 +29,11 @@ static Data computeMAC(Iter begin, Iter end, Data key) {
 }
 
 EncryptionParameters::EncryptionParameters(const std::string& password, Data data) : mac() {
-    auto derivedKey = Data(kdfParams.desiredKeyLength);
-    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), kdfParams.salt.data(),
-           kdfParams.salt.size(), kdfParams.n, kdfParams.r, kdfParams.p, derivedKey.data(),
-           kdfParams.desiredKeyLength);
+    auto scryptParams = boost::get<ScryptParameters>(kdfParams);
+    auto derivedKey = Data(scryptParams.desiredKeyLength);
+    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
+           scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
+           scryptParams.desiredKeyLength);
 
     aes_encrypt_ctx ctx;
     auto result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
@@ -48,16 +51,27 @@ EncryptionParameters::~EncryptionParameters() {
 }
 
 Data EncryptionParameters::decrypt(const std::string& password) const {
-    if (kdf != "scrypt") {
+    auto derivedKey = Data();
+    auto mac = Data();
+
+    if (kdfParams.which() == 0) {
+        auto scryptParams = boost::get<ScryptParameters>(kdfParams);
+        derivedKey.resize(scryptParams.defaultDesiredKeyLength);
+        scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
+            scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
+            scryptParams.defaultDesiredKeyLength);
+        mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+    } else if (kdfParams.which() == 1) {
+        auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
+        derivedKey.resize(pbkdf2Params.defaultDesiredKeyLength);
+        pbkdf2_hmac_sha256(reinterpret_cast<const byte*>(password.data()), password.size(), pbkdf2Params.salt.data(),
+            pbkdf2Params.salt.size(), pbkdf2Params.iterations, derivedKey.data(),
+            pbkdf2Params.defaultDesiredKeyLength);
+        mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+    } else {
         throw DecryptionError::unsupportedKDF;
     }
 
-    auto derivedKey = Data(kdfParams.defaultDesiredKeyLength);
-    scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), kdfParams.salt.data(),
-           kdfParams.salt.size(), kdfParams.n, kdfParams.r, kdfParams.p, derivedKey.data(),
-           kdfParams.defaultDesiredKeyLength);
-
-    const auto mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
     if (mac != this->mac) {
         throw DecryptionError::invalidPassword;
     }
@@ -103,9 +117,14 @@ EncryptionParameters::EncryptionParameters(const nlohmann::json& json) {
     encrypted = parse_hex(json[CodingKeys::encrypted].get<std::string>());
     cipher = json[CodingKeys::cipher].get<std::string>();
     cipherParams = AESParameters(json[CodingKeys::cipherParams]);
-    kdf = json[CodingKeys::kdf].get<std::string>();
-    kdfParams = ScryptParameters(json[CodingKeys::kdfParams]);
     mac = parse_hex(json[CodingKeys::mac].get<std::string>());
+
+    auto kdf = json[CodingKeys::kdf].get<std::string>();
+    if (kdf == "scrypt") {
+        kdfParams = ScryptParameters(json[CodingKeys::kdfParams]);
+    } else if (kdf == "pbkdf2") {
+        kdfParams = PBKDF2Parameters(json[CodingKeys::kdfParams]);
+    }
 }
 
 nlohmann::json EncryptionParameters::json() const {
@@ -113,8 +132,18 @@ nlohmann::json EncryptionParameters::json() const {
     j[CodingKeys::encrypted] = hex(encrypted);
     j[CodingKeys::cipher] = cipher;
     j[CodingKeys::cipherParams] = cipherParams.json();
-    j[CodingKeys::kdf] = kdf;
-    j[CodingKeys::kdfParams] = kdfParams.json();
     j[CodingKeys::mac] = hex(mac);
+
+    if (kdfParams.which() == 0) {
+        auto scryptParams = boost::get<ScryptParameters>(kdfParams);
+        j[CodingKeys::kdf] = "scrypt";
+        j[CodingKeys::kdfParams] = scryptParams.json();
+    } else if (kdfParams.which() == 1) {
+        auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
+        j[CodingKeys::kdf] = "pbkdf2";
+        j[CodingKeys::kdfParams] = pbkdf2Params.json();
+
+    }
+
     return j;
 }
