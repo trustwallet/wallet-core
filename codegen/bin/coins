@@ -38,5 +38,5 @@ erbs.each do |erb|
   result = template.result(binding)
 
   path = File.join(erb['folder'], erb['file'])
-  File.write(path, result)
+  File.write(path, result)  
 end
