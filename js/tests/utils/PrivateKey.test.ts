@@ -20,11 +20,12 @@ describe('PrivateKey', () => {
     });
 
     it('test isValid for valid data', () => {
-        expect(PrivateKey.isValid(validPrivateKeyData)).to.be.true;
+        expect(PrivateKey.isValid(validPrivateKeyData, Curve.SECP256K1)).to.be.true;
+        expect(PrivateKey.isValid(validPrivateKeyData, Curve.ED25519)).to.be.true;
     });
 
     it('test valid', () => {
-        expect(PrivateKey.isValid(validPrivateKeyData)).to.be.true;
+        expect(PrivateKey.isValid(validPrivateKeyData, Curve.SECP256K1)).to.be.true;
         let privateKey: PrivateKey | null = null;
         try {
             privateKey = PrivateKey.createWithData(validPrivateKeyData);

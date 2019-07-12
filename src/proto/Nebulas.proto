@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package TW.Nebulas.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // sender's address.
+    string from_address = 1;
+
+    // Chain identifier (256-bit number)
+    bytes chain_id = 2;
+
+    // Nonce (256-bit number)
+    bytes nonce = 3;
+
+    // Gas price (256-bit number)
+    bytes gas_price = 4;
+
+    
+    // Gas limit (256-bit number)
+    bytes gas_limit = 5;
+
+    // Recipient's address.
+    string to_address = 6;
+
+    // Amount to send in wei, 1 NAS = 10^18 Wei (256-bit number)
+    bytes amount = 7;
+
+    // Timestamp to create transaction (256-bit number)
+    bytes timestamp = 8;
+
+    // Optional payload
+    bytes payload = 9;
+
+    // Private key.
+    bytes private_key = 10;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    uint32 algorithm = 1;
+    bytes signature = 2;
+}

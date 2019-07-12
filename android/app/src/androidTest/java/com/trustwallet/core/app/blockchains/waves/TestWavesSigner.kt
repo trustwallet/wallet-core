@@ -21,13 +21,12 @@ class TestWavesTransactionSigner {
         val signingInput = Waves.SigningInput.newBuilder()
         signingInput.apply {
             amount = 100_000_000
-            amountAsset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
+            asset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             fee = 100_000
             feeAsset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             to = "3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx"
             attachment = ByteString.copyFrom("68656c6c6f".toHexByteArray())
             timestamp = 1559146613
-            publicKey = ByteString.copyFrom("794e8429ddf58353eacab99b4c2b3b71c8c1b5927980db2d6f8db52744dd103d".toHexByteArray())
             privateKey = ByteString.copyFrom("68b7a9adb4a655b205f43dac413803785921e22cd7c4d05857b203a62621075f".toHexByteArray())
         }
 
