@@ -13,7 +13,7 @@
 
 const char* stringForHRP(enum TWHRP hrp) {
     switch (hrp) {
-<% coins.filter{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+<% coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
     case TWHRP<%= format_name(coin['name']) %>:
         return HRP_<%= coin['id'].upcase %>;
 <% end -%>
@@ -22,7 +22,7 @@ const char* stringForHRP(enum TWHRP hrp) {
 }
 
 enum TWHRP hrpForString(const char *_Nonnull string) {
-<% coins.filter{ |coin| coin.has_key?('hrp') }.each_with_index do |coin, index| -%>
+<% coins.select{ |coin| coin.has_key?('hrp') }.each_with_index do |coin, index| -%>
     <% if index >= 1 -%>} else <% end -%>if (std::strcmp(string, HRP_<%= coin['id'].upcase %>) == 0) {
         return TWHRP<%= format_name(coin['name']) %>;
 <% end -%>
