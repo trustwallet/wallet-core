@@ -9,7 +9,6 @@
 #include "../uint256.h"
 #include "../UInt.h"
 #include "../Data.h"
-#include "../ReadData.h"
 #include "../HexCoding.h"
 #include "Transaction.h"
 #include "MinerTransaction.h"

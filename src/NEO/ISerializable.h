@@ -10,8 +10,10 @@
 #include <iterator>
 #include <cstdint>
 #include <climits>
+
 #include "../Data.h"
-#include "../ReadData.h"
+#include "../BinaryCoding.h"
+#include "ReadData.h"
 
 namespace TW::NEO {
 
@@ -24,7 +26,8 @@ class ISerializable {
 
     template<class T>
     static inline Data serialize(const std::vector<T> & data) {
-        Data resp(writeVar<uint64_t>(data.size()));
+        Data resp;
+        encodeVarInt(data.size(), resp);
         for (auto it = data.begin(); it < data.end(); ++it) {
             append(resp, it->serialize());
         }
@@ -33,7 +36,8 @@ class ISerializable {
 
     template<class T>
     static inline Data serialize(const T* data, int size) {
-        Data resp(writeVar<uint64_t>(size));
+        Data resp;
+        encodeVarInt(uint64_t(size), resp);
         for (int i = 0; i < size; ++i) {
             append(resp, data[i].serialize());
         }
@@ -42,7 +46,8 @@ class ISerializable {
 
     template<class T>
     static inline Data serialize(std::iterator<std::input_iterator_tag, T> begin, std::iterator<std::input_iterator_tag, T> end) {
-        Data resp(writeVar<uint64_t>(end - begin));
+        Data resp;
+        encodeVarInt(uint64_t(end - begin), resp);
         for (auto it = begin; it < end; ++it) {
             append(resp, it->serialize());
         }
@@ -55,16 +60,8 @@ class ISerializable {
         if (size < 0) {
             throw std::invalid_argument("ISerializable::deserialize ArgumentOutOfRangeException");
         }
-        if (size < 0xFD) {
-            initial_pos += 1;
-        } else if (size <= 0xFFFF) {
-            initial_pos += 2;
-        } else if (size <= 0xFFFFFFFF) {
-            initial_pos += 4;
-        } else {
-            initial_pos += 8;
-        }
 
+        initial_pos += varIntSize(size);
         for (uint64_t i = 0; i < size; ++i) {
             T value;
             value.deserialize(data, initial_pos);

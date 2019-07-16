@@ -9,7 +9,8 @@
 #include "../uint256.h"
 #include "../UInt.h"
 #include "../Data.h"
-#include "../ReadData.h"
+#include "ReadData.h"
+#include "../BinaryCoding.h"
 #include "ISerializable.h"
 
 namespace TW::NEO {
@@ -28,12 +29,14 @@ class TransactionOutput : public ISerializable {
 
     void deserialize(const Data &data, int initial_pos = 0) override {
         assetId = load<uint256_t>(readBytes(data, 32, initial_pos));
-        value = readNumber<int64_t>(data, initial_pos + 32);
+        value = decode64LE(data.data() + initial_pos + 32);
         scriptHash = load<uint160_t>(readBytes(data, 20, initial_pos + 32 + 8));
     }
 
     Data serialize() const override {
-        return concat(concat(store(assetId), write(value)), store<uint160_t>(scriptHash));
+        auto resp = store(assetId);
+        encode64LE(value, resp);
+        return concat(resp, store<uint160_t>(scriptHash));
     }
 
     bool operator==(const TransactionOutput &other) const {

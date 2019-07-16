@@ -23,8 +23,9 @@ class Witness : public ISerializable {
     }
 
     void deserialize(const Data &data, int initial_pos = 0) override {
-        invocationScript = readVarBytes(data, initial_pos);
-        verificationScript = readVarBytes(data, initial_pos + 4 + int(invocationScript.size()));
+        uint32_t size;
+        invocationScript = readVarBytes(data, initial_pos, &size);
+        verificationScript = readVarBytes(data, initial_pos + size);
     }
 
     Data serialize() const override {

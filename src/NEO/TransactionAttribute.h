@@ -9,7 +9,6 @@
 #include "TransactionAttributeUsage.h"
 #include "ISerializable.h"
 #include "../Data.h"
-#include "../ReadData.h"
 
 namespace TW::NEO {
 

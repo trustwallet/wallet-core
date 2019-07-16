@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Transaction.h"
-#include "../ReadData.h"
 
 namespace TW::NEO {
 
@@ -15,13 +14,15 @@ class MinerTransaction : public Transaction {
   public:
     uint32_t nonce;
 
-    virtual int deserializeExclusiveData(const Data &data, int initial_pos = 0) {
-        nonce = readNumber<uint32_t>(data, initial_pos);
+     virtual int deserializeExclusiveData(const Data &data, int initial_pos = 0) {
+        nonce = decode32LE(data.data() + initial_pos);
         return initial_pos + 4;
     }
 
     virtual Data serializeExclusiveData() const {
-        return write<uint32_t>(nonce);
+        auto resp = Data();
+        encode32LE(nonce, resp);
+        return resp;
     }
 
     bool operator==(const MinerTransaction &other) const {

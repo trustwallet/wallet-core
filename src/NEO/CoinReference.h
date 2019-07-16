@@ -12,7 +12,8 @@
 #include "../uint256.h"
 #include "../UInt.h"
 #include "../Data.h"
-#include "../ReadData.h"
+#include "ReadData.h"
+#include "../BinaryCoding.h"
 
 namespace TW::NEO {
 
@@ -29,11 +30,13 @@ class CoinReference : public ISerializable {
 
     void deserialize(const Data &data, int initial_pos = 0) override {
         prevHash = load<uint256_t>(readBytes(data, 32, initial_pos));
-        prevIndex = readNumber<uint16_t>(data, initial_pos + 32);
+        prevIndex = decode16LE(data.data() + initial_pos + 32);
     }
 
     Data serialize() const override {
-        return concat(store(prevHash), write<uint16_t>(prevIndex));
+        auto resp = store(prevHash);
+        encode16LE(prevIndex, resp);
+        return resp;
     }
 
     bool operator==(const CoinReference &other) const {
