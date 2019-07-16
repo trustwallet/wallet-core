@@ -16,7 +16,7 @@ public extension CoinType {
         switch self {
         case .binance, .cosmos, .terra:
             return CosmosAddress(string: string)
-        case .bitcoin, .litecoin, .viacoin, .qtum, .digiByte:
+        case .bitcoin, .litecoin, .viacoin, .qtum, .digiByte, .monacoin:
             if let segwitAddress = SegwitAddress(string: string) {
                 return segwitAddress
             } else {

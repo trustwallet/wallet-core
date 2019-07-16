@@ -281,4 +281,15 @@ TEST(Coin, ValidateAddressNebulas) {
     EXPECT_FALSE(validateAddress(TWCoinTypeNebulas, "123"));
 }
 
+TEST(Coin, validateAddressMonacoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeMonacoin, "MVELZC3ks1Xk59kvKWuSN3mpByNwaxeaBJ"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeMonacoin, "PHjTKtgYLTJ9D2Bzw2f6xBB41KBm2HeGfg"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeMonacoin, "mona1qp8f842ywwr9h5rdxyzggex7q3trvvvaarfssxccju52rj6htfzfsqr79j2"));
+
+    // bad address
+    EXPECT_FALSE(validateAddress(TWCoinTypeMonacoin, "YHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"));
+    // testnet address
+    EXPECT_FALSE(validateAddress(TWCoinTypeMonacoin, "mwJAu1BWcRSQhepZ71wiGoSwsD6hnB5B7G"));
+}
+
 } // namespace TW
