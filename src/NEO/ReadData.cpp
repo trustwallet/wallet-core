@@ -19,7 +19,7 @@ TW::Data TW::readVarBytes(const Data &from, int initial_pos, uint32_t* dataRead)
     uint64_t size = readVar<uint64_t>(from, initial_pos);
     auto shift = varIntSize(size);
     if (dataRead) {
-        *dataRead = shift + size;
+        *dataRead = uint32_t(shift + size);
     }
     return readBytes(from, size, initial_pos + shift);
 }
