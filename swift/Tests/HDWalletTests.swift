@@ -355,4 +355,13 @@ class HDWalletTests: XCTestCase {
 
         XCTAssertEqual(address, "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe")
     }
+
+    func testDeriveMonacoin() {
+        let monacoin = CoinType.monacoin
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: monacoin)
+        let address = monacoin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("MHkScH5duuiaAkdQ22NkLWmXqWnjq3hThM", address)
+    }
 }

@@ -69,6 +69,7 @@ describe('CoinAddressDerivation', () => {
             case CoinType.AETERNITY: expect('ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN').to.equal(address); break;
             case CoinType.ARK: expect('Ac49m5pu5YpMMNgEbSYeZUEpRMHcSK3DfV').to.equal(address); break;
             case CoinType.TERRA: expect('terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug').to.equal(address); break;
+            case CoinType.MONACOIN: expect('M9xFZzZdZhCDxpx42cM8bQHnLwaeX1aNja').to.equal(address); break;
         }
     };
 
