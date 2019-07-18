@@ -138,6 +138,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto terra = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra));
     assertStringsEqual(terra, "LUNA");
+
+    auto mona = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonacoin));
+    assertStringsEqual(mona, "MONA");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -186,6 +189,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebulas), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonacoin), 8);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -328,6 +332,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto terra = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra, txId));
     assertStringsEqual(terra, "https://terra.stake.id/?#/tx/123");
+
+    auto mona = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonacoin, txId));
+    assertStringsEqual(mona, "https://blockbook.electrum-mona.org/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -462,6 +469,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto terra = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
     assertStringsEqual(terra, "terra");
+
+    auto mona = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonacoin));
+    assertStringsEqual(mona, "monacoin");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -596,6 +606,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto terra = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
     assertStringsEqual(terra, "Terra");
+
+    auto mona = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonacoin));
+    assertStringsEqual(mona, "Monacoin");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
@@ -633,6 +646,7 @@ TEST(TWCoinTypeConfiguration, P2SHPrefix) {
     ASSERT_EQ(0x3F, TWCoinTypeP2shPrefix(TWCoinTypeDigiByte));
     ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
     ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
+    ASSERT_EQ(0x37, TWCoinTypeP2shPrefix(TWCoinTypeMonacoin));
 }
 
 TEST(TWCoinTypeConfiguration, StaticPrefix) {

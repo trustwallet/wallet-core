@@ -85,7 +85,7 @@ enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
 
 byte TW::staticPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.filter{ |coin| coin.has_key?('staticPrefix') }.each do |coin| -%>
+<%  coins.select{ |coin| coin.has_key?('staticPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['staticPrefix'] %>;
 <% end -%>
@@ -95,7 +95,7 @@ byte TW::staticPrefix(TWCoinType coin) {
 
 byte TW::p2pkhPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.filter{ |coin| coin.has_key?('p2pkhPrefix') }.each do |coin| -%>
+<%  coins.select{ |coin| coin.has_key?('p2pkhPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['p2pkhPrefix'] %>;
 <% end -%>
@@ -105,7 +105,7 @@ byte TW::p2pkhPrefix(TWCoinType coin) {
 
 byte TW::p2shPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.filter{ |coin| coin.has_key?('p2shPrefix') }.each do |coin| -%>
+<%  coins.select{ |coin| coin.has_key?('p2shPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['p2shPrefix'] %>;
 <% end -%>
@@ -115,7 +115,7 @@ byte TW::p2shPrefix(TWCoinType coin) {
 
 enum TWHRP TW::hrp(TWCoinType coin) {
     switch (coin) {
-<%  coins.filter{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+<%  coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return TWHRP<%= format_name(coin['name']) %>;
 <% end -%>
