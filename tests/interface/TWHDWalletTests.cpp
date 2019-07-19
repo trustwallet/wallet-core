@@ -89,7 +89,7 @@ TEST(HDWallet, DeriveBitcoin) {
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), false);
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
-    assertHexEqual(publicKeyData, "047ea5dff03f677502c4a1d73c5ac897200e56b155e876774c8fba0cc22f80b9414ec07cda7b1c9a84c2e04ea2746c21afacc5e91b47427c453c3f1a4a3e983ce5");
+    assertHexEqual(publicKeyData, "0440ebf906b948281289405317a5eb9a98045af8a8ab5311b2e3060cfb66c507a19b6180423c983e676b44536197b508e140cc42bd3def9a2ca0e90990edb79ff4");
 }
 
 TEST(HDWallet, DeriveEthereum) {
@@ -228,7 +228,8 @@ TEST(HDWallet, PublicKeyFromZ) {
     assertHexEqual(data4, "03995137c8eb3b223c904259e9b571a8939a0ec99b0717684c3936407ca8538c1b");
     assertHexEqual(data11, "0226a07edd0227fa6bc36239c0bd4db83d5e488f8fb1eeb68f89a5be916aad2d60");
 
-    assertStringsEqual(address4, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n");
+    //assertStringsEqual(address4, "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n");
+    assertStringsEqual(address4, "1Lpy5RHkwSho9HJrfSGTvxXi6ysCJqjRYb");
 }
 
 TEST(HDWallet, MultipleThreads) {

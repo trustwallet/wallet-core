@@ -131,7 +131,8 @@ TEST(StoredKey, MissingAddress) {
     key.fixAddresses("password");
 
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0x04De84ec355BAe81b51cD53Fdc8AA30A61872C95");
-    EXPECT_EQ(key.account(TWCoinTypeBitcoin, nullptr)->address, "bc1qe938ncm8fhdqg27xmxd7lq02jz9xh0x48r22lc");
+    //EXPECT_EQ(key.account(TWCoinTypeBitcoin, nullptr)->address, "bc1qe938ncm8fhdqg27xmxd7lq02jz9xh0x48r22lc");
+    EXPECT_EQ(key.account(TWCoinTypeBitcoin, nullptr)->address, "1KMpnoMDLQp3XGcw4hY3AYc5WQ7TJeWQ4N");
 }
 
 TEST(StoredKey, EtherWalletAddressNo0x) {
