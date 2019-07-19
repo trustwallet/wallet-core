@@ -9,8 +9,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://explorer.nebulas.io/#/tx/",
-        "url": "https://nebulas.io",
-        "rpcNodeInfo": "https://github.com/nebulasio/go-nebulas"
+        "info": {
+            "url": "https://nebulas.io",
+            "node": "https://github.com/nebulasio/go-nebulas",
+            "docs": "https://wiki.nebulas.io",
+            "rpcDocs": "https://wiki.nebulas.io/en/latest/dapp-development/rpc/rpc.html"
+        }
     },
     {
         "id": "ethereum",
