@@ -837,5 +837,18 @@
         "explorer": "https://blockbook.electrum-mona.org/tx/",
         "url": "https://monacoin.org",
         "rpcNodeInfo": "https://github.com/trezor/blockbook"
+    },
+    {
+        "id": "fio",
+        "name": "FIO",
+        "symbol": "FIO",
+        "decimals": 9,
+        "blockchain": "EOS",
+        "derivationPath": "m/44'/235'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "explorer": "https://fio.foundation",
+        "url": "https://fio.foundation",
+        "rpcNodeInfo": "https://fio.foundation"
     }
 ]
