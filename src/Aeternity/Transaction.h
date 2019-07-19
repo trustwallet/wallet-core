@@ -8,6 +8,7 @@
 
 #include <Data.h>
 #include <string>
+#include <uint256.h>
 
 namespace TW::Aeternity {
 
@@ -18,9 +19,9 @@ class Transaction {
 
     std::string recipient_id;
 
-    uint64_t amount;
+    uint256_t amount;
 
-    uint64_t fee;
+    uint256_t fee;
 
     std::string payload;
 
@@ -32,8 +33,8 @@ class Transaction {
     Transaction(
         std::string &sender_id,
         std::string &recipientId,
-        uint64_t amount,
-        uint64_t fee,
+        uint256_t amount,
+        uint256_t fee,
         std::string &payload,
         uint64_t ttl,
         uint64_t nonce
@@ -49,6 +50,9 @@ class Transaction {
     Data encode();
 
     static Data buildTag(const std::string &address);
+
+    static Data encodeSafeZero(uint256_t value);
+
 
 };
 

@@ -10,6 +10,7 @@
 
 #include <Aeternity/Address.h>
 #include <gtest/gtest.h>
+#include <uint256.h>
 
 using namespace TW;
 using namespace TW::Aeternity;
@@ -17,8 +18,8 @@ using namespace TW::Aeternity;
 TEST(AeternitySigner, Sign) {
     std::string sender_id = "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw";
     std::string recipient_id = "ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v";
-    uint64_t amount = 10;
-    double fee = 2e13;
+    uint256_t amount = 10;
+    uint256_t fee = 20000000000000;
     std::string payload = "Hello World";
     uint64_t ttl = 82757;
     uint64_t nonce = 49;
