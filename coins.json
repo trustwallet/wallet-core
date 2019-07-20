@@ -11,8 +11,8 @@
         "explorer": "https://explorer.nebulas.io/#/tx/",
         "info": {
             "url": "https://nebulas.io",
-            "clientNode": "https://github.com/nebulasio/go-nebulas",
-            "publicNode": "https://mainnet.nebulas.io",
+            "client": "https://github.com/nebulasio/go-nebulas",
+            "publicClient": "https://mainnet.nebulas.io",
             "docs": "https://wiki.nebulas.io",
             "rpcDocs": "https://wiki.nebulas.io/en/latest/dapp-development/rpc/rpc.html"
         }
