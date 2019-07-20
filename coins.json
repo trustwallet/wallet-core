@@ -12,6 +12,7 @@
         "info": {
             "url": "https://nebulas.io",
             "node": "https://github.com/nebulasio/go-nebulas",
+            "publicNode": "https://mainnet.nebulas.io",
             "docs": "https://wiki.nebulas.io",
             "rpcDocs": "https://wiki.nebulas.io/en/latest/dapp-development/rpc/rpc.html"
         }
