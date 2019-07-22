@@ -30,8 +30,10 @@ This list is generated from `src/coins.json`
 | 178     | POA Network      | POA    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/178.png" width="32" />     | <https://poa.network>          |
 | 194     | EOS              | EOS    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/194.png" width="32" />     | <http://eos.io>                |
 | 195     | Tron             | TRX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/195.png" width="32" />     | <https://tron.network>         |
+| 236     | Bitcoin SV       | BSV    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/236.png" width="32" />     | <https://bitcoinsv.io>         |
 | 237     | DEXON            | DXN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/237.png" width="32" />     | <https://dexon.org>            |
 | 242     | Nimiq            | NIM    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/242.png" width="32" />     | <https://nimiq.com>            |
+| 245     | Simple Ledger    | SLP    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/245.png" width="32" />     | <https://bitcoincash.org>      |
 | 282     | BravoCoin        | BRAVO  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/282.png" width="32" />     | <https://bravocoin.com>        |
 | 291     | IOST             | IOST   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/291.png" width="32" />     | <https://iost.io>              |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/304.png" width="32" />     | <https://iotex.io>             |
