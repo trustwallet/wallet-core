@@ -261,6 +261,7 @@ TEST(Coin, ValidateAddressWaves) {
 }
 
 TEST(Coin, ValidateAddressAeternity) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeAeternity, "ak_22ZPJTLbSDpAUfJbBJvqvXFuFe2RoP1ZEd7K9qaHJWF92MgnWm"));
     EXPECT_TRUE(validateAddress(TWCoinTypeAeternity, "ak_11111111111111111111111111111111273Yts"));
     EXPECT_FALSE(validateAddress(TWCoinTypeAeternity, "ak_11111111111111111111111111111111273Ytt"));// wrong checksum
     EXPECT_FALSE(validateAddress(TWCoinTypeAeternity,"ka_11111111111111111111111111111111273Yts")); // wrong prefix
