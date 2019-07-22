@@ -800,7 +800,7 @@
         "derivationPath": "m/44'/457'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://www.aeknow.org/block/transaction/",
+        "explorer": "https://explorer.aepps.com/#/tx/",
         "url": "https://aeternity.com",
         "rpcNodeInfo": "https://github.com/aeternity/aeternity"
     },

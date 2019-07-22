@@ -1,3 +1,5 @@
+#include <utility>
+
 // Copyright © 2017-2019 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
@@ -41,8 +43,8 @@ class Transaction {
     )
         : sender_id(sender_id)
         , recipient_id(recipientId)
-        , amount(amount)
-        , fee(fee)
+        , amount(std::move(amount))
+        , fee(std::move(fee))
         , payload(payload)
         , ttl(ttl)
         , nonce(nonce){};
