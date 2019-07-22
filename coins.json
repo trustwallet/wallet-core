@@ -9,8 +9,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://explorer.nebulas.io/#/tx/",
-        "url": "https://nebulas.io",
-        "rpcNodeInfo": "https://github.com/nebulasio/go-nebulas"
+        "info": {
+            "url": "https://nebulas.io",
+            "client": "https://github.com/nebulasio/go-nebulas",
+            "clientPublic": "https://mainnet.nebulas.io",
+            "clientDocs": "https://wiki.nebulas.io/en/latest/dapp-development/rpc/rpc.html"
+        }
     },
     {
         "id": "ethereum",
@@ -22,8 +26,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://etherscan.io/tx/",
-        "url": "https://ethereum.org",
-        "rpcNodeInfo": "https://github.com/ethereum/go-ethereum"
+        "info": {
+            "url": "https://ethereum.org",
+            "client": "https://github.com/ethereum/go-ethereum",
+            "clientPublic": "https://mainnet.infura.io",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "bitcoin",
@@ -42,8 +50,12 @@
         "xpub": "zpub",
         "xprv": "zprv",
         "explorer": "https://blockchair.com/bitcoin/transaction/",
-        "url": "https://bitcoin.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://bitcoin.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "bitcoincash",
@@ -62,8 +74,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://blockchair.com/bitcoin-cash/transaction/",
-        "url": "https://bitcoincash.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://bitcoincash.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "callisto",
@@ -75,8 +91,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://explorer2.callisto.network/tx/",
-        "url": "https://callisto.network",
-        "rpcNodeInfo": "https://github.com/EthereumCommonwealth/go-callisto"
+        "info": {
+            "url": "https://callisto.network",
+            "client": "https://github.com/EthereumCommonwealth/go-callisto",
+            "clientPublic": "https://clo-geth.0xinfra.com",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "dash",
@@ -94,8 +114,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://blockchair.com/dash/transaction/",
-        "url": "https://dash.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://dash.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "decred",
@@ -114,8 +138,12 @@
         "xpub": "dpub",
         "xprv": "dprv",
         "explorer": "https://mainnet.decred.org/tx/",
-        "url": "https://decred.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://decred.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "digibyte",
@@ -134,8 +162,12 @@
         "xpub": "zpub",
         "xprv": "zprv",
         "explorer": "https://digiexplorer.info/tx/",
-        "url": "https://www.digibyte.io",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://www.digibyte.io",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "doge",
@@ -153,8 +185,12 @@
         "xpub": "dgub",
         "xprv": "dgpv",
         "explorer": "https://blockchair.com/dogecoin/transaction/",
-        "url": "https://dogecoin.com",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://dogecoin.com",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "classic",
@@ -166,8 +202,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://gastracker.io/tx/",
-        "url": "https://ethereumclassic.org/",
-        "rpcNodeInfo": "https://github.com/ethereumclassic/go-ethereum"
+        "info": {
+            "url": "https://ethereumclassic.org",
+            "client": "https://github.com/ethereumclassic/go-ethereum",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "ellaism",
@@ -179,8 +219,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://explorer.ellaism.org/tx/",
-        "url": "https://ellaism.org",
-        "rpcNodeInfo": "https://github.com/ellaism/go-ellaism"
+        "info": {
+            "url": "https://ellaism.org",
+            "client": "https://github.com/ellaism/go-ellaism",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "ethersocial",
@@ -192,8 +236,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://ethersocial.net/tx/",
-        "url": "https://ethersocial.org",
-        "rpcNodeInfo": "https://github.com/Ethersocial/go-ethersocial"
+        "info": {
+            "url": "https://ethersocial.org",
+            "client": "https://github.com/Ethersocial/go-ethersocial",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "gochain",
@@ -205,8 +253,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://explorer.gochain.io/tx/",
-        "url": "https://gochain.io",
-        "rpcNodeInfo": "https://github.com/gochain-io/gochain"
+        "info": {
+            "url": "https://gochain.io",
+            "client": "https://github.com/gochain-io/gochain",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "groestlcoin",
@@ -225,8 +277,12 @@
         "xpub": "zpub",
         "xprv": "zprv",
         "explorer": "https://blockchair.com/groestlcoin/transaction/",
-        "url": "https://www.groestlcoin.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://www.groestlcoin.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "icon",
@@ -238,8 +294,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://tracker.icon.foundation/transaction/",
-        "url": "https://icon.foundation",
-        "rpcNodeInfo": "https://github.com/icon-project/icon-rpc-server"
+        "info": {
+            "url": "https://icon.foundation",
+            "client": "https://github.com/icon-project/icon-rpc-server",
+            "clientPublic": "",
+            "clientDocs": "https://www.icondev.io/docs/icon-json-rpc-v3"
+        }
     },
     {
         "id": "iost",
@@ -251,8 +311,12 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://www.iostabc.com/tx/",
-        "url": "https://iost.io",
-        "rpcNodeInfo": "https://github.com/iost-official/go-iost"
+        "info": {
+            "url": "https://iost.io",
+            "client": "https://github.com/iost-official/go-iost",
+            "clientPublic": "",
+            "clientDocs": "https://developers.iost.io/docs/en/6-reference/API.html"
+        }
     },
     {
         "id": "litecoin",
@@ -271,8 +335,12 @@
         "xpub": "zpub",
         "xprv": "zprv",
         "explorer": "https://blockchair.com/litecoin/transaction/",
-        "url": "https://litecoin.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://litecoin.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "ontology",
@@ -284,8 +352,12 @@
         "curve": "nist256p1",
         "publicKeyType": "nist256p1",
         "explorer": "https://explorer.ont.io/transaction/",
-        "url": "https://ont.io",
-        "rpcNodeInfo": "https://github.com/ontio/ontology"
+        "info": {
+            "url": "https://ont.io",
+            "client": "https://github.com/ontio/ontology",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ontio/ontology/blob/master/docs/specifications/rpc_api.md"
+        }
     },
     {
         "id": "viacoin",
@@ -304,8 +376,12 @@
         "xpub": "zpub",
         "xprv": "zprv",
         "explorer": "https://explorer.viacoin.org/tx/",
-        "url": "https://viacoin.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://viacoin.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "poa",
@@ -317,8 +393,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://poaexplorer.com/txid/search/",
-        "url": "https://poa.network",
-        "rpcNodeInfo": "https://github.com/poanetwork/parity-ethereum"
+        "info": {
+            "url": "https://poa.network",
+            "client": "https://github.com/poanetwork/parity-ethereum",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "thundertoken",
@@ -330,8 +410,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://scan.thundercore.com/transactions/",
-        "url": "https://decred.org/",
-        "rpcNodeInfo": "https://github.com/thundercore/pala"
+        "info": {
+            "url": "https://thundercore.com",
+            "client": "https://github.com/thundercore/pala",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "tomochain",
@@ -343,8 +427,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://scan.tomochain.com/txs/",
-        "url": "https://tomochain.com",
-        "rpcNodeInfo": "https://github.com/tomochain/tomochain"
+        "info": {
+            "url": "https://tomochain.com",
+            "client": "https://github.com/tomochain/tomochain",
+            "clientPublic": "https://rpc.tomochain.com",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "tron",
@@ -356,8 +444,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://tronscan.org/#/transaction/",
-        "url": "https://tron.network",
-        "rpcNodeInfo": "https://github.com/tronprotocol/java-tron"
+        "info": {
+            "url": "https://tron.network",
+            "client": "https://github.com/tronprotocol/java-tron",
+            "clientPublic": "https://api.trongrid.io",
+            "clientDocs": "https://developers.tron.network/docs/tron-wallet-rpc-api"
+        }
     },
     {
         "id": "vechain",
@@ -369,8 +461,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://explore.veforge.com/transactions/",
-        "url": "https://vechain.org",
-        "rpcNodeInfo": "https://github.com/vechain/thor"
+        "info": {
+            "url": "https://vechain.org",
+            "client": "https://github.com/vechain/thor",
+            "clientPublic": "",
+            "clientDocs": "https://doc.vechainworld.io/docs"
+        }
     },
     {
         "id": "wanchain",
@@ -382,8 +478,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://explorer.wanchain.org/tx/",
-        "url": "https://wanchain.org",
-        "rpcNodeInfo": "https://github.com/wanchain/go-wanchain"
+        "info": {
+            "url": "https://wanchain.org",
+            "client": "https://github.com/wanchain/go-wanchain",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "xdai",
@@ -395,8 +495,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://blockscout.com/poa/dai/tx/",
-        "url": "https://poa.network/xdai",
-        "rpcNodeInfo": "https://github.com/poanetwork/parity-ethereum"
+        "info": {
+            "url": "https://poa.network/xdai",
+            "client": "https://github.com/poanetwork/parity-ethereum",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "zcoin",
@@ -414,8 +518,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://explorer.zcoin.io/tx/",
-        "url": "https://zcoin.io",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://zcoin.io",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "zcash",
@@ -434,8 +542,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://chain.so/tx/ZEC/",
-        "url": "https://z.cash",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://z.cash",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "binance",
@@ -448,8 +560,12 @@
         "publicKeyType": "secp256k1",
         "hrp": "bnb",
         "explorer": "https://explorer.binance.org/tx/",
-        "url": "https://binance.org",
-        "rpcNodeInfo": "https://github.com/binance-chain/node-binary"
+        "info": {
+            "url": "https://binance.org",
+            "client": "https://github.com/binance-chain/node-binary",
+            "clientPublic": "https://dex.binance.org",
+            "clientDocs": "https://docs.binance.org/api-reference/dex-api/paths.html"
+        }
     },
     {
         "id": "ripple",
@@ -461,8 +577,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "explorer": "https://bithomp.com/explorer/",
-        "url": "https://ripple.com/xrp",
-        "rpcNodeInfo": "https://github.com/ripple/rippled"
+        "info": {
+            "url": "https://ripple.com/xrp",
+            "client": "https://github.com/ripple/rippled",
+            "clientPublic": "https://s2.ripple.com:51234",
+            "clientDocs": "https://xrpl.org/rippled-api.html"
+        }
     },
     {
         "id": "tezos",
@@ -474,8 +594,12 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://tzscan.io/",
-        "url": "https://tezos.com",
-        "rpcNodeInfo": "https://gitlab.com/tezos/tezos"
+        "info": {
+            "url": "https://tezos.com",
+            "client": "https://gitlab.com/tezos/tezos",
+            "clientPublic": "https://s2.ripple.com:51234",
+            "clientDocs": "https://tezos.gitlab.io/tezos/api/rpc.html"
+        }
     },
     {
         "id": "nimiq",
@@ -487,8 +611,12 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://nimiq.watch/#",
-        "url": "https://nimiq.com",
-        "rpcNodeInfo": "https://github.com/nimiq/core-rs"
+        "info": {
+            "url": "https://nimiq.com",
+            "client": "https://github.com/nimiq/core-rs",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/nimiq/core-js/wiki/JSON-RPC-API"
+        }
     },
     {
         "id": "stellar",
@@ -500,8 +628,12 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://stellarscan.io/transaction/",
-        "url": "https://stellar.org",
-        "rpcNodeInfo": "https://github.com/stellar/go"
+        "info": {
+            "url": "https://stellar.org",
+            "client": "https://github.com/stellar/go",
+            "clientPublic": "https://horizon.stellar.org",
+            "clientDocs": "https://www.stellar.org/developers/horizon/reference"
+        }
     },
     {
         "id": "aion",
@@ -513,8 +645,12 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://mainnet.aion.network/#/transaction/",
-        "url": "https://aion.network",
-        "rpcNodeInfo": "https://github.com/aionnetwork/aion"
+        "info": {
+            "url": "https://aion.network",
+            "client": "https://github.com/aionnetwork/aion",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/aionnetwork/aion/wiki/JSON-RPC-API-Docs"
+        }
     },
     {
         "id": "cosmos",
@@ -527,8 +663,12 @@
         "publicKeyType": "secp256k1",
         "hrp": "cosmos",
         "explorer": "https://www.mintscan.io/txs/",
-        "url": "https://cosmos.network",
-        "rpcNodeInfo": "https://github.com/cosmos/cosmos-sdk"
+        "info": {
+            "url": "https://cosmos.network",
+            "client": "https://github.com/cosmos/cosmos-sdk",
+            "clientPublic": "https://stargate.cosmos.network",
+            "clientDocs": "https://cosmos.network/rpc"
+        }
     },
     {
         "id": "neo",
@@ -540,8 +680,12 @@
         "curve": "nist256p1",
         "publicKeyType": "nist256p1",
         "explorer": "https://neoscan.io/transaction/",
-        "url": "https://neo.org",
-        "rpcNodeInfo": "https://github.com/neo-project/neo"
+        "info": {
+            "url": "https://neo.org",
+            "client": "https://github.com/neo-project/neo",
+            "clientPublic": "",
+            "clientDocs": "https://www.stellar.org/developers/horizon/reference"
+        }
     },
     {
         "id": "kin",
@@ -553,8 +697,12 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://kinexplorer.com/tx/",
-        "url": "https://www.kin.org",
-        "rpcNodeInfo": "https://github.com/kinecosystem/go"
+        "info": {
+            "url": "https://www.kin.org",
+            "client": "https://github.com/kinecosystem/go",
+            "clientPublic": "https://horizon.kinfederation.com",
+            "clientDocs": "https://www.stellar.org/developers/horizon/reference"
+        }
     },
     {
         "id": "nuls",
@@ -566,8 +714,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "explorer": "https://nuls.world/transactions/",
-        "url": "https://nuls.io",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://nuls.io",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "theta",
@@ -579,8 +731,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://explorer.thetatoken.org/txs/",
-        "url": "https://www.thetatoken.org",
-        "rpcNodeInfo": "https://github.com/thetatoken/theta-protocol-ledger"
+        "info": {
+            "url": "https://www.thetatoken.org",
+            "client": "https://github.com/thetatoken/theta-protocol-ledger",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/thetatoken/theta-mainnet-integration-guide/blob/master/docs/api.md#api-reference"
+        }
     },
     {
         "id": "lux",
@@ -598,8 +754,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://explorer.poswallet.io/#/tx/",
-        "url": "https://luxcore.io/",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://luxcore.io",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "qtum",
@@ -618,8 +778,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://qtum.info/tx/",
-        "url": "https://qtum.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://qtum.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "bravocoin",
@@ -631,8 +795,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "explorer": "https://explorer.bravocoin.com/txid/",
-        "url": "https://bravocoin.com",
-        "rpcNodeInfo": "https://github.com/bravo-project/bravo"
+        "info": {
+            "url": "https://bravocoin.com",
+            "client": "https://github.com/bravo-project/bravo",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/bravo-project/bravo"
+        }
     },
     {
         "id": "steem",
@@ -644,8 +812,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "explorer": "https://steemblockexplorer.com/tx/",
-        "url": "http://steem.io",
-        "rpcNodeInfo": "https://github.com/steemit/steem"
+        "info": {
+            "url": "http://steem.io",
+            "client": "https://github.com/steemit/steem",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/steemit/steem"
+        }
     },
     {
         "id": "eos",
@@ -657,8 +829,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "explorer": "https://bloks.io/transaction/",
-        "url": "http://eos.io",
-        "rpcNodeInfo": "https://github.com/eosio/eos"
+        "info": {
+            "url": "http://eos.io",
+            "client": "https://github.com/eosio/eos",
+            "clientPublic": "",
+            "clientDocs": "https://developers.eos.io/eosio-nodeos/reference"
+        }
     },
     {
         "id": "nano",
@@ -671,7 +847,13 @@
         "publicKeyType": "ed25519Blake2b",
         "explorer": "https://www.nanode.co/block/",
         "url": "https://nano.org",
-        "rpcNodeInfo": "https://github.com/nanocurrency/nano-node"
+        "rpcNodeInfo": "https://github.com/nanocurrency/nano-node",
+        "info": {
+            "url": "https://nano.org",
+            "client": "https://github.com/nanocurrency/nano-node",
+            "clientPublic": "",
+            "clientDocs": "https://docs.nano.org/commands/rpc-protocol/"
+        }
     },
     {
         "id": "iotex",
@@ -683,8 +865,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://iotexscan.io/action/",
-        "url": "https://iotex.io",
-        "rpcNodeInfo": "https://github.com/iotexproject/iotex-core"
+        "info": {
+            "url": "https://iotex.io",
+            "client": "https://github.com/iotexproject/iotex-core",
+            "clientPublic": "",
+            "clientDocs": "https://docs.iotex.io/#api"
+        }
     },
     {
         "id": "zilliqa",
@@ -697,8 +883,12 @@
         "publicKeyType": "secp256k1",
         "hrp": "zil",
         "explorer": "https://viewblock.io/zilliqa/tx/",
-        "url": "https://zilliqa.com",
-        "rpcNodeInfo": "https://github.com/Zilliqa/Zilliqa"
+        "info": {
+            "url": "https://zilliqa.com",
+            "client": "https://github.com/Zilliqa/Zilliqa",
+            "clientPublic": "https://api.zilliqa.com",
+            "clientDocs": "https://apidocs.zilliqa.com"
+        }
     },
     {
         "id": "semux",
@@ -710,8 +900,12 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://semux.info/explorer/transaction/",
-        "url": "https://www.semux.org",
-        "rpcNodeInfo": "https://github.com/semuxproject/semux-core"
+        "info": {
+            "url": "https://www.semux.org",
+            "client": "https://github.com/semuxproject/semux-core",
+            "clientPublic": "",
+            "clientDocs": "https://www.semux.org"
+        }
     },
     {
         "id": "dexon",
@@ -723,8 +917,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": "https://dexonscan.app/transaction/",
-        "url": "https://dexon.org",
-        "rpcNodeInfo": "https://dexon.org"
+        "info": {
+            "url": "https://dexon.org",
+            "client": "https://dexon.org",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     },
     {
         "id": "zelcash",
@@ -743,8 +941,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://explorer.zel.cash/tx/",
-        "url": "https://zel.cash",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://zel.cash",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "https://blockbook.zel.cash",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "ark",
@@ -756,8 +958,12 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "explorer": "https://explorer.ark.io/transaction/",
-        "url": "http://ark.io",
-        "rpcNodeInfo": "https://github.com/ArkEcosystem/core"
+        "info": {
+            "url": "http://ark.io",
+            "client": "https://github.com/ArkEcosystem/core",
+            "clientPublic": "",
+            "clientDocs": "https://docs.ark.io/api/json-rpc/"
+        }
     },
     {
         "id": "ravencoin",
@@ -775,8 +981,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://ravencoin.network/tx/",
-        "url": "https://ravencoin.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://ravencoin.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "waves",
@@ -788,8 +998,12 @@
         "curve": "ed25519",
         "publicKeyType": "curve25519",
         "explorer": "https://wavesexplorer.com/tx/",
-        "url": "https://wavesplatform.com",
-        "rpcNodeInfo": "https://github.com/wavesplatform/Waves"
+        "info": {
+            "url": "https://wavesplatform.com",
+            "client": "https://github.com/wavesplatform/Waves",
+            "clientPublic": "https://nodes.wavesnodes.com",
+            "clientDocs": "https://nodes.wavesnodes.com/api-docs/index.html"
+        }
     },
     {
         "id": "aeternity",
@@ -801,8 +1015,12 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "https://www.aeknow.org/block/transaction/",
-        "url": "https://aeternity.com",
-        "rpcNodeInfo": "https://github.com/aeternity/aeternity"
+        "info": {
+            "url": "https://aeternity.com",
+            "client": "https://github.com/aeternity/aeternity",
+            "clientPublic": "",
+            "clientDocs": "http://aeternity.com/api-docs/"
+        }
     },
     {
         "id": "terra",
@@ -815,8 +1033,12 @@
         "publicKeyType": "secp256k1",
         "hrp": "terra",
         "explorer": "https://terra.stake.id/?#/tx/",
-        "url": "https://terra.money",
-        "rpcNodeInfo": "https://github.com/terra-project/core"
+        "info": {
+            "url": "https://terra.money",
+            "client": "https://github.com/terra-project/core",
+            "clientPublic": "",
+            "clientDocs": "https://terra.money"
+        }
     },
     {
         "id": "monacoin",
@@ -835,8 +1057,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://blockbook.electrum-mona.org/tx/",
-        "url": "https://monacoin.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://monacoin.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "fio",
@@ -849,6 +1075,12 @@
         "publicKeyType": "secp256k1",
         "explorer": "https://fio.foundation",
         "url": "https://fio.foundation",
-        "rpcNodeInfo": "https://fio.foundation"
+        "rpcNodeInfo": "https://fio.foundation",
+        "info": {
+            "url": "https://fio.foundation",
+            "client": "https://fio.foundation",
+            "clientPublic": "",
+            "clientDocs": "https://fio.foundation"
+        }
     }
 ]

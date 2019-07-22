@@ -14,7 +14,7 @@ This list is generated from `src/coins.json`
 | 22      | Monacoin         | MONA   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/22.png" width="32" />      | <https://monacoin.org>         |
 | 42      | Decred           | DCR    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/42.png" width="32" />      | <https://decred.org>           |
 | 60      | Ethereum         | ETH    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/60.png" width="32" />      | <https://ethereum.org>         |
-| 61      | Ethereum Classic | ETC    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/61.png" width="32" />      | <https://ethereumclassic.org/> |
+| 61      | Ethereum Classic | ETC    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/61.png" width="32" />      | <https://ethereumclassic.org>  |
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/74.png" width="32" />      | <https://icon.foundation>      |
 | 111     | ARK              | ARK    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/111.png" width="32" />     | <http://ark.io>                |
 | 118     | Cosmos           | ATOM   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" />     | <https://cosmos.network>       |
@@ -47,13 +47,13 @@ This list is generated from `src/coins.json`
 | 820     | Callisto         | CLO    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/820.png" width="32" />     | <https://callisto.network>     |
 | 888     | NEO              | NEO    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/888.png" width="32" />     | <https://neo.org>              |
 | 889     | TomoChain        | TOMO   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/889.png" width="32" />     | <https://tomochain.com>        |
-| 1001    | Thunder Token    | TT     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1001.png" width="32" />    | <https://decred.org/>          |
+| 1001    | Thunder Token    | TT     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1001.png" width="32" />    | <https://thundercore.com>      |
 | 1024    | Ontology         | ONT    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1024.png" width="32" />    | <https://ont.io>               |
 | 1729    | Tezos            | XTZ    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/1729.png" width="32" />    | <https://tezos.com>            |
 | 2017    | Kin              | KIN    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2017.png" width="32" />    | <https://www.kin.org>          |
 | 2301    | Qtum             | QTUM   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2301.png" width="32" />    | <https://qtum.org>             |
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/2718.png" width="32" />    | <https://nebulas.io>           |
-| 3003    | Lux              | LUX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/3003.png" width="32" />    | <https://luxcore.io/>          |
+| 3003    | Lux              | LUX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/3003.png" width="32" />    | <https://luxcore.io>           |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/6060.png" width="32" />    | <https://gochain.io>           |
 | 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/8964.png" width="32" />    | <https://nuls.io>              |
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/19167.png" width="32" />   | <https://zel.cash>             |
