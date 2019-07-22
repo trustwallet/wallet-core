@@ -30,8 +30,6 @@ Data Transaction::encode() {
     return raw;
 }
 
-//// buildIDTag assemble an id() object
-//// see https://github.com/aeternity/protocol/blob/epoch-v0.22.0/serializations.md#the-id-type
 TW::Data Transaction::buildTag(const std::string &address) {
     auto payload = address.substr(Identifiers::prefixTransaction.size(), address.size());
 
@@ -42,9 +40,6 @@ TW::Data Transaction::buildTag(const std::string &address) {
     return data;
 }
 
-/// Awternity network does not accept zero int values as rlp param,
-/// instead empty byte array should be encoded
-/// see https://forum.aeternity.com/t/invalid-tx-error-on-mainnet-goggle-says-it-looks-good/4118/5?u=defuera
 TW::Data Transaction::encodeSafeZero(uint256_t value) {
     if (value == 0) {
         return Ethereum::RLP::encode(Data{0});

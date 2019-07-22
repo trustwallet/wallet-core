@@ -65,7 +65,6 @@ Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std
     return output;
 }
 
-/// Encode a byte array into base64 with prefix and a checksum
 std::string Signer::encodeBase64WithChecksum(const std::string &prefix, const TW::Data &rawTx) {
     auto checksum = Hash::sha256(Hash::sha256(rawTx));
     std::vector<unsigned char> checksumPart(checksum.begin(), checksum.begin() + checkSumSize);

@@ -51,8 +51,13 @@ class Transaction {
 
     Data encode();
 
+    //// buildIDTag assemble an id() object
+    //// see https://github.com/aeternity/protocol/blob/epoch-v0.22.0/serializations.md#the-id-type
     static Data buildTag(const std::string &address);
 
+    /// Awternity network does not accept zero int values as rlp param,
+    /// instead empty byte array should be encoded
+    /// see https://forum.aeternity.com/t/invalid-tx-error-on-mainnet-goggle-says-it-looks-good/4118/5?u=defuera
     static Data encodeSafeZero(uint256_t value);
 
 

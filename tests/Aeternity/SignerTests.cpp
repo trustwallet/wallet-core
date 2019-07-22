@@ -63,7 +63,7 @@ TEST(AeternitySigner, SignTxWithZeroAmount) {
 
     auto result = Signer::sign(privateKey, transaction);
     EXPECT_EQ(result.signature(), "sg_xG3qIlWJiQl5vdSjX2Vzr2TKE/cf7GY2tPRF2ZhKxQcZudm9SFaDOPNOma/k7JYgGM1Min1FBaN4xn1xD3WfD3ZUCmM=");
-    EXPECT_EQ(result.encoded(), "tx_+KYLAfhCuEA0OgWhpq/VfS6ksMS+Df4ewZxIITEhjaaMOiyT0aRuAEe6b5+d2cQtzoyz58NNr+N4MFowctrGXrCrrkhNIywLuF74XAwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKMKhhIwnOVAAAAxi0hlbGxvIFdvcmxkjoDNvQ==");
+    EXPECT_EQ(result.encoded(), "tx_+K4LAfhCuEDEbeoiVYmJCXm91KNfZXOvZMoT9x/sZja09EXZmErFBxm52b1IVoM4806Zr+TsliAYzUyKfUUFo3jGfXEPdZ8PuGb4ZAwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKMAhhIwnOVAAIMBu6sHkFplcm8gYW1vdW50IHRlc3S5L3Vn");
 }
 
 TEST(AeternitySigner, SignTxWithZeroNonce) {
@@ -80,7 +80,7 @@ TEST(AeternitySigner, SignTxWithZeroNonce) {
 
     auto result = Signer::sign(privateKey, transaction);
     EXPECT_EQ(result.signature(), "sg_nULIHBPG6fvQgDXWrMZLeYMX4wUiNc7cj5dWjSW5vjMFLxOy7v6rwJB4o33vhLots66oWUWHOZm5UWvqCziCBG+4fA8=");
-    EXPECT_EQ(result.encoded(), "tx_+KYLAfhCuEA0OgWhpq/VfS6ksMS+Df4ewZxIITEhjaaMOiyT0aRuAEe6b5+d2cQtzoyz58NNr+N4MFowctrGXrCrrkhNIywLuF74XAwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKMKhhIwnOVAAAAxi0hlbGxvIFdvcmxkjoDNvQ==");
+    EXPECT_EQ(result.encoded(), "tx_+LULAfhCuECdQsgcE8bp+9CANdasxkt5gxfjBSI1ztyPl1aNJbm+MwUvE7Lu/qvAkHijfe+Eui2zrqhZRYc5mblRa+oLOIIEuG34awwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKOILsSS9IArwACGEjCc5UAAgwG7qwCPWmVybyBub25jZSB0ZXN0piWfFA==");
 }
 
 
