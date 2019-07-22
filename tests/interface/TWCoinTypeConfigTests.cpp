@@ -141,6 +141,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto mona = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonacoin));
     assertStringsEqual(mona, "MONA");
+
+    auto fio = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeFIO));
+    assertStringsEqual(fio, "FIO");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -190,6 +193,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonacoin), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -472,6 +476,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto mona = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonacoin));
     assertStringsEqual(mona, "monacoin");
+
+    auto fio = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFIO));
+    assertStringsEqual(fio, "fio");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -609,6 +616,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto mona = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonacoin));
     assertStringsEqual(mona, "Monacoin");
+
+    auto fio = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFIO));
+    assertStringsEqual(fio, "FIO");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
@@ -631,6 +641,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainNebulas, TWCoinTypeBlockchain(TWCoinTypeNebulas));
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
+    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeFIO));
 }
 
 TEST(TWCoinTypeConfiguration, P2SHPrefix) {
