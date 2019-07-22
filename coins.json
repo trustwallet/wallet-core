@@ -49,6 +49,7 @@
         "base58Hasher": "sha256d",
         "xpub": "zpub",
         "xprv": "zprv",
+        "explorer": "https://blockchair.com/bitcoin/transaction/",
         "info": {
             "url": "https://bitcoin.org",
             "client": "https://github.com/trezor/blockbook",
