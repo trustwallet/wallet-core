@@ -1,19 +1,19 @@
 version = '0.13.0'
 
 Pod::Spec.new do |s|
-  s.name         = 'TrustWalletCore'
+  s.name         = 'IFWalletCore'
   s.version      = version
-  s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/TrustWallet/wallet-core'
+  s.summary      = 'IFWallet core data structures and algorithms.'
+  s.homepage     = 'https://github.com/ifwallet/wallet-core'
   s.license      = 'MIT'
-  s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
+  s.authors      = { 'bibodeng' => 'bibodeng@gmail.com' }
 
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.0'
 
   s.source = {
-    git: 'git@github.com:TrustWallet/wallet-core.git',
+    git: 'git@github.com:IFWallet/wallet-core.git',
     tag: version,
     submodules: true
   }
@@ -144,14 +144,14 @@ Pod::Spec.new do |s|
     'src/proto/*.proto'
   s.xcconfig = {
     'HEADER_SEARCH_PATHS' => '$(inherited) ' \
-      '${PODS_ROOT}/TrustWalletCore/src ' \
-      '${PODS_ROOT}/TrustWalletCore/trezor-crypto/src',
+      '${PODS_ROOT}/IFWalletCore/src ' \
+      '${PODS_ROOT}/IFWalletCore/trezor-crypto/src',
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ' \
       '/usr/local/include' \
-      '${PODS_ROOT}/TrustWalletCore/include ' \
-      '${PODS_ROOT}/TrustWalletCore/trezor-crypto/include ' \
-      "${PODS_ROOT}/TrustWalletCore/#{protobuf_dir}/src " \
-      "${PODS_ROOT}/TrustWalletCore/#{include_dir} ",
+      '${PODS_ROOT}/IFWalletCore/include ' \
+      '${PODS_ROOT}/IFWalletCore/trezor-crypto/include ' \
+      "${PODS_ROOT}/IFWalletCore/#{protobuf_dir}/src " \
+      "${PODS_ROOT}/IFWalletCore/#{include_dir} ",
     'GCC_WARN_UNUSED_FUNCTION' => 'NO',
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
@@ -164,3 +164,4 @@ Pod::Spec.new do |s|
 
   s.dependency 'SwiftProtobuf', '~> 1.5.0'
 end
+
