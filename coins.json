@@ -1074,7 +1074,7 @@
         "publicKeyType": "secp256k1",
         "explorer": "https://fio.foundation",
         "url": "https://fio.foundation",
-        "rpcNodeInfo": "https://fio.foundation"
+        "rpcNodeInfo": "https://fio.foundation",
         "info": {
             "url": "https://fio.foundation",
             "client": "https://fio.foundation",
