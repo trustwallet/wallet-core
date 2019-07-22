@@ -9,11 +9,12 @@
 #include "Coin.h"
 
 #include <TrustWalletCore/TWHash.h>
+#include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWBase58.h>
 #include <proto/Stellar.pb.h>
-#include <Stellar/Signer.h>
 
 #include "HexCoding.h"
 
@@ -168,6 +169,21 @@ TEST(HDWallet, DeriveAionPrivateKey) {
     auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeAion));
     auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
     assertHexEqual(privateKeyData, "db33ffdf82c7ba903daf68d961d3c23c20471a8ce6b408e52d579fd8add80cc9");
+}
+
+TEST(HDWallet, DeriveFIO) {
+    auto words = STRING("valley alien library bread worry brother bundle hammer loyal barely dune brave");
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    auto privateKey = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeFIO));
+    auto privateKeyData = WRAPD(TWPrivateKeyData(privateKey.get()));
+
+    uint8_t bytes[] = {0x80};
+    auto prefix = WRAPD(TWDataCreateWithBytes(bytes, 1));
+    TWDataAppendData(prefix.get(), privateKeyData.get());
+    auto base58 = WRAPS(TWBase58Encode(prefix.get()));
+    
+    assertHexEqual(privateKeyData, "ea8eb60b7e5868e218f248e032769020b4fea5dcfd02f2992861eaf4fb534854");
+    assertStringsEqual(base58, "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu");
 }
 
 TEST(HDWallet, ExtendedKeys) {

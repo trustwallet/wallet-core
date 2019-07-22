@@ -70,6 +70,7 @@ describe('CoinAddressDerivation', () => {
             case CoinType.ARK: expect('Ac49m5pu5YpMMNgEbSYeZUEpRMHcSK3DfV').to.equal(address); break;
             case CoinType.TERRA: expect('terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug').to.equal(address); break;
             case CoinType.MONACOIN: expect('M9xFZzZdZhCDxpx42cM8bQHnLwaeX1aNja').to.equal(address); break;
+            case CoinType.FIO: expect('FIO7MN1LuSfFgrbVHmrt9cVa2FYAs857Ppr9dzvEXoD1miKSxm3n3').to.equal(address); break;
         }
     };
 
