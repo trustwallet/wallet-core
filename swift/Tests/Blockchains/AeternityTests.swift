@@ -25,8 +25,8 @@ class AeternityTests: XCTestCase {
         let input = AeternitySigningInput.with {
             $0.fromAddress = "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw"
             $0.toAddress = "ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v"
-            $0.amount = 10
-            $0.fee = 20000000000000
+            $0.amount = Data(hexString: "0a")!
+            $0.fee = Data(hexString: "12309ce54000")!
             $0.payload = "Hello World"
             $0.ttl = 82757
             $0.nonce = 49
