@@ -1,4 +1,4 @@
-version = '0.13.1'
+version = '0.13.2'
 
 Pod::Spec.new do |s|
   s.name         = 'IFWalletCore'
