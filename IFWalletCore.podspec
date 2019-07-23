@@ -1,4 +1,4 @@
-version = '0.13.2'
+version = '0.13.0'
 
 Pod::Spec.new do |s|
   s.name         = 'IFWalletCore'
@@ -144,14 +144,14 @@ Pod::Spec.new do |s|
     'src/proto/*.proto'
   s.xcconfig = {
     'HEADER_SEARCH_PATHS' => '$(inherited) ' \
-      '${PODS_ROOT}/TrustWalletCore/src ' \
-      '${PODS_ROOT}/TrustWalletCore/trezor-crypto/src',
+      '${PODS_ROOT}/IFWalletCore/src ' \
+      '${PODS_ROOT}/IFWalletCore/trezor-crypto/src',
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ' \
       '/usr/local/include' \
-      '${PODS_ROOT}/TrustWalletCore/include ' \
-      '${PODS_ROOT}/TrustWalletCore/trezor-crypto/include ' \
-      "${PODS_ROOT}/TrustWalletCore/#{protobuf_dir}/src " \
-      "${PODS_ROOT}/TrustWalletCore/#{include_dir} ",
+      '${PODS_ROOT}/IFWalletCore/include ' \
+      '${PODS_ROOT}/IFWalletCore/trezor-crypto/include ' \
+      "${PODS_ROOT}/IFWalletCore/#{protobuf_dir}/src " \
+      "${PODS_ROOT}/IFWalletCore/#{include_dir} ",
     'GCC_WARN_UNUSED_FUNCTION' => 'NO',
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',

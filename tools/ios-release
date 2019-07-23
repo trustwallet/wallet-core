@@ -22,7 +22,7 @@ includes = Dir.glob('include/**/*.h') + Dir.glob('lib/**/*.{h,hpp}')
 sources = Dir.glob('swift/Sources/**/*.{swift,h,m}')
 libs = Dir.glob('build/ios/*.a')
 files = includes + sources + libs
-file_name = "TrustWalletCore-iOS-#{version}.zip"
+file_name = "IFWalletCore-iOS-#{version}.zip"
 _, stderr, status = Open3.capture3('zip', file_name, *files)
 if status != 0
   STDERR.puts stderr
@@ -30,25 +30,25 @@ if status != 0
 end
 
 # Upload archive
-system("aws s3 cp #{file_name} s3://wallet-core/ --acl public-read")
+system("aws s3 cp #{file_name} s3://ifwallet-core/ --acl public-read")
 
 # Upload Cocoapod
 puts 'Publishing...'
 podspec = <<-PODSPEC
 Pod::Spec.new do |s|
-  s.name         = 'TrustWalletCore'
+  s.name         = 'IFWalletCore'
   s.version      = '#{version}'
-  s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/TrustWallet/wallet-core'
+  s.summary      = 'IFWallet core data structures and algorithms.'
+  s.homepage     = 'https://github.com/ifwallet/wallet-core'
   s.license      = 'MIT'
-  s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
+  s.authors      = { 'bibodeng' => 'bibodeng@gmail.com' }
 
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.0'
 
   s.source = {
-    http: "https://s3.amazonaws.com/wallet-core/TrustWalletCore-iOS-#{version}.zip"
+    http: "https://ifwallet-core.s3-ap-southeast-1.amazonaws.com/IFWalletCore-iOS-#{version}.zip"
   }
   s.preserve_paths = 'build/ios/*.a'
   s.vendored_libraries =
@@ -63,7 +63,7 @@ Pod::Spec.new do |s|
     'swift/Sources/*.h'
   s.libraries = 'c++'
   s.xcconfig = {
-    'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ${PODS_ROOT}/TrustWalletCore/include',
+    'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ${PODS_ROOT}/IFWalletCore/include',
     'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
   }
   s.pod_target_xcconfig = {
@@ -72,7 +72,7 @@ Pod::Spec.new do |s|
   s.dependency 'SwiftProtobuf', '~> 1.5.0'
 end
 PODSPEC
-file = File.new('build/TrustWalletCore.podspec', 'w')
+file = File.new('build/IFWalletCore.podspec', 'w')
 file.write(podspec)
 file.close
 
