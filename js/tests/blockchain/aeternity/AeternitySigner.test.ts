@@ -12,8 +12,8 @@ describe('AeternitySigner', () => {
         const privateKey = fromHexString("4646464646464646464646464646464646464646464646464646464646464646");
 
         const input = TW.Aeternity.Proto.SigningInput.create({
-            amount: Long.fromNumber(10),
-            fee: Long.fromNumber(2e13),
+            amount: fromHexString("0a"),
+            fee: fromHexString("12309ce54000"),
             fromAddress: "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw",
             nonce: Long.fromNumber(49),
             payload: "Hello World",
