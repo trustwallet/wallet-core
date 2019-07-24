@@ -6,6 +6,7 @@
 
 #include "Signer.h"
 #include "Address.h"
+#include "Base58.h"
 #include "Base64.h"
 #include "HexCoding.h"
 #include "Identifiers.h"
@@ -25,7 +26,7 @@ Proto::SigningOutput Signer::sign(const TW::PrivateKey &privateKey, Transaction 
 
     /// sign ed25519
     auto sigRaw = privateKey.sign(msg, TWCurveED25519);
-    auto signature = encodeBase64WithChecksum(Identifiers::prefixSignature, sigRaw);
+    auto signature = Identifiers::prefixSignature + Base58::bitcoin.encodeCheck(sigRaw);
 
     /// encode the message using rlp
     auto rlpTxRaw = buildRlpTxRaw(txRlp, sigRaw);
