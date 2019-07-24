@@ -1,5 +1,7 @@
 package com.trustwallet.core.app.blockchains.aeternity
 
+import com.google.protobuf.ByteString
+import com.trustwallet.core.app.utils.toHexByteArray
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
 import org.junit.Test
@@ -17,8 +19,8 @@ class TestAeternitySigner {
         val signingInput = Aeternity.SigningInput.newBuilder()
             .setFromAddress("ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
             .setToAddress("ak_Egp9yVdpxmvAfQ7vsXGvpnyfNq71msbdUpkMNYGTeTe8kPL3v")
-            .setAmount(10L)
-            .setFee(2e13.toLong())
+            .setAmount(ByteString.copyFrom("0a".toHexByteArray()))
+            .setFee(ByteString.copyFrom("12309ce54000".toHexByteArray()))
             .setPayload("Hello World")
             .setTtl(82757)
             .setNonce(49)
@@ -33,7 +35,7 @@ class TestAeternitySigner {
         )
         assertEquals(
             output.signature,
-            "sg_2dlw1eTrh79Yri5+urBSwVMJ86dSvCVtWc/nxIJrhIehxLzbtEdddjNyGJFc700p09KSd01oVTrpoCfiFsFvB3kDla0="
+            "sg_VW42qDPP3MMNFAStYaumjZz7mC7BZYpbNa15E57ejqUe7JdQFWCiX65eLNUpGMpt8tSpfgCfkYzcaFppqx7W75CrcWdC8"
         )
     }
 }

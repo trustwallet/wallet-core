@@ -1014,11 +1014,11 @@
         "derivationPath": "m/44'/457'/0'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://www.aeknow.org/block/transaction/",
+        "explorer": "https://explorer.aepps.com/#/tx/",
         "info": {
             "url": "https://aeternity.com",
             "client": "https://github.com/aeternity/aeternity",
-            "clientPublic": "",
+            "clientPublic": "https://sdk-mainnet.aepps.com",
             "clientDocs": "http://aeternity.com/api-docs/"
         }
     },
