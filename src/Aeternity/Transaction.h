@@ -1,5 +1,3 @@
-#include <utility>
-
 // Copyright © 2017-2019 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
