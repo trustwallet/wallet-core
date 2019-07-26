@@ -69,6 +69,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeTerra, privateKey), "terra1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0ll9rwp");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNebulas, privateKey), "n1XTciu9ZRYt3ni7SxNBmivk9Y6XpP6VrhT");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeMonacoin, privateKey), "MRBWtGEKHGCHhmyJ1L4CwaWQZJzM5DnVcs");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeFIO, privateKey), "FIO5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
 }
 
 } // namespace TW
