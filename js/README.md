@@ -39,10 +39,10 @@ HDWallet.create(128);
 
 ### Memory management
 
--   Please note that memory allocated with C/C++ is released once there are no references to the JavaScript object and the Node.js garbage collector tries to release it from memory.
+-   Please note that memory allocated with C/C++ is released once there are no references to the JavaScript object, then Node.js garbage collector will try to release it from memory.
 
 ## Other Resources
 
--   For general [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) documentation refer to [GitBooks](https://developer.trustwallet.com/wallet-core).
+-   For general [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) documentation, please refer to [GitBooks](https://developer.trustwallet.com/wallet-core).
 
 -   For documentation on specific modules that are avaiable, please refer to [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) [exposed C headers](https://github.com/TrustWallet/wallet-core/tree/master/include/TrustWalletCore).
