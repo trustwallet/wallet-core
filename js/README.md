@@ -8,9 +8,7 @@ Type definitions for TypeScript are included.
 
 ## Install
 
-```
-$ npm install trust-wallet-core
-```
+    $ npm install trust-wallet-core
 
 ## Usage
 
@@ -35,15 +33,16 @@ HDWallet.create(128);
 `trust-wallet-core` only supports `macOS/OSX` at the moment. `Linux` and `Windows` support is forthcoming.
 
 ### Bindings
-- This project uses [`node-addon-api`](https://github.com/nodejs/node-addon-api) to interface with `wallet-core` [C headers]((https://github.com/TrustWallet/wallet-core/tree/master/include/TrustWalletCore)). 
-- The `node-addon-api` functions are wrapped in TypeScript that is then used to generate a JavaScript module with type definitions.
+
+-   This project uses [`node-addon-api`](https://github.com/nodejs/node-addon-api) to interface with `wallet-core` [C headers]((https://github.com/TrustWallet/wallet-core/tree/master/include/TrustWalletCore)). 
+-   The `node-addon-api` functions are wrapped in TypeScript that is then used to generate a JavaScript module with type definitions.
 
 ### Memory management
 
-- Please note that memory allocated with C/C++ is released once there are no references to the JavaScript object and the Node.js garbage collector tries to release it from memory.
+-   Please note that memory allocated with C/C++ is released once there are no references to the JavaScript object and the Node.js garbage collector tries to release it from memory.
 
 ## Other Resources
 
-- For general [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) documentation refer to [GitBooks](https://developer.trustwallet.com/wallet-core).
+-   For general [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) documentation refer to [GitBooks](https://developer.trustwallet.com/wallet-core).
 
-- For documentation on specific modules that are avaiable. Please refer to [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) [exposed C headers](https://github.com/TrustWallet/wallet-core/tree/master/include/TrustWalletCore).
+-   For documentation on specific modules that are avaiable, please refer to [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) [exposed C headers](https://github.com/TrustWallet/wallet-core/tree/master/include/TrustWalletCore).
