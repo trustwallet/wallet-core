@@ -17,8 +17,8 @@ plugins {
 }
 
 nexusStaging {
-    packageGroup 'com.trustwallet.walletcore'
-    stagingProfileId '9a3971ae7360bf'
+    packageGroup 'com.ifwallet.walletcore'
+    stagingProfileId '5e9e8e6f8d20a3'
 }
 
 allprojects {
