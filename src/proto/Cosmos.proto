@@ -29,8 +29,16 @@ message StakeMessage {
     string delegator_address = 1;
     string validator_address = 2;
     Amount amount = 3;
-    // default is cosmos-sdk/MsgDelegate
+    // cosmos-sdk/MsgDelegate to stake and cosmos-sdk/MsgUndelegate to unstake
     string type_prefix = 4;
+}
+
+// Message for staking.
+message WithdrawStakeRewardMessage {
+    string delegator_address = 1;
+    string validator_address = 2;
+    // default is cosmos-sdk/MsgWithdrawDelegationReward
+    string type_prefix = 3;
 }
 
 // Signature
@@ -48,7 +56,9 @@ message Transaction {
     oneof message_oneof {
         SendCoinsMessage send_coins_message = 4;
         StakeMessage stake_message = 5;
-    }    
+        StakeMessage unstake_message = 6;
+        WithdrawStakeRewardMessage withdraw_stake_reward_message = 7;
+    }
 }
 
 // Input data necessary to create a signed order.
@@ -64,9 +74,11 @@ message SigningInput {
     oneof message_oneof {
         SendCoinsMessage send_coins_message = 7;
         StakeMessage stake_message = 8;
+        StakeMessage unstake_message = 9;
+        WithdrawStakeRewardMessage withdraw_stake_reward_message = 10;
     }
     // default is cosmos-sdk/MsgSend
-    string type_prefix = 9;
+    string type_prefix = 11;
 }
 
 // Transaction signing output.

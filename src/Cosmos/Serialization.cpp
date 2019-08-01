@@ -18,6 +18,8 @@ using json = nlohmann::json;
 
 const std::string AMINO_PREFIX_SEND_COIN_MESSAGE = "cosmos-sdk/MsgSend";
 const std::string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
+const std::string AMINO_PREFIX_UNSTAKE_MESSAGE = "cosmos-sdk/MsgUndelegate";
+const std::string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE = "cosmos-sdk/MsgWithdrawDelegationReward";
 const std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
 const std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
@@ -83,6 +85,15 @@ json stakeMessageJSON(json& amount, std::string delegator_address, std::string v
     return wrapperJSON(type_prefix, jsonMsg);
 }
 
+json withdrawStakeRewardMessageJSON(std::string delegator_address, std::string validator_address, std::string type_prefix) {
+    json jsonMsg;
+
+    jsonMsg["delegator_address"] = delegator_address;
+    jsonMsg["validator_address"] = validator_address;
+
+    return wrapperJSON(type_prefix, jsonMsg);
+}
+
 json sendCoinsMessageJSON(const SendCoinsMessage& message) {
     json jsonAmounts = json::array();
 
@@ -93,6 +104,7 @@ json sendCoinsMessageJSON(const SendCoinsMessage& message) {
     return sendCoinsMessageJSON(jsonAmounts, message.from_address(), message.to_address(), message.type_prefix());
 }
 
+
 json stakeMessageJSON(const StakeMessage& message) {
     auto amount = message.amount();
     json jsonAmount = amountJSON(std::to_string(amount.amount()), amount.denom());
@@ -100,11 +112,19 @@ json stakeMessageJSON(const StakeMessage& message) {
     return stakeMessageJSON(jsonAmount, message.delegator_address(), message.validator_address(), message.type_prefix());
 }
 
+json withdrawStakeRewardMessageJSON(const WithdrawStakeRewardMessage& message) {
+    return withdrawStakeRewardMessageJSON(message.delegator_address(), message.validator_address(), message.type_prefix());
+}
+
 json messageJSON(const SigningInput& input) {
     if (input.has_send_coins_message()) {
         return sendCoinsMessageJSON(input.send_coins_message());
     } else if (input.has_stake_message()) {
         return stakeMessageJSON(input.stake_message());
+    } else if (input.has_unstake_message()) {
+        return stakeMessageJSON(input.unstake_message());
+    } else if (input.has_withdraw_stake_reward_message()) {
+        return withdrawStakeRewardMessageJSON(input.withdraw_stake_reward_message());
     }
 
     return nullptr;
@@ -115,6 +135,10 @@ json messageJSON(const Transaction& transaction) {
         return sendCoinsMessageJSON(transaction.send_coins_message());
     } else if (transaction.has_stake_message()) {
         return stakeMessageJSON(transaction.stake_message());
+    } else if (transaction.has_unstake_message()) {
+        return stakeMessageJSON(transaction.unstake_message());
+    } else if (transaction.has_withdraw_stake_reward_message()) {
+        return withdrawStakeRewardMessageJSON(transaction.withdraw_stake_reward_message());
     }
 
     return nullptr;
