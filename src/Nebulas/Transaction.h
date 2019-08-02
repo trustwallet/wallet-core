@@ -54,7 +54,7 @@ class Transaction {
     Proto::Data* newPayloadData() const;
 
     ///serialize the signed transaction.
-    void serializeToRaw() noexcept;
+    void serializeToRaw();
 };
 
 } // namespace TW::Nebulas

@@ -22,7 +22,7 @@ Proto::Data* Transaction::newPayloadData() const{
     return data;
 }
 
-void Transaction::serializeToRaw() noexcept{
+void Transaction::serializeToRaw(){
     if(signature.empty()) {
         throw std::logic_error("The transaction is unsigned!");
     }
