@@ -8,11 +8,16 @@
 
 #include "Address.h"
 #include "../uint256.h"
+#include "../proto/Nebulas.pb.h"
 
 namespace TW::Nebulas {
 
 class Transaction {
   public:
+    static const char* TxPayloadBinaryType;
+    static const char* TxPayloadDeployType;
+    static const char* TxPayloadCallType;
+
     Address from;
     uint256_t nonce;
     uint256_t gasPrice;
@@ -20,21 +25,36 @@ class Transaction {
     Address to;
     uint256_t amount;
     uint256_t timestamp;
-    std::vector<uint8_t> payload;
+    Data payload;
 
     // Signature values
+    uint256_t chainID;
+    Data hash;
     Data signature;
     uint32_t algorithm;
 
-    Transaction(Address from, uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, uint256_t timestamp, Data payload)
+    // serialize data
+    Data raw;
+
+    Transaction(Address from, uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, uint256_t timestamp)
         : from(std::move(from))
         , nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))
         , to(std::move(to))
         , amount(std::move(amount))
-        , timestamp(std::move(timestamp))
-        , payload(std::move(payload)){}
+        , timestamp(std::move(timestamp)){
+          auto data = newPayloadData();
+          payload.resize(data->ByteSize());
+          data->SerializePartialToArray(payload.data(),payload.size());
+          delete data;
+        }
+
+  public:
+    Proto::Data* newPayloadData() const;
+
+    ///serialize the signed transaction.
+    void serializeToRaw() noexcept;
 };
 
 } // namespace TW::Nebulas

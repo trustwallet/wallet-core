@@ -24,10 +24,6 @@ namespace TW::Nebulas {
 class Signer {
   public:
     uint256_t chainID;
-    
-    static const char* TxPayloadBinaryType;
-    static const char* TxPayloadDeployType;
-    static const char* TxPayloadCallType;
 
     /// Initializes a signer with a chain identifier.
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}

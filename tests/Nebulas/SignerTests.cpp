@@ -28,7 +28,6 @@ TEST(NebulasSigner, EmptyData) {
     ASSERT_EQ(zero, uint256_t(0));
 }
 
-const char* payloadString = "\n\6binary";   //{10, 6, 98, 105, 110, 97, 114, 121}
 TEST(NebulasSigner, Hash) {
     auto from = Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
     auto to = Address("n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17");
@@ -39,8 +38,7 @@ TEST(NebulasSigner, Hash) {
         /* gasLimit: */ 200000,
         /* to: */ to,
         /* amount: */ 11000000000000000000ULL,
-        /* timestamp: */ 1560052938,
-        /* payload: */ Data(payloadString,payloadString+8));
+        /* timestamp: */ 1560052938);
     auto signer = SignerExposed(1);
     auto hash = signer.hash(transaction);
 
@@ -61,7 +59,6 @@ TEST(NebulasSigner, Sign) {
     input.set_amount(value.data(),value.size());
     value = store(uint256_t(1560052938));
     input.set_timestamp(value.data(),value.size());
-    input.set_payload(payloadString);
 
     const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
