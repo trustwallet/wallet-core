@@ -27,7 +27,6 @@ class TestNebulasSigner {
             gasLimit = ByteString.copyFrom("0x030d40".toHexByteArray()) //200000
             amount = ByteString.copyFrom("0x98a7d9b8314c0000".toHexByteArray())    //11000000000000000000
             timestamp = ByteString.copyFrom("0x5cfc84ca".toHexByteArray())   //1560052938
-            payload = ByteString.copyFrom("\n\u0006binary".toByteArray())   //{10, 6, 98, 105, 110, 97, 114, 121}
             privateKey = ByteString.copyFrom(PrivateKey("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b".toHexByteArray()).data())
         }
 

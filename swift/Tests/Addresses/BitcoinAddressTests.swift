@@ -187,6 +187,45 @@ class BitcoinAddressTests: XCTestCase {
 
         XCTAssertFalse(CoinType.ravencoin.validate(address: addressString2),
                       "'\(addressString2)' should be an invalid Ravencoin address")
+    }
 
+    func testValidMonacoinAddress() {
+        let addressString = "MVELZC3ks1Xk59kvKWuSN3mpByNwaxeaBJ"
+
+        XCTAssertEqual(CoinType.monacoin.p2pkhPrefix, BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertTrue(BitcoinAddress.isValidString(string: addressString),
+                      "'\(addressString)' should be an valid Monacoin address")
+
+        let addressString2 = "PHjTKtgYLTJ9D2Bzw2f6xBB41KBm2HeGfg"
+
+        XCTAssertEqual(CoinType.monacoin.p2shPrefix, BitcoinAddress(string: addressString2)?.prefix)
+        XCTAssertTrue(BitcoinAddress.isValidString(string: addressString2),
+                      "'\(addressString2)' should be an valid Monacoin address")
+
+        let addressString3 = "mona1qp8f842ywwr9h5rdxyzggex7q3trvvvaarfssxccju52rj6htfzfsqr79j2"
+
+        XCTAssertEqual(HRP.monacoin, SegwitAddress(string: addressString3)?.hrp)
+        XCTAssertTrue(SegwitAddress.isValidString(string: addressString3),
+                      "'\(addressString3)' should be an valid Monacoin Bech32 address")
+    }
+
+    func testInvalidMonacoinAddress() {
+        // bad address
+        let addressString = "YHoCwPc2FCQqwToYnSiAb3SrCET4zEHsbS"
+
+        XCTAssertNil(BitcoinAddress(string: addressString)?.prefix)
+        XCTAssertFalse(BitcoinAddress.isValidString(string: addressString),
+                      "'\(addressString)' should be an invalid Monacoin address")
+
+        // testnet address
+        let addressString2 = "mwJAu1BWcRSQhepZ71wiGoSwsD6hnB5B7G"
+
+        XCTAssertFalse(CoinType.monacoin.validate(address: addressString2),
+                      "'\(addressString2)' should be an invalid Monacoin address")
+
+        let addressString3 = "tmona1qfj8lu0rafk2mpvk7jj62q8eerjpex3xlcadtupkrkhh5a73htmhs68e55m"
+
+        XCTAssertFalse(CoinType.monacoin.validate(address: addressString3),
+                      "'\(addressString3)' should be an invalid Monacoin Bech32 address")
     }
 }

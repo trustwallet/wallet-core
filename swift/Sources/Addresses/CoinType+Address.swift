@@ -16,7 +16,7 @@ public extension CoinType {
         switch self {
         case .binance, .cosmos, .terra:
             return CosmosAddress(string: string)
-        case .bitcoin, .litecoin, .viacoin, .qtum, .digiByte:
+        case .bitcoin, .litecoin, .viacoin, .qtum, .digiByte, .monacoin:
             if let segwitAddress = SegwitAddress(string: string) {
                 return segwitAddress
             } else {
@@ -30,9 +30,8 @@ public extension CoinType {
             }
         case .dash, .dogecoin, .zcoin, .lux, .ravencoin:
             return BitcoinAddress(string: string)
-        case .callisto, .ellaism, .ethereum, .ethereumClassic,
-             .ethersocial, .goChain, .poanetwork, .theta,
-             .thunderToken, .tomoChain, .veChain, .xdai, .dexon:
+        case .callisto, .ellaism, .ethereum, .ethereumClassic, .ethersocial, .goChain,
+             .poanetwork, .theta, .thunderToken, .tomoChain, .veChain, .xdai, .dexon:
             return EthereumAddress(string: string)
         case .wanchain:
             return WanchainAddress(string: string)
@@ -78,6 +77,8 @@ public extension CoinType {
             return SteemAddress(string: string)
         case .eos:
             return EOSAddress(string: string)
+        case .fio:
+            return FIOAddress(string: string)
         case .ioTeX:
             return IoTeXAddress(string: string)
         case .zilliqa:

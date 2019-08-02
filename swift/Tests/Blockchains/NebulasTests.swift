@@ -27,7 +27,6 @@ class NebulasTests: XCTestCase {
             $0.toAddress = "n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17"
             $0.amount = Data(hexString: "98a7d9b8314c0000")!  //11000000000000000000ULL
             $0.timestamp = Data(hexString: "5cfc84ca")!   //1560052938
-            $0.payload = "\n\u{6}binary".data(using: String.Encoding.utf8)!    //{10, 6, 98, 105, 110, 97, 114, 121}
             $0.privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!)!.data
         }
         let output = NebulasSigner.sign(input: input)

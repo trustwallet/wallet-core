@@ -18,12 +18,12 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_ENUM()
 enum TWHRP {
     TWHRPUnknown     /* "" */,
-<% coins.filter{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+<% coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
     TWHRP<%= format_name(coin['name']) %>     /* "<%= coin['hrp'] %>" */,
 <% end -%>
 };
 
-<% coins.filter{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+<% coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
 static const char *_Nonnull HRP_<%= coin['id'].upcase %> = "<%= coin['hrp'] %>";
 <% end -%>
 

@@ -13,7 +13,6 @@ describe('NebulasSigner', () => {
             gasLimit: fromHexString('0x030d40'), //200000
             gasPrice: fromHexString('0x0f4240'), //1000000
             nonce: fromHexString('0x7'),    //7
-            payload: new Uint8Array((('\n\x06binary').match(/[\s\S]/g)||[]).map(ch=>ch.charCodeAt(0))),    //{10, 6, 98, 105, 110, 97, 114, 121}
             privateKey: PrivateKey.createWithData(fromHexString("0xd2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")).data(),
             timestamp: fromHexString("0x5cfc84ca"), //1560052938
             toAddress: "n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17",

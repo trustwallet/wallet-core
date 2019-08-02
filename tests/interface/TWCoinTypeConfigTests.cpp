@@ -138,6 +138,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto terra = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra));
     assertStringsEqual(terra, "LUNA");
+
+    auto mona = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonacoin));
+    assertStringsEqual(mona, "MONA");
+
+    auto fio = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeFIO));
+    assertStringsEqual(fio, "FIO");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -186,6 +192,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebulas), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonacoin), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -267,7 +275,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(theta, "https://explorer.thetatoken.org/txs/123");
 
     auto grs = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
-    assertStringsEqual(grs, "https://chainz.cryptoid.info/grs/tx.dws?123");
+    assertStringsEqual(grs, "https://blockchair.com/groestlcoin/transaction/123");
 
     auto doge = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
     assertStringsEqual(doge, "https://blockchair.com/dogecoin/transaction/123");
@@ -323,10 +331,13 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto nas = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNebulas, txId));
     assertStringsEqual(nas, "https://explorer.nebulas.io/#/tx/123");
     auto ae = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
-    assertStringsEqual(ae, "https://www.aeknow.org/block/transaction/123");
+    assertStringsEqual(ae, "https://explorer.aepps.com/#/tx/123");
 
     auto terra = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra, txId));
     assertStringsEqual(terra, "https://terra.stake.id/?#/tx/123");
+
+    auto mona = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonacoin, txId));
+    assertStringsEqual(mona, "https://blockbook.electrum-mona.org/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -460,6 +471,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto terra = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
     assertStringsEqual(terra, "terra");
+
+    auto mona = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonacoin));
+    assertStringsEqual(mona, "monacoin");
+
+    auto fio = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFIO));
+    assertStringsEqual(fio, "fio");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -588,10 +605,18 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
   
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
+
     auto nas = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
     assertStringsEqual(nas, "Nebulas");
+
     auto terra = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
     assertStringsEqual(terra, "Terra");
+
+    auto mona = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonacoin));
+    assertStringsEqual(mona, "Monacoin");
+
+    auto fio = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFIO));
+    assertStringsEqual(fio, "FIO");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
@@ -614,6 +639,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainNebulas, TWCoinTypeBlockchain(TWCoinTypeNebulas));
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
+    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeFIO));
 }
 
 TEST(TWCoinTypeConfiguration, P2SHPrefix) {
@@ -629,6 +655,7 @@ TEST(TWCoinTypeConfiguration, P2SHPrefix) {
     ASSERT_EQ(0x3F, TWCoinTypeP2shPrefix(TWCoinTypeDigiByte));
     ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
     ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
+    ASSERT_EQ(0x37, TWCoinTypeP2shPrefix(TWCoinTypeMonacoin));
 }
 
 TEST(TWCoinTypeConfiguration, StaticPrefix) {
