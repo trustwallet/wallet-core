@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package TW.Solana.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    bytes private_key = 1;
+
+    string recipient = 2;
+
+    uint64 lamports = 3;
+
+    string recent_blockhash = 4;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    bytes encoded = 1;
+}
