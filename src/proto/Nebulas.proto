@@ -38,6 +38,7 @@ message SigningInput {
 message SigningOutput {
     uint32 algorithm = 1;
     bytes signature = 2;
+    string raw = 3;
 }
 
 //

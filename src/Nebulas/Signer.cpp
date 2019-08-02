@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "Base64.h"
 #include "../HexCoding.h"
 
 using namespace TW;
@@ -26,6 +27,7 @@ Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_algorithm(tx.algorithm);
     protoOutput.set_signature(reinterpret_cast<const char *>(tx.signature.data()), tx.signature.size());
+    protoOutput.set_raw(TW::Base64::encode(tx.raw));
     return protoOutput;
 }
 
@@ -34,6 +36,7 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
     transaction.chainID = chainID;
     transaction.algorithm = 1;
     transaction.signature = privateKey.sign(transaction.hash, TWCurveSECP256k1);
+    transaction.serializeToRaw();
 }
 
 Data Signer::hash(const Transaction &transaction) const noexcept {
