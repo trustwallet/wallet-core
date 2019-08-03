@@ -32,7 +32,7 @@ std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs,
 } // namespace
 
 Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, size_t index,
-                                       uint32_t hashType) const {
+                                       enum TWBitcoinSigHashType hashType) const {
     assert(index < inputs.size());
 
     if (TWBitcoinSigHashTypeIsSingle(hashType) && index >= outputs.size()) {
@@ -78,7 +78,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
 Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsToSign,
                                     const std::vector<TransactionOutput>& outputsToSign,
                                     std::size_t signIndex, std::size_t index,
-                                    uint32_t hashType) const {
+                                    enum TWBitcoinSigHashType hashType) const {
     auto preimage = Data{};
 
     // Commit to the version and hash serialization type.

@@ -209,7 +209,7 @@ Data TransactionSigner<Transaction>::createSignature(const Transaction& transact
                                                      const Script& script, const Data& key,
                                                      size_t index, Amount amount,
                                                      uint32_t version) {
-    auto sighash = transaction.getSignatureHash(script, index, input.hash_type(), amount,
+    auto sighash = transaction.getSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()), amount,
                                                 static_cast<TWBitcoinSignatureVersion>(version));
     auto pk = PrivateKey(key);
     auto sig = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);

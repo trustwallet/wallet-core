@@ -145,7 +145,7 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
 
 Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Script& script,
                              const Data& key, size_t index) {
-    auto sighash = transaction.computeSignatureHash(script, index, input.hash_type());
+    auto sighash = transaction.computeSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()));
     auto pk = PrivateKey(key);
     auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
     if (script.empty()) {

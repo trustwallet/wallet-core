@@ -6,10 +6,10 @@
 
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 
-bool TWBitcoinSigHashTypeIsSingle(uint32_t type) {
+bool TWBitcoinSigHashTypeIsSingle(enum TWBitcoinSigHashType type) {
     return (type & 0x1f) == TWBitcoinSigHashTypeSingle;
 }
 
-bool TWBitcoinSigHashTypeIsNone(uint32_t type) {
+bool TWBitcoinSigHashTypeIsNone(enum TWBitcoinSigHashType type) {
     return (type & 0x1f) == TWBitcoinSigHashTypeNone;
 }

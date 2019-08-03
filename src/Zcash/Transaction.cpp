@@ -25,7 +25,7 @@ const auto shieldedOutputsHashPersonalization = Data({'Z','c','a','s','h','S','O
 /// See also https://github.com/zcash/zcash/blob/36243f41f1d8df98bdc834825ba539263f1da121/src/consensus/upgrades.cpp#L28
 constexpr std::array<byte, 4> saplingBranchID = {0xbb, 0x09, 0xb8, 0x76};
 
-Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType,
+Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                               uint64_t amount) const {
     assert(index < inputs.size());
 
@@ -176,7 +176,7 @@ void Transaction::encode(Data& data) const {
 }
 
 Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
-                                   uint32_t hashType, uint64_t amount,
+                                   enum TWBitcoinSigHashType hashType, uint64_t amount,
                                    TWBitcoinSignatureVersion version) const {
     Data personalization;
     personalization.reserve(16);

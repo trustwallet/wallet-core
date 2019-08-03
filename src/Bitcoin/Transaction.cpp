@@ -16,7 +16,7 @@
 using namespace TW::Bitcoin;
 
 std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t index,
-                                              uint32_t hashType, uint64_t amount) const {
+                                              enum TWBitcoinSigHashType hashType, uint64_t amount) const {
     assert(index < inputs.size());
 
     auto data = std::vector<uint8_t>{};
@@ -129,7 +129,7 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
 }
 
 std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, size_t index,
-                                                   uint32_t hashType, uint64_t amount,
+                                                   enum TWBitcoinSigHashType hashType, uint64_t amount,
                                                    TWBitcoinSignatureVersion version) const {
     switch (version) {
     case BASE:
@@ -141,7 +141,7 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, siz
 
 /// Generates the signature hash for Witness version 0 scripts.
 std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
-                                                            uint32_t hashType,
+                                                            enum TWBitcoinSigHashType hashType,
                                                             uint64_t amount) const {
     auto preimage = getPreImage(scriptCode, index, hashType, amount);
     auto hash = TW::Hash::hash(hasher, preimage);
@@ -150,7 +150,7 @@ std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Script& script
 
 /// Generates the signature hash for for scripts other than witness scripts.
 std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode, size_t index,
-                                                       uint32_t hashType) const {
+                                                       enum TWBitcoinSigHashType hashType) const {
     assert(index < inputs.size());
 
     auto data = std::vector<uint8_t>{};
@@ -188,7 +188,7 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
 }
 
 void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size_t index,
-                                 uint32_t hashType, std::vector<uint8_t>& data) const {
+                                 enum TWBitcoinSigHashType hashType, std::vector<uint8_t>& data) const {
     // In case of SIGHASH_ANYONECANPAY, only the input being signed is
     // serialized
     if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0) {

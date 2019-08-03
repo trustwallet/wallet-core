@@ -19,7 +19,10 @@ enum TWBitcoinSigHashType {
     TWBitcoinSigHashTypeAnyoneCanPay = 0x80
 };
 
-extern bool TWBitcoinSigHashTypeIsSingle(uint32_t type);
-extern bool TWBitcoinSigHashTypeIsNone(uint32_t type);
+TW_EXPORT_METHOD
+bool TWBitcoinSigHashTypeIsSingle(enum TWBitcoinSigHashType type);
+
+TW_EXPORT_METHOD
+bool TWBitcoinSigHashTypeIsNone(enum TWBitcoinSigHashType type);
 
 TW_EXTERN_C_END
