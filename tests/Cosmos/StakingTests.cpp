@@ -48,7 +48,7 @@ TEST(CosmosStaking, Staking) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("{\"mode\":\"async\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"1018\",\"denom\":\"muon\"}],\"gas\":\"101721\"},\"memo\":\"\",\"msg\":[{\"type\":\"cosmos-sdk/MsgDelegate\",\"value\":{\"amount\":{\"amount\":\"10\",\"denom\":\"muon\"},\"delegator_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"validator_address\":\"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ==\"}],\"type\":\"cosmos-sdk/MsgSend\"}}", output.json());
+    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"1018\",\"denom\":\"muon\"}],\"gas\":\"101721\"},\"memo\":\"\",\"msg\":[{\"type\":\"cosmos-sdk/MsgDelegate\",\"value\":{\"amount\":{\"amount\":\"10\",\"denom\":\"muon\"},\"delegator_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"validator_address\":\"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ==\"}],\"type\":\"cosmos-sdk/MsgSend\"}}", output.json());
 
     ASSERT_EQ(hex(output.signature()), "c08bdf6c2b0b4428f37975e85d329f1cb19745b000994a743b5df81d57d573aa5f755349befcc848c1d1507818723b1288594bc91df685e89aff22e0303b4861");
 }
@@ -84,7 +84,7 @@ TEST(CosmosStaking, Unstaking) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("{\"mode\":\"async\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"1018\",\"denom\":\"muon\"}],\"gas\":\"101721\"},\"memo\":\"\",\"msg\":[{\"type\":\"cosmos-sdk/MsgUndelegate\",\"value\":{\"amount\":{\"amount\":\"10\",\"denom\":\"muon\"},\"delegator_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"validator_address\":\"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"j4WpUVohGIHa6/s0bCvuyjq1wtQGqbOtQCz92qPQjisTN44Tz++Ozx1lAP6F0M4+eTA03XerqQ8hZCeAfL/3nw==\"}],\"type\":\"cosmos-sdk/MsgSend\"}}", output.json());
+    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"1018\",\"denom\":\"muon\"}],\"gas\":\"101721\"},\"memo\":\"\",\"msg\":[{\"type\":\"cosmos-sdk/MsgUndelegate\",\"value\":{\"amount\":{\"amount\":\"10\",\"denom\":\"muon\"},\"delegator_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"validator_address\":\"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"j4WpUVohGIHa6/s0bCvuyjq1wtQGqbOtQCz92qPQjisTN44Tz++Ozx1lAP6F0M4+eTA03XerqQ8hZCeAfL/3nw==\"}],\"type\":\"cosmos-sdk/MsgSend\"}}", output.json());
 
     ASSERT_EQ(hex(output.signature()), "8f85a9515a211881daebfb346c2beeca3ab5c2d406a9b3ad402cfddaa3d08e2b13378e13cfef8ecf1d6500fe85d0ce3e793034dd77aba90f216427807cbff79f");
 }
@@ -117,7 +117,7 @@ TEST(CosmosStaking, Withdraw) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("{\"mode\":\"async\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"1018\",\"denom\":\"muon\"}],\"gas\":\"101721\"},\"memo\":\"\",\"msg\":[{\"type\":\"cosmos-sdk/MsgWithdrawDelegationReward\",\"value\":{\"delegator_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"validator_address\":\"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"VG8NZzVvavlM+1qyK5dOSZwzEj8sLCkvTw5kh44Oco9GQxBf13FVC+s/I3HwiICqo4+o8jNMEDp3nx2C0tuY1g==\"}],\"type\":\"cosmos-sdk/MsgSend\"}}", output.json());
+    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"1018\",\"denom\":\"muon\"}],\"gas\":\"101721\"},\"memo\":\"\",\"msg\":[{\"type\":\"cosmos-sdk/MsgWithdrawDelegationReward\",\"value\":{\"delegator_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"validator_address\":\"cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"VG8NZzVvavlM+1qyK5dOSZwzEj8sLCkvTw5kh44Oco9GQxBf13FVC+s/I3HwiICqo4+o8jNMEDp3nx2C0tuY1g==\"}],\"type\":\"cosmos-sdk/MsgSend\"}}", output.json());
 
     ASSERT_EQ(hex(output.signature()), "546f0d67356f6af94cfb5ab22b974e499c33123f2c2c292f4f0e64878e0e728f4643105fd771550beb3f2371f08880aaa38fa8f2334c103a779f1d82d2db98d6");
     }

@@ -27,7 +27,7 @@ json broadcastJSON(json& jsonObj) {
     json jsonMsgWrapper;
 
     jsonMsgWrapper["tx"] = jsonObj;
-    jsonMsgWrapper["mode"] = "async";
+    jsonMsgWrapper["mode"] = "block";
 
     return jsonMsgWrapper;
 }

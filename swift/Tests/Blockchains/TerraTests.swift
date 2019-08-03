@@ -52,7 +52,7 @@ class TerraTests: XCTestCase {
         let expectedJSON: String =
         """
 {
-    "mode: "async",
+    "mode": "block",
     "tx": {
         "fee": {
             "amount": [{
