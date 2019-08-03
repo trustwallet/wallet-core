@@ -24,11 +24,11 @@ Result<Transaction> Signer::sign() {
               std::back_inserter(signedInputs));
 
     const bool hashSingle =
-        ((input.hash_type() & ~TWSignatureHashTypeAnyoneCanPay) == TWSignatureHashTypeSingle);
+        ((input.hash_type() & ~TWBitcoinSigHashTypeAnyoneCanPay) == TWBitcoinSigHashTypeSingle);
     for (auto i = 0; i < plan.utxos.size(); i += 1) {
         auto& utxo = plan.utxos[i];
 
-        // Only sign TWSignatureHashTypeSingle if there's a corresponding output
+        // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
         }

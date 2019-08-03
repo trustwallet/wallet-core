@@ -7,20 +7,9 @@
 #pragma once
 
 #include "TWBase.h"
+#include "TWBitcoinSigHashType.h"
 
 TW_EXTERN_C_BEGIN
-
-TW_EXPORT_ENUM(uint32_t)
-enum TWSignatureHashType {
-    TWSignatureHashTypeAll = 0x01,
-    TWSignatureHashTypeNone = 0x02,
-    TWSignatureHashTypeSingle = 0x03,
-    TWSignatureHashTypeFork = 0x40,
-    TWSignatureHashTypeAnyoneCanPay = 0x80
-};
-
-extern bool TWSignatureHashTypeIsSingle(uint32_t type);
-extern bool TWSignatureHashTypeIsNone(uint32_t type);
 
 enum TWBitcoinSignatureVersion {
     BASE,

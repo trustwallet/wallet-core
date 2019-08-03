@@ -37,7 +37,7 @@ TEST(RavencoinTransaction, SignTransaction) {
     const int64_t fee = 2000000;
 
     auto input = Bitcoin::Proto::SigningInput();
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("RNoSGCX8SPFscj8epDaJjqEpuZa2B5in88");

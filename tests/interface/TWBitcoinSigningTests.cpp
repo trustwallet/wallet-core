@@ -77,7 +77,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
 
     // Setup input
     Proto::SigningInput input;
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(335'790'000);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
@@ -161,7 +161,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
 TEST(BitcoinSigning, SignP2WSH) {
     // Setup input
     Proto::SigningInput input;
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(1000);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
@@ -238,7 +238,7 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
 TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     // Setup input
     Proto::SigningInput input;
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(200'000'000);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
