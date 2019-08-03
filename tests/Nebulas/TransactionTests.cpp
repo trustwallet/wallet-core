@@ -34,8 +34,7 @@ TEST(NebulasTransaction, serialize) {
     auto signer = Signer(1);
     signer.sign(privateKey, transaction);
     transaction.serializeToRaw();
-    printf("hex(raw):%s",hex(transaction.raw).c_str());
-
+    
     ASSERT_EQ(TW::Base64::encode(transaction.raw), "CiBQXdR2neMqnEu21q/U+OHqZHSBX9Q0hNiRfL2eCZO4hRIaGVefwtw23wEobqA40/7aIwQHghETxH4r+50aGhlXf89CeLWgHFjKu9/6tn4KNbelsMDAIIi2IhAAAAAAAAAAAJin2bgxTAAAKAcwyony5wU6CAoGYmluYXJ5QAFKEAAAAAAAAAAAAAAAAAAPQkBSEAAAAAAAAAAAAAAAAAADDUBYAWJB9T9KkUH/jkYrCUE47M2MOl14Zfnpq1CWJseEYKngsPw19+1boXlc64Gl5Gt1gKb3+0MdRP26klFTmc9qjkfnFQA=");
 }
 
