@@ -46,7 +46,7 @@ class Transaction {
         , timestamp(std::move(timestamp)){
           auto data = newPayloadData();
           payload.resize(data->ByteSize());
-          data->SerializePartialToArray(payload.data(),payload.size());
+          data->SerializePartialToArray(payload.data(),(int)payload.size());
           delete data;
         }
 

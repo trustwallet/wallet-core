@@ -51,5 +51,5 @@ void Transaction::serializeToRaw(){
     tx.set_sign(reinterpret_cast<const char *>(signature.data()),signature.size());
 
     raw.resize(tx.ByteSize());
-    tx.SerializeToArray(raw.data(),raw.size());
+    tx.SerializeToArray(raw.data(),(int)raw.size());
 }
