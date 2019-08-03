@@ -467,7 +467,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto nas = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
     assertStringsEqual(nas, "nebulas");
-    
+
     auto ae = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     assertStringsEqual(ae, "aeternity");
 
