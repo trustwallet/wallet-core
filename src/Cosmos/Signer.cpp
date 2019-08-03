@@ -9,7 +9,6 @@
 
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "../Base64.h"
 #include "../PrivateKey.h"
 #include "../Data.h"
 
@@ -62,11 +61,6 @@ std::vector<uint8_t> Signer::sign() const {
     return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
 }
 
-std::string Signer::signInBase64() const {
-    auto signature = sign();
-    return Base64::encode(Data(signature.begin(), signature.end()));
-}
-
 std::string Signer::signaturePreimage() const {
     return signaturePreimageJSON(input).dump();
 }
@@ -107,10 +101,9 @@ Proto::SigningOutput Signer::build() const {
 
     auto signature = sign();
     auto txJson = buildTransactionJSON(signature);
-    auto txEncoded = json::to_cbor(txJson);
 
     output.set_json(txJson.dump());
-    output.set_encoded(txEncoded.data(), txEncoded.size());
+    output.set_signature(signature.data(), signature.size());
 
     return output;
 }
