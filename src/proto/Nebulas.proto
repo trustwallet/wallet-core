@@ -30,8 +30,11 @@ message SigningInput {
     // Timestamp to create transaction (256-bit number)
     bytes timestamp = 8;
 
+    // Optional payload
+    string payload = 9;
+
     // Private key.
-    bytes private_key = 9;
+    bytes private_key = 10;
 }
 
 // Transaction signing output.

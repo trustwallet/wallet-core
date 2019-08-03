@@ -18,7 +18,8 @@ Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
         load(input.gas_limit()),
         Address(input.to_address()),
         load(input.amount()),
-        load(input.timestamp())
+        load(input.timestamp()),
+        input.payload()
     );
     
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
@@ -41,12 +42,18 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
 
 Data Signer::hash(const Transaction &transaction) const noexcept {
     auto encoded = Data();
+    auto payload = Data();
+    auto data = Transaction::newPayloadData(transaction.payload);
+    payload.resize(data->ByteSize());
+    data->SerializePartialToArray(payload.data(),(int)payload.size());
+    delete data;
+
     encoded.insert(encoded.end(), transaction.from.bytes.begin(), transaction.from.bytes.end());
     encoded.insert(encoded.end(), transaction.to.bytes.begin(), transaction.to.bytes.end());
     encode256BE(encoded, transaction.amount, 128);
     encode256BE(encoded, transaction.nonce, 64);
     encode256BE(encoded, transaction.timestamp, 64);
-    encoded.insert(encoded.end(), transaction.payload.begin(), transaction.payload.end());
+    encoded.insert(encoded.end(), payload.begin(), payload.end());
     encode256BE(encoded, chainID, 32);
     encode256BE(encoded, transaction.gasPrice, 128);
     encode256BE(encoded, transaction.gasLimit, 128);

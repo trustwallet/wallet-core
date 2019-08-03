@@ -26,6 +26,7 @@ class NebulasTests: XCTestCase {
             $0.gasLimit = Data(hexString: "030d40")!     //200000
             $0.toAddress = "n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17"
             $0.amount = Data(hexString: "98a7d9b8314c0000")!  //11000000000000000000ULL
+            $0.payload = ""
             $0.timestamp = Data(hexString: "5cfc84ca")!   //1560052938
             $0.privateKey = PrivateKey(data: Data(hexString: "d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b")!)!.data
         }

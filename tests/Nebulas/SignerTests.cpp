@@ -38,7 +38,8 @@ TEST(NebulasSigner, Hash) {
         /* gasLimit: */ 200000,
         /* to: */ to,
         /* amount: */ 11000000000000000000ULL,
-        /* timestamp: */ 1560052938);
+        /* timestamp: */ 1560052938,
+        /* payload: */ std::string());
     auto signer = SignerExposed(1);
     auto hash = signer.hash(transaction);
 
@@ -57,6 +58,7 @@ TEST(NebulasSigner, Sign) {
     input.set_gas_limit(value.data(),value.size());
     value = store(uint256_t(11000000000000000000ULL));
     input.set_amount(value.data(),value.size());
+    input.set_payload("");
     value = store(uint256_t(1560052938));
     input.set_timestamp(value.data(),value.size());
 

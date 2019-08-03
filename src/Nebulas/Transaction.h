@@ -25,7 +25,7 @@ class Transaction {
     Address to;
     uint256_t amount;
     uint256_t timestamp;
-    Data payload;
+    std::string payload;
 
     // Signature values
     uint256_t chainID;
@@ -36,22 +36,18 @@ class Transaction {
     // serialize data
     Data raw;
 
-    Transaction(Address from, uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, uint256_t timestamp)
+    Transaction(Address from, uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Address to, uint256_t amount, uint256_t timestamp, const std::string& payload)
         : from(std::move(from))
         , nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))
         , to(std::move(to))
         , amount(std::move(amount))
-        , timestamp(std::move(timestamp)){
-          auto data = newPayloadData();
-          payload.resize(data->ByteSize());
-          data->SerializePartialToArray(payload.data(),(int)payload.size());
-          delete data;
-        }
+        , timestamp(std::move(timestamp))
+        , payload(payload){}
 
   public:
-    Proto::Data* newPayloadData() const;
+    static Proto::Data* newPayloadData(const std::string& payload);
 
     ///serialize the signed transaction.
     void serializeToRaw();

@@ -6,6 +6,7 @@
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
+#include <nlohmann/json.hpp>
 #include "Transaction.h"
 #include "../HexCoding.h"
 
@@ -16,9 +17,49 @@ const char *Transaction::TxPayloadBinaryType = "binary";
 const char *Transaction::TxPayloadDeployType = "deploy";
 const char *Transaction::TxPayloadCallType = "call";
 
-Proto::Data* Transaction::newPayloadData() const{
+std::string htmlescape(const std::string& str) {
+    std::string result;
+    for(size_t i=0; i<str.size(); ++i) {
+        switch(str[i])
+        {
+            case '&': result += "\\u0026"; break;
+            case '>': result += "\\u003e"; break;
+            case '<': result += "\\u003c"; break;
+            case 0x20:
+                if(i+1 < str.size()) {
+                    if(str[i+1]==0x28) {
+                        result += "\\u2028";
+                        ++i;
+                        break;
+                    }
+                    else if (str[i+1]==0x29) {
+                        result += "\\u2029";
+                        ++i;
+                        break;
+                    }
+                }
+            default: result += str[i]; break;
+        }
+    }
+    return result;
+}
+
+Proto::Data* Transaction::newPayloadData(const std::string& payload){
     auto data = new Proto::Data();
     data->set_type(Transaction::TxPayloadBinaryType);
+
+    nlohmann::json payloadData;
+    if(!payload.empty()) {
+        auto json = nlohmann::json::parse(payload);
+        if(json.find("binary")!=json.end()) {
+            std::string binary_data = json["binary"];
+            auto buff = Data(binary_data.begin(),binary_data.end());
+            payloadData["Data"]["type"] = "Buffer";
+            payloadData["Data"]["data"] = nlohmann::json(buff);
+        }
+    }
+    if(!payloadData.empty())
+        data->set_payload(htmlescape(payloadData.dump()));
     return data;
 }
 
@@ -28,7 +69,7 @@ void Transaction::serializeToRaw(){
     }
 
     auto tx = Proto::RawTransaction();
-    auto data = newPayloadData();
+    auto data = newPayloadData(payload);
 
     auto value = Data();
     auto gas_price = Data();
