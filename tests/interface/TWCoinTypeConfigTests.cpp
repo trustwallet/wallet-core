@@ -330,6 +330,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto nas = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNebulas, txId));
     assertStringsEqual(nas, "https://explorer.nebulas.io/#/tx/123");
+
     auto ae = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
     assertStringsEqual(ae, "https://explorer.aepps.com/#/tx/123");
 
@@ -466,6 +467,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto nas = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
     assertStringsEqual(nas, "nebulas");
+    
     auto ae = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     assertStringsEqual(ae, "aeternity");
 

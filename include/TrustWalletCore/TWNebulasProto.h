@@ -10,3 +10,5 @@
 
 typedef TWData *_Nonnull TW_Nebulas_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Nebulas_Proto_SigningOutput;
+typedef TWData *_Nonnull TW_Nebulas_Proto_Data;
+typedef TWData *_Nonnull TW_Nebulas_Proto_RawTransaction;

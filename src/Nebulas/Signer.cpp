@@ -5,14 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "Base64.h"
 #include "../HexCoding.h"
 
 using namespace TW;
 using namespace TW::Nebulas;
-
-const char *Signer::TxPayloadBinaryType = "binary";
-const char *Signer::TxPayloadDeployType = "deploy";
-const char *Signer::TxPayloadCallType = "call";
 
 Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
     Transaction tx(Address(input.from_address()),
@@ -21,8 +18,7 @@ Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
         load(input.gas_limit()),
         Address(input.to_address()),
         load(input.amount()),
-        load(input.timestamp()),
-        Data(input.payload().begin(), input.payload().end())
+        load(input.timestamp())
     );
     
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
@@ -31,13 +27,16 @@ Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_algorithm(tx.algorithm);
     protoOutput.set_signature(reinterpret_cast<const char *>(tx.signature.data()), tx.signature.size());
+    protoOutput.set_raw(TW::Base64::encode(tx.raw));
     return protoOutput;
 }
 
 void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
-    auto hash = this->hash(transaction);
+    transaction.hash = this->hash(transaction);
+    transaction.chainID = chainID;
     transaction.algorithm = 1;
-    transaction.signature = privateKey.sign(hash, TWCurveSECP256k1);
+    transaction.signature = privateKey.sign(transaction.hash, TWCurveSECP256k1);
+    transaction.serializeToRaw();
 }
 
 Data Signer::hash(const Transaction &transaction) const noexcept {
