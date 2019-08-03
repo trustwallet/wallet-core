@@ -20,18 +20,16 @@ Data Transaction::encode() {
     append(encoded, Ethereum::RLP::encode(Identifiers::rlpMessageVersion));
     append(encoded, Ethereum::RLP::encode(buildTag(sender_id)));
     append(encoded, Ethereum::RLP::encode(buildTag(recipient_id)));
-    append(encoded, Ethereum::RLP::encode(amount));
-    append(encoded, Ethereum::RLP::encode(fee));
-    append(encoded, Ethereum::RLP::encode(ttl));
-    append(encoded, Ethereum::RLP::encode(nonce));
+    append(encoded, encodeSafeZero(amount));
+    append(encoded, encodeSafeZero(fee));
+    append(encoded, encodeSafeZero(ttl));
+    append(encoded, encodeSafeZero(nonce));
     append(encoded, Ethereum::RLP::encode(payload));
 
     const Data &raw = Ethereum::RLP::encodeList(encoded);
     return raw;
 }
 
-//// buildIDTag assemble an id() object
-//// see https://github.com/aeternity/protocol/blob/epoch-v0.22.0/serializations.md#the-id-type
 TW::Data Transaction::buildTag(const std::string &address) {
     auto payload = address.substr(Identifiers::prefixTransaction.size(), address.size());
 
@@ -40,4 +38,12 @@ TW::Data Transaction::buildTag(const std::string &address) {
     append(data, Base58::bitcoin.decodeCheck(payload));
 
     return data;
+}
+
+TW::Data Transaction::encodeSafeZero(uint256_t value) {
+    if (value == 0) {
+        return Ethereum::RLP::encode(Data{0});
+    } else {
+        return Ethereum::RLP::encode(value);
+    }
 }

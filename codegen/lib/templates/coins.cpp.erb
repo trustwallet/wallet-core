@@ -85,7 +85,7 @@ enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
 
 byte TW::staticPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.filter{ |coin| coin.has_key?('staticPrefix') }.each do |coin| -%>
+<%  coins.select{ |coin| coin.has_key?('staticPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['staticPrefix'] %>;
 <% end -%>
@@ -95,7 +95,7 @@ byte TW::staticPrefix(TWCoinType coin) {
 
 byte TW::p2pkhPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.filter{ |coin| coin.has_key?('p2pkhPrefix') }.each do |coin| -%>
+<%  coins.select{ |coin| coin.has_key?('p2pkhPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['p2pkhPrefix'] %>;
 <% end -%>
@@ -103,21 +103,9 @@ byte TW::p2pkhPrefix(TWCoinType coin) {
     }
 }
 
-std::set<byte> TW::p2pkhPrefixes() {
-    return std::set<byte>({
-<%  coins.filter{ |coin| coin.has_key?('p2pkhPrefix') && !coin.has_key?('staticPrefix') }
-        .map{ |coin| coin['p2pkhPrefix'] }
-        .uniq
-        .each do |prefix|
--%>
-        <%= prefix %>,
-<% end -%>
-    });
-}
-
 byte TW::p2shPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.filter{ |coin| coin.has_key?('p2shPrefix') }.each do |coin| -%>
+<%  coins.select{ |coin| coin.has_key?('p2shPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['p2shPrefix'] %>;
 <% end -%>
@@ -125,21 +113,9 @@ byte TW::p2shPrefix(TWCoinType coin) {
     }
 }
 
-std::set<byte> TW::p2shPrefixes() {
-    return std::set<byte>({
-<%  coins.filter{ |coin| coin.has_key?('p2shPrefix') && !coin.has_key?('staticPrefix') }
-        .map{ |coin| coin['p2shPrefix'] }
-        .uniq
-        .each do |prefix|
--%>
-        <%= prefix %>,
-<% end -%>
-    });
-}
-
 enum TWHRP TW::hrp(TWCoinType coin) {
     switch (coin) {
-<%  coins.filter{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+<%  coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return TWHRP<%= format_name(coin['name']) %>;
 <% end -%>

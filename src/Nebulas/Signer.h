@@ -32,10 +32,11 @@ class Signer {
     /// Initializes a signer with a chain identifier.
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
+    /// Signs the transaction by a SigningInput object.
+    Proto::SigningOutput sign(Proto::SigningInput& input) const noexcept;
+
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
-
-    static void appendBigEndian(Data& data, const uint256_t& value,uint32_t digit);
 
   protected:
     /// Computes the transaction hash.

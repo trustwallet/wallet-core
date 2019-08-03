@@ -10,39 +10,46 @@
 using namespace TW;
 using namespace TW::Nebulas;
 
-const char* Signer::TxPayloadBinaryType = "binary";
-const char* Signer::TxPayloadDeployType = "deploy";
-const char* Signer::TxPayloadCallType = "call";
+const char *Signer::TxPayloadBinaryType = "binary";
+const char *Signer::TxPayloadDeployType = "deploy";
+const char *Signer::TxPayloadCallType = "call";
 
-void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
+Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
+    Transaction tx(Address(input.from_address()),
+        load(input.nonce()),
+        load(input.gas_price()),
+        load(input.gas_limit()),
+        Address(input.to_address()),
+        load(input.amount()),
+        load(input.timestamp()),
+        Data(input.payload().begin(), input.payload().end())
+    );
+    
+    auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    sign(privateKey, tx);
+
+    auto protoOutput = Proto::SigningOutput();
+    protoOutput.set_algorithm(tx.algorithm);
+    protoOutput.set_signature(reinterpret_cast<const char *>(tx.signature.data()), tx.signature.size());
+    return protoOutput;
+}
+
+void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
     auto hash = this->hash(transaction);
-    transaction.alg = 1;
-    transaction.sign = privateKey.sign(hash, TWCurveSECP256k1);
+    transaction.algorithm = 1;
+    transaction.signature = privateKey.sign(hash, TWCurveSECP256k1);
 }
 
-void Signer::appendBigEndian(Data& data, const uint256_t& value,uint32_t digit) {
-    Data bytes = store(value);
-    Data buff(digit / 8);
-
-    for (int i = 0; i < (int)bytes.size(); ++i) {
-        int start = (int)buff.size() - (int)bytes.size() + i;
-        if (start >= 0) {
-            buff[start] = bytes[i];
-        }
-    }
-    data.insert(data.end(),buff.begin(),buff.end());
-}
-
-Data Signer::hash(const Transaction& transaction) const noexcept {
+Data Signer::hash(const Transaction &transaction) const noexcept {
     auto encoded = Data();
-    encoded.insert(encoded.end(), transaction.from.bytes.begin(),transaction.from.bytes.end());
-    encoded.insert(encoded.end(), transaction.to.bytes.begin(),transaction.to.bytes.end());
-    appendBigEndian(encoded, transaction.amount,128);
-    appendBigEndian(encoded, transaction.nonce,64);
-    appendBigEndian(encoded, transaction.timestamp,64);
-    encoded.insert(encoded.end(),transaction.payload.begin(),transaction.payload.end());
-    appendBigEndian(encoded, chainID,32);
-    appendBigEndian(encoded, transaction.gasPrice,128);
-    appendBigEndian(encoded, transaction.gasLimit,128);
+    encoded.insert(encoded.end(), transaction.from.bytes.begin(), transaction.from.bytes.end());
+    encoded.insert(encoded.end(), transaction.to.bytes.begin(), transaction.to.bytes.end());
+    encode256BE(encoded, transaction.amount, 128);
+    encode256BE(encoded, transaction.nonce, 64);
+    encode256BE(encoded, transaction.timestamp, 64);
+    encoded.insert(encoded.end(), transaction.payload.begin(), transaction.payload.end());
+    encode256BE(encoded, chainID, 32);
+    encode256BE(encoded, transaction.gasPrice, 128);
+    encode256BE(encoded, transaction.gasLimit, 128);
     return Hash::sha3_256(encoded);
 }

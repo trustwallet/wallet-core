@@ -17,11 +17,16 @@ using namespace TW::Nebulas;
 
 TEST(NebulasAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("abc"));
-    ASSERT_FALSE(Address::isValid("n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Ytt"));
-    ASSERT_FALSE(Address::isValid("n1TgpFZWCMmFd2sphb6RKstttEyMCNa2Yyv"));
+    ASSERT_FALSE(Address::isValid("a1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv"));
+    ASSERT_FALSE(Address::isValid("n2TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv"));
+    // normal address test
+    ASSERT_TRUE(Address::isValid("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY"));
+    // contract address test
+    ASSERT_TRUE(Address::isValid("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39"));
 }
 
 TEST(NebulasAddress, String) {
+    ASSERT_THROW(Address("abc"), std::invalid_argument);
     ASSERT_EQ(Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").string(),
         "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
     ASSERT_EQ(Address(Base58::bitcoin.decode("n1TgpFZWCMmFd2sphb6RKsCvsEyMCNa2Yyv")).string(),
@@ -32,15 +37,18 @@ TEST(NebulasAddress, String) {
     ASSERT_EQ(address.string(), "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
 }
 
-TEST(NebulasAddress, FromPrivateKey) {
-    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
-    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
-    const auto address = Address(publicKey);
-
-    ASSERT_EQ(address.string(), "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
+TEST(NebulasAddress, Data) {
+    Data data;
+    EXPECT_THROW(Address(data).string(), std::invalid_argument);
+    ASSERT_EQ(Address(Base58::bitcoin.decode("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY")).string(),
+        "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
 }
 
-TEST(NebulasAddress, IsValid) {
-    ASSERT_FALSE(Address::isValid("abc"));
-    ASSERT_TRUE(Address::isValid("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY"));
+TEST(NebulasAddress, FromPrivateKey) {
+    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    const auto address = Address(publicKey);
+    ASSERT_EQ(address.string(), "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
+
+    EXPECT_THROW(Address(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1)), std::invalid_argument);
 }

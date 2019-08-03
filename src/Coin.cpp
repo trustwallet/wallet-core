@@ -37,6 +37,7 @@
 #include "ARK/Address.h"
 #include "Waves/Address.h"
 #include "Nebulas/Address.h"
+#include "FIO/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 
@@ -64,6 +65,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
     case TWCoinTypeLitecoin:
+    case TWCoinTypeMonacoin:
     case TWCoinTypeQtum:
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress::isValid(string, hrp) ||
@@ -107,6 +109,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeEOS:
         return EOS::Address::isValid(string);
+    case TWCoinTypeFIO:
+        return FIO::Address::isValid(string);
 
     case TWCoinTypeWanchain:
         return Wanchain::Address::isValid(string);
@@ -163,6 +167,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeWaves:
         return Waves::Address::isValid(string);
+        
     case TWCoinTypeNebulas:
         return Nebulas::Address::isValid(string);
     }
@@ -204,6 +209,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
     case TWCoinTypeLux:
+    case TWCoinTypeMonacoin:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
     case TWCoinTypeZcoin:
@@ -229,6 +235,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeEOS:
         return EOS::Address(publicKey).string();
+
+    case TWCoinTypeFIO:
+        return FIO::Address(publicKey).string();
 
     case TWCoinTypeWanchain:
         return Wanchain::Address(publicKey).string();

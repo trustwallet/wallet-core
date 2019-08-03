@@ -12,11 +12,21 @@ def self.format_name(n)
   formatted
 end
 
+def self.coin_type(path)
+  path.split('/')[2].chomp("'")
+end
+
+def self.coin_img(coin)
+  "<img src=\"https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/#{coin}.png\" width=\"32\" />"
+end
+
 json_string = File.read('coins.json')
 coins = JSON.parse(json_string).sort_by { |x| x['name'] }
+coins_md = coins.sort_by { |x| Integer(coin_type(x['derivationPath'])) }
 
 erbs = [
   {'template' => 'coins.cpp.erb', 'folder' => 'src/Generated', 'file' => 'Coins.cpp'},
+  {'template' => 'coins.md.erb', 'folder' => 'docs', 'file' => 'coins.md'},
   {'template' => 'hrp.cpp.erb', 'folder' => 'src/Generated', 'file' => 'TWHRP.cpp'},
   {'template' => 'hrp.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWHRP.h'}
 ]

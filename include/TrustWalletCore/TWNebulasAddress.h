@@ -14,7 +14,7 @@ TW_EXTERN_C_BEGIN
 
 struct TWPublicKey;
 
-/// Represents an Nebulas address.
+/// Represents a Nebulas address.
 TW_EXPORT_CLASS
 struct TWNebulasAddress;
 
@@ -29,10 +29,6 @@ bool TWNebulasAddressIsValidString(TWString *_Nonnull string);
 /// Creates an address from a string representaion.
 TW_EXPORT_STATIC_METHOD
 struct TWNebulasAddress *_Nullable TWNebulasAddressCreateWithString(TWString *_Nonnull string);
-
-/// Creates an address from a key hash.
-TW_EXPORT_STATIC_METHOD
-struct TWNebulasAddress *_Nullable TWNebulasAddressCreateWithKeyHash(TWData *_Nonnull keyHash);
 
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD

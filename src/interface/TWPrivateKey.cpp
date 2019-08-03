@@ -31,12 +31,17 @@ struct TWPrivateKey *TWPrivateKeyCreate() {
 }
 
 struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data) {
-    if (!TWPrivateKeyIsValid(data)) {
+    // Check length
+    if (TWDataSize(data) != TWPrivateKeySize) {
         return nullptr;
     }
 
     std::array<uint8_t, PrivateKey::size> bytes;
     TWDataCopyBytes(data, 0, TWPrivateKeySize, bytes.data());
+
+    if (!PrivateKey::isValid(bytes)) {
+        return nullptr;
+    }
 
    return new TWPrivateKey{ PrivateKey(std::move(bytes)) };
 }
@@ -51,20 +56,16 @@ void TWPrivateKeyDelete(struct TWPrivateKey *_Nonnull pk) {
     delete pk;
 }
 
-bool TWPrivateKeyIsValid(TWData *_Nonnull data) {
+bool TWPrivateKeyIsValid(TWData *_Nonnull data, enum TWCurve curve) {
     // Check length
     if (TWDataSize(data) != TWPrivateKeySize) {
         return false;
     }
 
-    // Check for zero address
-    for (size_t i = 0; i < TWPrivateKeySize; i += 1) {
-        if (TWDataGet(data, i) != 0) {
-            return true;
-        }
-    }
+    std::vector<uint8_t> bytes(TWPrivateKeySize);
+    TWDataCopyBytes(data, 0, TWPrivateKeySize, bytes.data());
 
-    return false;
+    return PrivateKey::isValid(bytes, curve);
 }
 
 TWData *TWPrivateKeyData(struct TWPrivateKey *_Nonnull pk) {

@@ -252,21 +252,18 @@ void Script::encode(std::vector<uint8_t>& data) const {
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 
-Script Script::buildForAddress(const std::string& string) {
+Script Script::buildForAddress(const std::string& string, enum TWCoinType coin) {
     if (Address::isValid(string)) {
-        auto p2pkhPrefixes = TW::p2pkhPrefixes();
-        auto p2shPrefixes = TW::p2shPrefixes();
         auto address = Address(string);
-        auto p2pkh = p2pkhPrefixes.find(address.bytes[0]);
-        if (p2pkh != p2pkhPrefixes.end()) {
+        auto p2pkh = TW::p2pkhPrefix(coin);
+        auto p2sh = TW::p2shPrefix(coin);
+        if (p2pkh == address.bytes[0]) {
             // address starts with 1/L
             auto data = Data();
             data.reserve(Address::size - 1);
             std::copy(address.bytes.begin() + 1, address.bytes.end(), std::back_inserter(data));
             return buildPayToPublicKeyHash(data);
-        }
-        auto p2sh = p2shPrefixes.find(address.bytes[0]);
-        if (p2sh != p2shPrefixes.end()) {
+        } else if (p2sh == address.bytes[0]) {
             // address starts with 3/M
             auto data = Data();
             data.reserve(Address::size - 1);
@@ -281,7 +278,7 @@ Script Script::buildForAddress(const std::string& string) {
     } else if (CashAddress::isValid(string)) {
         auto address = CashAddress(string);
         auto bitcoinAddress = address.legacyAddress();
-        return buildForAddress(bitcoinAddress.string());
+        return buildForAddress(bitcoinAddress.string(), TWCoinTypeBitcoinCash);
     } else if (Decred::Address::isValid(string)) {
         auto bytes = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
         if (bytes[1] == TW::p2pkhPrefix(TWCoinTypeDecred)) {
