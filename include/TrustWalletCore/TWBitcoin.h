@@ -10,11 +10,14 @@
 
 TW_EXTERN_C_BEGIN
 
-static const uint32_t TWSignatureHashTypeAll = 0x01;
-static const uint32_t TWSignatureHashTypeNone = 0x02;
-static const uint32_t TWSignatureHashTypeSingle = 0x03;
-static const uint32_t TWSignatureHashTypeFork = 0x40;
-static const uint32_t TWSignatureHashTypeAnyoneCanPay = 0x80;
+TW_EXPORT_ENUM(uint32_t)
+enum TWSignatureHashType {
+    TWSignatureHashTypeAll = 0x01,
+    TWSignatureHashTypeNone = 0x02,
+    TWSignatureHashTypeSingle = 0x03,
+    TWSignatureHashTypeFork = 0x40,
+    TWSignatureHashTypeAnyoneCanPay = 0x80
+};
 
 extern bool TWSignatureHashTypeIsSingle(uint32_t type);
 extern bool TWSignatureHashTypeIsNone(uint32_t type);
