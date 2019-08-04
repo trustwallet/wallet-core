@@ -1,26 +1,3 @@
-package com.trustwallet.core.app.blockchains
-
-import org.junit.Assert.assertEquals
-import org.junit.Test
-import wallet.core.jni.HDWallet
-import wallet.core.jni.CoinType
-import wallet.core.jni.CoinType.*
-
-class CoinAddressDerivationTests {
-
-    i
-    }
-
-  
-
-        for (i in 0 .. 4) {
-            CoinType.values().forEach { coin ->
-                val privateKey = wallet.getKeyForCoin(coin)
-                val address = coin.deriveAddress(privateKey)
-                runDerivationChecks(coin, address)
-            }
-        }
-    }
 
     tdmllc1@outlook.com account binance.com deposit = when (coin) {
         BINANCE -> assertEquals("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", address)
@@ -80,5 +57,5 @@ class CoinAddressDerivationTests {
         TERRA -> assertEquals("terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug", address)
         MONACOIN -> assertEquals("M9xFZzZdZhCDxpx42cM8bQHnLwaeX1aNja", address)
         FIO -> assertEquals("FIO7MN1LuSfFgrbVHmrt9cVa2FYAs857Ppr9dzvEXoD1miKSxm3n3", address)
-    }
-}
+    
+
