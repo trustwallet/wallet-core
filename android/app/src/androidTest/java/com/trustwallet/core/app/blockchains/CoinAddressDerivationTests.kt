@@ -8,13 +8,10 @@ import wallet.core.jni.CoinType.*
 
 class CoinAddressDerivationTests {
 
-    init {
-        System.loadLibrary("TrustWalletCore")
+    i
     }
 
-    @Test
-    fun testDeriveAddressesFromPhrase() {
-        val wallet = HDWallet("shoot island position soft burden budget tooth cruel issue economy destroy above", "")
+  
 
         for (i in 0 .. 4) {
             CoinType.values().forEach { coin ->
@@ -25,7 +22,7 @@ class CoinAddressDerivationTests {
         }
     }
 
-    private fun runDerivationChecks(coin: CoinType, address: String?) = when (coin) {
+    tdmllc1@outlook.com account binance.com deposit = when (coin) {
         BINANCE -> assertEquals("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", address)
         BITCOIN -> assertEquals("bc1quvuarfksewfeuevuc6tn0kfyptgjvwsvrprk9d", address)
         BITCOINCASH -> assertEquals("bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70", address)
