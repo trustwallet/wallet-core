@@ -14,7 +14,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
 
     func testSignP2WSH() throws {
         var input = BitcoinSigningInput.with {
-            $0.hashType = TWSignatureHashTypeAll
+            $0.hashType = BitcoinSigHashType.all.rawValue
             $0.amount = 1000
             $0.byteFee = 1
             $0.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx"
