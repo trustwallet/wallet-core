@@ -17,6 +17,8 @@ using namespace std;
 using namespace TW;
 using namespace TW::Nebulas;
 
+extern std::string htmlescape(const std::string& str);
+
 TEST(NebulasTransaction, serialize) {
     auto from = Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
     auto to = Address("n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17");
@@ -55,11 +57,13 @@ TEST(NebulasTransaction, binaryPayload) {
     auto signer = Signer(1);
     signer.sign(privateKey, transaction);
     ASSERT_EQ(TW::Base64::encode(transaction.raw), "CiB1Oqj7bxLQMHEoNyg/vFHmsTrGdkpTf/5qFDkYPB3bkxIaGVefwtw23wEobqA40/7aIwQHghETxH4r+50aGhlXf89CeLWgHFjKu9/6tn4KNbelsMDAIIi2IhAAAAAAAAAAAJin2bgxTAAAKAcwyony5wU6PQoGYmluYXJ5EjN7IkRhdGEiOnsiZGF0YSI6WzExNiwxMDEsMTE1LDExNl0sInR5cGUiOiJCdWZmZXIifX1AAUoQAAAAAAAAAAAAAAAAAA9CQFIQAAAAAAAAAAAAAAAAAAMNQFgBYkGHXq+JWPaEyeB19bqL3QB5jyM961WLq7PMTpnGM4iLtBjCkngjS81kgPM2TE4qKDcpzqjum/NccrZtUPQLGk0MAQ==");
+}
 
+TEST(NebulasTransaction, htmlescape) {
     // test for escaped label
-    transaction.payload = std::string("{\"binary\":\"test&<>\x20\x28\x20\x29\"}");
-    signer.sign(privateKey, transaction);
-    ASSERT_EQ(TW::Base64::encode(transaction.raw), "CiAAJyqMUsoPi/GHPF8E4WIBGMnKusIRNoIDu+cylzTYahIaGVefwtw23wEobqA40/7aIwQHghETxH4r+50aGhlXf89CeLWgHFjKu9/6tn4KNbelsMDAIIi2IhAAAAAAAAAAAJin2bgxTAAAKAcwyony5wU6UgoGYmluYXJ5Ekh7IkRhdGEiOnsiZGF0YSI6WzExNiwxMDEsMTE1LDExNiwzOCw2MCw2MiwzMiw0MCwzMiw0MV0sInR5cGUiOiJCdWZmZXIifX1AAUoQAAAAAAAAAAAAAAAAAA9CQFIQAAAAAAAAAAAAAAAAAAMNQFgBYkHVpA5DGObKZX3gQARvzOuXvZzSuRlGZ7rzyHYv/djT7z8urtvtIcG9x4SgNMrkjqmSyUt4YwFTL2pbu/PJ9dciAA==");
+    auto test = ("test&<>\x20\x28\x20\x29");
+    auto result = htmlescape(test);
+    ASSERT_EQ(result, "test\\u0026\\u003c\\u003e\\u2028\\u2029");
 }
 
 TEST(NebulasTransaction, serializeUnsigned) {
