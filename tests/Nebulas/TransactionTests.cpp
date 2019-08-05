@@ -54,8 +54,12 @@ TEST(NebulasTransaction, binaryPayload) {
     const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
     auto signer = Signer(1);
     signer.sign(privateKey, transaction);
-    transaction.serializeToRaw();
     ASSERT_EQ(TW::Base64::encode(transaction.raw), "CiB1Oqj7bxLQMHEoNyg/vFHmsTrGdkpTf/5qFDkYPB3bkxIaGVefwtw23wEobqA40/7aIwQHghETxH4r+50aGhlXf89CeLWgHFjKu9/6tn4KNbelsMDAIIi2IhAAAAAAAAAAAJin2bgxTAAAKAcwyony5wU6PQoGYmluYXJ5EjN7IkRhdGEiOnsiZGF0YSI6WzExNiwxMDEsMTE1LDExNl0sInR5cGUiOiJCdWZmZXIifX1AAUoQAAAAAAAAAAAAAAAAAA9CQFIQAAAAAAAAAAAAAAAAAAMNQFgBYkGHXq+JWPaEyeB19bqL3QB5jyM961WLq7PMTpnGM4iLtBjCkngjS81kgPM2TE4qKDcpzqjum/NccrZtUPQLGk0MAQ==");
+
+    // test for escaped label
+    transaction.payload = std::string("{\"binary\":\"test&<>\x20\x28\x20\x29\"}");
+    signer.sign(privateKey, transaction);
+    ASSERT_EQ(TW::Base64::encode(transaction.raw), "CiAAJyqMUsoPi/GHPF8E4WIBGMnKusIRNoIDu+cylzTYahIaGVefwtw23wEobqA40/7aIwQHghETxH4r+50aGhlXf89CeLWgHFjKu9/6tn4KNbelsMDAIIi2IhAAAAAAAAAAAJin2bgxTAAAKAcwyony5wU6UgoGYmluYXJ5Ekh7IkRhdGEiOnsiZGF0YSI6WzExNiwxMDEsMTE1LDExNiwzOCw2MCw2MiwzMiw0MCwzMiw0MV0sInR5cGUiOiJCdWZmZXIifX1AAUoQAAAAAAAAAAAAAAAAAA9CQFIQAAAAAAAAAAAAAAAAAAMNQFgBYkHVpA5DGObKZX3gQARvzOuXvZzSuRlGZ7rzyHYv/djT7z8urtvtIcG9x4SgNMrkjqmSyUt4YwFTL2pbu/PJ9dciAA==");
 }
 
 TEST(NebulasTransaction, serializeUnsigned) {
