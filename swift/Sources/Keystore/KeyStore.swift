@@ -257,7 +257,7 @@ public final class KeyStore {
     ///   - password: current password
     ///   - newName: new name
     public func update(wallet: Wallet, password: String, newName: String) throws -> Wallet {
-        try update(wallet: wallet, password: password, newPassword: nil, newName: newName, newCoins: nil)
+        return try update(wallet: wallet, password: password, newPassword: nil, newName: newName, newCoins: nil)
     }
 
     private func update(wallet: Wallet, password: String, newPassword: String?, newName: String?, newCoins: [CoinType]?) throws -> Wallet {
