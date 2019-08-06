@@ -23,10 +23,11 @@ const std::string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE = "cosmos-sdk/MsgWithdrawD
 const std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
 const std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
-json higherWrapperJSON(json& jsonObj) {
+json broadcastJSON(json& jsonObj) {
     json jsonMsgWrapper;
 
     jsonMsgWrapper["tx"] = jsonObj;
+    jsonMsgWrapper["mode"] = "block";
 
     return jsonMsgWrapper;
 }
@@ -176,5 +177,5 @@ json TW::Cosmos::transactionJSON(const Transaction& transaction, std::string typ
     jsonTx["msg"] = json::array({messageJSON(transaction)});
     jsonTx["signatures"] = json::array({signatureJSON(transaction.signature())});
 
-    return higherWrapperJSON(jsonTx);
+    return broadcastJSON(jsonTx);
 }

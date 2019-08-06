@@ -32,27 +32,27 @@ std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs,
 } // namespace
 
 Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, size_t index,
-                                       uint32_t hashType) const {
+                                       enum TWBitcoinSigHashType hashType) const {
     assert(index < inputs.size());
 
-    if (TWSignatureHashTypeIsSingle(hashType) && index >= outputs.size()) {
+    if (TWBitcoinSigHashTypeIsSingle(hashType) && index >= outputs.size()) {
         throw std::invalid_argument("attempt to sign single input at index "
                                     "larger than the number of outputs");
     }
 
     auto inputsToSign = inputs;
     auto signIndex = index;
-    if ((hashType & TWSignatureHashTypeAnyoneCanPay) != 0) {
+    if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0) {
         inputsToSign = {inputs[index]};
         signIndex = 0;
     }
 
     auto outputsToSign = outputs;
     switch (hashType & sigHashMask) {
-    case TWSignatureHashTypeNone:
+    case TWBitcoinSigHashTypeNone:
         outputsToSign = {};
         break;
-    case TWSignatureHashTypeSingle:
+    case TWBitcoinSigHashTypeSingle:
         outputsToSign.clear();
         std::copy(outputs.begin(), outputs.begin() + index + 1, outputsToSign.end());
         break;
@@ -78,7 +78,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
 Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsToSign,
                                     const std::vector<TransactionOutput>& outputsToSign,
                                     std::size_t signIndex, std::size_t index,
-                                    uint32_t hashType) const {
+                                    enum TWBitcoinSigHashType hashType) const {
     auto preimage = Data{};
 
     // Commit to the version and hash serialization type.
@@ -93,7 +93,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
         input.previousOutput.encode(preimage);
 
         auto sequence = input.sequence;
-        if ((TWSignatureHashTypeIsNone(hashType) || TWSignatureHashTypeIsSingle(hashType)) &&
+        if ((TWBitcoinSigHashTypeIsNone(hashType) || TWBitcoinSigHashTypeIsSingle(hashType)) &&
             i != signIndex) {
             sequence = 0;
         }
@@ -106,7 +106,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
         auto& output = outputsToSign[i];
         auto value = output.value;
         auto pkScript = output.script;
-        if (TWSignatureHashTypeIsSingle(hashType) && i != index) {
+        if (TWBitcoinSigHashTypeIsSingle(hashType) && i != index) {
             value = -1;
             pkScript = {};
         }
