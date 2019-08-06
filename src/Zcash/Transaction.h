@@ -42,7 +42,7 @@ struct Transaction {
     bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    Data getPreImage(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType,
+    Data getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                      uint64_t amount) const;
     Data getPrevoutHash() const;
     Data getSequenceHash() const;
@@ -55,7 +55,7 @@ struct Transaction {
     /// Encodes the rawtx into the provided buffer.
     void encode(Data& data) const;
 
-    Data getSignatureHash(const Bitcoin::Script& scriptCode, size_t index, uint32_t hashType,
+    Data getSignatureHash(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                           uint64_t amount, TWBitcoinSignatureVersion version) const;
 
     /// Converts to Protobuf model

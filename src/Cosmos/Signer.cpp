@@ -9,7 +9,6 @@
 
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "../Base64.h"
 #include "../PrivateKey.h"
 #include "../Data.h"
 
@@ -28,17 +27,29 @@ Signer::Signer(Proto::SigningInput&& input) {
     }
 
     if (input.has_send_coins_message()) {
-        auto coin_message = input.send_coins_message();
-        if (coin_message.type_prefix().empty()) {
-            coin_message.set_type_prefix(AMINO_PREFIX_SEND_COIN_MESSAGE);
+        auto message = input.send_coins_message();
+        if (message.type_prefix().empty()) {
+            message.set_type_prefix(AMINO_PREFIX_SEND_COIN_MESSAGE);
         }
-        *input.mutable_send_coins_message() = coin_message;
+        *input.mutable_send_coins_message() = message;
     } else if (input.has_stake_message()) {
-        auto stake_message = input.stake_message();
-        if (stake_message.type_prefix().empty()) {
-            stake_message.set_type_prefix(AMINO_PREFIX_STAKE_MESSAGE);
+        auto message = input.stake_message();
+        if (message.type_prefix().empty()) {
+            message.set_type_prefix(AMINO_PREFIX_STAKE_MESSAGE);
         }
-        *input.mutable_stake_message() = stake_message;
+        *input.mutable_stake_message() = message;
+    } else if(input.has_unstake_message()) {
+        auto message = input.unstake_message();
+        if (message.type_prefix().empty()) {
+            message.set_type_prefix(AMINO_PREFIX_UNSTAKE_MESSAGE);
+        }
+        *input.mutable_unstake_message() = message;
+    } else if(input.has_withdraw_stake_reward_message()) {
+        auto message = input.withdraw_stake_reward_message();
+        if (message.type_prefix().empty()) {
+            message.set_type_prefix(AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE);
+        }
+        *input.mutable_withdraw_stake_reward_message() = message;
     }
     this->input = input;
 }
@@ -48,11 +59,6 @@ std::vector<uint8_t> Signer::sign() const {
     auto hash = Hash::sha256(signaturePreimage());
     auto signature = key.sign(hash, TWCurveSECP256k1);
     return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
-}
-
-std::string Signer::signInBase64() const {
-    auto signature = sign();
-    return Base64::encode(Data(signature.begin(), signature.end()));
 }
 
 std::string Signer::signaturePreimage() const {
@@ -74,6 +80,10 @@ json Signer::buildTransactionJSON(const Data& signature) const {
         *transaction.mutable_send_coins_message() = input.send_coins_message();
     } else if (input.has_stake_message()) {
         *transaction.mutable_stake_message() = input.stake_message();
+    } else if (input.has_unstake_message()) {
+        *transaction.mutable_unstake_message() = input.unstake_message();
+    } else if (input.has_withdraw_stake_reward_message()) {
+        *transaction.mutable_withdraw_stake_reward_message() = input.withdraw_stake_reward_message();
     }
     
     *transaction.mutable_signature() = sig;
@@ -91,10 +101,9 @@ Proto::SigningOutput Signer::build() const {
 
     auto signature = sign();
     auto txJson = buildTransactionJSON(signature);
-    auto txEncoded = json::to_cbor(txJson);
 
     output.set_json(txJson.dump());
-    output.set_encoded(txEncoded.data(), txEncoded.size());
+    output.set_signature(signature.data(), signature.size());
 
     return output;
 }

@@ -1,6 +1,6 @@
 {
   "name": "trust-wallet-core",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "JavaScript wrapper for wallet-core",
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",

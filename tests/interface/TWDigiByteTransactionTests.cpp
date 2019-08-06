@@ -35,7 +35,7 @@ TEST(DigiByteTransaction, SignTransaction) {
     const int64_t fee = 1000;
 
     auto input = Bitcoin::Proto::SigningInput();
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("D9Gv7jWSVsS9Y5q98C79WyfEj6P2iM5Nzs");
@@ -100,7 +100,7 @@ TEST(DigiByteTransaction, SignP2WPKH) {
     const int64_t amount = 2000000;
 
     Proto::SigningInput input;
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu");

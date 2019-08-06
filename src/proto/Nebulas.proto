@@ -31,7 +31,7 @@ message SigningInput {
     bytes timestamp = 8;
 
     // Optional payload
-    bytes payload = 9;
+    string payload = 9;
 
     // Private key.
     bytes private_key = 10;
@@ -41,4 +41,28 @@ message SigningInput {
 message SigningOutput {
     uint32 algorithm = 1;
     bytes signature = 2;
+    string raw = 3;
+}
+
+//
+message Data {
+    string type = 1;
+    bytes payload = 2;
+}
+
+// Raw transaction data
+message RawTransaction {
+    bytes hash  = 1;
+    bytes from = 2;
+    bytes to = 3;
+    bytes value = 4;
+    uint64 nonce = 5;
+    int64 timestamp = 6;
+    Data data = 7;
+    uint32 chain_id = 8;
+    bytes gas_price = 9;
+    bytes gas_limit = 10;
+
+    uint32 alg = 11;
+    bytes sign = 12;
 }
