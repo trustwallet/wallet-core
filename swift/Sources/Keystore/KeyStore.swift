@@ -99,6 +99,12 @@ public final class KeyStore {
         return accounts
     }
 
+    /// Remove accounts from a wallet.
+    public func removeAccounts(wallet: Wallet, coins: [CoinType], password: String) throws -> Wallet {
+        let newCoins = wallet.accounts.filter { !coins.contains($0.coin ) }.map { $0.coin }
+        return try update(wallet: wallet, password: password, newPassword: nil, newName: nil, newCoins: newCoins)
+    }
+
     /// Imports an encrypted JSON key.
     ///
     /// - Parameters:
@@ -241,7 +247,7 @@ public final class KeyStore {
     ///   - password: current password
     ///   - newPassword: new password
     public func update(wallet: Wallet, password: String, newPassword: String) throws {
-        try update(wallet: wallet, password: password, newPassword: newPassword, newName: wallet.key.name)
+        try update(wallet: wallet, password: password, newPassword: newPassword, newName: nil, newCoins: nil)
     }
 
     /// Updates the name of an existing account.
@@ -250,11 +256,11 @@ public final class KeyStore {
     ///   - wallet: wallet to update
     ///   - password: current password
     ///   - newName: new name
-    public func update(wallet: Wallet, password: String, newName: String) throws {
-        try update(wallet: wallet, password: password, newPassword: password, newName: newName)
+    public func update(wallet: Wallet, password: String, newName: String) throws -> Wallet {
+        try update(wallet: wallet, password: password, newPassword: nil, newName: newName, newCoins: nil)
     }
 
-    private func update(wallet: Wallet, password: String, newPassword: String, newName: String) throws {
+    private func update(wallet: Wallet, password: String, newPassword: String?, newName: String?, newCoins: [CoinType]?) throws -> Wallet {
         guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")
         }
@@ -266,23 +272,24 @@ public final class KeyStore {
             privateKeyData.resetBytes(in: 0 ..< privateKeyData.count)
         }
 
-        let coins = wallet.accounts.map({ $0.coin })
+        let coins = newCoins ?? wallet.accounts.map({ $0.coin })
         guard !coins.isEmpty else {
             throw Error.accountNotFound
         }
 
         if let mnemonic = checkMnemonic(privateKeyData),
-            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: newName, password: newPassword, coin: coins[0]) {
+            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: newName ?? wallet.key.name, password: newPassword ?? password, coin: coins[0]) {
             wallets[index].key = key
         } else if let key = StoredKey.importPrivateKey(
-                privateKey: privateKeyData, name: newName, password: newPassword, coin: coins[0]) {
+                privateKey: privateKeyData, name: newName ?? wallet.key.name, password: newPassword ?? password, coin: coins[0]) {
             wallets[index].key = key
         } else {
             throw Error.invalidKey
         }
 
-        _ = try wallets[index].getAccounts(password: newPassword, coins: coins)
+        _ = try wallets[index].getAccounts(password: newPassword ?? password, coins: coins)
         try save(wallet: wallets[index])
+        return wallets[index]
     }
 
     /// Deletes an account including its key if the password is correct.

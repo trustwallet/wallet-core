@@ -85,7 +85,7 @@ class KeyStoreTests: XCTestCase {
         let coins = [CoinType.ethereum, .callisto, .poanetwork]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
-        try keyStore.update(wallet: wallet, password: "password", newPassword: "testpassword")
+        _ = try keyStore.update(wallet: wallet, password: "password", newPassword: "testpassword")
 
         let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
         let savedWallet = savedKeyStore.wallets.first(where: { $0 == wallet })!
@@ -105,7 +105,7 @@ class KeyStoreTests: XCTestCase {
         let coins = [CoinType.ethereum, .callisto, .poanetwork]
         let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
 
-        try keyStore.update(wallet: wallet, password: "password", newName: "testname")
+        _ = try keyStore.update(wallet: wallet, password: "password", newName: "testname")
 
         let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
         let savedWallet = savedKeyStore.wallets.first(where: { $0 == wallet })!
@@ -128,6 +128,19 @@ class KeyStoreTests: XCTestCase {
         let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
         let savedWallet = savedKeyStore.hdWallet!
         XCTAssertEqual(savedWallet.accounts.count, 3)
+    }
+    
+    func testRemoveAccounts() throws {
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let coins = [CoinType.ethereum, .callisto, .poanetwork, .bitcoin]
+        let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
+        
+        _ = try keyStore.removeAccounts(wallet: wallet, coins: coins.dropLast(), password: "password")
+        
+        let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
+        let savedWallet = savedKeyStore.wallets.first(where: { $0 == wallet })!
+        XCTAssertEqual(savedWallet.accounts.count, 1)
+        XCTAssertEqual(savedWallet.accounts[0].coin, coins.last)
     }
 
     func testDeleteKey() throws {
