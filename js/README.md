@@ -45,4 +45,4 @@ HDWallet.create(128);
 
 -   For general [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) documentation, please refer to [GitBooks](https://developer.trustwallet.com/wallet-core).
 
--   For documentation on specific modules that are avaiable, please refer to [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) [exposed C headers](https://github.com/TrustWallet/wallet-core/tree/master/include/TrustWalletCore).
+-   For documentation on specific modules that are available, please refer to [`TrustWallet/wallet-core`](https://github.com/TrustWallet/wallet-core) [exposed C headers](https://github.com/TrustWallet/wallet-core/tree/master/include/TrustWalletCore).

@@ -97,7 +97,7 @@ TEST(BitcoinCash, SignTransaction) {
     // https://blockchair.com/bitcoin-cash/transaction/96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4
 
     auto input = Bitcoin::Proto::SigningInput();
-    input.set_hash_type(TWSignatureHashTypeFork | TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeFork | TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");

@@ -49,7 +49,7 @@ struct Transaction {
 
     /// Generates the signature pre-image.
     Data computeSignatureHash(const Bitcoin::Script& scriptCode, size_t index,
-                              uint32_t hashType) const;
+                              enum TWBitcoinSigHashType hashType) const;
 
     /// Generates the transaction hash.
     Data hash() const;
@@ -63,7 +63,7 @@ struct Transaction {
   private:
     Data computePrefixHash(const std::vector<TransactionInput>& inputsToSign,
                            const std::vector<TransactionOutput>& outputsToSign,
-                           std::size_t signIndex, std::size_t index, uint32_t hashType) const;
+                           std::size_t signIndex, std::size_t index, enum TWBitcoinSigHashType hashType) const;
     Data computeWitnessHash(const std::vector<TransactionInput>& inputsToSign,
                             const Bitcoin::Script& signScript, std::size_t signIndex) const;
 
