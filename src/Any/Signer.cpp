@@ -33,31 +33,31 @@ Proto::SigningOutput Signer::sign() const noexcept {
         case TWCoinTypeCosmos: {
             Cosmos::Proto::SigningInput message;
             parse(transaction, &message, output);
-            if (!output.has_error()) {
+            if (output.success()) {
                 message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                 auto signerOutput = Cosmos::Signer(std::move(message)).build();
-                output.set_json(signerOutput.json());
+                output.set_output(signerOutput.json());
             }
             break;
         }
         case TWCoinTypeBinance: {
             Binance::Proto::SigningInput message;
             parse(transaction, &message, output);
-            if (!output.has_error()) {
+            if (output.success()) {
                 message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                 auto signerOutput = Binance::Signer(std::move(message)).build();
-                output.set_encoded(hex(signerOutput.begin(), signerOutput.end()));
+                output.set_output(hex(signerOutput.begin(), signerOutput.end()));
             }
             break;
         }
         case TWCoinTypeEthereum: {
             Ethereum::Proto::SigningInput message;
             parse(transaction, &message, output);
-            if (!output.has_error()) {
+            if (output.success()) {
                 message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                 auto signerOutput = Ethereum::Signer(load(message.chain_id())).sign(message);
                 auto encoded = signerOutput.encoded();
-                output.set_encoded(hex(encoded.begin(), encoded.end()));
+                output.set_output(hex(encoded.begin(), encoded.end()));
             }
             break;
         }
@@ -79,10 +79,13 @@ void Signer::parse(const std::string& transaction, Message* message,
 
     auto result = JsonStringToMessage(transaction, message, options);
 
-    if (!result.ok()) {
-        auto error = new Proto::SigningOutput_Error();
-        error->set_code(SignerErrorCodeInvalidJson);
-        error->set_description(result.error_message());
-        output.set_allocated_error(error);
+    if (result.ok()) {
+        output.set_success(true);
+        return;
     }
+
+    auto error = new Proto::SigningOutput_Error();
+    error->set_code(SignerErrorCodeInvalidJson);
+    error->set_description(result.error_message());
+    output.set_allocated_error(error);
 }

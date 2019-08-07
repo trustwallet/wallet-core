@@ -49,7 +49,7 @@ struct Transaction {
     bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    std::vector<uint8_t> getPreImage(const Script& scriptCode, size_t index, uint32_t hashType,
+    std::vector<uint8_t> getPreImage(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                                      uint64_t amount) const;
     std::vector<uint8_t> getPrevoutHash() const;
     std::vector<uint8_t> getSequenceHash() const;
@@ -59,10 +59,10 @@ struct Transaction {
     void encode(bool witness, std::vector<uint8_t>& data) const;
 
     /// Generates the signature hash for this transaction.
-    std::vector<uint8_t> getSignatureHash(const Script& scriptCode, size_t index, uint32_t hashType,
+    std::vector<uint8_t> getSignatureHash(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                                           uint64_t amount, TWBitcoinSignatureVersion version) const;
 
-    void serializeInput(size_t subindex, const Script&, size_t index, uint32_t hashType,
+    void serializeInput(size_t subindex, const Script&, size_t index, enum TWBitcoinSigHashType hashType,
                         std::vector<uint8_t>& data) const;
 
     /// Converts to Protobuf model
@@ -71,11 +71,11 @@ struct Transaction {
   private:
     /// Generates the signature hash for Witness version 0 scripts.
     std::vector<uint8_t> getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
-                                                   uint32_t hashType, uint64_t amount) const;
+                                                   enum TWBitcoinSigHashType hashType, uint64_t amount) const;
 
     /// Generates the signature hash for for scripts other than witness scripts.
     std::vector<uint8_t> getSignatureHashBase(const Script& scriptCode, size_t index,
-                                              uint32_t hashType) const;
+                                              enum TWBitcoinSigHashType hashType) const;
 };
 
 } // namespace TW::Bitcoin

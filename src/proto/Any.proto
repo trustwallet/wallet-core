@@ -20,12 +20,10 @@ message SigningOutput {
         string description = 2;
     }
 
-    oneof output {
-        // Signing error
-        Error  error  = 1;
-        // Signing output as JSON
-        string json   = 2;
-        // Signing output encoded
-        string encoded = 3;
+    oneof result {
+        Error error = 1;
+        bool success = 2;
     }
+
+    string output = 4;
 }

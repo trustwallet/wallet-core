@@ -37,7 +37,7 @@ TEST(MonacoinTransaction, SignTransaction) {
     const int64_t fee = 20000;
 
     auto input = Bitcoin::Proto::SigningInput();
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("M8aShwteMWyAbUw4SGS4EHLqfo1EfnKHcM");
