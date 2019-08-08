@@ -6,6 +6,7 @@
 
 #include "Signer.h"
 #include "Address.h"
+#include "Base58.h"
 #include "Base64.h"
 #include "HexCoding.h"
 #include "Identifiers.h"
@@ -25,13 +26,13 @@ Proto::SigningOutput Signer::sign(const TW::PrivateKey &privateKey, Transaction 
 
     /// sign ed25519
     auto sigRaw = privateKey.sign(msg, TWCurveED25519);
-    auto signature = finalize(Identifiers::prefixSignature, sigRaw);
+    auto signature = Identifiers::prefixSignature + Base58::bitcoin.encodeCheck(sigRaw);
 
     /// encode the message using rlp
     auto rlpTxRaw = buildRlpTxRaw(txRlp, sigRaw);
 
     /// encode the rlp message with the prefix
-    auto signedEncodedTx = finalize(Identifiers::prefixTransaction, rlpTxRaw);
+    auto signedEncodedTx = encodeBase64WithChecksum(Identifiers::prefixTransaction, rlpTxRaw);
 
     return createProtoOutput(signature, signedEncodedTx);
 }
@@ -65,8 +66,7 @@ Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std
     return output;
 }
 
-/// Encode a byte array into base64 with checksum and a prefix
-std::string Signer::finalize(const std::string &prefix, const TW::Data &rawTx) {
+std::string Signer::encodeBase64WithChecksum(const std::string &prefix, const TW::Data &rawTx) {
     auto checksum = Hash::sha256(Hash::sha256(rawTx));
     std::vector<unsigned char> checksumPart(checksum.begin(), checksum.begin() + checkSumSize);
 

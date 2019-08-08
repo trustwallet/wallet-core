@@ -24,11 +24,11 @@ Result<Transaction> Signer::sign() {
               std::back_inserter(signedInputs));
 
     const bool hashSingle =
-        ((input.hash_type() & ~TWSignatureHashTypeAnyoneCanPay) == TWSignatureHashTypeSingle);
+        ((input.hash_type() & ~TWBitcoinSigHashTypeAnyoneCanPay) == TWBitcoinSigHashTypeSingle);
     for (auto i = 0; i < plan.utxos.size(); i += 1) {
         auto& utxo = plan.utxos[i];
 
-        // Only sign TWSignatureHashTypeSingle if there's a corresponding output
+        // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
         }
@@ -145,7 +145,7 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
 
 Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Script& script,
                              const Data& key, size_t index) {
-    auto sighash = transaction.computeSignatureHash(script, index, input.hash_type());
+    auto sighash = transaction.computeSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()));
     auto pk = PrivateKey(key);
     auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
     if (script.empty()) {

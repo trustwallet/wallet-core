@@ -26,11 +26,11 @@ Result<Transaction> TransactionSigner<Transaction>::sign() {
               std::back_inserter(signedInputs));
 
     const bool hashSingle =
-        ((input.hash_type() & ~TWSignatureHashTypeAnyoneCanPay) == TWSignatureHashTypeSingle);
+        ((input.hash_type() & ~TWBitcoinSigHashTypeAnyoneCanPay) == TWBitcoinSigHashTypeSingle);
     for (auto i = 0; i < plan.utxos.size(); i += 1) {
         auto& utxo = plan.utxos[i];
 
-        // Only sign TWSignatureHashTypeSingle if there's a corresponding output
+        // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
         }
@@ -55,7 +55,7 @@ Result<void> TransactionSigner<Transaction>::sign(Script script, size_t index,
     std::vector<Data> witnessStack;
 
     uint32_t signatureVersion = [this]() {
-        if ((input.hash_type() & TWSignatureHashTypeFork) != 0) {
+        if ((input.hash_type() & TWBitcoinSigHashTypeFork) != 0) {
             return WITNESS_V0;
         } else {
             return BASE;
@@ -209,7 +209,7 @@ Data TransactionSigner<Transaction>::createSignature(const Transaction& transact
                                                      const Script& script, const Data& key,
                                                      size_t index, Amount amount,
                                                      uint32_t version) {
-    auto sighash = transaction.getSignatureHash(script, index, input.hash_type(), amount,
+    auto sighash = transaction.getSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()), amount,
                                                 static_cast<TWBitcoinSignatureVersion>(version));
     auto pk = PrivateKey(key);
     auto sig = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);

@@ -4,12 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWBitcoin.h>
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
 
-bool TWSignatureHashTypeIsSingle(uint32_t type) {
-    return (type & 0x1f) == TWSignatureHashTypeSingle;
+bool TWBitcoinSigHashTypeIsSingle(enum TWBitcoinSigHashType type) {
+    return (type & 0x1f) == TWBitcoinSigHashTypeSingle;
 }
 
-bool TWSignatureHashTypeIsNone(uint32_t type) {
-    return (type & 0x1f) == TWSignatureHashTypeNone;
+bool TWBitcoinSigHashTypeIsNone(enum TWBitcoinSigHashType type) {
+    return (type & 0x1f) == TWBitcoinSigHashTypeNone;
 }
