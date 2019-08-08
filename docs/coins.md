@@ -18,7 +18,6 @@ This list is generated from `src/coins.json`
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/74.png" width="32" />      | <https://icon.foundation>      |
 | 111     | ARK              | ARK    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/111.png" width="32" />     | <http://ark.io>                |
 | 118     | Cosmos           | ATOM   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" />     | <https://cosmos.network>       |
-| 118     | Coinex           | CET    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" />     | <https://coinex.org>           |
 | 133     | Zcash            | ZEC    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/133.png" width="32" />     | <https://z.cash>               |
 | 135     | Steem            | STEEM  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/135.png" width="32" />     | <http://steem.io>              |
 | 136     | Zcoin            | XZC    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/136.png" width="32" />     | <https://zcoin.io>             |
@@ -44,6 +43,7 @@ This list is generated from `src/coins.json`
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/425.png" width="32" />     | <https://aion.network>         |
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/457.png" width="32" />     | <https://aeternity.com>        |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/500.png" width="32" />     | <https://www.thetatoken.org>   |
+| 688     | Coinex           | CET    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/688.png" width="32" />     | <https://coinex.org>           |
 | 700     | xDai             | xDAI   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/700.png" width="32" />     | <https://poa.network/xdai>     |
 | 714     | Binance          | BNB    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/714.png" width="32" />     | <https://binance.org>          |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/818.png" width="32" />     | <https://vechain.org>          |
