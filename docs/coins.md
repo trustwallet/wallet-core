@@ -18,6 +18,7 @@ This list is generated from `src/coins.json`
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/74.png" width="32" />      | <https://icon.foundation>      |
 | 111     | ARK              | ARK    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/111.png" width="32" />     | <http://ark.io>                |
 | 118     | Cosmos           | ATOM   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" />     | <https://cosmos.network>       |
+| 118     | Coinex           | CET    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/118.png" width="32" />     | <https://coinex.org>           |
 | 133     | Zcash            | ZEC    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/133.png" width="32" />     | <https://z.cash>               |
 | 135     | Steem            | STEEM  | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/135.png" width="32" />     | <http://steem.io>              |
 | 136     | Zcoin            | XZC    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/136.png" width="32" />     | <https://zcoin.io>             |

@@ -18,25 +18,25 @@
 #include <string>
 
 using namespace TW;
-using namespace TW::Cosmos;
+using namespace TW::Coinex;
 
 using json = nlohmann::json;
 
 Signer::Signer(Proto::SigningInput&& input) {
     if (input.type_prefix().empty()) {
-        input.set_type_prefix(AMINO_PREFIX_SEND_COIN_MESSAGE);
+        input.set_type_prefix(COINEX_PREFIX_SEND_COIN_MESSAGE);
     }
 
     if (input.has_send_coins_message()) {
         auto coin_message = input.send_coins_message();
         if (coin_message.type_prefix().empty()) {
-            coin_message.set_type_prefix(AMINO_PREFIX_SEND_COIN_MESSAGE);
+            coin_message.set_type_prefix(COINEX_PREFIX_SEND_COIN_MESSAGE);
         }
         *input.mutable_send_coins_message() = coin_message;
     } else if (input.has_stake_message()) {
         auto stake_message = input.stake_message();
         if (stake_message.type_prefix().empty()) {
-            stake_message.set_type_prefix(AMINO_PREFIX_STAKE_MESSAGE);
+            stake_message.set_type_prefix(COINEX_PREFIX_STAKE_MESSAGE);
         }
         *input.mutable_stake_message() = stake_message;
     }
@@ -60,13 +60,13 @@ std::string Signer::signaturePreimage() const {
 }
 
 json Signer::buildTransactionJSON(const Data& signature) const {
-    auto sig = Cosmos::Proto::Signature();
+    auto sig = Coinex::Proto::Signature();
     sig.set_signature(signature.data(), signature.size());
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
     sig.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
 
-    auto transaction = Cosmos::Proto::Transaction();
+    auto transaction = Coinex::Proto::Transaction();
     *transaction.mutable_fee() = input.fee();
     transaction.set_memo(input.memo());
 

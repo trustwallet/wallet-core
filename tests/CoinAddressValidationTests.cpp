@@ -43,6 +43,11 @@ TEST(Coin, ValidateAddressBinance) {
     EXPECT_FALSE(validateAddress(TWCoinTypeBinance, "tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl"));
 }
 
+TEST(Coin, ValidateAddressCoinex) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeCoinex, "coinex1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeCoinex, "bcoinex1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
+}
+
 TEST(Coin, ValidateAddressLitecoin) {
     EXPECT_TRUE(validateAddress(TWCoinTypeLitecoin, "ltc1q5wmm9vrz55war9c0rgw26tv9un5fxnn7slyjpy"));
     EXPECT_TRUE(validateAddress(TWCoinTypeLitecoin, "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny"));

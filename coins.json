@@ -491,6 +491,20 @@
         "rpcNodeInfo": "https://github.com/binance-chain/node-binary"
     },
     {
+        "id": "coinex",
+        "name": "Coinex",
+        "symbol": "CET",
+        "decimals": 8,
+        "blockchain": "Cosmos",
+        "derivationPath": "m/44'/118'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "hrp": "coinex",
+        "explorer": "https://testnet.coinex.org/transactions/",
+        "url": "https://coinex.org",
+        "rpcNodeInfo": "https://coinex.org"
+    },
+    {
         "id": "ripple",
         "name": "XRP",
         "symbol": "XRP",
