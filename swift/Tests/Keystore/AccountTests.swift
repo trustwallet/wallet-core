@@ -51,7 +51,7 @@ class AccountTests: XCTestCase {
         XCTAssertEqual(wallet.accounts[2].extendedPublicKey, "xpub6DCGEUmR2vcLbecgHEDN8ksNiEnanDUo3kNiT8XEHoiFCW2UWJLizkzwciXYJFzNQsFDbsJMwtGTJAkCgAQSdKTfCAmDu87rReGC9vcZVNH")
         XCTAssertEqual(wallet.accounts[3].extendedPublicKey, "")
     }
-    
+
     func testBTCPrivateKeyWithPaths() throws {
         let key = StoredKey.importHDWallet(mnemonic: words, name: "name", password: password, coin: .bitcoin)!
         let wallet = Wallet(keyURL: URL(fileURLWithPath: "/"), key: key)
