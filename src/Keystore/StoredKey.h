@@ -62,7 +62,10 @@ struct StoredKey {
 
     /// Returns the account for a specific coin if it exists.
     const Account* account(TWCoinType coin) const;
-
+    
+    /// Remove the account for a specific coin
+    void removeAccount(TWCoinType coin);
+    
     /// Returns the private key for a specific coin, creating an account if
     /// necessary.
     ///

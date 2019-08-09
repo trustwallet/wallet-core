@@ -98,6 +98,14 @@ const Account* StoredKey::account(TWCoinType coin) const {
     return nullptr;
 }
 
+void StoredKey::removeAccount(TWCoinType coin) {
+    accounts.erase(std::remove_if(accounts.begin(), accounts.end(), [coin](Account& account) -> bool {
+        return account.coin() == coin;
+        }
+    ), accounts.end());
+}
+
+
 const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& password) {
     switch (type) {
     case StoredKeyType::mnemonicPhrase: {
