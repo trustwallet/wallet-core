@@ -62,7 +62,6 @@ describe('Bech32Address', () => {
         expect(zpub).to.equal('zpub6rFR7y4Q2AijBEqTUquhVz398htDFrtymD9xYYfG1m4wAcvPhXNfE3EfH1r1ADqtfSdVCToUG868RvUUkgDKf31mGDtKsAYz2oz2AGutZYs');
     });
 
-    // FIXME crashed on Linux
     it('test PublicKey from X', () => {
         const xpub = 'xpub6BosfCnifzxcFwrSzQiqu2DBVTshkCXacvNsWGYJVVhhawA7d4R5WSWGFNbi8Aw6ZRc1brxMyWMzG3DSSSSoekkudhUd9yLb6qx39T9nMdj';
         const xpubAddr2 = HDWallet.getPublicKeyFromExtended(xpub, "m/44'/145'/0'/0/2");
