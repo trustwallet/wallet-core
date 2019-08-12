@@ -5,5 +5,11 @@
 set -e
 
 pushd js
+
+echo "Installing..."
+npm install
+
+echo "Building..."
 npm run build
+
 popd
