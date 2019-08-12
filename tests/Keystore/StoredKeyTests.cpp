@@ -125,6 +125,14 @@ TEST(StoredKey, DecodingBitcoinAddress) {
 
     EXPECT_EQ(key.accounts[0].address, "3PWazDi9n1Hfyq9gXFxDxzADNL8RNYyK2y");
 }
+    
+TEST(StoredKey, RemoveAccount) {
+    auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-mnemonic.json");
+    EXPECT_EQ(key.accounts.size(), 2);
+    key.removeAccount(TWCoinTypeEthereum);
+    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeBitcoin);
+}
 
 TEST(StoredKey, MissingAddress) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
