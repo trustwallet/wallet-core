@@ -13,6 +13,6 @@ String TWStringJsString(Env *_Nonnull env, TWString *_Nonnull string) {
 }
 
 TWString *_Nonnull TWStringCreateWithJsString(String string) {
-    const char* chars = string.Utf8Value().c_str();
-    return TWStringCreateWithUTF8Bytes(chars);
+    std::string str = string.Utf8Value();
+    return TWStringCreateWithUTF8Bytes(str.c_str());
 }
