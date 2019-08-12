@@ -37,17 +37,6 @@ fi
 "$PROTOC" -I=$PREFIX/include -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
 "$PROTOC" -I=$PREFIX/include -I=src/Zilliqa/Protobuf --cpp_out=src/Zilliqa/Protobuf src/Zilliqa/Protobuf/*.proto
 
-# Generate JS Protobuf files
-if [ -x "$(command -v npm)" ]; then
-    pushd js
-    mkdir -p proto
-    npm install
-    npm run gen-proto
-    popd
-else
-    echo -e "\nWARNING: Skipped installing Node.js package because the npm tool is not installed."
-fi
-
 # Generate Proto interface file
 pushd protobuf-plugin
 cmake -H. -Bbuild

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This script builds JavaScript bindings
+# This script publishes JavaScript module to npm.
 
 set -e
 
@@ -14,5 +14,8 @@ npm run build
 
 echo "Testing..."
 npm test
+
+echo "Publishing binary..."
+npm run binary:publish
 
 popd

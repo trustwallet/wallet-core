@@ -1,20 +1,30 @@
 {
   "name": "trust-wallet-core",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "JavaScript wrapper for wallet-core",
-  "main": "build/lib/index.js",
-  "types": "build/lib/index.d.ts",
+  "main": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
   "scripts": {
     "test": "mocha -r ts-node/register tests/**/*.test.ts tests/**/**/*.test.ts",
-    "generate-js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
-    "generate-ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
-    "gen-proto": "npm run generate-js && npm run generate-ts",
-    "build-bind": "cd cpp && npx node-gyp configure && npx node-gyp build",
-    "dist": "rm -rf build/* && npx tsc && cp -r proto build/proto && cp cpp/build/Release/trust-wallet-nodejs.node build/trust-wallet-nodejs.node",
-    "build": "npm run build-bind && npm run dist"
+    "protobuf:js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
+    "protobuf:ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
+    "protobuf:generate": "npm run protobuf:js && npm run protobuf:ts",
+    "build": "rm -rf dist && npm run binary:build && npm run protobuf:generate && cp -r proto dist/proto && npx tsc --outDir dist",
+    "install": "npx node-pre-gyp install --fallback-to-build",
+    "binary:build": "npx node-pre-gyp install --build-from-source",
+    "binary:publish": "npx node-pre-gyp package && npx node-pre-gyp publish"
+  },
+  "binary": {
+    "module_name": "trust_wallet",
+    "module_path": "./dist/",
+    "host": "https://trust-wallet-core.s3-us-east-2.amazonaws.com",
+    "remote_path": "./v{version}",
+    "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
   },
   "files": [
-    "build",
+    "dist/js",
+    "dist/proto",
+    "dist/lib",
     "README.md"
   ],
   "author": "Sathvik Birudavolu <sathvik@binance.com>",
@@ -35,11 +45,13 @@
     "long": "^4.0.0",
     "node-addon-api": "^1.6.3",
     "node-gyp": "github:brave/node-gyp",
+    "node-pre-gyp": "^0.13.0",
     "protobufjs": "^6.8.8"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.6",
+    "aws-sdk": "^2.504.0",
     "chai": "^4.2.0",
     "mocha": "^6.1.4",
     "ts-node": "^8.1.0",
