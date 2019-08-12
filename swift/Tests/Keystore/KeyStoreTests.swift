@@ -129,7 +129,7 @@ class KeyStoreTests: XCTestCase {
         let savedWallet = savedKeyStore.hdWallet!
         XCTAssertEqual(savedWallet.accounts.count, 3)
     }
-    
+
     func testRemoveAccounts() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let coins = [CoinType.ethereum, .callisto, .poanetwork, .bitcoin]
