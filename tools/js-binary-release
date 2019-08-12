@@ -6,6 +6,9 @@ set -e
 
 pushd js
 
+echo "Installing..."
+npm install
+
 echo "Building & packaging..."
 npm run build
 
