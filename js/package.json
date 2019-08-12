@@ -9,7 +9,7 @@
     "protobuf:js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
     "protobuf:ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
     "protobuf:generate": "npm run protobuf:js && npm run protobuf:ts",
-    "build": "rm -rf dist && npm run binary:build && npx tsc --outDir dist && cp -r proto dist/proto",
+    "build": "rm -rf dist && npm run binary:build && npm run protobuf:generate && cp -r proto dist/proto && npx tsc --outDir dist",
     "install": "npx node-pre-gyp install --fallback-to-build",
     "binary:build": "npx node-pre-gyp install --build-from-source",
     "binary:publish": "npx node-pre-gyp package && npx node-pre-gyp publish"
