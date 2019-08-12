@@ -10,7 +10,7 @@
 {
   "targets": [
     {
-      "target_name": "trust-wallet-nodejs",
+      "target_name": "trust_wallet",
       "cflags!": [ "-fno-exceptions" ],
       "cflags_cc!": [ "-fno-exceptions", "-std=c++17" ],
       "xcode_settings": {
@@ -25,22 +25,33 @@
       	"ldflags": ["-lc++"]
       },
       "sources": [ 
-          "Sources.cc",
-          "TWNapiData.cc",
-          "TWNapiString.cc",
+          "cpp/Sources.cc",
+          "cpp/TWNapiData.cc",
+          "cpp/TWNapiString.cc",
 <% entities.sort { |x,y| x.name <=> y.name }.each do |entity| -%>
-          "generated/<%= entity.name %>.cc",
+          "cpp/generated/<%= entity.name %>.cc",
 <% end -%>
       ],
       "include_dirs": [
         "<!@(node -p \"require('node-addon-api').include\")",
         "<(module_root_dir)/",
-        "<(module_root_dir)/../../include",
-        "<(module_root_dir)/../../trezor-crypto/include"
+        "<(module_root_dir)/../include",
+        "<(module_root_dir)/../trezor-crypto/include"
       ],
-      "libraries": [ "<(module_root_dir)/../../build/libTrustWalletCore.a",
-                     "<(module_root_dir)/../../build/trezor-crypto/libTrezorCrypto.a",
-                     "<(module_root_dir)/../../build/libprotobuf.a" ]
+      "libraries": [ "<(module_root_dir)/../build/libTrustWalletCore.a",
+                     "<(module_root_dir)/../build/trezor-crypto/libTrezorCrypto.a",
+                     "<(module_root_dir)/../build/libprotobuf.a" ]
+    },
+    {
+      "target_name": "action_after_build",
+      "type": "none",
+      "dependencies": [ "<(module_name)" ],
+      "copies": [
+        {
+          "files": [ "<(PRODUCT_DIR)/<(module_name).node" ],
+          "destination": "<(module_path)"
+        }
+      ]
     }
   ]
 }
