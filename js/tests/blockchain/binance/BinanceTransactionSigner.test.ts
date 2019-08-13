@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { TW, PrivateKey, CosmosAddress, HRP, BinanceSigner } from '../../../lib';
+import { TW, PrivateKey, CosmosAddress, HRP, BinanceSigner } from '../../..';
 
 describe('EthereumTransactionSigner', () => {
 

@@ -3,7 +3,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { TW, BitcoinTransactionSigner } from '../../../lib';
+import { TW, BitcoinTransactionSigner } from '../../..';
 
 describe('BitcoinSigner', () => {
 

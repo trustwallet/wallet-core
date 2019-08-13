@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { bufToHex, fromHexString } from '../../Utils';
-import { TW, NebulasSigner, PrivateKey } from '../../../lib';
+import { TW, NebulasSigner, PrivateKey } from '../../..';
 
 describe('NebulasSigner', () => {
     it('test Nebulas block signing', () => {

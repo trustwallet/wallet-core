@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { TW, BravoSigner, Hash, CoinType, CoinTypeUtil, EOSSigner } from '../../../lib';
+import { TW, BravoSigner, Hash, CoinType, CoinTypeUtil, EOSSigner } from '../../..';
 
 describe('EOSSigning', () => {
 

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { bufToHex, fromHexString } from '../../Utils';
-import { PrivateKey, StellarAddress, PublicKey, PublicKeyType } from '../../../lib';
+import { PrivateKey, StellarAddress, PublicKey, PublicKeyType } from '../../..';
 
 describe('StellarAddress', () => {
 

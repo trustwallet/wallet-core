@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { TW, PrivateKey, WavesSigner } from '../../../lib';
+import { TW, PrivateKey, WavesSigner } from '../../..';
 
 describe('WavesSigner', () => {
 

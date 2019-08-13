@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { bufToHex } from '../Utils';
-import { HDWallet, CoinType, Purpose, HDVersion } from '../../lib';
+import { HDWallet, CoinType, Purpose, HDVersion } from '../..';
 
 describe('Bech32Address', () => {
 

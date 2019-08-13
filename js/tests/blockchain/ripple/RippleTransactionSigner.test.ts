@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { bufToHex, fromHexString } from '../../Utils';
-import { TW, PrivateKey, RippleSigner } from '../../../lib';
+import { TW, PrivateKey, RippleSigner } from '../../..';
 
 describe('RippleTransactionSigner', () => {
 
