@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString} from '../../Utils';
-import { TW, AeternitySigner } from '../../../lib';
+import { TW, AeternitySigner } from '../../..';
 
 describe('AeternitySigner', () => {
 

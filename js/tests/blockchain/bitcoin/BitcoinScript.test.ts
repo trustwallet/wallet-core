@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { BitcoinScript } from '../../../lib';
+import { BitcoinScript } from '../../..';
 
 describe('BitcoinScript', () => {
 

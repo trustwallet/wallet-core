@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString } from '../../Utils';
-import { TW, PrivateKey, CosmosAddress, CosmosSigner, HRP } from '../../../lib';
+import { TW, PrivateKey, CosmosAddress, CosmosSigner, HRP } from '../../..';
 
 describe('CosmosTransactions', () => {
 

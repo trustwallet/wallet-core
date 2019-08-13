@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { fromHexString } from '../../Utils';
-import { NanoAddress, PublicKey, PublicKeyType } from '../../../lib';
+import { NanoAddress, PublicKey, PublicKeyType } from '../../..';
 
 describe('NanoAddress', () => {
 

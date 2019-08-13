@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { bufToHex, fromHexString } from '../../Utils';
-import { TW, OntologySigner } from '../../../lib';
+import { TW, OntologySigner } from '../../..';
 
 describe('OntologySigner', () => {
 

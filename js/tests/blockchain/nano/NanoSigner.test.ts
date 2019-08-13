@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { bufToHex, fromHexString } from '../../Utils';
-import { TW, NanoSigner, PublicKey } from '../../../lib';
+import { TW, NanoSigner, PublicKey } from '../../..';
 
 describe('NanoSigner', () => {
 
