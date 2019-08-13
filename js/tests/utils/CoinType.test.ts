@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 
-import { CoinType, CoinTypeUtil, Purpose, Curve } from '../../lib';
+import { CoinType, CoinTypeUtil, Purpose, Curve } from '../..';
 
 describe('CoinType', () => {
 

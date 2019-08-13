@@ -130,6 +130,19 @@ class KeyStoreTests: XCTestCase {
         XCTAssertEqual(savedWallet.accounts.count, 3)
     }
 
+    func testRemoveAccounts() throws {
+        let keyStore = try KeyStore(keyDirectory: keyDirectory)
+        let coins = [CoinType.ethereum, .callisto, .poanetwork, .bitcoin]
+        let wallet = try keyStore.createWallet(name: "name", password: "password", coins: coins)
+
+        _ = try keyStore.removeAccounts(wallet: wallet, coins: coins.dropLast(), password: "password")
+
+        let savedKeyStore = try KeyStore(keyDirectory: keyDirectory)
+        let savedWallet = savedKeyStore.wallets.first(where: { $0 == wallet })!
+        XCTAssertEqual(savedWallet.accounts.count, 1)
+        XCTAssertEqual(savedWallet.accounts[0].coin, coins.last)
+    }
+
     func testDeleteKey() throws {
         let keyStore = try KeyStore(keyDirectory: keyDirectory)
         let wallet = keyStore.keyWallet!

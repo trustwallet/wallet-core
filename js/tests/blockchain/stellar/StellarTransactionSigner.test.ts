@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString } from '../../Utils';
-import { TW, PrivateKey, StellarPassphrase, StellarSigner, StellarPassphraseUtil } from '../../../lib';
+import { TW, PrivateKey, StellarPassphrase, StellarSigner, StellarPassphraseUtil } from '../../..';
 
 describe('StellarTransactionSigner', () => {
 

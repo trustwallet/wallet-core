@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { fromHexString } from '../../Utils';
-import { SemuxAddress, PublicKey, PublicKeyType } from '../../../lib';
+import { SemuxAddress, PublicKey, PublicKeyType } from '../../..';
 
 describe('SemuxAddress', () => {
 
