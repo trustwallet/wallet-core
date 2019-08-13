@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { bufToHex } from '../Utils';
-import { Hash, PrivateKey, Curve } from '../../lib';
+import { Hash, PrivateKey, Curve } from '../..';
 
 describe('PrivateKey', () => {
 

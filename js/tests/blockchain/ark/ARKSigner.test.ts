@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { TW, ARKSigner } from '../../../lib';
+import { TW, ARKSigner } from '../../..';
 
 describe('ARKSigner', () => {
 

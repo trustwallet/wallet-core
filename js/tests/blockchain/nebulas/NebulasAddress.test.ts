@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { fromHexString } from '../../Utils';
-import { NebulasAddress, PublicKey, PublicKeyType, PrivateKey } from '../../../lib';
+import { NebulasAddress, PublicKey, PublicKeyType, PrivateKey } from '../../..';
 
 describe('NebulasAddress', () => {
 

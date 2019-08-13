@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { bufToHex, fromHexString } from '../../Utils';
-import { TW, SemuxSigner, PublicKey } from '../../../lib';
+import { TW, SemuxSigner, PublicKey } from '../../..';
 import * as Long from "long";
 
 describe('SemuxSigner', () => {

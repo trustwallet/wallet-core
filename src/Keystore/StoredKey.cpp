@@ -78,12 +78,9 @@ const Account* StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
 
     const auto derivationPath = TW::derivationPath(coin);
     const auto address = wallet->deriveAddress(coin);
-
-    std::string extendedPublicKey;
+    
     const auto version = TW::xpubVersion(coin);
-    if (version != TWHDVersionNone) {
-        extendedPublicKey = wallet->getExtendedPublicKey(derivationPath.purpose(), coin, version);
-    }
+    const auto extendedPublicKey = wallet->getExtendedPublicKey(derivationPath.purpose(), coin, version);
 
     accounts.emplace_back(address, derivationPath, extendedPublicKey);
     return &accounts.back();

@@ -2,7 +2,7 @@ import { expect, AssertionError } from 'chai';
 import 'mocha';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { TW, BravoSigner, Hash } from '../../../lib';
+import { TW, BravoSigner, Hash } from '../../..';
 
 describe('BravoSigning', () => {
 

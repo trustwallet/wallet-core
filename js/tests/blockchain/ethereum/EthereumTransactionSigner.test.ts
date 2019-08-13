@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { EthereumSigner, TW, PrivateKey } from '../../../lib';
+import { EthereumSigner, TW, PrivateKey } from '../../..';
 
 describe('EthereumTransactionSigner', () => {
 

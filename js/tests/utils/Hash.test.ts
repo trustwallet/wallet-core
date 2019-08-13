@@ -3,7 +3,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { bufToHex } from '../Utils';
-import { Hash } from '../../lib';
+import { Hash } from '../..';
 
 describe('Hash', () => {
 

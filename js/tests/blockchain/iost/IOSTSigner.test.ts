@@ -4,7 +4,7 @@ import 'mocha';
 import * as Long from 'long';
 
 import { fromHexString, bufToHex } from '../../Utils';
-import { TW, IOSTSigner } from '../../../lib';
+import { TW, IOSTSigner } from '../../..';
 
 describe('IOSTSigner', () => {
 

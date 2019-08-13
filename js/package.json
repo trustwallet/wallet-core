@@ -1,6 +1,6 @@
 {
   "name": "trust-wallet-core",
-  "version": "0.6.0",
+  "version": "0.8.0",
   "description": "JavaScript wrapper for wallet-core",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -8,15 +8,15 @@
     "test": "mocha -r ts-node/register tests/**/*.test.ts tests/**/**/*.test.ts",
     "protobuf:js": "npx pbjs -t static-module --force-long -o proto/TrustWalletCore.js ../src/proto/*.proto",
     "protobuf:ts": "npx pbts -o proto/TrustWalletCore.d.ts proto/TrustWalletCore.js",
-    "protobuf:generate": "npm run protobuf:js && npm run protobuf:ts",
-    "build": "rm -rf dist && npm run binary:build && npm run protobuf:generate && cp -r proto dist/proto && npx tsc --outDir dist",
+    "protobuf:generate": "mkdir -p proto && npm run protobuf:js && npm run protobuf:ts",
+    "build": "rm -rf dist && mkdir dist && npm run binary:build && npm run protobuf:generate && cp -r proto dist/proto && npx tsc --outDir dist",
     "install": "npx node-pre-gyp install --fallback-to-build",
     "binary:build": "npx node-pre-gyp install --build-from-source",
     "binary:publish": "npx node-pre-gyp package && npx node-pre-gyp publish"
   },
   "binary": {
     "module_name": "trust_wallet",
-    "module_path": "./dist/",
+    "module_path": "./Release/",
     "host": "https://trust-wallet-core.s3-us-east-2.amazonaws.com",
     "remote_path": "./v{version}",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
