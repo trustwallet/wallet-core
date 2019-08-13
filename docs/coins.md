@@ -55,7 +55,6 @@ This list is generated from [./coins.json](../coins.json)
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nebulas/info/logo.png" width="32" />      | <https://nebulas.io>          |
 | 3003    | Lux              | LUX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/lux/info/logo.png" width="32" />          | <https://luxcore.io>          |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
-| 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nuls/info/logo.png" width="32" />         | <https://nuls.io>             |
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://zel.cash>            |
 | 31102   | Ethersocial      | ESN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethersocial/info/logo.png" width="32" />  | <https://ethersocial.org>     |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |

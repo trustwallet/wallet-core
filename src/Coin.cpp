@@ -27,7 +27,6 @@
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
 #include "Zcash/TAddress.h"
-#include "NULS/Address.h"
 #include "Bravo/Address.h"
 #include "Steem/Address.h"
 #include "EOS/Address.h"
@@ -155,9 +154,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
-
-    case TWCoinTypeNULS:
-        return NULS::Address::isValid(string);
 
     case TWCoinTypeSemux:
         return Semux::Address::isValid(string);
@@ -288,9 +284,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
-
-    case TWCoinTypeNULS:
-        return NULS::Address(publicKey).string();
 
     case TWCoinTypeSemux:
         return Semux::Address(publicKey).string();
