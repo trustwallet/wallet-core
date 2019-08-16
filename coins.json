@@ -1,5 +1,23 @@
 [
     {
+        "id": "harmony",
+        "name": "Harmony",
+        "symbol": "ONE",
+        "decimals": 18,
+        "blockchain": "Harmony",
+        "derivationPath": "m/44'/60'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": "https://explorer.harmony.one",
+        "info": {
+            "url": "https://harmony.one",
+            "client": "https://github.com/harmony-one",
+            "clientPublic": "https://github.com/harmony-one",
+            "clientDocs": "https://docs.harmony.one/sdk-wiki/wallet-developers/rpc-definitions"
+        }
+    },
+
+    {
         "id": "nebulas",
         "name": "Nebulas",
         "symbol": "NAS",

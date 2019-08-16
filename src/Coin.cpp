@@ -6,6 +6,9 @@
 
 #include "Coin.h"
 
+// YZ
+#include "Harmony/Address.h"
+
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Bitcoin/Address.h"
@@ -92,6 +95,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Groestlcoin::Address::isValid(string, {p2pkh, p2sh});
 
+    // YZ:
+    case TWCoinTypeHarmony:
+            
     case TWCoinTypeCallisto:
     case TWCoinTypeEllaism:
     case TWCoinTypeEthereum:
@@ -218,6 +224,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeDecred:
         return Decred::Address(publicKey).string();
 
+    // YZ
+    case TWCoinTypeHarmony:
+            
     case TWCoinTypeCallisto:
     case TWCoinTypeEllaism:
     case TWCoinTypeEthereum:

@@ -14,6 +14,7 @@ This list is generated from `src/coins.json`
 | 22      | Monacoin         | MONA   | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/22.png" width="32" />      | <https://monacoin.org>         |
 | 42      | Decred           | DCR    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/42.png" width="32" />      | <https://decred.org>           |
 | 60      | Ethereum         | ETH    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/60.png" width="32" />      | <https://ethereum.org>         |
+| 60      | Harmony          | ONE    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/60.png" width="32" />      | <https://harmony.one>          |
 | 61      | Ethereum Classic | ETC    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/61.png" width="32" />      | <https://ethereumclassic.org>  |
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/74.png" width="32" />      | <https://icon.foundation>      |
 | 111     | ARK              | ARK    | <img src="https://raw.githubusercontent.com/TrustWallet/tokens/master/coins/111.png" width="32" />     | <http://ark.io>                |

@@ -4,12 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Ethereum/ABI.h"
+#include "Harmony/ABI.h"
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>
 
-namespace TW::Ethereum {
+namespace TW::Harmony {
 
 TEST(ABI, EncodeTrue) {
     Data encoded;
@@ -105,4 +105,4 @@ TEST(ABI, FunctionWithDynamicArgumentsCase2) {
     EXPECT_EQ(hex(encoded.begin() + 260, encoded.begin() + 292), "48656c6c6f2c20776f726c642100000000000000000000000000000000000000");
 }
 
-} // namespace TW::Ethereum
+} // namespace TW::Harmony

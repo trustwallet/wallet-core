@@ -11,6 +11,12 @@
 #include <gtest/gtest.h>
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
+
+    //YZ
+    auto harmony = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeHarmony));
+    assertStringsEqual(harmony, "ONE");
+
+    
     auto eth = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereum));
     assertStringsEqual(eth, "ETH");
 
@@ -147,6 +153,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
+    
+    // YZ
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeHarmony), 18);
+    
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereum), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinCash), 8);
@@ -197,6 +207,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
+    
+    //YZ
+    
     auto txId = TWStringCreateWithUTF8Bytes("123");
     auto eth = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereum, txId));
     assertStringsEqual(eth, "https://etherscan.io/tx/123");
@@ -204,6 +217,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto btc = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoin, txId));
     assertStringsEqual(btc, "https://blockchair.com/bitcoin/transaction/123");
 
+    
     auto bch = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoinCash, txId));
     assertStringsEqual(bch, "https://blockchair.com/bitcoin-cash/transaction/123");
 

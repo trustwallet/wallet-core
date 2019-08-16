@@ -11,8 +11,8 @@
 
 namespace TW::Harmony {
 
-// YZ: check the transaction formats with Chao's Aug 13, 2019???
-// 
+// YZ: check the transaction formats
+// TBD
 class Transaction {
   public:
     uint256_t nonce;
@@ -36,4 +36,4 @@ class Transaction {
         , payload(std::move(payload)){}
 };
 
-} // namespace TW::Ethereum
+} // namespace TW::Harmony

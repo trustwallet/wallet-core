@@ -4,22 +4,23 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Ethereum/Address.h"
+#include "Harmony/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Ethereum;
+using namespace TW::Harmony;
 
-TEST(EthereumAddress, Invalid) {
+// EthereumAddress => ?
+TEST(HarmonyAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_FALSE(Address::isValid("aaeb60f3e94c9b9a09f33669435e7ef1beaed"));
     ASSERT_FALSE(Address::isValid("fB6916095ca1df60bB79Ce92cE3Ea74c37c5d359"));
 }
 
-TEST(EthereumAddress, EIP55) {
+TEST(HarmonyAddress, EIP55) {
     ASSERT_EQ(
         Address(parse_hex("5aaeb6053f3e94c9b9a09f33669435e7ef1beaed")).string(),
         "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"
@@ -42,12 +43,12 @@ TEST(EthereumAddress, EIP55) {
     );
 }
 
-TEST(EthereumAddress, String) {
+TEST(HarmonyAddress, String) {
     const auto address = Address("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed");
     ASSERT_EQ(address.string(), "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed");
 }
 
-TEST(EthereumAddress, FromPrivateKey) {
+TEST(HarmonyAddress, FromPrivateKey) {
     const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     const auto address = Address(publicKey);
@@ -55,7 +56,7 @@ TEST(EthereumAddress, FromPrivateKey) {
     ASSERT_EQ(address.string(), "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
 }
 
-TEST(EthereumAddress, IsValid) {
+TEST(HarmonyAddress, IsValid) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_TRUE(Address::isValid("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"));
 }
