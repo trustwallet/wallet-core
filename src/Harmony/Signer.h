@@ -6,8 +6,8 @@
 
 #pragma once
 
-//YZ #include "RLP.h"
-//YZ #include "Transaction.h"
+#include "RLP.h"
+#include "Transaction.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
@@ -20,6 +20,8 @@
 #include <vector>
 
 // YZ
+// Proto is Ethereum::Proto
+
 namespace TW::Harmony {
 
 /// Helper class that performs Ethereum transaction signing.
@@ -30,8 +32,8 @@ class Signer {
     /// Initializes a signer with a chain identifier.
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
-    /// Signs a Proto::SigningInput transaction
-    Proto::SigningOutput sign(const Proto::SigningInput& input) const noexcept;
+    /// Signs a Ethereum::Proto::SigningInput transaction
+    Ethereum::Proto::SigningOutput sign(const Ethereum::Proto::SigningInput& input) const noexcept;
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;

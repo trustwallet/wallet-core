@@ -11,9 +11,10 @@
 
 namespace TW {
 
+// YZ
 TEST(Coin, ValidateAddressHarmonyEthereum) {
-        EXPECT_TRUE(validateAddress(TWCoinTypeHarmonyEthereum, "0xa000"));
-        EXPECT_FALSE(validateAddress(TWCoinTypeHarmonyEthereum, "0x0000"));
+        EXPECT_TRUE(validateAddress(TWCoinTypeHarmony, "0xa000"));
+        EXPECT_FALSE(validateAddress(TWCoinTypeHarmony, "0x0000"));
     }
 
     

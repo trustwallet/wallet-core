@@ -33,7 +33,8 @@ Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data&
     return values(chainID, signature);
 }
 
-Proto::SigningOutput Signer::sign(const TW::Ethereum::Proto::SigningInput &input) const noexcept {
+// YZ: TW::Ethereum::Proto => Ethereum::Proto
+Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput &input) const noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
     auto transaction = Transaction(
@@ -47,7 +48,7 @@ Proto::SigningOutput Signer::sign(const TW::Ethereum::Proto::SigningInput &input
 
     sign(key, transaction);
 
-    auto protoOutput = Proto::SigningOutput();
+    auto protoOutput = Ethereum::Proto::SigningOutput();
 
     auto encoded = RLP::encode(transaction);
     protoOutput.set_encoded(encoded.data(), encoded.size());

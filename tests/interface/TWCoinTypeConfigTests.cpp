@@ -208,7 +208,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     
-    //YZ
+    //YZ TBD for transactions
     
     auto txId = TWStringCreateWithUTF8Bytes("123");
     auto eth = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereum, txId));
@@ -356,6 +356,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
+    
+    // YZ
+    auto harmony = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeHarmony));
+    assertStringsEqual(harmony, "harmony");
+    
+    
     auto eth = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereum));
     assertStringsEqual(eth, "ethereum");
 
@@ -496,6 +502,12 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
+
+    // YZ
+    auto harmony = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeHarmony));
+    assertStringsEqual(harmony, "Harmony");
+
+    
     auto eth = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereum));
     assertStringsEqual(eth, "Ethereum");
 
@@ -636,6 +648,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
+    
+    // YZ
+    ASSERT_EQ(TWBlockchainHarmony, TWCoinTypeBlockchain(TWCoinTypeHarmony));
+
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoin));
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeLitecoin));
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereum));
