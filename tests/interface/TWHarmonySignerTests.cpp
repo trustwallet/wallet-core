@@ -6,12 +6,19 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TWTestUtilities.h"
-#include <TrustWalletCore/TWHarmonySigner.h>
+
+//YZ: Not create TWHarmonySigner.h
+//#include <TrustWalletCore/TWHarmonySigner.h>
+// directly use the Ethereum one
+#include <TrustWalletCore/TWEthereumSigner.h>
+
 #include "Harmony/Transaction.h"
 #include "Data.h"
 #include "HexCoding.h"
 #include "uint256.h"
-#include "proto/Harmony.pb.h"
+
+// YZ: using Ethereum.pb
+#include "proto/Ethereum.pb.h"
 
 #include <gtest/gtest.h>
 
@@ -34,8 +41,9 @@ TEST(TWHarmonySigner, BigInt) {
     auto loaded = load(expectedData);
     ASSERT_EQ(loaded, value);
 
+    // YZ added Ethereum::
     // Check proto storing
-    Proto::SigningInput input;
+    Ethereum::Proto::SigningInput input;
     auto storedData = store(value);
     input.set_gas_limit(storedData.data(), storedData.size());
     ASSERT_EQ(hex(input.gas_limit()), hex(expectedData));
