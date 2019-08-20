@@ -49,6 +49,7 @@ enum TWCoinType {
     TWCoinTypeLitecoin = 2,
     TWCoinTypeMonacoin = 22,
     TWCoinTypeNebulas = 2718,
+    TWCoinTypeNULS = 8964,
     TWCoinTypeLux = 3003,
     TWCoinTypeNano = 165,
     TWCoinTypeNEO = 888,
