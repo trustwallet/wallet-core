@@ -6,7 +6,7 @@ import * as Long from 'long';
 import { fromHexString, bufToHex } from '../../Utils';
 import { TW, PrivateKey, CosmosAddress, HRP, BinanceSigner } from '../../..';
 
-describe('EthereumTransactionSigner', () => {
+describe('BinanceTransactionSigner', () => {
 
     it('test sign Binance transaction', () => {
         const privateKey = PrivateKey.createWithData(fromHexString('95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832'));
