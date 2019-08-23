@@ -11,7 +11,7 @@
 
 namespace TW::Harmony {
 
-// YZ: check the transaction formats
+// YZ: the transaction formats OK as long as getting back the same values
 // TBD
 class Transaction {
   public:

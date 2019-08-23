@@ -10,15 +10,34 @@
 #include "../HexCoding.h"
 
 // YZ
+#include "../Bech32.h"
 using namespace TW::Harmony;
 
-bool Address::isValid(const std::string& string) {
+// Harmony uses the address length as that of Ethereum
+/*bool Address::isValid(const std::string& string) {
     if (string.size() != 42 || string[0] != '0' || string[1] != 'x') {
         return false;
     }
     const auto data = parse_hex(string);
     return Address::isValid(data);
-}
+}*/
+
+ // TBV
+ bool Address::isValid(const std::string& addr) {
+    auto dec = Bech32::decode(addr);
+    if (dec.second.empty()) {
+       return false;
+     }
+     
+    Data conv;
+    auto success =
+    Bech32::convertBits<5, 8, false>(conv, Data(dec.second.begin(), dec.second.end()));
+    if (!success || conv.size() < 2 || conv.size() > 40) {
+         return false;
+     }
+     return true;
+ }
+ // TBV
 
 Address::Address(const std::string& string) {
     if (!isValid(string)) {
@@ -40,6 +59,15 @@ Address::Address(const PublicKey& publicKey) {
         throw std::invalid_argument("Ethereum::Address needs an extended SECP256k1 public key.");
     }
     const auto data = publicKey.hash({}, static_cast<Data(*)(const byte*, const byte*)>(Hash::keccak256), true);
+    
+    // YZ: For Harmony Address, Bech32 is used to encode Ethereum Address which is a keccak256 hash
+    // TBD: encoding to Bech32
+    /*
+    
+     
+     
+     */
+    
     std::copy(data.end() - Address::size, data.end(), bytes.begin());
 }
 

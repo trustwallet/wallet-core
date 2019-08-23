@@ -13,7 +13,8 @@
 using namespace TW;
 using namespace TW::Harmony;
 
-// EthereumAddress => ?
+// EthereumAddress format == Harmony Address format: 20 bytes
+
 TEST(HarmonyAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_FALSE(Address::isValid("aaeb60f3e94c9b9a09f33669435e7ef1beaed"));
@@ -21,6 +22,10 @@ TEST(HarmonyAddress, Invalid) {
 }
 
 TEST(HarmonyAddress, EIP55) {
+    
+    // Harmony address is Bech32 after obtaining Ethereum ... hasing
+    // TBD
+    
     ASSERT_EQ(
         Address(parse_hex("5aaeb6053f3e94c9b9a09f33669435e7ef1beaed")).string(),
         "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"
@@ -48,6 +53,10 @@ TEST(HarmonyAddress, String) {
     ASSERT_EQ(address.string(), "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed");
 }
 
+// Harmony address is Bech32 after obtaining Ethereum ... hasing
+// TBD
+// double check: ... Extended
+
 TEST(HarmonyAddress, FromPrivateKey) {
     const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
@@ -56,7 +65,20 @@ TEST(HarmonyAddress, FromPrivateKey) {
     ASSERT_EQ(address.string(), "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
 }
 
+
+// EthereumAddress format == Harmony Address format: 20 bytes
+
+//TEST(HarmonyAddress, IsValid) {
+//    ASSERT_FALSE(Address::isValid("abc"));
+//    ASSERT_TRUE(Address::isValid("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"));
+//}
+
 TEST(HarmonyAddress, IsValid) {
     ASSERT_FALSE(Address::isValid("abc"));
-    ASSERT_TRUE(Address::isValid("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"));
+    //YZ test the Harmony address
+    ASSERT_TRUE(Address::isValid("0xD7Ff41CA29306122185A07d04293DdB35F24Cf2d"));
+    ASSERT_TRUE(Address::isValid("0x806171f95c5a74371a19e8a312c9e5cb4e1d24f6"));
+    ASSERT_TRUE(Address::isValid("0xd7ff41ca29306122185a07d04293ddb35f24cf2d"));
 }
+
+

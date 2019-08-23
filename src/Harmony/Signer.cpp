@@ -33,7 +33,7 @@ Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data&
     return values(chainID, signature);
 }
 
-// YZ: TW::Ethereum::Proto => Ethereum::Proto
+// YZ: reuse TW::Ethereum::Proto => Ethereum::Proto
 Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput &input) const noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 

@@ -21,6 +21,28 @@ public:
     using Signer::hash;
 };
 
+// Harmony test data
+    TEST(Signer, HarmonyHash) {
+        auto address = Address("0xd7ff41ca29306122185a07d04293ddb35f24cf2d");
+        auto transaction = Transaction(
+                                       /* nonce: */ 0x0,
+                                       /* gasPrice: */ 20000000000,
+                                       /* gasLimit: */ 21000,
+                                       /* to: */ address,
+                                       ///* amount: */ 0x1158e460913d00000,
+                                       //Err: integer literal is too large to be represented in any integer type
+                                       
+                                       /* amount: */ 0x58e460913d,
+                                       
+                                       /* payload: */ {}
+                                       );
+        auto signer = SignerExposed(1);
+        auto hash = signer.hash(transaction);
+        
+        ASSERT_EQ(hex(hash), "dff358dad4d0fc95b11acc9826b190d8b7971ac26b3f7ebdee83c10cafaf86f");
+    }
+
+    
 TEST(Signer, Hash) {
     auto address = Address("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction(
@@ -37,6 +59,8 @@ TEST(Signer, Hash) {
     ASSERT_EQ(hex(hash), "daf5a779ae972f972197303d7b574746c7ef83eadac0f2791ad23db92e4c8e53");
 }
 
+    
+    
 TEST(Signer, Sign) {
     auto address = Address("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction(

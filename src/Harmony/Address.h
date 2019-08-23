@@ -17,8 +17,8 @@ namespace TW::Harmony {
 
 class Address {
   public:
-    /// Number of bytes in an address.
-    static const size_t size = 20; //YZ ??
+    /// Number of bytes in an address
+    static const size_t size = 20;
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
