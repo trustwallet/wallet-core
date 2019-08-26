@@ -8,5 +8,9 @@
 
 #include "TWData.h"
 
+typedef TWData *_Nonnull TW_Solana_Proto_Transfer;
+typedef TWData *_Nonnull TW_Solana_Proto_Stake;
+typedef TWData *_Nonnull TW_Solana_Proto_DeactivateStake;
+typedef TWData *_Nonnull TW_Solana_Proto_WithdrawStake;
 typedef TWData *_Nonnull TW_Solana_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Solana_Proto_SigningOutput;

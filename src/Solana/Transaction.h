@@ -160,6 +160,8 @@ class Message {
     // transaction if all succeed.
     std::vector<CompiledInstruction> instructions;
 
+    Message() : recentBlockhash(Hash("11111111111111111111111111111111")){};
+
     Message(MessageHeader header, std::vector<Address> accountKeys, Hash recentBlockhash,
             std::vector<CompiledInstruction> instructions)
         : header(header)

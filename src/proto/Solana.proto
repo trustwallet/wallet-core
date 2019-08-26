@@ -16,7 +16,7 @@ message Stake {
     uint64 amount = 4;
 }
 
-message Unstake {
+message DeactivateStake {
     bytes stake_private_key = 1;
     string vote_pubkey = 2;
 }
@@ -32,7 +32,7 @@ message SigningInput {
     oneof transaction_type {
         Transfer transfer_transaction = 1;
         Stake stake_transaction = 2;
-        Unstake unstake_transaction = 3;
+        DeactivateStake deactivate_stake_transaction = 3;
         WithdrawStake withdraw_transaction = 4;
     }
     string recent_blockhash = 5;
