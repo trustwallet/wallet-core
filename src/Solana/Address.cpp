@@ -7,6 +7,7 @@
 #include "Address.h"
 #include "../Base58.h"
 
+using namespace TW;
 using namespace TW::Solana;
 
 bool Address::isValid(const std::string &string) {
@@ -39,4 +40,9 @@ Address::Address(const PublicKey &publicKey) {
 
 std::string Address::string() const {
     return Base58::bitcoin.encode(bytes);
+}
+
+Data Address::vector() const {
+    Data vec(std::begin(bytes), std::end(bytes));
+    return vec;
 }

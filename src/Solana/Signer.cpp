@@ -23,7 +23,7 @@ void Signer::sign(const std::vector<PrivateKey> &privateKeys, Transaction &trans
 }
 
 void Signer::signUpdateBlockhash(const std::vector<PrivateKey> &privateKeys,
-                                 Transaction &transaction, Solana::Hash recentBlockhash) {
+                                 Transaction &transaction, Solana::Hash &recentBlockhash) {
     transaction.message.recentBlockhash = recentBlockhash;
     Signer::sign(privateKeys, transaction);
 }

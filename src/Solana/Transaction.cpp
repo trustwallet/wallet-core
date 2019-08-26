@@ -18,7 +18,7 @@ void Transaction::writeBytes(const Data &bytes, Data &buffer) {
     buffer.insert(buffer.end(), bytes.begin(), bytes.end());
 }
 
-std::vector<uint8_t> Transaction::serialize() const {
+Data Transaction::serialize() const {
     std::vector<uint8_t> buffer;
 
     this->writeBytes(shortVecLength<Signature>(this->signatures), buffer);
@@ -63,7 +63,7 @@ uint8_t Transaction::getAccountIndex(Address publicKey) {
     if (item == this->message.accountKeys.end()) {
         throw std::invalid_argument("publicKey not found in message.accountKeys");
     }
-    return (uint8_t) std::distance(this->message.accountKeys.begin(), item);
+    return (uint8_t)std::distance(this->message.accountKeys.begin(), item);
 }
 
 bool Signature::operator==(const Signature &v) const {

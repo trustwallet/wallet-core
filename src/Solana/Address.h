@@ -39,6 +39,9 @@ class Address {
 
     /// Returns a string representation of the address.
     std::string string() const;
+
+    /// Returns a vector of the address.
+    Data vector() const;
 };
 
 inline bool operator==(const Address &lhs, const Address &rhs) {

@@ -3,18 +3,43 @@ syntax = "proto3";
 package TW.Solana.Proto;
 option java_package = "wallet.core.jni.proto";
 
+message Transfer {
+    bytes private_key = 1;
+    string recipient = 2;
+    uint64 amount = 3;
+}
+
+message Stake {
+    bytes from_private_key = 1;
+    bytes stake_private_key = 2;
+    string vote_pubkey = 3;
+    uint64 amount = 4;
+}
+
+message Unstake {
+    bytes stake_private_key = 1;
+    string vote_pubkey = 2;
+}
+
+message WithdrawStake {
+    bytes stake_private_key = 1;
+    string recipient = 2;
+    uint64 amount = 3;
+}
+
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    bytes private_key = 1;
-
-    string recipient = 2;
-
-    uint64 lamports = 3;
-
-    string recent_blockhash = 4;
+    oneof transaction_type {
+        Transfer transfer_transaction = 1;
+        Stake stake_transaction = 2;
+        Unstake unstake_transaction = 3;
+        WithdrawStake withdraw_transaction = 4;
+    }
+    string recent_blockhash = 5;
 }
 
 // Transaction signing output.
 message SigningOutput {
     bytes encoded = 1;
+    bytes signature = 2;
 }

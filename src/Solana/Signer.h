@@ -19,7 +19,7 @@ class Signer {
     /// Signs the given transaction.
     static void sign(const std::vector<PrivateKey> &privateKeys, Transaction &transaction);
     static void signUpdateBlockhash(const std::vector<PrivateKey> &privateKeys,
-                                    Transaction &transaction, Solana::Hash recentBlockhash);
+                                    Transaction &transaction, Solana::Hash &recentBlockhash);
     static Data signRawMessage(const std::vector<PrivateKey> &privateKeys, const Data messageData);
 };
 
