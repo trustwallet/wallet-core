@@ -14,26 +14,28 @@ class TestSolanaAddress {
         System.loadLibrary("TrustWalletCore")
     }
 
+    private val expectedAddressString = "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"
+
     @Test
     fun testAddressFromPrivateKey() {
         val key = PrivateKey(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
         val pubkey = key.getPublicKeyEd25519()
         val address = SolanaAddress(pubkey)
 
-        assertEquals(address.description(), "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
+        assertEquals(address.description(), expectedAddressString)
     }
 
     @Test
     fun testAddressFromPublicKey() {
-        val pubkey = PublicKey(Base58.decodeNoCheck("7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"), PublicKeyType.ED25519)
+        val pubkey = PublicKey(Base58.decodeNoCheck(expectedAddressString), PublicKeyType.ED25519)
         val address = SolanaAddress(pubkey)
 
-        assertEquals(address.description(), "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
+        assertEquals(address.description(), expectedAddressString)
     }
 
     @Test
     fun testAddressFromString() {
-        val addressString = "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"
+        val addressString = expectedAddressString
         val address = SolanaAddress(addressString)
         assertEquals(address.description(), addressString)
     }
