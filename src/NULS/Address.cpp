@@ -17,8 +17,9 @@ bool Address::isValid(const std::string& string) {
     if (string.empty()) {
         return false;
     }
-
-    Data decoded = TW::Base58::bitcoin.decode(string);
+    std::string prefix = "NULSd";
+    std::string address = string.substr(prefix.length(), string.length() - prefix.length());
+    Data decoded = TW::Base58::bitcoin.decode(address);
     if (decoded.size() != size) {
         return false;
     }
@@ -50,7 +51,9 @@ Address::Address(const TW::PublicKey& publicKey) {
 }
 
 Address::Address(const std::string& string) {
-    const auto decoded = Base58::bitcoin.decode(string);
+    std::string prefix = "NULSd";
+    std::string address = string.substr(prefix.length(), string.length() - prefix.length());   
+    const auto decoded = Base58::bitcoin.decode(address);
     if (decoded.size() != Base58Address::size) {
         throw std::invalid_argument("Invalid address string");
     }
@@ -109,6 +112,7 @@ TW::PrivateKey Address::importHexPrivateKey(std::string hexPrivateKey) {
 }
 
 std::string Address::string() const {
-    return TW::Base58::bitcoin.encode(bytes.begin(), bytes.end());
+    std::string prefix = "NULSd";
+    return prefix.append(TW::Base58::bitcoin.encode(bytes.begin(), bytes.end()));
 }
 
