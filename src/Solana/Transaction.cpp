@@ -14,44 +14,40 @@
 using namespace TW;
 using namespace TW::Solana;
 
-void Transaction::writeBytes(const Data &bytes, Data &buffer) {
-    buffer.insert(buffer.end(), bytes.begin(), bytes.end());
-}
-
 Data Transaction::serialize() const {
-    std::vector<uint8_t> buffer;
+    Data buffer;
 
-    this->writeBytes(shortVecLength<Signature>(this->signatures), buffer);
+    append(buffer, shortVecLength<Signature>(this->signatures));
     for (auto signature : this->signatures) {
         Data signature_vec(signature.bytes.begin(), signature.bytes.end());
-        this->writeBytes(signature_vec, buffer);
+        append(buffer, signature_vec);
     }
-    this->writeBytes(this->messageData(), buffer);
+    append(buffer, this->messageData());
 
     return buffer;
 }
 
-std::vector<uint8_t> Transaction::messageData() const {
-    std::vector<uint8_t> buffer;
+Data Transaction::messageData() const {
+    Data buffer;
 
     buffer.push_back(this->message.header.numRequiredSignatures);
     buffer.push_back(this->message.header.numCreditOnlySignedAccounts);
     buffer.push_back(this->message.header.numCreditOnlyUnsignedAccounts);
-    this->writeBytes(shortVecLength<Address>(this->message.accountKeys), buffer);
+    append(buffer, shortVecLength<Address>(this->message.accountKeys));
     for (auto account_key : this->message.accountKeys) {
         Data account_key_vec(account_key.bytes.begin(), account_key.bytes.end());
-        this->writeBytes(account_key_vec, buffer);
+        append(buffer, account_key_vec);
     }
     Data recentBlockhash(this->message.recentBlockhash.bytes.begin(),
                          this->message.recentBlockhash.bytes.end());
-    this->writeBytes(recentBlockhash, buffer);
-    this->writeBytes(shortVecLength<CompiledInstruction>(this->message.instructions), buffer);
+    append(buffer, recentBlockhash);
+    append(buffer, shortVecLength<CompiledInstruction>(this->message.instructions));
     for (auto instruction : this->message.instructions) {
         buffer.push_back(instruction.programIdIndex);
-        this->writeBytes(shortVecLength<uint8_t>(instruction.accounts), buffer);
-        this->writeBytes(instruction.accounts, buffer);
-        this->writeBytes(shortVecLength<uint8_t>(instruction.data), buffer);
-        this->writeBytes(instruction.data, buffer);
+        append(buffer, shortVecLength<uint8_t>(instruction.accounts));
+        append(buffer, instruction.accounts);
+        append(buffer, shortVecLength<uint8_t>(instruction.data));
+        append(buffer, instruction.data);
     }
 
     return buffer;

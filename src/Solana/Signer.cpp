@@ -37,12 +37,12 @@ Data Signer::signRawMessage(const std::vector<PrivateKey> &privateKeys, const Da
         signatures.push_back(signature);
     }
     Data buffer;
-    Transaction::writeBytes(shortVecLength<Signature>(signatures), buffer);
+    append(buffer, shortVecLength<Signature>(signatures));
     for (auto signature : signatures) {
         Data signature_vec(signature.bytes.begin(), signature.bytes.end());
-        Transaction::writeBytes(signature_vec, buffer);
+        append(buffer, signature_vec);
     }
-    Transaction::writeBytes(messageData, buffer);
+    append(buffer, messageData);
 
     return buffer;
 }

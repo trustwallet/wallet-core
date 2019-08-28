@@ -268,7 +268,6 @@ class Transaction {
     std::vector<uint8_t> serialize() const;
     std::vector<uint8_t> messageData() const;
     uint8_t getAccountIndex(Address publicKey);
-    static void writeBytes(const Data &bytes, Data &buffer);
 
   private:
     std::array<uint8_t, 64> defaultSignature;
