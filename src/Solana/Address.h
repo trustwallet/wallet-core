@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "../Base58Address.h"
 #include "../PublicKey.h"
 
 #include <array>
@@ -14,25 +15,16 @@
 
 namespace TW::Solana {
 
-class Address {
+class Address : public Base58Address<32> {
   public:
-    /// Number of bytes in Solana address.
-    static const size_t size = 32;
-
-    /// Address data
-    std::array<uint8_t, size> bytes;
-
     /// Determines whether a collection of bytes makes a valid Solana address.
-    static bool isValid(const std::vector<uint8_t> &data) { return data.size() == size; }
+    static bool isValid(const Data &data) { return data.size() == size; }
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string &string);
 
     /// Initializes an address with a string representation.
     explicit Address(const std::string &string);
-
-    /// Initializes an address with a collection of bytes.
-    explicit Address(const std::vector<uint8_t> &data);
 
     /// Initializes an address with a public key.
     explicit Address(const PublicKey &publicKey);
@@ -43,10 +35,6 @@ class Address {
     /// Returns a vector of the address.
     Data vector() const;
 };
-
-inline bool operator==(const Address &lhs, const Address &rhs) {
-    return lhs.bytes == rhs.bytes;
-}
 
 } // namespace TW::Solana
 

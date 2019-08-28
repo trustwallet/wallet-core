@@ -6,6 +6,7 @@
 
 #include "Address.h"
 #include "../Base58.h"
+#include "../Base58Address.h"
 
 using namespace TW;
 using namespace TW::Solana;
@@ -18,14 +19,7 @@ bool Address::isValid(const std::string &string) {
 Address::Address(const std::string &string) {
     const auto data = Base58::bitcoin.decode(string);
     if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
-}
-
-Address::Address(const std::vector<uint8_t> &data) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address data");
+        throw std::invalid_argument("Invalid address string");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
