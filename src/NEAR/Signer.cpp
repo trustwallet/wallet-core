@@ -57,7 +57,7 @@ Signer::Signer(Proto::SigningInput&& input) {
 std::vector<uint8_t> Signer::sign() const {
     auto key = PrivateKey(input.private_key());
     auto hash = Hash::sha256(signaturePreimage());
-    auto signature = key.sign(hash, TWCurveSECP256k1);
+    auto signature = key.sign(hash, TWCurveED25519);
     return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
 }
 
