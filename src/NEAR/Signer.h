@@ -31,11 +31,6 @@ public:
     ///
     /// \returns the signed transaction.
     Proto::SigningOutput build() const;
-
-private:
-    std::string signaturePreimage() const;
-    nlohmann::json buildTransactionJSON(const Data& signature) const;
-    std::string buildTransaction() const;
 };
 
 } // namespace

@@ -7,18 +7,11 @@
 #pragma once
 
 #include "../proto/NEAR.pb.h"
-#include <nlohmann/json.hpp>
-
-extern const std::string NEAR_PREFIX_SEND_COIN_MESSAGE;
-extern const std::string NEAR_PREFIX_STAKE_MESSAGE;
-extern const std::string NEAR_PREFIX_TRANSACTION;
-extern const std::string NEAR_PREFIX_UNSTAKE_MESSAGE;
-extern const std::string NEAR_PREFIX_WITHDRAW_STAKE_MESSAGE;
-extern const std::string NEAR_PREFIX_PUBLIC_KEY;
+#include "../Data.h"
 
 namespace TW::NEAR {
 
-nlohmann::json signaturePreimageJSON(const Proto::SigningInput& input);
-nlohmann::json transactionJSON(const Proto::Transaction& transaction, std::string type_prefix);
+Data transactionData(const Proto::SigningInput& input);
+Data signedTransactionData(const Data& transactionData, const Data& signatureData);
 
 } // namespace

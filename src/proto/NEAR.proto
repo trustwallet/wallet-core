@@ -84,6 +84,8 @@ message SigningInput {
     uint64 nonce = 3;
     string receiver_id = 4;
     repeated Action actions = 5;
+
+    bytes private_key = 6;
 }
 
 // Transaction signing output.
