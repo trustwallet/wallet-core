@@ -3,88 +3,91 @@ syntax = "proto3";
 package TW.NEAR.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// Amount
-message Amount {
-    string denom = 1;
-    int64 amount = 2;
+/// Provides container for unsigned 128 bit integers.
+message Uint128 {
+    bytes number = 1;
 }
 
-// Fee
-message Fee {
-    repeated Amount amounts = 1;
-    uint64 gas = 2;
+message PublicKey {
+    uint32 key_type = 1;
 }
 
-// Message for sending coins.
-message SendCoinsMessage {
-    string from_address = 1;
-    string to_address = 2;
-    repeated Amount amounts = 3;
-    // default is cosmos-sdk/MsgSend
-    string type_prefix = 4;
+message FunctionCallPermission {
+    Uint128 allowance = 1;
+    string receiver_id = 2;
 }
 
-// Message for staking.
-message StakeMessage {
-    string delegator_address = 1;
-    string validator_address = 2;
-    Amount amount = 3;
-    // cosmos-sdk/MsgDelegate to stake and cosmos-sdk/MsgUndelegate to unstake
-    string type_prefix = 4;
+message FullAccessPermission {
 }
 
-// Message for staking.
-message WithdrawStakeRewardMessage {
-    string delegator_address = 1;
-    string validator_address = 2;
-    // default is cosmos-sdk/MsgWithdrawDelegationReward
-    string type_prefix = 3;
+message AccessKey {
+    uint64 nonce = 1;
+    oneof permission {
+        FunctionCallPermission function_call = 2;
+        FullAccessPermission full_access = 3;
+    }
 }
 
-// Signature
-message Signature {
-    bytes public_key = 1;
-    bytes signature = 2;
+message CreateAccount {
 }
 
-// Transaction
-message Transaction {
-    Fee fee = 1;
-    string memo = 2;
-    Signature signature = 3;
+message DeployContract {
+    bytes code = 1;
+}
 
-    oneof message_oneof {
-        SendCoinsMessage send_coins_message = 4;
-        StakeMessage stake_message = 5;
-        StakeMessage unstake_message = 6;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 7;
+message FunctionCall {
+    bytes method_name = 1;
+    bytes args = 2;
+    uint64 gas = 3;
+    Uint128 deposit = 4;
+}
+
+message Transfer {
+    Uint128 deposit = 1;
+}
+
+message Stake {
+    Uint128 stake = 1;
+    string public_key = 2;
+}
+
+message AddKey {
+    PublicKey public_key = 1;
+    AccessKey access_key = 2;
+}
+
+message DeleteKey {
+    PublicKey public_key = 1;
+}
+
+message DeleteAccount {
+    string beneficiary_id = 1;
+}
+
+message Action {
+    oneof payload {
+        CreateAccount create_account = 1;
+        DeployContract deploy_contract = 2;
+        FunctionCall function_call = 3;
+        Transfer send_money = 4;
+        Stake stake = 5;
+        AddKey add_key = 6;
+        DeleteKey delete_key = 7;
+        DeleteAccount delete_account = 8;
     }
 }
 
 // Input data necessary to create a signed order.
 message SigningInput {
-    uint64 account_number = 1;
-    string chain_id = 2;
-    Fee fee = 3;
-    string memo = 4;
-    uint64 sequence = 5; 
-
-    bytes private_key = 6;
-
-    oneof message_oneof {
-        SendCoinsMessage send_coins_message = 7;
-        StakeMessage stake_message = 8;
-        StakeMessage unstake_message = 9;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 10;
-    }
-    // default is cosmos-sdk/MsgSend
-    string type_prefix = 11;
+    string signer_id = 1;
+    PublicKey public_key = 2;
+    uint64 nonce = 3;
+    string receiver_id = 4;
+    repeated Action actions = 5;
 }
 
 // Transaction signing output.
 message SigningOutput {
-    // Signature
-    bytes signature = 1;
-    // Signed transaction in JSON.
-    string json = 2;
+    // Signed transaction blob
+    bytes signed_transaction = 1;
 }
