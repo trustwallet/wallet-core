@@ -23,31 +23,31 @@ using json = nlohmann::json;
 
 Signer::Signer(Proto::SigningInput&& input) {
     if (input.type_prefix().empty()) {
-        input.set_type_prefix(AMINO_PREFIX_SEND_COIN_MESSAGE);
+        input.set_type_prefix(NEAR_PREFIX_SEND_COIN_MESSAGE);
     }
 
     if (input.has_send_coins_message()) {
         auto message = input.send_coins_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_SEND_COIN_MESSAGE);
+            message.set_type_prefix(NEAR_PREFIX_SEND_COIN_MESSAGE);
         }
         *input.mutable_send_coins_message() = message;
     } else if (input.has_stake_message()) {
         auto message = input.stake_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_STAKE_MESSAGE);
+            message.set_type_prefix(NEAR_PREFIX_STAKE_MESSAGE);
         }
         *input.mutable_stake_message() = message;
     } else if(input.has_unstake_message()) {
         auto message = input.unstake_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_UNSTAKE_MESSAGE);
+            message.set_type_prefix(NEAR_PREFIX_UNSTAKE_MESSAGE);
         }
         *input.mutable_unstake_message() = message;
     } else if(input.has_withdraw_stake_reward_message()) {
         auto message = input.withdraw_stake_reward_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE);
+            message.set_type_prefix(NEAR_PREFIX_WITHDRAW_STAKE_MESSAGE);
         }
         *input.mutable_withdraw_stake_reward_message() = message;
     }
