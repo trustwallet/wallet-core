@@ -1052,7 +1052,7 @@
         "name": "FIO",
         "symbol": "FIO",
         "decimals": 9,
-        "blockchain": "EOS",
+        "blockchain": "FIO",
         "derivationPath": "m/44'/235'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",

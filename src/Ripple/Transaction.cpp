@@ -13,7 +13,8 @@ using namespace TW;
 using namespace TW::Ripple;
 
 const int NETWORK_PREFIX = 0x53545800;
-const int64_t MAX_ALLOWED_AMOUNT = 100000000000;
+/// Max supply in drops
+const int64_t MAX_ALLOWED_AMOUNT = 100000000000 * 1000000;
 
 Data Transaction::serialize() const {
     auto data = Data();
