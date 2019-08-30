@@ -8,6 +8,7 @@
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "Base64.h"
+#include "Base58.h"
 #include "proto/NEAR.pb.h"
 #include "NEAR/Address.h"
 #include "NEAR/Signer.h"
@@ -19,29 +20,22 @@
 namespace TW::NEAR {
 
 TEST(NEARSigner, SignTx) {
+    auto publicKey = Base58::bitcoin.decode("22skMptHjFWNyuEWY22ftn2AbLPSYpmYwGJRGwpNHbTV");
+
     auto input = Proto::SigningInput();
-    input.set_account_number(1037);
-    input.set_chain_id("gaia-13003");
-    input.set_memo("");
-    input.set_sequence(8);
+    input.set_signer_id("test.near");
+    input.mutable_public_key()->set_key_type(0);
+    input.mutable_public_key()->set_data(publicKey.data(), publicKey.size());
+    input.set_nonce(1);
+    input.set_receiver_id("whatever.near");
 
-    auto fromAddress = TW::NEAR::Address("NEAR", parse_hex("BC2DA90C84049370D1B7C528BC164BC588833F21"));
-    auto toAddress = TW::NEAR::Address("NEAR", parse_hex("12E8FE8B81ECC1F4F774EA6EC8DF267138B9F2D9"));
+    input.add_actions();
+    auto &transfer = *input.mutable_actions(0)->mutable_send_money();
+    Data deposit(16, 0);
+    deposit[0] = 1;
+    transfer.mutable_deposit()->set_number(deposit.data(), deposit.size());
 
-    auto &message = *input.mutable_send_coins_message();
-    message.set_from_address(fromAddress.string());
-    message.set_to_address(toAddress.string());
-    auto amountOfTx = message.add_amounts();
-    amountOfTx->set_denom("muon");
-    amountOfTx->set_amount(1);
-
-    auto &fee = *input.mutable_fee();
-    fee.set_gas(200000);
-    auto amountOfFee = fee.add_amounts();
-    amountOfFee->set_denom("muon");
-    amountOfFee->set_amount(200);
-
-    auto privateKey = parse_hex("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005");
+    auto privateKey = Base58::bitcoin.decode("2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw");
     input.set_private_key(privateKey.data(), privateKey.size());
 
     auto signer = NEAR::Signer(std::move(input));
@@ -52,15 +46,7 @@ TEST(NEARSigner, SignTx) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"200\",\"denom\":\"muon\"}],\"gas\":\"200000\"},\"memo\":\"\",\"msg\":[{\"type\":\"NEAR-sdk/MsgSend\",\"value\":{\"amount\":[{\"amount\":\"1\",\"denom\":\"muon\"}],\"from_address\":\"NEAR1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\",\"to_address\":\"NEAR1zt50azupanqlfam5afhv3hexwyutnukeh4c573\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AlcobsPzfTNVe7uqAAsndErJAjqplnyudaGB0f+R+p3F\"},\"signature\":\"/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg==\"}],\"type\":\"NEAR-sdk/MsgSend\"}}", output.json());
-
-    ASSERT_EQ(hex(output.signature()), "fc3ef899d206c88077fec42f21ba0b4df4bd3fd115fdf606ae01d9136fef363f57e9e33a7b9ec6ddab658cd07e3c0067470de94e4e75b979a1085a29f0efd926");
-
-
-    /*
-        the sample tx on testnet
-        https://hubble.figment.network/chains/gaia-13003/blocks/142933/transactions/3A9206598C3D2E75A5EC074FD33EA53EB18EC729357F0965971C1C51F812AEA3?format=json
-    */
+    // TODO
 }
 
 }

@@ -22,7 +22,7 @@ Signer::Signer(Proto::SigningInput&& input) {
 }
 
 Data Signer::sign() const {
-    auto key = PrivateKey(input.private_key());
+    auto key = PrivateKey(input.private_key(), TWPublicKeyTypeED25519);
     auto hash = Hash::sha256(transactionData(this->input));
     auto signature = key.sign(hash, TWCurveED25519);
     return std::vector<uint8_t>(signature.begin(), signature.end() - 1);

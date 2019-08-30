@@ -10,6 +10,7 @@ message Uint128 {
 
 message PublicKey {
     uint32 key_type = 1;
+    bytes data = 2;
 }
 
 message FunctionCallPermission {
@@ -69,7 +70,7 @@ message Action {
         CreateAccount create_account = 1;
         DeployContract deploy_contract = 2;
         FunctionCall function_call = 3;
-        Transfer send_money = 4;
+        Transfer transfer = 4;
         Stake stake = 5;
         AddKey add_key = 6;
         DeleteKey delete_key = 7;
