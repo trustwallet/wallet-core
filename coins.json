@@ -1078,8 +1078,8 @@
         "explorer": "https://explorer.solana.com/tx/",
         "info": {
             "url": "https://solana.com",
-            "client": "https://solana.com",
-            "clientPublic": "",
+            "client": "https://github.com/solana-labs/solana",
+            "clientPublic": "http://api.mainnet.solana.com",
             "clientDocs": "https://solana-labs.github.io/book/"
         }
     }
