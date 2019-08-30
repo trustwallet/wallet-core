@@ -187,6 +187,10 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .fio:
                     let expectedResult = "FIO7MN1LuSfFgrbVHmrt9cVa2FYAs857Ppr9dzvEXoD1miKSxm3n3"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .harmony:
+                    // TODO Use Harmony one address
+                    let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }
