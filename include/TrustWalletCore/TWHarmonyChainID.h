@@ -11,8 +11,8 @@ TW_EXTERN_C_BEGIN
 
 /// Chain identifier for Harmony blockchain.
 TW_EXPORT_ENUM(uint32_t)
-enum TWEthereumChainID {
-    TWEthereumChainIDBase = 0,
+enum TWHarmonyChainID {
+    TWHarmonyChainIDBase = 0,
 };
 
 TW_EXTERN_C_END
