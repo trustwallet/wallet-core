@@ -1,4 +1,4 @@
-package com.trustwallet.core.app.blockchains.ethereum
+package com.trustwallet.core.app.blockchains.harmony
 
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
