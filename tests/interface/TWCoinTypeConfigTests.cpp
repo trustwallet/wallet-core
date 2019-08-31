@@ -144,6 +144,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto fio = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeFIO));
     assertStringsEqual(fio, "FIO");
+
+    auto ton = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTelegram));
+    assertStringsEqual(ton, "TON");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -194,6 +197,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonacoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTelegram), 9);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -339,6 +343,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto mona = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonacoin, txId));
     assertStringsEqual(mona, "https://blockbook.electrum-mona.org/tx/123");
+
+    auto ton = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTelegram, txId));
+    assertStringsEqual(ton, "TODO/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -479,6 +486,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto fio = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFIO));
     assertStringsEqual(fio, "fio");
+
+    auto ton = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTelegram));
+    assertStringsEqual(ton, "ton");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -619,6 +629,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto fio = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFIO));
     assertStringsEqual(fio, "FIO");
+
+    auto ton = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTelegram));
+    assertStringsEqual(ton, "Telegram");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
@@ -641,6 +654,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
     ASSERT_EQ(TWBlockchainFIO, TWCoinTypeBlockchain(TWCoinTypeFIO));
+    ASSERT_EQ(TWBlockchainTelegram, TWCoinTypeBlockchain(TWCoinTypeTelegram));
 }
 
 TEST(TWCoinTypeConfiguration, P2SHPrefix) {

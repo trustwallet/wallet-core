@@ -1065,5 +1065,24 @@
             "clientPublic": "",
             "clientDocs": "https://fio.foundation"
         }
+    },
+    {
+        "id": "ton",
+        "name": "Telegram",
+        "symbol": "TON",
+        "decimals": 9,
+        "blockchain": "Telegram",
+        "derivationPath": "m/44'/505'/0'",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "explorer": "TODO/",
+        "url": "https://github.com/copperbits/TON",
+        "rpcNodeInfo": "",
+        "info": {
+            "url": "https://github.com/copperbits/TON",
+            "client": "https://test.ton.org/ton-test-liteclient-full.tar.xz",
+            "clientPublic": "",
+            "clientDocs": "https://test.ton.org/download.html"
+        }
     }
 ]
