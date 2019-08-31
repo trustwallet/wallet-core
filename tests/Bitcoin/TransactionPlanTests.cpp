@@ -35,7 +35,7 @@ inline auto buildUTXO(const OutPoint& outPoint, Amount amount) {
     return utxo;
 }
 
-inline auto buildSigningInput(Amount amount, int byteFee, const std::vector<Proto::UnspentTransaction> utxos, bool useMaxAmount, enum TWCoinType coin) {
+inline auto buildSigningInput(Amount amount, int byteFee, const std::vector<Proto::UnspentTransaction>& utxos, bool useMaxAmount, enum TWCoinType coin) {
     Proto::SigningInput input;
     input.set_amount(amount);
     input.set_byte_fee(byteFee);
