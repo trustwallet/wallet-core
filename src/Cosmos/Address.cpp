@@ -36,7 +36,7 @@ bool Address::isValid(const std::string& addr, const std::string& hrp) {
         return false;
     }
     // now we check hrp prefix here
-    if (dec.first.rfind(hrp, 0) != 0) {
+    if (dec.first.compare(0, hrp.length(), hrp) != 0) {
         return false;
     }
 
