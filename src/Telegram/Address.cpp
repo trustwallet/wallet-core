@@ -53,9 +53,6 @@ bool Address::parseAddress(const std::string& addressStr_in, Address& addr_inout
     }
     bool isValidRaw = parseRawAddress(addressStr_in, addr_inout);
     return isValidRaw;
-    {
-        return true;
-    }
 }
 
 bool Address::parseRawAddress(const std::string& addressStr_in, Address& addr_inout)
@@ -111,7 +108,7 @@ bool Address::parseRawAddress(const std::string& addressStr_in, Address& addr_in
 bool Address::convertBase64Url(const std::string& base64Url_in, std::string& base64Std_out)
 {
     // Base64URL format ('+' and '/' are replaced by '-' and '_')
-    if (base64Url_in.find('-') == string::npos && base64Url_in.find('_' == string::npos))
+    if (base64Url_in.find('-') == string::npos && base64Url_in.find('_') == string::npos)
     {
         // no Base64Url-specific characters
         return false;
@@ -133,7 +130,7 @@ bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_i
     {
         bytes = TW::Base64::decode(addressStr_in);
     }
-    catch(exception ex)
+    catch(const exception& ex)
     {
         // 2nd try: Base64URL format ('+' and '/' are replaced by '-' and '_')
         std::string base64Url;
@@ -147,7 +144,7 @@ bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_i
         {
             bytes = TW::Base64::decode(base64Url);
         }
-        catch(const std::exception& e)
+        catch(const std::exception& ex)
         {
             // not valid base64url
             return false;
