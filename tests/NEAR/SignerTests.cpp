@@ -20,7 +20,7 @@
 namespace TW::NEAR {
 
 TEST(NEARSigner, SignTx) {
-    auto publicKey = Base58::bitcoin.decode("22skMptHjFWNyuEWY22ftn2AbLPSYpmYwGJRGwpNHbTV");
+    auto publicKey = Base58::bitcoin.decode("Anu7LYDfpLtkP7E16LT9imXF694BdQaa9ufVkQiwTQxC");
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
@@ -35,14 +35,14 @@ TEST(NEARSigner, SignTx) {
     deposit[0] = 1;
     transfer.mutable_deposit()->set_number(deposit.data(), deposit.size());
 
-    auto privateKey = Base58::bitcoin.decode("2wyRcSwSuHtRVmkMCGjPwnzZmQLeXLzLLyED1NDMt4BjnKgQL6tF85yBx6Jr26D2dUNeC716RBoTxntVHsegogYw");
-    input.set_private_key(privateKey.data(), privateKey.size());
+    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    input.set_private_key(privateKey.data(), 32);
 
     auto signer = NEAR::Signer(std::move(input));
     auto signature = signer.sign();
     auto signatureInBase64 = Base64::encode(signature);
 
-    ASSERT_EQ("/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg==", signatureInBase64);
+    ASSERT_EQ("v4UxPuX98S9+2dgnMwLL0nthTy1rdu5stLkqJ7SDQgm+LTvxi7482ZZ/RQMByShxGx+Uvu8CsnCz8jUhngQ3CQ==", signatureInBase64);
 
     auto output = signer.build();
 
