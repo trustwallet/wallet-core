@@ -1072,7 +1072,7 @@
         "symbol": "TON",
         "decimals": 9,
         "blockchain": "Telegram",
-        "derivationPath": "m/44'/505'/0'",
+        "derivationPath": "m/44'/396'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": "TODO/",
