@@ -60,7 +60,7 @@ enum TWCoinType {
     TWCoinTypeSolana = 501,
     TWCoinTypeSteem = 135,
     TWCoinTypeStellar = 148,
-    TWCoinTypeTelegram = 505,
+    TWCoinTypeTelegram = 396,
     TWCoinTypeTezos = 1729,
     TWCoinTypeTheta = 500,
     TWCoinTypeThunderToken = 1001,
