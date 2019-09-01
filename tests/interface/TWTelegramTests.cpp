@@ -11,9 +11,10 @@
 
 #include <gtest/gtest.h>
 
-TEST(TWTelegramAddress, AddressFromString) {
+TEST(TWTelegramAddress, CreateWithString) {
     auto addrStr = TWStringCreateWithUTF8Bytes("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb");
-    
+
+    // first call isValid
     bool isValid = TWTelegramAddressIsValidString(addrStr);
     ASSERT_TRUE(isValid);
 
@@ -21,5 +22,15 @@ TEST(TWTelegramAddress, AddressFromString) {
     auto address = TWTelegramAddressCreateWithString(addrStr);
     // convert back to string
     auto str2 = TWTelegramAddressDescription(address);
-    ASSERT_EQ(std::string(TWStringUTF8Bytes(addrStr)), std::string(TWStringUTF8Bytes(str2)) );
+    ASSERT_EQ(std::string(TWStringUTF8Bytes(addrStr)), std::string(TWStringUTF8Bytes(str2)));
+
+    {
+        // create a second one, also invoke compare
+        auto address2 = TWTelegramAddressCreateWithString(TWStringCreateWithUTF8Bytes("Ef-BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb"));
+        ASSERT_TRUE(TWTelegramAddressEqual(address, address2));
+
+        TWTelegramAddressDelete(address2);
+    }
+
+    TWTelegramAddressDelete(address);
 }
