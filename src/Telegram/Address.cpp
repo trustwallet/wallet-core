@@ -32,6 +32,7 @@ Address::Address(const std::string& address)
 Address::Address(const PublicKey& publicKey)
 {
     // TODO
+    // Steps: a StateInit account state is created (containing code and data), its hash is taken, and new address is derived from the hash
     throw std::logic_error("TODO: Not yet implemented");
 }
 
