@@ -238,3 +238,12 @@ std::string Address::stringRaw() const
     ss << workchainId << ':' << hex(addrBytes);
     return ss.str();
 }
+
+bool operator==(const Address& lhs, const Address& rhs)
+{
+    return (
+        lhs.workchainId == rhs.workchainId &&
+        lhs.addrBytes == rhs.addrBytes &&
+        lhs.isBounceable == rhs.isBounceable &&
+        lhs.isTestOnly == rhs.isTestOnly);
+}
