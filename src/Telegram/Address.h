@@ -64,7 +64,14 @@ private:
     static bool convertBase64Url(const std::string& base64Url_in, std::string& base64Std_out);
 };
 
-bool operator==(const Address& lhs, const Address& rhs);
+inline bool operator==(const Address& lhs, const Address& rhs)
+{
+    return (
+        lhs.workchainId == rhs.workchainId &&
+        lhs.addrBytes == rhs.addrBytes &&
+        lhs.isBounceable == rhs.isBounceable &&
+        lhs.isTestOnly == rhs.isTestOnly);
+}
 
 } // namespace TW::Telegram
 
