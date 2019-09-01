@@ -28,6 +28,12 @@ Address::Address(const std::string& address)
     }
 }
 
+Address::Address(const PublicKey& publicKey)
+{
+    // TODO
+    throw std::logic_error("TODO: Not yet implemented");
+}
+
 bool Address::isValid(const std::string& address)
 {
     Address addr;
@@ -63,8 +69,8 @@ bool Address::parseRawAddress(const std::string& addressStr_in, Address& addr_in
         // colon in wrong position
         return false;
     }
-    string workchainStr = addressStr_in.substr(0, colidx);
-    string addressStr = addressStr_in.substr(colidx + 1, addressStr_in.length() - colidx - 1);
+    std::string workchainStr = addressStr_in.substr(0, colidx);
+    std::string addressStr = addressStr_in.substr(colidx + 1, addressStr_in.length() - colidx - 1);
 
     WorkchainId_t workchainId;
     try
@@ -138,6 +144,12 @@ bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_i
     // TODO check CRC
 
     return true;
+}
+
+std::string Address::string() const
+{
+    // TODO
+    return "TODO";
 }
 
 std::string Address::stringRaw() const

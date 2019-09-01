@@ -33,6 +33,8 @@
 #include "Solana/Address.h"
 #include "Steem/Address.h"
 #include "Stellar/Address.h"
+#include "Cosmos/Address.h"
+#include "Telegram/Address.h"
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
@@ -178,8 +180,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Solana::Address::isValid(string);
 
     case TWCoinTypeTelegram:
-        // TODO Telegram
-        return false;
+        return Telegram::Address::isValid(string);
     }
 }
 
@@ -318,8 +319,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
         return Solana::Address(publicKey).string();
 
     case TWCoinTypeTelegram:
-        // TODO Telegram
-        return "";
+        return Telegram::Address(publicKey).string();
     }
 }
 
