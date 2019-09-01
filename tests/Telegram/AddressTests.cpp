@@ -16,6 +16,7 @@ using namespace TW::Telegram;
 static string TestGiverHex = "8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d";
 static string TestGiverRaw = "-1:8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d";
 static string TestGiverUser = "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb";
+static string TestGiverUserUrl = "Ef-BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb"; // base64url
 
 TEST(TelegramAddress, WorkchainValid)
 {
@@ -23,6 +24,12 @@ TEST(TelegramAddress, WorkchainValid)
     ASSERT_TRUE(Workchain::isValid(-1));
     ASSERT_FALSE(Workchain::isValid(1));
     ASSERT_FALSE(Workchain::isValid(10));
+}
+
+TEST(TelegramAddress, AddressValidUser)
+{
+    ASSERT_TRUE(Address::isValid(TestGiverUser));
+    // TODO negative tests
 }
 
 TEST(TelegramAddress, AddressValidRaw)
@@ -42,7 +49,20 @@ TEST(TelegramAddress, AddressValidRaw)
     ASSERT_FALSE(Address::isValid("0:0"));
 }
 
-TEST(TelegramAddress, AddressValidUser)
+TEST(TelegramAddress, AddressFromUser)
 {
-    ASSERT_TRUE(Address::isValid(TestGiverUser));
+    auto addr1 = Address(TestGiverUser);
+    // TODO auto addr2strUser = addr1.string();
+    // ASSERT_EQ(TestGiverUser, addr2strUser);
+    auto addr2strRaw = addr1.stringRaw();
+    ASSERT_EQ(TestGiverRaw, addr2strRaw);
+}
+
+TEST(TelegramAddress, AddressFromRaw)
+{
+    auto addr1 = Address(TestGiverRaw);
+    // TODO auto addr2strUser = addr1.string();
+    // ASSERT_EQ(TestGiverUser, addr2strUser);
+    auto addr2strRaw = addr1.stringRaw();
+    ASSERT_EQ(TestGiverRaw, addr2strRaw);
 }

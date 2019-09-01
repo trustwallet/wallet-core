@@ -17,8 +17,9 @@ using WorkchainId_t = int32_t;
 /// Workchain ID, currently supported: masterchain: -1, basic workchain: 0
 class Workchain {
 public:
-    static const WorkchainId_t Workchain_Master = -1;
-    static const WorkchainId_t Workchain_Basic = 0;
+    static constexpr WorkchainId_t MasterChainId = -1;
+    static constexpr WorkchainId_t BasicChainId = 0;
+    static constexpr WorkchainId_t InvalidChainId = 0x80000000;
 
     static bool isValid(WorkchainId_t workchainId_in);
 };
@@ -33,24 +34,31 @@ public:
     // Address: 256 bits (for chains -1 and 0)
     std::array<byte, AddressLength> addrBytes;
 
-    /// Determines whether a string makes a valid address, in any format
-    static bool isValid(const std::string& address);
-
-    /*
     /// Initializes a TON address with a string representation, either raw or user friendly
     explicit Address(const std::string& address);
 
+    /*
     /// Initializes a Nano address with a public key.
     explicit Address(const PublicKey& publicKey);
+    */
+
+    /// Determines whether a string makes a valid address, in any format
+    static bool isValid(const std::string& address);
 
     /// Returns a string representation of the address, raw format
     std::string stringRaw() const;
 
+    /*
     /// Returns a string representation of the address, user friendly format
     std::string string() const;
     */
 
 private:
+    /// Empty constructor
+    Address() = default;
+
+    static bool parseAddress(const std::string& addressStr_in, Address& addr_inout);
+
     static bool parseRawAddress(const std::string& addressStr_in, Address& addr_inout);
 
     static bool parseUserAddress(const std::string& addressStr_in, Address& addr_inout);
