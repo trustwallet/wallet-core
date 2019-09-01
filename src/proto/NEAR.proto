@@ -84,9 +84,10 @@ message SigningInput {
     PublicKey public_key = 2;
     uint64 nonce = 3;
     string receiver_id = 4;
-    repeated Action actions = 5;
+    bytes block_hash = 5;
+    repeated Action actions = 6;
 
-    bytes private_key = 6;
+    bytes private_key = 7;
 }
 
 // Transaction signing output.
