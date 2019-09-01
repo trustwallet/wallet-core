@@ -64,17 +64,11 @@ private:
     static bool convertBase64Url(const std::string& base64Url_in, std::string& base64Std_out);
 };
 
-/*
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
-}
-*/
+bool operator==(const Address& lhs, const Address& rhs);
 
 } // namespace TW::Telegram
 
-/*
 /// Wrapper for C interface.
 struct TWTelegramAddress {
     TW::Telegram::Address impl;
 };
-*/
