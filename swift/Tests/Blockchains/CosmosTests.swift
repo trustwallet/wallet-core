@@ -7,6 +7,19 @@
 import XCTest
 import TrustWalletCore
 
+
+class CosmosAddressTests: XCTestCase {
+    func testAddressValidation() {
+        // CoinType.validate will check hrp
+        XCTAssertTrue(CoinType.cosmos.validate(address: "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02"))
+
+        // CosmosAddress.isValidString won't check hrp
+        XCTAssertTrue(CosmosAddress.isValidString(string: "cosmospub1addwnpepqftjsmkr7d7nx4tmhw4qqze8w39vjq364xt8etn45xqarlu3l2wu2n7pgrq"))
+        XCTAssertTrue(CosmosAddress.isValidString(string: "cosmosvaloper1sxx9mszve0gaedz5ld7qdkjkfv8z992ax69k08"))
+        XCTAssertTrue(CosmosAddress.isValidString(string: "cosmosvalconspub1zcjduepqjnnwe2jsywv0kfc97pz04zkm7tc9k2437cde2my3y5js9t7cw9mstfg3sa"))
+    }
+}
+
 class CosmosSignerTests: XCTestCase {
 
     func testSigningTransaction() {
