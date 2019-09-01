@@ -125,8 +125,8 @@ TEST(Coin, validateAddressGroestlcoin){
 }
 
 TEST(Coin, validateAddressNULS){
-    EXPECT_TRUE(validateAddress(TWCoinTypeNULS, "Nse1vKX9QHF7A84MHqrh4rRubVHAPc18"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeNULS, "Nse3uLgeCBWP48GCGx8L54gnELfpnSG9"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeNULS, "NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeNULS, "NULSd6HgUxmcJWc88iELEJ7RH9XHsazBQqnJd"));
 }
 
 TEST(Coin, validateAddressQtum) {

@@ -15,7 +15,7 @@ namespace TW::NULS {
 class Address : public Base58Address<24> {
   public:
     /// NULS Main Net Chain ID
-    static const uint16_t MainNetID = 8964;
+    static const uint16_t MainNetID = 1;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);

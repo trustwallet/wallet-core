@@ -18,7 +18,12 @@ bool Address::isValid(const std::string& string) {
         return false;
     }
     std::string prefix = "NULSd";
+    if (string.length() <=  prefix.length()) {
+        return false;
+    }
+
     std::string address = string.substr(prefix.length(), string.length() - prefix.length());
+
     Data decoded = TW::Base58::bitcoin.decode(address);
     if (decoded.size() != size) {
         return false;
@@ -35,8 +40,10 @@ bool Address::isValid(const std::string& string) {
 
 Address::Address(const TW::PublicKey& publicKey) {
     // Main-Net chainID
-    bytes[0] = 0x04;
-    bytes[1] = 0x23;
+    //bytes[0] = 0x04;
+    //bytes[1] = 0x23;
+    bytes[0] = 0x01;
+    bytes[1] = 0x00;
     // Address Type
     bytes[2] = 0x01;
 
