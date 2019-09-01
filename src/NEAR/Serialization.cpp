@@ -42,15 +42,19 @@ static void writeU128(Data& data, const Proto::Uint128 number) {
     data.insert(std::end(data), std::begin(numberData), std::end(numberData));
 }
 
+template <class T> static void writeRawBuffer(Data &data, const T& buf) {
+    data.insert(std::end(data), std::begin(buf), std::end(buf));
+}
+
 static void writeString(Data& data, const std::string& str) {
     writeU32(data, str.length());
-    data.insert(std::end(data), std::begin(str), std::end(str));
+    writeRawBuffer(data, str);
 }
 
 static void writePublicKey(Data& data, const Proto::PublicKey& publicKey) {
     writeU8(data, publicKey.key_type());
     const auto& keyData = publicKey.data();
-    data.insert(std::end(data), std::begin(keyData), std::end(keyData));
+    writeRawBuffer(data, keyData);
 }
 
 static void writeTransfer(Data& data, const Proto::Transfer& transfer) {
@@ -75,9 +79,9 @@ Data TW::NEAR::transactionData(const Proto::SigningInput& input) {
     writePublicKey(data, input.public_key());
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
-    // TODO: assert data sizes
+    // TODO: assert fixed size buffer sizes
     const auto& block_hash = input.block_hash();
-    data.insert(std::end(data), std::begin(block_hash), std::end(block_hash));
+    writeRawBuffer(data, block_hash);
     writeU32(data, input.actions_size());
     for (const auto& action : input.actions()) {
         writeAction(data, action);
@@ -86,5 +90,9 @@ Data TW::NEAR::transactionData(const Proto::SigningInput& input) {
 }
 
 Data TW::NEAR::signedTransactionData(const Data& transactionData, const Data& signatureData) {
-    return Data();
+    Data data;
+    writeRawBuffer(data, transactionData);
+    writeU8(data, 0);
+    writeRawBuffer(data, signatureData);
+    return data;
 }
