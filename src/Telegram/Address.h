@@ -37,21 +37,17 @@ public:
     /// Initializes a TON address with a string representation, either raw or user friendly
     explicit Address(const std::string& address);
 
-    /*
-    /// Initializes a Nano address with a public key.
+    /// Initializes a TON address with a public key.
     explicit Address(const PublicKey& publicKey);
-    */
 
     /// Determines whether a string makes a valid address, in any format
     static bool isValid(const std::string& address);
 
+    /// Returns a string representation of the address (user friendly format)
+    std::string string() const;
+
     /// Returns a string representation of the address, raw format
     std::string stringRaw() const;
-
-    /*
-    /// Returns a string representation of the address, user friendly format
-    std::string string() const;
-    */
 
 private:
     /// Empty constructor
