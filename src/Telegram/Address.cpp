@@ -6,6 +6,7 @@
 
 #include "Address.h"
 #include "../HexCoding.h"
+#include "../Base64.h"
 
 #include <iostream>
 
@@ -14,17 +15,36 @@ using namespace TW::Telegram;
 
 bool Workchain::isValid(WorkchainId_t workchainId)
 {
-    return (workchainId == -1 || workchainId == 0); 
+    return (workchainId == MasterChainId || workchainId == BasicChainId);
+}
+
+Address::Address(const std::string& address)
+{
+    bool valid = parseAddress(address, *this);
+
+    // Ensure address is valid
+    if (!valid) {
+        throw std::invalid_argument("Invalid address data");
+    }
 }
 
 bool Address::isValid(const std::string& address)
 {
     Address addr;
+    bool isValid = parseAddress(address, addr);
+    return isValid;
+}
 
-    bool isValidRaw = parseRawAddress(address, addr);
-    if (isValidRaw) return true;
-
-    bool isValidUser = parseUserAddress(address, addr);
+bool Address::parseAddress(const std::string& addressStr_in, Address& addr_inout)
+{
+    bool isValidRaw = parseRawAddress(addressStr_in, addr_inout);
+    if (isValidRaw)
+    {
+        // raw format, stop
+        return true;
+    }
+    // not raw format, must be user friendly format
+    bool isValidUser = parseUserAddress(addressStr_in, addr_inout);
     return isValidUser;
 }
 
@@ -69,13 +89,60 @@ bool Address::parseRawAddress(const std::string& addressStr_in, Address& addr_in
         return false;
     }
 
-    addr_inout.addrBytes.fill(parse_hex(addressStr).front());
+    auto hexParse = parse_hex(addressStr);
+    std::copy(hexParse.begin(), hexParse.end(), addr_inout.addrBytes.begin());
 
     return true;
 }
 
 bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_inout)
 {
-    // TODO
-    return false;
+    TW::Data base64decode;
+    try
+    {
+        base64decode = TW::Base64::decode(addressStr_in);
+    }
+    catch(exception ex)
+    {
+        // not valid base64
+        return false;
+    }
+
+    byte tagByte = base64decode[0];
+    if (tagByte != 0x11 && tagByte != 0x51 && tagByte != 0x91 && tagByte != 0xd1)
+    {
+        return false;
+    }
+
+    byte chainId = base64decode[1];
+    switch (chainId)
+    {
+    case 0x00:
+        // basic workchain
+        addr_inout.workchainId = Workchain::BasicChainId;
+        break;
+
+    case 0xff:
+        // master chain
+        addr_inout.workchainId = Workchain::MasterChainId;
+        break;
+
+    default:
+        // invalid chain
+        return false;
+    }
+
+    // 32 bytes address
+    std::copy(base64decode.begin() + 2, base64decode.begin() + 2 + AddressLength, addr_inout.addrBytes.begin());
+
+    // TODO check CRC
+
+    return true;
+}
+
+std::string Address::stringRaw() const
+{
+    std::stringstream ss;
+    ss << workchainId << ':' << hex(addrBytes);
+    return ss.str();
 }
