@@ -8,6 +8,7 @@
 #include "../HexCoding.h"
 #include "../Base64.h"
 #include "../Crc.h"
+#include "../Hash.h"
 
 #include <iostream>
 
@@ -31,9 +32,36 @@ Address::Address(const std::string& address)
 
 Address::Address(const PublicKey& publicKey)
 {
-    // TODO
     // Steps: a StateInit account state is created (containing code and data), its hash is taken, and new address is derived from the hash
-    throw std::logic_error("TODO: Not yet implemented");
+    // TODO: This may be not 100% correct, does not produce same result as ref impl for 'test giver' account
+
+    if (publicKey.type != TWPublicKeyTypeED25519)
+    {
+        throw std::invalid_argument("Invalid public key type");
+    }
+
+    const std::string accountSCCodeFixed("FF0020DDA4F260810200D71820D70B1FED44D0D7091FD709FFD15112BAF2A122F901541044F910F2A2F80001D7091F3120D74A97D70907D402FB00DED1A4C8CB1FCBFFC9ED54");
+
+    TW::Data stateInit;
+    // code
+    stateInit = parse_hex(accountSCCodeFixed);
+    // data: 4 byte serial num (0), 32 byte public key
+    for(int i = 0; i < 4; ++i) stateInit.push_back(0);
+    for(auto i = publicKey.bytes.begin(), n = publicKey.bytes.end(); i != n; ++i)
+    {
+        stateInit.push_back(*i);
+    }
+    assert(stateInit.size() >= 4 + 4 + 32);
+
+    // compute hash
+    auto hash = TW::Hash::sha256(stateInit.data(), stateInit.data() + stateInit.size());
+
+    // fill members
+    workchainId = Workchain::MasterChainId;
+    // addrBytes = hash
+    std::copy(hash.begin(), hash.end(), addrBytes.begin());
+    isBounceable = true;
+    isTestOnly = false;
 }
 
 bool Address::isValid(const std::string& address)

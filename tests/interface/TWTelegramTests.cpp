@@ -6,6 +6,7 @@
 
 #include <TrustWalletCore/TWTelegramAddress.h>
 #include <TrustWalletCore/TWString.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include "TWTestUtilities.h"
 
@@ -33,4 +34,13 @@ TEST(TWTelegramAddress, CreateWithString) {
     }
 
     TWTelegramAddressDelete(address);
+}
+
+TEST(TWTelegramAddress, CreateWithPublicKey) {
+    auto pkData = DATA("F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3");
+    //auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(pkData.get(), TWPublicKeyTypeED25519));
+    auto publicKey = TWPublicKeyCreateWithData(pkData.get(), TWPublicKeyTypeED25519);
+    auto address = TWTelegramAddressCreateWithPublicKey(publicKey);
+    auto addressStr = TWTelegramAddressDescription(address);
+    ASSERT_EQ(std::string("Ef/i1CkT9THzhPebXBgRvAhspHRUXT8wC+1Hz+8xZtv1gs+k"), TWStringUTF8Bytes(addressStr));
 }

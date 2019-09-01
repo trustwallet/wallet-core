@@ -99,3 +99,10 @@ TEST(TelegramAddress, AddressToString)
     auto strUserRaw = addr.stringRaw();
     ASSERT_EQ(TestGiverRaw, strUserRaw);
 }
+
+TEST(TelegramAddress, AddressFromPublicKey)
+{
+    const auto publicKey = PublicKey(parse_hex("F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3"), TWPublicKeyTypeED25519);
+    const auto address = Address(publicKey);
+    ASSERT_EQ("Ef/i1CkT9THzhPebXBgRvAhspHRUXT8wC+1Hz+8xZtv1gs+k", address.string());
+}
