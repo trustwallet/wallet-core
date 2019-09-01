@@ -29,7 +29,13 @@ TEST(TelegramAddress, WorkchainValid)
 TEST(TelegramAddress, AddressValidUser)
 {
     ASSERT_TRUE(Address::isValid(TestGiverUser));
-    // TODO negative tests
+    // wrong length
+    ASSERT_FALSE(Address::isValid("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSk"));
+    ASSERT_FALSE(Address::isValid("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkbz"));
+    ASSERT_FALSE(Address::isValid("E"));
+    ASSERT_FALSE(Address::isValid(""));
+    // Wrong CRC: same value, but with invalid CRC (0)
+    ASSERT_FALSE(Address::isValid("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODQAA"));
 }
 
 TEST(TelegramAddress, AddressValidRaw)
@@ -47,22 +53,49 @@ TEST(TelegramAddress, AddressValidRaw)
     ASSERT_FALSE(Address::isValid("0:8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0"));
     ASSERT_FALSE(Address::isValid("0:"));
     ASSERT_FALSE(Address::isValid("0:0"));
+    ASSERT_FALSE(Address::isValid(""));
 }
 
 TEST(TelegramAddress, AddressFromUser)
 {
-    auto addr1 = Address(TestGiverUser);
-    // TODO auto addr2strUser = addr1.string();
-    // ASSERT_EQ(TestGiverUser, addr2strUser);
-    auto addr2strRaw = addr1.stringRaw();
-    ASSERT_EQ(TestGiverRaw, addr2strRaw);
+    {
+        auto addr = Address(TestGiverUser);
+        // verify fields
+        ASSERT_TRUE(addr.isBounceable);
+        ASSERT_FALSE(addr.isTestOnly);
+        // convert back to string, check
+        auto addr2strUser = addr.string();
+        ASSERT_EQ(TestGiverUser, addr2strUser);
+        auto addr2strRaw = addr.stringRaw();
+        ASSERT_EQ(TestGiverRaw, addr2strRaw);
+    }
+
+    {
+        // Base64Url format
+        auto addr2 = Address(TestGiverUserUrl);
+        // convert back to string, will be standard again
+        auto addr22strUser = addr2.string();
+        ASSERT_EQ(TestGiverUser, addr22strUser);
+    }
 }
 
 TEST(TelegramAddress, AddressFromRaw)
 {
-    auto addr1 = Address(TestGiverRaw);
-    // TODO auto addr2strUser = addr1.string();
-    // ASSERT_EQ(TestGiverUser, addr2strUser);
-    auto addr2strRaw = addr1.stringRaw();
+    auto addr = Address(TestGiverRaw);
+    // convert back to string, check
+    auto addr2strUser = addr.string();
+    ASSERT_EQ(TestGiverUser, addr2strUser);
+    auto addr2strRaw = addr.stringRaw();
     ASSERT_EQ(TestGiverRaw, addr2strRaw);
+}
+
+TEST(TelegramAddress, AddressToString)
+{
+    auto addr = Address(TestGiverUser);
+
+    auto strUser = addr.string();
+    ASSERT_EQ(TestGiverUser, strUser);
+
+    auto strUserRaw = addr.stringRaw();
+    ASSERT_EQ(TestGiverRaw, strUserRaw);
 }

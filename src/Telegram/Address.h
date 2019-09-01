@@ -34,6 +34,9 @@ public:
     // Address: 256 bits (for chains -1 and 0)
     std::array<byte, AddressLength> addrBytes;
 
+    bool isBounceable { true };
+    bool isTestOnly { false };
+
     /// Initializes a TON address with a string representation, either raw or user friendly
     explicit Address(const std::string& address);
 
@@ -54,10 +57,11 @@ private:
     Address() = default;
 
     static bool parseAddress(const std::string& addressStr_in, Address& addr_inout);
-
     static bool parseRawAddress(const std::string& addressStr_in, Address& addr_inout);
-
+    // Accepts user-friendly base64 format, also accepts Base64Url format
     static bool parseUserAddress(const std::string& addressStr_in, Address& addr_inout);
+    // Try to convert Base64Url format to standard format
+    static bool convertBase64Url(const std::string& base64Url_in, std::string& base64Std_out);
 };
 
 /*
