@@ -133,6 +133,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto nas = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNebulas));
     assertStringsEqual(nas, "NAS");
+
     auto ae = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
     assertStringsEqual(ae, "AE");
 
@@ -279,6 +280,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto doge = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
     assertStringsEqual(doge, "https://blockchair.com/dogecoin/transaction/123");
+
+    auto decred = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDecred, txId));
+    assertStringsEqual(decred, "https://dcrdata.decred.org/tx/123");
 
     auto lux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
     assertStringsEqual(lux, "https://explorer.poswallet.io/#/tx/123");
