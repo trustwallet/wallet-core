@@ -310,4 +310,19 @@ TEST(Coin, validateAddressFIO) {
     EXPECT_FALSE(validateAddress(TWCoinTypeFIO, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
 }
 
+TEST(Coin, validateAddressTelegram) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeTelegram, "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb"));
+    // wrong length
+    EXPECT_FALSE(validateAddress(TWCoinTypeTelegram, "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSk"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTelegram, "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkbz"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTelegram, "E"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTelegram, ""));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTelegram, "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODQAA"));
+    // Raw format
+    EXPECT_TRUE(validateAddress(TWCoinTypeTelegram, "-1:8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d"));
+    // no colon
+    EXPECT_FALSE(validateAddress(TWCoinTypeTelegram, "-1 8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTelegram, "0:0"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTelegram, ""));
+}
 } // namespace TW
