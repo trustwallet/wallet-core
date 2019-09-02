@@ -137,7 +137,7 @@
         "base58Hasher": "blake256d",
         "xpub": "dpub",
         "xprv": "dprv",
-        "explorer": "https://mainnet.decred.org/tx/",
+        "explorer": "https://dcrdata.decred.org/tx/",
         "info": {
             "url": "https://decred.org",
             "client": "https://github.com/trezor/blockbook",
