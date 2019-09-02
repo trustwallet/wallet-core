@@ -1065,5 +1065,22 @@
             "clientPublic": "",
             "clientDocs": "https://fio.foundation"
         }
+    },
+    {
+	"id": "harmony",
+	"name": "Harmony",
+	"symbol": "HMY",
+	"decimals": 18,
+	"blockchain": "Harmony",
+	"derivationPath": "m/44'/60'/0'/0/0",
+	"curve": "secp256k1",
+	"publicKeyType": "secp256k1Extended",
+	"explorer": "https://explorer.harmony.one/#/tx/",
+	"info": {
+	    "url": "https://harmony.one",
+	    "client": "https://github.com/harmony-one/go-sdk",
+	    "clientPublic": "https://github.com/harmony-one/go-sdk",
+	    "clientDocs": "https://app.gitbook.com/@harmony-one/s/sdk-wiki"
+	}
     }
 ]
