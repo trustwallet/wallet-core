@@ -33,6 +33,8 @@ class Signer {
     /// error.
     std::vector<uint8_t> sign() const;
 
+    std::vector<uint8_t> signWithTss() const;
+
   private:
     std::string signaturePreimage() const;
     std::vector<uint8_t> encodeTransaction(const std::vector<uint8_t>& signature) const;

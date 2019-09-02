@@ -9,6 +9,7 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
+#include "tss.h"
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -36,6 +37,30 @@ std::vector<uint8_t> Signer::sign() const {
     auto hash = Hash::sha256(signaturePreimage());
     auto signature = key.sign(hash, TWCurveSECP256k1);
     return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
+}
+
+std::vector<uint8_t> Signer::signWithTss() const {
+    GoString home;
+    home.p = "/Users/zhaocong/.test1";
+    home.n = strlen(home.p);
+
+    GoString vault;
+    vault.p = "default";
+    vault.n = strlen(vault.p);
+
+    GoString passphrase;
+    passphrase.p = "123456789";
+    passphrase.n = strlen(passphrase.p);
+
+    std::string message = signaturePreimage();
+    GoString msg;
+    msg.p = message.c_str();
+    msg.n = strlen(msg.p);
+
+    void *p;
+    auto n = Sign(home, vault, passphrase, msg, p);
+    std::vector<uint8_t> sig((uint8_t *)p, (uint8_t *)p + n);
+    return sig;
 }
 
 std::string Signer::signaturePreimage() const {
