@@ -28,17 +28,11 @@ std::string Harmony::checksumed(const Address &address, Checksum kind) {
             case Checksum::eip55:
                 string.push_back(static_cast<char>(toupper(a)));
                 break;
-            case Checksum::wanchain:
-                string.push_back(static_cast<char>(tolower(a)));
-                break;
             }
         } else {
             switch (kind) {
             case Checksum::eip55:
                 string.push_back(static_cast<char>(tolower(a)));
-                break;
-            case Checksum::wanchain:
-                string.push_back(static_cast<char>(toupper(a)));
                 break;
             }
         }

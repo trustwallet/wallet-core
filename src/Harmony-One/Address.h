@@ -17,14 +17,16 @@ namespace TW::Harmony {
 class Address {
   public:
     /// Number of bytes in an address.
-    static const size_t size = 20;
+    static constexpr size_t size = 20;
+
+    static constexpr auto hrp = "one";
 
     /// Address data consisting of a prefix byte followed by the public key
     /// hash.
     std::array<uint8_t, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid  address.
-    static bool isValid(const Data &data) { return data.size() == size; }
+    static bool isValid(const Data &data);
 
     /// Determines whether a string makes a valid  address.
     static bool isValid(const std::string &string);

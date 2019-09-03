@@ -10,15 +10,14 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-
 #include "../proto/Harmony.pb.h"
-
-namespace TW::Harmony {
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
 #include <tuple>
 #include <vector>
+
+namespace TW::Harmony {
 
 /// Helper class that performs Harmony transaction signing.
 class Signer {
@@ -34,7 +33,6 @@ class Signer {
     /// Signs the given transaction.
     void sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept;
 
-  public:
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// @returns the r, s, and v values of the transaction signature
@@ -47,9 +45,13 @@ class Signer {
     static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
                                                               const Data &signature) noexcept;
 
+    std::string txn_as_rlp_hex(Transaction &transaction) const noexcept;
+
   protected:
     /// Computes the transaction hash.
     Data hash(const Transaction &transaction) const noexcept;
+    // Plain rlp encoding before hashing
+    Data rlp_no_hash(const Transaction &transaction) const noexcept;
 };
 
 } // namespace TW::Harmony

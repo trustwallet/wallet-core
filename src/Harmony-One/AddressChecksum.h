@@ -11,11 +11,8 @@
 
 namespace TW::Harmony {
 
-/// Checksum types for Ethereum-based blockchains.
-enum class Checksum {
-    eip55,
-    wanchain,
-};
+/// Checksum types for Harmony blockchain
+enum class Checksum { eip55 };
 
 std::string checksumed(const Address &, enum Checksum);
 

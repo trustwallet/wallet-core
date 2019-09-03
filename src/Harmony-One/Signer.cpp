@@ -4,50 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <cstdint>
-#include <stdint.h>
-
 #include "Signer.h"
 #include "../Ethereum/RLP.h"
+#include "../HexCoding.h"
 
 using namespace TW;
 using namespace TW::Harmony;
-
-struct T : TW::Ethereum::RLP {
-
-    static Data encode(const TW::Harmony::Transaction &transaction) {
-        auto encoded = Data();
-        using namespace TW::Ethereum;
-        append(encoded, RLP::encode(transaction.nonce));
-        append(encoded, RLP::encode(transaction.gasPrice));
-        append(encoded, RLP::encode(transaction.gasLimit));
-        append(encoded, RLP::encode(transaction.fromShardID));
-        append(encoded, RLP::encode(transaction.toShardID));
-        append(encoded, RLP::encode(transaction.to.bytes));
-        append(encoded, RLP::encode(transaction.amount));
-        append(encoded, RLP::encode(transaction.payload));
-        append(encoded, RLP::encode(transaction.v));
-        append(encoded, RLP::encode(transaction.r));
-        append(encoded, RLP::encode(transaction.s));
-        return encodeList(encoded);
-    }
-
-    template <typename T>
-    static Data encodeList(T elements) noexcept {
-        auto encodedData = Data();
-        for (const auto &el : elements) {
-            auto encoded = TW::Ethereum::RLP::encode(el);
-            if (encoded.empty()) {
-                return {};
-            }
-            encodedData.insert(encodedData.end(), encoded.begin(), encoded.end());
-        }
-
-        auto encoded = encodeHeader(encodedData.size(), 0xc0, 0xf7);
-        encoded.insert(encoded.end(), encodedData.begin(), encodedData.end());
-        return encoded;
-    }
-};
 
 std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
                                                            const Data &signature) noexcept {
@@ -86,27 +48,26 @@ Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input)
         /* payload: */ Data(input.payload().begin(), input.payload().end()));
     sign(key, transaction);
     auto protoOutput = Proto::SigningOutput();
-    auto encoded = T::encode(transaction);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-    auto v = store(transaction.v);
-    protoOutput.set_v(v.data(), v.size());
-    auto r = store(transaction.r);
-    protoOutput.set_r(r.data(), r.size());
-    auto s = store(transaction.s);
-    protoOutput.set_s(s.data(), s.size());
+    // auto encoded = T::encode(chainID, transaction);
+    // protoOutput.set_encoded(encoded.data(), encoded.size());
+    // auto v = store(transaction.v);
+    // protoOutput.set_v(v.data(), v.size());
+    // auto r = store(transaction.r);
+    // protoOutput.set_r(r.data(), r.size());
+    // auto s = store(transaction.s);
+    // protoOutput.set_s(s.data(), s.size());
     return protoOutput;
 }
 
 void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
     auto hash = this->hash(transaction);
     auto tuple = Signer::sign(chainID, privateKey, hash);
-
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::hash(const Transaction &transaction) const noexcept {
+Data Signer::rlp_no_hash(const Transaction &transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
     append(encoded, RLP::encode(transaction.nonce));
@@ -120,5 +81,13 @@ Data Signer::hash(const Transaction &transaction) const noexcept {
     append(encoded, RLP::encode(chainID));
     append(encoded, RLP::encode(0));
     append(encoded, RLP::encode(0));
-    return Hash::keccak256(T::encodeList(encoded));
+    return RLP::encodeList(encoded);
+}
+
+std::string Signer::txn_as_rlp_hex(Transaction &transaction) const noexcept {
+    return TW::hex(rlp_no_hash(transaction));
+}
+
+Data Signer::hash(const Transaction &transaction) const noexcept {
+    return Hash::keccak256(rlp_no_hash(transaction));
 }

@@ -18,12 +18,17 @@
 
 using namespace TW::Harmony;
 
-bool Address::isValid(const std::string &string) {
-    if (string.size() != 42 || string[0] != '0' || string[1] != 'x') {
+bool Address::isValid(const std::string &addr) {
+    if (addr.size() != 42 || addr[0] != '0' || addr[1] != 'x') {
         return false;
     }
-    const auto data = parse_hex(string);
+    const auto data = parse_hex(addr);
     return Address::isValid(data);
+}
+
+bool Address::isValid(const Data &data) {
+    // Easiest low threshold of checking validity
+    return data.size() == size;
 }
 
 Address::Address(const std::string &string) {
@@ -43,11 +48,11 @@ Address::Address(const Data &data) {
 
 Address::Address(const PublicKey &publicKey) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
-        throw std::invalid_argument("Ethereum::Address needs an extended SECP256k1 public key.");
+        throw std::invalid_argument("Harmony::Address needs an extended SECP256k1 public key.");
     }
     const auto data = publicKey.hash(
         {}, static_cast<Data (*)(const byte *, const byte *)>(Hash::keccak256), true);
-    std::copy(data.end() - Address::size, data.end(), bytes.begin());
+    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 std::string Address::string() const {
