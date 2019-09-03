@@ -98,8 +98,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://blockchair.com/bitcoin-cash/transaction/",
-        "url": "https://bitcoincash.org",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://bitcoincash.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "bitcoinsv",
@@ -117,8 +121,12 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": "https://blockchair.com/bitcoin-sv/transaction/",
-        "url": "https://bitcoinsv.io",
-        "rpcNodeInfo": "https://github.com/trezor/blockbook"
+        "info": {
+            "url": "https://bitcoinsv.io",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
     },
     {
         "id": "callisto",
@@ -615,10 +623,14 @@
         "derivationPath": "m/44'/688'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "hrp": "coinex",
-        "explorer": "https://testnet.coinex.org/transactions/",
-        "url": "https://coinex.org",
-        "rpcNodeInfo": "https://coinex.org"
+        "hrp": "cettest",
+        "explorer": "https://testnet.coinex.org/",
+        "info": {
+            "url": "https://coinex.org",
+            "client": "https://coinex.org",
+            "clientPublic": "",
+            "clientDocs": "https://coinex.org"
+        }
     },
     {
         "id": "ripple",

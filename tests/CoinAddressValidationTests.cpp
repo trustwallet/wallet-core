@@ -44,7 +44,8 @@ TEST(Coin, ValidateAddressBinance) {
 }
 
 TEST(Coin, ValidateAddressCoinex) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeCoinex, "coinex1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
+    //EXPECT_TRUE(validateAddress(TWCoinTypeCoinex, "coinex1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeCoinex, "cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j"));
     EXPECT_FALSE(validateAddress(TWCoinTypeCoinex, "bcoinex1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
 }
 

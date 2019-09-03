@@ -11,6 +11,14 @@
 
 extern const std::string COINEX_PREFIX_SEND_COIN_MESSAGE;
 extern const std::string COINEX_PREFIX_STAKE_MESSAGE;
+extern const std::string COINEX_PREFIX_UNSTAKE_MESSAGE;
+extern const std::string COINEX_PREFIX_WITHDRAW_STAKE_MESSAGE;
+
+extern const std::string COINEX_PREFIX_SET_ALIAS_MESSAGE;
+
+extern const std::string COINEX_PREFIX_CREATE_ORDER_MESSAGE;
+extern const std::string COINEX_PREFIX_CANCEL_ORDER_MESSAGE;
+
 extern const std::string COINEX_PREFIX_TRANSACTION;
 extern const std::string COINEX_PREFIX_PUBLIC_KEY;
 

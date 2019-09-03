@@ -28,7 +28,7 @@ enum TWCoinType {
     TWCoinTypeCoinex = 688,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
-    TWCoinTypeBitcoinSV= 236,
+    TWCoinTypeBitcoinSV = 236,
     TWCoinTypeSimpleLedger = 245,
     TWCoinTypeBravoCoin = 282,
     TWCoinTypeCallisto = 820,

@@ -51,6 +51,7 @@ class CoinexSignerTests: XCTestCase {
         let expectedJSON: String =
 """
 {
+    "mode": "block",
 	"tx": {
 		"fee": {
 			"amount": [{
@@ -123,9 +124,10 @@ class CoinexSignerTests: XCTestCase {
 
         let output = CoinexSigner.sign(input: signingInput)
 
-        let expectedJSON = 
+        let expectedJSON: String = 
 """
 {
+    "mode": "block",
 	"tx": {
 		"fee": {
 			"amount": [{
@@ -161,8 +163,3 @@ class CoinexSignerTests: XCTestCase {
     }
 }
 
-extension String {
-    func flatten() -> String {
-        return components(separatedBy: .whitespacesAndNewlines).joined()
-    }
-}

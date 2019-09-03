@@ -28,11 +28,20 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .cosmos:
                     let expectedResult = "cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .coinex:
+                    let expectedResult = "cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .bitcoin:
                     let expectedResult = "1BejyChZRiwwE2zYtbj8HRqq1RYScA8uAp"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .bitcoinCash:
                     let expectedResult = "bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .simpleLedger:
+                    let expectedResult = "bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .bitcoinSV:
+                    let expectedResult = "1BejyChZRiwwE2zYtbj8HRqq1RYScA8uAp"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .callisto:
                     let expectedResult = "0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04"

@@ -306,7 +306,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeWaves:
         return Waves::Address(publicKey).string();
-        
+
     case TWCoinTypeNebulas:
         return Nebulas::Address(publicKey).string();
     }
