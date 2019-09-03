@@ -137,11 +137,6 @@ TEST(Coin, validateAddressGroestlcoin){
     EXPECT_FALSE(validateAddress(TWCoinTypeGroestlcoin,"bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv"));
 }
 
-TEST(Coin, validateAddressNULS){
-    EXPECT_TRUE(validateAddress(TWCoinTypeNULS, "Nse1vKX9QHF7A84MHqrh4rRubVHAPc18"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeNULS, "Nse3uLgeCBWP48GCGx8L54gnELfpnSG9"));
-}
-
 TEST(Coin, validateAddressQtum) {
     EXPECT_TRUE(validateAddress(TWCoinTypeQtum, "qc1qn9gjawre2t6xmcv5gyqkujqhd8cfvvyx0rx2mp"));
     EXPECT_TRUE(validateAddress(TWCoinTypeQtum, "Qbmj3ufB1TaRSSP5DYR4KQxsyHBNrk8Y4p"));
@@ -295,7 +290,7 @@ TEST(Coin, ValidateAddressAeternity) {
 
 TEST(Coin, ValidateAddressTerra) {
     EXPECT_TRUE(validateAddress(TWCoinTypeTerra, "terra1krl5p2fak3nl4ph0w8tsr6y85qwczlzykv7pt7"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeTerra, "terravaloper1eutun6vh83lmyq0wmyf9vgghvurze2xanl9sq6"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeTerra, "terravaloper1eutun6vh83lmyq0wmyf9vgghvurze2xanl9sq6"));
     EXPECT_FALSE(validateAddress(TWCoinTypeAeternity, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
 }
 

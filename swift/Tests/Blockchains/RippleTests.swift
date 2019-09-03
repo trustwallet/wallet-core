@@ -7,9 +7,6 @@
 import XCTest
 import TrustWalletCore
 
-typealias RippleSigningInput = TW_Ripple_Proto_SigningInput
-typealias RiipleSigningOutput = TW_Ripple_Proto_SigningOutput
-
 class RippleTests: XCTestCase {
 
     func testAddress() {

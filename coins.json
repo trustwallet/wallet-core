@@ -184,7 +184,7 @@
         "base58Hasher": "blake256d",
         "xpub": "dpub",
         "xprv": "dprv",
-        "explorer": "https://mainnet.decred.org/tx/",
+        "explorer": "https://dcrdata.decred.org/tx/",
         "info": {
             "url": "https://decred.org",
             "client": "https://github.com/trezor/blockbook",
@@ -770,23 +770,6 @@
         }
     },
     {
-        "id": "nuls",
-        "name": "NULS",
-        "symbol": "NULS",
-        "decimals": 8,
-        "blockchain": "NULS",
-        "derivationPath": "m/44'/8964'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1",
-        "explorer": "https://nuls.world/transactions/",
-        "info": {
-            "url": "https://nuls.io",
-            "client": "https://github.com/trezor/blockbook",
-            "clientPublic": "",
-            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-        }
-    },
-    {
         "id": "theta",
         "name": "Theta",
         "symbol": "THETA",
@@ -1134,7 +1117,7 @@
         "name": "FIO",
         "symbol": "FIO",
         "decimals": 9,
-        "blockchain": "EOS",
+        "blockchain": "FIO",
         "derivationPath": "m/44'/235'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",

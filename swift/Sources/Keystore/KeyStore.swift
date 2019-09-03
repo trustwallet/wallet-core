@@ -99,6 +99,25 @@ public final class KeyStore {
         return accounts
     }
 
+    /// Remove accounts from a wallet.
+    public func removeAccounts(wallet: Wallet, coins: [CoinType], password: String) throws -> Wallet {
+        guard wallet.key.decryptPrivateKey(password: password) != nil else {
+            throw Error.invalidPassword
+        }
+
+        guard let index = wallets.firstIndex(of: wallet) else {
+            fatalError("Missing wallet")
+        }
+
+        for coin in coins {
+            wallet.key.removeAccountForCoin(coin: coin)
+        }
+
+        wallets[index] = wallet
+        try save(wallet: wallet)
+        return wallet
+    }
+
     /// Imports an encrypted JSON key.
     ///
     /// - Parameters:

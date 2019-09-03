@@ -40,13 +40,16 @@ class AccountTests: XCTestCase {
     }
 
     func testExtendedPubkey() throws {
-        let key = StoredKey.importHDWallet(mnemonic: words, name: "name", password: password, coin: .bitcoin)!
+        let key = StoredKey.importHDWallet(mnemonic: words, name: "name", password: password, coin: .ethereum)!
         let wallet = Wallet(keyURL: URL(fileURLWithPath: "/"), key: key)
         _ = try wallet.getAccount(password: password, coin: .bitcoin)
         _ = try wallet.getAccount(password: password, coin: .bitcoinCash)
+        _ = try wallet.getAccount(password: password, coin: .ethereumClassic)
 
-        XCTAssertEqual(wallet.accounts[0].extendedPublicKey, "zpub6rNUNtxSa9Gxvm4Bdxf1MPMwrvkzwDx6vP96Hkzw3jiQKdg3fhXBStxjn12YixQB8h88B3RMSRscRstf9AEVaYr3MAqVBEWBDuEJU4PGaT9")
-        XCTAssertEqual(wallet.accounts[1].extendedPublicKey, "xpub6DCGEUmR2vcLbecgHEDN8ksNiEnanDUo3kNiT8XEHoiFCW2UWJLizkzwciXYJFzNQsFDbsJMwtGTJAkCgAQSdKTfCAmDu87rReGC9vcZVNH")
+        XCTAssertEqual(wallet.accounts[0].extendedPublicKey, "")
+        XCTAssertEqual(wallet.accounts[1].extendedPublicKey, "zpub6rNUNtxSa9Gxvm4Bdxf1MPMwrvkzwDx6vP96Hkzw3jiQKdg3fhXBStxjn12YixQB8h88B3RMSRscRstf9AEVaYr3MAqVBEWBDuEJU4PGaT9")
+        XCTAssertEqual(wallet.accounts[2].extendedPublicKey, "xpub6DCGEUmR2vcLbecgHEDN8ksNiEnanDUo3kNiT8XEHoiFCW2UWJLizkzwciXYJFzNQsFDbsJMwtGTJAkCgAQSdKTfCAmDu87rReGC9vcZVNH")
+        XCTAssertEqual(wallet.accounts[3].extendedPublicKey, "")
     }
 
     func testBTCPrivateKeyWithPaths() throws {

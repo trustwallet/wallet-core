@@ -69,8 +69,6 @@ public extension CoinType {
             }
         case .iost:
             return IOSTAccount(string: string)
-        case .nuls:
-            return NULSAddress(string: string)
         case .bravoCoin:
             return BravoAddress(string: string)
         case .steem:

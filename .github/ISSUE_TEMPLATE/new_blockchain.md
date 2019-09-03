@@ -1,7 +1,13 @@
-<!--- Thank you for requesting new blockchain support -->
+---
+name: New blockchain
+about: Request a new blockchain support
+title: ''
+labels: chain-integration
+assignees: ''
+
+---
 
 <!--- Before submitting please check to see if this coin was already requested -->
-
 <!--- Provide as many relevant details about the coin -->
 ## Description
 
