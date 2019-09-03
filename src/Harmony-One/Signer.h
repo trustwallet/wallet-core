@@ -51,7 +51,7 @@ class Signer {
     /// Computes the transaction hash.
     Data hash(const Transaction &transaction) const noexcept;
     // Plain rlp encoding before hashing
-    Data rlp_no_hash(const Transaction &transaction) const noexcept;
+    Data rlp_no_hash(const Transaction &transaction, const bool) const noexcept;
 };
 
 } // namespace TW::Harmony

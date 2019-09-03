@@ -29,10 +29,10 @@ message SigningInput {
     // Private key.
     bytes private_key = 8;
 
-    // From shard ID, 16-bit number
+    // From shard ID (256-bit number)
     bytes from_shard_id = 9;
 
-    // To Shard ID 16-bit number
+    // To Shard ID (256-bit number)
     bytes to_shard_id = 10;
 }
 

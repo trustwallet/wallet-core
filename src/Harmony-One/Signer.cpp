@@ -20,12 +20,8 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
     v += 27;
 
     boost::multiprecision::uint256_t newV;
-    if (chainID != 0) {
-        import_bits(newV, signature.begin() + 64, signature.begin() + 65);
-        newV += 35 + chainID + chainID;
-    } else {
-        newV = v;
-    }
+    import_bits(newV, signature.begin() + 64, signature.begin() + 65);
+    newV += 35 + chainID + chainID;
     return std::make_tuple(r, s, newV);
 }
 
@@ -48,14 +44,14 @@ Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input)
         /* payload: */ Data(input.payload().begin(), input.payload().end()));
     sign(key, transaction);
     auto protoOutput = Proto::SigningOutput();
-    // auto encoded = T::encode(chainID, transaction);
-    // protoOutput.set_encoded(encoded.data(), encoded.size());
-    // auto v = store(transaction.v);
-    // protoOutput.set_v(v.data(), v.size());
-    // auto r = store(transaction.r);
-    // protoOutput.set_r(r.data(), r.size());
-    // auto s = store(transaction.s);
-    // protoOutput.set_s(s.data(), s.size());
+    auto encoded = rlp_no_hash(transaction, true);
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+    auto v = store(transaction.v);
+    protoOutput.set_v(v.data(), v.size());
+    auto r = store(transaction.r);
+    protoOutput.set_r(r.data(), r.size());
+    auto s = store(transaction.s);
+    protoOutput.set_s(s.data(), s.size());
     return protoOutput;
 }
 
@@ -67,7 +63,7 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::rlp_no_hash(const Transaction &transaction) const noexcept {
+Data Signer::rlp_no_hash(const Transaction &transaction, const bool include_vrs) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
     append(encoded, RLP::encode(transaction.nonce));
@@ -78,16 +74,22 @@ Data Signer::rlp_no_hash(const Transaction &transaction) const noexcept {
     append(encoded, RLP::encode(transaction.to.bytes));
     append(encoded, RLP::encode(transaction.amount));
     append(encoded, RLP::encode(transaction.payload));
-    append(encoded, RLP::encode(chainID));
-    append(encoded, RLP::encode(0));
-    append(encoded, RLP::encode(0));
+    if (include_vrs) {
+        append(encoded, RLP::encode(transaction.v));
+        append(encoded, RLP::encode(transaction.r));
+        append(encoded, RLP::encode(transaction.s));
+    } else {
+        append(encoded, RLP::encode(chainID));
+        append(encoded, RLP::encode(0));
+        append(encoded, RLP::encode(0));
+    }
     return RLP::encodeList(encoded);
 }
 
 std::string Signer::txn_as_rlp_hex(Transaction &transaction) const noexcept {
-    return TW::hex(rlp_no_hash(transaction));
+    return TW::hex(rlp_no_hash(transaction, false));
 }
 
 Data Signer::hash(const Transaction &transaction) const noexcept {
-    return Hash::keccak256(rlp_no_hash(transaction));
+    return Hash::keccak256(rlp_no_hash(transaction, false));
 }

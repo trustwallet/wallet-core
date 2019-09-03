@@ -36,7 +36,7 @@ TEST(HarmonySigner, RLPEncoding) {
         /* to: */ address,
         /* amount: */ uint256_t("0x168d28e3f00280000"),
         /* payload: */ {});
-    auto signer = SignerExposed(uint256_t("400"));
+    auto signer = SignerExposed(uint256_t(TWHarmonyChainIDLocalNet));
     auto rlp_hex = signer.txn_as_rlp_hex(transaction);
     ASSERT_EQ(rlp_hex, rlp_unhashed_should_be);
 }
@@ -55,7 +55,7 @@ TEST(HarmonySigner, Hash) {
         /* to: */ address,
         /* amount: */ uint256_t("0x168d28e3f00280000"),
         /* payload: */ {});
-    auto signer = SignerExposed(uint256_t("400"));
+    auto signer = SignerExposed(uint256_t(TWHarmonyChainIDLocalNet));
     auto hash = signer.hash(transaction);
     ASSERT_EQ(hex(hash), should_be);
 }

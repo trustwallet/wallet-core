@@ -16,7 +16,6 @@ using namespace TW::Harmony;
 TW_Harmony_Proto_SigningOutput TWHarmonySignerSign(TW_Harmony_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-
     auto signer = Signer(load(input.chain_id()));
     auto protoOutput = signer.sign(input);
 
