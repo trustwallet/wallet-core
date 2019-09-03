@@ -31,8 +31,10 @@ This list is generated from [./coins.json](../coins.json)
 | 194     | EOS              | EOS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/eos/info/logo.png" width="32" />          | <http://eos.io>               |
 | 195     | Tron             | TRX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tron/info/logo.png" width="32" />         | <https://tron.network>        |
 | 235     | FIO              | FIO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/fio/info/logo.png" width="32" />          | <https://fio.foundation>      |
+| 236     | Bitcoin SV       | BSV    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoinsv/info/logo.png" width="32" />    | <https://bitcoinsv.io>        |
 | 237     | DEXON            | DXN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/dexon/info/logo.png" width="32" />        | <https://dexon.org>           |
 | 242     | Nimiq            | NIM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nimiq/info/logo.png" width="32" />        | <https://nimiq.com>           |
+| 245     | Simple Ledger    | SLP    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/simpleledger/info/logo.png" width="32" /> | <https://bitcoincash.org>     |
 | 282     | BravoCoin        | BRAVO  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bravocoin/info/logo.png" width="32" />    | <https://bravocoin.com>       |
 | 291     | IOST             | IOST   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iost/info/logo.png" width="32" />         | <https://iost.io>             |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png" width="32" />        | <https://iotex.io>            |
@@ -41,6 +43,7 @@ This list is generated from [./coins.json](../coins.json)
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
+| 688     | Coinex           | CET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/coinex/info/logo.png" width="32" />       | <https://coinex.org>          |
 | 700     | xDai             | xDAI   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/xdai/info/logo.png" width="32" />         | <https://poa.network/xdai>    |
 | 714     | Binance          | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/logo.png" width="32" />      | <https://vechain.org>         |
