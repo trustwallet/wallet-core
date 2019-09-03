@@ -1,6 +1,8 @@
 .DS_Store
 *~
 *.orig
+*.swp
+*.swo
 
 # Build directories
 .build/

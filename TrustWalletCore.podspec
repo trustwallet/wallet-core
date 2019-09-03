@@ -1,19 +1,19 @@
-version = '0.10.1'
+version = '0.13.1'
 
 Pod::Spec.new do |s|
   s.name         = 'TrustWalletCore'
   s.version      = version
-  s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/TrustWallet/wallet-core'
+  s.summary      = 'TrustWallet core data structures and algorithms.'
+  s.homepage     = 'https://github.com/ifwallet/wallet-core'
   s.license      = 'MIT'
-  s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
+  s.authors      = { 'bibodeng' => 'bibodeng@gmail.com' }
 
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.0'
 
   s.source = {
-    git: 'git@github.com:TrustWallet/wallet-core.git',
+    git: 'git@github.com:IFWallet/wallet-core.git',
     tag: version,
     submodules: true
   }
@@ -164,3 +164,4 @@ Pod::Spec.new do |s|
 
   s.dependency 'SwiftProtobuf', '~> 1.5.0'
 end
+

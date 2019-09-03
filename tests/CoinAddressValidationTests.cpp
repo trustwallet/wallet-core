@@ -64,6 +64,13 @@ TEST(Coin, ValidateAddressBitcoinCash) {
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4"));
 }
 
+TEST(Coin, ValidateAddressBitcoinSV) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinSV, "bitcoincash:qruxj7zq6yzpdx8dld0e9hfvt7u47zrw9gfr5hy0vh"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinSV, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinSV, "qq07l6rr5lsdm3m80qxw80ku2ex0tj76vvsxpvmgme"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinSV, "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4"));
+}
+
 TEST(Coin, ValidateAddressDogecoin) {
     EXPECT_TRUE(validateAddress(TWCoinTypeDogecoin, "DHKM6NDUUv9kaHAGi1QU7MRBNKfQiAdP3F"));
 
@@ -188,8 +195,8 @@ TEST(Coin, ValidateAddressARK){
 TEST(Coin, ValidateAddressDGB){
     EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "DBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp4"));
     EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "dgb1q3p2nf26ac6qtdrv4czh5nmp2eshfj9wyn9vv3d"));
-    EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVo")); 
-    
+    EXPECT_TRUE(validateAddress(TWCoinTypeDigiByte, "SUngTA1vaC2E62mbnc81Mdos3TcvZHwsVo"));
+
     // bad address
     EXPECT_FALSE(validateAddress(TWCoinTypeDigiByte, "XBfCffUdSbhqKZhjuvrJ6AgvJofT4E2kp4"));
     // bad bech32 address

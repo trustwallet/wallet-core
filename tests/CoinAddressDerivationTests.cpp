@@ -19,6 +19,8 @@ TEST(Coin, DeriveAddress) {
     //EXPECT_EQ(TW::deriveAddress(TWCoinTypeBitcoin, privateKey), "bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBitcoin, privateKey), "1JHMeqKunF2Up6zxnMQGhJu5667BXz98YQ");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBitcoinCash, privateKey), "bitcoincash:qz7eyzytkl5z6cg6nw20hd62pyyp22mcfuardfd2vn");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBitcoinSV, privateKey), "1JHMeqKunF2Up6zxnMQGhJu5667BXz98YQ");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeSimpleLedger, privateKey), "bitcoincash:qz7eyzytkl5z6cg6nw20hd62pyyp22mcfuardfd2vn");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeCallisto, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeCosmos, privateKey), "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeDash, privateKey), "XsyCV5yojxF4y3bYeEiVYqarvRgsWFELZL");

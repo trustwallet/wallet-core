@@ -22,7 +22,7 @@ public extension CoinType {
             } else {
                 return BitcoinAddress(string: string)
             }
-        case .bitcoinCash:
+        case .bitcoinCash, .bitcoinSV, .simpleLedger:
             if let bitcoinCashAddress = BitcoinCashAddress(string: string) {
                 return bitcoinCashAddress
             } else {
