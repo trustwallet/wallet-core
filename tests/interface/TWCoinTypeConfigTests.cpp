@@ -147,7 +147,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     assertStringsEqual(fio, "FIO");
 
     auto hmy = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeHarmony));
-    assertStringsEqual(hmy, "HMY");
+    assertStringsEqual(hmy, "ONE");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {

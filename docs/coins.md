@@ -14,7 +14,6 @@ This list is generated from [./coins.json](../coins.json)
 | 22      | Monacoin         | MONA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/monacoin/info/logo.png" width="32" />     | <https://monacoin.org>        |
 | 42      | Decred           | DCR    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/decred/info/logo.png" width="32" />       | <https://decred.org>          |
 | 60      | Ethereum         | ETH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png" width="32" />     | <https://ethereum.org>        |
-| 60      | Harmony          | HMY    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/harmony/info/logo.png" width="32" />      | <https://harmony.one>         |
 | 61      | Ethereum Classic | ETC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/classic/info/logo.png" width="32" />      | <https://ethereumclassic.org> |
 | 74      | ICON             | ICX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/icon/info/logo.png" width="32" />         | <https://icon.foundation>     |
 | 111     | ARK              | ARK    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ark/info/logo.png" width="32" />          | <http://ark.io>               |
@@ -49,6 +48,7 @@ This list is generated from [./coins.json](../coins.json)
 | 888     | NEO              | NEO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neo/info/logo.png" width="32" />          | <https://neo.org>             |
 | 889     | TomoChain        | TOMO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tomochain/info/logo.png" width="32" />    | <https://tomochain.com>       |
 | 1001    | Thunder Token    | TT     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/thundertoken/info/logo.png" width="32" /> | <https://thundercore.com>     |
+| 1023    | Harmony          | ONE    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/harmony/info/logo.png" width="32" />      | <https://harmony.one>         |
 | 1024    | Ontology         | ONT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ontology/info/logo.png" width="32" />     | <https://ont.io>              |
 | 1729    | Tezos            | XTZ    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tezos/info/logo.png" width="32" />        | <https://tezos.com>           |
 | 2017    | Kin              | KIN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kin/info/logo.png" width="32" />          | <https://www.kin.org>         |
