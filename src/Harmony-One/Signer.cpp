@@ -31,7 +31,7 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data 
     return values(chainID, signature);
 }
 
-Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input) const noexcept {
+Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction(
         /* nonce: */ load(input.nonce()),
@@ -42,9 +42,12 @@ Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input)
         /* to: */ Address(input.to_address()),
         /* amount: */ load(input.amount()),
         /* payload: */ Data(input.payload().begin(), input.payload().end()));
-    sign(key, transaction);
+
+    auto signer = Signer(uint256_t(load(input.chain_id())));
+    signer.sign(key, transaction);
     auto protoOutput = Proto::SigningOutput();
-    auto encoded = rlp_no_hash(transaction, true);
+    auto encoded = signer.rlp_no_hash(transaction, true);
+
     protoOutput.set_encoded(encoded.data(), encoded.size());
     auto v = store(transaction.v);
     protoOutput.set_v(v.data(), v.size());

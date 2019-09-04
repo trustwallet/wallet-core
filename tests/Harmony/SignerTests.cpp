@@ -11,6 +11,7 @@
 #include "Harmony-One/Address.h"
 #include "Harmony-One/Signer.h"
 #include "HexCoding.h"
+#include "proto/Harmony.pb.h"
 
 namespace TW::Harmony {
 
@@ -80,6 +81,47 @@ TEST(HarmonySigner, Sign) {
     ASSERT_EQ(transaction.v, 835);
     ASSERT_EQ(transaction.r, should_be_r);
     ASSERT_EQ(transaction.s, should_be_s);
+}
+
+TEST(HarmonySigner, SignProtoBuf) {
+    auto input = Proto::SigningInput();
+    auto receiver = "0x587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2";
+    input.set_to_address(receiver);
+    const auto privateKey =
+        PrivateKey(parse_hex("e2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94"));
+    auto payload = parse_hex("");
+    input.set_payload(payload.data(), payload.size());
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    auto value = store(uint256_t("0x190"));
+    input.set_chain_id(value.data(), value.size());
+
+    value = store(uint256_t("0x9"));
+    input.set_nonce(value.data(), value.size());
+
+    value = store(uint256_t(""));
+    input.set_gas_price(value.data(), value.size());
+
+    value = store(uint256_t("0x5208"));
+    input.set_gas_limit(value.data(), value.size());
+
+    value = store(uint256_t("0x3"));
+    input.set_from_shard_id(value.data(), value.size());
+
+    value = store(uint256_t("0x2"));
+    input.set_to_shard_id(value.data(), value.size());
+
+    value = store(uint256_t("0x168d28e3f00280000"));
+    input.set_amount(value.data(), value.size());
+
+    auto proto_output = TW::Harmony::Signer::sign(input);
+    auto should_be_v = "0343";
+    auto should_be_r = "f4757c9ffad127996f788fb388be3e3e03440f6980b36dc6cee7230e390f0c13";
+    auto should_be_s = "42f0ff332bd552e8ad7a1cf6a0af4ebebfb1f8aae413c54d3464b9babba5f28d";
+
+    ASSERT_EQ(hex(proto_output.v()), should_be_v);
+    ASSERT_EQ(hex(proto_output.r()), should_be_r);
+    ASSERT_EQ(hex(proto_output.s()), should_be_s);
 }
 
 } // namespace TW::Harmony

@@ -28,7 +28,7 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs a Proto::SigningInput transaction
-    Proto::SigningOutput sign(const Proto::SigningInput &input) const noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput &input) noexcept;
 
     /// Signs the given transaction.
     void sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept;
