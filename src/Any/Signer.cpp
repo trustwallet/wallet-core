@@ -13,9 +13,12 @@
 #include "Binance/Signer.h"
 #include "Ethereum/Signer.h"
 #include "Tezos/Signer.h"
+#include "IoTeX/Signer.h"
+#include "Wanchain/Signer.h"
 
 #include <string>
 #include <google/protobuf/util/json_util.h>
+#include <Wanchain/Address.h>
 
 using namespace TW;
 using namespace google::protobuf;
@@ -74,6 +77,36 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             }
             break;
         }
+        case TWCoinTypeIoTeX: {
+            IoTeX::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_privatekey(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = IoTeX::Signer(std::move(message)).build();
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
+        }
+        case TWCoinTypeWanchain: {
+            Ethereum::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                auto ethTransaction = Ethereum::Transaction(
+                        /* nonce: */ load(message.nonce()),
+                        /* gasPrice: */ load(message.gas_price()),
+                        /* gasLimit: */ load(message.gas_limit()),
+                        /* to: */ Ethereum::Address(message.to_address()),
+                        /* amount: */ load(message.amount()),
+                        /* payload: */ Data(message.payload().begin(), message.payload().end())
+                );
+                auto signer = Wanchain::Signer(load(message.chain_id()));
+                signer.sign(privateKey, ethTransaction);
+                auto encoded = signer.encode(ethTransaction);
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
+        }
         default:
             auto error = new Proto::SigningOutput_Error();
             error->set_code(SignerErrorCodeNotSupported);
@@ -101,4 +134,11 @@ void Any::Signer::parse(const std::string& transaction, Message* message,
     error->set_code(SignerErrorCodeInvalidJson);
     error->set_description(result.error_message());
     output.set_allocated_error(error);
+}
+
+void Any::Signer::toJson(const google::protobuf::Message &message, std::string *json_string) const  noexcept {
+    util::JsonPrintOptions options;
+    options.preserve_proto_field_names = true;
+
+    MessageToJsonString(message, json_string, options);
 }
