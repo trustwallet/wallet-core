@@ -17,7 +17,7 @@ class HarmonyTests: XCTestCase {
             $0.fromShardID = Data(hexString: "0x03")!
             $0.toShardID = Data(hexString: "0x02")!
             $0.payload = Data(hexString: "0x")!
-            $0.toAddress = "0x587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2"
+            $0.toAddress = "one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p"
             $0.amount = Data(hexString: "0x0168d28e3f00280000")!
             $0.privateKey = Data(hexString: "0xe2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94")!
         }
