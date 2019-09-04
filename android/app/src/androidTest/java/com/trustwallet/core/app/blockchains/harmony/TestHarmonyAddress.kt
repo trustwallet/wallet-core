@@ -16,26 +16,26 @@ class TestHarmonyAddress {
 
     @Test
     fun testAddressFromPrivateKey() {
-        // val key = PrivateKey(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
-        // val pubkey = key.getPublicKeyEd25519()
-        // val address = HarmonyAddress(pubkey)
-        // assertEquals(address.description(), "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
-        assertEquals(true, true)
+         val key = PrivateKey(Base58.decodeNoCheck("GGzxJ4QmKCXH2juK89RVAmvFAfdUfUARCvxEsBM356vX"))
+         val pubkey = key.getPublicKeySecp256k1(false)
+         val address = HarmonyAddress(pubkey)
+         assertEquals(address.description(), "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe")
     }
 
     @Test
     fun testAddressFromPublicKey() {
-        // val pubkey = PublicKey(Base58.decodeNoCheck("7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"), PublicKeyType.ED25519)
-        // val address = HarmonyAddress(pubkey)
-	// assertEquals(address.description(), "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
-        assertEquals(true, true)
+         val pubkey = PublicKey(
+             Base58.decodeNoCheck("RKjfnr3wMojEruvXZuvNDmL7UfLUiyU3vsBGoZ4k2qY8YzoEJDHLmXDWid9K6YDuGJ2u1fZ8E8JXDjk3KUuDXtwz"),
+             PublicKeyType.SECP256K1EXTENDED
+         )
+         val address = HarmonyAddress(pubkey)
+    	 assertEquals(address.description(), "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe")
     }
 
     @Test
     fun testAddressFromString() {
-        // val addressString = "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"
-        // val address = HarmonyAddress(addressString)
-        // assertEquals(address.description(), addressString)
-        assertEquals(true, true)
+         val addressString = "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe"
+         val address = HarmonyAddress(addressString)
+         assertEquals(address.description(), addressString)
     }
 }
