@@ -26,12 +26,12 @@ bool TWHarmonyAddressEqual(struct TWHarmonyAddress *_Nonnull lhs,
 
 bool TWHarmonyAddressIsValidString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string *>(string);
-    return Address::isValid(*s);
+    return Address::isValid(*s).first;
 }
 
 struct TWHarmonyAddress *_Nullable TWHarmonyAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string *>(string);
-    if (!Address::isValid(*s)) {
+    if (!Address::isValid(*s).first) {
         return nullptr;
     }
     return new TWHarmonyAddress{Address(*s)};

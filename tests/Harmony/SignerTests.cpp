@@ -24,7 +24,7 @@ class SignerExposed : public Signer {
 };
 
 TEST(HarmonySigner, RLPEncoding) {
-    auto address = Address("0x587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2");
+    auto address = Address("one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p");
     auto rlp_unhashed_should_be = "ec0880825208010194587c66b4b973a7b231d02ebbc7e"
                                   "7d9f6c5a49ef2890168d28e3f00280000808201908080";
     uint256_t amount("0x56bc75e2d63100000");
@@ -43,7 +43,7 @@ TEST(HarmonySigner, RLPEncoding) {
 }
 
 TEST(HarmonySigner, Hash) {
-    auto address = Address("0x587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2");
+    auto address = Address("one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p");
     auto should_be = "3092f57f57a88d9e822947b1b6245d19"
                      "5600e698b4c829044e7553256a52498c";
     uint256_t amount("0x56bc75e2d63100000");
@@ -62,7 +62,7 @@ TEST(HarmonySigner, Hash) {
 }
 
 TEST(HarmonySigner, Sign) {
-    auto address = Address("0x587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2");
+    auto address = Address("one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p");
     auto transaction = Transaction(
         /* nonce: */ 0x9,
         /* gasPrice: */ 0x0,
@@ -85,7 +85,7 @@ TEST(HarmonySigner, Sign) {
 
 TEST(HarmonySigner, SignProtoBuf) {
     auto input = Proto::SigningInput();
-    auto receiver = "0x587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2";
+    auto receiver = "one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p";
     input.set_to_address(receiver);
     const auto privateKey =
         PrivateKey(parse_hex("e2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94"));

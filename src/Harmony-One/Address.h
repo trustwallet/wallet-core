@@ -21,15 +21,13 @@ class Address {
 
     static constexpr auto hrp = "one";
 
-    /// Address data consisting of a prefix byte followed by the public key
-    /// hash.
     std::array<uint8_t, size> bytes;
 
-    /// Determines whether a collection of bytes makes a valid  address.
+    /// Determines whether a collection of bytes makes a valid address.
     static bool isValid(const Data &data);
 
-    /// Determines whether a string makes a valid  address.
-    static bool isValid(const std::string &string);
+    /// Determines whether a string makes a valid address, nonempty data payload if valid
+    static std::pair<bool, std::vector<uint8_t>> isValid(const std::string &string);
 
     /// Initializes an address with a string representation.
     explicit Address(const std::string &string);
@@ -40,8 +38,11 @@ class Address {
     /// Initializes an address with a public key.
     explicit Address(const PublicKey &publicKey);
 
-    /// Returns a string representation of the address.
+    /// Returns a bech32 representation of the address.
     std::string string() const;
+
+    /// Provide hex representation of address
+    std::string hex_dump() const;
 };
 
 inline bool operator==(const Address &lhs, const Address &rhs) {

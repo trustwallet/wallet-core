@@ -170,7 +170,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
     case TWCoinTypeNebulas:
         return Nebulas::Address::isValid(string);
     case TWCoinTypeHarmony:
-        return Harmony::Address::isValid(string);
+        return Harmony::Address::isValid(string).first;
     }
 }
 

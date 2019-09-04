@@ -7,7 +7,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-#include "AddressChecksum.h"
 
 #include "../Bech32.h"
 #include "../Hash.h"
@@ -18,44 +17,53 @@
 
 using namespace TW::Harmony;
 
-bool Address::isValid(const std::string &addr) {
-    if (addr.size() != 42 || addr[0] != '0' || addr[1] != 'x') {
-        return false;
+std::pair<bool, std::vector<uint8_t>> Address::isValid(const std::string &addr) {
+    if (addr.size() != 42) {
+        return {false, {}};
     }
-    const auto data = parse_hex(addr);
-    return Address::isValid(data);
+    const auto [first, second] = Bech32::decode(addr);
+    if (first.size() == 0 || second.size() == 0 || first != Address::hrp) {
+        return {false, {}};
+    }
+    return {true, second};
 }
 
 bool Address::isValid(const Data &data) {
-    // Easiest low threshold of checking validity
-    return data.size() == size;
+    return data.size() == Address::size;
 }
 
-Address::Address(const std::string &string) {
-    if (!isValid(string)) {
-        throw std::invalid_argument("Invalid address data");
+Address::Address(const std::string &addr) {
+    const auto [success, payload] = isValid(addr);
+    if (!success) {
+        throw std::invalid_argument("address not in Harmony bech32 format");
     }
-    const auto data = parse_hex(string);
-    std::copy(data.begin(), data.end(), bytes.begin());
+    Data as_base_32;
+    Bech32::convertBits<5, 8, false>(as_base_32, payload);
+    std::copy(as_base_32.begin(), as_base_32.end(), bytes.begin());
 }
 
 Address::Address(const Data &data) {
     if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address data");
+        throw std::invalid_argument("invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey &publicKey) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
-        throw std::invalid_argument("Harmony::Address needs an extended SECP256k1 public key.");
+        throw std::invalid_argument("address may only be an extended SECP256k1 public key");
     }
     const auto data = publicKey.hash(
         {}, static_cast<Data (*)(const byte *, const byte *)>(Hash::keccak256), true);
-    std::copy(data.begin(), data.end(), bytes.begin());
+    std::copy(data.end() - Address::size, data.end(), bytes.begin());
 }
 
 std::string Address::string() const {
-    return Harmony::checksumed(static_cast<const TW::Harmony::Address>(*this),
-                               Harmony::Checksum::eip55);
+    Data as_base_32;
+    Bech32::convertBits<8, 5, false>(as_base_32, std::vector<uint8_t>(bytes.begin(), bytes.end()));
+    return Bech32::encode(Address::hrp, as_base_32);
+}
+
+std::string Address::hex_dump() const {
+    return hex(bytes);
 }
