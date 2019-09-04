@@ -6,8 +6,6 @@
 
 #include "Any/Signer.h"
 #include "Coin.h"
-#include "Base64.h"
-#include "Tezos/BinaryCoding.h"
 
 #include <stdexcept>
 #include <gtest/gtest.h>
