@@ -46,7 +46,7 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         signerKeys.push_back(stakeKey);
     } else if (input.has_deactivate_stake_transaction()) {
         auto protoMessage = input.deactivate_stake_transaction();
-        auto stakeKey = PrivateKey(protoMessage.stake_private_key());
+        auto stakeKey = PrivateKey(protoMessage.private_key());
         message = Message(
             /* from */ Address(stakeKey.getPublicKey(TWPublicKeyTypeED25519)),
             /* voteAccount */ Address(protoMessage.vote_pubkey()),

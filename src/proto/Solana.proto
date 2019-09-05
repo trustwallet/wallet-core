@@ -17,12 +17,14 @@ message Stake {
 }
 
 message DeactivateStake {
-    bytes stake_private_key = 1;
+    // The stake account private key
+    bytes private_key = 1;
     string vote_pubkey = 2;
 }
 
 message WithdrawStake {
-    bytes private_key = 1; // The stake account private key
+    // The stake account private key
+    bytes private_key = 1;
     string recipient = 2;
     uint64 value = 3;
 }

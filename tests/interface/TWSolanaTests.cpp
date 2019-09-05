@@ -81,7 +81,7 @@ TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
     auto input = Solana::Proto::SigningInput();
 
     auto &message = *input.mutable_deactivate_stake_transaction();
-    message.set_stake_private_key(stakePrivateKey.data(), stakePrivateKey.size());
+    message.set_private_key(stakePrivateKey.data(), stakePrivateKey.size());
     message.set_vote_pubkey("B7Cx2wYAry78VNR8uoewzFDq3FRKJh8exNMyzrpQSfLB");
     input.set_recent_blockhash("11111111111111111111111111111111");
 

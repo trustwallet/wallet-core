@@ -87,7 +87,7 @@ class SolanaTests: XCTestCase {
 
     func testDeactivateStakeSigner() throws {
         let deactivateStakeMessage = SolanaDeactivateStake.with {
-            $0.stakePrivateKey = Data(Base58.decodeNoCheck( string: "5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q")!)
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q")!)
             $0.votePubkey = "B7Cx2wYAry78VNR8uoewzFDq3FRKJh8exNMyzrpQSfLB"
         }
         let input = SolanaSigningInput.with {
