@@ -88,10 +88,6 @@ message UnfreezeAssetContract {
     bytes owner_address = 1;
 }
 
-message WithdrawBalanceContract {
-    bytes owner_address = 1;
-}
-
 message VoteAssetContract {
     bytes owner_address = 1;
     repeated bytes vote_address = 2;
@@ -107,4 +103,8 @@ message VoteWitnessContract {
     bytes owner_address = 1;
     repeated Vote votes = 2;
     bool support = 3;
+}
+
+message WithdrawBalanceContract {
+    bytes owner_address = 1;
 }
