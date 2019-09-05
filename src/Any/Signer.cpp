@@ -13,6 +13,11 @@
 #include "Binance/Signer.h"
 #include "Ethereum/Signer.h"
 #include "Tezos/Signer.h"
+#include "IoTeX/Signer.h"
+#include "Wanchain/Signer.h"
+#include "Waves/Signer.h"
+#include "Nebulas/Signer.h"
+#include "Tron/Signer.h"
 
 #include <string>
 #include <google/protobuf/util/json_util.h>
@@ -50,6 +55,11 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             }
             break;
         }
+        case TWCoinTypeTomoChain:
+        case TWCoinTypeCallisto:
+        case TWCoinTypeThunderToken:
+        case TWCoinTypePOANetwork:
+        case TWCoinTypeEthereumClassic:
         case TWCoinTypeEthereum: {
             Ethereum::Proto::SigningInput message;
             parse(transaction, &message, output);
@@ -71,6 +81,79 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
                 operation_list.operation_list.assign(operations.begin(), operations.end());
                 auto signerOutput = Tezos::Signer().signOperationList(privateKey, operation_list);
                 output.set_output(hex(signerOutput.begin(), signerOutput.end()));
+            }
+            break;
+        }
+        case TWCoinTypeIoTeX: {
+            IoTeX::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_privatekey(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = IoTeX::Signer(std::move(message)).build();
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
+        }
+        case TWCoinTypeWanchain: {
+            Ethereum::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                auto ethTransaction = Ethereum::Transaction(
+                        /* nonce: */ load(message.nonce()),
+                        /* gasPrice: */ load(message.gas_price()),
+                        /* gasLimit: */ load(message.gas_limit()),
+                        /* to: */ Ethereum::Address(message.to_address()),
+                        /* amount: */ load(message.amount()),
+                        /* payload: */ Data(message.payload().begin(), message.payload().end())
+                );
+                auto signer = Wanchain::Signer(load(message.chain_id()));
+                signer.sign(privateKey, ethTransaction);
+                auto encoded = signer.encode(ethTransaction);
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
+        }
+        case TWCoinTypeWaves: {
+            Waves::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
+                auto wavesTransaction = Waves::Transaction(
+                        /* amount */ message.amount(),
+                        /* asset */ message.asset(),
+                        /* fee */ message.fee(),
+                        /* fee_asset */ message.fee_asset(),
+                        /* to */ Waves::Address(message.to()),
+                        /* attachment */ Data(message.attachment().begin(), message.attachment().end()),
+                        /* timestamp */ message.timestamp(),
+                        /* pub_key */ publicKey.bytes
+                );
+                auto signature = Waves::Signer::sign(privateKey, wavesTransaction);
+                auto jsonOutput = wavesTransaction.buildJson(signature).dump();
+                output.set_output(jsonOutput);
+            }
+            break;
+        }
+        case TWCoinTypeNebulas: {
+            Nebulas::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Nebulas::Signer(load(message.chain_id())).sign(message);
+                auto signature = signerOutput.signature();
+                output.set_output(hex(signature.begin(), signature.end()));
+            }
+            break;
+        }
+        case TWCoinTypeTron: {
+            Tron::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Tron::Signer::sign(message);
+                auto signature = signerOutput.signature();
+                output.set_output(hex(signature.begin(), signature.end()));
             }
             break;
         }
@@ -101,4 +184,11 @@ void Any::Signer::parse(const std::string& transaction, Message* message,
     error->set_code(SignerErrorCodeInvalidJson);
     error->set_description(result.error_message());
     output.set_allocated_error(error);
+}
+
+void Any::Signer::toJson(const google::protobuf::Message &message, std::string *json_string) const  noexcept {
+    util::JsonPrintOptions options;
+    options.preserve_proto_field_names = true;
+
+    MessageToJsonString(message, json_string, options);
 }
