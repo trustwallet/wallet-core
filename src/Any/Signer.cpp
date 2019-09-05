@@ -15,10 +15,10 @@
 #include "Tezos/Signer.h"
 #include "IoTeX/Signer.h"
 #include "Wanchain/Signer.h"
+#include "Waves/Signer.h"
 
 #include <string>
 #include <google/protobuf/util/json_util.h>
-#include <Wanchain/Address.h>
 
 using namespace TW;
 using namespace google::protobuf;
@@ -104,6 +104,27 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
                 signer.sign(privateKey, ethTransaction);
                 auto encoded = signer.encode(ethTransaction);
                 output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
+        }
+        case TWCoinTypeWaves: {
+            Waves::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
+                auto wavesTransaction = Waves::Transaction(
+                        /* amount */ message.amount(),
+                        /* asset */ message.asset(),
+                        /* fee */ message.fee(),
+                        /* fee_asset */ message.fee_asset(),
+                        /* to */ Waves::Address(message.to()),
+                        /* attachment */ Data(message.attachment().begin(), message.attachment().end()),
+                        /* timestamp */ message.timestamp(),
+                        /* pub_key */ publicKey.bytes
+                );
+                auto signature = Waves::Signer::sign(privateKey, wavesTransaction);
+                auto jsonOutput = wavesTransaction.buildJson(signature).dump();
+                output.set_output(jsonOutput);
             }
             break;
         }
