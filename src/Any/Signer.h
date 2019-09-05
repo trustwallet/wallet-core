@@ -7,7 +7,6 @@
 #pragma once
 
 #include "proto/Any.pb.h"
-#include "Coin.h"
 
 enum SignerErrorCode {
     SignerErrorCodeNotSupported = 1,
