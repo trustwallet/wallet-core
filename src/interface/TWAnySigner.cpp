@@ -34,7 +34,7 @@ bool TWAnySignerIsSignEnabled(TWCoinType coinType)
     Proto::SigningOutput output = signer->impl.sign();
 
     // If the coin is not supported, the error code is SignerErrorCodeNotSupported.
-    // If the sign method return an SignerErrorCodeInvalidJson, it means the coin is supported but couldn't parse the
-    // transaction (which is invalid by default)
+    // If the sign method return an SignerErrorCodeInvalidJson, it means the coin is
+    // supported but couldn't parse the transaction (which is invalid by default)
     return output.error().code() == SignerErrorCodeInvalidJson;
 }
