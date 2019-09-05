@@ -22,6 +22,8 @@ class HarmonyTests: XCTestCase {
             $0.privateKey = Data(hexString: "0xe2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94")!
         }
         let output = HarmonySigner.sign(input: input)
+        let shouldBeEncoded = "f86c0980825208030294587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2890168d28e3f0028000080820343a0f4757c9ffad127996f788fb388be3e3e03440f6980b36dc6cee7230e390f0c13a042f0ff332bd552e8ad7a1cf6a0af4ebebfb1f8aae413c54d3464b9babba5f28d"
+        XCTAssertEqual(output.encoded.hexString, shouldBeEncoded)
         XCTAssertEqual(output.v.hexString, "0343")
         XCTAssertEqual(output.r.hexString, "f4757c9ffad127996f788fb388be3e3e03440f6980b36dc6cee7230e390f0c13")
         XCTAssertEqual(output.s.hexString, "42f0ff332bd552e8ad7a1cf6a0af4ebebfb1f8aae413c54d3464b9babba5f28d")
