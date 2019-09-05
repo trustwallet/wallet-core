@@ -16,6 +16,7 @@ typedef TWData *_Nonnull TW_Tron_Proto_UnfreezeAssetContract;
 typedef TWData *_Nonnull TW_Tron_Proto_VoteAssetContract;
 typedef TWData *_Nonnull TW_Tron_Proto_VoteWitnessContract;
 typedef TWData *_Nonnull TW_Tron_Proto_WithdrawBalanceContract;
+typedef TWData *_Nonnull TW_Tron_Proto_TriggerSmartContract;
 typedef TWData *_Nonnull TW_Tron_Proto_BlockHeader;
 typedef TWData *_Nonnull TW_Tron_Proto_Transaction;
 typedef TWData *_Nonnull TW_Tron_Proto_SigningInput;

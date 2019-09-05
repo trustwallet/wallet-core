@@ -16,6 +16,7 @@ message Transaction {
             WithdrawBalanceContract = 6;
             VoteAssetContract = 7;
             VoteWitnessContract = 8;
+            TriggerSmartContract = 9;
         }
         ContractType type = 1;
         google.protobuf.Any parameter = 2;
@@ -107,4 +108,13 @@ message VoteWitnessContract {
 
 message WithdrawBalanceContract {
     bytes owner_address = 1;
+}
+
+message TriggerSmartContract {
+    bytes owner_address = 1;
+    bytes contract_address = 2;
+    int64 call_value = 3;
+    bytes data = 4;
+    int64 call_token_value = 5;
+    int64 token_id = 6;
 }

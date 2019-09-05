@@ -135,6 +135,21 @@ protocol::WithdrawBalanceContract to_internal(const Proto::WithdrawBalanceContra
     return internal;
 }
 
+protocol::TriggerSmartContract to_internal(const Proto::TriggerSmartContract& triggerSmartContract) {
+    auto internal = protocol::TriggerSmartContract();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(triggerSmartContract.owner_address());
+    const auto contractAddress = Base58::bitcoin.decodeCheck(triggerSmartContract.contract_address());
+
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_contract_address(contractAddress.data(), contractAddress.size());
+    internal.set_call_value(triggerSmartContract.call_value());
+    internal.set_data(triggerSmartContract.data());
+    internal.set_call_token_value(triggerSmartContract.call_token_value());
+    internal.set_token_id(triggerSmartContract.token_id());
+
+    return internal;
+}
+
 /// Converts an external BlockHeader to an internal one used for signing.
 protocol::BlockHeader to_internal(const Proto::BlockHeader& header) {
     auto internal = protocol::BlockHeader();
@@ -231,6 +246,14 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         contract->set_type(protocol::Transaction_Contract_ContractType_WithdrawBalanceContract);
 
         auto withdraw = to_internal(input.transaction().withdraw_balance());
+        google::protobuf::Any any;
+        any.PackFrom(withdraw);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_trigger_smart_contract()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
+
+        auto withdraw = to_internal(input.transaction().trigger_smart_contract());
         google::protobuf::Any any;
         any.PackFrom(withdraw);
         *contract->mutable_parameter() = any;

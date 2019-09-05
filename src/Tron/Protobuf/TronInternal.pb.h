@@ -43,7 +43,7 @@ struct TableStruct_TronInternal_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::google::protobuf::internal::ParseTable schema[14]
+  static const ::google::protobuf::internal::ParseTable schema[15]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
@@ -75,6 +75,9 @@ extern TransferAssetContractDefaultTypeInternal _TransferAssetContract_default_i
 class TransferContract;
 class TransferContractDefaultTypeInternal;
 extern TransferContractDefaultTypeInternal _TransferContract_default_instance_;
+class TriggerSmartContract;
+class TriggerSmartContractDefaultTypeInternal;
+extern TriggerSmartContractDefaultTypeInternal _TriggerSmartContract_default_instance_;
 class UnfreezeAssetContract;
 class UnfreezeAssetContractDefaultTypeInternal;
 extern UnfreezeAssetContractDefaultTypeInternal _UnfreezeAssetContract_default_instance_;
@@ -104,6 +107,7 @@ template<> ::protocol::Transaction_Contract* Arena::CreateMaybeMessage<::protoco
 template<> ::protocol::Transaction_raw* Arena::CreateMaybeMessage<::protocol::Transaction_raw>(Arena*);
 template<> ::protocol::TransferAssetContract* Arena::CreateMaybeMessage<::protocol::TransferAssetContract>(Arena*);
 template<> ::protocol::TransferContract* Arena::CreateMaybeMessage<::protocol::TransferContract>(Arena*);
+template<> ::protocol::TriggerSmartContract* Arena::CreateMaybeMessage<::protocol::TriggerSmartContract>(Arena*);
 template<> ::protocol::UnfreezeAssetContract* Arena::CreateMaybeMessage<::protocol::UnfreezeAssetContract>(Arena*);
 template<> ::protocol::UnfreezeBalanceContract* Arena::CreateMaybeMessage<::protocol::UnfreezeBalanceContract>(Arena*);
 template<> ::protocol::VoteAssetContract* Arena::CreateMaybeMessage<::protocol::VoteAssetContract>(Arena*);
@@ -124,12 +128,13 @@ enum Transaction_Contract_ContractType {
   Transaction_Contract_ContractType_WithdrawBalanceContract = 6,
   Transaction_Contract_ContractType_VoteAssetContract = 7,
   Transaction_Contract_ContractType_VoteWitnessContract = 8,
+  Transaction_Contract_ContractType_TriggerSmartContract = 9,
   Transaction_Contract_ContractType_Transaction_Contract_ContractType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::google::protobuf::int32>::min(),
   Transaction_Contract_ContractType_Transaction_Contract_ContractType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::google::protobuf::int32>::max()
 };
 bool Transaction_Contract_ContractType_IsValid(int value);
 const Transaction_Contract_ContractType Transaction_Contract_ContractType_ContractType_MIN = Transaction_Contract_ContractType_AccountCreateContract;
-const Transaction_Contract_ContractType Transaction_Contract_ContractType_ContractType_MAX = Transaction_Contract_ContractType_VoteWitnessContract;
+const Transaction_Contract_ContractType Transaction_Contract_ContractType_ContractType_MAX = Transaction_Contract_ContractType_TriggerSmartContract;
 const int Transaction_Contract_ContractType_ContractType_ARRAYSIZE = Transaction_Contract_ContractType_ContractType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Transaction_Contract_ContractType_descriptor();
@@ -277,6 +282,8 @@ class Transaction_Contract final :
     Transaction_Contract_ContractType_VoteAssetContract;
   static const ContractType VoteWitnessContract =
     Transaction_Contract_ContractType_VoteWitnessContract;
+  static const ContractType TriggerSmartContract =
+    Transaction_Contract_ContractType_TriggerSmartContract;
   static inline bool ContractType_IsValid(int value) {
     return Transaction_Contract_ContractType_IsValid(value);
   }
@@ -2207,6 +2214,177 @@ class WithdrawBalanceContract final :
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_TronInternal_2eproto;
 };
+// -------------------------------------------------------------------
+
+class TriggerSmartContract final :
+    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:protocol.TriggerSmartContract) */ {
+ public:
+  TriggerSmartContract();
+  virtual ~TriggerSmartContract();
+
+  TriggerSmartContract(const TriggerSmartContract& from);
+
+  inline TriggerSmartContract& operator=(const TriggerSmartContract& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  TriggerSmartContract(TriggerSmartContract&& from) noexcept
+    : TriggerSmartContract() {
+    *this = ::std::move(from);
+  }
+
+  inline TriggerSmartContract& operator=(TriggerSmartContract&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return default_instance().GetDescriptor();
+  }
+  static const TriggerSmartContract& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const TriggerSmartContract* internal_default_instance() {
+    return reinterpret_cast<const TriggerSmartContract*>(
+               &_TriggerSmartContract_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    14;
+
+  void Swap(TriggerSmartContract* other);
+  friend void swap(TriggerSmartContract& a, TriggerSmartContract& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline TriggerSmartContract* New() const final {
+    return CreateMaybeMessage<TriggerSmartContract>(nullptr);
+  }
+
+  TriggerSmartContract* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<TriggerSmartContract>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const TriggerSmartContract& from);
+  void MergeFrom(const TriggerSmartContract& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+  static const char* _InternalParse(const char* begin, const char* end, void* object, ::google::protobuf::internal::ParseContext* ctx);
+  ::google::protobuf::internal::ParseFunc _ParseFunc() const final { return _InternalParse; }
+  #else
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(TriggerSmartContract* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // bytes owner_address = 1;
+  void clear_owner_address();
+  static const int kOwnerAddressFieldNumber = 1;
+  const ::std::string& owner_address() const;
+  void set_owner_address(const ::std::string& value);
+  #if LANG_CXX11
+  void set_owner_address(::std::string&& value);
+  #endif
+  void set_owner_address(const char* value);
+  void set_owner_address(const void* value, size_t size);
+  ::std::string* mutable_owner_address();
+  ::std::string* release_owner_address();
+  void set_allocated_owner_address(::std::string* owner_address);
+
+  // bytes contract_address = 2;
+  void clear_contract_address();
+  static const int kContractAddressFieldNumber = 2;
+  const ::std::string& contract_address() const;
+  void set_contract_address(const ::std::string& value);
+  #if LANG_CXX11
+  void set_contract_address(::std::string&& value);
+  #endif
+  void set_contract_address(const char* value);
+  void set_contract_address(const void* value, size_t size);
+  ::std::string* mutable_contract_address();
+  ::std::string* release_contract_address();
+  void set_allocated_contract_address(::std::string* contract_address);
+
+  // bytes data = 4;
+  void clear_data();
+  static const int kDataFieldNumber = 4;
+  const ::std::string& data() const;
+  void set_data(const ::std::string& value);
+  #if LANG_CXX11
+  void set_data(::std::string&& value);
+  #endif
+  void set_data(const char* value);
+  void set_data(const void* value, size_t size);
+  ::std::string* mutable_data();
+  ::std::string* release_data();
+  void set_allocated_data(::std::string* data);
+
+  // int64 call_value = 3;
+  void clear_call_value();
+  static const int kCallValueFieldNumber = 3;
+  ::google::protobuf::int64 call_value() const;
+  void set_call_value(::google::protobuf::int64 value);
+
+  // int64 call_token_value = 5;
+  void clear_call_token_value();
+  static const int kCallTokenValueFieldNumber = 5;
+  ::google::protobuf::int64 call_token_value() const;
+  void set_call_token_value(::google::protobuf::int64 value);
+
+  // int64 token_id = 6;
+  void clear_token_id();
+  static const int kTokenIdFieldNumber = 6;
+  ::google::protobuf::int64 token_id() const;
+  void set_token_id(::google::protobuf::int64 value);
+
+  // @@protoc_insertion_point(class_scope:protocol.TriggerSmartContract)
+ private:
+  class HasBitSetters;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr owner_address_;
+  ::google::protobuf::internal::ArenaStringPtr contract_address_;
+  ::google::protobuf::internal::ArenaStringPtr data_;
+  ::google::protobuf::int64 call_value_;
+  ::google::protobuf::int64 call_token_value_;
+  ::google::protobuf::int64 token_id_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_TronInternal_2eproto;
+};
 // ===================================================================
 
 
@@ -3925,9 +4103,216 @@ inline void WithdrawBalanceContract::set_allocated_owner_address(::std::string* 
   // @@protoc_insertion_point(field_set_allocated:protocol.WithdrawBalanceContract.owner_address)
 }
 
+// -------------------------------------------------------------------
+
+// TriggerSmartContract
+
+// bytes owner_address = 1;
+inline void TriggerSmartContract::clear_owner_address() {
+  owner_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TriggerSmartContract::owner_address() const {
+  // @@protoc_insertion_point(field_get:protocol.TriggerSmartContract.owner_address)
+  return owner_address_.GetNoArena();
+}
+inline void TriggerSmartContract::set_owner_address(const ::std::string& value) {
+  
+  owner_address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:protocol.TriggerSmartContract.owner_address)
+}
+#if LANG_CXX11
+inline void TriggerSmartContract::set_owner_address(::std::string&& value) {
+  
+  owner_address_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:protocol.TriggerSmartContract.owner_address)
+}
+#endif
+inline void TriggerSmartContract::set_owner_address(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  owner_address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:protocol.TriggerSmartContract.owner_address)
+}
+inline void TriggerSmartContract::set_owner_address(const void* value, size_t size) {
+  
+  owner_address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:protocol.TriggerSmartContract.owner_address)
+}
+inline ::std::string* TriggerSmartContract::mutable_owner_address() {
+  
+  // @@protoc_insertion_point(field_mutable:protocol.TriggerSmartContract.owner_address)
+  return owner_address_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TriggerSmartContract::release_owner_address() {
+  // @@protoc_insertion_point(field_release:protocol.TriggerSmartContract.owner_address)
+  
+  return owner_address_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TriggerSmartContract::set_allocated_owner_address(::std::string* owner_address) {
+  if (owner_address != nullptr) {
+    
+  } else {
+    
+  }
+  owner_address_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), owner_address);
+  // @@protoc_insertion_point(field_set_allocated:protocol.TriggerSmartContract.owner_address)
+}
+
+// bytes contract_address = 2;
+inline void TriggerSmartContract::clear_contract_address() {
+  contract_address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TriggerSmartContract::contract_address() const {
+  // @@protoc_insertion_point(field_get:protocol.TriggerSmartContract.contract_address)
+  return contract_address_.GetNoArena();
+}
+inline void TriggerSmartContract::set_contract_address(const ::std::string& value) {
+  
+  contract_address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:protocol.TriggerSmartContract.contract_address)
+}
+#if LANG_CXX11
+inline void TriggerSmartContract::set_contract_address(::std::string&& value) {
+  
+  contract_address_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:protocol.TriggerSmartContract.contract_address)
+}
+#endif
+inline void TriggerSmartContract::set_contract_address(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  contract_address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:protocol.TriggerSmartContract.contract_address)
+}
+inline void TriggerSmartContract::set_contract_address(const void* value, size_t size) {
+  
+  contract_address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:protocol.TriggerSmartContract.contract_address)
+}
+inline ::std::string* TriggerSmartContract::mutable_contract_address() {
+  
+  // @@protoc_insertion_point(field_mutable:protocol.TriggerSmartContract.contract_address)
+  return contract_address_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TriggerSmartContract::release_contract_address() {
+  // @@protoc_insertion_point(field_release:protocol.TriggerSmartContract.contract_address)
+  
+  return contract_address_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TriggerSmartContract::set_allocated_contract_address(::std::string* contract_address) {
+  if (contract_address != nullptr) {
+    
+  } else {
+    
+  }
+  contract_address_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), contract_address);
+  // @@protoc_insertion_point(field_set_allocated:protocol.TriggerSmartContract.contract_address)
+}
+
+// int64 call_value = 3;
+inline void TriggerSmartContract::clear_call_value() {
+  call_value_ = PROTOBUF_LONGLONG(0);
+}
+inline ::google::protobuf::int64 TriggerSmartContract::call_value() const {
+  // @@protoc_insertion_point(field_get:protocol.TriggerSmartContract.call_value)
+  return call_value_;
+}
+inline void TriggerSmartContract::set_call_value(::google::protobuf::int64 value) {
+  
+  call_value_ = value;
+  // @@protoc_insertion_point(field_set:protocol.TriggerSmartContract.call_value)
+}
+
+// bytes data = 4;
+inline void TriggerSmartContract::clear_data() {
+  data_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& TriggerSmartContract::data() const {
+  // @@protoc_insertion_point(field_get:protocol.TriggerSmartContract.data)
+  return data_.GetNoArena();
+}
+inline void TriggerSmartContract::set_data(const ::std::string& value) {
+  
+  data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:protocol.TriggerSmartContract.data)
+}
+#if LANG_CXX11
+inline void TriggerSmartContract::set_data(::std::string&& value) {
+  
+  data_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:protocol.TriggerSmartContract.data)
+}
+#endif
+inline void TriggerSmartContract::set_data(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:protocol.TriggerSmartContract.data)
+}
+inline void TriggerSmartContract::set_data(const void* value, size_t size) {
+  
+  data_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:protocol.TriggerSmartContract.data)
+}
+inline ::std::string* TriggerSmartContract::mutable_data() {
+  
+  // @@protoc_insertion_point(field_mutable:protocol.TriggerSmartContract.data)
+  return data_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* TriggerSmartContract::release_data() {
+  // @@protoc_insertion_point(field_release:protocol.TriggerSmartContract.data)
+  
+  return data_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void TriggerSmartContract::set_allocated_data(::std::string* data) {
+  if (data != nullptr) {
+    
+  } else {
+    
+  }
+  data_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), data);
+  // @@protoc_insertion_point(field_set_allocated:protocol.TriggerSmartContract.data)
+}
+
+// int64 call_token_value = 5;
+inline void TriggerSmartContract::clear_call_token_value() {
+  call_token_value_ = PROTOBUF_LONGLONG(0);
+}
+inline ::google::protobuf::int64 TriggerSmartContract::call_token_value() const {
+  // @@protoc_insertion_point(field_get:protocol.TriggerSmartContract.call_token_value)
+  return call_token_value_;
+}
+inline void TriggerSmartContract::set_call_token_value(::google::protobuf::int64 value) {
+  
+  call_token_value_ = value;
+  // @@protoc_insertion_point(field_set:protocol.TriggerSmartContract.call_token_value)
+}
+
+// int64 token_id = 6;
+inline void TriggerSmartContract::clear_token_id() {
+  token_id_ = PROTOBUF_LONGLONG(0);
+}
+inline ::google::protobuf::int64 TriggerSmartContract::token_id() const {
+  // @@protoc_insertion_point(field_get:protocol.TriggerSmartContract.token_id)
+  return token_id_;
+}
+inline void TriggerSmartContract::set_token_id(::google::protobuf::int64 value) {
+  
+  token_id_ = value;
+  // @@protoc_insertion_point(field_set:protocol.TriggerSmartContract.token_id)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
