@@ -17,7 +17,7 @@ include_directories(${Protobuf_INCLUDE_DIRS})
 # Test executable
 file(GLOB_RECURSE test_sources *.cpp **/*.cpp)
 add_executable(tests ${test_sources})
-target_link_libraries(tests gtest_main TrezorCrypto TrustWalletCore protobuf Boost::boost /Users/zhaocong/Developer/Binance/tss/trust/libtss.a)
+target_link_libraries(tests gtest_main TrezorCrypto TrustWalletCore protobuf Boost::boost)
 target_include_directories(tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_compile_options(tests PRIVATE "-Wall")
 

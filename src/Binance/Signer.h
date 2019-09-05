@@ -33,11 +33,9 @@ class Signer {
     /// error.
     std::vector<uint8_t> sign() const;
 
-    std::vector<uint8_t> signWithTss() const;
-
-  private:
     std::string signaturePreimage() const;
     std::vector<uint8_t> encodeTransaction(const std::vector<uint8_t>& signature) const;
+private:
     std::vector<uint8_t> encodeOrder() const;
     std::vector<uint8_t> encodeSignature(const std::vector<uint8_t>& signature) const;
     std::vector<uint8_t> aminoWrap(const std::string& raw, const std::vector<uint8_t>& typePrefix,

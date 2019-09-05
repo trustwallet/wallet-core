@@ -91,6 +91,8 @@ message SigningInput {
         TokenFreezeOrder freeze_order = 11;
         TokenUnfreezeOrder unfreeze_order = 12;
     }
+
+    bytes public_key = 13;   // for tss interface who doesn't have private_key, but need derive address
 }
 
 // Transaction signing output.
