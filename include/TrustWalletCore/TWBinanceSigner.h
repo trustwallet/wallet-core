@@ -19,5 +19,6 @@ struct TWBinanceSigner;
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
 TW_Binance_Proto_SigningOutput TWBinanceSignerSign(TW_Binance_Proto_SigningInput input);
-
+TWData *_Nonnull TWBinanceMessage(TW_Binance_Proto_SigningInput data);
+TWData *_Nonnull TWBinanceTransaction(TW_Binance_Proto_SigningInput data, TWData *_Nonnull signature);
 TW_EXTERN_C_END

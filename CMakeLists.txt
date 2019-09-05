@@ -57,24 +57,15 @@ if(${ANDROID})
 else()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
-    add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS} src/Binance/tss.h src/Binance/demo.cpp)
+    add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost /Users/zhaocong/Developer/Binance/tss/trust/libtss.a "-framework CoreFoundation" "-framework Security")
-
-    add_executable(demo ${sources})
-    target_link_libraries(demo PRIVATE TrezorCrypto protobuf Boost::boost /Users/zhaocong/Developer/Binance/tss/trust/libtss.a "-framework CoreFoundation" "-framework Security")
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
 
 endif()
 target_compile_options(TrustWalletCore PRIVATE "-Wall")
-target_compile_options(demo PRIVATE "-Wall")
 
 set_target_properties(TrustWalletCore
     PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED ON
-)
-set_target_properties(demo
-        PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
 )
@@ -86,16 +77,6 @@ target_include_directories(TrustWalletCore
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
-)
-
-target_include_directories(demo
-        PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-        PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
