@@ -190,7 +190,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeDigiByte:
     case TWCoinTypeGroestlcoin:
-    case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
 
@@ -207,6 +206,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Cosmos::Address(hrp, publicKey).string();
 
     case TWCoinTypeBitcoin:
+    case TWCoinTypeLitecoin:
     case TWCoinTypeBitcoinSV:
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
