@@ -76,11 +76,6 @@ message TokenUnfreezeOrder {
 }
 
 message HTLTOrder {
-    // 0x2A2C87FA
-    message Coin {
-        string denom = 1;
-        int64 amount = 2;
-    }
     // 0xB33F9A24      // prefix
     bytes from = 1;    // signer address
     bytes to = 2;    // recipient address
@@ -95,11 +90,6 @@ message HTLTOrder {
 }
 
 message DepositHTLTOrder {
-    // 0x63986496
-    message Coin {
-        string denom = 1;
-        int64 amount = 2;
-    }
     // 0xB33F9A24      // prefix
     bytes from = 1;    // signer address
     bytes swapID = 2;
