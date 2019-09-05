@@ -23,7 +23,7 @@ class SignerExposed : public Signer {
     using Signer::hash;
 };
 
-static uint256_t LOCAL_NET = 0x190;
+static uint256_t PRETEND_LOCAL_NET = 0x190;
 
 TEST(HarmonySigner, RLPEncoding) {
     auto address = Address("one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p");
@@ -39,7 +39,7 @@ TEST(HarmonySigner, RLPEncoding) {
         /* to: */ address,
         /* amount: */ uint256_t("0x168d28e3f00280000"),
         /* payload: */ {});
-    auto signer = SignerExposed(LOCAL_NET);
+    auto signer = SignerExposed(PRETEND_LOCAL_NET);
     auto rlp_hex = signer.txn_as_rlp_hex(transaction);
     ASSERT_EQ(rlp_hex, rlp_unhashed_should_be);
 }
@@ -58,7 +58,7 @@ TEST(HarmonySigner, Hash) {
         /* to: */ address,
         /* amount: */ uint256_t("0x168d28e3f00280000"),
         /* payload: */ {});
-    auto signer = SignerExposed(LOCAL_NET);
+    auto signer = SignerExposed(PRETEND_LOCAL_NET);
     auto hash = signer.hash(transaction);
     ASSERT_EQ(hex(hash), should_be);
 }
@@ -76,7 +76,7 @@ TEST(HarmonySigner, Sign) {
         /* payload: */ {});
     auto key =
         PrivateKey(parse_hex("0xe2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94"));
-    auto signer = SignerExposed(LOCAL_NET);
+    auto signer = SignerExposed(PRETEND_LOCAL_NET);
     uint256_t should_be_r("0xf4757c9ffad127996f788fb388be3e3e03440f6980b36dc6cee7230e390f0c13");
     uint256_t should_be_s("0x42f0ff332bd552e8ad7a1cf6a0af4ebebfb1f8aae413c54d3464b9babba5f28d");
     signer.sign(key, transaction);
@@ -95,7 +95,7 @@ TEST(HarmonySigner, SignProtoBuf) {
     input.set_payload(payload.data(), payload.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    auto value = store(LOCAL_NET);
+    auto value = store(PRETEND_LOCAL_NET);
     input.set_chain_id(value.data(), value.size());
 
     value = store(uint256_t("0x9"));
@@ -125,5 +125,4 @@ TEST(HarmonySigner, SignProtoBuf) {
     ASSERT_EQ(hex(proto_output.r()), should_be_r);
     ASSERT_EQ(hex(proto_output.s()), should_be_s);
 }
-
 } // namespace TW::Harmony
