@@ -22,3 +22,8 @@ TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput data)
     auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
+
+bool TWAnySignerIsSignEnabled(TWCoinType coinType)
+{
+    return Signer::isEnabled(coinType);
+}

@@ -176,3 +176,8 @@ TEST(Signer, InvalidJsonFormat) {
     ASSERT_FALSE(output.success());
     ASSERT_EQ(SignerErrorCodeInvalidJson, output.error().code());
 }
+
+TEST(Signer, IsEnabled) {
+    ASSERT_TRUE(Signer::isEnabled(TWCoinTypeBinance));
+    ASSERT_FALSE(Signer::isEnabled(TWCoinTypeBitcoinCash));
+}

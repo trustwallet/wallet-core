@@ -7,6 +7,7 @@
 #pragma once
 
 #include "proto/Any.pb.h"
+#include "Coin.h"
 
 enum SignerErrorCode {
     SignerErrorCodeNotSupported = 1,
@@ -20,6 +21,7 @@ public:
     explicit Signer(const Proto::SigningInput& input) : input(input) {}
 
     Proto::SigningOutput sign() const noexcept;
+    static bool isEnabled(TWCoinType coinType);
 private:
     const Proto::SigningInput& input;
 

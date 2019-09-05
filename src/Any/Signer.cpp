@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Data.h"
-#include "Coin.h"
 #include "PrivateKey.h"
 #include "Signer.h"
 #include "HexCoding.h"
@@ -165,6 +164,28 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
     }
 
     return output;
+}
+
+bool Any::Signer::isEnabled(TWCoinType coinType) {
+    switch (coinType) {
+        case TWCoinTypeCosmos:
+        case TWCoinTypeBinance:
+        case TWCoinTypeTomoChain:
+        case TWCoinTypeCallisto:
+        case TWCoinTypeThunderToken:
+        case TWCoinTypePOANetwork:
+        case TWCoinTypeEthereumClassic:
+        case TWCoinTypeEthereum:
+        case TWCoinTypeTezos:
+        case TWCoinTypeIoTeX:
+        case TWCoinTypeWanchain:
+        case TWCoinTypeWaves:
+        case TWCoinTypeNebulas:
+        case TWCoinTypeTron:
+            return true;
+        default:
+            return false;
+    }
 }
 
 void Any::Signer::parse(const std::string& transaction, Message* message,

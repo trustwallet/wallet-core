@@ -8,6 +8,7 @@
 
 #include "TWBase.h"
 #include "TWAnyProto.h"
+#include "TWCoinType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -17,6 +18,7 @@ struct TWAnySigner;
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
 TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput input);
+bool TWAnySignerIsSignEnabled(TWCoinType coinType);
 
 
 TW_EXTERN_C_END
