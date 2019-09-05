@@ -55,6 +55,11 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             }
             break;
         }
+        case TWCoinTypeTomoChain:
+        case TWCoinTypeCallisto:
+        case TWCoinTypeThunderToken:
+        case TWCoinTypePOANetwork:
+        case TWCoinTypeEthereumClassic:
         case TWCoinTypeEthereum: {
             Ethereum::Proto::SigningInput message;
             parse(transaction, &message, output);
