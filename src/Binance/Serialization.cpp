@@ -57,6 +57,28 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
         j["from"] = addressString(input.unfreeze_order().from());
         j["symbol"] = input.unfreeze_order().symbol();
         j["amount"] = input.unfreeze_order().amount();
+    } else if (input.has_htlt_order()) {
+        j["from"] = addressString(input.htlt_order().from());
+        j["to"] = input.htlt_order().to();
+        j["recipient_other_chain"] = input.htlt_order().recipientotherchain();
+        j["sender_other_chain"] = input.htlt_order().senderotherchain();
+        j["random_number_hash"] = input.htlt_order().randomnumberhash();
+        j["timestamp"] = input.htlt_order().timestamp();
+        j["amount"] = tokensJSON(input.htlt_order().amount());
+        j["expected_income"] = input.htlt_order().expectedincome();
+        j["height_span"] = input.htlt_order().heightspan();
+        j["cross_chain"] = input.htlt_order().crosschain();
+    } else if (input.has_deposithtlt_order()) {
+        j["from"] = addressString(input.deposithtlt_order().from());
+        j["swap_id"] = input.deposithtlt_order().swapid();
+        j["amount"] = tokensJSON(input.deposithtlt_order().amount());
+    } else if (input.has_claimhtlt_order()) {
+        j["from"] = addressString(input.claimhtlt_order().from());
+        j["swap_id"] = input.claimhtlt_order().swapid();
+        j["random_number"] = input.claimhtlt_order().randomnumber();
+    } else if (input.has_refundhtlt_order()) {
+        j["from"] = addressString(input.refundhtlt_order().from());
+        j["swap_id"] = input.refundhtlt_order().swapid();
     }
     return j;
 }
