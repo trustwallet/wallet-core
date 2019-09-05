@@ -9,8 +9,10 @@ import TrustWalletCore
 
 class SolanaTests: XCTestCase {
 
+    let privateKeyData = Data(Base58.decodeNoCheck( string: "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr")!)
+
     func testAddressFromPrivateKey() {
-        let privateKey = PrivateKey(data: Data(Base58.decodeNoCheck(string: "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr")!))!
+        let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeyEd25519()
         let address = SolanaAddress(publicKey: publicKey)
         XCTAssertEqual(address.description, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
@@ -30,9 +32,9 @@ class SolanaTests: XCTestCase {
 
     func testTransferSigner() throws {
         let transferMessage = SolanaTransfer.with {
-            $0.privateKey = Data(Base58.decodeNoCheck( string: "A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr")!)
+            $0.privateKey = privateKeyData
             $0.recipient = "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
-            $0.amount = 42
+            $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.transferTransaction = transferMessage
@@ -57,7 +59,7 @@ class SolanaTests: XCTestCase {
             $0.fromPrivateKey = Data(Base58.decodeNoCheck( string: "GGT4G41n1K3E4MTjb7VwADSFNJA3Jx7wUxm54Fpcje6w")!)
             $0.stakePrivateKey = Data(Base58.decodeNoCheck( string: "2bwUDLUVYCfUhQHiAiwvHzM8oNT7pdk5J1XjhTLeumP5")!)
             $0.votePubkey = "FkL2bzbUbp3J9MQEX3toMBA4q8ZcHcjeacdtn2Ti8Qec"
-            $0.amount = 42
+            $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.stakeTransaction = delegateStakeMessage
@@ -109,9 +111,9 @@ class SolanaTests: XCTestCase {
 
     func testWithdrawStakeSigner() throws {
         let withdrawMessage = SolanaWithdrawStake.with {
-            $0.stakePrivateKey = Data(Base58.decodeNoCheck( string: "5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q")!)
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q")!)
             $0.recipient = "C3e7ryQjYJFSUetohBofTaWEBbNcq4yVX43hi7igVtcP"
-            $0.amount = 42
+            $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.withdrawTransaction = withdrawMessage

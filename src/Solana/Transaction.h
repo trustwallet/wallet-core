@@ -57,34 +57,32 @@ struct CompiledInstruction {
         : programIdIndex(programIdIndex), accounts(accounts), data(data) {}
 
     // This constructor creates a default System Transfer instruction
-    CompiledInstruction(uint8_t programIdIndex, uint64_t lamports)
-        : programIdIndex(programIdIndex) {
+    CompiledInstruction(uint8_t programIdIndex, uint64_t value) : programIdIndex(programIdIndex) {
         std::vector<uint8_t> accounts = {0, 1};
         this->accounts = accounts;
         SystemInstruction type = Transfer;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
-        encode64LE(static_cast<uint64_t>(lamports), data);
+        encode64LE(static_cast<uint64_t>(value), data);
         this->data = data;
     }
 
     // This constructor creates a System CreateAccount instruction
-    CompiledInstruction(uint8_t programIdIndex, uint64_t lamports, uint64_t space,
-                        Address programId)
+    CompiledInstruction(uint8_t programIdIndex, uint64_t value, uint64_t space, Address programId)
         : programIdIndex(programIdIndex) {
         std::vector<uint8_t> accounts = {0, 1};
         this->accounts = accounts;
         SystemInstruction type = CreateAccount;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
-        encode64LE(static_cast<uint64_t>(lamports), data);
+        encode64LE(static_cast<uint64_t>(value), data);
         encode64LE(static_cast<uint64_t>(space), data);
         append(data, programId.vector());
         this->data = data;
     }
 
     // This constructor creates a Stake instruction
-    CompiledInstruction(uint8_t programIdIndex, StakeInstruction type, uint64_t lamports)
+    CompiledInstruction(uint8_t programIdIndex, StakeInstruction type, uint64_t value)
         : programIdIndex(programIdIndex) {
         std::vector<uint8_t> accounts;
         auto data = Data();
@@ -92,11 +90,11 @@ struct CompiledInstruction {
         switch (type) {
         case DelegateStake:
             accounts = {1, 2, 3, 4};
-            encode64LE(static_cast<uint64_t>(lamports), data);
+            encode64LE(static_cast<uint64_t>(value), data);
             break;
         case Withdraw:
             accounts = {0, 1, 2, 3};
-            encode64LE(static_cast<uint64_t>(lamports), data);
+            encode64LE(static_cast<uint64_t>(value), data);
             break;
         case Deactivate:
             accounts = {0, 1, 2};
@@ -170,7 +168,7 @@ class Message {
         , instructions(instructions) {}
 
     // This constructor creates a default single-signer Transfer message
-    Message(Address from, Address to, uint64_t lamports, Hash recentBlockhash)
+    Message(Address from, Address to, uint64_t value, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 2};
         this->header = header;
@@ -178,13 +176,13 @@ class Message {
         std::vector<Address> accountKeys = {from, to, programId};
         this->accountKeys = accountKeys;
         std::vector<CompiledInstruction> instructions;
-        auto instruction = CompiledInstruction(2, lamports);
+        auto instruction = CompiledInstruction(2, value);
         instructions.push_back(instruction);
         this->instructions = instructions;
     }
 
     // This constructor creates a create_stake_account_and_delegate_stake message
-    Message(Address from, Address stakeAccount, Address voteAccount, uint64_t lamports,
+    Message(Address from, Address stakeAccount, Address voteAccount, uint64_t value,
             Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {2, 0, 5};
@@ -201,18 +199,18 @@ class Message {
 
         std::vector<CompiledInstruction> instructions;
         // create_account instruction
-        auto createAccountInstruction = CompiledInstruction(5, lamports, 96, stakeProgramId);
+        auto createAccountInstruction = CompiledInstruction(5, value, 96, stakeProgramId);
         instructions.push_back(createAccountInstruction);
         // delegate_stake instruction
         StakeInstruction type = DelegateStake;
-        auto delegateInstruction = CompiledInstruction(6, type, lamports);
+        auto delegateInstruction = CompiledInstruction(6, type, value);
         instructions.push_back(delegateInstruction);
 
         this->instructions = instructions;
     }
 
     // This constructor creates a withdraw message
-    Message(Address stakeAccount, Address to, uint64_t lamports, StakeInstruction type,
+    Message(Address stakeAccount, Address to, uint64_t value, StakeInstruction type,
             Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 4};
@@ -225,7 +223,7 @@ class Message {
                                             programId};
         this->accountKeys = accountKeys;
         std::vector<CompiledInstruction> instructions;
-        auto instruction = CompiledInstruction(4, Withdraw, lamports);
+        auto instruction = CompiledInstruction(4, Withdraw, value);
         instructions.push_back(instruction);
         this->instructions = instructions;
     }
@@ -259,8 +257,8 @@ class Transaction {
     }
 
     // Default basic transfer transaction
-    Transaction(Address from, Address to, uint64_t lamports, Hash recentBlockhash)
-        : message(Message(from, to, lamports, recentBlockhash)) {
+    Transaction(Address from, Address to, uint64_t value, Hash recentBlockhash)
+        : message(Message(from, to, value, recentBlockhash)) {
         this->signatures.resize(1, Signature(defaultSignature));
     }
 

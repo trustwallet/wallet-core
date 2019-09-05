@@ -6,14 +6,14 @@ option java_package = "wallet.core.jni.proto";
 message Transfer {
     bytes private_key = 1;
     string recipient = 2;
-    uint64 amount = 3;
+    uint64 value = 3;
 }
 
 message Stake {
     bytes from_private_key = 1;
     bytes stake_private_key = 2;
     string vote_pubkey = 3;
-    uint64 amount = 4;
+    uint64 value = 4;
 }
 
 message DeactivateStake {
@@ -22,9 +22,9 @@ message DeactivateStake {
 }
 
 message WithdrawStake {
-    bytes stake_private_key = 1;
+    bytes private_key = 1; // The stake account private key
     string recipient = 2;
-    uint64 amount = 3;
+    uint64 value = 3;
 }
 
 // Input data necessary to create a signed transaction.
@@ -41,5 +41,4 @@ message SigningInput {
 // Transaction signing output.
 message SigningOutput {
     bytes encoded = 1;
-    bytes signature = 2;
 }

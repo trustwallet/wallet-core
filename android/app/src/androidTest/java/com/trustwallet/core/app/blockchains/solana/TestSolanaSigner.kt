@@ -25,7 +25,7 @@ class TestSolanaSigner {
         val transferMessage = Solana.Transfer.newBuilder().apply {
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
             recipient = "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
-            amount = 42
+            value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             transferTransaction = transferMessage
@@ -44,7 +44,7 @@ class TestSolanaSigner {
             fromPrivateKey = ByteString.copyFrom(Base58.decodeNoCheck("GGT4G41n1K3E4MTjb7VwADSFNJA3Jx7wUxm54Fpcje6w"))
             stakePrivateKey = ByteString.copyFrom(Base58.decodeNoCheck("2bwUDLUVYCfUhQHiAiwvHzM8oNT7pdk5J1XjhTLeumP5"))
             votePubkey = "FkL2bzbUbp3J9MQEX3toMBA4q8ZcHcjeacdtn2Ti8Qec"
-            amount = 42
+            value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             stakeTransaction = delegateStakeMessage
@@ -77,9 +77,9 @@ class TestSolanaSigner {
     @Test
     fun testWithdrawStakeSign() {
         val withdrawStakeMessage = Solana.WithdrawStake.newBuilder().apply {
-            stakePrivateKey = ByteString.copyFrom(Base58.decodeNoCheck("5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q"))
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q"))
             recipient = "C3e7ryQjYJFSUetohBofTaWEBbNcq4yVX43hi7igVtcP"
-            amount = 42
+            value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             withdrawTransaction = withdrawStakeMessage

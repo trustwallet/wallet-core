@@ -29,7 +29,7 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         message = Message(
             /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
             /* to */ Address(protoMessage.recipient()),
-            /* lamports */ protoMessage.amount(),
+            /* value */ protoMessage.value(),
             /* recent_blockhash */ blockhash);
         signerKeys.push_back(key);
     } else if (input.has_stake_transaction()) {
@@ -40,7 +40,7 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
             /* from */ Address(payerKey.getPublicKey(TWPublicKeyTypeED25519)),
             /* stakeAccount */ Address(stakeKey.getPublicKey(TWPublicKeyTypeED25519)),
             /* voteAccount */ Address(protoMessage.vote_pubkey()),
-            /* lamports */ protoMessage.amount(),
+            /* value */ protoMessage.value(),
             /* recent_blockhash */ blockhash);
         signerKeys.push_back(payerKey);
         signerKeys.push_back(stakeKey);
@@ -55,11 +55,11 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         signerKeys.push_back(stakeKey);
     } else if (input.has_withdraw_transaction()) {
         auto protoMessage = input.withdraw_transaction();
-        auto stakeKey = PrivateKey(protoMessage.stake_private_key());
+        auto stakeKey = PrivateKey(protoMessage.private_key());
         message = Message(
             /* from */ Address(stakeKey.getPublicKey(TWPublicKeyTypeED25519)),
             /* to */ Address(protoMessage.recipient()),
-            /* lamports */ protoMessage.amount(),
+            /* value */ protoMessage.value(),
             /* type */ Withdraw,
             /* recent_blockhash */ blockhash);
         signerKeys.push_back(stakeKey);
@@ -72,8 +72,6 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
     auto protoOutput = Proto::SigningOutput();
     auto encoded = transaction.serialize();
     protoOutput.set_encoded(encoded.data(), encoded.size());
-    protoOutput.set_signature(transaction.signatures[0].bytes.data(),
-                              transaction.signatures[0].bytes.size());
 
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),

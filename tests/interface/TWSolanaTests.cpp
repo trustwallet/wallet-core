@@ -25,7 +25,7 @@ TEST(TWSolanaSigner, SignTransfer) {
     auto &message = *input.mutable_transfer_transaction();
     message.set_private_key(privateKey.data(), privateKey.size());
     message.set_recipient("EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd");
-    message.set_amount((uint64_t)42L);
+    message.set_value((uint64_t)42L);
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();
@@ -52,7 +52,7 @@ TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
     message.set_from_private_key(fromPrivateKey.data(), fromPrivateKey.size());
     message.set_stake_private_key(stakePrivateKey.data(), stakePrivateKey.size());
     message.set_vote_pubkey("FkL2bzbUbp3J9MQEX3toMBA4q8ZcHcjeacdtn2Ti8Qec");
-    message.set_amount((uint64_t)42L);
+    message.set_value((uint64_t)42L);
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();
@@ -106,9 +106,9 @@ TEST(TWSolanaSigner, SignWithdrawStakeTransaction) {
     auto input = Solana::Proto::SigningInput();
 
     auto &message = *input.mutable_withdraw_transaction();
-    message.set_stake_private_key(stakePrivateKey.data(), stakePrivateKey.size());
+    message.set_private_key(stakePrivateKey.data(), stakePrivateKey.size());
     message.set_recipient("C3e7ryQjYJFSUetohBofTaWEBbNcq4yVX43hi7igVtcP");
-    message.set_amount((uint64_t)42L);
+    message.set_value((uint64_t)42L);
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();
