@@ -120,14 +120,14 @@ TEST(StoredKey, CreateAccounts) {
     const auto mnemonicData = TW::Data(mnemonicPhrase.c_str(), mnemonicPhrase.c_str() + mnemonicPhrase.size());
     auto key = StoredKey(StoredKeyType::mnemonicPhrase, "name", password, mnemonicData);
     const auto wallet = key.wallet(password);
-    
+
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->extendedPublicKey, "");
 
-    EXPECT_EQ(key.account(TWCoinTypeBitcoin, &wallet)->address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
-    EXPECT_EQ(key.account(TWCoinTypeBitcoin, &wallet)->extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+    EXPECT_EQ(key.account(TWCoinTypeBitcoin, &wallet)->address, "1NyRyFewhZcWMa9XCj3bBxSXPXyoSg8dKz");
+    EXPECT_EQ(key.account(TWCoinTypeBitcoin, &wallet)->extendedPublicKey, "xpub6CR52eaUuVb4kXAVyHC2i5ZuqJ37oWNPZFtjXaazFPXZD45DwWBYEBLdrF7fmCR9pgBuCA9Q57zZfyJjDUBDNtWkhWuGHNYKLgDHpqrHsxV");
 }
-    
+
 TEST(StoredKey, DecodingEthereumAddress) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
@@ -139,7 +139,7 @@ TEST(StoredKey, DecodingBitcoinAddress) {
 
     EXPECT_EQ(key.accounts[0].address, "3PWazDi9n1Hfyq9gXFxDxzADNL8RNYyK2y");
 }
-    
+
 TEST(StoredKey, RemoveAccount) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-mnemonic.json");
     EXPECT_EQ(key.accounts.size(), 2);
