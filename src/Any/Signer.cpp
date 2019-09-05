@@ -16,6 +16,8 @@
 #include "IoTeX/Signer.h"
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
+#include "Nebulas/Signer.h"
+#include "Tron/Signer.h"
 
 #include <string>
 #include <google/protobuf/util/json_util.h>
@@ -125,6 +127,28 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
                 auto signature = Waves::Signer::sign(privateKey, wavesTransaction);
                 auto jsonOutput = wavesTransaction.buildJson(signature).dump();
                 output.set_output(jsonOutput);
+            }
+            break;
+        }
+        case TWCoinTypeNebulas: {
+            Nebulas::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Nebulas::Signer(load(message.chain_id())).sign(message);
+                auto signature = signerOutput.signature();
+                output.set_output(hex(signature.begin(), signature.end()));
+            }
+            break;
+        }
+        case TWCoinTypeTron: {
+            Tron::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Tron::Signer::sign(message);
+                auto signature = signerOutput.signature();
+                output.set_output(hex(signature.begin(), signature.end()));
             }
             break;
         }

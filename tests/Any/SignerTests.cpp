@@ -88,21 +88,6 @@ TEST(Signer, IoTeXTransactionSign) {
               output.output());
 }
 
-TEST(Signer, NetworkNotSupported) {
-    auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
-    auto input = Proto::SigningInput();
-    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
-    input.set_transaction(transaction);
-    input.set_coin_type(TWCoinTypeBitcoinCash);
-
-    auto signer = Signer(input);
-    auto output = signer.sign();
-
-    ASSERT_FALSE(output.success());
-    ASSERT_EQ(SignerErrorCodeNotSupported, output.error().code());
-    ASSERT_EQ("Network not supported", output.error().description());
-}
-
 TEST(Signer, WanchainTransactionSign) {
     auto transaction = R"({"chainId": "MQ==","toAddress": "0x3535353535353535353535353535353535353535","nonce": "OQ==","gasPrice": "MjAwMDAwMDAwMDA=","gasLimit": "MjEwMDA=","amount": "MTAwMDAwMDAwMDAwMDAwMDAwMA=="})";
     auto input = Proto::SigningInput();
@@ -131,6 +116,51 @@ TEST(Signer, WavesTransactionSign) {
     ASSERT_TRUE(output.success());;
     ASSERT_EQ(R"({"amount":100000000,"attachment":"4t2Xazb2SX","fee":100000000,"proofs":["4WUvsbgA2EsyCd5C7jHS57SgvPNczXYnxyKSvAzm18vtRhvbjjH9Dq2vUDgqm8h4GcDzzueQnHg3WH4xTyxDJ1Hg"],"recipient":"3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds","senderPublicKey":"6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU","timestamp":1526641218066,"type":4,"version":2})",
               output.output());
+}
+
+TEST(Signer, NebulasTransactionSign) {
+    auto transaction = R"({"fromAddress": "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY","chainId": "MQ==","nonce": "Nw==","gasPrice": "MTAwMDAwMA==","gasLimit": "MjAwMDAw","toAddress": "n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17","amount": "MTEwMDAwMDAwMDAwMDAwMDAwMDA=","timestamp": "MTU2MDA1MjkzOA==","payload": ""})";
+    auto input = Proto::SigningInput();
+    input.set_private_key("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeNebulas);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());;
+    ASSERT_EQ("17aca84f1c31f2065123ff14d53f10e2c2a8cd6e99f75fb9b11a2bc7bacb14e05c29f2267c700f9f1c5b9df26bddc5972993c71be651c5c7872683e23cdd80c301",
+              output.output());
+}
+
+TEST(Signer, TronTransactionSign) {
+    auto transaction = R"({"transaction": {"timestamp": 1539295479000,"expiration": 1539331479000,"blockHeader": {"timestamp": 1539295479000,"txTrieRoot": "ZCiMLbBkExZ2KpnbsC73yQ+Wi2D58uQQg1mAYUMy+G0=","parentHash": "AAAAAAAvezr09fi54jowxTD3GfFlt0LnNYU2soDurS0=","number": 3111739,"witnessAddress": "QVhj9gkbjnF2bagIsd0xWXkPYd59","version": 3},"transfer": {"ownerAddress": "TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC","toAddress": "THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV","amount": 2000000}}})";
+    auto input = Proto::SigningInput();
+    input.set_private_key("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeTron);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());;
+    ASSERT_EQ("ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200",
+              output.output());
+}
+
+TEST(Signer, NetworkNotSupported) {
+    auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
+    auto input = Proto::SigningInput();
+    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeBitcoinCash);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_FALSE(output.success());
+    ASSERT_EQ(SignerErrorCodeNotSupported, output.error().code());
+    ASSERT_EQ("Network not supported", output.error().description());
 }
 
 TEST(Signer, InvalidJsonFormat) {
