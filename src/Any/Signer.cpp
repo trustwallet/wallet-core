@@ -27,8 +27,7 @@ using namespace google::protobuf;
 Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
     const auto coinType = (TWCoinType) input.coin_type();
     const auto transaction = input.transaction();
-    const auto privateKeyData = parse_hex(input.private_key());
-    const auto privateKey = PrivateKey(privateKeyData);
+    const auto privateKey = PrivateKey(parse_hex(input.private_key()));
 
     auto output = Any::Proto::SigningOutput();
 
@@ -164,28 +163,6 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
     }
 
     return output;
-}
-
-bool Any::Signer::isEnabled(TWCoinType coinType) {
-    switch (coinType) {
-        case TWCoinTypeCosmos:
-        case TWCoinTypeBinance:
-        case TWCoinTypeTomoChain:
-        case TWCoinTypeCallisto:
-        case TWCoinTypeThunderToken:
-        case TWCoinTypePOANetwork:
-        case TWCoinTypeEthereumClassic:
-        case TWCoinTypeEthereum:
-        case TWCoinTypeTezos:
-        case TWCoinTypeIoTeX:
-        case TWCoinTypeWanchain:
-        case TWCoinTypeWaves:
-        case TWCoinTypeNebulas:
-        case TWCoinTypeTron:
-            return true;
-        default:
-            return false;
-    }
 }
 
 void Any::Signer::parse(const std::string& transaction, Message* message,

@@ -7,6 +7,7 @@
 #include "Any/Signer.h"
 #include "Coin.h"
 
+#include <TrustWalletCore/TWAnySigner.h>
 #include <stdexcept>
 #include <gtest/gtest.h>
 
@@ -178,6 +179,6 @@ TEST(Signer, InvalidJsonFormat) {
 }
 
 TEST(Signer, IsEnabled) {
-    ASSERT_TRUE(Signer::isEnabled(TWCoinTypeBinance));
-    ASSERT_FALSE(Signer::isEnabled(TWCoinTypeBitcoinCash));
+    ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeBinance));
+    ASSERT_FALSE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoinCash));
 }

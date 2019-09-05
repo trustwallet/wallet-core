@@ -25,5 +25,16 @@ TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput data)
 
 bool TWAnySignerIsSignEnabled(TWCoinType coinType)
 {
-    return Signer::isEnabled(coinType);
+    Proto::SigningInput input;
+    input.set_coin_type(coinType);
+    input.set_private_key("0000000000000000000000000000000000000000000000000000000000000001");
+    input.set_transaction("<invalid json>");
+
+    auto signer = new TWAnySigner{ Signer(input) };
+    Proto::SigningOutput output = signer->impl.sign();
+
+    // If the coin is not supported, the error code is SignerErrorCodeNotSupported.
+    // If the sign method return an SignerErrorCodeInvalidJson, it means the coin is supported but couldn't parse the
+    // transaction (which is invalid by default)
+    return output.error().code() == SignerErrorCodeInvalidJson;
 }

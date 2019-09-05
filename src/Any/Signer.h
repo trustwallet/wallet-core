@@ -21,7 +21,6 @@ public:
     explicit Signer(const Proto::SigningInput& input) : input(input) {}
 
     Proto::SigningOutput sign() const noexcept;
-    static bool isEnabled(TWCoinType coinType);
 private:
     const Proto::SigningInput& input;
 
