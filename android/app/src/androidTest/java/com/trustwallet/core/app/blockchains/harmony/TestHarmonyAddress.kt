@@ -14,12 +14,14 @@ class TestHarmonyAddress {
         System.loadLibrary("TrustWalletCore")
     }
 
+    val targetAddress = "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe"
+
     @Test
     fun testAddressFromPrivateKey() {
          val key = PrivateKey(Base58.decodeNoCheck("GGzxJ4QmKCXH2juK89RVAmvFAfdUfUARCvxEsBM356vX"))
          val pubkey = key.getPublicKeySecp256k1(false)
          val address = HarmonyAddress(pubkey)
-         assertEquals(address.description(), "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe")
+         assertEquals(address.description(), targetAddress)
     }
 
     @Test
@@ -29,13 +31,12 @@ class TestHarmonyAddress {
              PublicKeyType.SECP256K1EXTENDED
          )
          val address = HarmonyAddress(pubkey)
-    	 assertEquals(address.description(), "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe")
+    	 assertEquals(address.description(), targetAddress)
     }
 
     @Test
     fun testAddressFromString() {
-         val addressString = "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe"
-         val address = HarmonyAddress(addressString)
-         assertEquals(address.description(), addressString)
+         val address = HarmonyAddress(targetAddress)
+         assertEquals(address.description(), targetAddress)
     }
 }
