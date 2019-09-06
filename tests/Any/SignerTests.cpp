@@ -7,7 +7,6 @@
 #include "Any/Signer.h"
 #include "Coin.h"
 
-#include <TrustWalletCore/TWAnySigner.h>
 #include <stdexcept>
 #include <gtest/gtest.h>
 
