@@ -21,6 +21,8 @@
 #include <string>
 #include <google/protobuf/util/json_util.h>
 
+#include <TrustWalletCore/TWCoinType.h>
+
 using namespace TW;
 using namespace google::protobuf;
 
