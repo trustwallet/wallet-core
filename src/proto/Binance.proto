@@ -92,8 +92,8 @@ message HTLTOrder {
 message DepositHTLTOrder {
     // 0xB33F9A24      // prefix
     bytes from = 1;    // signer address
-    bytes swapID = 2;
-    repeated SendOrder.Token Amount = 3;
+    repeated SendOrder.Token Amount = 2;
+    bytes swapID = 3;
 }
 
 message ClaimHTLOrder {

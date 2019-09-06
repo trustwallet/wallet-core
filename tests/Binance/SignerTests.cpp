@@ -247,35 +247,37 @@ namespace TW::Binance {
 
         auto signingInput = Proto::SigningInput();
         signingInput.set_chain_id("test-chain");
-        signingInput.set_account_number(16);
+        signingInput.set_account_number(15);
         signingInput.set_sequence(0);
         signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
 
         auto token = Proto::SendOrder::Token();
         token.set_denom("BNB");
-        token.set_amount(1000000000);
+        token.set_amount(100000000);
 
         auto randomNumberHash =
-                parse_hex("14ff3b6157e94eb1d815011188f03454536cd0ee920a9fe2d8caff54babc724d");
+                parse_hex("e8eae926261ab77d018202434791a335249b470246a7b02e28c3b2fb6ffad8f3");
 
         auto &htltOrder = *signingInput.mutable_htlt_order();
         htltOrder.set_from(fromAddr.data(), fromAddr.size());
-        htltOrder.set_to(fromAddr.data(), fromAddr.size());
+        htltOrder.set_to(toAddr.data(), toAddr.size());
+        htltOrder.set_recipientotherchain("");
+        htltOrder.set_senderotherchain("");
         *htltOrder.add_amount() = token;
         htltOrder.set_heightspan(400);
-        htltOrder.set_expectedincome("100000000:BTC-BA4");
-        htltOrder.set_timestamp(1567663147);
+        htltOrder.set_expectedincome("100000000:BTC-1DC");
+        htltOrder.set_timestamp(1567746273);
         htltOrder.set_randomnumberhash(randomNumberHash.data(), randomNumberHash.size());
         htltOrder.set_crosschain(false);
 
         const auto data = Binance::Signer(std::move(signingInput)).build();
         ASSERT_EQ(hex(data.begin(), data.end()),
-                  "ef01f0625dee0a7bb33f9a240a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e112140153f11d6db7"
-                  "e69c7d51e771c697378018fb6c242a2014ff3b6157e94eb1d815011188f03454536cd0ee920a9fe2d8ca"
-                  "ff54babc724d30abc8c2eb053a0b0a03424e42108094ebdc0342113130303030303030303a4254432d42"
-                  "4134489003126c0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe"
-                  "0f6b6a8fc71240c597949381aa83fe1ef1612598dd91daa81da57f4103c0ec07b1a905afded82b751eb8"
-                  "7a619a507866057dd28a762ed4501e2bbf4b73aa7a7595c6fdae450a931810");
+                  "ee01f0625dee0a7ab33f9a240a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e112140153f11d6db7"
+                  "e69c7d51e771c697378018fb6c242a20e8eae926261ab77d018202434791a335249b470246a7b02e28c3"
+                  "b2fb6ffad8f330e1d1c7eb053a0a0a03424e421080c2d72f42113130303030303030303a4254432d3144"
+                  "43489003126c0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f"
+                  "6b6a8fc712406a5fec06eb0d59436a0f89934c0b70180cefd3fb2bd7018f8529ed41ec133d2e630c5a50"
+                  "d3ad586f7cede6aeee11d8467617096e173d13ef804f20112ed3891a180f");
     }
 
     TEST(BinanceSigner, BuildDepositHTLT) {
@@ -291,15 +293,15 @@ namespace TW::Binance {
 
         auto signingInput = Proto::SigningInput();
         signingInput.set_chain_id("test-chain");
-        signingInput.set_account_number(17);
+        signingInput.set_account_number(16);
         signingInput.set_sequence(0);
         signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
 
         auto token = Proto::SendOrder::Token();
-        token.set_denom("BTC-BA4");
+        token.set_denom("BTC-1DC");
         token.set_amount(100000000);
 
-        auto swapID = parse_hex("fc06cfc6455c0883ec32944844ce0812dcf8a2e06d703e3a3ec1862c347c050d");
+        auto swapID = parse_hex("dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5");
 
         auto &depositHTLTOrder = *signingInput.mutable_deposithtlt_order();
         depositHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
@@ -309,10 +311,10 @@ namespace TW::Binance {
         const auto data = Binance::Signer(std::move(signingInput)).build();
         ASSERT_EQ(hex(data.begin(), data.end()),
                   "c001f0625dee0a4c639864960a140153f11d6db7e69c7d51e771c697378018fb6c24120e0a074254432d"
-                  "4241341080c2d72f1a20fc06cfc6455c0883ec32944844ce0812dcf8a2e06d703e3a3ec1862c347c050d"
+                  "3144431080c2d72f1a20dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5"
                   "126c0a26eb5ae98721038df6960084e20b2d07d50e1422f94105c6241d9f1482a4eb79ce8bfd460f19e4"
-                  "1240be03ba00fbcbabe18563b29ef14fdec75117861303fd6cc7b4c58041b6e428225b192d91387c12b0"
-                  "3629e5c2992645a4c3dcdf74d856c87dbb36a2ee33bd27931811");
+                  "1240ee4f7e4bec7715cbb16e935daf717e11e3c995ff4a65193b8e8dbf63c129f9403eeaa8879d7eb644"
+                  "1bd2d554a3f697bcead191194d8a6a4f3f2348a9d56353111810");
     }
 
     TEST(BinanceSigner, BuildClaimHTLT) {
@@ -328,13 +330,13 @@ namespace TW::Binance {
 
         auto signingInput = Proto::SigningInput();
         signingInput.set_chain_id("test-chain");
-        signingInput.set_account_number(16);
-        signingInput.set_sequence(0);
+        signingInput.set_account_number(15);
+        signingInput.set_sequence(1);
         signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
 
         auto randomNumber =
-                parse_hex("3854da8010abff0788961478ebc72b6b875296c4bc2d5b5fedafa9bb8b6d4543");
-        auto swapID = parse_hex("fc06cfc6455c0883ec32944844ce0812dcf8a2e06d703e3a3ec1862c347c050d");
+                parse_hex("bda6933c7757d0ca428aa01fb9d0935a231f87bf2deeb9b409cea3f2d580a2cc");
+        auto swapID = parse_hex("dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5");
 
         auto &claimHTLTOrder = *signingInput.mutable_claimhtlt_order();
         claimHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
@@ -344,11 +346,11 @@ namespace TW::Binance {
         const auto data = Binance::Signer(std::move(signingInput)).build();
         ASSERT_EQ(
                 hex(data.begin(), data.end()),
-                "d201f0625dee0a5ec16653000a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220fc06cfc6455c0883ec"
-                "32944844ce0812dcf8a2e06d703e3a3ec1862c347c050d1a203854da8010abff0788961478ebc72b6b875296c4"
-                "bc2d5b5fedafa9bb8b6d4543126c0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561a"
-                "ac993dbe0f6b6a8fc71240a33dd4422143bb598598508c93d27282e4d1c315cfb821155882af3cdd76ec8158c0"
-                "5045e1d25d2752631e5bd36c315afb0397900bc8ccbdaf4880fca92d49111810");
+                "d401f0625dee0a5ec16653000a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220dd8fd4719741844d35"
+                "eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e51a20bda6933c7757d0ca428aa01fb9d0935a231f87bf"
+                "2deeb9b409cea3f2d580a2cc126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561a"
+                "ac993dbe0f6b6a8fc71240c2fd2b55e67afbbd97a4fe5064a297af27bc3339c2153d0f40478b6b0647b3e701f1"
+                "df1ba0eb7eed4e21234261b662fd52fd9b4f406956b7f4be8de11a4de7b0180f2001");
     }
 
     TEST(BinanceSigner, BuildRefundHTLT) {
@@ -364,23 +366,23 @@ namespace TW::Binance {
 
         auto signingInput = Proto::SigningInput();
         signingInput.set_chain_id("test-chain");
-        signingInput.set_account_number(16);
-        signingInput.set_sequence(0);
+        signingInput.set_account_number(15);
+        signingInput.set_sequence(1);
         signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
 
-        auto swapID = parse_hex("fc06cfc6455c0883ec32944844ce0812dcf8a2e06d703e3a3ec1862c347c050d");
+        auto swapID = parse_hex("dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5");
 
         auto &refundHTLTOrder = *signingInput.mutable_refundhtlt_order();
         refundHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
         refundHTLTOrder.set_swapid(swapID.data(), swapID.size());
 
         const auto data = Binance::Signer(std::move(signingInput)).build();
-        ASSERT_EQ(
-                hex(data.begin(), data.end()),
-                "b001f0625dee0a3c3454a27c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220fc06cfc6455c0883ec"
-                "32944844ce0812dcf8a2e06d703e3a3ec1862c347c050d126c0a26eb5ae9872103a9a55c040c8eb8120f3d1b32"
-                "193250841c08af44ea561aac993dbe0f6b6a8fc71240d9ec8ab48471bd4d7c496b941fce1514f17a209f28cb07"
-                "bcc18ba9183b4440b174f7f0fbf922edc971d2f93d552d8a6e1640d758b34cf47dfb69e2c86f5f279b1810");
+        ASSERT_EQ(hex(data.begin(), data.end()),
+                  "b201f0625dee0a3c3454a27c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220dd8fd4719741"
+                  "844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5126e0a26eb5ae9872103a9a55c040c8e"
+                  "b8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc712402a957b42bc99a7577a8928e5538a"
+                  "97c0e35095efd0572ade0b4c42332818b0855d0e3b818f015cb21e6231bee8679b0cb0c1d621fc14c34a"
+                  "b31eb05a57c482a6180f2001");
     }
 
 } // namespace TW::Binance

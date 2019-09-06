@@ -8,6 +8,7 @@
 
 #include "../Cosmos/Address.h"
 #include <TrustWalletCore/TWHRP.h>
+#include "../HexCoding.h"
 
 using namespace TW;
 
@@ -17,6 +18,12 @@ static inline std::string addressString(const std::string& bytes) {
     auto data = std::vector<uint8_t>(bytes.begin(), bytes.end());
     auto address = Cosmos::Address(HRP_BINANCE, data);
     return address.string();
+}
+
+static inline std::string encodeHexBytes(const std::string& bytes) {
+    auto str = hex(bytes.begin(), bytes.end());
+    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    return str;
 }
 
 json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
@@ -59,10 +66,10 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
         j["amount"] = input.unfreeze_order().amount();
     } else if (input.has_htlt_order()) {
         j["from"] = addressString(input.htlt_order().from());
-        j["to"] = input.htlt_order().to();
+        j["to"] = addressString(input.htlt_order().to());
         j["recipient_other_chain"] = input.htlt_order().recipientotherchain();
         j["sender_other_chain"] = input.htlt_order().senderotherchain();
-        j["random_number_hash"] = input.htlt_order().randomnumberhash();
+        j["random_number_hash"] = encodeHexBytes(input.htlt_order().randomnumberhash());
         j["timestamp"] = input.htlt_order().timestamp();
         j["amount"] = tokensJSON(input.htlt_order().amount());
         j["expected_income"] = input.htlt_order().expectedincome();
@@ -70,15 +77,15 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
         j["cross_chain"] = input.htlt_order().crosschain();
     } else if (input.has_deposithtlt_order()) {
         j["from"] = addressString(input.deposithtlt_order().from());
-        j["swap_id"] = input.deposithtlt_order().swapid();
+        j["swap_id"] = encodeHexBytes(input.deposithtlt_order().swapid());
         j["amount"] = tokensJSON(input.deposithtlt_order().amount());
     } else if (input.has_claimhtlt_order()) {
         j["from"] = addressString(input.claimhtlt_order().from());
-        j["swap_id"] = input.claimhtlt_order().swapid();
-        j["random_number"] = input.claimhtlt_order().randomnumber();
+        j["swap_id"] = encodeHexBytes(input.claimhtlt_order().swapid());
+        j["random_number"] = encodeHexBytes(input.claimhtlt_order().randomnumber());
     } else if (input.has_refundhtlt_order()) {
         j["from"] = addressString(input.refundhtlt_order().from());
-        j["swap_id"] = input.refundhtlt_order().swapid();
+        j["swap_id"] = encodeHexBytes(input.refundhtlt_order().swapid());
     }
     return j;
 }
