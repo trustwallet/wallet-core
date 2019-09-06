@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWBinanceSigner.h>
+#include <PublicKey.h>
 
 #include "../Binance/Signer.h"
 #include "../proto/Binance.pb.h"
@@ -31,18 +32,26 @@ TWData *_Nonnull TWBinanceMessage(TW_Binance_Proto_SigningInput data) {
 
     auto signer = new TWBinanceSigner{ Signer(std::move(input)) };
     auto encoded = signer->impl.signaturePreimage();
-    return encoded.c_str();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
 }
 
-TWData *_Nonnull TWBinanceTransaction(TW_Binance_Proto_SigningInput data, TWData *_Nonnull signature) {
+TWData *_Nonnull TWBinanceTransaction(TW_Binance_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto signer = new TWBinanceSigner{ Signer(std::move(input)) };
+
     std::vector<uint8_t> signVec;
     auto rawSign = TWDataBytes(signature);
     signVec.assign(rawSign, rawSign + static_cast<int>(TWDataSize(signature)));
-    auto encoded = signer->impl.encodeTransaction(signVec);
+
+    std::vector<uint8_t> pkVec;
+    auto rawPk = TWDataBytes(pubKey);
+    pkVec.assign(rawPk, rawPk + static_cast<int>(TWDataSize(pubKey)));
+    auto publicKey = PublicKey(pkVec, TWPublicKeyTypeSECP256k1);
+
+    auto sig = signer->impl.encodeSignature(publicKey, signVec);
+    auto encoded = signer->impl.encodeTransaction(sig);
 
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
 }
