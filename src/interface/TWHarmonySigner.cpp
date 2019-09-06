@@ -6,7 +6,7 @@
 
 #include <TrustWalletCore/TWHarmonySigner.h>
 
-#include "../Harmony-One/Signer.h"
+#include "../Harmony/Signer.h"
 #include "../proto/Harmony.pb.h"
 #include "../uint256.h"
 

@@ -19,7 +19,7 @@
 #include "Ethereum/Address.h"
 #include "FIO/Address.h"
 #include "Groestlcoin/Address.h"
-#include "Harmony-One/Address.h"
+#include "Harmony/Address.h"
 #include "IOST/Account.h"
 #include "Icon/Address.h"
 #include "IoTeX/Address.h"

@@ -7,7 +7,7 @@
 #include <TrustWalletCore/TWHarmonyAddress.h>
 
 #include "../Data.h"
-#include "../Harmony-One/Address.h"
+#include "../Harmony/Address.h"
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPublicKey.h>

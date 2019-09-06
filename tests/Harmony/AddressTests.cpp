@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Harmony-One/Address.h"
+#include "Harmony/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 
@@ -17,8 +17,8 @@ TEST(HarmonyAddress, FromString) {
     const auto sender = Address("one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe");
     const auto receiver = Address("one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p");
 
-    ASSERT_EQ(sender.hex_dump(), "ed1ebe4fd1f73f86388f231997859ca42c07da5d");
-    ASSERT_EQ(receiver.hex_dump(), "587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2");
+    ASSERT_EQ(sender.hexDump(), "ed1ebe4fd1f73f86388f231997859ca42c07da5d");
+    ASSERT_EQ(receiver.hexDump(), "587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2");
 }
 
 TEST(HarmonyAddress, FromData) {
