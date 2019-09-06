@@ -8,6 +8,7 @@
 
 #include "../NEAR/Address.h"
 #include "../Base64.h"
+#include "../BinaryCoding.h"
 #include <TrustWalletCore/TWHRP.h>
 
 using namespace TW;
@@ -20,21 +21,11 @@ static void writeU8(Data& data, uint8_t number) {
 }
 
 static void writeU32(Data& data, uint32_t number) {
-    data.push_back(number & 0xFF);
-    data.push_back((number >> 8) & 0xFF);
-    data.push_back((number >> 16) & 0xFF);
-    data.push_back((number >> 24) & 0xFF);
+    encode32LE(number, data);
 }
 
 static void writeU64(Data& data, uint64_t number) {
-    data.push_back(number & 0xFF);
-    data.push_back((number >> 8) & 0xFF);
-    data.push_back((number >> 16) & 0xFF);
-    data.push_back((number >> 24) & 0xFF);
-    data.push_back((number >> 32) & 0xFF);
-    data.push_back((number >> 40) & 0xFF);
-    data.push_back((number >> 48) & 0xFF);
-    data.push_back((number >> 56) & 0xFF);
+    encode64LE(number, data);
 }
 
 static void writeU128(Data& data, const Proto::Uint128 number) {
