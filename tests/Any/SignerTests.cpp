@@ -148,6 +148,21 @@ TEST(Signer, TronTransactionSign) {
               output.output());
 }
 
+TEST(Signer, VeChhainTransactionSign) {
+    auto transaction = R"({"chainTag": 1,"blockRef": 1,"expiration": 1,"clauses": [{"to": "0x3535353535353535353535353535353535353535","value": "MTAwMA==","data": ""}],"gasPriceCoef": 0,"gas": 21000,"dependsOn": "","nonce": 1})";
+    auto input = Proto::SigningInput();
+    input.set_private_key("0x4646464646464646464646464646464646464646464646464646464646464646");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeVeChain);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());;
+    ASSERT_EQ("f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601",
+              output.output());
+}
+
 TEST(Signer, NetworkNotSupported) {
     auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
     auto input = Proto::SigningInput();
