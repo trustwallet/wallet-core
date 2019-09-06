@@ -19,14 +19,14 @@ namespace TW::Coinex {
 
 TEST(CoinexMarket, CreateSellOrder) {
     auto input = Proto::SigningInput();
-    input.set_account_number(30);
-    input.set_chain_id("coinexdex-test2000");
+    input.set_account_number(35);
+    input.set_chain_id("coinexdex-test2001");
     input.set_memo("ifwallet");
-    input.set_sequence(7);
+    input.set_sequence(1);
 
     auto& message = *input.mutable_create_order_message();
     message.set_sender("cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j");
-    message.set_sequence("7");
+    message.set_identify(1);
     message.set_trading_pair("ift/cet");
     message.set_order_type(2);
     message.set_price_precision(2);
@@ -57,14 +57,14 @@ TEST(CoinexMarket, CreateSellOrder) {
 
 TEST(CoinexMarket, CreateBuyOrder) {
     auto input = Proto::SigningInput();
-    input.set_account_number(30);
-    input.set_chain_id("coinexdex-test2000");
+    input.set_account_number(35);
+    input.set_chain_id("coinexdex-test2001");
     input.set_memo("ifwallet");
-    input.set_sequence(8);
+    input.set_sequence(2);
 
     auto& message = *input.mutable_create_order_message();
     message.set_sender("cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j");
-    message.set_sequence("8");
+    message.set_identify(1);
     message.set_trading_pair("ift/cet");
     message.set_order_type(2);
     message.set_price_precision(2);
