@@ -162,19 +162,9 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             VeChain::Proto::SigningInput message;
             parse(transaction, &message, output);
             if (output.success()) {
-                auto veChainTransaction = VeChain::Transaction();
-                veChainTransaction.chainTag = static_cast<uint8_t>(message.chain_tag());
-                veChainTransaction.blockRef = message.block_ref();
-                veChainTransaction.expiration = message.expiration();
-                for (auto& clause : message.clauses()) {
-                    veChainTransaction.clauses.emplace_back(clause);
-                }
-                veChainTransaction.gasPriceCoef = static_cast<uint8_t>(message.gas_price_coef());
-                veChainTransaction.gas = message.gas();
-                veChainTransaction.dependsOn = Data(message.depends_on().begin(), message.depends_on().end());
-                veChainTransaction.nonce = message.nonce();
-                veChainTransaction.signature = VeChain::Signer::sign(privateKey, veChainTransaction);
-                auto encoded = veChainTransaction.encode();
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = VeChain::Signer::sign(message);
+                auto encoded = signerOutput.encoded();
                 output.set_output(hex(encoded.begin(), encoded.end()));
             }
             break;
