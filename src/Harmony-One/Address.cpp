@@ -17,7 +17,7 @@
 
 using namespace TW::Harmony;
 
-std::pair<bool, std::vector<uint8_t>> Address::isValid(const std::string &addr) {
+std::pair<bool, Data> Address::isValid(const std::string &addr) {
     if (addr.size() != 42) {
         return {false, {}};
     }
