@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Data.h"
-#include "Coin.h"
 #include "PrivateKey.h"
 #include "Signer.h"
 #include "HexCoding.h"
@@ -23,14 +22,15 @@
 #include <string>
 #include <google/protobuf/util/json_util.h>
 
+#include <TrustWalletCore/TWCoinType.h>
+
 using namespace TW;
 using namespace google::protobuf;
 
 Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
     const auto coinType = (TWCoinType) input.coin_type();
     const auto transaction = input.transaction();
-    const auto privateKeyData = parse_hex(input.private_key());
-    const auto privateKey = PrivateKey(privateKeyData);
+    const auto privateKey = PrivateKey(parse_hex(input.private_key()));
 
     auto output = Any::Proto::SigningOutput();
 
