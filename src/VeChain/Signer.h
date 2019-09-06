@@ -24,6 +24,9 @@ class Signer {
   public:
     Signer() = delete;
 
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
 };
