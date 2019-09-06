@@ -23,7 +23,7 @@ TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput data)
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-bool TWAnySignerIsSignEnabled(TWCoinType coinType)
+bool TWAnySignerIsSignEnabled(enum TWCoinType coinType)
 {
     Proto::SigningInput input;
     input.set_coin_type(coinType);

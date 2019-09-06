@@ -20,6 +20,6 @@ TW_EXPORT_STATIC_METHOD
 TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput input);
 
 TW_EXPORT_STATIC_METHOD
-bool TWAnySignerIsSignEnabled(TWCoinType coinType);
+bool TWAnySignerIsSignEnabled(enum TWCoinType coinType);
 
 TW_EXTERN_C_END
