@@ -7,6 +7,7 @@
 #pragma once
 
 #include "../proto/Binance.pb.h"
+#include "../PublicKey.h"
 
 #include <cstdint>
 #include <vector>
@@ -35,9 +36,10 @@ class Signer {
 
     std::string signaturePreimage() const;
     std::vector<uint8_t> encodeTransaction(const std::vector<uint8_t>& signature) const;
+    std::vector<uint8_t> encodeSignature(const PublicKey& publicKey, const std::vector<uint8_t>& signature) const;
+    std::vector<uint8_t> encodeSignature(const std::vector<uint8_t>& signature) const;
 private:
     std::vector<uint8_t> encodeOrder() const;
-    std::vector<uint8_t> encodeSignature(const std::vector<uint8_t>& signature) const;
     std::vector<uint8_t> aminoWrap(const std::string& raw, const std::vector<uint8_t>& typePrefix,
                                    bool isPrefixLength) const;
 };

@@ -129,8 +129,6 @@ message SigningInput {
         ClaimHTLOrder claimHTLT_order = 15;
         RefundHTLTOrder refundHTLT_order = 16;
     }
-
-    bytes public_key = 13;   // for tss interface who doesn't have private_key, but need derive address
 }
 
 // Transaction signing output.

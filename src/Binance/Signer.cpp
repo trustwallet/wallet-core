@@ -9,6 +9,7 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
+#include "../PublicKey.h"
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -31,7 +32,8 @@ static const auto pubKeyPrefix = std::vector<uint8_t>{0xEB, 0x5A, 0xE9, 0x87};
 static const auto transactionPrefix = std::vector<uint8_t>{0xF0, 0x62, 0x5D, 0xEE};
 
 std::vector<uint8_t> Signer::build() const {
-    return encodeTransaction(sign());
+    auto signature = encodeSignature(sign());
+    return encodeTransaction(signature);
 }
 
 std::vector<uint8_t> Signer::sign() const {
@@ -43,15 +45,15 @@ std::vector<uint8_t> Signer::sign() const {
 
 std::string Signer::signaturePreimage() const {
     auto json = signatureJSON(input);
+    std::cout << json << std::endl;
     return json.dump();
 }
 
 std::vector<uint8_t> Signer::encodeTransaction(const std::vector<uint8_t>& signature) const {
-    auto sig = encodeSignature(signature);
     auto msg = encodeOrder();
     auto transaction = Binance::Proto::Transaction();
     transaction.add_msgs(msg.data(), msg.size());
-    transaction.add_signatures(sig.data(), sig.size());
+    transaction.add_signatures(signature.data(), signature.size());
     transaction.set_memo(input.memo());
     transaction.set_source(input.source());
 
@@ -96,14 +98,12 @@ std::vector<uint8_t> Signer::encodeOrder() const {
 }
 
 std::vector<uint8_t> Signer::encodeSignature(const std::vector<uint8_t>& signature) const {
-    PublicKey publicKey(Data(), TWPublicKeyTypeSECP256k1);
-    if (input.private_key().length() > 0) {
-        auto key = PrivateKey(input.private_key());
-        publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
-    } else {
-        publicKey = PublicKey(input.public_key(), TWPublicKeyTypeSECP256k1);
-    }
+    auto key = PrivateKey(input.private_key());
+    auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    return encodeSignature(publicKey, signature);
+}
 
+std::vector<uint8_t> Signer::encodeSignature(const PublicKey& publicKey, const std::vector<uint8_t>& signature) const {
     auto encodedPublicKey = pubKeyPrefix;
     encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.bytes.size()));
     encodedPublicKey.insert(encodedPublicKey.end(), publicKey.bytes.begin(), publicKey.bytes.end());
