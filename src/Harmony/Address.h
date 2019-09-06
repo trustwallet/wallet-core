@@ -19,8 +19,6 @@ class Address {
     /// Number of bytes in an address.
     static constexpr size_t size = 20;
 
-    static constexpr auto hrp = "one";
-
     std::array<uint8_t, size> bytes;
 
     /// Determines whether a collection of bytes makes a valid address.
@@ -42,7 +40,7 @@ class Address {
     std::string string() const;
 
     /// Provide hex representation of address
-    std::string hex_dump() const;
+    std::string hexDump() const;
 };
 
 inline bool operator==(const Address &lhs, const Address &rhs) {

@@ -17,12 +17,23 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
     import_bits(v, signature.begin() + 64, signature.begin() + 65);
-    v += 27;
+    v += 35 + chainID + chainID;
+    return std::make_tuple(r, s, v);
 
-    boost::multiprecision::uint256_t newV;
-    import_bits(newV, signature.begin() + 64, signature.begin() + 65);
-    newV += 35 + chainID + chainID;
-    return std::make_tuple(r, s, newV);
+    // boost::multiprecision::uint256_t r, s, v;
+    // import_bits(r, signature.begin(), signature.begin() + 32);
+    // import_bits(s, signature.begin() + 32, signature.begin() + 64);
+    // import_bits(v, signature.begin() + 64, signature.begin() + 65);
+    // v += 27;
+
+    // boost::multiprecision::uint256_t newV;
+    // if (chainID != 0) {
+    //     import_bits(newV, signature.begin() + 64, signature.begin() + 65);
+    //     newV += 35 + chainID + chainID;
+    // } else {
+    //     newV = v;
+    // }
+    // return std::make_tuple(r, s, newV);
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t>
@@ -31,7 +42,7 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data 
     return values(chainID, signature);
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction(
         /* nonce: */ load(input.nonce()),
@@ -46,7 +57,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto signer = Signer(uint256_t(load(input.chain_id())));
     signer.sign(key, transaction);
     auto protoOutput = Proto::SigningOutput();
-    auto encoded = signer.rlp_no_hash(transaction, true);
+    auto encoded = signer.rlpNoHash(transaction, true);
 
     protoOutput.set_encoded(encoded.data(), encoded.size());
     auto v = store(transaction.v);
@@ -66,7 +77,7 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::rlp_no_hash(const Transaction &transaction, const bool include_vrs) const noexcept {
+Data Signer::rlpNoHash(const Transaction &transaction, const bool include_vrs) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
     append(encoded, RLP::encode(transaction.nonce));
@@ -89,10 +100,10 @@ Data Signer::rlp_no_hash(const Transaction &transaction, const bool include_vrs)
     return RLP::encodeList(encoded);
 }
 
-std::string Signer::txn_as_rlp_hex(Transaction &transaction) const noexcept {
-    return TW::hex(rlp_no_hash(transaction, false));
+std::string Signer::txnAsRLPHex(Transaction &transaction) const noexcept {
+    return TW::hex(rlpNoHash(transaction, false));
 }
 
 Data Signer::hash(const Transaction &transaction) const noexcept {
-    return Hash::keccak256(rlp_no_hash(transaction, false));
+    return Hash::keccak256(rlpNoHash(transaction, false));
 }

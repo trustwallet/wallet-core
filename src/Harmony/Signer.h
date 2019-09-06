@@ -45,13 +45,13 @@ class Signer {
     static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
                                                               const Data &signature) noexcept;
 
-    std::string txn_as_rlp_hex(Transaction &transaction) const noexcept;
+    std::string txnAsRLPHex(Transaction &transaction) const noexcept;
 
   protected:
     /// Computes the transaction hash.
     Data hash(const Transaction &transaction) const noexcept;
     // Plain rlp encoding before hashing
-    Data rlp_no_hash(const Transaction &transaction, const bool) const noexcept;
+    Data rlpNoHash(const Transaction &transaction, const bool) const noexcept;
 };
 
 } // namespace TW::Harmony

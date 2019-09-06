@@ -17,12 +17,12 @@
 
 using namespace TW::Harmony;
 
-std::pair<bool, Data> Address::isValid(const std::string &addr) {
+std::pair<bool, std::vector<uint8_t>> Address::isValid(const std::string &addr) {
     if (addr.size() != 42) {
         return {false, {}};
     }
     const auto [first, second] = Bech32::decode(addr);
-    if (first.size() == 0 || second.size() == 0 || first != Address::hrp) {
+    if (first.size() == 0 || second.size() == 0 || first != HRP_HARMONY) {
         return {false, {}};
     }
     return {true, second};
@@ -37,9 +37,9 @@ Address::Address(const std::string &addr) {
     if (!success) {
         throw std::invalid_argument("address not in Harmony bech32 format");
     }
-    Data as_base_32;
-    Bech32::convertBits<5, 8, false>(as_base_32, payload);
-    std::copy(as_base_32.begin(), as_base_32.end(), bytes.begin());
+    Data converted;
+    Bech32::convertBits<5, 8, false>(converted, payload);
+    std::copy(converted.begin(), converted.end(), bytes.begin());
 }
 
 Address::Address(const Data &data) {
@@ -59,11 +59,11 @@ Address::Address(const PublicKey &publicKey) {
 }
 
 std::string Address::string() const {
-    Data as_base_32;
-    Bech32::convertBits<8, 5, false>(as_base_32, std::vector<uint8_t>(bytes.begin(), bytes.end()));
-    return Bech32::encode(Address::hrp, as_base_32);
+    Data converted;
+    Bech32::convertBits<8, 5, false>(converted, std::vector<uint8_t>(bytes.begin(), bytes.end()));
+    return Bech32::encode(HRP_HARMONY, converted);
 }
 
-std::string Address::hex_dump() const {
+std::string Address::hexDump() const {
     return hex(bytes);
 }
