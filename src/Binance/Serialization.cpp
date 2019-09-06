@@ -67,25 +67,25 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
     } else if (input.has_htlt_order()) {
         j["from"] = addressString(input.htlt_order().from());
         j["to"] = addressString(input.htlt_order().to());
-        j["recipient_other_chain"] = input.htlt_order().recipientotherchain();
-        j["sender_other_chain"] = input.htlt_order().senderotherchain();
-        j["random_number_hash"] = encodeHexBytes(input.htlt_order().randomnumberhash());
+        j["recipient_other_chain"] = input.htlt_order().recipient_other_chain();
+        j["sender_other_chain"] = input.htlt_order().sender_other_chain();
+        j["random_number_hash"] = encodeHexBytes(input.htlt_order().random_number_hash());
         j["timestamp"] = input.htlt_order().timestamp();
         j["amount"] = tokensJSON(input.htlt_order().amount());
-        j["expected_income"] = input.htlt_order().expectedincome();
-        j["height_span"] = input.htlt_order().heightspan();
-        j["cross_chain"] = input.htlt_order().crosschain();
+        j["expected_income"] = input.htlt_order().expected_income();
+        j["height_span"] = input.htlt_order().height_span();
+        j["cross_chain"] = input.htlt_order().cross_chain();
     } else if (input.has_deposithtlt_order()) {
         j["from"] = addressString(input.deposithtlt_order().from());
-        j["swap_id"] = encodeHexBytes(input.deposithtlt_order().swapid());
+        j["swap_id"] = encodeHexBytes(input.deposithtlt_order().swap_id());
         j["amount"] = tokensJSON(input.deposithtlt_order().amount());
     } else if (input.has_claimhtlt_order()) {
         j["from"] = addressString(input.claimhtlt_order().from());
-        j["swap_id"] = encodeHexBytes(input.claimhtlt_order().swapid());
-        j["random_number"] = encodeHexBytes(input.claimhtlt_order().randomnumber());
+        j["swap_id"] = encodeHexBytes(input.claimhtlt_order().swap_id());
+        j["random_number"] = encodeHexBytes(input.claimhtlt_order().random_number());
     } else if (input.has_refundhtlt_order()) {
         j["from"] = addressString(input.refundhtlt_order().from());
-        j["swap_id"] = encodeHexBytes(input.refundhtlt_order().swapid());
+        j["swap_id"] = encodeHexBytes(input.refundhtlt_order().swap_id());
     }
     return j;
 }

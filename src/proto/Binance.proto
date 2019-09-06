@@ -79,34 +79,34 @@ message HTLTOrder {
     // 0xB33F9A24      // prefix
     bytes from = 1;    // signer address
     bytes to = 2;    // recipient address
-    string recipientOtherChain = 3;
-    string senderOtherChain = 4;
-    bytes randomNumberHash = 5;
+    string recipient_other_chain = 3;
+    string sender_other_chain = 4;
+    bytes random_number_hash = 5;
     int64 timestamp = 6;
     repeated SendOrder.Token amount = 7;
-    string expectedIncome = 8;
-    int64 heightSpan = 9;
-    bool crossChain = 10;
+    string expected_income = 8;
+    int64 height_span = 9;
+    bool cross_chain = 10;
 }
 
 message DepositHTLTOrder {
     // 0xB33F9A24      // prefix
     bytes from = 1;    // signer address
-    repeated SendOrder.Token Amount = 2;
-    bytes swapID = 3;
+    repeated SendOrder.Token amount = 2;
+    bytes swap_id = 3;
 }
 
 message ClaimHTLOrder {
     // 0xC1665300      // prefix
     bytes from = 1;    // signer address
-    bytes swapID = 2;
-    bytes randomNumber = 3;
+    bytes swap_id = 2;
+    bytes random_number = 3;
 }
 
 message RefundHTLTOrder {
     // 0x3454A27C      // prefix
     bytes from = 1;    // signer address
-    bytes swapID = 2;
+    bytes swap_id = 2;
 }
 
 // Input data necessary to create a signed order.

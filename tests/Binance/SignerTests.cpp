@@ -75,30 +75,11 @@ namespace TW::Binance {
 
         ASSERT_EQ(
                 hex(result.begin(), result.end()),
-                "db01"
-                "f0625dee"
-                "0a65"
-                "ce6dc043"
-                "0a14"
-                "b6561dcc104130059a7c08f48c64610c1f6f9064"
-                "122b"
-                "423635363144434331303431333030353941374330384634384336343631304331463646393036342d3131"
-                "1a0b"
-                "4254432d3543345f424e42"
-                "2002"
-                "2801"
-                "3080c2d72f"
-                "3880989abc04"
-                "4001"
-                "126e"
-                "0a26"
-                "eb5ae987"
-                "21029729a52e4e3c2b4a4e52aa74033eedaf8ba1df5ab6d1f518fd69e67bbd309b0e"
-                "1240"
-                "2a78b6d9a108eb9440221802b626e24d80179395ac984f016db012ef1a0c16d71b4d7053e05366ae3ea2681fc8"
-                "052398fda20551c965d74c5970bbc66b94b48e"
-                "1801"
-                "200a");
+                "db01f0625dee0a65ce6dc0430a14b6561dcc104130059a7c08f48c64610c1f6f9064122b423635363144434331"
+                "303431333030353941374330384634384336343631304331463646393036342d31311a0b4254432d3543345f42"
+                "4e42200228013080c2d72f3880989abc044001126e0a26eb5ae98721029729a52e4e3c2b4a4e52aa74033eedaf"
+                "8ba1df5ab6d1f518fd69e67bbd309b0e12402a78b6d9a108eb9440221802b626e24d80179395ac984f016db012"
+                "ef1a0c16d71b4d7053e05366ae3ea2681fc8052398fda20551c965d74c5970bbc66b94b48e1801200a");
     }
 
     TEST(BinanceSigner, BuildSend) {
@@ -141,26 +122,11 @@ namespace TW::Binance {
         auto result = signer.build();
 
         ASSERT_EQ(hex(result.begin(), result.end()),
-                  "cc01"
-                  "f0625dee"
-                  "0a4e"
-                  "2a2c87fa"
-                  "0a23"
-                  "0a1440c2979694bbc961023d1d27be6fc4d21a9febe6120b0a03424e4210c098a8dd03"
-                  "1223"
-                  "0a1488b37d5e05f3699e2a1406468e5d87cb9dcceb95120b0a03424e4210c098a8dd03"
-                  "126e"
-                  "0a26"
-                  "eb5ae987"
-                  "21026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502"
-                  "1240"
-                  "c65a13440f18a155bd971ee40b9e0dd58586f5bf344e12ec4c76c439aebca8c7789bab7bfbfb4ce89aad"
-                  "c4a02df225b6b6efc861c13bbeb5f7a3eea2d7ffc80f"
-                  "1813"
-                  "2017"
-                  "1a04"
-                  "74657374"
-                  "2001");
+                  "cc01f0625dee0a4e2a2c87fa0a230a1440c2979694bbc961023d1d27be6fc4d21a9febe6120b0a03424e"
+                  "4210c098a8dd0312230a1488b37d5e05f3699e2a1406468e5d87cb9dcceb95120b0a03424e4210c098a8"
+                  "dd03126e0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38"
+                  "e5021240c65a13440f18a155bd971ee40b9e0dd58586f5bf344e12ec4c76c439aebca8c7789bab7bfbfb"
+                  "4ce89aadc4a02df225b6b6efc861c13bbeb5f7a3eea2d7ffc80f181320171a04746573742001");
     }
 
     TEST(BinanceSigner, BuildSend2) {
@@ -208,40 +174,19 @@ namespace TW::Binance {
 
         const auto data = Signer(std::move(signingInput)).build();
         ASSERT_EQ(hex(data.begin(), data.end()),
-                  "c601"
-                  "f0625dee"
-                  "0a52"
-                  "2a2c87fa"
-                  "0a25"
-                  "0a141d0e3086e8e4e0a53c38a90d55bd58b34d57d2fa120d0a03424e42108080e983b1de16"
-                  "1225"
-                  "0a146b571fc0a9961a7ddf45e49a88a4d83941fcabbe120d0a03424e42108080e983b1de16"
-                  "126c"
-                  "0a26"
-                  "eb5ae987"
-                  "21027e69d96640300433654e016d218a8d7ffed751023d8efe81e55dedbd6754c971"
-                  "1240"
-                  "8b23eecfa8237a27676725173e58154e6c204bb291b31c3b7b507c8f04e2773909ba70e01b54f4bd0bc7"
-                  "6669f5712a5a66b9508acdf3aa5e4fde75fbe57622a1"
-                  "2001");
+                  "c601f0625dee0a522a2c87fa0a250a141d0e3086e8e4e0a53c38a90d55bd58b34d57d2fa120d0a03424e"
+                  "42108080e983b1de1612250a146b571fc0a9961a7ddf45e49a88a4d83941fcabbe120d0a03424e421080"
+                  "80e983b1de16126c0a26eb5ae98721027e69d96640300433654e016d218a8d7ffed751023d8efe81e55d"
+                  "edbd6754c97112408b23eecfa8237a27676725173e58154e6c204bb291b31c3b7b507c8f04e2773909ba"
+                  "70e01b54f4bd0bc76669f5712a5a66b9508acdf3aa5e4fde75fbe57622a12001");
     }
 
     TEST(BinanceSigner, BuildHTLT) {
-        const auto derivationPath = TW::derivationPath(TWCoinTypeBinance);
-
-        const auto fromWallet =
-                HDWallet("patrol tired convince excite giant list tissue spring venture between rubber "
-                         "child kite hurry bulk tired raccoon beyond wrist naive message buzz ice slice",
-                         "");
-        const auto fromPrivateKey = fromWallet.getKey(derivationPath);
+        const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
         const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
         auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
 
-        const auto toWallet =
-                HDWallet("recycle poet history join say present until laptop normal burger inject entire "
-                         "end beach talent occur depth ask wage purpose tornado hold easily kick",
-                         "");
-        const auto toPrivateKey = toWallet.getKey(derivationPath);
+        const auto toPrivateKey = PrivateKey(parse_hex("851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a"));
         const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
         auto toAddr = Cosmos::Address(HRP_BINANCE, toPublicKey).keyHash;
 
@@ -261,14 +206,14 @@ namespace TW::Binance {
         auto &htltOrder = *signingInput.mutable_htlt_order();
         htltOrder.set_from(fromAddr.data(), fromAddr.size());
         htltOrder.set_to(toAddr.data(), toAddr.size());
-        htltOrder.set_recipientotherchain("");
-        htltOrder.set_senderotherchain("");
+        htltOrder.set_recipient_other_chain("");
+        htltOrder.set_sender_other_chain("");
         *htltOrder.add_amount() = token;
-        htltOrder.set_heightspan(400);
-        htltOrder.set_expectedincome("100000000:BTC-1DC");
+        htltOrder.set_height_span(400);
+        htltOrder.set_expected_income("100000000:BTC-1DC");
         htltOrder.set_timestamp(1567746273);
-        htltOrder.set_randomnumberhash(randomNumberHash.data(), randomNumberHash.size());
-        htltOrder.set_crosschain(false);
+        htltOrder.set_random_number_hash(randomNumberHash.data(), randomNumberHash.size());
+        htltOrder.set_cross_chain(false);
 
         const auto data = Binance::Signer(std::move(signingInput)).build();
         ASSERT_EQ(hex(data.begin(), data.end()),
@@ -281,13 +226,7 @@ namespace TW::Binance {
     }
 
     TEST(BinanceSigner, BuildDepositHTLT) {
-        const auto derivationPath = TW::derivationPath(TWCoinTypeBinance);
-
-        const auto fromWallet =
-                HDWallet("recycle poet history join say present until laptop normal burger inject entire "
-                         "end beach talent occur depth ask wage purpose tornado hold easily kick",
-                         "");
-        const auto fromPrivateKey = fromWallet.getKey(derivationPath);
+        const auto fromPrivateKey = PrivateKey(parse_hex("851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a"));
         const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
         auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
 
@@ -305,7 +244,7 @@ namespace TW::Binance {
 
         auto &depositHTLTOrder = *signingInput.mutable_deposithtlt_order();
         depositHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
-        depositHTLTOrder.set_swapid(swapID.data(), swapID.size());
+        depositHTLTOrder.set_swap_id(swapID.data(), swapID.size());
         *depositHTLTOrder.add_amount() = token;
 
         const auto data = Binance::Signer(std::move(signingInput)).build();
@@ -318,13 +257,7 @@ namespace TW::Binance {
     }
 
     TEST(BinanceSigner, BuildClaimHTLT) {
-        const auto derivationPath = TW::derivationPath(TWCoinTypeBinance);
-
-        const auto fromWallet =
-                HDWallet("patrol tired convince excite giant list tissue spring venture between rubber "
-                         "child kite hurry bulk tired raccoon beyond wrist naive message buzz ice slice",
-                         "");
-        const auto fromPrivateKey = fromWallet.getKey(derivationPath);
+        const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
         const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
         auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
 
@@ -340,8 +273,8 @@ namespace TW::Binance {
 
         auto &claimHTLTOrder = *signingInput.mutable_claimhtlt_order();
         claimHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
-        claimHTLTOrder.set_swapid(swapID.data(), swapID.size());
-        claimHTLTOrder.set_randomnumber(randomNumber.data(), randomNumber.size());
+        claimHTLTOrder.set_swap_id(swapID.data(), swapID.size());
+        claimHTLTOrder.set_random_number(randomNumber.data(), randomNumber.size());
 
         const auto data = Binance::Signer(std::move(signingInput)).build();
         ASSERT_EQ(
@@ -354,13 +287,7 @@ namespace TW::Binance {
     }
 
     TEST(BinanceSigner, BuildRefundHTLT) {
-        const auto derivationPath = TW::derivationPath(TWCoinTypeBinance);
-
-        const auto fromWallet =
-                HDWallet("patrol tired convince excite giant list tissue spring venture between rubber "
-                         "child kite hurry bulk tired raccoon beyond wrist naive message buzz ice slice",
-                         "");
-        const auto fromPrivateKey = fromWallet.getKey(derivationPath);
+        const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
         const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
         auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
 
@@ -374,7 +301,7 @@ namespace TW::Binance {
 
         auto &refundHTLTOrder = *signingInput.mutable_refundhtlt_order();
         refundHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
-        refundHTLTOrder.set_swapid(swapID.data(), swapID.size());
+        refundHTLTOrder.set_swap_id(swapID.data(), swapID.size());
 
         const auto data = Binance::Signer(std::move(signingInput)).build();
         ASSERT_EQ(hex(data.begin(), data.end()),
