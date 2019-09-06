@@ -79,4 +79,69 @@ TEST(TronSigner, SignTransfer) {
     ASSERT_EQ(hex(output.signature()), "ede769f6df28aefe6a846be169958c155e23e7e5c9621d2e8dce1719b4d952b63e8a8bf9f00e41204ac1bf69b1a663dacdf764367e48e4a5afcd6b055a747fb200");
 }
 
+TEST(TronSigner, SignFreezeBalance) {
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    auto& freeze = *transaction.mutable_freeze_balance();
+    freeze.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+    freeze.set_receiver_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+    freeze.set_frozen_duration(1000000);
+    freeze.set_frozen_duration(100);
+    freeze.set_resource("ENERGY");
+
+    transaction.set_timestamp(1539295479000);
+    transaction.set_expiration(1539295479000 + 10 * 60 * 60 * 1000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(3111739);
+    const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(3);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(output.id()), "a66845c0f55ac36081b22f5391b97df65ab7e1c724e766d88017121a3e37022f");
+    ASSERT_EQ(hex(output.signature()), "c9f16c7d0d486515d7aaad8424a374a3e6f9b19d0b84ae810088db6ade164e717f1e52f08c76118a975eadcacce4c068b2adc2255e6bde12746e75f70b75abae00");
+}
+
+TEST(TronSigner, SignUnFreezeBalance) {
+    auto input = Proto::SigningInput();
+    auto& transaction = *input.mutable_transaction();
+
+    auto& unfreeze = *transaction.mutable_unfreeze_balance();
+    unfreeze.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+    unfreeze.set_receiver_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+    unfreeze.set_resource("ENERGY");
+
+    transaction.set_timestamp(1539295479000);
+    transaction.set_expiration(1539295479000 + 10 * 60 * 60 * 1000);
+
+    auto& blockHeader = *transaction.mutable_block_header();
+    blockHeader.set_timestamp(1539295479000);
+    const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+    blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+    const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+    blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+    blockHeader.set_number(3111739);
+    const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+    blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+    blockHeader.set_version(3);
+
+    const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+    const auto output = Signer::sign(input);
+
+    ASSERT_EQ(hex(output.id()), "0c17d6eac276d68f6c63945252268620aa49aa881b28d766f1206c8627f782a7");
+    ASSERT_EQ(hex(output.signature()), "19e8fdc4450515479a179e74e023768830e1ec51a34787cb09a56798f51b50f2471abc925fcb52208d48ec523bc3ae391e60c68297fb25ea39be691a8c8f08ef00");
+}
 } // namespace TW::Tron
