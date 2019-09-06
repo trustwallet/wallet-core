@@ -19,21 +19,19 @@ class TestHarmonyTransactionSigner {
     fun testHarmonyTransactionSigning() {
         val signingInput = Harmony.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("0xe2f88b4974ae763ca1c2db49218802c2e441293a09eaa9ab681779e05d1b7b94".toHexByteArray()).data())
-            toAddress = "one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p"
-            chainId = ByteString.copyFrom("0x190".toHexByteArray())
+            privateKey = ByteString.copyFrom(PrivateKey("0xb578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e".toHexByteArray()).data())
+            toAddress = "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc"
+            chainId = ByteString.copyFrom("0x02".toHexByteArray())
             nonce = ByteString.copyFrom("0x9".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x5208".toHexByteArray())
-            fromShardId = ByteString.copyFrom("0x3".toHexByteArray())
-            toShardId = ByteString.copyFrom("0x2".toHexByteArray())
-            amount = ByteString.copyFrom("0x168d28e3f00280000".toHexByteArray())
+            fromShardId = ByteString.copyFrom("0x1".toHexByteArray())
+            toShardId = ByteString.copyFrom("0x0".toHexByteArray())
+            amount = ByteString.copyFrom("0x4c53ecdc18a60000".toHexByteArray())
         }
-
         val sign: Harmony.SigningOutput = HarmonySigner.sign(signingInput.build())
-
-        assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x0343")
-        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0xf4757c9ffad127996f788fb388be3e3e03440f6980b36dc6cee7230e390f0c13")
-        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x42f0ff332bd552e8ad7a1cf6a0af4ebebfb1f8aae413c54d3464b9babba5f28d")
+        assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x28")
+        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x325aed6caa01a5235b7a508c8ab67f0c43946b05a1ea6a3e0628de4033fe372d")
+        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x6c19085d3376c30f6dc47cec795991cd37d6d0ebddfa633b0a8f494bc19cd01b")
     }
 }
