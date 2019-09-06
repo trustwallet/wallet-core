@@ -18,7 +18,8 @@ struct TWAnySigner;
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
 TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput input);
-bool TWAnySignerIsSignEnabled(TWCoinType coinType);
 
+TW_EXPORT_STATIC_METHOD
+bool TWAnySignerIsSignEnabled(TWCoinType coinType);
 
 TW_EXTERN_C_END
