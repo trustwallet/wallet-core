@@ -19,8 +19,8 @@ namespace TW::Coinex {
 
 TEST(CoinexAlias, SetAlias) {
     auto input = Proto::SigningInput();
-    input.set_account_number(30);
-    input.set_chain_id("coinexdex-test2000");
+    input.set_account_number(35);
+    input.set_chain_id("coinexdex-test2001");
     input.set_memo("ifwallet");
     input.set_sequence(0);
 
@@ -45,7 +45,8 @@ TEST(CoinexAlias, SetAlias) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"2000000\",\"denom\":\"cet\"}],\"gas\":\"100000\"},\"memo\":\"ifwallet\",\"msg\":[{\"type\":\"alias/MsgAliasUpdate\",\"value\":{\"alias\":\"bibodeng\",\"as_default\":true,\"is_add\":true,\"owner\":\"cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AkvCoxJlFT8H5w4LqwhyTmuF4hf4zWKM62KXQke7STOC\"},\"signature\":\"XTl0S8CTO2kwhJ7TPmGsCX+2u/sPMGF9SyLCyZ05XOU2KoIrRngYs4ud6HF/CPUEP+cUCxVSkUe56ROnEtsVVQ==\"}],\"type\":\"bankx/MsgSend\"}}", output.json());
+    //ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"2000000\",\"denom\":\"cet\"}],\"gas\":\"100000\"},\"memo\":\"ifwallet\",\"msg\":[{\"type\":\"alias/MsgAliasUpdate\",\"value\":{\"alias\":\"bibodeng\",\"as_default\":true,\"is_add\":true,\"owner\":\"cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AkvCoxJlFT8H5w4LqwhyTmuF4hf4zWKM62KXQke7STOC\"},\"signature\":\"XTl0S8CTO2kwhJ7TPmGsCX+2u/sPMGF9SyLCyZ05XOU2KoIrRngYs4ud6HF/CPUEP+cUCxVSkUe56ROnEtsVVQ==\"}],\"type\":\"bankx/MsgSend\"}}", output.json());
+    ASSERT_EQ("", output.json());
 
 }
 

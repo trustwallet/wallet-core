@@ -180,7 +180,7 @@ json coinexSetAliaMessageJSON(const SetAliasMessage& message) {
 // create order
 json coinexCreateOrderMessageJSON(
         std::string sender,
-        std::string sequence,
+        std::int64_t identify,
         std::string trading_pair,
         std::int64_t order_type,
         std::int64_t price_precision,
@@ -193,7 +193,7 @@ json coinexCreateOrderMessageJSON(
     json jsonMsg;
 
     jsonMsg["sender"] = sender;
-    jsonMsg["sequence"] = sequence;
+    jsonMsg["identify"] = identify;
     jsonMsg["trading_pair"] = trading_pair;
     jsonMsg["order_type"] = order_type;
     jsonMsg["price_precision"] = price_precision;
@@ -209,7 +209,7 @@ json coinexCreateOrderMessageJSON(
 json coinexCreateOrderMessageJSON(const CreateOrderMessage& message) {
     return coinexCreateOrderMessageJSON(
             message.sender(),
-            message.sequence(),
+            message.identify(),
             message.trading_pair(),
             message.order_type(),
             message.price_precision(),

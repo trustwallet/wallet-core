@@ -61,7 +61,7 @@ message SetAliasMessage {
 // Message for DEX create order
 message CreateOrderMessage {
     string sender = 1;
-    string sequence = 2;
+    int64 identify = 2;
     string trading_pair = 3;
     int64 order_type = 4;
     int64 price_precision = 5;
