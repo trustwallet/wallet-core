@@ -18,6 +18,7 @@
 #include "Waves/Signer.h"
 #include "Nebulas/Signer.h"
 #include "Tron/Signer.h"
+#include "VeChain/Signer.h"
 
 #include <string>
 #include <google/protobuf/util/json_util.h>
@@ -154,6 +155,27 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
                 auto signerOutput = Tron::Signer::sign(message);
                 auto signature = signerOutput.signature();
                 output.set_output(hex(signature.begin(), signature.end()));
+            }
+            break;
+        }
+        case TWCoinTypeVeChain: {
+            VeChain::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                auto veChainTransaction = VeChain::Transaction();
+                veChainTransaction.chainTag = static_cast<uint8_t>(message.chain_tag());
+                veChainTransaction.blockRef = message.block_ref();
+                veChainTransaction.expiration = message.expiration();
+                for (auto& clause : message.clauses()) {
+                    veChainTransaction.clauses.emplace_back(clause);
+                }
+                veChainTransaction.gasPriceCoef = static_cast<uint8_t>(message.gas_price_coef());
+                veChainTransaction.gas = message.gas();
+                veChainTransaction.dependsOn = Data(message.depends_on().begin(), message.depends_on().end());
+                veChainTransaction.nonce = message.nonce();
+                veChainTransaction.signature = VeChain::Signer::sign(privateKey, veChainTransaction);
+                auto encoded = veChainTransaction.encode();
+                output.set_output(hex(encoded.begin(), encoded.end()));
             }
             break;
         }
