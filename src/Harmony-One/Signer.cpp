@@ -31,7 +31,7 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data 
     return values(chainID, signature);
 }
 
-Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Transaction(
         /* nonce: */ load(input.nonce()),
