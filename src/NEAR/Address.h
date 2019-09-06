@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2019 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,49 +9,49 @@
 #include "../Data.h"
 #include "../PublicKey.h"
 
-#include <cstdint>
 #include <string>
+#include <optional>
 
 namespace TW::NEAR {
 
 class Address {
-  public:
-    /// Human-readable part.
-    ///
-    /// \see https://github.com/satoshilabs/slips/blob/master/slip-0173.md
-    std::string hrp;
+public:
+    /// Number of bytes in an address, public key size + checksum
+    static const size_t size = PublicKey::ed25519Size + 4;
 
-    /// Public key hash.
-    Data keyHash;
+    /// Address data consisting of a prefix byte followed by the public key
+    /// hash.
+    std::array<byte, size> bytes;
 
     /// Determines whether a string makes a valid NEAR address.
     static bool isValid(const std::string& string);
 
-    /// Determines whether a string makes a valid NEAR address, and the
-    /// HRP matches.
-    static bool isValid(const std::string& string, const std::string& hrp);
+    /// Determines whether a string makes a valid NEAR address.
+    static bool isValid(const Data& bytes);
 
-    /// Initializes an address with a key hash.
-    Address(std::string hrp, Data keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
+    /// Initializes a NEAR address from a string representation.
+    Address(const std::string& string);
 
-    /// Initializes an address with a public key.
-    Address(std::string hrp, const PublicKey& publicKey);
+    /// Initializes a NEAR address from a public key.
+    Address(const PublicKey& publicKey);
 
-    /// Decodes an address.
-    ///
-    /// \returns a pair with the address and a success flag.
-    static std::pair<Address, bool> decode(const std::string& addr);
-
-    /// Encodes the address.
-    ///
-    /// \returns encoded address string, or empty string on failure.
+    /// Returns a string representation of the NEAR address.
     std::string string() const;
 
-    bool operator==(const Address& rhs) const { return hrp == rhs.hrp && keyHash == rhs.keyHash; }
+    friend bool operator==(const Address& lhs, const Address& rhs);
 
-  private:
-    Address() = default;
+    static std::string prefix() { return "NEAR"; }
+
+private:
+    static uint32_t createChecksum(const Data& bytes);
+
+    static std::optional<Data> decodeKeyData(const std::string& string);
 };
+
+
+inline bool operator==(const Address& lhs, const Address& rhs) {
+    return lhs.bytes == rhs.bytes;
+}
 
 } // namespace TW::NEAR
 
