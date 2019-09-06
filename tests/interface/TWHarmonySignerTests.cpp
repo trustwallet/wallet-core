@@ -66,6 +66,6 @@ TEST(TWHarmonySigner, Sign) {
     auto shouldBeS = "643f18005b790cac8d8e7dc90e6147df0b83874b52db198864694ea28a79e6fc";
 
     ASSERT_EQ(hex(output.v()), shouldBeV);
-    ASSERT_EQ(hex(result.r()), shouldBeR);
-    ASSERT_EQ(hex(result.s()), shouldBeS);
+    ASSERT_EQ(hex(output.r()), shouldBeR);
+    ASSERT_EQ(hex(output.s()), shouldBeS);
 }
