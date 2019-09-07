@@ -41,13 +41,8 @@ TEST(NEARSigner, SignTx) {
     auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
     input.set_private_key(privateKey.data(), 32);
 
-    auto signer = NEAR::Signer(std::move(input));
-    auto signature = signer.sign();
-    auto signatureInBase64 = Base64::encode(signature);
+    auto output = Signer::sign(std::move(input));
 
-    ASSERT_EQ(signatureInBase64, "lpqDMyGG7pdV5IOTJVJYBuGJo9LSu0tHYOlEQ+l+HE8i3u7wBZqOlxMQDtpuGRRNp+ig735TmyBwi6HY0CG9AQ==");
-
-    auto output = signer.build();
     auto signed_transaction = output.signed_transaction();
     auto outputInBase64 = Base64::encode(Data(signed_transaction.begin(), signed_transaction.end()));
 

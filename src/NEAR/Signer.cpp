@@ -17,24 +17,13 @@
 using namespace TW;
 using namespace TW::NEAR;
 
-Signer::Signer(Proto::SigningInput&& input) {
-    this->input = input;
-}
-
-Data Signer::sign() const {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto transaction = transactionData(input);
     auto key = PrivateKey(input.private_key());
-    auto hash = Hash::sha256(transactionData(this->input));
+    auto hash = Hash::sha256(transaction);
     auto signature = key.sign(hash, TWCurveED25519);
-    return std::vector<uint8_t>(signature.begin(), signature.end());
-}
-
-Proto::SigningOutput Signer::build() const {
     auto output = Proto::SigningOutput();
-
-    auto signature = sign();
-    auto signedTransaction = signedTransactionData(transactionData(this->input), signature);
-
+    auto signedTransaction = signedTransactionData(transaction, signature);
     output.set_signed_transaction(signedTransaction.data(), signedTransaction.size());
-
     return output;
 }

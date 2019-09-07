@@ -16,21 +16,11 @@ namespace TW::NEAR {
 
 /// Helper class that performs NEAR transaction signing.
 class Signer {
-public:
-    Proto::SigningInput input;
+  public:
+    Signer() = delete;
 
-    /// Initializes a transaction signer.
-    Signer(Proto::SigningInput&& input);
-
-    /// Signs the transaction.
-    ///
-    /// \returns the transaction signature or an empty vector if there is an error.
-    Data sign() const;
-
-    /// Builds the signed transaction.
-    ///
-    /// \returns the signed transaction.
-    Proto::SigningOutput build() const;
+    /// Signs the given transaction.
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace
