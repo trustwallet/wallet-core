@@ -41,6 +41,7 @@ This list is generated from [./coins.json](../coins.json)
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
+| 501     | Solana           | SOL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" width="32" />       | <https://solana.com>          |
 | 700     | xDai             | xDAI   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/xdai/info/logo.png" width="32" />         | <https://poa.network/xdai>    |
 | 714     | Binance          | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/logo.png" width="32" />      | <https://vechain.org>         |

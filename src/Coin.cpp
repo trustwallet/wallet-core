@@ -30,6 +30,7 @@
 #include "Ontology/Address.h"
 #include "Ripple/Address.h"
 #include "Semux/Address.h"
+#include "Solana/Address.h"
 #include "Steem/Address.h"
 #include "Stellar/Address.h"
 #include "Tezos/Address.h"
@@ -169,8 +170,12 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeNebulas:
         return Nebulas::Address::isValid(string);
+
     case TWCoinTypeHarmony:
         return Harmony::Address::isValid(string).first;
+
+    case TWCoinTypeSolana:
+        return Solana::Address::isValid(string);
     }
 }
 
@@ -301,8 +306,12 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeNebulas:
         return Nebulas::Address(publicKey).string();
+
     case TWCoinTypeHarmony:
         return Harmony::Address(publicKey).string();
+
+    case TWCoinTypeSolana:
+        return Solana::Address(publicKey).string();
     }
 }
 

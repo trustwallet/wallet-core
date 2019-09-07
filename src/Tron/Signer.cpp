@@ -53,6 +53,103 @@ protocol::TransferAssetContract to_internal(const Proto::TransferAssetContract& 
     return internal;
 }
 
+protocol::FreezeBalanceContract to_internal(const Proto::FreezeBalanceContract& freezeContract) {
+    auto internal = protocol::FreezeBalanceContract();
+    auto resource = protocol::ResourceCode();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(freezeContract.owner_address());
+    const auto receiveAddress = Base58::bitcoin.decodeCheck(freezeContract.receiver_address());
+
+    protocol::ResourceCode_Parse(freezeContract.resource(), &resource);
+
+    internal.set_resource(resource);
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_owner_address(receiveAddress.data(), receiveAddress.size());
+    internal.set_frozen_balance(freezeContract.frozen_balance());
+    internal.set_frozen_duration(freezeContract.frozen_duration());
+
+    return internal;
+}
+
+protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContract& unfreezeContract) {
+    auto internal = protocol::UnfreezeBalanceContract();
+    auto resource = protocol::ResourceCode();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(unfreezeContract.owner_address());
+    const auto receiveAddress = Base58::bitcoin.decodeCheck(unfreezeContract.receiver_address());
+
+    protocol::ResourceCode_Parse(unfreezeContract.resource(), &resource);
+
+    internal.set_resource(resource);
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_owner_address(receiveAddress.data(), receiveAddress.size());
+
+    return internal;
+}
+
+protocol::UnfreezeAssetContract to_internal(const Proto::UnfreezeAssetContract& unfreezeContract) {
+    auto internal = protocol::UnfreezeAssetContract();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(unfreezeContract.owner_address());
+
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+
+    return internal;
+}
+
+protocol::VoteAssetContract to_internal(const Proto::VoteAssetContract& voteContract) {
+    auto internal = protocol::VoteAssetContract();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(voteContract.owner_address());
+
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_support(voteContract.support());
+    internal.set_count(voteContract.count());
+    for(int i = 0; i < voteContract.vote_address_size(); i++) {
+        auto voteAddress = Base58::bitcoin.decodeCheck(voteContract.vote_address(i));
+        internal.add_vote_address(voteAddress.data(), voteAddress.size());
+    }
+
+    return internal;
+}
+
+protocol::VoteWitnessContract to_internal(const Proto::VoteWitnessContract& voteContract) {
+    auto internal = protocol::VoteWitnessContract();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(voteContract.owner_address());
+
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_support(voteContract.support());
+    for(int i = 0; i < voteContract.votes_size(); i++) {
+        auto voteAddress = Base58::bitcoin.decodeCheck(voteContract.votes(i).vote_address());
+        auto vote = internal.add_votes();
+
+        vote->set_vote_address(voteAddress.data(), voteAddress.size());
+        vote->set_vote_count(voteContract.votes(i).vote_count());
+    }
+
+    return internal;
+}
+
+protocol::WithdrawBalanceContract to_internal(const Proto::WithdrawBalanceContract& withdrawContract) {
+    auto internal = protocol::WithdrawBalanceContract();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(withdrawContract.owner_address());
+
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+
+    return internal;
+}
+
+protocol::TriggerSmartContract to_internal(const Proto::TriggerSmartContract& triggerSmartContract) {
+    auto internal = protocol::TriggerSmartContract();
+    const auto ownerAddress = Base58::bitcoin.decodeCheck(triggerSmartContract.owner_address());
+    const auto contractAddress = Base58::bitcoin.decodeCheck(triggerSmartContract.contract_address());
+
+    internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
+    internal.set_contract_address(contractAddress.data(), contractAddress.size());
+    internal.set_call_value(triggerSmartContract.call_value());
+    internal.set_data(triggerSmartContract.data());
+    internal.set_call_token_value(triggerSmartContract.call_token_value());
+    internal.set_token_id(triggerSmartContract.token_id());
+
+    return internal;
+}
+
 /// Converts an external BlockHeader to an internal one used for signing.
 protocol::BlockHeader to_internal(const Proto::BlockHeader& header) {
     auto internal = protocol::BlockHeader();
@@ -103,6 +200,62 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto transfer = to_internal(input.transaction().transfer_asset());
         google::protobuf::Any any;
         any.PackFrom(transfer);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_freeze_balance()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_FreezeBalanceContract);
+
+        auto freeze_balance = to_internal(input.transaction().freeze_balance());
+        google::protobuf::Any any;
+        any.PackFrom(freeze_balance);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_unfreeze_balance()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeBalanceContract);
+
+        auto unfreeze_balance = to_internal(input.transaction().unfreeze_balance());
+        google::protobuf::Any any;
+        any.PackFrom(unfreeze_balance);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_unfreeze_asset()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeAssetContract);
+
+        auto unfreeze_asset = to_internal(input.transaction().unfreeze_asset());
+        google::protobuf::Any any;
+        any.PackFrom(unfreeze_asset);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_vote_asset()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_VoteAssetContract);
+
+        auto vote_asset = to_internal(input.transaction().vote_asset());
+        google::protobuf::Any any;
+        any.PackFrom(vote_asset);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_vote_witness()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_VoteWitnessContract);
+
+        auto vote_witness = to_internal(input.transaction().vote_witness());
+        google::protobuf::Any any;
+        any.PackFrom(vote_witness);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_withdraw_balance()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_WithdrawBalanceContract);
+
+        auto withdraw = to_internal(input.transaction().withdraw_balance());
+        google::protobuf::Any any;
+        any.PackFrom(withdraw);
+        *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_trigger_smart_contract()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
+
+        auto withdraw = to_internal(input.transaction().trigger_smart_contract());
+        google::protobuf::Any any;
+        any.PackFrom(withdraw);
         *contract->mutable_parameter() = any;
     }
 

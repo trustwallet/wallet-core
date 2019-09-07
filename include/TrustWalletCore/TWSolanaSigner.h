@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2019 Trust.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -7,19 +7,17 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWAnyProto.h"
-#include "TWCoinType.h"
+#include "TWData.h"
+#include "TWSolanaProto.h"
 
 TW_EXTERN_C_BEGIN
 
+/// Helper class to sign Solana transactions.
 TW_EXPORT_CLASS
-struct TWAnySigner;
+struct TWSolanaSigner;
 
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
-TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput input);
-
-TW_EXPORT_STATIC_METHOD
-bool TWAnySignerIsSignEnabled(enum TWCoinType coinType);
+TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput input);
 
 TW_EXTERN_C_END

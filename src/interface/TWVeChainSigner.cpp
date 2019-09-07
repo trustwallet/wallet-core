@@ -8,7 +8,7 @@
 
 #include "../VeChain/Signer.h"
 #include "../proto/VeChain.pb.h"
-#include "../uint256.h"
+
 
 using namespace TW;
 using namespace TW::VeChain;
@@ -17,25 +17,7 @@ TW_VeChain_Proto_SigningOutput TWVeChainSignerSign(TW_VeChain_Proto_SigningInput
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto transaction = Transaction();
-    transaction.chainTag = static_cast<uint8_t>(input.chain_tag());
-    transaction.blockRef = input.block_ref();
-    transaction.expiration = input.expiration();
-    for (auto& clause : input.clauses()) {
-        transaction.clauses.emplace_back(clause);
-    }
-    transaction.gasPriceCoef = static_cast<uint8_t>(input.gas_price_coef());
-    transaction.gas = input.gas();
-    transaction.dependsOn = Data(input.depends_on().begin(), input.depends_on().end());
-    transaction.nonce = input.nonce();
-    transaction.signature = Signer::sign(key, transaction);
-
-    auto protoOutput = Proto::SigningOutput();
-
-    auto encoded = transaction.encode();
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-    protoOutput.set_signature(transaction.signature.data(), transaction.signature.size());
+    auto protoOutput = Signer::sign(input);
 
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
