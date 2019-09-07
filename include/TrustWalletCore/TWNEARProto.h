@@ -8,7 +8,6 @@
 
 #include "TWData.h"
 
-typedef TWData *_Nonnull TW_NEAR_Proto_Uint128;
 typedef TWData *_Nonnull TW_NEAR_Proto_PublicKey;
 typedef TWData *_Nonnull TW_NEAR_Proto_FunctionCallPermission;
 typedef TWData *_Nonnull TW_NEAR_Proto_FullAccessPermission;

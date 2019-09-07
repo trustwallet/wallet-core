@@ -28,8 +28,7 @@ static void writeU64(Data& data, uint64_t number) {
     encode64LE(number, data);
 }
 
-static void writeU128(Data& data, const Proto::Uint128 number) {
-    const auto& numberData = number.number();
+static void writeU128(Data& data, const std::string& numberData) {
     data.insert(std::end(data), std::begin(numberData), std::end(numberData));
 }
 

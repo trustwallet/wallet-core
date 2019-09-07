@@ -32,7 +32,7 @@ TEST(NEARSerialization, SerializeTransferTransaction) {
     auto &transfer = *input.mutable_actions(0)->mutable_transfer();
     Data deposit(16, 0);
     deposit[0] = 1;
-    transfer.mutable_deposit()->set_number(deposit.data(), deposit.size());
+    transfer.set_deposit(deposit.data(), deposit.size());
 
     auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());

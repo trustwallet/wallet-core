@@ -3,18 +3,13 @@ syntax = "proto3";
 package TW.NEAR.Proto;
 option java_package = "wallet.core.jni.proto";
 
-/// Provides container for unsigned 128 bit integers.
-message Uint128 {
-    bytes number = 1;
-}
-
 message PublicKey {
     uint32 key_type = 1;
     bytes data = 2;
 }
 
 message FunctionCallPermission {
-    Uint128 allowance = 1;
+    bytes allowance = 1; // uint128
     string receiver_id = 2;
 }
 
@@ -40,15 +35,15 @@ message FunctionCall {
     bytes method_name = 1;
     bytes args = 2;
     uint64 gas = 3;
-    Uint128 deposit = 4;
+    bytes deposit = 4; // uint128
 }
 
 message Transfer {
-    Uint128 deposit = 1;
+    bytes deposit = 1; // uint128
 }
 
 message Stake {
-    Uint128 stake = 1;
+    bytes stake = 1; // uint128
     string public_key = 2;
 }
 
