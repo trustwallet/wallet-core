@@ -81,10 +81,10 @@ message HTLTOrder {
     bytes to = 2;    // recipient address
     string recipient_other_chain = 3;
     string sender_other_chain = 4;
-    bytes random_number_hash = 5;
+    bytes random_number_hash = 5; //hash of a random number and timestamp, based on SHA256
     int64 timestamp = 6;
     repeated SendOrder.Token amount = 7;
-    string expected_income = 8;
+    string expected_income = 8; // expected gained token on the other chain
     int64 height_span = 9;
     bool cross_chain = 10;
 }

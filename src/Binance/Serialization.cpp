@@ -20,10 +20,6 @@ static inline std::string addressString(const std::string& bytes) {
     return address.string();
 }
 
-static inline std::string encodeHexBytes(const std::string& bytes) {
-    return hex(bytes.begin(), bytes.end());
-}
-
 json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
     json j;
     j["account_number"] = std::to_string(input.account_number());
@@ -67,7 +63,7 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
         j["to"] = addressString(input.htlt_order().to());
         j["recipient_other_chain"] = input.htlt_order().recipient_other_chain();
         j["sender_other_chain"] = input.htlt_order().sender_other_chain();
-        j["random_number_hash"] = encodeHexBytes(input.htlt_order().random_number_hash());
+        j["random_number_hash"] = hex(input.htlt_order().random_number_hash());
         j["timestamp"] = input.htlt_order().timestamp();
         j["amount"] = tokensJSON(input.htlt_order().amount());
         j["expected_income"] = input.htlt_order().expected_income();
@@ -75,15 +71,15 @@ json Binance::orderJSON(const Binance::Proto::SigningInput& input) {
         j["cross_chain"] = input.htlt_order().cross_chain();
     } else if (input.has_deposithtlt_order()) {
         j["from"] = addressString(input.deposithtlt_order().from());
-        j["swap_id"] = encodeHexBytes(input.deposithtlt_order().swap_id());
+        j["swap_id"] = hex(input.deposithtlt_order().swap_id());
         j["amount"] = tokensJSON(input.deposithtlt_order().amount());
     } else if (input.has_claimhtlt_order()) {
         j["from"] = addressString(input.claimhtlt_order().from());
-        j["swap_id"] = encodeHexBytes(input.claimhtlt_order().swap_id());
-        j["random_number"] = encodeHexBytes(input.claimhtlt_order().random_number());
+        j["swap_id"] = hex(input.claimhtlt_order().swap_id());
+        j["random_number"] = hex(input.claimhtlt_order().random_number());
     } else if (input.has_refundhtlt_order()) {
         j["from"] = addressString(input.refundhtlt_order().from());
-        j["swap_id"] = encodeHexBytes(input.refundhtlt_order().swap_id());
+        j["swap_id"] = hex(input.refundhtlt_order().swap_id());
     }
     return j;
 }
