@@ -1067,6 +1067,24 @@
         }
     },
     {
+        "id": "harmony",
+        "name": "Harmony",
+        "symbol": "ONE",
+        "decimals": 18,
+        "blockchain": "Harmony",
+        "hrp": "one",
+        "derivationPath": "m/44'/1023'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": "https://explorer.harmony.one/#/tx/",
+        "info": {
+            "url": "https://harmony.one",
+            "client": "https://github.com/harmony-one/go-sdk",
+            "clientPublic": "https://github.com/harmony-one/go-sdk",
+            "clientDocs": "https://app.gitbook.com/@harmony-one/s/sdk-wiki"
+        }
+    },
+    {
         "id": "solana",
         "name": "Solana",
         "symbol": "SOL",

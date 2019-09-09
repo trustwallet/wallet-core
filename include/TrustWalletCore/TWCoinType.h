@@ -9,11 +9,11 @@
 #include "TWBase.h"
 #include "TWBlockchain.h"
 #include "TWCurve.h"
+#include "TWHDVersion.h"
+#include "TWHRP.h"
 #include "TWPrivateKey.h"
 #include "TWPurpose.h"
 #include "TWString.h"
-#include "TWHDVersion.h"
-#include "TWHRP.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -79,6 +79,7 @@ enum TWCoinType {
     TWCoinTypeRavencoin = 175,
     TWCoinTypeWaves = 5741564,
     TWCoinTypeTerra = 330,
+    TWCoinTypeHarmony = 1023,
 };
 
 /// Returns the blockchain for a coin type.
@@ -111,11 +112,13 @@ TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
 
 /// Derives the address for a particular coin from the private key.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivateKey *_Nonnull privateKey);
+TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin,
+                                           struct TWPrivateKey *_Nonnull privateKey);
 
 /// Derives the address for a particular coin from the public key.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin, struct TWPublicKey *_Nonnull publicKey);
+TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin,
+                                                        struct TWPublicKey *_Nonnull publicKey);
 
 /// HRP for this coin type
 TW_EXPORT_PROPERTY
