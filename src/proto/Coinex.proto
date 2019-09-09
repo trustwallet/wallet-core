@@ -34,6 +34,15 @@ message StakeMessage {
     string type_prefix = 4;
 }
 
+// Message for redelegate.
+message RedelegateMessage {
+    string delegator_address = 1;
+    string validator_src_address = 2;
+    string validator_dst_address = 3;
+    Amount amount = 4;
+    string type_prefix = 5;
+}
+
 // Signature
 message Signature {
     bytes public_key = 1;
@@ -46,6 +55,15 @@ message WithdrawStakeRewardMessage {
     string validator_address = 2;
     // default is cosmos-sdk/MsgWithdrawDelegationReward
     string type_prefix = 3;
+}
+
+// Message for staking.
+message WithdrawStakeRewardAndRestakeMessage {
+    string delegator_address = 1;
+    string validator_address = 2;
+    Amount amount = 3;
+    string type_prefix_1 = 4; // withdraw
+    string type_prefix_2 = 5; // stake
 }
 
 // Message for alias
@@ -92,11 +110,13 @@ message Transaction {
         SendCoinsMessage send_coins_message = 4;
         StakeMessage stake_message = 5;
         StakeMessage unstake_message = 6;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 7;
-        SetAliasMessage set_alias_message = 8;
-        CreateOrderMessage create_order_message = 9;
-        CancelOrderMessage cancel_order_message = 10;
-    }    
+        RedelegateMessage redelegate_message = 7;
+        WithdrawStakeRewardMessage withdraw_stake_reward_message = 8;
+        WithdrawStakeRewardAndRestakeMessage withdraw_stake_reward_and_restake_message = 9;
+        SetAliasMessage set_alias_message = 10;
+        CreateOrderMessage create_order_message = 11;
+        CancelOrderMessage cancel_order_message = 12;
+    }
 }
 
 // Input data necessary to create a signed order.
@@ -113,13 +133,15 @@ message SigningInput {
         SendCoinsMessage send_coins_message = 7;
         StakeMessage stake_message = 8;
         StakeMessage unstake_message = 9;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 10;
-        SetAliasMessage set_alias_message = 11;
-        CreateOrderMessage create_order_message = 12;
-        CancelOrderMessage cancel_order_message = 13;
+        RedelegateMessage redelegate_message = 10;
+        WithdrawStakeRewardMessage withdraw_stake_reward_message = 11;
+        WithdrawStakeRewardAndRestakeMessage withdraw_stake_reward_and_restake_message = 12;
+        SetAliasMessage set_alias_message = 13;
+        CreateOrderMessage create_order_message = 14;
+        CancelOrderMessage cancel_order_message = 15;
     }
     // default is cosmos-sdk/MsgSend
-    string type_prefix = 14;
+    string type_prefix = 16;
 }
 
 // Transaction signing output.

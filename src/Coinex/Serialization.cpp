@@ -20,6 +20,7 @@ const std::string COINEX_PREFIX_SEND_COIN_MESSAGE = "bankx/MsgSend";
 // stacking
 const std::string COINEX_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
 const std::string COINEX_PREFIX_UNSTAKE_MESSAGE = "cosmos-sdk/MsgUndelegate";
+const std::string COINEX_PREFIX_REDELEGATE_MESSAGE = "cosmos-sdk/MsgBeginRedelegate";
 const std::string COINEX_PREFIX_WITHDRAW_STAKE_MESSAGE = "cosmos-sdk/MsgWithdrawDelegationReward";
 // alias
 const std::string COINEX_PREFIX_SET_ALIAS_MESSAGE = "alias/MsgAliasUpdate";
@@ -131,6 +132,35 @@ json coinexStakeMessageJSON(const Coinex::Proto::StakeMessage& message) {
             message.type_prefix());
 }
 
+// redelegate
+json coinexRedelegateMessageJSON(
+        json& amount,
+        std::string delegator_address,
+        std::string validator_src_address,
+        std::string validator_dst_address,
+        std::string type_prefix) {
+    json jsonMsg;
+
+    jsonMsg["amount"] = amount;
+    jsonMsg["delegator_address"] = delegator_address;
+    jsonMsg["validator_src_address"] = validator_src_address;
+    jsonMsg["validator_dst_address"] = validator_dst_address;
+
+    return coinexWrapperJSON(type_prefix, jsonMsg);
+}
+
+json coinexRedelegateMessageJSON(const Coinex::Proto::RedelegateMessage& message) {
+    auto amount = message.amount();
+    json jsonAmount = coinexAmountJSON(std::to_string(amount.amount()), amount.denom());
+
+    return coinexRedelegateMessageJSON(
+            jsonAmount,
+            message.delegator_address(),
+            message.validator_src_address(),
+            message.validator_dst_address(),
+            message.type_prefix());
+}
+
 // withdraw stake
 json coinexWithdrawStakeRewardMessageJSON(
         std::string delegator_address,
@@ -149,6 +179,42 @@ json coinexWithdrawStakeRewardMessageJSON(const WithdrawStakeRewardMessage& mess
             message.delegator_address(),
             message.validator_address(),
             message.type_prefix());
+}
+
+// withdraw and restack
+json coinexWithdrawStakeRewardAndRestakeMessageJSON(
+        json& amount,
+        std::string delegator_address,
+        std::string validator_address,
+        std::string type_prefix_withdraw,
+        std::string type_prefix_stake) {
+
+    json msgArray = json::array();
+
+    json withdrawMsg;
+    withdrawMsg["delegator_address"] = delegator_address;
+    withdrawMsg["validator_address"] = validator_address;
+    msgArray.push_back(coinexWrapperJSON(type_prefix_withdraw, withdrawMsg));
+
+    json stakeMsg;
+    stakeMsg["amount"] = amount;
+    stakeMsg["delegator_address"] = delegator_address;
+    stakeMsg["validator_address"] = validator_address;
+    msgArray.push_back(coinexWrapperJSON(type_prefix_stake, stakeMsg));
+
+    return msgArray;
+}
+
+json coinexWithdrawStakeRewardAndRestakeMessageJSON(const WithdrawStakeRewardAndRestakeMessage& message) {
+    auto amount = message.amount();
+    json jsonAmount = coinexAmountJSON(std::to_string(amount.amount()), amount.denom());
+
+    return coinexWithdrawStakeRewardAndRestakeMessageJSON(
+            jsonAmount,
+            message.delegator_address(),
+            message.validator_address(),
+            message.type_prefix_1(),
+            message.type_prefix_2());
 }
 
 // alias
@@ -238,43 +304,53 @@ json coinexCancelOrderMessageJSON(const CancelOrderMessage& message) {
 //
 json coinexMessageJSON(const Coinex::Proto::SigningInput& input) {
     if (input.has_send_coins_message()) {
-        return coinexSendCoinsMessageJSON(input.send_coins_message());
+        return json::array({coinexSendCoinsMessageJSON(input.send_coins_message())});
     } else if (input.has_stake_message()) {
-        return coinexStakeMessageJSON(input.stake_message());
+        return json::array({coinexStakeMessageJSON(input.stake_message())});
     } else if (input.has_unstake_message()) {
-        return coinexStakeMessageJSON(input.unstake_message());
+        return json::array({coinexStakeMessageJSON(input.unstake_message())});
+    } else if (input.has_redelegate_message()) {
+        return json::array({coinexRedelegateMessageJSON(input.redelegate_message())});
     } else if (input.has_withdraw_stake_reward_message()) {
-        return coinexWithdrawStakeRewardMessageJSON(input.withdraw_stake_reward_message());
+        return json::array({coinexWithdrawStakeRewardMessageJSON(input.withdraw_stake_reward_message())});
+    } else if (input.has_withdraw_stake_reward_and_restake_message()) {
+        // array
+        return coinexWithdrawStakeRewardAndRestakeMessageJSON(input.withdraw_stake_reward_and_restake_message());
     } else if (input.has_set_alias_message()) {
-        return coinexSetAliaMessageJSON(input.set_alias_message());
+        return json::array({coinexSetAliaMessageJSON(input.set_alias_message())});
     } else if (input.has_create_order_message()) {
-        return coinexCreateOrderMessageJSON(input.create_order_message());
+        return json::array({coinexCreateOrderMessageJSON(input.create_order_message())});
     } else if (input.has_cancel_order_message()) {
-        return coinexCancelOrderMessageJSON(input.cancel_order_message());
+        return json::array({coinexCancelOrderMessageJSON(input.cancel_order_message())});
     }
 
 
-    return nullptr;
+    return json::array({nullptr});
 }
 
 json coinexMessageJSON(const Coinex::Proto::Transaction& transaction) {
     if (transaction.has_send_coins_message()) {
-        return coinexSendCoinsMessageJSON(transaction.send_coins_message());
+        return json::array({coinexSendCoinsMessageJSON(transaction.send_coins_message())});
     } else if (transaction.has_stake_message()) {
-        return coinexStakeMessageJSON(transaction.stake_message());
+        return json::array({coinexStakeMessageJSON(transaction.stake_message())});
     } else if (transaction.has_unstake_message()) {
-        return coinexStakeMessageJSON(transaction.unstake_message());
+        return json::array({coinexStakeMessageJSON(transaction.unstake_message())});
+    } else if (transaction.has_redelegate_message()) {
+        return json::array({coinexRedelegateMessageJSON(transaction.redelegate_message())});
     } else if (transaction.has_withdraw_stake_reward_message()) {
-        return coinexWithdrawStakeRewardMessageJSON(transaction.withdraw_stake_reward_message());
+        return json::array({coinexWithdrawStakeRewardMessageJSON(transaction.withdraw_stake_reward_message())});
+    } else if (transaction.has_withdraw_stake_reward_and_restake_message()) {
+        // array
+        return coinexWithdrawStakeRewardAndRestakeMessageJSON(transaction.withdraw_stake_reward_and_restake_message());
     } else if (transaction.has_set_alias_message()) {
-        return coinexSetAliaMessageJSON(transaction.set_alias_message());
+        return json::array({coinexSetAliaMessageJSON(transaction.set_alias_message())});
     } else if (transaction.has_create_order_message()) {
-        return coinexCreateOrderMessageJSON(transaction.create_order_message());
+        return json::array({coinexCreateOrderMessageJSON(transaction.create_order_message())});
     } else if (transaction.has_cancel_order_message()) {
-        return coinexCancelOrderMessageJSON(transaction.cancel_order_message());
+        return json::array({coinexCancelOrderMessageJSON(transaction.cancel_order_message())});
     }
 
-    return nullptr;
+    return json::array({nullptr});
 }
 
 json coinexSignatureJSON(const Coinex::Proto::Signature& signature) {
@@ -294,7 +370,7 @@ json TW::Coinex::signaturePreimageJSON(const Coinex::Proto::SigningInput& input)
     jsonForSigning["chain_id"] = input.chain_id();
     jsonForSigning["fee"] = coinexFeeJSON(input.fee());
     jsonForSigning["memo"] = input.memo();
-    jsonForSigning["msgs"] = json::array({coinexMessageJSON(input)});
+    jsonForSigning["msgs"] = coinexMessageJSON(input);
     jsonForSigning["sequence"] = std::to_string(input.sequence());
 
     return jsonForSigning;
@@ -306,7 +382,7 @@ json TW::Coinex::transactionJSON(const Coinex::Proto::Transaction& transaction, 
     jsonTx["type"] = type_prefix;
     jsonTx["fee"] = coinexFeeJSON(transaction.fee());
     jsonTx["memo"] = transaction.memo();
-    jsonTx["msg"] = json::array({coinexMessageJSON(transaction)});
+    jsonTx["msg"] = coinexMessageJSON(transaction);
     jsonTx["signatures"] = json::array({coinexSignatureJSON(transaction.signature())});
 
     return coinexHigherWrapperJSON(jsonTx);
