@@ -63,26 +63,26 @@ TEST(NULSAddress, FromData) {
 
 TEST(NULSAddress, FromPrivateKey) {
     const auto privateKey =
-        PrivateKey(parse_hex("07ad86dbd32190741bf7a62a330426eb50ef1b73622dc5906874b95c63d563577cb854a9972c904332f1d0db56311a0d"));
+        PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey);
 
-    ASSERT_EQ(address.string(), "NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2");
+    ASSERT_EQ(address.string(), "NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L");
 }
 
 TEST(NULSAddress, FromCompressedPublicKey) {
     const auto publicKey =
-        PublicKey(parse_hex("02baf607308a66f66996cbcc64fc8c57911a0857a02764171bda552eb0339e2be4"), TWPublicKeyTypeSECP256k1);
+        PublicKey(parse_hex("0244d50ff36c3136b4bf81f0c74b066695bc2af43e28d7f0ca1d48fcfd084bea66"), TWPublicKeyTypeSECP256k1);
     const auto address = Address(publicKey);
 
-    ASSERT_EQ(address.string(), "NULSd6HgUxmcJWc88iELEJ7RH9XHsazBQqnJc");
+    ASSERT_EQ(address.string(), "NULSd6HgUiMKPNi221bPfqvvho8QpuYBvn1x3");
 }
 
 TEST(NULSAddress, FromPrivateKey33) {
-    //const auto privateKey = NULS::Address::importHexPrivateKey(
-     //   "00a2139f4972f19f82fa26f08166880913be795bc6e1d596c2108fc4f60f2ec5f2");
-    //const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    //const auto address = Address(publicKey);
+    const auto privateKey = NULS::Address::importHexPrivateKey(
+       "d77580833f0b3c35b7114c23d6b66790d726c308baf237ec8c369152f2c08d27");
+    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const auto address = Address(publicKey);
 
-    //ASSERT_EQ(address.string(), "NsdvEERpbh9PyhVGBuE4Tgkee83HYbdj");
+    ASSERT_EQ(address.string(), "NULSd6HgXx8YkwEjePLWUmdRSZzPQzK6BXnsB");
 }

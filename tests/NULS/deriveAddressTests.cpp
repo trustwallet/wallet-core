@@ -46,11 +46,11 @@ TEST(NULSAddress, DeriveKeyFromXPrv) {
 TEST(NULSAddress,DeriveAddressFromXPrv) {
     auto xprv = "xprv9yEvwSfPanK5gLYVnYvNyF2CEWJx1RsktQtKDeT6jnCnqASBiPCvFYHFSApXv39bZbF6hRaha1kWQBVhN1xjo7NHuhAn5uUfzy79TBuGiHh";
 
-    const std::string addressList[5]={"NsdtwhD8hb8H72J7FyQpGta2sqLngrXZ",
-                                "Nse51sBAzRTVtm48wYQLb4TH7MGAHAER",
-                                "NsdvoFSwfh1oW238SFM6p5wL4J834Gv2",
-                                "Nse4wVWsJ4v3jPcpE4vRkAiZLFyQSNKd",
-                                "Nse5NzUcZybsvFQeNgqfuWmmmwCfhdxF"};
+    const std::string addressList[5]={"NULSd6HgUh88tiaCcHCYk8WiquiMYAvYLCUbw",
+                                "NULSd6HgemJ6w1QXq4wJmp5iNDtEnQSThnnHV",
+                                "NULSd6HgWYgNhgg68gCHmJnf8SuiqMPKaZtzC",
+                                "NULSd6HgegvSdK3zNuZsT6cETNzW4dMAwwzPs",
+                                "NULSd6Hgf8RQNaxgD6RfHFE9hYLZH52QDDG2V"};
 
     for (int i = 0; i < 5; ++i) {
         auto privateKey = HDWallet::getPrivateKeyFromExtended(xprv,DerivationPath(TWPurposeBIP44,TWCoinTypeNULS,0,0,i));
@@ -62,11 +62,11 @@ TEST(NULSAddress,DeriveAddressFromXPrv) {
 TEST(NULSAddress, DeriveAddressFromXPub) {
     auto xpub = "xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw";
 
-    const std::string addressList[5]={"NsdtwhD8hb8H72J7FyQpGta2sqLngrXZ",
-                                "Nse51sBAzRTVtm48wYQLb4TH7MGAHAER",
-                                "NsdvoFSwfh1oW238SFM6p5wL4J834Gv2",
-                                "Nse4wVWsJ4v3jPcpE4vRkAiZLFyQSNKd",
-                                "Nse5NzUcZybsvFQeNgqfuWmmmwCfhdxF"};
+    const std::string addressList[5]={"NULSd6HgUh88tiaCcHCYk8WiquiMYAvYLCUbw",
+                                "NULSd6HgemJ6w1QXq4wJmp5iNDtEnQSThnnHV",
+                                "NULSd6HgWYgNhgg68gCHmJnf8SuiqMPKaZtzC",
+                                "NULSd6HgegvSdK3zNuZsT6cETNzW4dMAwwzPs",
+                                "NULSd6Hgf8RQNaxgD6RfHFE9hYLZH52QDDG2V"};
 
     for (int i = 0; i < 5; ++i) {
         auto publicKey = HDWallet::getPublicKeyFromExtended(xpub,DerivationPath(TWPurposeBIP44,TWCoinTypeNULS,0,0,i));
