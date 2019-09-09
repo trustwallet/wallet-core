@@ -21,9 +21,7 @@ static inline std::string addressString(const std::string& bytes) {
 }
 
 static inline std::string encodeHexBytes(const std::string& bytes) {
-    auto str = hex(bytes.begin(), bytes.end());
-    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
-    return str;
+    return hex(bytes.begin(), bytes.end());
 }
 
 json Binance::signatureJSON(const Binance::Proto::SigningInput& input) {
