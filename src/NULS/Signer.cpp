@@ -39,9 +39,7 @@ Data Signer::sign() const {
     encode16LE(2, data);
     // Timestamp
     encode48LE(tx.timestamp(), data);
-    // Remark
-    std::string remark = tx.remark();
-    serializerRemark(remark, data);
+
     // txData
     encode32LE(0xffffffff, data);
     // CoinData Input
@@ -52,6 +50,10 @@ Data Signer::sign() const {
     std::vector<Proto::TransactionOutput> outputs;
     std::copy(tx.outputs().begin(), tx.outputs().end(), std::back_inserter(outputs));
     serializerOutput(outputs, data);
+    
+    // Remark
+    std::string remark = tx.remark();
+    serializerRemark(remark, data);
 
     // Calc transaction hash
     Data txHash = calcTransactionDigest(data);
