@@ -261,6 +261,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     internal.mutable_raw_data()->set_timestamp(input.transaction().timestamp());
     internal.mutable_raw_data()->set_expiration(input.transaction().expiration());
+    internal.mutable_raw_data()->set_fee_limit(input.transaction().fee_limit());
     setBlockReference(input.transaction(), internal);
 
     output.set_ref_block_bytes(internal.raw_data().ref_block_bytes());

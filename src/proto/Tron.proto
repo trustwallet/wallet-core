@@ -107,6 +107,9 @@ message Transaction {
     // Transaction block header.
     BlockHeader block_header = 3;
 
+    // Transaction fee limit
+    int64 fee_limit = 4;
+
     // Contract.
     oneof contract_oneof {
         TransferContract transfer = 10;
