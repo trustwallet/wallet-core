@@ -122,13 +122,13 @@ enum Transaction_Contract_ContractType {
   Transaction_Contract_ContractType_AccountCreateContract = 0,
   Transaction_Contract_ContractType_TransferContract = 1,
   Transaction_Contract_ContractType_TransferAssetContract = 2,
-  Transaction_Contract_ContractType_FreezeBalanceContract = 3,
-  Transaction_Contract_ContractType_UnfreezeBalanceContract = 4,
-  Transaction_Contract_ContractType_UnfreezeAssetContract = 5,
-  Transaction_Contract_ContractType_WithdrawBalanceContract = 6,
-  Transaction_Contract_ContractType_VoteAssetContract = 7,
-  Transaction_Contract_ContractType_VoteWitnessContract = 8,
-  Transaction_Contract_ContractType_TriggerSmartContract = 9,
+  Transaction_Contract_ContractType_VoteAssetContract = 3,
+  Transaction_Contract_ContractType_VoteWitnessContract = 4,
+  Transaction_Contract_ContractType_FreezeBalanceContract = 11,
+  Transaction_Contract_ContractType_UnfreezeBalanceContract = 12,
+  Transaction_Contract_ContractType_WithdrawBalanceContract = 13,
+  Transaction_Contract_ContractType_UnfreezeAssetContract = 14,
+  Transaction_Contract_ContractType_TriggerSmartContract = 31,
   Transaction_Contract_ContractType_Transaction_Contract_ContractType_INT_MIN_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::google::protobuf::int32>::min(),
   Transaction_Contract_ContractType_Transaction_Contract_ContractType_INT_MAX_SENTINEL_DO_NOT_USE_ = std::numeric_limits<::google::protobuf::int32>::max()
 };
@@ -270,18 +270,18 @@ class Transaction_Contract final :
     Transaction_Contract_ContractType_TransferContract;
   static const ContractType TransferAssetContract =
     Transaction_Contract_ContractType_TransferAssetContract;
-  static const ContractType FreezeBalanceContract =
-    Transaction_Contract_ContractType_FreezeBalanceContract;
-  static const ContractType UnfreezeBalanceContract =
-    Transaction_Contract_ContractType_UnfreezeBalanceContract;
-  static const ContractType UnfreezeAssetContract =
-    Transaction_Contract_ContractType_UnfreezeAssetContract;
-  static const ContractType WithdrawBalanceContract =
-    Transaction_Contract_ContractType_WithdrawBalanceContract;
   static const ContractType VoteAssetContract =
     Transaction_Contract_ContractType_VoteAssetContract;
   static const ContractType VoteWitnessContract =
     Transaction_Contract_ContractType_VoteWitnessContract;
+  static const ContractType FreezeBalanceContract =
+    Transaction_Contract_ContractType_FreezeBalanceContract;
+  static const ContractType UnfreezeBalanceContract =
+    Transaction_Contract_ContractType_UnfreezeBalanceContract;
+  static const ContractType WithdrawBalanceContract =
+    Transaction_Contract_ContractType_WithdrawBalanceContract;
+  static const ContractType UnfreezeAssetContract =
+    Transaction_Contract_ContractType_UnfreezeAssetContract;
   static const ContractType TriggerSmartContract =
     Transaction_Contract_ContractType_TriggerSmartContract;
   static inline bool ContractType_IsValid(int value) {

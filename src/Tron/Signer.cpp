@@ -143,7 +143,7 @@ protocol::TriggerSmartContract to_internal(const Proto::TriggerSmartContract& tr
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
     internal.set_contract_address(contractAddress.data(), contractAddress.size());
     internal.set_call_value(triggerSmartContract.call_value());
-    internal.set_data(triggerSmartContract.data());
+    internal.set_data(triggerSmartContract.data().data(), triggerSmartContract.data().size());
     internal.set_call_token_value(triggerSmartContract.call_token_value());
     internal.set_token_id(triggerSmartContract.token_id());
 
@@ -253,9 +253,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto contract = internal.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
 
-        auto withdraw = to_internal(input.transaction().trigger_smart_contract());
+        auto trigger_smart_contract = to_internal(input.transaction().trigger_smart_contract());
         google::protobuf::Any any;
-        any.PackFrom(withdraw);
+        any.PackFrom(trigger_smart_contract);
         *contract->mutable_parameter() = any;
     }
 
