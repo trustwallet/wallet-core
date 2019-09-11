@@ -20,7 +20,6 @@ const std::string AMINO_PREFIX_SEND_COIN_MESSAGE = "cosmos-sdk/MsgSend";
 const std::string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
 const std::string AMINO_PREFIX_UNSTAKE_MESSAGE = "cosmos-sdk/MsgUndelegate";
 const std::string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE = "cosmos-sdk/MsgWithdrawDelegationReward";
-const std::string AMINO_PREFIX_TRANSACTION = "auth/StdTx";
 const std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
 json broadcastJSON(json& jsonObj) {
