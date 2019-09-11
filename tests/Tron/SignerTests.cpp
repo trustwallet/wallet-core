@@ -109,8 +109,8 @@ TEST(TronSigner, SignFreezeBalance) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "a66845c0f55ac36081b22f5391b97df65ab7e1c724e766d88017121a3e37022f");
-    ASSERT_EQ(hex(output.signature()), "c9f16c7d0d486515d7aaad8424a374a3e6f9b19d0b84ae810088db6ade164e717f1e52f08c76118a975eadcacce4c068b2adc2255e6bde12746e75f70b75abae00");
+    ASSERT_EQ(hex(output.id()), "c55020234343ddd055bded92e5656382a03370f33579518786fb637dc55c004b");
+    ASSERT_EQ(hex(output.signature()), "d75839158e854d98631a010f0aaebf7285a733b38afb2dcb59fcf523aa869b561d9db159826f06ecb5b1b7824c2405fb37b178d70aa3d4188b9c53af7f684e4a00");
 }
 
 TEST(TronSigner, SignUnFreezeBalance) {
@@ -141,8 +141,8 @@ TEST(TronSigner, SignUnFreezeBalance) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "0c17d6eac276d68f6c63945252268620aa49aa881b28d766f1206c8627f782a7");
-    ASSERT_EQ(hex(output.signature()), "19e8fdc4450515479a179e74e023768830e1ec51a34787cb09a56798f51b50f2471abc925fcb52208d48ec523bc3ae391e60c68297fb25ea39be691a8c8f08ef00");
+    ASSERT_EQ(hex(output.id()), "9d6c70491f7f20857b3a92ad59683485941e70bab2f09debf42eceabe31619f4");
+    ASSERT_EQ(hex(output.signature()), "1063f470a8ab4948000993c8b067d1c7ce542a0651360f0d4dc41f95e6591b512b244d4dcffc36670dfe70674cac40b9c32a88d4e9a4bd639c029e0e4b5f5a8301");
 }
 
 TEST(TronSigner, SignUnFreezeAsset) {
@@ -171,8 +171,8 @@ TEST(TronSigner, SignUnFreezeAsset) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "01536f7ec1482651dc6ffbe6958ba57727e5446b68ffd923404fe55500b0b118");
-    ASSERT_EQ(hex(output.signature()), "d6c1971678f0e6e1f766fb350a2c31c05cc4873505b99146d526be83ea400d5573a49a72b22147d84dc6d1ca5f93c36b9afa1720de1ccce71577baef1e0af0d601");
+    ASSERT_EQ(hex(output.id()), "432bd5cf77ff134787712724709a672fc6e51763de00292438db02d23931e13d");
+    ASSERT_EQ(hex(output.signature()), "f493d8f275538a50bb8a832d759df9cad535bb2c5cc73296b04983f551d8398b6d7a30fc0fdfd73e8a9cac77a1a6a9435dc6309bb98fbb219035e88809a0b65901");
 }
 
 TEST(TronSigner, SignWithdrawBalance) {
@@ -201,8 +201,8 @@ TEST(TronSigner, SignWithdrawBalance) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "1cf610ef619136831fbe07ff3f901280a5653ff731b92ec40b664e2dbbd7b326");
-    ASSERT_EQ(hex(output.signature()), "325e965c159ab47e4817ca0b3c3be0ff0fe2730007113bcb76a27cef8ddfb449434235f935d846578ee5347ed8ce1199e5509d9a1e0991aa6a92808b579f7de900");
+    ASSERT_EQ(hex(output.id()), "69aaa954dcd61f28a6a73e979addece6e36541522e5b3374b18b4ef9bc3de4cb");
+    ASSERT_EQ(hex(output.signature()), "cb7d23a5eb23284a25ba6deaa231de0f18d8d103592e3312bff101a4219a3e02167eca24b3f4ce78b34f0c1842b6f7fb8d813f530c4c54342cdedef9f8e1f85100");
 }
 
 TEST(TronSigner, SignVoteAsset) {
@@ -234,8 +234,8 @@ TEST(TronSigner, SignVoteAsset) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "6e94c42063a6ed8b6af573578c91d457ae7e87c139c91099ba10600988689d18");
-    ASSERT_EQ(hex(output.signature()), "e223e5dc0e9d47e1d7288780d9fca933454d88cef98fe2d14be81c9beb591d2b0eb1d615d6a41de4accc738096a3c55dc7f3afb276f39ac463f5f9e919b4f13300");
+    ASSERT_EQ(hex(output.id()), "59b5736fb9756124f9470e4fadbcdafdc8c970da7157fa0ad34a41559418bf0a");
+    ASSERT_EQ(hex(output.signature()), "501e04b08f359116a26d9ec784abc50830f92a9dc05d2c1aceefe0eba79466d2730b63b6739edf0f1f1972181618b201ce0b4167d14a66abf40eba4097c39ec400");
 }
 
 TEST(TronSigner, SignVoteWitness) {
@@ -269,8 +269,8 @@ TEST(TronSigner, SignVoteWitness) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "4f647f0a0a825a8ea8c3a1a480df56748f855708e60c2f6efd6e0f4ec0c13b2c");
-    ASSERT_EQ(hex(output.signature()), "baaacdc352c5a0fd64eafb94d08e52e6a6c914504a292435502fdb381b19943a0e1eabbef7425362f39f5368b7da80034778a282bdd1ca26474f035d433d746601");
+    ASSERT_EQ(hex(output.id()), "3f923e9dd9571a66624fafeda27baa3e00aba1709d3fdc5c97c77b81fda18c1f");
+    ASSERT_EQ(hex(output.signature()), "79ec1073ae1319ef9303a2f5a515876cfd67f8f0e155bdbde1115d391c05358a3c32f148bfafacf07e1619aaed728d9ffbc2c7e4a5046003c7b74feb86fc68e400");
 }
 
 TEST(TronSigner, SignTriggerSmartContract) {
@@ -304,7 +304,7 @@ TEST(TronSigner, SignTriggerSmartContract) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "f9ab370a5100d125614b6e6ebbe1f13e03c4d82d6d61a6539905e39757ea1495");
-    ASSERT_EQ(hex(output.signature()), "48c29695a5cc7736671257f37db40ddbdec0df9c01fadd6f202014e1bafb217c089481e948b33331cc254fdf21211765516cf16cf0dd2ae35245f764e6249f6400");
+    ASSERT_EQ(hex(output.id()), "9927d3daae10ad001b25ef3c1bb03073c928cc0e0823f6f3ce404c2b03ce3570");
+    ASSERT_EQ(hex(output.signature()), "21a99aafeabdddfdfae86538df048d120a83eb36bbcf5656595919ba6afddacd0a07d0ba051ae80337613174b109f36cb583b6e46ee5aecf6ffe3392fdbb8a2a01");
 }
 } // namespace TW::Tron

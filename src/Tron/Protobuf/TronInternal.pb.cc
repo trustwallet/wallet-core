@@ -500,12 +500,12 @@ const char descriptor_table_protodef_TronInternal_2eproto[] =
   "ter\030\002 \001(\0132\024.google.protobuf.Any\022\020\n\010provi"
   "der\030\003 \001(\014\"\224\002\n\014ContractType\022\031\n\025AccountCre"
   "ateContract\020\000\022\024\n\020TransferContract\020\001\022\031\n\025T"
-  "ransferAssetContract\020\002\022\031\n\025FreezeBalanceC"
-  "ontract\020\003\022\033\n\027UnfreezeBalanceContract\020\004\022\031"
-  "\n\025UnfreezeAssetContract\020\005\022\033\n\027WithdrawBal"
-  "anceContract\020\006\022\025\n\021VoteAssetContract\020\007\022\027\n"
-  "\023VoteWitnessContract\020\010\022\030\n\024TriggerSmartCo"
-  "ntract\020\t\032\271\001\n\003raw\022\027\n\017ref_block_bytes\030\001 \001("
+  "ransferAssetContract\020\002\022\025\n\021VoteAssetContr"
+  "act\020\003\022\027\n\023VoteWitnessContract\020\004\022\031\n\025Freeze"
+  "BalanceContract\020\013\022\033\n\027UnfreezeBalanceCont"
+  "ract\020\014\022\033\n\027WithdrawBalanceContract\020\r\022\031\n\025U"
+  "nfreezeAssetContract\020\016\022\030\n\024TriggerSmartCo"
+  "ntract\020\037\032\271\001\n\003raw\022\027\n\017ref_block_bytes\030\001 \001("
   "\014\022\025\n\rref_block_num\030\003 \001(\003\022\026\n\016ref_block_ha"
   "sh\030\004 \001(\014\022\022\n\nexpiration\030\010 \001(\003\0220\n\010contract"
   "\030\013 \003(\0132\036.protocol.Transaction.Contract\022\021"
@@ -571,11 +571,11 @@ bool Transaction_Contract_ContractType_IsValid(int value) {
     case 2:
     case 3:
     case 4:
-    case 5:
-    case 6:
-    case 7:
-    case 8:
-    case 9:
+    case 11:
+    case 12:
+    case 13:
+    case 14:
+    case 31:
       return true;
     default:
       return false;
@@ -586,12 +586,12 @@ bool Transaction_Contract_ContractType_IsValid(int value) {
 const Transaction_Contract_ContractType Transaction_Contract::AccountCreateContract;
 const Transaction_Contract_ContractType Transaction_Contract::TransferContract;
 const Transaction_Contract_ContractType Transaction_Contract::TransferAssetContract;
-const Transaction_Contract_ContractType Transaction_Contract::FreezeBalanceContract;
-const Transaction_Contract_ContractType Transaction_Contract::UnfreezeBalanceContract;
-const Transaction_Contract_ContractType Transaction_Contract::UnfreezeAssetContract;
-const Transaction_Contract_ContractType Transaction_Contract::WithdrawBalanceContract;
 const Transaction_Contract_ContractType Transaction_Contract::VoteAssetContract;
 const Transaction_Contract_ContractType Transaction_Contract::VoteWitnessContract;
+const Transaction_Contract_ContractType Transaction_Contract::FreezeBalanceContract;
+const Transaction_Contract_ContractType Transaction_Contract::UnfreezeBalanceContract;
+const Transaction_Contract_ContractType Transaction_Contract::WithdrawBalanceContract;
+const Transaction_Contract_ContractType Transaction_Contract::UnfreezeAssetContract;
 const Transaction_Contract_ContractType Transaction_Contract::TriggerSmartContract;
 const Transaction_Contract_ContractType Transaction_Contract::ContractType_MIN;
 const Transaction_Contract_ContractType Transaction_Contract::ContractType_MAX;

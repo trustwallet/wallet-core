@@ -10,13 +10,13 @@ message Transaction {
             AccountCreateContract = 0;
             TransferContract = 1;
             TransferAssetContract = 2;
-            FreezeBalanceContract = 3;
-            UnfreezeBalanceContract = 4;
-            UnfreezeAssetContract = 5;
-            WithdrawBalanceContract = 6;
-            VoteAssetContract = 7;
-            VoteWitnessContract = 8;
-            TriggerSmartContract = 9;
+            VoteAssetContract = 3;
+            VoteWitnessContract = 4;
+            FreezeBalanceContract = 11;
+            UnfreezeBalanceContract = 12;
+            WithdrawBalanceContract = 13;
+            UnfreezeAssetContract = 14;
+            TriggerSmartContract = 31;
         }
         ContractType type = 1;
         google.protobuf.Any parameter = 2;
