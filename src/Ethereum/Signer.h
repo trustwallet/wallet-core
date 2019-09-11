@@ -35,6 +35,11 @@ class Signer {
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 
+    Transaction transaction(const Proto::SigningInput &input) const noexcept;
+
+    /// Computes the transaction hash.
+    Data hash(const Transaction& transaction) const noexcept;
+
   public:
     /// Signs a hash with the given private key for the given chain identifier.
     ///
@@ -47,10 +52,6 @@ class Signer {
     /// @returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID,
                                                               const Data& signature) noexcept;
-
-  protected:
-    /// Computes the transaction hash.
-    Data hash(const Transaction& transaction) const noexcept;
 };
 
 } // namespace TW::Ethereum

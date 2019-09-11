@@ -36,14 +36,7 @@ Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data&
 Proto::SigningOutput Signer::sign(const TW::Ethereum::Proto::SigningInput &input) const noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
-    auto transaction = Transaction(
-            /* nonce: */ load(input.nonce()),
-            /* gasPrice: */ load(input.gas_price()),
-            /* gasLimit: */ load(input.gas_limit()),
-            /* to: */ Address(input.to_address()),
-            /* amount: */ load(input.amount()),
-            /* payload: */ Data(input.payload().begin(), input.payload().end())
-    );
+    auto transaction = this->transaction(input);
 
     sign(key, transaction);
 
@@ -71,6 +64,19 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const 
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
     transaction.v = std::get<2>(tuple);
+}
+
+Transaction Signer::transaction(const TW::Ethereum::Proto::SigningInput &input) const noexcept {
+    auto transaction = Transaction(
+            /* nonce: */ load(input.nonce()),
+            /* gasPrice: */ load(input.gas_price()),
+            /* gasLimit: */ load(input.gas_limit()),
+            /* to: */ Address(input.to_address()),
+            /* amount: */ load(input.amount()),
+            /* payload: */ Data(input.payload().begin(), input.payload().end())
+    );
+
+    return transaction;
 }
 
 Data Signer::hash(const Transaction& transaction) const noexcept {
