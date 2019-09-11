@@ -15,7 +15,6 @@
 #include <cassert>
 #include <stdexcept>
 #include <vector>
-#include <iostream>
 
 namespace TW {
 

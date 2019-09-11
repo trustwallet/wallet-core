@@ -45,7 +45,6 @@ std::vector<uint8_t> Signer::sign() const {
 
 std::string Signer::signaturePreimage() const {
     auto json = signatureJSON(input);
-    std::cout << json << std::endl;
     return json.dump();
 }
 
