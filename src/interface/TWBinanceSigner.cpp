@@ -26,7 +26,7 @@ TW_Binance_Proto_SigningOutput TWBinanceSignerSign(TW_Binance_Proto_SigningInput
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TWData *_Nonnull TWBinanceMessage(TW_Binance_Proto_SigningInput data) {
+TWData *_Nonnull TWBinanceSignerMessage(TW_Binance_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
@@ -35,7 +35,7 @@ TWData *_Nonnull TWBinanceMessage(TW_Binance_Proto_SigningInput data) {
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
 }
 
-TWData *_Nonnull TWBinanceTransaction(TW_Binance_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature) {
+TWData *_Nonnull TWBinanceSignerTransaction(TW_Binance_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 

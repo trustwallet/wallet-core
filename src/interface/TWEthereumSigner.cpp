@@ -24,7 +24,7 @@ TW_Ethereum_Proto_SigningOutput TWEthereumSignerSign(TW_Ethereum_Proto_SigningIn
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TWData *_Nonnull TWEthereumMessage(TW_Ethereum_Proto_SigningInput data) {
+TWData *_Nonnull TWEthereumSignerMessage(TW_Ethereum_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
@@ -34,7 +34,7 @@ TWData *_Nonnull TWEthereumMessage(TW_Ethereum_Proto_SigningInput data) {
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
 }
 
-TWData *_Nonnull TWEthereumTransaction(TW_Ethereum_Proto_SigningInput data, TWData *_Nonnull signature) {
+TWData *_Nonnull TWEthereumSignerTransaction(TW_Ethereum_Proto_SigningInput data, TWData *_Nonnull signature) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
