@@ -21,8 +21,8 @@ TW_EXPORT_STATIC_METHOD
 TW_Binance_Proto_SigningOutput TWBinanceSignerSign(TW_Binance_Proto_SigningInput input);
 /// Builds a message to be signed
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBinanceMessage(TW_Binance_Proto_SigningInput data);
+TWData *_Nonnull TWBinanceSignerMessage(TW_Binance_Proto_SigningInput data);
 /// Builds a transaction to be broadcasted
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWBinanceTransaction(TW_Binance_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature);
+TWData *_Nonnull TWBinanceSignerTransaction(TW_Binance_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature);
 TW_EXTERN_C_END
