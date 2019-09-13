@@ -102,7 +102,13 @@ TEST(TelegramAddress, AddressToString)
 
 TEST(TelegramAddress, AddressFromPublicKey)
 {
+    // Sample taken from TON HOWTO
     const auto publicKey = PublicKey(parse_hex("F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3"), TWPublicKeyTypeED25519);
-    const auto address = Address(publicKey);
-    ASSERT_EQ("Ef/i1CkT9THzhPebXBgRvAhspHRUXT8wC+1Hz+8xZtv1gs+k", address.string());
+    auto address = Address(publicKey);
+    ASSERT_EQ("-1:60c04141c6a7b96d68615e7a91d265ad0f3a9a922e9ae9c901d4fa83f5d3c0d0", address.stringRaw());
+    ASSERT_EQ("Ef9gwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0KTM", address.string());
+    // to match options 7 (non-bounceable, test only, base64url)
+    address.isBounceable = false;
+    address.isTestOnly = true;
+    ASSERT_EQ("0f9gwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0EKD", address.string());
 }

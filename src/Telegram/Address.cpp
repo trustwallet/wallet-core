@@ -5,12 +5,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
+#include "Cell.h"
 #include "../HexCoding.h"
 #include "../Base64.h"
 #include "../Crc.h"
-#include "../Hash.h"
 
 #include <iostream>
+#include <memory>
 
 using namespace std;
 using namespace TW::Telegram;
@@ -32,33 +33,37 @@ Address::Address(const std::string& address)
 
 Address::Address(const PublicKey& publicKey)
 {
-    // Steps: a StateInit account state is created (containing code and data), its hash is taken, and new address is derived from the hash
-    // TODO: This may be not 100% correct, does not produce same result as ref impl for 'test giver' account
+    // Steps: a StateInit account state cell is created (containing code and data), its hash is taken, and new address is derived from the hash
 
     if (publicKey.type != TWPublicKeyTypeED25519)
     {
         throw std::invalid_argument("Invalid public key type");
     }
 
-    const std::string accountSCCodeFixed("FF0020DDA4F260810200D71820D70B1FED44D0D7091FD709FFD15112BAF2A122F901541044F910F2A2F80001D7091F3120D74A97D70907D402FB00DED1A4C8CB1FCBFFC9ED54");
-
-    TW::Data stateInit;
     // code
-    stateInit = parse_hex(accountSCCodeFixed);
+    //const std::string accountSCCodeFixed("FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54");
+    const std::string accountSCCodeFixed("FF0020DDA4F260810200D71820D70B1FED44D0D7091FD709FFD15112BAF2A122F901541044F910F2A2F80001D7091F3120D74A97D70907D402FB00DED1A4C8CB1FCBFFC9ED54");
+    auto ccode = std::make_shared<Cell>();
+    assert(ccode->setSliceBytesStr(accountSCCodeFixed));
+
     // data: 4 byte serial num (0), 32 byte public key
-    for(int i = 0; i < 4; ++i) stateInit.push_back(0);
-    for(auto i = publicKey.bytes.begin(), n = publicKey.bytes.end(); i != n; ++i)
-    {
-        stateInit.push_back(*i);
-    }
-    assert(stateInit.size() >= 4 + 4 + 32);
+    std::vector<unsigned char> data;
+    for(int i = 0; i < 4; ++i) data.push_back(0);
+    data.insert(data.end(), publicKey.bytes.begin(), publicKey.bytes.end());
+    assert(data.size() == 4 + 32);
+    auto cdata = std::make_shared<Cell>();
+    assert(cdata->setSliceBytes(data.data(), data.size()));
+
+    Cell stateInit;
+    stateInit.setSliceBitsStr("34", 5);
+    stateInit.addCell(ccode);
+    stateInit.addCell(cdata);
 
     // compute hash
-    auto hash = TW::Hash::sha256(stateInit.data(), stateInit.data() + stateInit.size());
+    auto hash = stateInit.hash();
 
     // fill members
     workchainId = Workchain::MasterChainId;
-    // addrBytes = hash
     std::copy(hash.begin(), hash.end(), addrBytes.begin());
     isBounceable = true;
     isTestOnly = false;
