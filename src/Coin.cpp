@@ -24,6 +24,7 @@
 #include "Icon/Address.h"
 #include "IoTeX/Address.h"
 #include "NEO/Address.h"
+#include "NEAR/Address.h"
 #include "Nano/Address.h"
 #include "Nebulas/Address.h"
 #include "Nimiq/Address.h"
@@ -155,6 +156,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeNano:
         return Nano::Address::isValid(string);
+
+    case TWCoinTypeNEAR:
+        return NEAR::Address::isValid(string);
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
@@ -294,6 +298,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
+
+    case TWCoinTypeNEAR:
+        return NEAR::Address(publicKey).string();
 
     case TWCoinTypeSemux:
         return Semux::Address(publicKey).string();
