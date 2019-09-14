@@ -12,7 +12,6 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 ![Maven Central](https://img.shields.io/maven-central/v/com.trustwallet.walletcore/walletcore.svg)
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
-[![npm](https://img.shields.io/badge/npm-v0.4.0-blue.svg?style=flat-square&logo=npm)](https://www.npmjs.com/package/trust-wallet-core)
 
 ### Supported Blockchains
 

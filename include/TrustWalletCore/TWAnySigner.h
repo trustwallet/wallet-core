@@ -8,6 +8,7 @@
 
 #include "TWBase.h"
 #include "TWAnyProto.h"
+#include "TWCoinType.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -18,5 +19,7 @@ struct TWAnySigner;
 TW_EXPORT_STATIC_METHOD
 TW_Any_Proto_SigningOutput TWAnySignerSign(TW_Any_Proto_SigningInput input);
 
+TW_EXPORT_STATIC_METHOD
+bool TWAnySignerIsSignEnabled(enum TWCoinType coinType);
 
 TW_EXTERN_C_END

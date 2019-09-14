@@ -23,6 +23,10 @@ static const auto tradeOrderPrefix = std::vector<uint8_t>{0xCE, 0x6D, 0xC0, 0x43
 static const auto cancelTradeOrderPrefix = std::vector<uint8_t>{0x16, 0x6E, 0x68, 0x1B};
 static const auto tokenFreezeOrderPrefix = std::vector<uint8_t>{0xE7, 0x74, 0xB3, 0x2D};
 static const auto tokenUnfreezeOrderPrefix = std::vector<uint8_t>{0x65, 0x15, 0xFF, 0x0D};
+static const auto HTLTOrderPrefix = std::vector<uint8_t>{0xB3, 0x3F, 0x9A, 0x24};
+static const auto depositHTLTOrderPrefix = std::vector<uint8_t>{0x63, 0x98, 0x64, 0x96};
+static const auto claimHTLTOrderPrefix = std::vector<uint8_t>{0xC1, 0x66, 0x53, 0x00};
+static const auto refundHTLTOrderPrefix = std::vector<uint8_t>{0x34, 0x54, 0xA2, 0x7C};
 static const auto pubKeyPrefix = std::vector<uint8_t>{0xEB, 0x5A, 0xE9, 0x87};
 static const auto transactionPrefix = std::vector<uint8_t>{0xF0, 0x62, 0x5D, 0xEE};
 
@@ -73,6 +77,18 @@ std::vector<uint8_t> Signer::encodeOrder() const {
     } else if (input.has_unfreeze_order()) {
         data = input.unfreeze_order().SerializeAsString();
         prefix = tokenUnfreezeOrderPrefix;
+    } else if (input.has_htlt_order()) {
+        data = input.htlt_order().SerializeAsString();
+        prefix = HTLTOrderPrefix;
+    } else if (input.has_deposithtlt_order()) {
+        data = input.deposithtlt_order().SerializeAsString();
+        prefix = depositHTLTOrderPrefix;
+    } else if (input.has_claimhtlt_order()) {
+        data = input.claimhtlt_order().SerializeAsString();
+        prefix = claimHTLTOrderPrefix;
+    } else if (input.has_refundhtlt_order()) {
+        data = input.refundhtlt_order().SerializeAsString();
+        prefix = refundHTLTOrderPrefix;
     } else {
         return {};
     }
