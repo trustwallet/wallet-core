@@ -46,6 +46,9 @@ public:
     TW::Data hash() const;
 
 private:
+    void allocate(size_t size, unsigned char* data);
+
+private:
     unsigned char* _data;
     size_t _size; // in bytes
     size_t _sizeBits;
