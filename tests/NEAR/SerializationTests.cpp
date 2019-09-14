@@ -37,6 +37,9 @@ TEST(NEARSerialization, SerializeTransferTransaction) {
     auto blockHash = Base58::bitcoin.decode("244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM");
     input.set_block_hash(blockHash.data(), blockHash.size());
 
+    auto privateKey = Base58::bitcoin.decode("3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv");
+    input.set_private_key(privateKey.data(), 32);
+
     auto serialized = transactionData(input);
     auto serializedHex = hex(serialized);
 
