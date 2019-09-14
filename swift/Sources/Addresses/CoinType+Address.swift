@@ -57,6 +57,8 @@ public extension CoinType {
             return NanoAddress(string: string)
         case .nebulas:
             return NebulasAddress(string: string)
+        case .near:
+            return NEARAddress(string: string)
         case .neo:
             return NEOAddress(string: string)
         case .decred:

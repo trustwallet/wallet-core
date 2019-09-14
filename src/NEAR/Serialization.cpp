@@ -38,12 +38,12 @@ template <class T> static void writeRawBuffer(Data &data, const T& buf) {
 }
 
 static void writeString(Data& data, const std::string& str) {
-    writeU32(data, str.length());
+    writeU32(data, static_cast<uint32_t>(str.length()));
     writeRawBuffer(data, str);
 }
 
 static void writePublicKey(Data& data, const Proto::PublicKey& publicKey) {
-    writeU8(data, publicKey.key_type());
+    writeU8(data, static_cast<uint8_t>(publicKey.key_type()));
     const auto& keyData = publicKey.data();
     writeRawBuffer(data, keyData);
 }
@@ -59,7 +59,6 @@ static void writeAction(Data& data, const Proto::Action& action) {
             writeTransfer(data, action.transfer());
             return;
         default:
-            // TODO: Report error properly?
             return;
     }
 }
