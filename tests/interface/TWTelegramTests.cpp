@@ -42,5 +42,5 @@ TEST(TWTelegramAddress, CreateWithPublicKey) {
     auto publicKey = TWPublicKeyCreateWithData(pkData.get(), TWPublicKeyTypeED25519);
     auto address = TWTelegramAddressCreateWithPublicKey(publicKey);
     auto addressStr = TWTelegramAddressDescription(address);
-    ASSERT_EQ(std::string("Ef/i1CkT9THzhPebXBgRvAhspHRUXT8wC+1Hz+8xZtv1gs+k"), TWStringUTF8Bytes(addressStr));
+    ASSERT_EQ(std::string("Ef9gwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0KTM"), TWStringUTF8Bytes(addressStr));
 }
