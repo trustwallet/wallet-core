@@ -31,16 +31,29 @@ Slice::~Slice()
     }
 }
 
+void Slice::allocate(size_t size, unsigned char* data)
+{
+    assert(_data == nullptr);
+    if (data != nullptr && size > 0)
+    {
+        _size = size;
+        _data = new unsigned char[_size];
+        assert(data != nullptr);
+        std::copy(data, data + _size, _data);
+    }
+}
+
 Slice & Slice::operator=(const Slice & from)
 {
-    _size = from._size;
-    _sizeBits = from._sizeBits;
-    _data = nullptr;
-    if (from._data != nullptr)
+    if (&from != this) // check for self
     {
-        _data = new unsigned char[_size];
-        assert(from._data != nullptr);
-        std::copy(from._data, from._data + from._size, _data);
+        _size = from._size;
+        _sizeBits = from._sizeBits;
+        _data = nullptr;
+        if (from._data != nullptr)
+        {
+            allocate(from._size, from._data);
+        }
     }
     return *this;
 }
@@ -50,14 +63,11 @@ bool Slice::loadFromBytes(unsigned char* data, size_t size)
     if (_data != nullptr || _size != 0) return false; // already loaded
     assert(_data == nullptr);
     assert(_size == 0);
-    if (data == nullptr) return false; // null ptr
+    if (data == nullptr || size == 0) return false; // missing data
     assert(data != nullptr);
-    _size = size;
-    _sizeBits = size * 8;
     // allocate and copy
-    _data = new unsigned char[_size];
-    assert(data != nullptr);    
-    std::copy(data, data + size, _data);
+    allocate(size, data);
+    _sizeBits = _size * 8;
     return true;
 }
 
