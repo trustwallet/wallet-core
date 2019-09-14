@@ -24,8 +24,6 @@ TEST(NEARSigner, SignTx) {
 
     auto input = Proto::SigningInput();
     input.set_signer_id("test.near");
-    input.mutable_public_key()->set_key_type(0);
-    input.mutable_public_key()->set_data(publicKey.data(), publicKey.size());
     input.set_nonce(1);
     input.set_receiver_id("whatever.near");
 

@@ -9,6 +9,7 @@
 #include "../NEAR/Address.h"
 #include "../Base64.h"
 #include "../BinaryCoding.h"
+#include "../PrivateKey.h"
 #include <TrustWalletCore/TWHRP.h>
 
 using namespace TW;
@@ -66,10 +67,13 @@ static void writeAction(Data& data, const Proto::Action& action) {
 Data TW::NEAR::transactionData(const Proto::SigningInput& input) {
     Data data;
     writeString(data, input.signer_id());
-    writePublicKey(data, input.public_key());
+    auto key = PrivateKey(input.private_key());
+    auto public_key = key.getPublicKey(TWPublicKeyTypeED25519);
+    auto public_key_proto = Proto::PublicKey();
+    public_key_proto.set_data(public_key.bytes.data(), public_key.bytes.size());
+    writePublicKey(data, public_key_proto);
     writeU64(data, input.nonce());
     writeString(data, input.receiver_id());
-    // TODO: assert fixed size buffer sizes
     const auto& block_hash = input.block_hash();
     writeRawBuffer(data, block_hash);
     writeU32(data, input.actions_size());

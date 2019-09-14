@@ -76,13 +76,12 @@ message Action {
 // Input data necessary to create a signed order.
 message SigningInput {
     string signer_id = 1;
-    PublicKey public_key = 2;
-    uint64 nonce = 3;
-    string receiver_id = 4;
-    bytes block_hash = 5;
-    repeated Action actions = 6;
+    uint64 nonce = 2;
+    string receiver_id = 3;
+    bytes block_hash = 4;
+    repeated Action actions = 5;
 
-    bytes private_key = 7;
+    bytes private_key = 6;
 }
 
 // Transaction signing output.
