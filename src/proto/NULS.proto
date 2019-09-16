@@ -54,21 +54,17 @@ message TransactionOutput {
 }
 
 message Transaction {
-    int32  type = 1;   
-    string from_address = 2;
-    string to_address = 3;
-    int64 amount = 4;
+    int32  type = 1;
+    int32  timestamp = 2;
+    bytes  tx_data = 3;
 
+    //CoinFrom
+    repeated TransactionInput inputs = 4;
 
-    /// UTF-8 encode strings
-    string remark = 5;
-
-    int64 timestamp = 6;
-
-    /// Unspent input list
-    repeated TransactionInput inputs = 7;
-    /// Output list
-    repeated TransactionOutput outputs = 8;
+    //CoinTo
+    repeated TransactionOutput outputs = 5;
+    string remark = 6;
+    bytes tx_sig = 7;
 }
 
 
@@ -76,15 +72,15 @@ message TransactionPurpose {
     bytes private_key = 1;
     string from_address = 2;
     string to_address = 3;
-    int64 amount = 4;
+    bytes amount = 4;
 
     /// UTF-8 encode strings
     string remark = 5;
 
-    int64 timestamp = 6;
+    int32 timestamp = 6;
 
     /// Unspent input list
-    repeated TransactionInput utxos = 7;
+    repeated TransactionInput inputs = 7;
 
     // If sending max amount.
     bool use_max_amount = 8;
@@ -94,12 +90,12 @@ message TransactionPlan {
     bytes private_key = 1;
     string from_address = 2;
     string to_address = 3;
-    int64 amount = 4;
+    bytes amount = 4;
 
     /// UTF-8 encode strings
     string remark = 5;
 
-    int64 timestamp = 6;
+    int32 timestamp = 6;
     int64 fee = 7;
     int64 change = 8;
     int64 available_amount = 9;

@@ -12,17 +12,6 @@
 using namespace TW;
 using namespace TW::NULS;
 
-/*
- *
- {
-    "address": "NsdzroTToPjWGSqz9ZpWJNSvDRhtcE7S",
-    "encryptedPrivateKey": null,
-    "alias": null,
-    "pubKey": "03d38bb716c3a641895ffaa480c29cc7aa5f75ed550138a52e644e94afc9d0cd03",
-    "prikey": "00e4e0454476a38d9c5dbf332cf576f6dd77c6941e41c64be3ae22b334f3bed2de"
- }
- *
- * */
 
 TEST(NULSAddress, StaticInvalid) {
     ASSERT_FALSE(Address::isValid("abc"));
