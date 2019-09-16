@@ -272,6 +272,17 @@ const sha2_word64 sha512_initial_hash_value[8] = {
 	0x5be0cd19137e2179ULL
 };
 
+const sha2_word64 sha512_256_initial_hash_value[8] = {
+	0x22312194fc2bf72cULL,
+	0x9f555fa3c84c64c2ULL,
+	0x2393b86b6f53b151ULL,
+	0x963877195940eabdULL,
+	0x96283ee2a88effe3ULL,
+	0xbe5e1e2553863992ULL,
+	0x2b0199fc2c85b8aaULL,
+	0x0eb72ddc81c52ca2ULL,
+};
+
 /*
  * Constant used by SHA256/384/512_End() functions for converting the
  * digest to a readable hexadecimal character string:
@@ -984,6 +995,15 @@ void sha512_Init(SHA512_CTX* context) {
 	context->bitcount[0] = context->bitcount[1] =  0;
 }
 
+void sha512_256_Init(SHA512_CTX* context) {
+	if (context == (SHA512_CTX*)0) {
+		return;
+	}
+	MEMCPY_BCOPY(context->state, sha512_256_initial_hash_value, SHA512_DIGEST_LENGTH);
+	memzero(context->buffer, SHA512_BLOCK_LENGTH);
+	context->bitcount[0] = context->bitcount[1] =  0;
+}
+
 #ifdef SHA2_UNROLL_TRANSFORM
 
 /* Unrolled SHA-512 round macros: */
@@ -1272,6 +1292,17 @@ void sha512_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA512_DIGEST_
 	sha512_Init(&context);
 	sha512_Update(&context, data, len);
 	sha512_Final(&context, digest);
+}
+
+void sha512_256_Raw(const sha2_byte* data, size_t len, uint8_t digest[SHA256_DIGEST_LENGTH]) {
+	SHA512_CTX	context;
+	uint8_t result[SHA512_DIGEST_LENGTH];
+	sha512_256_Init(&context);
+	sha512_Update(&context, data, len);
+	sha512_Final(&context, result);
+
+	memcpy(digest, result, SHA256_DIGEST_LENGTH);
+	memzero(result, SHA512_DIGEST_LENGTH);
 }
 
 char* sha512_Data(const sha2_byte* data, size_t len, char digest[SHA512_DIGEST_STRING_LENGTH]) {

@@ -32,6 +32,9 @@ TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashSHA512(TWData *_Nonnull data);
 
 TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashSHA512_256(TWData *_Nonnull data);
+
+TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashKeccak256(TWData *_Nonnull data);
 
 TW_EXPORT_STATIC_METHOD
