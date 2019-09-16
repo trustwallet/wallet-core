@@ -137,7 +137,7 @@
         "base58Hasher": "blake256d",
         "xpub": "dpub",
         "xprv": "dprv",
-        "explorer": "https://mainnet.decred.org/tx/",
+        "explorer": "https://dcrdata.decred.org/tx/",
         "info": {
             "url": "https://decred.org",
             "client": "https://github.com/trezor/blockbook",
@@ -1052,7 +1052,7 @@
         "name": "FIO",
         "symbol": "FIO",
         "decimals": 9,
-        "blockchain": "EOS",
+        "blockchain": "FIO",
         "derivationPath": "m/44'/235'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
@@ -1064,6 +1064,41 @@
             "client": "https://fio.foundation",
             "clientPublic": "",
             "clientDocs": "https://fio.foundation"
+        }
+    },
+    {
+        "id": "harmony",
+        "name": "Harmony",
+        "symbol": "ONE",
+        "decimals": 18,
+        "blockchain": "Harmony",
+        "hrp": "one",
+        "derivationPath": "m/44'/1023'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": "https://explorer.harmony.one/#/tx/",
+        "info": {
+            "url": "https://harmony.one",
+            "client": "https://github.com/harmony-one/go-sdk",
+            "clientPublic": "https://github.com/harmony-one/go-sdk",
+            "clientDocs": "https://app.gitbook.com/@harmony-one/s/sdk-wiki"
+        }
+    },
+    {
+        "id": "solana",
+        "name": "Solana",
+        "symbol": "SOL",
+        "decimals": 13,
+        "blockchain": "Solana",
+        "derivationPath": "m/44'/501'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "https://explorer.solana.com/tx/",
+        "info": {
+            "url": "https://solana.com",
+            "client": "https://github.com/solana-labs/solana",
+            "clientPublic": "http://api.mainnet.solana.com",
+            "clientDocs": "https://solana-labs.github.io/book/"
         }
     }
 ]

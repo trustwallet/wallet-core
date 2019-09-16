@@ -24,6 +24,7 @@ private:
     const Proto::SigningInput& input;
 
     void parse(const std::string &transaction, google::protobuf::Message *message, Proto::SigningOutput &output) const noexcept;
+    void toJson(const google::protobuf::Message &message, std::string *json_string) const noexcept;
 };
 
 }

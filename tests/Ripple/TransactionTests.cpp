@@ -23,11 +23,19 @@ TEST(RippleTransaction, serializeAmount) {
     auto data1 = Transaction::serializeAmount(1);
     auto data2 = Transaction::serializeAmount(93493429243);
     auto data3 = Transaction::serializeAmount(25000000);
+    auto data4 = Transaction::serializeAmount(100000000000);
+    /// more than max supply
+    auto data5 = Transaction::serializeAmount(200000000000000000);
+    /// negative value
+    auto data6 = Transaction::serializeAmount(-1);
 
     ASSERT_EQ(hex(data0), "4000000000000000");
     ASSERT_EQ(hex(data1), "4000000000000001");
     ASSERT_EQ(hex(data2), "40000015c4a483fb");
     ASSERT_EQ(hex(data3), "40000000017d7840");
+    ASSERT_EQ(hex(data4), "400000174876e800");
+    ASSERT_EQ(hex(data5), "42c68af0bb140000");
+    ASSERT_EQ(hex(data6), "");
 }
 
 TEST(RippleTransaction, serialize) {

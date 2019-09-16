@@ -13,7 +13,6 @@ using namespace TW;
 using namespace TW::Ripple;
 
 const int NETWORK_PREFIX = 0x53545800;
-const int64_t MAX_ALLOWED_AMOUNT = 100000000000;
 
 Data Transaction::serialize() const {
     auto data = Data();
@@ -70,7 +69,7 @@ Data Transaction::getPreImage() const {
 }
 
 Data Transaction::serializeAmount(int64_t amount) {
-    if (amount > MAX_ALLOWED_AMOUNT || amount < 0) {
+    if (amount < 0) {
         return Data();
     }
     auto data = Data();

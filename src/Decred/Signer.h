@@ -46,7 +46,10 @@ class Signer {
     Signer() = default;
 
     /// Initializes a transaction signer with signing input.
-    explicit Signer(Bitcoin::Proto::SigningInput&& input) : input(input) {}
+    explicit Signer(Bitcoin::Proto::SigningInput&& input) 
+      : input(input), plan(TransactionBuilder::plan(input)) {
+        transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
+    }
 
     /// Initializes a transaction signer with signing input, a transaction, and
     /// a hash type.

@@ -16,7 +16,8 @@
 
 namespace TW::Bitcoin {
 
-struct TransactionBuilder {
+class TransactionBuilder {
+public:
     /// Plans a transaction by selecting UTXOs and calculating fees.
     static TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
         auto plan = TransactionPlan();
