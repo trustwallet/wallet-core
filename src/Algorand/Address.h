@@ -17,8 +17,8 @@ class Address {
   public:
     /// Base32 encoded address string length.
     static const size_t encodedSize = 58;
-    /// Sha512/256 checksum size.
 
+    /// Sha512/256 checksum size.
     static const size_t checksumSize = 4;
     /// Address data consisting of public key.
 
