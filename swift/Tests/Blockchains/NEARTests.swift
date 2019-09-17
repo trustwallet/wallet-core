@@ -23,6 +23,7 @@ class NEARAddressTests: XCTestCase {
 class NEARSignerTests: XCTestCase {
 
     func testSigningTransaction() {
+        // swiftlint:disable:next line_length
         let privateKey = PrivateKey(data: Base58.decodeNoCheck(string: "3hoMW1HvnRLSFCLZnvPzWeoGwtdHzke34B2cTHM8rhcbG3TbuLKtShTv3DvyejnXKXKBiV7YPkLeqUHN1ghnqpFv")!.subdata(in: 0..<32))!
 
         let signingInput = NEARSigningInput.with {
@@ -35,7 +36,7 @@ class NEARSignerTests: XCTestCase {
                     $0.transfer = NEARTransfer.with {
                         $0.deposit = Data(hexString: "01000000000000000000000000000000")!
                     }
-                })
+                }),
             ]
 
             $0.blockHash = Base58.decodeNoCheck(string: "244ZQ9cgj3CQ6bWBdytfrJMuMQ1jdXLFGnr4HhvtCTnM")!
@@ -43,6 +44,7 @@ class NEARSignerTests: XCTestCase {
         }
 
         let output = NEARSigner.sign(input: signingInput)
+        // swiftlint:disable:next line_length
         let expectedBase64Encoded = "CQAAAHRlc3QubmVhcgCRez0mjUtY9/7BsVC9aNab4+5dTMOYVeNBU4Rlu3eGDQEAAAAAAAAADQAAAHdoYXRldmVyLm5lYXIPpHP9JpAd8pa+atxMxN800EDvokNSJLaYaRDmMML+9gEAAAADAQAAAAAAAAAAAAAAAAAAAACWmoMzIYbul1Xkg5MlUlgG4Ymj0tK7S0dg6URD6X4cTyLe7vAFmo6XExAO2m4ZFE2n6KDvflObIHCLodjQIb0B"
         XCTAssertEqual(Data(base64Encoded: expectedBase64Encoded), output.signedTransaction)
     }
