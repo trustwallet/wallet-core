@@ -310,12 +310,11 @@ TEST(TronSigner, SignTriggerSmartContract) {
 
 TEST(TronSigner, SignTransferTrc20Contract) {
     auto input = Proto::SigningInput();
-    auto data = parse_hex("736f6d652064617461");
     auto& transaction = *input.mutable_transaction();
     auto& transfer_contract = *transaction.mutable_transfer_trc20_contract();
     transfer_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
     transfer_contract.set_contract_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
-    transfer_contract.set_to_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+    transfer_contract.set_to_address("TW1dU4L3eNm7Lw8WvieLKEHpXWAussRG9Z");
     transfer_contract.set_amount(1000);
 
     transaction.set_timestamp(1539295479000);
@@ -336,7 +335,7 @@ TEST(TronSigner, SignTransferTrc20Contract) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "ef4a91ca0671856dd9df9d65d02d3c909f478b65a54ff593c4f268ac62667fca");
-    ASSERT_EQ(hex(output.signature()), "012c656ab56f3056e5a473be411d7afeefbc5948622612eec9d41c6e627c61a47049c2d7f6c4badff035236a54f4e87591900f0d3bdfca355d85d6ec9a65d3a701");
+    ASSERT_EQ(hex(output.id()), "0d644290e3cf554f6219c7747f5287589b6e7e30e1b02793b48ba362da6a5058");
+    ASSERT_EQ(hex(output.signature()), "bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01");
 }
 } // namespace TW::Tron
