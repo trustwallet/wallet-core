@@ -7,6 +7,7 @@
 #include <TrustWalletCore/TWTelegramAddress.h>
 #include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWHDWallet.h>
 
 #include "TWTestUtilities.h"
 
@@ -43,4 +44,18 @@ TEST(TWTelegramAddress, CreateWithPublicKey) {
     auto address = TWTelegramAddressCreateWithPublicKey(publicKey);
     auto addressStr = TWTelegramAddressDescription(address);
     ASSERT_EQ(std::string("Ef9gwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0KTM"), TWStringUTF8Bytes(addressStr));
+}
+
+TEST(TWTelegramAddress, HDWallet) {
+    auto mnemonic = "shoot island position soft burden budget tooth cruel issue economy destroy above";
+    auto passphrase = "";
+
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(STRING(mnemonic).get(), STRING(passphrase).get()));
+
+    auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeDerivationPath(TWCoinTypeSolana));
+    auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
+    auto address = TWTelegramAddressCreateWithPublicKey(publicKey);
+    auto addressStr = WRAPS(TWTelegramAddressDescription(address));
+
+    assertStringsEqual(addressStr, "Ef/ILPbxb92d5s9xvpznI7YLyh7kloPJdj1dEFTmHwrX97Hf");
 }

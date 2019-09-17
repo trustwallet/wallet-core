@@ -84,5 +84,6 @@ class CoinAddressDerivationTests {
         FIO -> assertEquals("FIO7MN1LuSfFgrbVHmrt9cVa2FYAs857Ppr9dzvEXoD1miKSxm3n3", address)
         HARMONY -> assertEquals("one12fk20wmvgypdkn59n4hq8e3aa5899xfx4vsu09", address)
         SOLANA -> assertEquals("2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m", address)
+        TELEGRAM -> assertEquals("Ef/ILPbxb92d5s9xvpznI7YLyh7kloPJdj1dEFTmHwrX97Hf", address)
     }
 }

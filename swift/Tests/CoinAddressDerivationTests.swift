@@ -193,6 +193,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .solana:
                     let expectedResult = "2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .telegram:
+                    let expectedResult = "Ef/ILPbxb92d5s9xvpznI7YLyh7kloPJdj1dEFTmHwrX97Hf"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }
