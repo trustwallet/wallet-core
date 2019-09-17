@@ -99,6 +99,8 @@ public extension CoinType {
             return HarmonyAddress(string: string)
         case .solana:
             return SolanaAddress(string: string)
+        case .algorand:
+            return AlgorandAddress(string: string)
         }
     }
 }

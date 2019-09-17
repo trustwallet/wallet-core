@@ -34,6 +34,7 @@ This list is generated from [./coins.json](../coins.json)
 | 237     | DEXON            | DXN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/dexon/info/logo.png" width="32" />        | <https://dexon.org>           |
 | 242     | Nimiq            | NIM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nimiq/info/logo.png" width="32" />        | <https://nimiq.com>           |
 | 282     | BravoCoin        | BRAVO  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bravocoin/info/logo.png" width="32" />    | <https://bravocoin.com>       |
+| 283     | Algorand         | ALGO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/algorand/info/logo.png" width="32" />     | <https://www.algorand.com/>   |
 | 291     | IOST             | IOST   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iost/info/logo.png" width="32" />         | <https://iost.io>             |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png" width="32" />        | <https://iotex.io>            |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |

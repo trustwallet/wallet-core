@@ -9,6 +9,7 @@
 #include "ARK/Address.h"
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
+#include "Algorand/Address.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
@@ -180,6 +181,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeSolana:
         return Solana::Address::isValid(string);
+
+    case TWCoinTypeAlgorand:
+        return Algorand::Address::isValid(string);
     }
 }
 
@@ -319,6 +323,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeSolana:
         return Solana::Address(publicKey).string();
+
+    case TWCoinTypeAlgorand:
+        return Algorand::Address(publicKey).string();
     }
 }
 
