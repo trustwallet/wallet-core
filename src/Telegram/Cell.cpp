@@ -58,61 +58,59 @@ Slice & Slice::operator=(const Slice & from)
     return *this;
 }
 
-bool Slice::loadFromBytes(unsigned char* data, size_t size)
+Slice Slice::createFromBytes(unsigned char* data, size_t size)
 {
-    if (_data != nullptr || _size != 0) return false; // already loaded
-    assert(_data == nullptr);
-    assert(_size == 0);
-    if (data == nullptr || size == 0) return false; // missing data
+    if (data == nullptr || size == 0) throw std::runtime_error("empty data");
     assert(data != nullptr);
-    // allocate and copy
-    allocate(size, data);
-    _sizeBits = _size * 8;
-    return true;
+    // Create, allocate and copy
+    Slice s;
+    s.allocate(size, data);
+    s._sizeBits = s._size * 8;
+    return s;
 }
 
-bool Slice::loadFromBytes(TW::Data data)
+Slice Slice::createFromBytes(TW::Data data)
 {
-    return loadFromBytes(data.data(), data.size());
+    return createFromBytes(data.data(), data.size());
 }
 
-bool Slice::loadFromBytesStr(std::string const & dataStr)
+Slice Slice::createFromBytesStr(std::string const & dataStr)
 {
     TW::Data data = TW::parse_hex(dataStr);
-    return loadFromBytes(data.data(), data.size());
+    return createFromBytes(data.data(), data.size());
 }
 
-bool Slice::loadFromBits(unsigned char* data, size_t size, size_t sizeBits)
+Slice Slice::createFromBits(unsigned char* data, size_t size, size_t sizeBits)
 {
     // compute number of bytes needed
     size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
-    if (size < size1) return false; // to few bytes given
+    if (size < size1) throw std::runtime_error("too few bytes given");
     assert(size >= size1);
     // fill bytes ...
-    if (!loadFromBytes(data, size1)) return false;
+    Slice s = createFromBytes(data, size1);
     // ... and adjust sizeBits and last byte
-    _sizeBits = sizeBits;
-    if ((_sizeBits & 7) != 0)
+    s._sizeBits = sizeBits;
+    if ((s._sizeBits & 7) != 0)
     {
-        size_t diffBits = _size * 8 - _sizeBits;
+        size_t diffBits = s._size * 8 - s._sizeBits;
         assert(diffBits > 0 && diffBits <= 7);
         // zero unused bits
-        _data[_size - 1] &= ~((1 << diffBits) - 1);
+        s._data[s._size - 1] &= ~((1 << diffBits) - 1);
         // set highest unused bit to 0
-        _data[_size - 1] |= (1 << (diffBits - 1));
+        s._data[s._size - 1] |= (1 << (diffBits - 1));
     }
-    return true;
+    return s;
 }
 
-bool Slice::loadFromBits(TW::Data data, size_t sizeBits)
+Slice Slice::createFromBits(TW::Data data, size_t sizeBits)
 {
-    return loadFromBits(data.data(), data.size(), sizeBits);
+    return createFromBits(data.data(), data.size(), sizeBits);
 }
 
-bool Slice::loadFromBitsStr(std::string const & dataStr, size_t sizeBits)
+Slice Slice::createFromBitsStr(std::string const & dataStr, size_t sizeBits)
 {
     TW::Data data = TW::parse_hex(dataStr);
-    return loadFromBits(data.data(), data.size(), sizeBits);
+    return createFromBits(data.data(), data.size(), sizeBits);
 }
 
 std::string Slice::asBytesStr() const
@@ -134,35 +132,28 @@ void Cell::setSlice(Slice const & slice)
     _slice = slice;
 }
 
-bool Cell::setSliceBytes(unsigned char* data, size_t size)
+void Cell::setSliceBytes(unsigned char* data, size_t size)
 {
-    Slice s;
-    if (!s.loadFromBytes(data, size)) return false;
+    Slice s = Slice::createFromBytes(data, size);
     setSlice(s);
-    return true;
 }
 
-bool Cell::setSliceBytesStr(std::string const & sliceStr)
+void Cell::setSliceBytesStr(std::string const & sliceStr)
 {
-    Slice s;
-    if (!s.loadFromBytesStr(sliceStr)) return false;
+    Slice s = Slice::createFromBytesStr(sliceStr);
     setSlice(s);
-    return true;
 }
 
-bool Cell::setSliceBitsStr(std::string const & sliceStr, size_t sizeBits)
+void Cell::setSliceBitsStr(std::string const & sliceStr, size_t sizeBits)
 {
-    Slice s;
-    if (!s.loadFromBitsStr(sliceStr, sizeBits)) return false;
+    Slice s = Slice::createFromBitsStr(sliceStr, sizeBits);
     setSlice(s);
-    return true;
 }
 
-bool Cell::addCell(std::shared_ptr<Cell> const & cell)
+void Cell::addCell(std::shared_ptr<Cell> const & cell)
 {
-    if (cell_count() >= max_cells) return false; // too many cells
+    if (cell_count() >= max_cells) throw std::runtime_error("too many cells");
     _cells.push_back(cell);
-    return true;
 }
 
 std::string Cell::toString() const
