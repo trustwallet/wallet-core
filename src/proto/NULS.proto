@@ -15,7 +15,7 @@ message TransactionInput {
     bytes nonce = 5;
 
     //lock status: 1 locked; 0 unlocked
-    bytes locked = 6;
+    int32 locked = 6;
 }
 
 message TransactionOutput {
@@ -41,7 +41,9 @@ message Transaction {
     string remark = 6;
     bytes tx_sig = 7;
 
-     bytes amount = 8;
+    bytes amount = 8;
+    string from_address = 9;
+    string to_address = 10;
 }
 
 

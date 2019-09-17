@@ -30,15 +30,29 @@ static inline void serializerInput(std::vector<Proto::TransactionInput>& inputs,
     std::vector<uint8_t>& data) {
     encodeVarInt(inputs.size(), data);
     for (const auto& input : inputs) {
-        Data owner = parse_hex(input.from_hash());
-        // Input owner is txid and index
-        encodeVarInt((uint16_t)input.from_index(), owner);
+        const auto& fromAddress = input.from_address();
+        if (!NULS::Address::isValid(fromAddress)) {
+            throw std::invalid_argument("Invalid address");
+        }
 
-        encodeVarInt(owner.size(), data);
-        std::copy(owner.begin(), owner.end(), std::back_inserter(data));
+        const auto& addr = NULS::Address(fromAddress);
+        encodeVarInt(addr.bytes.size() - 1, data);
+        std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
 
-        encode64LE((uint64_t)input.amount(), data);
-        encode48LE((uint64_t)input.lock_time(), data);
+        encodeVarInt((uint16_t)input.assets_chainid(), data);
+        encode16LE((uint16_t)input.assets_chainid(), data);
+
+        encodeVarInt((uint16_t)input.idassets_id(), data);
+        encode16LE((uint16_t)input.idassets_id(), data);
+
+        encodeVarInt(input.idamount().size(), data);
+        std::copy(input.idamount().begin(), input.idamount().end(), std::back_inserter(data));
+
+        encodeVarInt(input.nonce().size(), data);
+        std::copy(input.nonce().begin(), input.nonce().end(), std::back_inserter(data));
+
+        encodeVarInt(1, data);
+        data.push_back(static_cast<uint8_t>(input.locked()));
     }
 }
 
@@ -54,8 +68,18 @@ static inline void serializerOutput(std::vector<Proto::TransactionOutput>& outpu
         const auto& addr = NULS::Address(toAddress);
         encodeVarInt(addr.bytes.size() - 1, data);
         std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
-        encode64LE((uint64_t)output.amount(), data);
-        encode48LE((uint64_t)output.lock_time(), data);
+
+        encodeVarInt((uint16_t)output.assets_chainid(), data);
+        encode16LE((uint16_t)output.assets_chainid(), data);
+
+        encodeVarInt((uint16_t)output.idassets_id(), data);
+        encode16LE((uint16_t)output.idassets_id(), data);
+
+        encodeVarInt(output.idamount().size(), data);
+        std::copy(output.idamount().begin(), output.idamount().end(), std::back_inserter(data));
+
+        encodeVarInt(output.lock_time(), data);
+        encode32LE(output.lock_time(), data);
     }
 }
 
