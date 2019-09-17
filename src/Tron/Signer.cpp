@@ -20,6 +20,8 @@ using namespace TW;
 using namespace TW::Tron;
 using namespace std::chrono;
 
+const std::string TRANSFER_TOKEN_FUNCTION = "0xa9059cbb";
+
 size_t base58Capacity = 128;
 
 /// Converts an external TransferContract to an internal one used for signing.
@@ -158,7 +160,7 @@ protocol::TriggerSmartContract to_internal(const Proto::TransferTRC20Contract& t
     encode64BE(transferTrc20Contract.amount(), amount);
 
     // Encode smart contract call parameters
-    auto contract_params = parse_hex("0xa9059cbb");
+    auto contract_params = parse_hex(TRANSFER_TOKEN_FUNCTION);
     pad_left(toAddress, 32);
     pad_left(amount, 32);
     append(contract_params, toAddress);
