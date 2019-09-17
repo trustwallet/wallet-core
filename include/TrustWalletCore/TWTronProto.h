@@ -10,6 +10,7 @@
 
 typedef TWData *_Nonnull TW_Tron_Proto_TransferContract;
 typedef TWData *_Nonnull TW_Tron_Proto_TransferAssetContract;
+typedef TWData *_Nonnull TW_Tron_Proto_TransferTRC20Contract;
 typedef TWData *_Nonnull TW_Tron_Proto_FreezeBalanceContract;
 typedef TWData *_Nonnull TW_Tron_Proto_UnfreezeBalanceContract;
 typedef TWData *_Nonnull TW_Tron_Proto_UnfreezeAssetContract;
