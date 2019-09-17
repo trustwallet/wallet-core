@@ -16,7 +16,7 @@ struct TransactionBuilder {
 
     /// Plans a transaction by selecting UTXOs and calculating fees.
     static Proto::TransactionPlan plan(const NULS::Proto::TransactionPurpose& purpose) {
-        if (purpose.utxos_size() == 0) {
+        if (purpose.inputs_size() == 0) {
             return Proto::TransactionPlan{};
         }
 
@@ -117,7 +117,7 @@ struct TransactionBuilder {
         auto plan = Proto::TransactionPlan();
 
         uint32_t maxInputs = calculatorMaxInput(static_cast<uint32_t>(purpose.remark().size()));
-        uint32_t selectCount = std::min((uint32_t)purpose.utxos_size(), maxInputs);
+        uint32_t selectCount = std::min((uint32_t)purpose.inputs_size(), maxInputs);
 
         auto sortedUtxos = purpose.utxos();
         std::sort(sortedUtxos.begin(), sortedUtxos.end(),

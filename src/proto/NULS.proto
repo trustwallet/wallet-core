@@ -3,45 +3,18 @@ syntax = "proto3";
 package TW.NULS.Proto;
 option java_package = "wallet.core.jni.proto";
 
-//message TransactionInput {
-    //string from_hash = 1;
-    //int32 from_index = 2;
-    //int64 amount = 3;
-    //int64 lock_time = 4;
-    //string address = 5;
-//}
-
-//message TransactionOutput {
-    //string to_address = 1;
-    //int64 amount = 2;
-    //int64 lock_time = 3;
-    //int32 index = 4;
-//}
-
-//message Transaction {
-    //int32  type = 1;   
-    //string from_address = 2;
-    //string to_address = 3;
-    //int64 amount = 4;
-
-
-    /// UTF-8 encode strings
-    //string remark = 5;
-
-    //int64 timestamp = 6;
-
-    /// Unspent input list
-    //repeated TransactionInput inputs = 7;
-    /// Output list
-    //repeated TransactionOutput outputs = 8;
-//}
-
 message TransactionInput {
     string from_address = 1;
     int32 assets_chainid = 2;
     int32 idassets_id = 3;
+
+    //tranaction out amount (128-bit number)
     bytes idamount = 4;
+
+    //8 bytes
     bytes nonce = 5;
+
+    //lock status: 1 locked; 0 unlocked
     bytes locked = 6;
 }
 
@@ -49,6 +22,8 @@ message TransactionOutput {
     string to_address = 1;
     int32 assets_chainid = 2;
     int32 idassets_id = 3;
+
+    // tranaction amount (128-bit number)
     bytes idamount = 4;
     int32 lock_time = 5;
 }
@@ -65,6 +40,8 @@ message Transaction {
     repeated TransactionOutput outputs = 5;
     string remark = 6;
     bytes tx_sig = 7;
+
+     bytes amount = 8;
 }
 
 
