@@ -28,6 +28,20 @@ message TransferAssetContract {
     int64 amount = 4;
 }
 
+message TransferTRC20Contract {
+    // Contract name.
+    string contract_address = 1;
+
+    // Sender address.
+    string owner_address = 2;
+
+    // Recipient address.
+    string to_address = 3;
+
+    // Amount to send.
+    int64 amount = 4;
+}
+
 message FreezeBalanceContract {
     // Sender address.
     string owner_address = 1;
@@ -121,6 +135,7 @@ message Transaction {
         VoteAssetContract vote_asset = 16;
         VoteWitnessContract vote_witness = 17;
         TriggerSmartContract trigger_smart_contract = 18;
+        TransferTRC20Contract transfer_trc20_contract = 19;
     }
 }
 

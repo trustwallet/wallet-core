@@ -13,10 +13,14 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 
+#include <chrono>
 #include <cassert>
 
 using namespace TW;
 using namespace TW::Tron;
+using namespace std::chrono;
+
+const std::string TRANSFER_TOKEN_FUNCTION = "0xa9059cbb";
 
 size_t base58Capacity = 128;
 
@@ -150,6 +154,26 @@ protocol::TriggerSmartContract to_internal(const Proto::TriggerSmartContract& tr
     return internal;
 }
 
+protocol::TriggerSmartContract to_internal(const Proto::TransferTRC20Contract& transferTrc20Contract) {
+    auto toAddress = Base58::bitcoin.decodeCheck(transferTrc20Contract.to_address());
+    Data amount;
+    encode64BE(transferTrc20Contract.amount(), amount);
+
+    // Encode smart contract call parameters
+    auto contract_params = parse_hex(TRANSFER_TOKEN_FUNCTION);
+    pad_left(toAddress, 32);
+    pad_left(amount, 32);
+    append(contract_params, toAddress);
+    append(contract_params, amount);
+
+    auto triggerSmartContract = Proto::TriggerSmartContract();
+    triggerSmartContract.set_owner_address(transferTrc20Contract.owner_address());
+    triggerSmartContract.set_contract_address(transferTrc20Contract.contract_address());
+    triggerSmartContract.set_data(contract_params.data(), contract_params.size());
+
+    return to_internal(triggerSmartContract);
+}
+
 /// Converts an external BlockHeader to an internal one used for signing.
 protocol::BlockHeader to_internal(const Proto::BlockHeader& header) {
     auto internal = protocol::BlockHeader();
@@ -257,10 +281,29 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         google::protobuf::Any any;
         any.PackFrom(trigger_smart_contract);
         *contract->mutable_parameter() = any;
+    } else if (input.transaction().has_transfer_trc20_contract()) {
+        auto contract = internal.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
+
+        auto trigger_smart_contract = to_internal(input.transaction().transfer_trc20_contract());
+        google::protobuf::Any any;
+        any.PackFrom(trigger_smart_contract);
+        *contract->mutable_parameter() = any;
     }
 
-    internal.mutable_raw_data()->set_timestamp(input.transaction().timestamp());
-    internal.mutable_raw_data()->set_expiration(input.transaction().expiration());
+    // Get default timestamp and expiration
+    const uint64_t now = duration_cast< milliseconds >(
+            system_clock::now().time_since_epoch()
+    ).count();
+    const uint64_t timestamp = input.transaction().timestamp() == 0
+            ? now
+            : input.transaction().timestamp();
+    const uint64_t expiration = input.transaction().expiration() == 0
+            ? timestamp + 10 * 60 * 60 * 1000 // 10 hours
+            : input.transaction().expiration();
+
+    internal.mutable_raw_data()->set_timestamp(timestamp);
+    internal.mutable_raw_data()->set_expiration(expiration);
     internal.mutable_raw_data()->set_fee_limit(input.transaction().fee_limit());
     setBlockReference(input.transaction(), internal);
 
