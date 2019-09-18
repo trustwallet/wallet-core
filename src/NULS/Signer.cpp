@@ -35,17 +35,21 @@ Data Signer::sign() const {
     auto priv = Address::importHexPrivateKey(plan.private_key());
 
     auto data = Data();
+
     // Transaction Type
     encode16LE(2, data);
-    // Timestamp
-    encode48LE(tx.timestamp(), data);
 
+    // Timestamp
+    encode32LE(tx.timestamp(), data);
+    
     // txData
     encode32LE(0xffffffff, data);
+
     // CoinData Input
     std::vector<Proto::TransactionInput> inputs;
     std::copy(tx.inputs().begin(), tx.inputs().end(), std::back_inserter(inputs));
     serializerInput(inputs, data);
+
     // CoinData Output
     std::vector<Proto::TransactionOutput> outputs;
     std::copy(tx.outputs().begin(), tx.outputs().end(), std::back_inserter(outputs));

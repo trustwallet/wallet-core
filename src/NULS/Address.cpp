@@ -40,8 +40,6 @@ bool Address::isValid(const std::string& string) {
 
 Address::Address(const TW::PublicKey& publicKey) {
     // Main-Net chainID
-    //bytes[0] = 0x04;
-    //bytes[1] = 0x23;
     bytes[0] = 0x01;
     bytes[1] = 0x00;
     // Address Type

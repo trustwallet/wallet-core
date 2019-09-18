@@ -39,19 +39,16 @@ static inline void serializerInput(std::vector<Proto::TransactionInput>& inputs,
         encodeVarInt(addr.bytes.size() - 1, data);
         std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
 
-        encodeVarInt((uint16_t)input.assets_chainid(), data);
         encode16LE((uint16_t)input.assets_chainid(), data);
-
-        encodeVarInt((uint16_t)input.idassets_id(), data);
         encode16LE((uint16_t)input.idassets_id(), data);
 
+        //todo
         encodeVarInt(input.idamount().size(), data);
         std::copy(input.idamount().begin(), input.idamount().end(), std::back_inserter(data));
 
         encodeVarInt(input.nonce().size(), data);
         std::copy(input.nonce().begin(), input.nonce().end(), std::back_inserter(data));
 
-        encodeVarInt(1, data);
         data.push_back(static_cast<uint8_t>(input.locked()));
     }
 }
@@ -69,16 +66,13 @@ static inline void serializerOutput(std::vector<Proto::TransactionOutput>& outpu
         encodeVarInt(addr.bytes.size() - 1, data);
         std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
 
-        encodeVarInt((uint16_t)output.assets_chainid(), data);
         encode16LE((uint16_t)output.assets_chainid(), data);
-
-        encodeVarInt((uint16_t)output.idassets_id(), data);
         encode16LE((uint16_t)output.idassets_id(), data);
 
+        //todo
         encodeVarInt(output.idamount().size(), data);
         std::copy(output.idamount().begin(), output.idamount().end(), std::back_inserter(data));
 
-        encodeVarInt(output.lock_time(), data);
         encode32LE(output.lock_time(), data);
     }
 }
