@@ -13,7 +13,7 @@
 namespace TW::NULS {
 
 struct TransactionBuilder {
-
+/*
     /// Plans a transaction by selecting UTXOs and calculating fees.
     static Proto::TransactionPlan plan(const NULS::Proto::TransactionPurpose& purpose) {
         if (purpose.inputs_size() == 0) {
@@ -157,23 +157,8 @@ struct TransactionBuilder {
         *plan.mutable_outputs() = {outputs.begin(), outputs.end()};
         return plan;
     }
+*/
 
-    static int32_t calculatorMaxInput(uint32_t remarkSize) {
-        uint32_t outputSize = 1 * TRANSACTION_OUTPUT_SIZE;
-        uint32_t maxInputs =
-            (MAX_TRANSACTION_SIZE - TRANSACTION_HEAD_SIZE - remarkSize - outputSize) / 50;
-        if ((MAX_TRANSACTION_SIZE - TRANSACTION_HEAD_SIZE - remarkSize - outputSize) % 50 != 0) {
-            maxInputs -= 1;
-        }
-        return maxInputs;
-    }
-
-    static uint32_t calculatorTransactionSize(uint32_t inputCount, uint32_t outputCount,
-                                             uint32_t remarkSize) {
-        uint32_t size = 124 + TRANSACTION_INPUT_SIZE * inputCount +
-                        TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
-        return size;
-    }
 
     static const uint16_t TRANSACTION_HEAD_SIZE = 124;
     static const uint16_t TRANSACTION_INPUT_SIZE = 50;
@@ -182,6 +167,23 @@ struct TransactionBuilder {
     static const uint64_t MAX_TRANSACTION_SIZE = 300 * 1024;
     /// 0.001 NULS per KB
     static const uint64_t MIN_PRICE_PRE_1024_BYTES = 100000;
+
+    static int32_t calculatorMaxInput(uint32_t remarkSize) {
+        uint32_t outputSize = 1 * TRANSACTION_OUTPUT_SIZE;
+        uint32_t maxInputs =
+                (MAX_TRANSACTION_SIZE - TRANSACTION_HEAD_SIZE - remarkSize - outputSize) / 50;
+        if ((MAX_TRANSACTION_SIZE - TRANSACTION_HEAD_SIZE - remarkSize - outputSize) % 50 != 0) {
+            maxInputs -= 1;
+        }
+        return maxInputs;
+    }
+
+    static uint32_t calculatorTransactionSize(uint32_t inputCount, uint32_t outputCount,
+                                              uint32_t remarkSize) {
+        uint32_t size = 124 + TRANSACTION_INPUT_SIZE * inputCount +
+                        TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
+        return size;
+    }
 
     static inline uint64_t calculatorTransactionFee(uint64_t size) {
         uint64_t fee = (size / 1024) * MIN_PRICE_PRE_1024_BYTES;

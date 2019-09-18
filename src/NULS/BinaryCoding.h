@@ -26,7 +26,7 @@ static inline void serializerRemark(std::string& remark, std::vector<uint8_t>& d
     std::copy(remark.begin(), remark.end(), std::back_inserter(data));
 }
 
-static inline void serializerInput(std::vector<Proto::TransactionInput>& inputs,
+static inline void serializerInput(std::vector<Proto::TransactionCoinFrom>& inputs,
     std::vector<uint8_t>& data) {
     encodeVarInt(inputs.size(), data);
     for (const auto& input : inputs) {
@@ -53,7 +53,7 @@ static inline void serializerInput(std::vector<Proto::TransactionInput>& inputs,
     }
 }
 
-static inline void serializerOutput(std::vector<Proto::TransactionOutput>& outputs,
+static inline void serializerOutput(std::vector<Proto::TransactionCoinTo>& outputs,
     std::vector<uint8_t>& data) {
     encodeVarInt(outputs.size(), data);
     for (const auto& output : outputs) {

@@ -15,18 +15,20 @@ namespace TW::NULS {
 class Signer {
   public:
     Proto::Transaction tx;
-    Proto::TransactionPlan plan;
+    //Proto::TransactionPlan plan;
     //Signer(Proto::TransactionPlan& plan);
 
     Proto::SigningInput input;
 
     /// Initializes a transaction signer.
-    Signer(Proto::SigningInput&& input);
+    Signer(Proto::SigningInput& input);
 
     /// Signs the transaction.
     ///
     /// \returns the transaction signature or an empty vector if there is an error.
     Data sign() const;
+
+
 };
 
 } // namespace TW::NULS

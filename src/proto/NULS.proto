@@ -3,7 +3,7 @@ syntax = "proto3";
 package TW.NULS.Proto;
 option java_package = "wallet.core.jni.proto";
 
-message TransactionInput {
+message TransactionCoinFrom {
     string from_address = 1;
     int32 assets_chainid = 2;
     int32 idassets_id = 3;
@@ -18,7 +18,7 @@ message TransactionInput {
     int32 locked = 6;
 }
 
-message TransactionOutput {
+message TransactionCoinTo {
     string to_address = 1;
     int32 assets_chainid = 2;
     int32 idassets_id = 3;
@@ -28,21 +28,29 @@ message TransactionOutput {
     int32 lock_time = 5;
 }
 
+message Signature {
+    int32 pkey_len = 1;
+    bytes public_key = 2;
+    int32 sig_len = 3;
+    bytes signature = 4;
+}
+
 message Transaction {
     int32  type = 1;
     int32  timestamp = 2;
-    bytes  tx_data = 3;
+    int32  tx_data = 3;
 
     //CoinFrom
-    repeated TransactionInput inputs = 4;
+    repeated TransactionCoinFrom inputs = 4;
 
     //CoinTo
-    repeated TransactionOutput outputs = 5;
+    repeated TransactionCoinTo outputs = 5;
     string remark = 6;
-    bytes tx_sig = 7;
+    repeated Signature tx_sigs = 7;
+    bytes hash = 8;
 }
 
-
+/*
 message TransactionPurpose {
     bytes private_key = 1;
     string from_address = 2;
@@ -60,7 +68,9 @@ message TransactionPurpose {
     // If sending max amount.
     bool use_max_amount = 8;
 }
+*/
 
+/*
 message TransactionPlan {
     bytes private_key = 1;
     string from_address = 2;
@@ -79,7 +89,7 @@ message TransactionPlan {
     repeated TransactionInput inputs = 10;
     repeated TransactionOutput outputs = 11;
 }
-
+*/
 // Input data necessary to create a signed order.
 message SigningInput {
     bytes private_key = 1;
@@ -95,6 +105,7 @@ message SigningInput {
     string remark = 8;
     // Account balance 
     bytes balance = 9;
+    int32 timestamp = 10;
 }
 
 message SigningOutput {
