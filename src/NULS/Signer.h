@@ -16,7 +16,12 @@ class Signer {
   public:
     Proto::Transaction tx;
     Proto::TransactionPlan plan;
-    Signer(Proto::TransactionPlan& plan);
+    //Signer(Proto::TransactionPlan& plan);
+
+    Proto::SigningInput input;
+
+    /// Initializes a transaction signer.
+    Signer(Proto::SigningInput&& input);
 
     /// Signs the transaction.
     ///

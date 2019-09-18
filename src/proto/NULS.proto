@@ -40,10 +40,6 @@ message Transaction {
     repeated TransactionOutput outputs = 5;
     string remark = 6;
     bytes tx_sig = 7;
-
-    bytes amount = 8;
-    string from_address = 9;
-    string to_address = 10;
 }
 
 
@@ -82,6 +78,23 @@ message TransactionPlan {
     /// Selected Unspent input list
     repeated TransactionInput inputs = 10;
     repeated TransactionOutput outputs = 11;
+}
+
+// Input data necessary to create a signed order.
+message SigningInput {
+    bytes private_key = 1;
+    string from_address = 2;
+    string to_address = 3;
+    bytes amount = 4;
+
+    int32 chain_id = 5;
+    int32 idassetsId = 6;
+
+    //The last 8 bytes of latest transaction hash 
+    bytes nonce = 7;
+    string remark = 8;
+    // Account balance 
+    bytes balance = 9;
 }
 
 message SigningOutput {
