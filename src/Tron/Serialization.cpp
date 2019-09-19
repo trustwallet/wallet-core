@@ -127,10 +127,10 @@ json valueJSON(const protocol::TriggerSmartContract& contract) {
         valueJSON["call_value"] = contract.call_value();
     }
     if (contract.call_token_value() > 0) {
-        valueJSON["call_value"] = contract.call_token_value();
+        valueJSON["call_token_value"] = contract.call_token_value();
     }
     if (contract.token_id() > 0) {
-        valueJSON["call_value"] = contract.token_id();
+        valueJSON["token_id"] = contract.token_id();
     }
 
     return valueJSON;

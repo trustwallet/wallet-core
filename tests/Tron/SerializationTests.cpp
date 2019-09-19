@@ -109,4 +109,68 @@ namespace TW::Tron {
 
         ASSERT_EQ(output.json(), R"({"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.VoteWitnessContract","value":{"owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db","support":true,"votes":[{"vote_address":"41521ea197907927725ef36d70f25f850d1659c7c7","vote_count":3}]}},"type":"VoteWitnessContract"}],"expiration":1539331479000,"ref_block_byes":"7b3b","ref_block_hash":"b21ace8d6ac20e7e","timestamp":1539295479000},"signature":["79ec1073ae1319ef9303a2f5a515876cfd67f8f0e155bdbde1115d391c05358a3c32f148bfafacf07e1619aaed728d9ffbc2c7e4a5046003c7b74feb86fc68e400"],"txID":"3f923e9dd9571a66624fafeda27baa3e00aba1709d3fdc5c97c77b81fda18c1f"})");
     }
+
+    TEST(TronSerialization, SignTriggerSmartContract) {
+        auto input = Proto::SigningInput();
+        auto data = parse_hex("736f6d652064617461");
+        auto& transaction = *input.mutable_transaction();
+        auto& trigger_contract = *transaction.mutable_trigger_smart_contract();
+        trigger_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+        trigger_contract.set_contract_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+        trigger_contract.set_call_value(0);
+        trigger_contract.set_call_token_value(10000);
+        trigger_contract.set_token_id(1);
+        trigger_contract.set_data(data.data(), data.size());
+
+        transaction.set_timestamp(1539295479000);
+        transaction.set_expiration(1539295479000 + 10 * 60 * 60 * 1000);
+
+        auto& blockHeader = *transaction.mutable_block_header();
+        blockHeader.set_timestamp(1539295479000);
+        const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+        blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+        const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+        blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+        blockHeader.set_number(3111739);
+        const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+        blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+        blockHeader.set_version(3);
+
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+        const auto output = Signer::sign(input);
+
+        ASSERT_EQ(output.json(), R"({"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.TriggerSmartContract","value":{"call_token_value":10000,"contract_address":"41521ea197907927725ef36d70f25f850d1659c7c7","data":"736f6d652064617461","owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db","token_id":1}},"type":"TriggerSmartContract"}],"expiration":1539331479000,"ref_block_byes":"7b3b","ref_block_hash":"b21ace8d6ac20e7e","timestamp":1539295479000},"signature":["21a99aafeabdddfdfae86538df048d120a83eb36bbcf5656595919ba6afddacd0a07d0ba051ae80337613174b109f36cb583b6e46ee5aecf6ffe3392fdbb8a2a01"],"txID":"9927d3daae10ad001b25ef3c1bb03073c928cc0e0823f6f3ce404c2b03ce3570"})");
+    }
+
+    TEST(TronSerialization, SignTransferTrc20Contract) {
+        auto input = Proto::SigningInput();
+        auto& transaction = *input.mutable_transaction();
+        auto& transfer_contract = *transaction.mutable_transfer_trc20_contract();
+        transfer_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+        transfer_contract.set_contract_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+        transfer_contract.set_to_address("TW1dU4L3eNm7Lw8WvieLKEHpXWAussRG9Z");
+        transfer_contract.set_amount(1000);
+
+        transaction.set_timestamp(1539295479000);
+
+        auto& blockHeader = *transaction.mutable_block_header();
+        blockHeader.set_timestamp(1539295479000);
+        const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+        blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+        const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+        blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+        blockHeader.set_number(3111739);
+        const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+        blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+        blockHeader.set_version(3);
+
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+        const auto output = Signer::sign(input);
+
+        ASSERT_EQ(output.json(), R"({"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.TriggerSmartContract","value":{"contract_address":"41521ea197907927725ef36d70f25f850d1659c7c7","data":"a9059cbb000000000000000000000041dbd7c53729b3310e1843083000fa84abad99696100000000000000000000000000000000000000000000000000000000000003e8","owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db"}},"type":"TriggerSmartContract"}],"expiration":1539331479000,"ref_block_byes":"7b3b","ref_block_hash":"b21ace8d6ac20e7e","timestamp":1539295479000},"signature":["bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01"],"txID":"0d644290e3cf554f6219c7747f5287589b6e7e30e1b02793b48ba362da6a5058"})");
+    }
 }
