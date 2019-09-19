@@ -157,4 +157,6 @@ message SigningOutput {
 
     bytes ref_block_bytes = 3;
     bytes ref_block_hash = 4;
+
+    string json = 5;
 }
