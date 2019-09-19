@@ -7,7 +7,7 @@
 #include "HexCoding.h"
 #include "Algorand/Address.h"
 #include "PublicKey.h"
-#include  "PrivateKey.h"
+#include "PrivateKey.h"
 #include <gtest/gtest.h>
 #include <vector>
 

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package TW.Algorand.Proto;
+option java_package = "wallet.core.jni.proto";
+
+enum TransactionType {
+    Pay = 0;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    string to_address = 1;
+    uint64 fee = 2;
+    uint64 amount = 3;
+    uint64 first_round = 4;
+    uint64 last_round = 5;
+    bytes note = 6;
+    TransactionType type = 7;
+    // Private key.
+    bytes private_key = 8;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    bytes signature = 2;
+}
