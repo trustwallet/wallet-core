@@ -6,11 +6,8 @@
 
 #include "Serialization.h"
 
-#include "../NEAR/Address.h"
-#include "../Base64.h"
 #include "../BinaryCoding.h"
 #include "../PrivateKey.h"
-#include <TrustWalletCore/TWHRP.h>
 
 using namespace TW;
 using namespace TW::NEAR;

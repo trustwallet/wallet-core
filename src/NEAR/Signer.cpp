@@ -8,11 +8,7 @@
 #include "Serialization.h"
 
 #include "../Hash.h"
-#include "../HexCoding.h"
 #include "../PrivateKey.h"
-#include "../Data.h"
-
-#include <string>
 
 using namespace TW;
 using namespace TW::NEAR;

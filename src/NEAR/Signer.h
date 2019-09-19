@@ -7,10 +7,6 @@
 #pragma once
 
 #include "../proto/NEAR.pb.h"
-#include "../Data.h"
-#include <nlohmann/json.hpp>
-#include <stdint.h>
-#include <vector>
 
 namespace TW::NEAR {
 
