@@ -3,53 +3,6 @@ syntax = "proto3";
 package TW.NULS.Proto;
 option java_package = "wallet.core.jni.proto";
 
-message TransactionCoinFrom {
-    string from_address = 1;
-    int32 assets_chainid = 2;
-    int32 idassets_id = 3;
-
-    //tranaction out amount (128-bit number)
-    bytes idamount = 4;
-
-    //8 bytes
-    bytes nonce = 5;
-
-    //lock status: 1 locked; 0 unlocked
-    int32 locked = 6;
-}
-
-message TransactionCoinTo {
-    string to_address = 1;
-    int32 assets_chainid = 2;
-    int32 idassets_id = 3;
-
-    // tranaction amount (128-bit number)
-    bytes idamount = 4;
-    int32 lock_time = 5;
-}
-
-message Signature {
-    int32 pkey_len = 1;
-    bytes public_key = 2;
-    int32 sig_len = 3;
-    bytes signature = 4;
-}
-
-message Transaction {
-    int32  type = 1;
-    int32  timestamp = 2;
-    int32  tx_data = 3;
-
-    //CoinFrom
-    repeated TransactionCoinFrom inputs = 4;
-
-    //CoinTo
-    repeated TransactionCoinTo outputs = 5;
-    string remark = 6;
-    repeated Signature tx_sigs = 7;
-    bytes hash = 8;
-}
-
 /*
 message TransactionPurpose {
     bytes private_key = 1;
@@ -90,22 +43,62 @@ message TransactionPlan {
     repeated TransactionOutput outputs = 11;
 }
 */
+
+message TransactionCoinFrom {
+    string from_address = 1;
+    uint32 assets_chainid = 2;
+    uint32 idassets_id = 3;
+    //tranaction out amount (128-bit number)
+    bytes idamount = 4;
+    //8 bytes
+    bytes nonce = 5;
+    //lock status: 1 locked; 0 unlocked
+    uint32 locked = 6;
+}
+
+message TransactionCoinTo {
+    string to_address = 1;
+    uint32 assets_chainid = 2;
+    uint32 idassets_id = 3;
+    // tranaction amount (128-bit number)
+    bytes idamount = 4;
+    uint32 lock_time = 5;
+}
+
+message Signature {
+    uint32 pkey_len = 1;
+    bytes public_key = 2;
+    uint32 sig_len = 3;
+    bytes signature = 4;
+}
+
+message Transaction {
+    uint32  type = 1;
+    uint32  timestamp = 2;
+    uint32  tx_data = 3;
+    //CoinFrom
+    repeated TransactionCoinFrom inputs = 4;
+    //CoinTo
+    repeated TransactionCoinTo outputs = 5;
+    string remark = 6;
+    repeated Signature tx_sigs = 7;
+    uint32 hash = 8;
+}
+
 // Input data necessary to create a signed order.
 message SigningInput {
     bytes private_key = 1;
     string from_address = 2;
     string to_address = 3;
     bytes amount = 4;
-
-    int32 chain_id = 5;
-    int32 idassetsId = 6;
-
+    uint32 chain_id = 5;
+    uint32 idassetsId = 6;
     //The last 8 bytes of latest transaction hash 
     bytes nonce = 7;
     string remark = 8;
     // Account balance 
-    bytes balance = 9;
-    int32 timestamp = 10;
+    string balance = 9;
+    uint32 timestamp = 10;
 }
 
 message SigningOutput {

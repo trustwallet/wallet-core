@@ -22,6 +22,6 @@ struct TWNULSSigner;
 
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
-TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_SigningInput plan);
+TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_SigningInput input);
 
 TW_EXTERN_C_END

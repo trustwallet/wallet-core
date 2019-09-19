@@ -7,7 +7,9 @@
 #include "Signer.h"
 
 #include "Address.h"
+#include "../uint256.h"
 #include "BinaryCoding.h"
+#include "TransactionBuilder.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
@@ -52,16 +54,29 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
     tx.set_type(2);
     tx.set_timestamp(input.timestamp());
     tx.set_tx_data(0xffffffff);
+    
+    
+    //encode256BE(gas_limit, gasLimit, 128);
 }
+
 Data Signer::sign() const {
+
     if (input.private_key().empty()) {
         throw std::invalid_argument("Must have private key string");
     }
-    /*else if (tx.inputs_size() == 0) {
-        throw std::invalid_argument("Not enough input balance to do the transaction");
-    } else if (tx.outputs_size() == 0) {
-        throw std::invalid_argument("There must be at least one output, something is missed");
-    }*/
+
+    uint32_t txSize = calculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
+    uint64_t fee = calculatorTransactionFee(txSize);
+    uint256_t txAmount = load(input.amount());
+    uint256_t balance = load(input.balance());
+    uint256_t fromAmount = txAmount + fee;
+    if (fromAmount > balance) {
+        throw std::invalid_argument("User account balance not sufficient");
+    }
+    
+    Proto::TransactionCoinFrom coinFrom = tx.inputs(0);
+    Data amount = store(txAmount);
+    coinFrom.set_idamount(amount.data());
 
     auto priv = Address::importHexPrivateKey(input.private_key());
 
@@ -74,6 +89,7 @@ Data Signer::sign() const {
     encode32LE(tx.timestamp(), data);
     
     // txData
+    encodeVarInt(tx.tx_data().size(), data);
     encode32LE(tx.tx_data(), data);
 
     // CoinData Input

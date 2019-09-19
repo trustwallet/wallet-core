@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 #pragma once
+#include "../uint256.h"
 #include "../BinaryCoding.h"
 #include "../proto/NULS.pb.h"
 #include "../HexCoding.h"
@@ -42,7 +43,6 @@ static inline void serializerInput(std::vector<Proto::TransactionCoinFrom>& inpu
         encode16LE((uint16_t)input.assets_chainid(), data);
         encode16LE((uint16_t)input.idassets_id(), data);
 
-        //todo
         encodeVarInt(input.idamount().size(), data);
         std::copy(input.idamount().begin(), input.idamount().end(), std::back_inserter(data));
 
@@ -69,7 +69,6 @@ static inline void serializerOutput(std::vector<Proto::TransactionCoinTo>& outpu
         encode16LE((uint16_t)output.assets_chainid(), data);
         encode16LE((uint16_t)output.idassets_id(), data);
 
-        //todo
         encodeVarInt(output.idamount().size(), data);
         std::copy(output.idamount().begin(), output.idamount().end(), std::back_inserter(data));
 

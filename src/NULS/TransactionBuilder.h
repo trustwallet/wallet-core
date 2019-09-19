@@ -160,9 +160,10 @@ struct TransactionBuilder {
 */
 
 
-    static const uint16_t TRANSACTION_HEAD_SIZE = 124;
-    static const uint16_t TRANSACTION_INPUT_SIZE = 50;
-    static const uint16_t TRANSACTION_OUTPUT_SIZE = 38;
+    static const uint16_t TRANSACTION_FIX_SIZE = 14; //type 2, time 4, txData 4, hash 4
+    static const uint16_t TRANSACTION_SIG_MAX_SIZE = 110;
+    static const uint16_t TRANSACTION_INPUT_SIZE = 70;
+    static const uint16_t TRANSACTION_OUTPUT_SIZE = 68;
     /// Transaction size must less that 300KB
     static const uint64_t MAX_TRANSACTION_SIZE = 300 * 1024;
     /// 0.001 NULS per KB
@@ -171,8 +172,8 @@ struct TransactionBuilder {
     static int32_t calculatorMaxInput(uint32_t remarkSize) {
         uint32_t outputSize = 1 * TRANSACTION_OUTPUT_SIZE;
         uint32_t maxInputs =
-                (MAX_TRANSACTION_SIZE - TRANSACTION_HEAD_SIZE - remarkSize - outputSize) / 50;
-        if ((MAX_TRANSACTION_SIZE - TRANSACTION_HEAD_SIZE - remarkSize - outputSize) % 50 != 0) {
+                (MAX_TRANSACTION_SIZE - TRANSACTION_HEAD_SIZE - remarkSize - outputSize) / TRANSACTION_INPUT_SIZE;
+        if ((MAX_TRANSACTION_SIZE - TRANSACTION_HEAD_SIZE - remarkSize - outputSize) % TRANSACTION_INPUT_SIZE != 0) {
             maxInputs -= 1;
         }
         return maxInputs;
@@ -180,7 +181,7 @@ struct TransactionBuilder {
 
     static uint32_t calculatorTransactionSize(uint32_t inputCount, uint32_t outputCount,
                                               uint32_t remarkSize) {
-        uint32_t size = 124 + TRANSACTION_INPUT_SIZE * inputCount +
+        uint32_t size = TRANSACTION_FIX_SIZE + TRANSACTION_SIG_MAX_SIZE + TRANSACTION_INPUT_SIZE * inputCount +
                         TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
         return size;
     }
