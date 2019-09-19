@@ -104,7 +104,8 @@ TEST(Signer, WanchainTransactionSign) {
 }
 
 TEST(Signer, WavesTransactionSign) {
-    auto transaction = R"({"amount": 100000000,"asset": "WAVES","fee": 100000000,"fee_asset": "WAVES","to": "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds","attachment": "ZmFsYWZlbA==","timestamp": 1526641218066})";
+    
+    auto transaction = R"({"timestamp": 1526641218066, "transferMessage": {"amount": 100000000,"asset": "WAVES","fee": 100000000,"fee_asset": "WAVES","to": "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds","attachment": "ZmFsYWZlbA=="} })";
     auto input = Proto::SigningInput();
     input.set_private_key("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a");
     input.set_transaction(transaction);

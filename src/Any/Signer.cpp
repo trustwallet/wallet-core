@@ -121,14 +121,7 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             if (output.success()) {
                 auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
                 auto wavesTransaction = Waves::Transaction(
-                        /* amount */ message.amount(),
-                        /* asset */ message.asset(),
-                        /* fee */ message.fee(),
-                        /* fee_asset */ message.fee_asset(),
-                        /* to */ Waves::Address(message.to()),
-                        /* attachment */ Data(message.attachment().begin(), message.attachment().end()),
-                        /* timestamp */ message.timestamp(),
-                        /* pub_key */ publicKey.bytes
+                        std::move(message), publicKey.bytes
                 );
                 auto signature = Waves::Signer::sign(privateKey, wavesTransaction);
                 auto jsonOutput = wavesTransaction.buildJson(signature).dump();

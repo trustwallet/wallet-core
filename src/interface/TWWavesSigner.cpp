@@ -19,15 +19,7 @@ TW_Waves_Proto_SigningOutput TWWavesSignerSign(TW_Waves_Proto_SigningInput data)
 
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
-    auto transaction = Transaction(
-        /* amount */ input.amount(),
-        /* asset */ input.asset(),
-        /* fee */ input.fee(),
-        /* fee_asset */ input.fee_asset(),
-        /* to */ Address(input.to()),
-        /* attachment */ Data(input.attachment().begin(), input.attachment().end()),
-        /* timestamp */ input.timestamp(),
-        /* pub_key */ publicKey.bytes);
+    auto transaction = Transaction(input, publicKey.bytes);
 
     Data signature = Signer::sign(privateKey, transaction);
 
