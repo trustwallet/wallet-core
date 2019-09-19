@@ -213,7 +213,7 @@ json contractJSON(const protocol::Transaction::Contract &contract) {
 json raw_dataJSON(const protocol::Transaction::raw &raw) {
     json raw_dataJSON;
 
-    raw_dataJSON["ref_block_byes"] = hex(raw.ref_block_bytes());
+    raw_dataJSON["ref_block_bytes"] = hex(raw.ref_block_bytes());
     raw_dataJSON["ref_block_hash"] = hex(raw.ref_block_hash());
     if (raw.ref_block_num() > 0) {
         raw_dataJSON["ref_block_num"] = raw.ref_block_num();
