@@ -8,7 +8,6 @@
 
 #include "../Cosmos/Address.h"
 #include "../Base64.h"
-#include <TrustWalletCore/TWHRP.h>
 
 using namespace TW;
 using namespace TW::Cosmos;

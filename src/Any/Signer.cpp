@@ -153,8 +153,7 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             if (output.success()) {
                 message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                 auto signerOutput = Tron::Signer::sign(message);
-                auto signature = signerOutput.signature();
-                output.set_output(hex(signature.begin(), signature.end()));
+                output.set_output(signerOutput.json());
             }
             break;
         }

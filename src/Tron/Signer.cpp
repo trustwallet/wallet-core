@@ -12,6 +12,7 @@
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include "Serialization.h"
 
 #include <chrono>
 #include <cassert>
@@ -316,8 +317,11 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     const auto signature = key.sign(hash, TWCurveSECP256k1);
 
+    const auto json = transactionJSON(internal, hash, signature).dump();
+
     output.set_id(hash.data(), hash.size());
     output.set_signature(signature.data(), signature.size());
+    output.set_json(json.data(), json.size());
 
     return output;
 }
