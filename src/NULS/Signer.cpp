@@ -7,7 +7,6 @@
 #include "Signer.h"
 
 #include "Address.h"
-#include "../uint256.h"
 #include "BinaryCoding.h"
 #include "TransactionBuilder.h"
 #include "../Hash.h"
@@ -33,7 +32,7 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
 
     coinFrom.set_from_address(input.from_address());
     coinFrom.set_assets_chainid(input.chain_id());
-    coinFrom.set_idassets_id(input.idassetsid());
+    coinFrom.set_idassets_id(input.idassets_id());
     //need to update with amount + fee
     coinFrom.set_idamount(input.amount());
     coinFrom.set_nonce(input.nonce());
@@ -45,7 +44,7 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
     coinTo.set_to_address(input.to_address());
     coinTo.set_idamount(input.amount());
     coinTo.set_assets_chainid(input.chain_id());
-    coinTo.set_idassets_id(input.idassetsid());
+    coinTo.set_idassets_id(input.idassets_id());
     coinTo.set_lock_time(0);
     Proto::TransactionCoinTo* output_item = tx.add_outputs();
     *output_item = coinTo;
@@ -54,9 +53,6 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
     tx.set_type(2);
     tx.set_timestamp(input.timestamp());
     tx.set_tx_data(0xffffffff);
-    
-    
-    //encode256BE(gas_limit, gasLimit, 128);
 }
 
 Data Signer::sign() const {
@@ -65,8 +61,8 @@ Data Signer::sign() const {
         throw std::invalid_argument("Must have private key string");
     }
 
-    uint32_t txSize = calculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
-    uint64_t fee = calculatorTransactionFee(txSize);
+    uint32_t txSize = TransactionBuilder::calculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
+    uint64_t fee = TransactionBuilder::calculatorTransactionFee(txSize);
     uint256_t txAmount = load(input.amount());
     uint256_t balance = load(input.balance());
     uint256_t fromAmount = txAmount + fee;
@@ -74,41 +70,35 @@ Data Signer::sign() const {
         throw std::invalid_argument("User account balance not sufficient");
     }
     
-    Proto::TransactionCoinFrom coinFrom = tx.inputs(0);
-    Data amount = store(txAmount);
-    coinFrom.set_idamount(amount.data());
-
-    auto priv = Address::importHexPrivateKey(input.private_key());
+    Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.inputs(0);
+    Data amount = store(fromAmount);
+    std::string amountStr;
+    amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
+    coinFrom.set_idamount(amountStr);
 
     auto data = Data();
-
     // Transaction Type
     encode16LE(tx.type(), data);
-
     // Timestamp
     encode32LE(tx.timestamp(), data);
-    
     // txData
-    encodeVarInt(tx.tx_data().size(), data);
+    encodeVarInt(4, data);
     encode32LE(tx.tx_data(), data);
-
     // CoinData Input
     std::vector<Proto::TransactionCoinFrom> inputs;
     std::copy(tx.inputs().begin(), tx.inputs().end(), std::back_inserter(inputs));
     serializerInput(inputs, data);
-
     // CoinData Output
     std::vector<Proto::TransactionCoinTo> outputs;
     std::copy(tx.outputs().begin(), tx.outputs().end(), std::back_inserter(outputs));
     serializerOutput(outputs, data);
-    
     // Remark
     std::string remark = tx.remark();
     serializerRemark(remark, data);
 
     // Calc transaction hash
     Data txHash = calcTransactionDigest(data);
-
+    auto priv = Address::importHexPrivateKey(input.private_key());
     auto transactionSignature = makeTransactionSignature(priv, txHash);
 
     encodeVarInt(transactionSignature.size(), data);

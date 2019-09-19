@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include "Data.h"
+#include "../uint256.h"
 
 namespace TW::NULS {
 

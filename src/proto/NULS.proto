@@ -90,14 +90,14 @@ message SigningInput {
     bytes private_key = 1;
     string from_address = 2;
     string to_address = 3;
-    bytes amount = 4;
+    bytes  amount = 4;
     uint32 chain_id = 5;
-    uint32 idassetsId = 6;
+    uint32 idassets_id = 6;
     //The last 8 bytes of latest transaction hash 
     bytes nonce = 7;
     string remark = 8;
     // Account balance 
-    string balance = 9;
+    bytes  balance = 9;
     uint32 timestamp = 10;
 }
 

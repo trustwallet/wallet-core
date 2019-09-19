@@ -84,15 +84,12 @@ static inline Data calcTransactionDigest(Data& data) {
 
 static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash) {
     PublicKey pubKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-
     Data transactionSignature = Data();
     encodeVarInt(pubKey.bytes.size(), transactionSignature);
     std::copy(pubKey.bytes.begin(), pubKey.bytes.end(), std::back_inserter(transactionSignature));
     auto signature = privateKey.signAsDER(txHash, TWCurve::TWCurveSECP256k1);
-
     transactionSignature.push_back(static_cast<uint8_t>(0x00));
     encodeVarInt(signature.size(), transactionSignature);
-
     std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));
     return transactionSignature;
 }
