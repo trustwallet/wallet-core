@@ -51,6 +51,7 @@ enum TWCoinType {
     TWCoinTypeNebulas = 2718,
     TWCoinTypeLux = 3003,
     TWCoinTypeNano = 165,
+    TWCoinTypeNEAR = 397,
     TWCoinTypeNEO = 888,
     TWCoinTypeNimiq = 242,
     TWCoinTypeOntology = 1024,

@@ -1100,5 +1100,22 @@
             "clientPublic": "http://api.mainnet.solana.com",
             "clientDocs": "https://solana-labs.github.io/book/"
         }
+    },
+    {
+        "id": "near",
+        "name": "NEAR",
+        "symbol": "NEAR",
+        "decimals": 18,
+        "blockchain": "NEAR",
+        "derivationPath": "m/44'/397'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "https://explorer.nearprotocol.com",
+        "info": {
+            "url": "https://nearprotocol.com",
+            "client": "https://github.com/nearprotocol/nearcore",
+            "clientPublic": "https://rpc.nearprotocol.com",
+            "clientDocs": "https://docs.nearprotocol.com"
+        }
     }
 ]

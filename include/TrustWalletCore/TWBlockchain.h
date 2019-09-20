@@ -42,6 +42,7 @@ enum TWBlockchain {
     TWBlockchainFIO = 28,
     TWBlockchainSolana = 29,
     TWBlockchainHarmony = 30,
+    TWBlockchainNEAR = 31,
 };
 
 TW_EXTERN_C_END

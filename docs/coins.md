@@ -38,6 +38,7 @@ This list is generated from [./coins.json](../coins.json)
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png" width="32" />        | <https://iotex.io>            |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
 | 330     | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png" width="32" />        | <https://terra.money>         |
+| 397     | NEAR             | NEAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/near/info/logo.png" width="32" />         | <https://nearprotocol.com>    |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |

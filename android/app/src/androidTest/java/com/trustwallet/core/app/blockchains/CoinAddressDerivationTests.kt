@@ -57,6 +57,7 @@ class CoinAddressDerivationTests {
         AION -> assertEquals("0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e", address)
         NANO -> assertEquals("nano_39gsbcishxn3n7wd17ono4otq5wazwzusqgqigztx73wbrh5jwbdbshfnumc", address)
         NEBULAS -> assertEquals("n1ZVgEidtdseYv9ogmGz69Cz4mbqmHYSNqJ", address)
+        NEAR -> assertEquals("NEAR6Y66fCzeKqWiwxoPox5oGeDN9VhNCu7CEQ9M86iniqoN9vg2X", address)
         NEO -> assertEquals("AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF", address)
         THETA -> assertEquals("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
         COSMOS -> assertEquals("cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn", address)
