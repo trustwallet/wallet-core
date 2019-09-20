@@ -11,7 +11,7 @@
 using namespace TW;
 using namespace TW::Algorand;
 
-const Data TRANSACTION_TAG = {0x84, 0x88};
+const Data TRANSACTION_TAG = {84, 88};
 const std::string TRANSACTION_PAY = "pay";
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
@@ -37,6 +37,6 @@ Data Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexce
     Data data;
     append(data, TRANSACTION_TAG);
     append(data, transaction.serialize());
-    auto signature = privateKey.sign(data, TWCurveSECP256k1);
+    auto signature = privateKey.sign(data, TWCurveED25519);
     return Data(signature.begin(), signature.end());
 }

@@ -20,12 +20,16 @@ bool Address::isValid(const std::string& string) {
     }
     const size_t dataSize = PublicKey::ed25519Size + checksumSize;
     std::array<byte, dataSize> decoded;
+    // base32 decode
     if (base32_decode(string.data(), string.size(), decoded.data(), dataSize, BASE32_ALPHABET_RFC4648) == nullptr) {
         return false;
     }
+    // compute public key hash
     auto hash = Hash::sha512_256(decoded.begin(), decoded.end() - checksumSize);
+    // last 4 bytes are checksum
     std::array<byte, checksumSize> checksum;
     std::copy(hash.end() - checksumSize, hash.end(), checksum.data());
+    // compare checksum
     if (!std::equal(decoded.end() - checksumSize, decoded.end(), checksum.begin())) {
         return false;
     }
@@ -57,6 +61,7 @@ std::string Address::string() const {
     std::vector<char> encoded;
     encoded.resize(64);
 
+    // base32_encode(publickey + checksum)
     std::copy(bytes.begin(), bytes.end(), data.data());
     std::copy(hash.end() - checksumSize, hash.end(), data.data() + PublicKey::ed25519Size);
     base32_encode(data.data(), dataSize, encoded.data(), encoded.size(), BASE32_ALPHABET_RFC4648);

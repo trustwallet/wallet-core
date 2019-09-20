@@ -19,11 +19,20 @@ class AlgorandTests: XCTestCase {
         XCTAssertEqual(address.description, addressFromString.description)
     }
 
-    func testEncode() {
-        XCTAssertTrue(AlgorandAddress.isValidString(string: "ZPKWEGSSSUHYEZNU5REKXN6WYIFEOQ42WQY2DAJA4QO4GJ4LJDO5TEF5HA"))
-        print("amt".data(using: .utf8)!.hexString)
-        let data = Data(hexString: "82a3736967c440a764385b86da330b373750eeeaafd78e0e1525c534569d17f5d47d44b57f1b14a1b4a0c3239467c344b8a11723bb478b33ce1dfc65e541adc4248a6d58e5f309a374786e88a3616d74cd03e8a3666565cd03e8a26676ce001df153a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c76ce001df53ba3726376c4203dd160d60673bd9b13adc25dad5d988d0d9f4ccdbe95a2122f9ef28b3ce4e896a3736e64c420cbd5621a52950f8265b4ec48abb7d6c20a47439ab431a18120e41dc3278b48dda474797065a3706179")!
-        let base64 = data.base64EncodedString()
-        print(base64)
+    func testSign() {
+        let input = AlgorandSigningInput.with {
+            $0.toAddress = "CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4"
+            $0.fee = 263000
+            $0.amount = 1000000000000
+            $0.firstRound = 1937767
+            $0.lastRound = 1938767
+            $0.note = "hello".data(using: .utf8)!
+            $0.type = .pay
+            $0.privateKey = Data(hexString: "d5b43d706ef0cb641081d45a2ec213b5d8281f439f2425d1af54e2afdaabf55b")!
+        }
+
+        let output = AlgorandSigner.sign(input: input)
+
+        XCTAssertEqual(output.encoded.hexString, "82a3736967c440baa00062adcdcb5875e4435cdc6885d26bfe5308ab17983c0fda790b7103051fcb111554e5badfc0ac7edf7e1223a434342a9eeed5cdb047690827325051560ba374786e8aa3616d74cf000000e8d4a51000a3666565ce00040358a26676ce001d9167a367656eac6d61696e6e65742d76312e30a26768c420c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adfa26c76ce001d954fa46e6f7465c40568656c6c6fa3726376c42014560180e9c92da3171aa3c872356e30a8ea7f96c4a74bc1755a68929c94cb8fa3736e64c42061bf060efc02e2887dfffc8ed85268c8c091c013eedf315bc50794d02a8791ada474797065a3706179")
     }
 }
