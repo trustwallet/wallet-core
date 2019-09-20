@@ -61,4 +61,46 @@ TEST(WavesLease, CancelSerialize) {
                                 "76183580d723909af2b50e72b02f1e36707e");
 }
 
+TEST(WavesLease, jsonSerialize) {
+  const auto privateKey = PrivateKey(parse_hex(
+      "9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+  const auto publicKeyCurve25519 =
+      privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
+  auto input = Proto::SigningInput();
+  input.set_timestamp(int64_t(1568973547102));
+  input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+  auto &message = *input.mutable_lease_message();
+  message.set_amount(int64_t(100000));
+  message.set_fee(int64_t(100000));
+  message.set_to("3P9DEDP5VbyXQyKtXDUt2crRPn5B7gs6ujc");
+  auto tx1 = Transaction(input,
+                         /* pub_key */
+                        parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
+
+  auto signature = Signer::sign(privateKey, tx1);
+    std::cerr<<Base58::bitcoin.encode(signature)<<endl;
+
+  auto json = tx1.buildJson(signature);
+
+  ASSERT_EQ(json["type"], TransactionType::lease);
+  ASSERT_EQ(json["version"], TransactionVersion::V2);
+  ASSERT_EQ(json["fee"], int64_t(100000));
+  ASSERT_EQ(json["senderPublicKey"],
+            "6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU");
+  ASSERT_EQ(json["timestamp"], int64_t(1568973547102));
+  ASSERT_EQ(json["proofs"].dump(),
+            "[\"4opce9e99827upK3m3D3NicnvBqbMLtAJ4Jc8ksTLiScqBgjdqzr9JyXG"
+            "C1NAGZUbkqJvix9bNrBokrxtGruwmu3\"]");
+  ASSERT_EQ(json["recipient"], "3P9DEDP5VbyXQyKtXDUt2crRPn5B7gs6ujc");
+  ASSERT_EQ(json["amount"], int64_t(100000));
+  ASSERT_EQ(json.dump(),
+            "{\"amount\":100000,\"fee\":100000,\"proofs\":["
+            "\"4opce9e99827upK3m3D3NicnvBqbMLtAJ4Jc8ksTLiScqBgjdqzr9JyXGC1NAGZUbkqJ"
+            "vix9bNrBokrxtGruwmu3\"],\"recipient\":"
+            "\"3P9DEDP5VbyXQyKtXDUt2crRPn5B7gs6ujc\",\"senderPublicKey\":"
+            "\"6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU\",\"timestamp\":"
+            "1568973547102,\"type\":8,\"version\":2}");
+}
+
 
