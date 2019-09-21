@@ -12,7 +12,7 @@ class WavesTests: XCTestCase {
     func testSigner() throws {
 
         let privateKey = PrivateKey(data: Data(hexString: "68b7a9adb4a655b205f43dac413803785921e22cd7c4d05857b203a62621075f")!)!
-        
+
         let transferMessage = WavesTransferMessage.with {
             $0.amount = 100_000_000
             $0.asset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
