@@ -187,7 +187,7 @@ json Transaction::buildJson(Data signature) const {
                             pub_key);
     } else if (input.has_cancel_lease_message()) {
         auto message = input.cancel_lease_message();
-        auto leaseId = Data(message.lease_id().begin(), message.lease_id().end());
+        auto leaseId = Base58::bitcoin.decode(message.lease_id());
         return jsonCancelLease(
                             signature,
                             leaseId,

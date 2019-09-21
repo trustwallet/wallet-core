@@ -79,8 +79,6 @@ TEST(WavesLease, jsonSerialize) {
                         parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
 
   auto signature = Signer::sign(privateKey, tx1);
-    std::cerr<<Base58::bitcoin.encode(signature)<<endl;
-
   auto json = tx1.buildJson(signature);
 
   ASSERT_EQ(json["type"], TransactionType::lease);
@@ -101,6 +99,43 @@ TEST(WavesLease, jsonSerialize) {
             "\"3P9DEDP5VbyXQyKtXDUt2crRPn5B7gs6ujc\",\"senderPublicKey\":"
             "\"6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU\",\"timestamp\":"
             "1568973547102,\"type\":8,\"version\":2}");
+}
+
+TEST(WavesLease, jsonCancelSerialize) {
+    const auto privateKey = PrivateKey(parse_hex(
+                                                 "9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"));
+    const auto publicKeyCurve25519 =
+    privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
+    auto input = Proto::SigningInput();
+    input.set_timestamp(int64_t(1568973547102));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    
+    auto &message = *input.mutable_cancel_lease_message();
+    message.set_lease_id("DKhmXrCsBwf6WVhGh8bYVBnjtAXGpk2K4Yd3CW4u1huG");
+    message.set_fee(int64_t(100000));
+    auto tx1 = Transaction(input,
+                           /* pub_key */
+                           parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
+    auto signature = Signer::sign(privateKey, tx1);
+    auto json = tx1.buildJson(signature);
+    
+    ASSERT_EQ(json["type"], TransactionType::cancelLease);
+    ASSERT_EQ(json["version"], TransactionVersion::V2);
+    ASSERT_EQ(json["fee"], int64_t(100000));
+    ASSERT_EQ(json["senderPublicKey"],
+              "6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU");
+    ASSERT_EQ(json["leaseId"], "DKhmXrCsBwf6WVhGh8bYVBnjtAXGpk2K4Yd3CW4u1huG");
+    ASSERT_EQ(json["chainId"], 87);
+    ASSERT_EQ(json["timestamp"], int64_t(1568973547102));
+    ASSERT_EQ(json["proofs"].dump(),
+              "[\"Mwhh7kdbhPv9vtnPh6pjEcHTFJ5h5JtAziwFpqH8Ykw1yWYie4Nquh"
+              "eYtAWPbRowgpDVBxvG1rTrv82LnFdByQY\"]");
+    ASSERT_EQ(json.dump(),
+              "{\"chainId\":87,\"fee\":100000,\"leaseId\":\"DKhmXrCsBwf6WVhGh8bYVBnjtAXGpk2K4Yd3CW4u1huG\","
+              "\"proofs\":[\"Mwhh7kdbhPv9vtnPh6pjEcHTFJ5h5JtAziwFpqH8Ykw1yWYie4NquheYtAWP"
+              "bRowgpDVBxvG1rTrv82LnFdByQY\"],\"senderPublicKey\":"
+              "\"6mA8eQjie53kd4jbZrwL3ZhMBqCX6nzit1k55tR2X7zU\",\"timestamp\":"
+              "1568973547102,\"type\":9,\"version\":2}");
 }
 
 
