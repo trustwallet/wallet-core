@@ -109,8 +109,8 @@ TEST(TronSigner, SignFreezeBalance) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "c55020234343ddd055bded92e5656382a03370f33579518786fb637dc55c004b");
-    ASSERT_EQ(hex(output.signature()), "d75839158e854d98631a010f0aaebf7285a733b38afb2dcb59fcf523aa869b561d9db159826f06ecb5b1b7824c2405fb37b178d70aa3d4188b9c53af7f684e4a00");
+    ASSERT_EQ(hex(output.id()), "d314967bc1d153d649d9f54a1cc78033f0d696a58ff6922f490ddaec82558c83");
+    ASSERT_EQ(hex(output.signature()), "aa7cf79fb1692ff432a1a3e520be3355c3e8168c5fa22f6e3b96c2a9f2e2827b49d67d5e6eea5c7e7cf872047d422ce5d4d149c4df752b176d13f8f48920271201");
 }
 
 TEST(TronSigner, SignUnFreezeBalance) {
@@ -141,8 +141,8 @@ TEST(TronSigner, SignUnFreezeBalance) {
 
     const auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.id()), "9d6c70491f7f20857b3a92ad59683485941e70bab2f09debf42eceabe31619f4");
-    ASSERT_EQ(hex(output.signature()), "1063f470a8ab4948000993c8b067d1c7ce542a0651360f0d4dc41f95e6591b512b244d4dcffc36670dfe70674cac40b9c32a88d4e9a4bd639c029e0e4b5f5a8301");
+    ASSERT_EQ(hex(output.id()), "c5bd624bb53fed8ce4a7361475263b3a91ae71ef389630e0b3b8693c8c56d7a1");
+    ASSERT_EQ(hex(output.signature()), "4b4b12b5fd091d5343335f14ac90bf23ea9a8167d648dd9d10d00c9c9b24731c484937bf133e5010f0338fb70a679a9a2eca8b945574005bc4015b419a68897300");
 }
 
 TEST(TronSigner, SignUnFreezeAsset) {

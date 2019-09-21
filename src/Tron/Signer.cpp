@@ -62,13 +62,13 @@ protocol::FreezeBalanceContract to_internal(const Proto::FreezeBalanceContract& 
     auto internal = protocol::FreezeBalanceContract();
     auto resource = protocol::ResourceCode();
     const auto ownerAddress = Base58::bitcoin.decodeCheck(freezeContract.owner_address());
-    const auto receiveAddress = Base58::bitcoin.decodeCheck(freezeContract.receiver_address());
+    const auto receiverAddress = Base58::bitcoin.decodeCheck(freezeContract.receiver_address());
 
     protocol::ResourceCode_Parse(freezeContract.resource(), &resource);
 
     internal.set_resource(resource);
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
-    internal.set_owner_address(receiveAddress.data(), receiveAddress.size());
+    internal.set_receiver_address(receiverAddress.data(), receiverAddress.size());
     internal.set_frozen_balance(freezeContract.frozen_balance());
     internal.set_frozen_duration(freezeContract.frozen_duration());
 
@@ -79,13 +79,13 @@ protocol::UnfreezeBalanceContract to_internal(const Proto::UnfreezeBalanceContra
     auto internal = protocol::UnfreezeBalanceContract();
     auto resource = protocol::ResourceCode();
     const auto ownerAddress = Base58::bitcoin.decodeCheck(unfreezeContract.owner_address());
-    const auto receiveAddress = Base58::bitcoin.decodeCheck(unfreezeContract.receiver_address());
+    const auto receiverAddress = Base58::bitcoin.decodeCheck(unfreezeContract.receiver_address());
 
     protocol::ResourceCode_Parse(unfreezeContract.resource(), &resource);
 
     internal.set_resource(resource);
     internal.set_owner_address(ownerAddress.data(), ownerAddress.size());
-    internal.set_owner_address(receiveAddress.data(), receiveAddress.size());
+    internal.set_receiver_address(receiverAddress.data(), receiverAddress.size());
 
     return internal;
 }
