@@ -15,7 +15,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 
 ### Supported Blockchains
 
-We support Bitcoin, Ethereum, Binance Chain and 40+ blockchains, you can see the full list [here](docs/coins.md).
+We support Bitcoin, Ethereum, Binance Chain and 50+ blockchains, you can see the full list [here](docs/coins.md).
 
 # Usage
 

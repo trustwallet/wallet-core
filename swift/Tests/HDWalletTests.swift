@@ -372,4 +372,14 @@ class HDWalletTests: XCTestCase {
 
         XCTAssertEqual("FIO5J2xdfWygeNdHZNZRzRws8YGbVxjUXtp4eP8KoGkGKoLFQ7CaU", address)
     }
+
+    func testDeriveAlgorand() {
+        let algo = CoinType.algorand
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: algo)
+
+        let address = algo.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("VEFQ2IIW7CVKDLFEY53BMVJYKURC7KJTCW6U6R2CMQLQXZI52SCFSYASEY", address)
+    }
 }

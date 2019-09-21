@@ -151,6 +151,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto solana = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSolana));
     assertStringsEqual(solana, "SOL");
+
+    auto algo = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAlgorand));
+    assertStringsEqual(algo, "ALGO");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -203,6 +206,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeHarmony), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 13);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAlgorand), 6);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -356,6 +360,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto solana = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSolana, txId));
     assertStringsEqual(solana, "https://explorer.solana.com/tx/123");
+
+    auto algo = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAlgorand, txId));
+    assertStringsEqual(algo, "https://algoexplorer.io/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -502,6 +509,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto solana = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
     assertStringsEqual(solana, "solana");
+
+    auto algo = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
+    assertStringsEqual(algo, "algorand");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -648,6 +658,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto solana = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
     assertStringsEqual(solana, "Solana");
+
+    auto algo = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
+    assertStringsEqual(algo, "Algorand");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
@@ -672,6 +685,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainFIO, TWCoinTypeBlockchain(TWCoinTypeFIO));
     ASSERT_EQ(TWBlockchainHarmony, TWCoinTypeBlockchain(TWCoinTypeHarmony));
     ASSERT_EQ(TWBlockchainSolana, TWCoinTypeBlockchain(TWCoinTypeSolana));
+    ASSERT_EQ(TWBlockchainAlgorand, TWCoinTypeBlockchain(TWCoinTypeAlgorand));
 }
 
 TEST(TWCoinTypeConfiguration, P2SHPrefix) {

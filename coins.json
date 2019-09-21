@@ -1117,5 +1117,22 @@
             "clientPublic": "https://rpc.nearprotocol.com",
             "clientDocs": "https://docs.nearprotocol.com"
         }
+    },
+    {
+        "id": "algorand",
+        "name": "Algorand",
+        "symbol": "ALGO",
+        "decimals": 6,
+        "blockchain": "Algorand",
+        "derivationPath": "m/44'/283'/0'/0'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "https://algoexplorer.io/tx/",
+        "info": {
+            "url": "https://www.algorand.com/",
+            "client": "https://github.com/algorand/go-algorand",
+            "clientPublic": "https://indexer.algorand.network",
+            "clientDocs": "https://developer.algorand.org/docs/algod-rest-paths"
+        }
     }
 ]
