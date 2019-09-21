@@ -8,5 +8,6 @@
 
 #include "TWData.h"
 
+typedef TWData *_Nonnull TW_Algorand_Proto_TransactionPay;
 typedef TWData *_Nonnull TW_Algorand_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Algorand_Proto_SigningOutput;

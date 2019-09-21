@@ -15,21 +15,25 @@ const Data TRANSACTION_TAG = {84, 88};
 const std::string TRANSACTION_PAY = "pay";
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+    auto protoOutput = Proto::SigningOutput();
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
     auto from = Address(pubkey);
-    auto to = Address(input.to_address());
+
     auto note = Data(input.note().begin(), input.note().end());
+    auto genesisId = input.genesis_id();
+    auto genesisHash = Data(input.genesis_hash().begin(), input.genesis_hash().end());
+    if (input.has_transaction_pay()) {
+        auto message = input.transaction_pay();
+        auto to = Address(message.to_address());
 
-    auto transaction = Transaction(from, to, input.fee(), input.amount(), input.first_round(),
-                                   input.last_round(), note, TRANSACTION_PAY);
-    auto signature = sign(key, transaction);
-
-    auto protoOutput = Proto::SigningOutput();
-    auto serialized = transaction.serialize(signature);
-    protoOutput.set_encoded(serialized.data(), serialized.size());
-    protoOutput.set_signature(signature.data(), signature.size());
-
+        auto transaction = Transaction(from, to, message.fee(), message.amount(), message.first_round(),
+                                   message.last_round(), note, TRANSACTION_PAY, genesisId, genesisHash);
+        auto signature = sign(key, transaction);
+        auto serialized = transaction.serialize(signature);
+        protoOutput.set_encoded(serialized.data(), serialized.size());
+    }
+    
     return protoOutput;
 }
 

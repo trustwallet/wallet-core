@@ -18,14 +18,19 @@ class TestAlgorandSigner {
 
     @Test
     fun AlgorandTransactionSigning() {
-        val signingInput = Algorand.SigningInput.newBuilder()
+        val transaction = Algorand.TransactionPay.newBuilder()
             .setToAddress("CRLADAHJZEW2GFY2UPEHENLOGCUOU74WYSTUXQLVLJUJFHEUZOHYZNWYR4")
             .setAmount(1000000000000)
             .setFee(263000)
             .setFirstRound(1937767)
             .setLastRound(1938767)
+            .build()
+        val signingInput = Algorand.SigningInput.newBuilder()
+            .setGenesisId("mainnet-v1.0")
+            .setGenesisHash(ByteString.copyFrom("c061c4d8fc1dbdded2d7604be4568e3f6d041987ac37bde4b620b5ab39248adf".toHexByteArray()))
             .setNote(ByteString.copyFrom("68656c6c6f".toHexByteArray()))
             .setPrivateKey("d5b43d706ef0cb641081d45a2ec213b5d8281f439f2425d1af54e2afdaabf55b".toHexBytesInByteString())
+            .setTransactionPay(transaction)
             .build()
 
         val output: Algorand.SigningOutput = AlgorandSigner.sign(signingInput)

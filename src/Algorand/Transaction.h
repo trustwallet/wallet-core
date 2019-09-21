@@ -23,16 +23,16 @@ class Transaction {
     Data note;
     std::string type;
 
+    std::string genesisId;
+    Data genesisHash;
+
     Transaction(Address &from, Address &to, uint64_t fee, uint64_t amount, uint64_t firstRound,
-                uint64_t lastRound, Data &note, std::string type)
-        : from(from)
-        , to(to)
-        , fee(fee)
-        , amount(amount)
-        , firstRound(firstRound)
-        , lastRound(lastRound)
-        , note(note) 
-        , type(type) {}
+                uint64_t lastRound, Data &note, std::string type, std::string &genesisIdg, Data &genesisHash)
+        : from(from) , to(to)
+        , fee(fee), amount(amount)
+        , firstRound(firstRound), lastRound(lastRound)
+        , note(note), type(type)
+        , genesisId(genesisIdg), genesisHash(genesisHash) {}
 
   public:
     Data serialize() const;
