@@ -20,20 +20,19 @@ using namespace TW;
 
 TEST(TWWavesSigner, Sign) {
     auto input = Waves::Proto::SigningInput();
-
     const auto privateKey =
         PrivateKey(Base58::bitcoin.decode("83mqJpmgB5Mko1567sVAdqZxVKsT6jccXt3eFSi4G1zE"));
-
+    
     const auto publicKeyCurve25519 = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
-
-    input.set_amount(int64_t(100000000));
-    input.set_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
-    input.set_fee(int64_t(100000));
-    input.set_fee_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
-    input.set_to("3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx");
-    input.set_attachment("hello");
     input.set_timestamp(int64_t(1559146613));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    auto &message = *input.mutable_transfer_message();
+    message.set_amount(int64_t(100000000));
+    message.set_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
+    message.set_fee(int64_t(100000));
+    message.set_fee_asset("DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq");
+    message.set_to("3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx");
+    message.set_attachment("hello");
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
@@ -46,13 +45,7 @@ TEST(TWWavesSigner, Sign) {
               "43bdf35fd80d985edf4b4de1fb1c5c427e84d0879f8f");
 
     auto transaction = Waves::Transaction(
-        /* amount */ input.amount(),
-        /* asset */ input.asset(),
-        /* fee */ input.fee(),
-        /* fee_asset */ input.fee_asset(),
-        /* to */ Waves::Address(input.to()),
-        /* attachment */ Data(input.attachment().begin(), input.attachment().end()),
-        /* timestamp */ input.timestamp(),
+         input,
         /* pub_key */ publicKeyCurve25519.bytes);
 
     ASSERT_TRUE(publicKeyCurve25519.verify(
