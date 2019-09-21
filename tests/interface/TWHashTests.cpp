@@ -48,8 +48,8 @@ TEST(HashTests, sha512_256) {
 }
 
 TEST(TWHashTests, sha512_256) {
-    const char* message = "hello";
-    auto messageData = WRAPD(TWDataCreateWithBytes((const uint8_t *)message, strlen(message)));
+    auto message = std::string("hello");
+    auto messageData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(message.data()), message.size()));
     auto hashed = WRAPD(TWHashSHA512_256(messageData.get()));
     auto expectedString = WRAPS(TWStringCreateWithUTF8Bytes("e30d87cfa2a75db545eac4d61baf970366a8357c7f72fa95b52d0accb698f13a"));
     auto expected = WRAPD(TWDataCreateWithHexString(expectedString.get()));
