@@ -35,6 +35,13 @@ TWData *_Nonnull TWHashSHA512(TWData *_Nonnull data) {
     return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA512Length);
 }
 
+TWData *_Nonnull TWHashSHA512_256(TWData *_Nonnull data) {
+    std::array<uint8_t, TWHashSHA256Length> resultBytes;
+    auto dataBytes = TWDataBytes(data);
+    sha512_256_Raw(dataBytes, TWDataSize(data), resultBytes.data());
+    return TWDataCreateWithBytes(resultBytes.data(), TWHashSHA256Length);
+}
+
 TWData *_Nonnull TWHashKeccak256(TWData *_Nonnull data) {
     std::array<uint8_t, TWHashSHA256Length> resultBytes;
     auto dataBytes = TWDataBytes(data);

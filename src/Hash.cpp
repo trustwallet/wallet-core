@@ -35,6 +35,12 @@ Data Hash::sha512(const byte* begin, const byte* end) {
     return result;
 }
 
+Data Hash::sha512_256(const byte* begin, const byte* end) {
+    Data result(sha256Size);
+    sha512_256_Raw(begin, end - begin, result.data());
+    return result;
+}
+
 Data Hash::keccak256(const byte* begin, const byte* end) {
     Data result(sha256Size);
     keccak_256(begin, end - begin, result.data());

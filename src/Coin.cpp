@@ -9,6 +9,7 @@
 #include "ARK/Address.h"
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
+#include "Algorand/Address.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
@@ -24,6 +25,7 @@
 #include "Icon/Address.h"
 #include "IoTeX/Address.h"
 #include "NEO/Address.h"
+#include "NEAR/Address.h"
 #include "Nano/Address.h"
 #include "Nebulas/Address.h"
 #include "Nimiq/Address.h"
@@ -156,6 +158,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
     case TWCoinTypeNano:
         return Nano::Address::isValid(string);
 
+    case TWCoinTypeNEAR:
+        return NEAR::Address::isValid(string);
+
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
 
@@ -176,6 +181,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeSolana:
         return Solana::Address::isValid(string);
+
+    case TWCoinTypeAlgorand:
+        return Algorand::Address::isValid(string);
     }
 }
 
@@ -295,6 +303,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
 
+    case TWCoinTypeNEAR:
+        return NEAR::Address(publicKey).string();
+
     case TWCoinTypeSemux:
         return Semux::Address(publicKey).string();
 
@@ -312,6 +323,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeSolana:
         return Solana::Address(publicKey).string();
+
+    case TWCoinTypeAlgorand:
+        return Algorand::Address(publicKey).string();
     }
 }
 

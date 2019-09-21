@@ -35,8 +35,3 @@ class Transaction {
 };
 
 } // namespace TW::Nimiq
-
-/// Wrapper for C interface.
-struct TWNimiqTransaction {
-    TW::Nimiq::Transaction impl;
-};

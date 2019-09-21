@@ -51,6 +51,7 @@ enum TWCoinType {
     TWCoinTypeNebulas = 2718,
     TWCoinTypeLux = 3003,
     TWCoinTypeNano = 165,
+    TWCoinTypeNEAR = 397,
     TWCoinTypeNEO = 888,
     TWCoinTypeNimiq = 242,
     TWCoinTypeOntology = 1024,
@@ -80,6 +81,7 @@ enum TWCoinType {
     TWCoinTypeWaves = 5741564,
     TWCoinTypeTerra = 330,
     TWCoinTypeHarmony = 1023,
+    TWCoinTypeAlgorand = 283,
 };
 
 /// Returns the blockchain for a coin type.
