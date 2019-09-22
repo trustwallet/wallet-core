@@ -35,6 +35,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto gochain = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGoChain));
     assertStringsEqual(gochain, "GO");
 
+    auto hatch = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeHatch));
+    assertStringsEqual(hatch, "HATCH");
+
     auto icon = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeICON));
     assertStringsEqual(icon, "ICX");
 
@@ -168,6 +171,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthersocial), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGoChain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeHatch), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOANetwork), 18);
@@ -231,6 +235,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto gochain = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGoChain, txId));
     assertStringsEqual(gochain, "https://explorer.gochain.io/tx/123");
+
+    auto hatch = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeHatch, txId));
+    assertStringsEqual(hatch, "https://explorer.hatch.ga/tx/123");
 
     auto icon = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeICON, txId));
     assertStringsEqual(icon, "https://tracker.icon.foundation/transaction/123");
@@ -387,6 +394,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto gochain = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGoChain));
     assertStringsEqual(gochain, "gochain");
 
+    auto hatch = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeHatch));
+    assertStringsEqual(hatch, "hatch");
+
     auto icon = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeICON));
     assertStringsEqual(icon, "icon");
 
@@ -535,6 +545,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto gochain = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGoChain));
     assertStringsEqual(gochain, "GoChain");
+
+    auto hatch = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeHatch));
+    assertStringsEqual(hatch, "Hatch");
 
     auto icon = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeICON));
     assertStringsEqual(icon, "ICON");
@@ -695,6 +708,7 @@ TEST(TWCoinTypeConfiguration, P2SHPrefix) {
     ASSERT_EQ(0x1a, TWCoinTypeP2shPrefix(TWCoinTypeDecred));
     ASSERT_EQ(0x16, TWCoinTypeP2shPrefix(TWCoinTypeDogecoin));
     ASSERT_EQ(0x32, TWCoinTypeP2shPrefix(TWCoinTypeLitecoin));
+    ASSERT_EQ(0x10, TWCoinTypeP2shPrefix(TWCoinTypeHatch));
     ASSERT_EQ(0x21, TWCoinTypeP2shPrefix(TWCoinTypeViacoin));
     ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZcash));
     ASSERT_EQ(0x07, TWCoinTypeP2shPrefix(TWCoinTypeZcoin));

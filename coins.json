@@ -285,6 +285,29 @@
         }
     },
     {
+        "id": "hatch",
+        "name": "Hatch",
+        "symbol": "HATCH",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/44'/88888888'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "p2pkhPrefix": 76,
+        "p2shPrefix": 16,
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "explorer": "https://explorer.hatch.ga/tx/",
+        "info": {
+            "url": "https://hatch.ga",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
+    },
+    {
         "id": "icon",
         "name": "ICON",
         "symbol": "ICX",

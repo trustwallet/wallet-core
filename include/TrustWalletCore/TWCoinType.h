@@ -42,6 +42,7 @@ enum TWCoinType {
     TWCoinTypeFIO = 235,
     TWCoinTypeGoChain = 6060,
     TWCoinTypeGroestlcoin = 17,
+    TWCoinTypeHatch = 88888888,
     TWCoinTypeICON = 74,
     TWCoinTypeIOST = 291,
     TWCoinTypeIoTeX = 304,

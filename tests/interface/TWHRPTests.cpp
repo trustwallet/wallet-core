@@ -69,6 +69,7 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEthereumClassic));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEthersocial));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeGoChain));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeHatch));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeICON));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeIOST));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeIoTeX));

@@ -64,3 +64,4 @@ This list is generated from [./coins.json](../coins.json)
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
 | 7562605 | Semux            | SEM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/semux/info/logo.png" width="32" />        | <https://www.semux.org>       |
+| 88888888| Hatch            | HATCH  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/hatch/info/logo.png" width="32" />        | <https://hatch.ga>            |

@@ -61,6 +61,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .goChain:
                     let expectedResult = "0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .hatch:
+                    let expectedResult = "XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .icon:
                     let expectedResult = "hx18b380b53c23dc4ee9f6666bc20d1be02f3fe106"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
