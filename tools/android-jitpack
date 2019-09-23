@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# This script builds the Android package.
+
+set -e
+
+pushd android
+./gradlew  clean install
+popd
