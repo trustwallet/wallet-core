@@ -34,7 +34,7 @@ class TestBinanceTransactionSigning {
         token.amount = 1
 
         val input = Binance.SendOrder.Input.newBuilder()
-        input.address = ByteString.copyFrom(CosmosAddress(HRP.BINANCE, publicKey).keyHash())
+        input.address = ByteString.copyFrom(CosmosAddress(HRP.BNB, publicKey).keyHash())
         input.addAllCoins(listOf(token.build()))
 
         val output =  Binance.SendOrder.Output.newBuilder()
