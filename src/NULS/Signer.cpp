@@ -52,7 +52,7 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
     tx.set_remark(input.remark());
     tx.set_type(2);
     tx.set_timestamp(input.timestamp());
-    tx.set_tx_data(0xffffffff);
+    tx.set_tx_data(0);
 }
 
 Data Signer::sign() const {
@@ -81,9 +81,15 @@ Data Signer::sign() const {
     encode16LE(tx.type(), data);
     // Timestamp
     encode32LE(tx.timestamp(), data);
+     // Remark
+    std::string remark = tx.remark();
+    serializerRemark(remark, data);
     // txData
-    encodeVarInt(4, data);
-    encode32LE(tx.tx_data(), data);
+    encodeVarInt(0, data);
+
+    //coinFrom and coinTo size
+    encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, data);
+
     // CoinData Input
     std::vector<Proto::TransactionCoinFrom> inputs;
     std::copy(tx.inputs().begin(), tx.inputs().end(), std::back_inserter(inputs));
@@ -92,9 +98,7 @@ Data Signer::sign() const {
     std::vector<Proto::TransactionCoinTo> outputs;
     std::copy(tx.outputs().begin(), tx.outputs().end(), std::back_inserter(outputs));
     serializerOutput(outputs, data);
-    // Remark
-    std::string remark = tx.remark();
-    serializerRemark(remark, data);
+
 
     // Calc transaction hash
     Data txHash = calcTransactionDigest(data);

@@ -16,7 +16,7 @@ struct TransactionBuilder {
     static const uint16_t TRANSACTION_FIX_SIZE = 14; //type 2, time 4, txData 4, hash 4
     static const uint16_t TRANSACTION_SIG_MAX_SIZE = 110;
     static const uint16_t TRANSACTION_INPUT_SIZE = 70;
-    static const uint16_t TRANSACTION_OUTPUT_SIZE = 68;
+    static const uint16_t TRANSACTION_OUTPUT_SIZE = 70;
     /// Transaction size must less that 300KB
     static const uint64_t MAX_TRANSACTION_SIZE = 300 * 1024;
     /// 0.001 NULS per KB

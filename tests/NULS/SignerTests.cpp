@@ -43,12 +43,12 @@ inline auto makeInput(std::string priKey, std::string addressFrom, std::string a
 }
 
 TEST(NULSSigner, Sign) {
-    Data nonceData = parse_hex("46a7e127e1fb5302");
+    Data nonceData = parse_hex("0000000000000000");
     std::string nonce;
     nonce.insert(nonce.begin(), nonceData.begin(), nonceData.end());
     auto input = makeInput("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a",
                            "NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L", "NULSd6HgUiMKPNi221bPfqvvho8QpuYBvn1x3",
-                           10000000L, 1, 1, nonce, "这是个签名用例", 10000000000L);
+                           10000000L, 1, 1, nonce, "", 10000000000L);
     auto signer = NULS::Signer(input);
     std::vector<uint8_t> signature = signer.sign();
     std::string signedTransaction = hex(signature);

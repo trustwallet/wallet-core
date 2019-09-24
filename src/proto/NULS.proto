@@ -75,7 +75,7 @@ message Signature {
 message Transaction {
     uint32  type = 1;
     uint32  timestamp = 2;
-    uint32  tx_data = 3;
+    bytes   tx_data = 3;
     //CoinFrom
     repeated TransactionCoinFrom inputs = 4;
     //CoinTo
