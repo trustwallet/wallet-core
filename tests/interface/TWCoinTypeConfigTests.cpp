@@ -86,9 +86,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto grs = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
     assertStringsEqual(grs, "GRS");
 
-    auto lux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLux));
-    assertStringsEqual(lux, "LUX");
-
     auto qtum = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
     assertStringsEqual(qtum, "QTUM");
 
@@ -186,7 +183,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKin), 5);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLux), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeQtum), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravoCoin), 3);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSteem), 3);
@@ -294,9 +290,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto decred = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDecred, txId));
     assertStringsEqual(decred, "https://dcrdata.decred.org/tx/123");
-
-    auto lux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
-    assertStringsEqual(lux, "https://explorer.poswallet.io/#/tx/123");
 
     auto qtum = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
     assertStringsEqual(qtum, "https://qtum.info/tx/123");
@@ -440,9 +433,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto grs = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
     assertStringsEqual(grs, "groestlcoin");
-
-    auto lux = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLux));
-    assertStringsEqual(lux, "lux");
 
     auto qtum = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     assertStringsEqual(qtum, "qtum");
@@ -592,9 +582,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto grs = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
     assertStringsEqual(grs, "Groestlcoin");
-
-    auto lux = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
-    assertStringsEqual(lux, "Lux");
 
     auto qtum = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
     assertStringsEqual(qtum, "Qtum");
