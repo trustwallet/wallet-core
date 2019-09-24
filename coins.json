@@ -552,6 +552,7 @@
     {
         "id": "binance",
         "name": "Binance",
+        "displayName": "BNB",
         "symbol": "BNB",
         "decimals": 8,
         "blockchain": "Binance",
