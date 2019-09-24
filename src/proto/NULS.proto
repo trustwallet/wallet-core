@@ -75,12 +75,13 @@ message Signature {
 message Transaction {
     uint32  type = 1;
     uint32  timestamp = 2;
-    bytes   tx_data = 3;
+    string  remark = 3;
+    bytes   tx_data = 4;
     //CoinFrom
-    repeated TransactionCoinFrom inputs = 4;
+    repeated TransactionCoinFrom inputs = 5;
     //CoinTo
-    repeated TransactionCoinTo outputs = 5;
-    string remark = 6;
+    repeated TransactionCoinTo outputs = 6;
+
     repeated Signature tx_sigs = 7;
     uint32 hash = 8;
 }

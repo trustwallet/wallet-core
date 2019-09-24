@@ -36,6 +36,7 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
     //need to update with amount + fee
     coinFrom.set_idamount(input.amount());
     coinFrom.set_nonce(input.nonce());
+
     //default unlocked
     coinFrom.set_locked(0);
     Proto::TransactionCoinFrom* input_item = tx.add_inputs();
@@ -52,7 +53,7 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
     tx.set_remark(input.remark());
     tx.set_type(2);
     tx.set_timestamp(input.timestamp());
-    tx.set_tx_data(0);
+    tx.set_tx_data("");
 }
 
 Data Signer::sign() const {
@@ -71,10 +72,18 @@ Data Signer::sign() const {
     }
     
     Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.inputs(0);
-    Data amount = store(fromAmount);
+    Data amount;
+    encode256BE(amount,fromAmount,128);
     std::string amountStr;
     amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
     coinFrom.set_idamount(amountStr);
+
+    Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.outputs(0);
+    Data amountTo;
+    encode256BE(amountTo,txAmount,128);
+    std::string amountToStr;
+    amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());
+    coinTo.set_idamount(amountToStr);
 
     auto data = Data();
     // Transaction Type
@@ -88,12 +97,13 @@ Data Signer::sign() const {
     encodeVarInt(0, data);
 
     //coinFrom and coinTo size
-    encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, data);
+    encodeVarInt(TransactionBuilder::TRANSACTION_INPUT_SIZE + TransactionBuilder::TRANSACTION_OUTPUT_SIZE, data);
 
     // CoinData Input
     std::vector<Proto::TransactionCoinFrom> inputs;
     std::copy(tx.inputs().begin(), tx.inputs().end(), std::back_inserter(inputs));
     serializerInput(inputs, data);
+
     // CoinData Output
     std::vector<Proto::TransactionCoinTo> outputs;
     std::copy(tx.outputs().begin(), tx.outputs().end(), std::back_inserter(outputs));

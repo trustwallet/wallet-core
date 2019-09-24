@@ -75,3 +75,15 @@ static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash
     std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));
     return transactionSignature;
 }
+inline void encode256LE(Data &data, const uint256_t &value, uint32_t digit) {
+    Data bytes = store(value);
+    Data buff(digit / 8);
+
+    for (int i = 0; i < (int)bytes.size(); ++i) {
+        //int start = (int)buff.size() - (int)bytes.size() + i;
+        //if (start >= 0) {
+            buff[i] = bytes[i];
+        //}
+    }
+    data.insert(data.end(), buff.begin(), buff.end());
+}
