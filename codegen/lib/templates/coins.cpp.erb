@@ -200,7 +200,11 @@ TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
     switch (coin) {
 <%  coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-        string = "<%= coin['name'] %>";
+<%  if coin['displayName'].nil? -%>
+    string = "<%= coin['name'] %>";
+<%  else -%>
+    string = "<%= coin['displayName'] %>";
+<%  end -%>
         break;
 <% end -%>
     }

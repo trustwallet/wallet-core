@@ -554,7 +554,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     assertStringsEqual(xzc, "Zcoin");
 
     auto bnb = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
-    assertStringsEqual(bnb, "Binance");
+    assertStringsEqual(bnb, "BNB");
 
     auto xtz = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
     assertStringsEqual(xtz, "Tezos");
