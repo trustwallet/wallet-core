@@ -59,7 +59,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto zcoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcoin));
     assertStringsEqual(zcoin, "XZC");
 
-    auto bnb = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinance));
+    auto bnb = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBNB));
     assertStringsEqual(bnb, "BNB");
 
     auto xtz = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
@@ -175,7 +175,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWanchain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVeChain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBNB), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
@@ -255,7 +255,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto xzc = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcoin, txId));
     assertStringsEqual(xzc, "https://explorer.zcoin.io/tx/123");
 
-    auto bnb = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
+    auto bnb = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBNB, txId));
     assertStringsEqual(bnb, "https://explorer.binance.org/tx/123");
 
     auto zec = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, txId));
@@ -407,7 +407,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto xzc = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcoin));
     assertStringsEqual(xzc, "zcoin");
 
-    auto bnb = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinance));
+    auto bnb = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBNB));
     assertStringsEqual(bnb, "binance");
 
     auto xtz = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
@@ -553,8 +553,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto xzc = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcoin));
     assertStringsEqual(xzc, "Zcoin");
 
-    auto bnb = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
-    assertStringsEqual(bnb, "Binance");
+    auto bnb = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBNB));
+    assertStringsEqual(bnb, "BNB");
 
     auto xtz = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
     assertStringsEqual(xtz, "Tezos");

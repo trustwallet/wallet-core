@@ -46,7 +46,7 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             }
             break;
         }
-        case TWCoinTypeBinance: {
+        case TWCoinTypeBNB: {
             Binance::Proto::SigningInput message;
             parse(transaction, &message, output);
             if (output.success()) {

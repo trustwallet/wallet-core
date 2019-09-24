@@ -33,7 +33,7 @@ TEST(Signer, BinanceTransactionSign) {
     auto input = Proto::SigningInput();
     input.set_private_key("f947b3554a1c2fa70e1caa9de53fbda353348d1e856c593848f3a29737d31f11");
     input.set_transaction(transaction);
-    input.set_coin_type(TWCoinTypeBinance);
+    input.set_coin_type(TWCoinTypeBNB);
 
     auto signer = Signer(input);
     auto output = signer.sign();

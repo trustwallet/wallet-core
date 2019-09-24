@@ -149,7 +149,7 @@ TEST(BinanceSigner, BuildSend) {
 }
 
 TEST(BinanceSigner, BuildSend2) {
-    const auto derivationPath = TW::derivationPath(TWCoinTypeBinance);
+    const auto derivationPath = TW::derivationPath(TWCoinTypeBNB);
 
     const auto fromWallet = HDWallet("swift slam quote sail high remain mandate sample now stamp title among fiscal captain joy puppy ghost arrow attract ozone situate install gain mean", "");
     const auto fromPrivateKey = fromWallet.getKey(derivationPath);

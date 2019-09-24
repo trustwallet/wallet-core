@@ -11,15 +11,15 @@ class BinanceChainTests: XCTestCase {
 
     func testAddress() {
         let publicKey = PublicKey(data: Data(hexString: "0x026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")!, type: .secp256k1)!
-        let address = CosmosAddress(hrp: .binance, publicKey: publicKey)
+        let address = CosmosAddress(hrp: .bnb, publicKey: publicKey)
 
         XCTAssertEqual("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", address?.description)
     }
 
     func testBinanceMainnet() {
         let wallet = HDWallet(mnemonic: "rabbit tilt arm protect banner ill produce vendor april bike much identify pond upset front easily glass gallery address hair priority focus forest angle", passphrase: "")
-        let key = wallet.getKeyForCoin(coin: .binance)
-        let address = CoinType.binance.deriveAddress(privateKey: key)
+        let key = wallet.getKeyForCoin(coin: .bnb)
+        let address = CoinType.bnb.deriveAddress(privateKey: key)
 
         XCTAssertEqual(key.data.hexString, "727f677b390c151caf9c206fd77f77918f56904b5504243db9b21e51182c4c06")
         XCTAssertEqual("bnb1devga6q804tx9fqrnx0vtu5r36kxgp9tmk4xkm", address.description)
@@ -41,7 +41,7 @@ class BinanceChainTests: XCTestCase {
         token.amount = 1
 
         var input = TW_Binance_Proto_SendOrder.Input()
-        input.address = CosmosAddress(hrp: .binance, publicKey: publicKey)!.keyHash
+        input.address = CosmosAddress(hrp: .bnb, publicKey: publicKey)!.keyHash
         input.coins = [token]
 
         var output = TW_Binance_Proto_SendOrder.Output()

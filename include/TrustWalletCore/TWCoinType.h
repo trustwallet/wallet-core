@@ -24,7 +24,7 @@ TW_EXPORT_ENUM(uint32_t)
 enum TWCoinType {
     TWCoinTypeAeternity = 457,
     TWCoinTypeAion = 425,
-    TWCoinTypeBinance = 714,
+    TWCoinTypeBNB = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
     TWCoinTypeBravoCoin = 282,

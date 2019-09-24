@@ -15,7 +15,7 @@ using namespace TW;
 
 TEST(TWAnySigner, IsEnabled) {
     ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeEthereum));
-    ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeBinance));
+    ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeBNB));
 
     ASSERT_FALSE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoinCash));
     ASSERT_FALSE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoin));

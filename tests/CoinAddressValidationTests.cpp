@@ -39,8 +39,8 @@ TEST(Coin, validateAddressBitcoin) {
 }
 
 TEST(Coin, ValidateAddressBinance) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeBinance, "bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeBinance, "tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeBNB, "bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeBNB, "tbnb12vtaxl9952zm6rwf7v8jerq74pvaf77fkw9xhl"));
 }
 
 TEST(Coin, ValidateAddressLitecoin) {
