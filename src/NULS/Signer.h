@@ -16,8 +16,6 @@ namespace TW::NULS {
 class Signer {
   public:
     Proto::Transaction tx;
-    //Proto::TransactionPlan plan;
-    //Signer(Proto::TransactionPlan& plan);
 
     Proto::SigningInput input;
 
@@ -28,8 +26,6 @@ class Signer {
     ///
     /// \returns the transaction signature or an empty vector if there is an error.
     Data sign() const;
-
-
 };
 
 } // namespace TW::NULS

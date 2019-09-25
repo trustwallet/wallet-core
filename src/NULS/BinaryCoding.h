@@ -12,7 +12,6 @@
 using namespace TW;
 using namespace TW::NULS;
 
-
 static inline void serializerRemark(std::string& remark, std::vector<uint8_t>& data) {
     encodeVarInt(remark.length(), data);
     std::copy(remark.begin(), remark.end(), std::back_inserter(data));
@@ -32,8 +31,9 @@ static inline void serializerInput(std::vector<Proto::TransactionCoinFrom>& inpu
         encode16LE((uint16_t)input.assets_chainid(), data);
         encode16LE((uint16_t)input.idassets_id(), data);
         std::copy(input.idamount().begin(), input.idamount().end(), std::back_inserter(data));
-        encodeVarInt(input.nonce().size(), data);
-        std::copy(input.nonce().begin(), input.nonce().end(), std::back_inserter(data));
+        Data nonce = parse_hex(input.nonce());
+        encodeVarInt(nonce.size(), data);
+        append(data, nonce);
         data.push_back(static_cast<uint8_t>(input.locked()));
         break;
     }
@@ -70,22 +70,9 @@ static inline Data makeTransactionSignature(PrivateKey& privateKey, Data& txHash
     encodeVarInt(pubKey.bytes.size(), transactionSignature);
     std::copy(pubKey.bytes.begin(), pubKey.bytes.end(), std::back_inserter(transactionSignature));
     auto signature = privateKey.signAsDER(txHash, TWCurve::TWCurveSECP256k1);
-    transactionSignature.push_back(static_cast<uint8_t>(0x00));
     encodeVarInt(signature.size(), transactionSignature);
     std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));
     return transactionSignature;
-}
-inline void encode256LE(Data &data, const uint256_t &value, uint32_t digit) {
-    Data bytes = store(value);
-    Data buff(digit / 8);
-
-    for (int i = 0; i < (int)bytes.size(); ++i) {
-        //int start = (int)buff.size() - (int)bytes.size() + i;
-        //if (start >= 0) {
-            buff[i] = bytes[i];
-        //}
-    }
-    data.insert(data.end(), buff.begin(), buff.end());
 }
 
 /// Loads a `uint256_t` from Protobuf bytes (which are wrongly represented as

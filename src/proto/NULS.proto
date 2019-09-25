@@ -3,47 +3,6 @@ syntax = "proto3";
 package TW.NULS.Proto;
 option java_package = "wallet.core.jni.proto";
 
-/*
-message TransactionPurpose {
-    bytes private_key = 1;
-    string from_address = 2;
-    string to_address = 3;
-    bytes amount = 4;
-
-    /// UTF-8 encode strings
-    string remark = 5;
-
-    int32 timestamp = 6;
-
-    /// Unspent input list
-    repeated TransactionInput inputs = 7;
-
-    // If sending max amount.
-    bool use_max_amount = 8;
-}
-*/
-
-/*
-message TransactionPlan {
-    bytes private_key = 1;
-    string from_address = 2;
-    string to_address = 3;
-    bytes amount = 4;
-
-    /// UTF-8 encode strings
-    string remark = 5;
-
-    int32 timestamp = 6;
-    int64 fee = 7;
-    int64 change = 8;
-    int64 available_amount = 9;
-
-    /// Selected Unspent input list
-    repeated TransactionInput inputs = 10;
-    repeated TransactionOutput outputs = 11;
-}
-*/
-
 message TransactionCoinFrom {
     string from_address = 1;
     uint32 assets_chainid = 2;

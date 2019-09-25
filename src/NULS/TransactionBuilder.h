@@ -13,7 +13,7 @@
 namespace TW::NULS {
 
 struct TransactionBuilder {
-    static const uint16_t TRANSACTION_FIX_SIZE = 14; //type 2, time 4, txData 4, hash 4
+    static const uint16_t TRANSACTION_FIX_SIZE = 11; //type 2, time 4, txData 1, hash 4
     static const uint16_t TRANSACTION_SIG_MAX_SIZE = 110;
     static const uint16_t TRANSACTION_INPUT_SIZE = 70;
     static const uint16_t TRANSACTION_OUTPUT_SIZE = 70;

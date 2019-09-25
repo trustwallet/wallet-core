@@ -15,17 +15,6 @@
 using namespace TW;
 using namespace TW::NULS;
 
-/*
-Signer::Signer(Proto::TransactionPlan& plan) : plan(plan) {
-    tx.set_amount(plan.amount());
-    tx.set_from_address(plan.from_address());
-    tx.set_to_address(plan.to_address());
-    tx.set_remark(plan.remark());
-    tx.set_timestamp(plan.timestamp());
-    *tx.mutable_inputs() = *plan.mutable_inputs();
-    *tx.mutable_outputs() = *plan.mutable_outputs();
-}
- */
 Signer::Signer(Proto::SigningInput& input) : input(input) {
     Proto::TransactionCoinFrom coinFrom;
     Proto::TransactionCoinTo coinTo;
@@ -63,19 +52,20 @@ Data Signer::sign() const {
     }
 
     uint32_t txSize = TransactionBuilder::calculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
-    uint64_t fee = TransactionBuilder::calculatorTransactionFee(txSize);
+    uint256_t fee = (uint256_t)TransactionBuilder::calculatorTransactionFee(txSize);
     uint256_t txAmount = load(input.amount());
     uint256_t balance = load(input.balance());
     uint256_t fromAmount = txAmount + fee;
     if (fromAmount > balance) {
         throw std::invalid_argument("User account balance not sufficient");
     }
-    
+
     Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.inputs(0);
     Data amount;
     amount = store_lsb(fromAmount);
     std::string amountStr;
     amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
+    amountStr.append((unsigned long)(amount.capacity() - amount.size()), '\0');
     coinFrom.set_idamount(amountStr);
 
     Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.outputs(0);
@@ -83,6 +73,7 @@ Data Signer::sign() const {
     amountTo = store_lsb(txAmount);
     std::string amountToStr;
     amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());
+    amountToStr.append((unsigned long)(amountTo.capacity() - amountTo.size()), '\0');
     coinTo.set_idamount(amountToStr);
 
     auto data = Data();
@@ -109,12 +100,10 @@ Data Signer::sign() const {
     std::copy(tx.outputs().begin(), tx.outputs().end(), std::back_inserter(outputs));
     serializerOutput(outputs, data);
 
-
     // Calc transaction hash
     Data txHash = calcTransactionDigest(data);
     auto priv = Address::importHexPrivateKey(input.private_key());
     auto transactionSignature = makeTransactionSignature(priv, txHash);
-
     encodeVarInt(transactionSignature.size(), data);
     std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(data));
 
