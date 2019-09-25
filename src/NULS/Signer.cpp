@@ -73,14 +73,14 @@ Data Signer::sign() const {
     
     Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.inputs(0);
     Data amount;
-    encode256BE(amount,fromAmount,128);
+    amount = store_lsb(fromAmount);
     std::string amountStr;
     amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
     coinFrom.set_idamount(amountStr);
 
     Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.outputs(0);
     Data amountTo;
-    encode256BE(amountTo,txAmount,128);
+    amountTo = store_lsb(txAmount);
     std::string amountToStr;
     amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());
     coinTo.set_idamount(amountToStr);

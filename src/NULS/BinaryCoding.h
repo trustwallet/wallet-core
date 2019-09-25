@@ -87,3 +87,26 @@ inline void encode256LE(Data &data, const uint256_t &value, uint32_t digit) {
     }
     data.insert(data.end(), buff.begin(), buff.end());
 }
+
+/// Loads a `uint256_t` from Protobuf bytes (which are wrongly represented as
+/// std::string).(lsb first)
+inline uint256_t load_lsb(const std::string& data) {
+    using boost::multiprecision::cpp_int;
+    if (data.empty()) {
+        return uint256_t(0);
+    }
+    uint256_t result;
+    import_bits(result, reinterpret_cast<const byte*>(data.data()),
+                reinterpret_cast<const byte*>(data.data() + data.size()), false);
+    return result;
+}
+
+/// Stores a `uint256_t` as a collection of bytes.(lsb first)
+inline Data store_lsb(const uint256_t& v) {
+    using boost::multiprecision::cpp_int;
+    Data bytes;
+    bytes.reserve(32);
+    export_bits(v, std::back_inserter(bytes), 8, false);
+    return bytes;
+}
+
