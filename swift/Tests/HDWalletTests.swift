@@ -135,15 +135,6 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("a5jgmKczLE7fbgBmVkDTvvAQx8pYZKL7LP", address)
     }
 
-    func testDeriveLux() {
-        let lux = CoinType.lux
-        let wallet = HDWallet.test
-        let key = wallet.getKeyForCoin(coin: lux)
-        let address = lux.deriveAddress(privateKey: key)
-
-        XCTAssertEqual("LUWu1RfpiSpBp4tYKqV3WwYdmJpgYmKpfh", address)
-    }
-
     func testDeriveBinanceChain() {
         let binance = CoinType.binance
         let wallet = HDWallet.test
@@ -371,5 +362,15 @@ class HDWalletTests: XCTestCase {
         let address = fio.deriveAddress(privateKey: key)
 
         XCTAssertEqual("FIO5J2xdfWygeNdHZNZRzRws8YGbVxjUXtp4eP8KoGkGKoLFQ7CaU", address)
+    }
+
+    func testDeriveAlgorand() {
+        let algo = CoinType.algorand
+        let wallet = HDWallet.test
+        let key = wallet.getKeyForCoin(coin: algo)
+
+        let address = algo.deriveAddress(privateKey: key)
+
+        XCTAssertEqual("VEFQ2IIW7CVKDLFEY53BMVJYKURC7KJTCW6U6R2CMQLQXZI52SCFSYASEY", address)
     }
 }

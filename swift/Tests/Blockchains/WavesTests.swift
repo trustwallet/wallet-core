@@ -13,15 +13,19 @@ class WavesTests: XCTestCase {
 
         let privateKey = PrivateKey(data: Data(hexString: "68b7a9adb4a655b205f43dac413803785921e22cd7c4d05857b203a62621075f")!)!
 
-        let input = WavesSigningInput.with {
+        let transferMessage = WavesTransferMessage.with {
             $0.amount = 100_000_000
             $0.asset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             $0.fee = 100_000
             $0.feeAsset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             $0.to = "3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx"
             $0.attachment = Data(hexString: "0x68656c6c6f")!
+        }
+
+        let input = WavesSigningInput.with {
             $0.timestamp = 1559146613
             $0.privateKey = privateKey.data
+            $0.transferMessage = transferMessage
         }
 
         let output = WavesSigner.sign(input: input)

@@ -40,6 +40,11 @@ enum TWBlockchain {
     TWBlockchainWaves = 25,
     TWBlockchainAeternity = 26,
     TWBlockchainNebulas = 27,
+    TWBlockchainFIO = 28,
+    TWBlockchainSolana = 29,
+    TWBlockchainHarmony = 30,
+    TWBlockchainNEAR = 31,
+    TWBlockchainAlgorand = 32,
 };
 
 TW_EXTERN_C_END

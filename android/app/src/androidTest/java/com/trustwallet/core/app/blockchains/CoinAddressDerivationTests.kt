@@ -57,6 +57,7 @@ class CoinAddressDerivationTests {
         AION -> assertEquals("0xa0629f34c9ea4757ad0b275628d4d02e3db6c9009ba2ceeba76a5b55fb2ca42e", address)
         NANO -> assertEquals("nano_39gsbcishxn3n7wd17ono4otq5wazwzusqgqigztx73wbrh5jwbdbshfnumc", address)
         NEBULAS -> assertEquals("n1ZVgEidtdseYv9ogmGz69Cz4mbqmHYSNqJ", address)
+        NEAR -> assertEquals("NEAR6Y66fCzeKqWiwxoPox5oGeDN9VhNCu7CEQ9M86iniqoN9vg2X", address)
         NEO -> assertEquals("AUa3rzbGJe7MbHf8Kra9em8oaLBL1MDYKF", address)
         THETA -> assertEquals("0x0d1fa20c218Fec2f2C55d52aB267940485fa5DA4", address)
         COSMOS -> assertEquals("cosmos142j9u5eaduzd7faumygud6ruhdwme98qsy2ekn", address)
@@ -65,7 +66,6 @@ class CoinAddressDerivationTests {
         KIN -> assertEquals("GBL3MT2ICHHM5OJ2QJ44CAHGDK6MLPINVXBKOKLHGBWQDVRWTWQ7U2EA", address)
         VIACOIN -> assertEquals("via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc", address)
         IOST -> assertEquals("EKRQPgX7nKt8hJABwm9m3BKWGj7kcSECkJnCBauHQWin", address)
-        LUX -> assertEquals("LYL6SZG8S6dyXRFT8Bw4FHUoVef3cWCoPi", address)
         QTUM -> assertEquals("QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF", address)
         NULS -> assertEquals("NsdtNvsfmPerWk4BhcapHTB3LptF8Sbe", address)
         BRAVOCOIN -> assertEquals("BRV8g4c7Uve8NNsqDMeADLqPeFyohMQ7d9MzarSE23KogTS71BaiQ", address)
@@ -83,5 +83,8 @@ class CoinAddressDerivationTests {
         TERRA -> assertEquals("terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug", address)
         MONACOIN -> assertEquals("M9xFZzZdZhCDxpx42cM8bQHnLwaeX1aNja", address)
         FIO -> assertEquals("FIO7MN1LuSfFgrbVHmrt9cVa2FYAs857Ppr9dzvEXoD1miKSxm3n3", address)
+        HARMONY -> assertEquals("one12fk20wmvgypdkn59n4hq8e3aa5899xfx4vsu09", address)
+        SOLANA -> assertEquals("2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m", address)
+        ALGORAND -> assertEquals("JTJWO524JXIHVPGBDWFLJE7XUIA32ECOZOBLF2QP3V5TQBT3NKZSCG67BQ", address)
     }
 }

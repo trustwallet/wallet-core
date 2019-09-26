@@ -15,6 +15,10 @@ namespace TW {
 using byte = std::uint8_t;
 using Data = std::vector<byte>;
 
+inline void pad_left(Data& data, const uint32_t size) {
+    data.insert(data.begin(), size - data.size(), 0);
+}
+
 inline Data data(const std::string& data) {
     return std::vector<byte>(data.begin(), data.end());
 }

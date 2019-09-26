@@ -75,6 +75,40 @@ message TokenUnfreezeOrder {
     int64 amount = 3;  // amount of token to unfreeze
 }
 
+message HTLTOrder {
+    // 0xB33F9A24      // prefix
+    bytes from = 1;    // signer address
+    bytes to = 2;    // recipient address
+    string recipient_other_chain = 3;
+    string sender_other_chain = 4;
+    bytes random_number_hash = 5; //hash of a random number and timestamp, based on SHA256
+    int64 timestamp = 6;
+    repeated SendOrder.Token amount = 7;
+    string expected_income = 8; // expected gained token on the other chain
+    int64 height_span = 9;
+    bool cross_chain = 10;
+}
+
+message DepositHTLTOrder {
+    // 0xB33F9A24      // prefix
+    bytes from = 1;    // signer address
+    repeated SendOrder.Token amount = 2;
+    bytes swap_id = 3;
+}
+
+message ClaimHTLOrder {
+    // 0xC1665300      // prefix
+    bytes from = 1;    // signer address
+    bytes swap_id = 2;
+    bytes random_number = 3;
+}
+
+message RefundHTLTOrder {
+    // 0x3454A27C      // prefix
+    bytes from = 1;    // signer address
+    bytes swap_id = 2;
+}
+
 // Input data necessary to create a signed order.
 message SigningInput {
     string chain_id = 1;
@@ -90,6 +124,10 @@ message SigningInput {
         SendOrder send_order = 10;
         TokenFreezeOrder freeze_order = 11;
         TokenUnfreezeOrder unfreeze_order = 12;
+        HTLTOrder htlt_order = 13;
+        DepositHTLTOrder depositHTLT_order = 14;
+        ClaimHTLOrder claimHTLT_order = 15;
+        RefundHTLTOrder refundHTLT_order = 16;
     }
 }
 

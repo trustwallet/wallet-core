@@ -19,15 +19,18 @@ class TestWavesTransactionSigner {
     @Test
     fun testWavesTransactionSigning() {
         val signingInput = Waves.SigningInput.newBuilder()
-        signingInput.apply {
+        val transferMsg = Waves.TransferMessage.newBuilder().apply {
             amount = 100_000_000
             asset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             fee = 100_000
             feeAsset = "DacnEpaUVFRCYk8Fcd1F3cqUZuT4XG7qW9mRyoZD81zq"
             to = "3PPCZQkvdMJpmx7Zrz1cnYsPe9Bt1XT2Ckx"
             attachment = ByteString.copyFrom("68656c6c6f".toHexByteArray())
+        }.build()
+        signingInput.apply {
             timestamp = 1559146613
             privateKey = ByteString.copyFrom("68b7a9adb4a655b205f43dac413803785921e22cd7c4d05857b203a62621075f".toHexByteArray())
+            transferMessage = transferMsg
         }
 
         val sign: Waves.SigningOutput = WavesSigner.sign(signingInput.build())

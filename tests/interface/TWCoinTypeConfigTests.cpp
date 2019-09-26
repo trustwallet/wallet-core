@@ -86,9 +86,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto grs = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
     assertStringsEqual(grs, "GRS");
 
-    auto lux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLux));
-    assertStringsEqual(lux, "LUX");
-
     auto qtum = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
     assertStringsEqual(qtum, "QTUM");
 
@@ -133,6 +130,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto nas = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNebulas));
     assertStringsEqual(nas, "NAS");
+
     auto ae = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
     assertStringsEqual(ae, "AE");
 
@@ -144,6 +142,15 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto fio = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeFIO));
     assertStringsEqual(fio, "FIO");
+
+    auto hmy = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeHarmony));
+    assertStringsEqual(hmy, "ONE");
+
+    auto solana = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSolana));
+    assertStringsEqual(solana, "SOL");
+
+    auto algo = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAlgorand));
+    assertStringsEqual(algo, "ALGO");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
@@ -176,7 +183,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKin), 5);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLux), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeQtum), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravoCoin), 3);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSteem), 3);
@@ -194,6 +200,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonacoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeHarmony), 18);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 13);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAlgorand), 6);
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
@@ -249,9 +258,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto bnb = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
     assertStringsEqual(bnb, "https://explorer.binance.org/tx/123");
 
-    auto zecTxId = TWStringCreateWithUTF8Bytes("d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
-    auto zec = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, zecTxId));
-    assertStringsEqual(zec, "https://chain.so/tx/ZEC/d831fda3a9e74d14cd151d035ab77cf0a71eea6c0e4aa0d5c1de54851c3c1d9e");
+    auto zec = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, txId));
+    assertStringsEqual(zec, "https://chain.so/tx/ZEC/123");
 
     auto xtz = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
     assertStringsEqual(xtz, "https://tzscan.io/123");
@@ -280,8 +288,8 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto doge = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
     assertStringsEqual(doge, "https://blockchair.com/dogecoin/transaction/123");
 
-    auto lux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLux, txId));
-    assertStringsEqual(lux, "https://explorer.poswallet.io/#/tx/123");
+    auto decred = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDecred, txId));
+    assertStringsEqual(decred, "https://dcrdata.decred.org/tx/123");
 
     auto qtum = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
     assertStringsEqual(qtum, "https://qtum.info/tx/123");
@@ -339,6 +347,15 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto mona = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonacoin, txId));
     assertStringsEqual(mona, "https://blockbook.electrum-mona.org/tx/123");
+
+    auto harmony = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeHarmony, txId));
+    assertStringsEqual(harmony, "https://explorer.harmony.one/#/tx/123");
+
+    auto solana = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSolana, txId));
+    assertStringsEqual(solana, "https://explorer.solana.com/tx/123");
+
+    auto algo = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAlgorand, txId));
+    assertStringsEqual(algo, "https://algoexplorer.io/tx/123");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
@@ -417,9 +434,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto grs = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
     assertStringsEqual(grs, "groestlcoin");
 
-    auto lux = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLux));
-    assertStringsEqual(lux, "lux");
-
     auto qtum = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     assertStringsEqual(qtum, "qtum");
 
@@ -479,6 +493,15 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto fio = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFIO));
     assertStringsEqual(fio, "fio");
+
+    auto hmy = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeHarmony));
+    assertStringsEqual(hmy, "harmony");
+
+    auto solana = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
+    assertStringsEqual(solana, "solana");
+
+    auto algo = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
+    assertStringsEqual(algo, "algorand");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
@@ -531,7 +554,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     assertStringsEqual(xzc, "Zcoin");
 
     auto bnb = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
-    assertStringsEqual(bnb, "Binance");
+    assertStringsEqual(bnb, "BNB");
 
     auto xtz = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
     assertStringsEqual(xtz, "Tezos");
@@ -559,9 +582,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto grs = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
     assertStringsEqual(grs, "Groestlcoin");
-
-    auto lux = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLux));
-    assertStringsEqual(lux, "Lux");
 
     auto qtum = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
     assertStringsEqual(qtum, "Qtum");
@@ -604,7 +624,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto ark = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
     assertStringsEqual(ark, "ARK");
-  
+
     auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
     assertStringsEqual(waves, "Waves");
 
@@ -619,6 +639,15 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto fio = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFIO));
     assertStringsEqual(fio, "FIO");
+
+    auto hmy = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeHarmony));
+    assertStringsEqual(hmy, "Harmony");
+
+    auto solana = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
+    assertStringsEqual(solana, "Solana");
+
+    auto algo = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
+    assertStringsEqual(algo, "Algorand");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
@@ -641,7 +670,10 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainNebulas, TWCoinTypeBlockchain(TWCoinTypeNebulas));
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
-    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeFIO));
+    ASSERT_EQ(TWBlockchainFIO, TWCoinTypeBlockchain(TWCoinTypeFIO));
+    ASSERT_EQ(TWBlockchainHarmony, TWCoinTypeBlockchain(TWCoinTypeHarmony));
+    ASSERT_EQ(TWBlockchainSolana, TWCoinTypeBlockchain(TWCoinTypeSolana));
+    ASSERT_EQ(TWBlockchainAlgorand, TWCoinTypeBlockchain(TWCoinTypeAlgorand));
 }
 
 TEST(TWCoinTypeConfiguration, P2SHPrefix) {

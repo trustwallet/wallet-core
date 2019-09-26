@@ -34,13 +34,16 @@ This list is generated from [./coins.json](../coins.json)
 | 237     | DEXON            | DXN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/dexon/info/logo.png" width="32" />        | <https://dexon.org>           |
 | 242     | Nimiq            | NIM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nimiq/info/logo.png" width="32" />        | <https://nimiq.com>           |
 | 282     | BravoCoin        | BRAVO  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bravocoin/info/logo.png" width="32" />    | <https://bravocoin.com>       |
+| 283     | Algorand         | ALGO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/algorand/info/logo.png" width="32" />     | <https://www.algorand.com/>   |
 | 291     | IOST             | IOST   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iost/info/logo.png" width="32" />         | <https://iost.io>             |
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png" width="32" />        | <https://iotex.io>            |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
 | 330     | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png" width="32" />        | <https://terra.money>         |
+| 397     | NEAR             | NEAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/near/info/logo.png" width="32" />         | <https://nearprotocol.com>    |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
+| 501     | Solana           | SOL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" width="32" />       | <https://solana.com>          |
 | 700     | xDai             | xDAI   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/xdai/info/logo.png" width="32" />         | <https://poa.network/xdai>    |
 | 714     | Binance          | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |
 | 818     | VeChain          | VET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/vechain/info/logo.png" width="32" />      | <https://vechain.org>         |
@@ -48,12 +51,12 @@ This list is generated from [./coins.json](../coins.json)
 | 888     | NEO              | NEO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/neo/info/logo.png" width="32" />          | <https://neo.org>             |
 | 889     | TomoChain        | TOMO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tomochain/info/logo.png" width="32" />    | <https://tomochain.com>       |
 | 1001    | Thunder Token    | TT     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/thundertoken/info/logo.png" width="32" /> | <https://thundercore.com>     |
+| 1023    | Harmony          | ONE    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/harmony/info/logo.png" width="32" />      | <https://harmony.one>         |
 | 1024    | Ontology         | ONT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ontology/info/logo.png" width="32" />     | <https://ont.io>              |
 | 1729    | Tezos            | XTZ    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tezos/info/logo.png" width="32" />        | <https://tezos.com>           |
 | 2017    | Kin              | KIN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kin/info/logo.png" width="32" />          | <https://www.kin.org>         |
 | 2301    | Qtum             | QTUM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/qtum/info/logo.png" width="32" />         | <https://qtum.org>            |
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nebulas/info/logo.png" width="32" />      | <https://nebulas.io>          |
-| 3003    | Lux              | LUX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/lux/info/logo.png" width="32" />          | <https://luxcore.io>          |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
 | 8964    | NULS             | NULS   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nuls/info/logo.png" width="32" />         | <https://nuls.io>             |
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://zel.cash>            |

@@ -3,7 +3,6 @@
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
-
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "Waves/Signer.h"
@@ -23,17 +22,21 @@ TEST(WavesSigner, SignTransaction) {
               "559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d");
     // 3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds
     const auto address = Address(publicKeyCurve25519);
-
+    auto input = Proto::SigningInput();
+    input.set_timestamp(int64_t(1526641218066));
+    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    
+    auto &message = *input.mutable_transfer_message();
+    message.set_amount(int64_t(100000000));
+    message.set_asset(Transaction::WAVES);
+    message.set_fee(int64_t(100000000));
+    message.set_fee_asset(Transaction::WAVES);
+    message.set_to(address.string());
+    message.set_attachment("falafel");
     auto tx1 = Transaction(
-        /* amount */ 100000000,
-        /* amount asset */ Transaction::WAVES,
-        /* fee */ 100000000,
-        /* fee asset*/ Transaction::WAVES,
-        /* to */ address,
-        /* attachment */ parse_hex("66616c6166656c"),
-        /* timestamp */ 1526641218066,
-        /* pub_key */
-        parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
+                           input,
+                           /* pub_key */
+                           parse_hex("559a50cb45a9a8e8d4f83295c354725990164d10bb505275d1a3086c08fb935d"));
 
     auto signature = Signer::sign(privateKey, tx1);
 

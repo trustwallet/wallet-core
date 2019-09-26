@@ -8,6 +8,7 @@ import Foundation
 
 public extension CoinType {
     /// Converts a string to an address for this coin type.
+    // swiftlint:disable function_body_length
     func address(string: String) -> Address? {
         guard self.validate(address: string) else {
             return nil
@@ -28,7 +29,7 @@ public extension CoinType {
             } else {
                 return BitcoinAddress(string: string)
             }
-        case .dash, .dogecoin, .zcoin, .lux, .ravencoin:
+        case .dash, .dogecoin, .zcoin, .ravencoin:
             return BitcoinAddress(string: string)
         case .callisto, .ellaism, .ethereum, .ethereumClassic, .ethersocial, .goChain,
              .poanetwork, .theta, .thunderToken, .tomoChain, .veChain, .xdai, .dexon:
@@ -57,6 +58,8 @@ public extension CoinType {
             return NanoAddress(string: string)
         case .nebulas:
             return NebulasAddress(string: string)
+        case .near:
+            return NEARAddress(string: string)
         case .neo:
             return NEOAddress(string: string)
         case .decred:
@@ -95,6 +98,12 @@ public extension CoinType {
             return WavesAddress(string: string)
         case .aeternity:
             return AeternityAddress(string: string)
+        case .harmony:
+            return HarmonyAddress(string: string)
+        case .solana:
+            return SolanaAddress(string: string)
+        case .algorand:
+            return AlgorandAddress(string: string)
         }
     }
 }
