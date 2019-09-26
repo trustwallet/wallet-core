@@ -74,7 +74,6 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeIoTeX));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeKin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeNULS));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeLux));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeNano));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeNEO));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeNimiq));
