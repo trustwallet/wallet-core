@@ -1,2 +1,2 @@
 before_install:
-   - ./tools/android-jitpack
+   - sudo ./tools/android-jitpack
