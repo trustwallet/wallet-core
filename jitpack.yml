@@ -1,2 +1,3 @@
+sudo: true
 before_install:
    - sudo ./tools/android-jitpack
