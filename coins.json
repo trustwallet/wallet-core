@@ -552,6 +552,7 @@
     {
         "id": "binance",
         "name": "Binance",
+        "displayName": "BNB",
         "symbol": "BNB",
         "decimals": 8,
         "blockchain": "Binance",
@@ -719,29 +720,6 @@
             "client": "https://github.com/thetatoken/theta-protocol-ledger",
             "clientPublic": "",
             "clientDocs": "https://github.com/thetatoken/theta-mainnet-integration-guide/blob/master/docs/api.md#api-reference"
-        }
-    },
-    {
-        "id": "lux",
-        "name": "Lux",
-        "symbol": "LUX",
-        "decimals": 8,
-        "blockchain": "Bitcoin",
-        "derivationPath": "m/44'/3003'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1",
-        "p2pkhPrefix": 48,
-        "p2shPrefix": 63,
-        "publicKeyHasher": "sha256ripemd",
-        "base58Hasher": "sha256d",
-        "xpub": "xpub",
-        "xprv": "xprv",
-        "explorer": "https://explorer.poswallet.io/#/tx/",
-        "info": {
-            "url": "https://luxcore.io",
-            "client": "https://github.com/trezor/blockbook",
-            "clientPublic": "",
-            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
         }
     },
     {

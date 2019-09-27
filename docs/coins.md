@@ -57,7 +57,6 @@ This list is generated from [./coins.json](../coins.json)
 | 2017    | Kin              | KIN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kin/info/logo.png" width="32" />          | <https://www.kin.org>         |
 | 2301    | Qtum             | QTUM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/qtum/info/logo.png" width="32" />         | <https://qtum.org>            |
 | 2718    | Nebulas          | NAS    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nebulas/info/logo.png" width="32" />      | <https://nebulas.io>          |
-| 3003    | Lux              | LUX    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/lux/info/logo.png" width="32" />          | <https://luxcore.io>          |
 | 6060    | GoChain          | GO     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/gochain/info/logo.png" width="32" />      | <https://gochain.io>          |
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://zel.cash>            |
 | 31102   | Ethersocial      | ESN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethersocial/info/logo.png" width="32" />  | <https://ethersocial.org>     |
