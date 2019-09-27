@@ -7,7 +7,7 @@ CMAKE_VERSION=3.13.4
 PROTOBUF_VERSION=3.7.0
 
 # Install the basics
-apt-get update && apt-get install curl && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev
+sudo apt-get update && apt-get install curl && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev
 
 # Make latest NodeJS available
 curl -sL https://deb.nodesource.com/setup_10.x | bash -
