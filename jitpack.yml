@@ -1,3 +1,3 @@
 sudo: true
 before_install:
-   - su ./tools/android-jitpack
+   - docker run trustwallet/wallet-core /bin/bash -c "export PATH=~/.rbenv/shims:\$PATH && cd wallet-core && git fetch --tags --prune --progress --no-recurse-submodules origin +$BUILD_SOURCEBRANCH:refs/remotes/${BUILD_SOURCEBRANCH#"refs/"} && git checkout --progress --force refs/remotes/${BUILD_SOURCEBRANCH#"refs/"} && export PREFIX=/usr/local && export CK_TIMEOUT_MULTIPLIER=4 && ./bootstrap.sh"
