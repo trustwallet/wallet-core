@@ -45,3 +45,23 @@ message SigningOutput {
     bytes r = 3;
     bytes s = 4;
 }
+
+message DirectiveNewValidator {
+    //
+}
+
+message DirectiveEditValidator {
+    //
+}
+
+message DirectiveDelegate {
+    //
+}
+
+message DirectiveRedelegate {
+    //
+}
+
+message DirectiveUndelegate {
+    //
+}

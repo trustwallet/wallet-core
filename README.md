@@ -1,3 +1,43 @@
+
+diff --git a/bootstrap.sh b/bootstrap.sh
+index e5ddf64..58305ad 100755
+--- a/bootstrap.sh
++++ b/bootstrap.sh
+@@ -4,20 +4,22 @@
+ set -e
+
+ echo "#### Initializing... ####"
+-tools/install-dependencies
++# tools/install-dependencies
+
+ echo "#### Generating files... ####"
+-tools/generate-files
++# tools/generate-files
+
+ echo "#### Building... ####"
+-cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
+-make -Cbuild tests TrezorCryptoTests
++# cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
++make -Cbuild tests TrezorCryptoTests -j8
+
+ if [ -x "$(command -v clang-tidy)" ]; then
+     echo "#### Linting... ####"
+     tools/lint
+ fi
+
++export GTEST_FILTER="*Harmony*"
++
+ echo "#### Testing... ####"
+ export CK_TIMEOUT_MULTIPLIER=4
+ build/trezor-crypto/tests/TrezorCryptoTests
+
+
+
+
+
+
+
+
 <img src="docs/banner.png" align="center" title="Trust logo">
 
 Trust Wallet Core is a cross-platform library that implements low-level cryptographic wallet functionality for all supported blockchains. Most of the code is C++ with a set of strict exported C interfaces. The library provides idiomatic interfaces for all supported languages (currently Swift for iOS and Java for Android).
