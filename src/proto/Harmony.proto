@@ -46,6 +46,41 @@ message SigningOutput {
     bytes s = 4;
 }
 
+message StakingTransactionInput {
+    // StakeMsg 
+    oneof stake_msg {
+        DirectiveNewValidator new_validator_message = 1;
+        DirectiveEditValidator edit_validator_message = 2;
+        DirectiveDelegate delegate_message = 3;
+        DirectiveRedelegate redelegate_message = 4;
+        DirectiveUndelegate undelegate_message = 5;
+    }
+
+    // Nonce (256-bit number)
+    bytes nonce = 6;
+
+    // Gas price (256-bit number)
+    bytes gas_price = 7;
+
+    // Gas limit (256-bit number)
+    bytes gas_limit = 8;    
+
+    // Chain identifier (256-bit number)
+    bytes chain_id = 9; 
+
+    // Private key.
+    bytes private_key = 10;
+}
+
+message StakingTransactionOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    bytes v = 2;
+    bytes r = 3;
+    bytes s = 4;
+}
+
 message DirectiveNewValidator {
     //
 }
@@ -55,7 +90,14 @@ message DirectiveEditValidator {
 }
 
 message DirectiveDelegate {
-    //
+    // Delegator address
+    string delegator_address = 1;
+
+    // Validator address
+    string validator_address = 2;
+
+    // Amount
+    bytes amount = 3;
 }
 
 message DirectiveRedelegate {
