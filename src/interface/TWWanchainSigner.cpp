@@ -17,32 +17,8 @@ TW_Ethereum_Proto_SigningOutput TWWanchainSignerSign(TW_Ethereum_Proto_SigningIn
     Ethereum::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto transaction = Ethereum::Transaction(
-        /* nonce: */ load(input.nonce()),
-        /* gasPrice: */ load(input.gas_price()),
-        /* gasLimit: */ load(input.gas_limit()),
-        /* to: */ Ethereum::Address(input.to_address()),
-        /* amount: */ load(input.amount()),
-        /* payload: */ Data(input.payload().begin(), input.payload().end())
-    );
-
     auto signer = Signer(load(input.chain_id()));
-    signer.sign(key, transaction);
-
-    auto protoOutput = Ethereum::Proto::SigningOutput();
-
-    auto encoded = signer.encode(transaction);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-
-    auto v = store(transaction.v);
-    protoOutput.set_v(v.data(), v.size());
-
-    auto r = store(transaction.r);
-    protoOutput.set_r(r.data(), r.size());
-
-    auto s = store(transaction.s);
-    protoOutput.set_s(s.data(), s.size());
+    auto protoOutput = signer.sign(input);
 
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());

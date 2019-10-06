@@ -11,8 +11,8 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include "../uint256.h"
 #include "../proto/Ethereum.pb.h"
+#include "../uint256.h"
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cstdint>
@@ -30,27 +30,30 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     /// Signs a Proto::SigningInput transaction
-    Proto::SigningOutput sign(const Proto::SigningInput& input) const noexcept;
+    Proto::SigningOutput sign(const Proto::SigningInput &input) const noexcept;
 
     /// Signs the given transaction.
-    void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
+    void sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept;
 
   public:
+    /// build Transaction from signing input
+    static Transaction build(const Proto::SigningInput &input);
+
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// @returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t>
-    sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept;
+    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept;
 
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID,
-                                                              const Data& signature) noexcept;
+    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
+                                                              const Data &signature) noexcept;
 
   protected:
     /// Computes the transaction hash.
-    Data hash(const Transaction& transaction) const noexcept;
+    Data hash(const Transaction &transaction) const noexcept;
 };
 
 } // namespace TW::Ethereum
