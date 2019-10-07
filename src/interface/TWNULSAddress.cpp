@@ -26,8 +26,12 @@ bool TWNULSAddressIsValidString(TWString* _Nonnull string) {
 /// Creates an address from a string representaion.
 struct TWNULSAddress* _Nullable TWNULSAddressCreateWithString(TWString* _Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWNULSAddress{std::move(address)};
+    try {
+        const auto address = Address(*s);
+        return new TWNULSAddress{ std::move(address) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWNULSAddress* _Nullable TWNULSAddressCreateWithData(TWData* _Nonnull data) {

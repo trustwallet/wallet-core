@@ -6,9 +6,9 @@ option java_package = "wallet.core.jni.proto";
 message TransactionCoinFrom {
     string from_address = 1;
     uint32 assets_chainid = 2;
-    uint32 idassets_id = 3;
+    uint32 assets_id = 3;
     //tranaction out amount (128-bit number)
-    bytes idamount = 4;
+    bytes id_amount = 4;
     //8 bytes
     bytes nonce = 5;
     //lock status: 1 locked; 0 unlocked
@@ -18,9 +18,9 @@ message TransactionCoinFrom {
 message TransactionCoinTo {
     string to_address = 1;
     uint32 assets_chainid = 2;
-    uint32 idassets_id = 3;
+    uint32 assets_id = 3;
     // tranaction amount (128-bit number)
-    bytes idamount = 4;
+    bytes id_amount = 4;
     uint32 lock_time = 5;
 }
 
@@ -37,11 +37,11 @@ message Transaction {
     string  remark = 3;
     bytes   tx_data = 4;
     //CoinFrom
-    repeated TransactionCoinFrom inputs = 5;
+    TransactionCoinFrom input = 5;
     //CoinTo
-    repeated TransactionCoinTo outputs = 6;
+    TransactionCoinTo output = 6;
 
-    repeated Signature tx_sigs = 7;
+    Signature tx_sigs = 7;
     uint32 hash = 8;
 }
 

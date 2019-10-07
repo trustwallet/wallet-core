@@ -8,9 +8,8 @@
 #include "PrivateKey.h"
 #include <gtest/gtest.h>
 
-#include "NULS/Address.h"
+//#include "NULS/Address.h"
 #include "NULS/Signer.h"
-#include "NULS/TransactionBuilder.h"
 
 using namespace TW;
 using namespace TW::NULS;
@@ -48,7 +47,7 @@ TEST(NULSSigner, Sign) {
                            "NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H", "NULSd6Hgied7ym6qMEfVzZanMaa9qeqA6TZSe",
                            10000000, 1, 1, "0000000000000000", "", 100000000);
     auto signer = NULS::Signer(input);
-    std::vector<uint8_t> signature = signer.sign();
+    Data signature = signer.sign();
     std::string signedTransaction = hex(signature);
 
     ASSERT_EQ(

@@ -16,10 +16,6 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWNULSSigner;
 
-/// Make a transaction plan
-//TW_EXPORT_STATIC_METHOD
-//TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose purpose);
-
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
 TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_SigningInput input);

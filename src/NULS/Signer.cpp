@@ -8,7 +8,6 @@
 
 #include "Address.h"
 #include "BinaryCoding.h"
-#include "TransactionBuilder.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
 
@@ -17,27 +16,23 @@ using namespace TW::NULS;
 
 Signer::Signer(Proto::SigningInput& input) : input(input) {
     Proto::TransactionCoinFrom coinFrom;
-    Proto::TransactionCoinTo coinTo;
-
     coinFrom.set_from_address(input.from_address());
     coinFrom.set_assets_chainid(input.chain_id());
-    coinFrom.set_idassets_id(input.idassets_id());
+    coinFrom.set_assets_id(input.idassets_id());
     //need to update with amount + fee
-    coinFrom.set_idamount(input.amount());
+    coinFrom.set_id_amount(input.amount());
     coinFrom.set_nonce(input.nonce());
-
     //default unlocked
     coinFrom.set_locked(0);
-    Proto::TransactionCoinFrom* input_item = tx.add_inputs();
-    *input_item = coinFrom;
+    *tx.mutable_input() = coinFrom;
 
+    Proto::TransactionCoinTo coinTo;
     coinTo.set_to_address(input.to_address());
-    coinTo.set_idamount(input.amount());
+    coinTo.set_id_amount(input.amount());
     coinTo.set_assets_chainid(input.chain_id());
-    coinTo.set_idassets_id(input.idassets_id());
+    coinTo.set_assets_id(input.idassets_id());
     coinTo.set_lock_time(0);
-    Proto::TransactionCoinTo* output_item = tx.add_outputs();
-    *output_item = coinTo;
+    *tx.mutable_output() = coinTo;
 
     tx.set_remark(input.remark());
     tx.set_type(2);
@@ -46,13 +41,12 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
 }
 
 Data Signer::sign() const {
-
     if (input.private_key().empty()) {
         throw std::invalid_argument("Must have private key string");
     }
 
-    uint32_t txSize = TransactionBuilder::calculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
-    uint256_t fee = (uint256_t)TransactionBuilder::calculatorTransactionFee(txSize);
+    uint32_t txSize = CalculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
+    uint256_t fee = (uint256_t)CalculatorTransactionFee(txSize);
     uint256_t txAmount = load(input.amount());
     uint256_t balance = load(input.balance());
     uint256_t fromAmount = txAmount + fee;
@@ -60,21 +54,23 @@ Data Signer::sign() const {
         throw std::invalid_argument("User account balance not sufficient");
     }
 
-    Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.inputs(0);
+    Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
     Data amount;
-    amount = store_lsb(fromAmount);
+    amount = store(fromAmount);
+    std::reverse(amount.begin(), amount.end());
     std::string amountStr;
     amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
     amountStr.append((unsigned long)(amount.capacity() - amount.size()), '\0');
-    coinFrom.set_idamount(amountStr);
+    coinFrom.set_id_amount(amountStr);
 
-    Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.outputs(0);
+    Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.output();
     Data amountTo;
-    amountTo = store_lsb(txAmount);
+    amountTo = store(txAmount);
+    std::reverse(amountTo.begin(), amountTo.end());
     std::string amountToStr;
     amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());
     amountToStr.append((unsigned long)(amountTo.capacity() - amountTo.size()), '\0');
-    coinTo.set_idamount(amountToStr);
+    coinTo.set_id_amount(amountToStr);
 
     auto data = Data();
     // Transaction Type
@@ -88,17 +84,13 @@ Data Signer::sign() const {
     encodeVarInt(0, data);
 
     //coinFrom and coinTo size
-    encodeVarInt(TransactionBuilder::TRANSACTION_INPUT_SIZE + TransactionBuilder::TRANSACTION_OUTPUT_SIZE, data);
+    encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, data);
 
     // CoinData Input
-    std::vector<Proto::TransactionCoinFrom> inputs;
-    std::copy(tx.inputs().begin(), tx.inputs().end(), std::back_inserter(inputs));
-    serializerInput(inputs, data);
+    serializerInput(tx.input(), data);
 
     // CoinData Output
-    std::vector<Proto::TransactionCoinTo> outputs;
-    std::copy(tx.outputs().begin(), tx.outputs().end(), std::back_inserter(outputs));
-    serializerOutput(outputs, data);
+    serializerOutput(tx.output(), data);
 
     // Calc transaction hash
     Data txHash = calcTransactionDigest(data);
@@ -108,4 +100,28 @@ Data Signer::sign() const {
     std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(data));
 
     return data;
+}
+
+int32_t Signer::CalculatorMaxInput(uint32_t remarkSize) const{
+    uint32_t outputSize = TRANSACTION_OUTPUT_SIZE;
+    uint32_t maxInputs =
+                (MAX_TRANSACTION_SIZE - TRANSACTION_FIX_SIZE - TRANSACTION_SIG_MAX_SIZE - remarkSize - outputSize) / TRANSACTION_INPUT_SIZE;
+    if ((MAX_TRANSACTION_SIZE - TRANSACTION_FIX_SIZE - TRANSACTION_SIG_MAX_SIZE - remarkSize - outputSize) % TRANSACTION_INPUT_SIZE != 0) {
+        maxInputs -= 1;
+    }        
+    return maxInputs;
+}
+
+uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {
+    uint32_t size = TRANSACTION_FIX_SIZE + TRANSACTION_SIG_MAX_SIZE + TRANSACTION_INPUT_SIZE * inputCount +
+                        TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;
+    return size;
+}
+
+uint64_t Signer::CalculatorTransactionFee(uint64_t size) const {
+    uint64_t fee = (size / 1024) * MIN_PRICE_PRE_1024_BYTES;
+    if (size % 1024 > 0) {
+        fee += MIN_PRICE_PRE_1024_BYTES;
+    }
+    return fee;
 }

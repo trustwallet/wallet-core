@@ -41,7 +41,6 @@
 #include "Waves/Address.h"
 #include "Zcash/TAddress.h"
 #include "NULS/Address.h"
-#include "Bravo/Address.h"
 #include "Steem/Address.h"
 #include "EOS/Address.h"
 #include "IoTeX/Address.h"

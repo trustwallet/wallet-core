@@ -7,7 +7,6 @@
 #include <TrustWalletCore/TWNULSSigner.h>
 
 #include "../NULS/Signer.h"
-#include "../NULS/TransactionBuilder.h"
 #include "../PrivateKey.h"
 #include "../proto/NULS.pb.h"
 

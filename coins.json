@@ -714,12 +714,12 @@
         "derivationPath": "m/44'/8964'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "explorer": "https://nuls.world/transactions/",
+        "explorer": "https://nulscan.io/",
         "info": {
             "url": "https://nuls.io",
-            "client": "https://github.com/trezor/blockbook",
+            "client": "https://github.com/nuls-io/nuls-v2",
             "clientPublic": "",
-            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+            "clientDocs": "https://docs.nuls.io/"
         }
     },
     {

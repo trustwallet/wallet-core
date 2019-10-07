@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import 'mocha';
 
 import { CoinType, CoinTypeUtil, HDWallet } from '../..';

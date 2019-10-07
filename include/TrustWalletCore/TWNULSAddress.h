@@ -8,7 +8,6 @@
 
 #include "TWBase.h"
 #include "TWData.h"
-#include "TWHRP.h"
 #include "TWString.h"
 
 TW_EXTERN_C_BEGIN

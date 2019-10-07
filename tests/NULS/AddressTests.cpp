@@ -17,17 +17,8 @@ TEST(NULSAddress, StaticInvalid) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_FALSE(Address::isValid("aaeb60f3e94c9b9a09f33669435e7ef1beaed"));
     ASSERT_FALSE(Address::isValid("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z"));
-}
-
-TEST(NULSAddress, StaticIsValid) {
-    ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_TRUE(Address::isValid("NULSd6HgUxmcJWc88iELEJ7RH9XHsazBQqnJc"));
-    ASSERT_TRUE(Address::isValid("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2"));
-}
-
-TEST(NULSAddress, IsValid) {
-    ASSERT_FALSE(Address("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9we").isValid());
-    ASSERT_TRUE(Address("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2").isValid());
+    ASSERT_TRUE(Address::isValid("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2"));    
 }
 
 TEST(NULSAddress, ChainID) {
@@ -43,11 +34,6 @@ TEST(NULSAddress, Type) {
 TEST(NULSAddress, FromString) {
     const auto address = Address("NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2");
     ASSERT_EQ(address.string(), "NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2");
-}
-
-TEST(NULSAddress, FromData) {
-    //const auto address = Address(parse_hex("0423017ed91a950f9734ee8062f2fcb9be3fe29aba07aef3"));
-    //ASSERT_EQ(address.string(), "Nse1vKX9QHF7A84MHqrh4rRubVHAPc18");
 }
 
 TEST(NULSAddress, FromPrivateKey) {

@@ -13,17 +13,17 @@
 
 using namespace TW::NULS;
 
+const std::string Address::prefix("NULSd");
+
 bool Address::isValid(const std::string& string) {
     if (string.empty()) {
         return false;
     }
-    std::string prefix = "NULSd";
     if (string.length() <=  prefix.length()) {
         return false;
     }
 
     std::string address = string.substr(prefix.length(), string.length() - prefix.length());
-
     Data decoded = TW::Base58::bitcoin.decode(address);
     if (decoded.size() != size) {
         return false;
@@ -40,10 +40,10 @@ bool Address::isValid(const std::string& string) {
 
 Address::Address(const TW::PublicKey& publicKey) {
     // Main-Net chainID
-    bytes[0] = 0x01;
+    bytes[0] = MainNetID;
     bytes[1] = 0x00;
     // Address Type
-    bytes[2] = 0x01;
+    bytes[2] = addressType;
 
     ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.begin() + 3);
 
@@ -56,13 +56,11 @@ Address::Address(const TW::PublicKey& publicKey) {
 }
 
 Address::Address(const std::string& string) {
-    std::string prefix = "NULSd";
-    std::string address = string.substr(prefix.length(), string.length() - prefix.length());   
-    const auto decoded = Base58::bitcoin.decode(address);
-    if (decoded.size() != Base58Address::size) {
+    if (false == isValid(string)){
         throw std::invalid_argument("Invalid address string");
     }
-
+    std::string address = string.substr(prefix.length(), string.length() - prefix.length()); 
+    const auto decoded = Base58::bitcoin.decode(address);
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
@@ -117,7 +115,7 @@ TW::PrivateKey Address::importHexPrivateKey(std::string hexPrivateKey) {
 }
 
 std::string Address::string() const {
-    std::string prefix = "NULSd";
-    return prefix.append(TW::Base58::bitcoin.encode(bytes.begin(), bytes.end()));
+    std::string temp = prefix;
+    return temp.append(TW::Base58::bitcoin.encode(bytes.begin(), bytes.end()));
 }
 

@@ -17,45 +17,40 @@ static inline void serializerRemark(std::string& remark, std::vector<uint8_t>& d
     std::copy(remark.begin(), remark.end(), std::back_inserter(data));
 }
 
-static inline void serializerInput(std::vector<Proto::TransactionCoinFrom>& inputs,
+static inline void serializerInput(const Proto::TransactionCoinFrom& input,
     std::vector<uint8_t>& data) {
     encodeVarInt(1, data);  //there is one coinFrom
-    for (const auto& input : inputs) {
-        const auto& fromAddress = input.from_address();
-        if (!NULS::Address::isValid(fromAddress)) {
-            throw std::invalid_argument("Invalid address");
-        }
-        const auto& addr = NULS::Address(fromAddress);
-        encodeVarInt(addr.bytes.size() - 1, data);
-        std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
-        encode16LE((uint16_t)input.assets_chainid(), data);
-        encode16LE((uint16_t)input.idassets_id(), data);
-        std::copy(input.idamount().begin(), input.idamount().end(), std::back_inserter(data));
-        Data nonce = parse_hex(input.nonce());
-        encodeVarInt(nonce.size(), data);
-        append(data, nonce);
-        data.push_back(static_cast<uint8_t>(input.locked()));
-        break;
+    const auto& fromAddress = input.from_address();
+    if (!NULS::Address::isValid(fromAddress)) {
+        throw std::invalid_argument("Invalid address");
     }
+    const auto& addr = NULS::Address(fromAddress);
+    encodeVarInt(addr.bytes.size() - 1, data);
+    std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
+    encode16LE((uint16_t)input.assets_chainid(), data);
+    encode16LE((uint16_t)input.assets_id(), data);
+    std::copy(input.id_amount().begin(), input.id_amount().end(), std::back_inserter(data));
+    Data nonce = parse_hex(input.nonce());
+    encodeVarInt(nonce.size(), data);
+    append(data, nonce);
+    data.push_back(static_cast<uint8_t>(input.locked()));
 }
 
-static inline void serializerOutput(std::vector<Proto::TransactionCoinTo>& outputs,
+static inline void serializerOutput(const Proto::TransactionCoinTo& output,
     std::vector<uint8_t>& data) {
     encodeVarInt(1, data); //there is one coinTo
-    for (const auto& output : outputs) {
-        const auto& toAddress = output.to_address();
-        if (!NULS::Address::isValid(toAddress)) {
-            throw std::invalid_argument("Invalid address");
-        }
-        const auto& addr = NULS::Address(toAddress);
-        encodeVarInt(addr.bytes.size() - 1, data);
-        std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
-        encode16LE((uint16_t)output.assets_chainid(), data);
-        encode16LE((uint16_t)output.idassets_id(), data);
-        std::copy(output.idamount().begin(), output.idamount().end(), std::back_inserter(data));
-        encode64LE(output.lock_time(), data);
-        break;
+
+    const auto& toAddress = output.to_address();
+    if (!NULS::Address::isValid(toAddress)) {
+        throw std::invalid_argument("Invalid address");
     }
+    const auto& addr = NULS::Address(toAddress);
+    encodeVarInt(addr.bytes.size() - 1, data);
+    std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
+    encode16LE((uint16_t)output.assets_chainid(), data);
+    encode16LE((uint16_t)output.assets_id(), data);
+    std::copy(output.id_amount().begin(), output.id_amount().end(), std::back_inserter(data));
+    encode64LE(output.lock_time(), data);
 }
 
 static inline Data calcTransactionDigest(Data& data) {
