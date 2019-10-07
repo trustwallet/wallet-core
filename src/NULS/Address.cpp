@@ -88,7 +88,7 @@ bool Address::isValid() const {
     return bytes[23] == checkSum;
 }
 
-TW::PrivateKey Address::importHexPrivateKey(std::string hexPrivateKey) {
+TW::PrivateKey Address::importHexPrivateKey(const std::string hexPrivateKey) {
     Data privKey = parse_hex(hexPrivateKey);
     Data data = Data();
     switch (privKey.size()) {

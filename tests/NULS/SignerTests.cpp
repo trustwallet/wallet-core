@@ -8,7 +8,6 @@
 #include "PrivateKey.h"
 #include <gtest/gtest.h>
 
-//#include "NULS/Address.h"
 #include "NULS/Signer.h"
 
 using namespace TW;
