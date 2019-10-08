@@ -99,7 +99,7 @@ struct CompiledInstruction {
     // This constructor creates a Withdraw Stake instruction
     CompiledInstruction(uint8_t programIdIndex, StakeInstruction type, uint64_t value)
         : programIdIndex(programIdIndex) {
-        std::vector<uint8_t> accounts = {0, 1, 2, 3};
+        std::vector<uint8_t> accounts = {1, 2, 3, 4, 0};
         this->accounts = accounts;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
@@ -116,7 +116,7 @@ struct CompiledInstruction {
         if (type == DelegateStake) {
             accounts = {1, 3, 4, 5, 0};
         } else if (type == Deactivate) {
-            accounts = {0, 1, 2};
+            accounts = {1, 2, 0};
         }
         this->accounts = accounts;
         this->data = data;
@@ -233,12 +233,12 @@ class Message {
     // This constructor creates a deactivate_stake message
     Message(Address signer, Address stakeAccount, StakeInstruction type, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 0, 3};
+        MessageHeader header = {1, 1, 2};
         this->header = header;
 
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         auto programId = Address("Stake11111111111111111111111111111111111111");
-        std::vector<Address> accountKeys = {stakeAccount, sysvarClockId, programId};
+        std::vector<Address> accountKeys = {signer, stakeAccount, sysvarClockId, programId};
         this->accountKeys = accountKeys;
         std::vector<CompiledInstruction> instructions;
         auto instruction = CompiledInstruction(3, Deactivate);
@@ -250,17 +250,17 @@ class Message {
     Message(Address signer, Address stakeAccount, Address to, uint64_t value, StakeInstruction type,
             Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 0, 4};
+        MessageHeader header = {1, 1, 4};
         this->header = header;
 
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         auto sysvarStakeHistoryId = Address("SysvarStakeHistory1111111111111111111111111");
         auto programId = Address("Stake11111111111111111111111111111111111111");
-        std::vector<Address> accountKeys = {stakeAccount, to, sysvarClockId, sysvarStakeHistoryId,
+        std::vector<Address> accountKeys = {signer, stakeAccount, to, sysvarClockId, sysvarStakeHistoryId,
                                             programId};
         this->accountKeys = accountKeys;
         std::vector<CompiledInstruction> instructions;
-        auto instruction = CompiledInstruction(4, Withdraw, value);
+        auto instruction = CompiledInstruction(5, Withdraw, value);
         instructions.push_back(instruction);
         this->instructions = instructions;
     }

@@ -107,11 +107,12 @@ TEST(TWSolanaSigner, RandomStakePubkey) {
 }
 
 TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
-    auto privateKey = Base58::bitcoin.decode("5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q");
+    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto &message = *input.mutable_deactivate_stake_transaction();
     message.set_private_key(privateKey.data(), privateKey.size());
+    message.set_stake_pubkey("Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk");
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();
@@ -121,21 +122,22 @@ TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
     auto expectedHex =
-        "019a5534012ae734086fdcef5e7838c88a025ee2dd96b945753bdd5d90d9b43663b47f674e20835759cb"
-        "7c50a3238db1f1d961be53f7b4d8cb989b003d16163c0c01000304bb25296230c34d03f077f3eb35c4b4"
-        "a2ca436bef2e4628b77a32bb743d6df8ea962bdd5edcbc6f93841f68ade86a279756734dbb921b6d1cf1"
-        "aa5460dbe40f2806a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d8"
-        "179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc00000000000000000000000000000000000"
-        "000000000000000000000000000000000000000103030001020403000000";
+        "017828896b4aa8cb1fb4378f4fb565bae8381fdab077ba9ea4f75f3eac5ed7251190dccde7c49ee1c5d4cd120a"
+        "6495df12cd46e9e9dc202282e30530805132d102010102040eba44e56f060007284dc037275a15094c1d6c0697"
+        "ddb28b2be661dfb0f4bab8a106312279be880f9aef61c849c4ec109af4766f3fdcbe7db3ff48c06e9f90c306a7"
+        "d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d8179137542a983437bdfe2a7a"
+        "b2557f535c8a78722b68a49dc00000000000000000000000000000000000000000000000000000000000000000"
+        "000000000103030102000405000000";
     ASSERT_EQ(hex(output.encoded()), expectedHex);
 }
 
 TEST(TWSolanaSigner, SignWithdrawStakeTransaction) {
-    auto stakePrivateKey = Base58::bitcoin.decode("5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q");
+    auto stakePrivateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto &message = *input.mutable_withdraw_transaction();
     message.set_private_key(stakePrivateKey.data(), stakePrivateKey.size());
+    message.set_stake_pubkey("Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk");
     message.set_recipient("C3e7ryQjYJFSUetohBofTaWEBbNcq4yVX43hi7igVtcP");
     message.set_value((uint64_t)42L);
     input.set_recent_blockhash("11111111111111111111111111111111");
@@ -147,13 +149,13 @@ TEST(TWSolanaSigner, SignWithdrawStakeTransaction) {
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
     auto expectedHex =
-        "010ffa019ccce82c7cbed48f76897145e0ce726f9e73aaf49bd301c3ba0635e840f54838df6e3378a3d2"
-        "39c017783251c00f030f73f7dca1c8a64e6b3469eecc0101000405bb25296230c34d03f077f3eb35c4b4"
-        "a2ca436bef2e4628b77a32bb743d6df8eaa41db0070ae3aee30c6ce259f81a49cd15603fe29b47ba80ac"
-        "734ff3911462a006a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a7d5"
-        "17193584d0feed9bb3431d13206be544281b57b8566cc5375ff400000006a1d8179137542a983437bdfe"
-        "2a7ab2557f535c8a78722b68a49dc0000000000000000000000000000000000000000000000000000000"
-        "000000000000000000010404000102030c020000002a00000000000000";
+        "0108684dc006c04eff052c1f2a4791537c4207d3efd21ec64c4845dbee8d83e74c589269a02795034c4d766d73"
+        "2c6f38db86d4f41a314a570d44d47f506feafb06010104060eba44e56f060007284dc037275a15094c1d6c0697"
+        "ddb28b2be661dfb0f4bab8a106312279be880f9aef61c849c4ec109af4766f3fdcbe7db3ff48c06e9f90c3a41d"
+        "b0070ae3aee30c6ce259f81a49cd15603fe29b47ba80ac734ff3911462a006a7d51718c774c928566398691d5e"
+        "b68b5eb8a39b4b6d5c73555b210000000006a7d517193584d0feed9bb3431d13206be544281b57b8566cc5375f"
+        "f400000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000000000000000000000"
+        "000000000000000000000000000000000000000000000001050501020304000c040000002a00000000000000";
     ASSERT_EQ(hex(output.encoded()), expectedHex);
 }
 
