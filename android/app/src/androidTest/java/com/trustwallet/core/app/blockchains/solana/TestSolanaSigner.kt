@@ -41,10 +41,10 @@ class TestSolanaSigner {
     @Test
     fun testDelegateStakeSign() {
         val delegateStakeMessage = Solana.Stake.newBuilder().apply {
-            fromPrivateKey = ByteString.copyFrom(Base58.decodeNoCheck("GGT4G41n1K3E4MTjb7VwADSFNJA3Jx7wUxm54Fpcje6w"))
-            stakePrivateKey = ByteString.copyFrom(Base58.decodeNoCheck("2bwUDLUVYCfUhQHiAiwvHzM8oNT7pdk5J1XjhTLeumP5"))
-            votePubkey = "FkL2bzbUbp3J9MQEX3toMBA4q8ZcHcjeacdtn2Ti8Qec"
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"))
+            votePubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             value = 42
+            stakePubkey = "Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk"
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             stakeTransaction = delegateStakeMessage
@@ -53,7 +53,7 @@ class TestSolanaSigner {
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)
 
-        val expectedHexString = "0x02d6c09b562bcb41e815f2d9a30511a932461df5a0c72a0e602bca84ff51067d639cfaa63bc56ebd9272731f8821a9965745abcfe2a20af35058933c5887739a0aaf1260437b1910cd332ce4a51b0a5c0a125456142c0e96ab7b7b10b3455cf9ca9033a49223b66e2e389f0993689b2ec1a48c169fcf0b920510f30e1800fea60602000507af8f866c01b3b67a8a7edfda2424a4869210f361a98db7828587856f0eb8efb449a6029108b84a1bfc74bd11cce6e0cd672dabe9d3993a028f3febddb7183773db1d1b3c012b3b486eeee5627fa15c54ec8b33c80dd436d72d0fbdcd0453756906a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000000000000000000000000000000000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000020502000134000000002a00000000000000600000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0000000000604010203040c000000002a00000000000000"
+        val expectedHexString = "0x0146236d3c6553ad8120c3ac0e97a1bb75ec2ceebe388982bf01a14e8b0d9c3453415120a0db0fa1a1125d88e9c12219d6660560338261e957dcadd9ac4afda40d010005080eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab8a106312279be880f9aef61c849c4ec109af4766f3fdcbe7db3ff48c06e9f90c306a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a00000000378ba8d9f9881e9be69cf1d70ee0a93ed0378b83203f42fa29f9df5c887f1c0d06a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000000000000000000000000000000000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000030602000134000000002a00000000000000d80600000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000070201026c000000000eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab80eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab800000000000000000000000000000000000000000000000000000000000000000000000000000000070501030405000402000000"
         assertEquals(output.encoded.toByteArray().toHex(), expectedHexString)
     }
 
@@ -61,7 +61,6 @@ class TestSolanaSigner {
     fun testDeactivateStakeSign() {
         val deactivateStakeMessage = Solana.DeactivateStake.newBuilder().apply {
             privateKey = ByteString.copyFrom(Base58.decodeNoCheck("5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q"))
-            votePubkey = "B7Cx2wYAry78VNR8uoewzFDq3FRKJh8exNMyzrpQSfLB"
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             deactivateStakeTransaction = deactivateStakeMessage

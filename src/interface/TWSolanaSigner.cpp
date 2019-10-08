@@ -9,11 +9,20 @@
 #include "../Solana/Signer.h"
 #include "../proto/Solana.pb.h"
 
+#include <TrezorCrypto/rand.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWSolanaSigner.h>
 
 using namespace TW;
 using namespace TW::Solana;
+
+Address generateRandomPubkey() {
+    byte buf[32];
+    random_buffer(buf, 32);
+    auto data = Data();
+    data.insert(data.begin(), buf, buf + 32);
+    return Address(PublicKey(data, TWPublicKeyTypeED25519));
+}
 
 TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput data) {
     Proto::SigningInput input;
@@ -34,35 +43,37 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         signerKeys.push_back(key);
     } else if (input.has_stake_transaction()) {
         auto protoMessage = input.stake_transaction();
-        auto payerKey = PrivateKey(protoMessage.from_private_key());
-        auto stakeKey = PrivateKey(protoMessage.stake_private_key());
+        auto key = PrivateKey(protoMessage.private_key());
+        auto stakeAccount = protoMessage.stake_pubkey().length() > 0
+                                ? Address(protoMessage.stake_pubkey())
+                                : generateRandomPubkey();
         message = Message(
-            /* from */ Address(payerKey.getPublicKey(TWPublicKeyTypeED25519)),
-            /* stakeAccount */ Address(stakeKey.getPublicKey(TWPublicKeyTypeED25519)),
+            /* signer */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+            /* stakeAccount */ stakeAccount,
             /* voteAccount */ Address(protoMessage.vote_pubkey()),
             /* value */ protoMessage.value(),
             /* recent_blockhash */ blockhash);
-        signerKeys.push_back(payerKey);
-        signerKeys.push_back(stakeKey);
+        signerKeys.push_back(key);
     } else if (input.has_deactivate_stake_transaction()) {
         auto protoMessage = input.deactivate_stake_transaction();
-        auto stakeKey = PrivateKey(protoMessage.private_key());
+        auto key = PrivateKey(protoMessage.private_key());
         message = Message(
-            /* from */ Address(stakeKey.getPublicKey(TWPublicKeyTypeED25519)),
-            /* voteAccount */ Address(protoMessage.vote_pubkey()),
+            /* signer */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+            /* stakeAccount */ Address(protoMessage.stake_pubkey()),
             /* type */ Deactivate,
             /* recent_blockhash */ blockhash);
-        signerKeys.push_back(stakeKey);
+        signerKeys.push_back(key);
     } else if (input.has_withdraw_transaction()) {
         auto protoMessage = input.withdraw_transaction();
-        auto stakeKey = PrivateKey(protoMessage.private_key());
+        auto key = PrivateKey(protoMessage.private_key());
         message = Message(
-            /* from */ Address(stakeKey.getPublicKey(TWPublicKeyTypeED25519)),
+            /* signer */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+            /* stakeAccount */ Address(protoMessage.stake_pubkey()),
             /* to */ Address(protoMessage.recipient()),
             /* value */ protoMessage.value(),
             /* type */ Withdraw,
             /* recent_blockhash */ blockhash);
-        signerKeys.push_back(stakeKey);
+        signerKeys.push_back(key);
     }
     auto transaction = Transaction(message);
 
