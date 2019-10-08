@@ -72,22 +72,6 @@ uint8_t Address::type() const {
     return bytes[2];
 }
 
-bool Address::isValid() const {
-    if (chainID() != MainNetID) {
-        return false;
-    }
-    if (type() != 0x01 && type() != 0x02) {
-        return false;
-    }
-
-    uint8_t checkSum = 0x00;
-    for (int i = 0; i < 23; ++i) {
-        checkSum ^= bytes[i];
-    }
-
-    return bytes[23] == checkSum;
-}
-
 TW::PrivateKey Address::importHexPrivateKey(const std::string& hexPrivateKey) {
     Data privKey = parse_hex(hexPrivateKey);
     Data data = Data();

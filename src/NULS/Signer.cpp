@@ -102,16 +102,6 @@ Data Signer::sign() const {
     return data;
 }
 
-int32_t Signer::CalculatorMaxInput(uint32_t remarkSize) const{
-    uint32_t outputSize = TRANSACTION_OUTPUT_SIZE;
-    uint32_t maxInputs =
-                (MAX_TRANSACTION_SIZE - TRANSACTION_FIX_SIZE - TRANSACTION_SIG_MAX_SIZE - remarkSize - outputSize) / TRANSACTION_INPUT_SIZE;
-    if ((MAX_TRANSACTION_SIZE - TRANSACTION_FIX_SIZE - TRANSACTION_SIG_MAX_SIZE - remarkSize - outputSize) % TRANSACTION_INPUT_SIZE != 0) {
-        maxInputs -= 1;
-    }        
-    return maxInputs;
-}
-
 uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {
     uint32_t size = TRANSACTION_FIX_SIZE + TRANSACTION_SIG_MAX_SIZE + TRANSACTION_INPUT_SIZE * inputCount +
                         TRANSACTION_OUTPUT_SIZE * outputCount + remarkSize;

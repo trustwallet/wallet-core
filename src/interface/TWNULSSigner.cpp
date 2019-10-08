@@ -12,19 +12,7 @@
 
 using namespace TW;
 using namespace TW::NULS;
-/*
-TW_NULS_Proto_TransactionPlan TWNULSSignerPlan(TW_NULS_Proto_TransactionPurpose data) {
-    Proto::TransactionPurpose purpose;
-    purpose.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto plan = TransactionBuilder::plan(purpose);
-    std::vector<uint8_t> serializeData(plan.ByteSize());
-    plan.SerializeToArray(serializeData.data(), plan.ByteSize());
-
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serializeData.data()),
-                                 serializeData.size());
-}
-*/
 TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
