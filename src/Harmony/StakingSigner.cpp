@@ -33,12 +33,11 @@ StakingSigner::sign(const TW::Harmony::Proto::StakingTransactionInput &input) no
     auto signer = StakingSigner(uint256_t(load(input.chain_id())));
 
     auto protoOutput = Proto::StakingTransactionOutput();
-    auto directive = 0x2;
     auto delegate = Delegate(Address(input.delegate_message().delegator_address()),
                              Address(input.delegate_message().validator_address()),
                              load(input.delegate_message().amount()));
     auto stakingTx = StakingTransaction<Delegate>(
-        /* directive: */ directive,
+        /* directive: */ 0x2,
         /* stakeMsg: */ delegate,
         /* nonce: */ load(input.nonce()),
         /* gasPrice: */ load(input.gas_price()),

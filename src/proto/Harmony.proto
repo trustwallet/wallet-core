@@ -81,29 +81,56 @@ message StakingTransactionOutput {
     bytes s = 4;
 }
 
+message Description {
+    string name = 1;
+    string identity = 2;
+    string website = 3;
+    string security_contact = 4;
+    string details = 5;
+}
+
+message Decimal {
+    bytes value = 1;
+    bytes precision = 2;
+}
+
+message CommissionRate {
+    Decimal rate = 1;
+    Decimal max_rate = 2;
+    Decimal max_change_rate = 3;
+}
+
 message DirectiveNewValidator {
-    //
+    Description description = 1;
+    CommissionRate commission = 2;
+    bytes min_self_delegation = 3;
+    bytes staking_address = 4;
+    bytes pub_key = 5;
+    bytes amount = 6;
 }
 
 message DirectiveEditValidator {
-    //
+    Description description = 1;
+    string staking_address = 2;
+    Decimal commission_rate = 3;
+    bytes min_self_delegation = 4;
 }
 
 message DirectiveDelegate {
-    // Delegator address
     string delegator_address = 1;
-
-    // Validator address
     string validator_address = 2;
-
-    // Amount
     bytes amount = 3;
 }
 
 message DirectiveRedelegate {
-    //
+    string delegator_address = 1;
+    string validator_src_address = 2;
+    string validator_dst_address = 3;
+    bytes amount = 4;
 }
 
 message DirectiveUndelegate {
-    //
+    string delegator_address = 1;
+    string validator_address = 2;
+    bytes amount = 3;
 }
