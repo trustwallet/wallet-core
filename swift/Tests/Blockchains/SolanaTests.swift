@@ -55,11 +55,12 @@ class SolanaTests: XCTestCase {
     }
 
     func testDelegateStakeSigner() throws {
+        let stakePubkey = "Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk"
         let delegateStakeMessage = SolanaStake.with {
             $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
             $0.votePubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
-            $0.stakePubkey = "Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk"
+            $0.stakePubkey = stakePubkey
         }
         let input = SolanaSigningInput.with {
             $0.stakeTransaction = delegateStakeMessage
@@ -84,6 +85,7 @@ class SolanaTests: XCTestCase {
         """
 
         XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.stakePubkey, stakePubkey)
     }
 
     func testDeactivateStakeSigner() throws {

@@ -42,4 +42,5 @@ message SigningInput {
 // Transaction signing output.
 message SigningOutput {
     bytes encoded = 1;
+    string stake_pubkey = 2;
 }

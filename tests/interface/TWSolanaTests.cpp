@@ -44,6 +44,8 @@ TEST(TWSolanaSigner, SignTransfer) {
 }
 
 TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
+    auto stakePubkey = "Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk";
+
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
@@ -51,7 +53,7 @@ TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
     message.set_private_key(privateKey.data(), privateKey.size());
     message.set_vote_pubkey("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     message.set_value((uint64_t)42L);
-    message.set_stake_pubkey("Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk");
+    message.set_stake_pubkey(stakePubkey);
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();
@@ -75,6 +77,7 @@ TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
         "00000000000000000000000000000000000000000000000000000000000000000007050103040500040200000"
         "0";
     ASSERT_EQ(hex(output.encoded()), expectedHex);
+    ASSERT_EQ(output.stake_pubkey(), stakePubkey);
 }
 
 TEST(TWSolanaSigner, RandomStakePubkey) {
@@ -104,6 +107,7 @@ TEST(TWSolanaSigner, RandomStakePubkey) {
     output1.ParseFromArray(TWDataBytes(outputTWData1), TWDataSize(outputTWData1));
 
     ASSERT_NE(hex(output0.encoded()), hex(output1.encoded()));
+    ASSERT_NE(output0.stake_pubkey(), output1.stake_pubkey());
 }
 
 TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {

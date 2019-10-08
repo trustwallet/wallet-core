@@ -30,6 +30,7 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
 
     auto blockhash = Solana::Hash(input.recent_blockhash());
     Message message;
+    std::string stakePubkey;
     std::vector<PrivateKey> signerKeys;
 
     if (input.has_transfer_transaction()) {
@@ -47,6 +48,7 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         auto stakeAccount = protoMessage.stake_pubkey().length() > 0
                                 ? Address(protoMessage.stake_pubkey())
                                 : generateRandomPubkey();
+        stakePubkey = stakeAccount.string();
         message = Message(
             /* signer */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
             /* stakeAccount */ stakeAccount,
@@ -83,6 +85,9 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
     auto protoOutput = Proto::SigningOutput();
     auto encoded = transaction.serialize();
     protoOutput.set_encoded(encoded.data(), encoded.size());
+    if (stakePubkey.length() > 0) {
+      protoOutput.set_stake_pubkey(stakePubkey);
+    }
 
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),
