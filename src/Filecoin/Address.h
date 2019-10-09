@@ -15,6 +15,9 @@ namespace TW::Filecoin {
 
 class Address {
   public:
+    const char FilecoinMainnetPrefix = 'f';
+    const char FilecoinTestnetPrefix = 't';
+
     /// 'f'/'t'+ protocol + base32 encoded address string length + checksum.
     static const size_t encodedSize = 41;
     static const size_t payloadSize = 20;

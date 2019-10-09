@@ -59,7 +59,7 @@ Address::Address(const PublicKey& publicKey) {
 
 std::string Address::string() const {
     std::array<byte, encodedSize> encoded;
-    encoded[0] = 'f';
+    encoded[0] = FilecoinMainnetPrefix;
     encoded[1] = '1';
     std::array<byte, payloadSize+1> check;
     check[0] = 1;
