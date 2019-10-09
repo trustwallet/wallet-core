@@ -15,7 +15,6 @@ namespace TW::Filecoin {
 
 class Address {
   public:
-    const char* BASE32_ALPHABET_RFC4648_LOWERCASE = "abcdefghijklmnopqrstuvwxyz23456789";
     /// 'f'/'t'+ protocol + base32 encoded address string length + checksum.
     static const size_t encodedSize = 41;
     static const size_t payloadSize = 20;

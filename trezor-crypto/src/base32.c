@@ -25,6 +25,7 @@
 #include <string.h>
 
 const char *BASE32_ALPHABET_RFC4648 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789";
+const char *BASE32_ALPHABET_RFC4648_LOWERCASE = "abcdefghijklmnopqrstuvwxyz23456789";
 
 static inline void base32_5to8(const uint8_t *in, uint8_t length, uint8_t *out);
 static inline bool base32_8to5(const uint8_t *in, uint8_t length, uint8_t *out, const char *alphabet);

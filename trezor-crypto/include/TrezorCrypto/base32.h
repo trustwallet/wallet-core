@@ -32,6 +32,7 @@ extern "C" {
 #endif
 
 extern const char *BASE32_ALPHABET_RFC4648;
+extern const char *BASE32_ALPHABET_RFC4648_LOWERCASE;
 
 char *base32_encode(const uint8_t *in, size_t inlen, char *out, size_t outlen, const char *alphabet);
 void base32_encode_unsafe(const uint8_t *in, size_t inlen, uint8_t *out);
