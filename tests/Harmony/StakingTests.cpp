@@ -32,7 +32,7 @@ TEST(HarmonyStaking, SignDirectiveEditValidator) {
 TEST(HarmonyStaking, SignDirectiveDelegate) {
     auto input = Proto::StakingTransactionInput();
     const auto privateKey =
-        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+        PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     auto value = store(uint256_t("0x2"));
@@ -46,10 +46,10 @@ TEST(HarmonyStaking, SignDirectiveDelegate) {
     value = store(uint256_t("0xa"));
     delegateMsg->set_amount(value.data(), value.size());
 
-    value = store(uint256_t("0xa"));
+    value = store(uint256_t("0x02"));
     input.set_nonce(value.data(), value.size());
 
-    value = store(uint256_t(""));
+    value = store(uint256_t("0x0"));
     input.set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x64")); // 0x5208
@@ -58,15 +58,15 @@ TEST(HarmonyStaking, SignDirectiveDelegate) {
     auto proto_output = StakingSigner::sign(input);
 
     auto expectEncoded =
-        "f87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
-        "580a02806428a0ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80a05c28dbc417"
-        "63dc2391263e1aae30f842f90734d7ec68cee2352af0d4b0662b54";
+        "f87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a"
+        "9c580a02806428a0ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80a05c28dbc4"
+        "1763dc2391263e1aae30f842f90734d7ec68cee2352af0d4b0662b54";
 
     auto v = "28";
-    auto r = "2e43463bf0bfd1563d3702f301f92c15d167892e337d9831d4c2d3ba1507efbc";
-    auto s = "14e5f9d9618699316c69e720af3b373bc9d3c3d97962decd13dc3b48d2a4ac75";
+    auto r = "ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80";
+    auto s = "5c28dbc41763dc2391263e1aae30f842f90734d7ec68cee2352af0d4b0662b54";
 
-    // ASSERT_EQ(hex(proto_output.encoded()), expectEncoded);
+    ASSERT_EQ(hex(proto_output.encoded()), expectEncoded);
     ASSERT_EQ(hex(proto_output.v()), v);
     ASSERT_EQ(hex(proto_output.r()), r);
     ASSERT_EQ(hex(proto_output.s()), s);

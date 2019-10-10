@@ -25,7 +25,7 @@ TEST(TWHarmonyStakingSigner, Delegate) {
     Proto::StakingTransactionInput input;
 
     const auto privateKey =
-        PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
+        PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     auto value = store(uint256_t("0x2"));
@@ -38,10 +38,10 @@ TEST(TWHarmonyStakingSigner, Delegate) {
     value = store(uint256_t("0xa"));
     delegateMsg->set_amount(value.data(), value.size());
 
-    value = store(uint256_t("0xa"));
+    value = store(uint256_t("0x2"));
     input.set_nonce(value.data(), value.size());
 
-    value = store(uint256_t(""));
+    value = store(uint256_t("0x0"));
     input.set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x64"));
@@ -55,8 +55,8 @@ TEST(TWHarmonyStakingSigner, Delegate) {
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
     auto shouldBeV = "28";
-    auto shouldBeR = "2e43463bf0bfd1563d3702f301f92c15d167892e337d9831d4c2d3ba1507efbc";
-    auto shouldBeS = "14e5f9d9618699316c69e720af3b373bc9d3c3d97962decd13dc3b48d2a4ac75";
+    auto shouldBeR = "ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80";
+    auto shouldBeS = "5c28dbc41763dc2391263e1aae30f842f90734d7ec68cee2352af0d4b0662b54";
 
     ASSERT_EQ(hex(output.v()), shouldBeV);
     ASSERT_EQ(hex(output.r()), shouldBeR);

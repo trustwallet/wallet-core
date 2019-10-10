@@ -30,12 +30,15 @@ class StakingTransaction {
     uint256_t s = uint256_t();
 
     StakingTransaction(uint8_t directive, Directive stakeMsg, uint256_t nonce, uint256_t gasPrice,
-                       uint256_t gasLimit)
+                       uint256_t gasLimit, uint256_t v, uint256_t r, uint256_t s)
         : directive(std::move(directive))
         , stakeMsg(std::move(stakeMsg))
         , nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
-        , gasLimit(std::move(gasLimit)) {}
+        , gasLimit(std::move(gasLimit))
+        , v(std::move(v))
+        , r(std::move(r))
+        , s(std::move(s)) {}
 };
 
 enum Directive : uint8_t {

@@ -36,12 +36,9 @@ StakingSigner::sign(const TW::Harmony::Proto::StakingTransactionInput &input) no
     auto delegate = Delegate(Address(input.delegate_message().delegator_address()),
                              Address(input.delegate_message().validator_address()),
                              load(input.delegate_message().amount()));
-    auto stakingTx = StakingTransaction<Delegate>(
-        /* directive: */ 0x2,
-        /* stakeMsg: */ delegate,
-        /* nonce: */ load(input.nonce()),
-        /* gasPrice: */ load(input.gas_price()),
-        /* gasLimit: */ load(input.gas_limit()));
+    auto stakingTx =
+        StakingTransaction<Delegate>(0x2, delegate, load(input.nonce()), load(input.gas_price()),
+                                     load(input.gas_limit()), 2, 0, 0);
     signer.sign<Delegate>(key, stakingTx);
 
     auto encoded = signer.rlpNoHash<Delegate>(stakingTx, true);

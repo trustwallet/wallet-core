@@ -40,8 +40,8 @@ class HarmonyTests: XCTestCase {
         }
         let input = TW_Harmony_Proto_StakingTransactionInput.with {
             $0.chainID = Data(hexString: localNet)!
-            $0.privateKey = Data(hexString: "0xb578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e")!
-            $0.nonce = Data(hexString: "0xa")!
+            $0.privateKey = Data(hexString: "4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48")!
+            $0.nonce = Data(hexString: "0x2")!
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x64")!
             $0.delegateMessage = delegate
@@ -51,9 +51,9 @@ class HarmonyTests: XCTestCase {
         let e1 = "f87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
         let e2 = "580a02806428a0ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80a05c28dbc417"
         let e3 = "63dc2391263e1aae30f842f90734d7ec68cee2352af0d4b0662b54"
-        // XCTAssertEqual(output.encoded.hexString, e1 + e2 + e3)
+        XCTAssertEqual(output.encoded.hexString, e1 + e2 + e3)
         XCTAssertEqual(output.v.hexString, "28")
-        XCTAssertEqual(output.r.hexString, "2e43463bf0bfd1563d3702f301f92c15d167892e337d9831d4c2d3ba1507efbc")
-        XCTAssertEqual(output.s.hexString, "14e5f9d9618699316c69e720af3b373bc9d3c3d97962decd13dc3b48d2a4ac75")
+        XCTAssertEqual(output.r.hexString, "ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80")
+        XCTAssertEqual(output.s.hexString, "5c28dbc41763dc2391263e1aae30f842f90734d7ec68cee2352af0d4b0662b54")
     }
 }
