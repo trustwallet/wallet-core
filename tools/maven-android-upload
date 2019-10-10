@@ -11,9 +11,9 @@ pushd android
 
 if [ "$snapshot" = true ]; then
   version=`git rev-parse --short HEAD`"-SNAPSHOT"
-  ./gradlew artifactoryPublish -Pversion="$version"
+  ./gradlew clean build artifactoryPublish -Pversion="$version"
 else
-  ./gradlew bintrayUpload -Pversion="$version"
+  ./gradlew clean build bintrayUpload -Pversion="$version"
 fi
 
 echo "Abroid build uploaded"
