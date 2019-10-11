@@ -95,18 +95,14 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
                Groestlcoin::Address::isValid(string, {p2pkh, p2sh});
 
     case TWCoinTypeCallisto:
-    case TWCoinTypeEllaism:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
-    case TWCoinTypeXDai:
     case TWCoinTypeTheta:
-    case TWCoinTypeDEXON:
         return Ethereum::Address::isValid(string);
 
     case TWCoinTypeEOS:
@@ -231,18 +227,14 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
         return Decred::Address(publicKey).string();
 
     case TWCoinTypeCallisto:
-    case TWCoinTypeEllaism:
     case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthersocial:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
     case TWCoinTypeThunderToken:
     case TWCoinTypeTomoChain:
     case TWCoinTypeVeChain:
-    case TWCoinTypeXDai:
     case TWCoinTypeTheta:
-    case TWCoinTypeDEXON:
         return Ethereum::Address(publicKey).string();
 
     case TWCoinTypeEOS:

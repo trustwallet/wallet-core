@@ -68,9 +68,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
     auto xlm = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
     assertStringsEqual(xlm, "XLM");
 
-    auto xdai = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXDai));
-    assertStringsEqual(xdai, "xDAI");
-
     auto aion = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
     assertStringsEqual(aion, "AION");
 
@@ -88,9 +85,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto qtum = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
     assertStringsEqual(qtum, "QTUM");
-
-    auto esn = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthersocial));
-    assertStringsEqual(esn, "ESN");
 
     auto bravo = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBravoCoin));
     assertStringsEqual(bravo, "BRAVO");
@@ -112,12 +106,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSemux));
     assertStringsEqual(semux, "SEM");
-
-    auto ella = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEllaism));
-    assertStringsEqual(ella, "ELLA");
-
-    auto dexon = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDEXON));
-    assertStringsEqual(dexon, "DXN");
 
     auto dgb = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDigiByte));
     assertStringsEqual(dgb, "DGB");
@@ -160,9 +148,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCallisto), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDash), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEllaism), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthersocial), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGoChain), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
@@ -177,7 +163,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXDai), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKin), 5);
@@ -191,7 +176,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDEXON), 18);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDigiByte), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
@@ -267,9 +251,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto xlm = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
     assertStringsEqual(xlm, "https://stellarscan.io/transaction/123");
 
-    auto xdai = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXDai, txId));
-    assertStringsEqual(xdai, "https://blockscout.com/poa/dai/tx/123");
-
     auto aion = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
     assertStringsEqual(aion, "https://mainnet.aion.network/#/transaction/123");
 
@@ -294,9 +275,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto qtum = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
     assertStringsEqual(qtum, "https://qtum.info/tx/123");
 
-    auto ets = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthersocial, txId));
-    assertStringsEqual(ets, "https://ethersocial.net/tx/123");
-
     auto bravo = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBravoCoin, txId));
     assertStringsEqual(bravo, "https://explorer.bravocoin.com/txid/123");
 
@@ -317,12 +295,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSemux, txId));
     assertStringsEqual(semux, "https://semux.info/explorer/transaction/123");
-
-    auto ella = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEllaism, txId));
-    assertStringsEqual(ella, "https://explorer.ellaism.org/tx/123");
-
-    auto dexon = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDEXON, txId));
-    assertStringsEqual(dexon, "https://dexonscan.app/transaction/123");
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
     assertStringsEqual(zel, "https://explorer.zel.cash/tx/123");
@@ -416,9 +388,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
     auto xlm = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
     assertStringsEqual(xlm, "stellar");
 
-    auto xdai = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXDai));
-    assertStringsEqual(xdai, "xdai");
-
     auto aion = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
     assertStringsEqual(aion, "aion");
 
@@ -436,9 +405,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto qtum = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     assertStringsEqual(qtum, "qtum");
-
-    auto ets = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthersocial));
-    assertStringsEqual(ets, "ethersocial");
 
     auto bravo = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBravoCoin));
     assertStringsEqual(bravo, "bravocoin");
@@ -460,12 +426,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSemux));
     assertStringsEqual(semux, "semux");
-
-    auto ella = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEllaism));
-    assertStringsEqual(ella, "ellaism");
-
-    auto dexon = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDEXON));
-    assertStringsEqual(dexon, "dexon");
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
     assertStringsEqual(zel, "zelcash");
@@ -562,9 +522,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto xlm = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
     assertStringsEqual(xlm, "Stellar");
 
-    auto xdai = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXDai));
-    assertStringsEqual(xdai, "xDai");
-
     auto aion = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
     assertStringsEqual(aion, "Aion");
 
@@ -586,9 +543,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
     auto qtum = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
     assertStringsEqual(qtum, "Qtum");
 
-    auto ets = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthersocial));
-    assertStringsEqual(ets, "Ethersocial");
-
     auto bravo = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBravoCoin));
     assertStringsEqual(bravo, "BravoCoin");
 
@@ -609,12 +563,6 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
 
     auto semux = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSemux));
     assertStringsEqual(semux, "Semux");
-
-    auto ella = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEllaism));
-    assertStringsEqual(ella, "Ellaism");
-
-    auto dexon = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDEXON));
-    assertStringsEqual(dexon, "DEXON");
 
     auto zel = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
     assertStringsEqual(zel, "Zelcash");
