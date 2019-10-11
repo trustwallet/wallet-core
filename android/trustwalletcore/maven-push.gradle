@@ -86,12 +86,6 @@ bintray {
             desc = "Wallet Core ${this.version}"
             released = new Date()
             vcsTag = this.version
-            //mavenCentralSync {
-            //    sync = true 
-            //    close = '1'
-            //    user = System.getenv('SONATYPE_USERNAME')
-            //    password = System.getenv('SONATYPE_PASSWORD')
-            //}
         }
     }
 }
