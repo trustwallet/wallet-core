@@ -17,7 +17,6 @@ class SlipTests: XCTestCase {
         XCTAssertEqual(CoinType.thunderToken.rawValue, 1001)
         XCTAssertEqual(CoinType.wanchain.rawValue, 5718350)
         XCTAssertEqual(CoinType.callisto.rawValue, 820)
-        XCTAssertEqual(CoinType.ellaism.rawValue, 163)
         XCTAssertEqual(CoinType.ethereumClassic.rawValue, 61)
         XCTAssertEqual(CoinType.goChain.rawValue, 6060)
         XCTAssertEqual(CoinType.ontology.rawValue, 1024)
@@ -26,10 +25,7 @@ class SlipTests: XCTestCase {
         XCTAssertEqual(CoinType.icon.rawValue, 74)
         XCTAssertEqual(CoinType.tomoChain.rawValue, 889)
         XCTAssertEqual(CoinType.tezos.rawValue, 1729)
-        XCTAssertEqual(CoinType.xdai.rawValue, 700)
         XCTAssertEqual(CoinType.qtum.rawValue, 2301)
-        XCTAssertEqual(CoinType.ethersocial.rawValue, 31102)
-        XCTAssertEqual(CoinType.dexon.rawValue, 237)
         XCTAssertEqual(CoinType.nebulas.rawValue, 2718)
     }
 }
