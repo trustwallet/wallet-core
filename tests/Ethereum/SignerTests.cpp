@@ -22,7 +22,7 @@ public:
 };
 
 TEST(Signer, Hash) {
-    auto address = Address("0x3535353535353535353535353535353535353535");
+    auto address = parse_hex("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
@@ -38,7 +38,7 @@ TEST(Signer, Hash) {
 }
 
 TEST(Signer, Sign) {
-    auto address = Address("0x3535353535353535353535353535353535353535");
+    auto address = parse_hex("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,

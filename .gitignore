@@ -28,3 +28,4 @@ coverage/
 
 cmake-build-debug/
 .cquery_cache/
+.cxx/

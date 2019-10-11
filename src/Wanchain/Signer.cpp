@@ -10,6 +10,29 @@
 using namespace TW;
 using namespace TW::Wanchain;
 
+Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput &input) const noexcept {
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto transaction = Ethereum::Signer::build(input);
+
+    sign(key, transaction);
+
+    auto protoOutput = Ethereum::Proto::SigningOutput();
+
+    auto encoded = encode(transaction);
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+
+    auto v = store(transaction.v);
+    protoOutput.set_v(v.data(), v.size());
+
+    auto r = store(transaction.r);
+    protoOutput.set_r(r.data(), r.size());
+
+    auto s = store(transaction.s);
+    protoOutput.set_s(s.data(), s.size());
+
+    return protoOutput;
+}
+
 void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept {
     transaction.v = chainID;
     transaction.r = 0;
@@ -28,7 +51,7 @@ Data Signer::encode(const Ethereum::Transaction& transaction) const noexcept {
     append(encoded, Ethereum::RLP::encode(transaction.nonce));
     append(encoded, Ethereum::RLP::encode(transaction.gasPrice));
     append(encoded, Ethereum::RLP::encode(transaction.gasLimit));
-    append(encoded, Ethereum::RLP::encode(transaction.to.bytes));
+    append(encoded, Ethereum::RLP::encode(transaction.to));
     append(encoded, Ethereum::RLP::encode(transaction.amount));
     append(encoded, Ethereum::RLP::encode(transaction.payload));
     append(encoded, Ethereum::RLP::encode(transaction.v));
