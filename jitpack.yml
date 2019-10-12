@@ -1,3 +1,0 @@
-before_install:
-  - echo "y" | $ANDROID_HOME/tools/bin/sdkmanager "cmake;3.10.2.4988404"
-  - ./bootstrap.sh
