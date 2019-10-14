@@ -36,10 +36,9 @@ message Operation {
     // Note: Proto3 semantics require a zero value.
     ENDORSEMENT = 0;
 
-    REVEAL = 7;
-    TRANSACTION = 8;
-    ORIGINATION = 9;
-    DELEGATION = 10;
+    REVEAL = 107;
+    TRANSACTION = 108;
+    DELEGATION = 110;
   }
   OperationKind kind = 7;
 
@@ -47,7 +46,6 @@ message Operation {
   oneof operation_data {
     RevealOperationData reveal_operation_data = 8;
     TransactionOperationData transaction_operation_data = 9;
-    OriginationOperationData origination_operation_data = 10;
     DelegationOperationData delegation_operation_data = 11;
   }
 }
@@ -63,13 +61,6 @@ message TransactionOperationData {
 // Next field: 2
 message RevealOperationData {
   bytes public_key = 1;
-}
-
-// Origination operation specific data.
-// Next field: 3
-message OriginationOperationData {
-  string manager_pubkey = 1;
-  int64 balance = 2;
 }
 
 // Delegation operation specific data.

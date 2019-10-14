@@ -19,7 +19,7 @@ std::string base58ToHex(const std::string& string, size_t prefixLength, uint8_t*
     if (decoded.size() < prefixLength) {
         return "";
     }
-    return "00" + TW::hex(decoded.data() + prefixLength, decoded.data() + decoded.size());
+    return TW::hex(decoded.data() + prefixLength, decoded.data() + decoded.size());
 }
 
 PublicKey parsePublicKey(const std::string& publicKey) {

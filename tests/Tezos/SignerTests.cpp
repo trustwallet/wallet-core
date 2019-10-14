@@ -63,10 +63,10 @@ TEST(TezosSigner, SignOperationList) {
     op_list.addOperation(transactionOperation);
 
     std::string expectedForgedBytesToSign = hex(op_list.forge());
-    std::string expectedSignature = "d924cb3e56c4b9f55e50735e461899a2f616a26bfb0aa05d0b356b66f517b023df330ad3621f0bf39d518131a1becd6a7b2e226ed291483af3682535d1f4530f";
+    std::string expectedSignature = "8d0c8c3deee10f4cc7cc67eaac2c6a90f4f91a9035e6067ed8b03a26bbdbfc2581d61d2f038c9811ce13516a7f4eb29a31103463fd70805c622580810c377406";
     std::string expectedSignedBytes = expectedForgedBytesToSign + expectedSignature;
     auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
     auto signedBytes = Signer().signOperationList(key, op_list);
 
-    ASSERT_EQ(signedBytes, parse_hex(expectedSignedBytes));
+    ASSERT_EQ(hex(signedBytes.begin(), signedBytes.end()), expectedSignedBytes);
 }
