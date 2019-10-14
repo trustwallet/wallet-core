@@ -179,6 +179,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeAlgorand:
         return Algorand::Address::isValid(string);
+            
+        case TWCoinTypePolkadot:
+            return 0;
     }
 }
 
@@ -316,6 +319,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeAlgorand:
         return Algorand::Address(publicKey).string();
+
+        case TWCoinTypePolkadot:
+            return "";
     }
 }
 

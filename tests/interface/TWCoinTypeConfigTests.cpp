@@ -139,6 +139,9 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
 
     auto algo = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAlgorand));
     assertStringsEqual(algo, "ALGO");
+    
+    auto pdot = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePolkadot));
+    assertStringsEqual(pdot, "DOT");
 }
 
 TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {

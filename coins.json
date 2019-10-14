@@ -1044,5 +1044,22 @@
             "clientPublic": "https://indexer.algorand.network",
             "clientDocs": "https://developer.algorand.org/docs/algod-rest-paths"
         }
+	},
+    {
+        "id": "polkadot",
+        "name": "Polkadot",
+        "symbol": "DOT",
+        "decimals": 15,
+        "blockchain": "Polkadot",
+        "derivationPath": "m/44'/354'/0'/0'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519Blake2b",
+        "explorer": "https://polkadot.js.org/apps/#/explorer",
+        "info": {
+            "url": "https://polkadot.network",
+            "client": "https://github.com/soramitsu/kagome",
+            "clientPublic": "",
+            "clientDocs": ""
+        }
     }
 ]
