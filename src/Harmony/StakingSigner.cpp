@@ -33,23 +33,128 @@ StakingSigner::sign(const TW::Harmony::Proto::StakingTransactionInput &input) no
     auto signer = StakingSigner(uint256_t(load(input.chain_id())));
 
     auto protoOutput = Proto::StakingTransactionOutput();
-    auto delegate = Delegate(Address(input.delegate_message().delegator_address()),
-                             Address(input.delegate_message().validator_address()),
-                             load(input.delegate_message().amount()));
-    auto stakingTx =
-        StakingTransaction<Delegate>(0x2, delegate, load(input.nonce()), load(input.gas_price()),
-                                     load(input.gas_limit()), 2, 0, 0);
-    signer.sign<Delegate>(key, stakingTx);
 
-    auto encoded = signer.rlpNoHash<Delegate>(stakingTx, true);
-    auto v = store(stakingTx.v);
-    auto r = store(stakingTx.r);
-    auto s = store(stakingTx.s);
+    Data encoded, v, r, s;
+    if (input.has_new_validator_message()) {
+        auto description = Description(
+            /* name */ input.new_validator_message().description().name(),
+            /* identity */ input.new_validator_message().description().identity(),
+            /* website */ input.new_validator_message().description().website(),
+            /* securityContact */ input.new_validator_message().description().security_contact(),
+            /* details */ input.new_validator_message().description().details());
+        auto rate = Decimal(
+            /* value */ load(input.new_validator_message().commission().rate().value()),
+            /* precision */ load(input.new_validator_message().commission().rate().precision()));
+        auto maxRate = Decimal(
+            /* value */ load(input.new_validator_message().commission().max_rate().value()),
+            /* precision */ load(
+                input.new_validator_message().commission().max_rate().precision()));
+        auto maxChangeRate = Decimal(
+            /* value */ load(input.new_validator_message().commission().max_change_rate().value()),
+            /* precision */ load(
+                input.new_validator_message().commission().max_change_rate().precision()));
+
+        auto commission = CommissionRate(rate, maxRate, maxChangeRate);
+        auto newValidator = NewValidator(
+            /* Description */ description,
+            /* Commission */ commission,
+            /* MinSelfDelegation */ load(input.new_validator_message().min_self_delegation()),
+            /* StakingAddress */ Address(input.new_validator_message().staking_address()),
+            /* PubKey */
+            Data(input.new_validator_message().pub_key().begin(),
+                 input.new_validator_message().pub_key().end()),
+            /* Amount */ load(input.new_validator_message().amount()));
+
+        auto stakingTx = StakingTransaction<NewValidator>(
+            DirectiveNewValidator, newValidator, load(input.nonce()), load(input.gas_price()),
+            load(input.gas_limit()), load(input.chain_id()), 0, 0);
+
+        signer.sign<NewValidator>(key, stakingTx);
+
+        encoded = signer.rlpNoHash<NewValidator>(stakingTx, true);
+        v = store(stakingTx.v);
+        r = store(stakingTx.r);
+        s = store(stakingTx.s);
+    } else if (input.has_edit_validator_message()) {
+        auto description = Description(
+            /* name */ input.edit_validator_message().description().name(),
+            /* identity */ input.edit_validator_message().description().identity(),
+            /* website */ input.edit_validator_message().description().website(),
+            /* securityContact */ input.edit_validator_message().description().security_contact(),
+            /* details */ input.edit_validator_message().description().details());
+
+        auto commissionRate = Decimal(
+            /* value */ load(input.edit_validator_message().commission_rate().value()),
+            /* precision */ load(input.edit_validator_message().commission_rate().precision()));
+
+        auto editValidator = EditValidator(
+            /* Description */ description,
+            /* StakingAddress */ Address(input.edit_validator_message().staking_address()),
+            /* CommissionRate */ commissionRate,
+            /* MinSelfDelegation */ load(input.edit_validator_message().min_self_delegation()));
+
+        auto stakingTx = StakingTransaction<EditValidator>(
+            DirectiveEditValidator, editValidator, load(input.nonce()), load(input.gas_price()),
+            load(input.gas_limit()), load(input.chain_id()), 0, 0);
+
+        signer.sign<EditValidator>(key, stakingTx);
+
+        encoded = signer.rlpNoHash<EditValidator>(stakingTx, true);
+        v = store(stakingTx.v);
+        r = store(stakingTx.r);
+        s = store(stakingTx.s);
+    } else if (input.has_delegate_message()) {
+        auto delegate = Delegate(Address(input.delegate_message().delegator_address()),
+                                 Address(input.delegate_message().validator_address()),
+                                 load(input.delegate_message().amount()));
+        auto stakingTx = StakingTransaction<Delegate>(
+            DirectiveDelegate, delegate, load(input.nonce()), load(input.gas_price()),
+            load(input.gas_limit()), load(input.chain_id()), 0, 0);
+
+        signer.sign<Delegate>(key, stakingTx);
+
+        encoded = signer.rlpNoHash<Delegate>(stakingTx, true);
+        v = store(stakingTx.v);
+        r = store(stakingTx.r);
+        s = store(stakingTx.s);
+    } else if (input.has_redelegate_message()) {
+        auto redelegate = Redelegate(Address(input.redelegate_message().delegator_address()),
+                                     Address(input.redelegate_message().validator_src_address()),
+                                     Address(input.redelegate_message().validator_dst_address()),
+                                     load(input.redelegate_message().amount()));
+        auto stakingTx = StakingTransaction<Redelegate>(
+            DirectiveRedelegate, redelegate, load(input.nonce()), load(input.gas_price()),
+            load(input.gas_limit()), load(input.chain_id()), 0, 0);
+
+        signer.sign<Redelegate>(key, stakingTx);
+
+        encoded = signer.rlpNoHash<Redelegate>(stakingTx, true);
+        v = store(stakingTx.v);
+        r = store(stakingTx.r);
+        s = store(stakingTx.s);
+    } else if (input.has_undelegate_message()) {
+        auto undelegate = Undelegate(Address(input.undelegate_message().delegator_address()),
+                                     Address(input.undelegate_message().validator_address()),
+                                     load(input.undelegate_message().amount()));
+        auto stakingTx = StakingTransaction<Undelegate>(
+            DirectiveUndelegate, undelegate, load(input.nonce()), load(input.gas_price()),
+            load(input.gas_limit()), load(input.chain_id()), 0, 0);
+
+        signer.sign<Undelegate>(key, stakingTx);
+
+        encoded = signer.rlpNoHash<Undelegate>(stakingTx, true);
+        v = store(stakingTx.v);
+        r = store(stakingTx.r);
+        s = store(stakingTx.s);
+    } else {
+        // should never come here for valid input
+    }
 
     protoOutput.set_encoded(encoded.data(), encoded.size());
     protoOutput.set_v(v.data(), v.size());
     protoOutput.set_r(r.data(), r.size());
     protoOutput.set_s(s.data(), s.size());
+
     return protoOutput;
 }
 
@@ -63,7 +168,89 @@ void StakingSigner::sign(const PrivateKey &privateKey,
     transaction.v = std::get<2>(tuple);
 }
 
+Data StakingSigner::rlpNoHashDirective(const StakingTransaction<NewValidator> &transaction) const
+    noexcept {
+    auto encoded = Data();
+    using namespace TW::Ethereum;
+
+    auto descriptionEncoded = Data();
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.name));
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.identity));
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.website));
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.securityContact));
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.details));
+    append(encoded, RLP::encodeList(descriptionEncoded));
+
+    auto commissionEncoded = Data();
+
+    auto rateEncoded = Data();
+    append(rateEncoded, RLP::encode(transaction.stakeMsg.commission.rate.value));
+    append(commissionEncoded, RLP::encodeList(rateEncoded));
+
+    auto maxRateEncoded = Data();
+    append(maxRateEncoded, RLP::encode(transaction.stakeMsg.commission.maxRate.value));
+    append(commissionEncoded, RLP::encodeList(maxRateEncoded));
+
+    auto maxChangeRateEncoded = Data();
+    append(maxChangeRateEncoded, RLP::encode(transaction.stakeMsg.commission.maxChangeRate.value));
+    append(commissionEncoded, RLP::encodeList(maxChangeRateEncoded));
+
+    append(encoded, RLP::encodeList(commissionEncoded));
+
+    append(encoded, RLP::encode(transaction.stakeMsg.minSelfDelegation));
+    append(encoded, RLP::encode(transaction.stakeMsg.stakingAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.pubKey));
+    append(encoded, RLP::encode(transaction.stakeMsg.amount));
+
+    return RLP::encodeList(encoded);
+}
+
+Data StakingSigner::rlpNoHashDirective(const StakingTransaction<EditValidator> &transaction) const
+    noexcept {
+    auto encoded = Data();
+    using namespace TW::Ethereum;
+
+    auto descriptionEncoded = Data();
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.name));
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.identity));
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.website));
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.securityContact));
+    append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.details));
+    append(encoded, RLP::encodeList(descriptionEncoded));
+
+    append(encoded, RLP::encode(transaction.stakeMsg.stakingAddress.bytes));
+
+    auto decEncoded = Data();
+    append(decEncoded, RLP::encode(transaction.stakeMsg.commissionRate.value));
+    append(encoded, RLP::encodeList(decEncoded));
+
+    append(encoded, RLP::encode(transaction.stakeMsg.minSelfDelegation));
+
+    return RLP::encodeList(encoded);
+}
+
 Data StakingSigner::rlpNoHashDirective(const StakingTransaction<Delegate> &transaction) const
+    noexcept {
+    auto encoded = Data();
+    using namespace TW::Ethereum;
+    append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.amount));
+    return RLP::encodeList(encoded);
+}
+
+Data StakingSigner::rlpNoHashDirective(const StakingTransaction<Redelegate> &transaction) const
+    noexcept {
+    auto encoded = Data();
+    using namespace TW::Ethereum;
+    append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.validatorSrcAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.validatorDstAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.amount));
+    return RLP::encodeList(encoded);
+}
+
+Data StakingSigner::rlpNoHashDirective(const StakingTransaction<Undelegate> &transaction) const
     noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
@@ -79,9 +266,8 @@ Data StakingSigner::rlpNoHash(const StakingTransaction<Directive> &transaction,
     auto encoded = Data();
     using namespace TW::Ethereum;
     append(encoded, RLP::encode(transaction.directive));
-    if (transaction.directive == DirectiveDelegate) {
-        append(encoded, rlpNoHashDirective(transaction));
-    }
+    append(encoded, rlpNoHashDirective(transaction));
+
     append(encoded, RLP::encode(transaction.nonce));
     append(encoded, RLP::encode(transaction.gasPrice));
     append(encoded, RLP::encode(transaction.gasLimit));

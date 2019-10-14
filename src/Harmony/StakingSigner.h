@@ -62,7 +62,11 @@ class StakingSigner {
     template <typename Directive>
     Data rlpNoHash(const StakingTransaction<Directive> &transaction, const bool) const noexcept;
 
+    Data rlpNoHashDirective(const StakingTransaction<NewValidator> &transaction) const noexcept;
+    Data rlpNoHashDirective(const StakingTransaction<EditValidator> &transaction) const noexcept;
     Data rlpNoHashDirective(const StakingTransaction<Delegate> &transaction) const noexcept;
+    Data rlpNoHashDirective(const StakingTransaction<Redelegate> &transaction) const noexcept;
+    Data rlpNoHashDirective(const StakingTransaction<Undelegate> &transaction) const noexcept;
 };
 
 } // namespace TW::Harmony

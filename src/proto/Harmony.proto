@@ -104,7 +104,7 @@ message DirectiveNewValidator {
     Description description = 1;
     CommissionRate commission = 2;
     bytes min_self_delegation = 3;
-    bytes staking_address = 4;
+    string staking_address = 4;
     bytes pub_key = 5;
     bytes amount = 6;
 }
