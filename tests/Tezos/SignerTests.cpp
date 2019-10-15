@@ -48,7 +48,7 @@ TEST(TezosSigner, SignOperationList) {
     PublicKey publicKey = parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
     
     auto revealOperationData = new TW::Tezos::Proto::RevealOperationData();
-    revealOperationData -> set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+    revealOperationData->set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
 
     auto revealOperation = TW::Tezos::Proto::Operation();
     revealOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
@@ -63,7 +63,7 @@ TEST(TezosSigner, SignOperationList) {
     op_list.addOperation(transactionOperation);
 
     std::string expectedForgedBytesToSign = hex(op_list.forge());
-    std::string expectedSignature = "8d0c8c3deee10f4cc7cc67eaac2c6a90f4f91a9035e6067ed8b03a26bbdbfc2581d61d2f038c9811ce13516a7f4eb29a31103463fd70805c622580810c377406";
+    std::string expectedSignature = "169e93479cae07dabd59095f205fc101e34d00b10b93e5d6f3f442053fb32af6051e8c2c05a327052adec68c126460533c4b1400b5705bfe19d9d5e6c013550e";
     std::string expectedSignedBytes = expectedForgedBytesToSign + expectedSignature;
     auto key = PrivateKey(parse_hex("0x2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f"));
     auto signedBytes = Signer().signOperationList(key, op_list);

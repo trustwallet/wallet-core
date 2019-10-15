@@ -127,11 +127,11 @@ TEST(TezosTransaction, forgeTransaction) {
     transactionOperation.set_kind(TW::Tezos::Proto::Operation::TRANSACTION);
     transactionOperation.set_allocated_transaction_operation_data(transactionOperationData);
 
-    auto expected = "08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";	
+    auto expected = "080081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810201008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
     auto serialized = forgeOperation(transactionOperation);
 
-    ASSERT_EQ(serialized, parse_hex(expected));	
-}	
+    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+}
 
 TEST(TezosTransaction, forgeReveal) {
     PublicKey publicKey = parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
@@ -148,7 +148,7 @@ TEST(TezosTransaction, forgeReveal) {
     revealOperation.set_kind(TW::Tezos::Proto::Operation::REVEAL);
     revealOperation.set_allocated_reveal_operation_data(revealOperationData);
    
-    auto expected = "07000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
+    auto expected = "070081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
     auto serialized = forgeOperation(revealOperation);
 
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);

@@ -90,7 +90,9 @@ Data forgeOperation(const Operation& operation) {
       append(forged, forgedStorageLimit);
       append(forged, forgePublicKey(publicKey));
       return forged;
-  } else if (operation.kind() == Operation_OperationKind_DELEGATION) {
+  }
+
+  if (operation.kind() == Operation_OperationKind_DELEGATION) {
       auto delegate = operation.delegation_operation_data().delegate();
       forged.push_back(0x0a);
       append(forged, forgedSource);
@@ -105,19 +107,18 @@ Data forgeOperation(const Operation& operation) {
           append(forged, forgeBool(false));
       }
       return forged;
-  } else {
-      auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
-      auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
-      forged.push_back(0x08);
-      append(forged, forgedSource);
-      append(forged, forgedFee);
-      append(forged, forgedCounter);
-      append(forged, forgedGasLimit);
-      append(forged, forgedStorageLimit);
-      append(forged, forgedAmount);
-      append(forged, forgedDestination);
-      append(forged, forgeBool(false));
-      return forged;
   }
-  return Data();
+
+  auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
+  auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
+  forged.push_back(0x08);
+  append(forged, forgedSource);
+  append(forged, forgedFee);
+  append(forged, forgedCounter);
+  append(forged, forgedGasLimit);
+  append(forged, forgedStorageLimit);
+  append(forged, forgedAmount);
+  append(forged, forgedDestination);
+  append(forged, forgeBool(false));
+  return forged;
 }

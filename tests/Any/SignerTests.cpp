@@ -9,6 +9,8 @@
 
 #include <stdexcept>
 #include <gtest/gtest.h>
+#include "Base64.h"
+#include "Tezos/BinaryCoding.h"
 
 using namespace TW;
 using namespace TW::Any;
@@ -59,8 +61,9 @@ TEST(Signer, EthereumTransactionSign) {
 }
 
 TEST(Signer, TezosTransactionSign) {
-    auto transaction = R"({"operationList": {"branch": "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp","operations": [{"source": "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW","fee": 1272,"counter": 30738,"gasLimit": 10100,"storageLimit": 257,"kind": 7,"revealOperationData": {"publicKey": "QpqYbIBypAofOj4qtaWBm7Gy+2mZPFAEg3gVudxVkj4="}},{"source": "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW","fee": 1272,"counter": 30739,"gasLimit": 10100,"storageLimit": 257,"kind": 8,"transactionOperationData": {"destination": "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW","amount": 1}}]}})";
+    auto transaction = R"({"operationList": {"branch": "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp","operations": [{"source": "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW","fee": 1272,"counter": 30738,"gasLimit": 10100,"storageLimit": 257,"kind": 107,"revealOperationData": {"publicKey": "QpqYbIBypAofOj4qtaWBm7Gy+2mZPFAEg3gVudxVkj4="}},{"source": "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW","fee": 1272,"counter": 30739,"gasLimit": 10100,"storageLimit": 257,"kind": 108,"transactionOperationData": {"destination": "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW","amount": 1}}]}})";
     auto input = Proto::SigningInput();
+
     input.set_private_key("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f");
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeTezos);
@@ -69,7 +72,7 @@ TEST(Signer, TezosTransactionSign) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.success());;
-    ASSERT_EQ("3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0107000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e08000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721008d0c8c3deee10f4cc7cc67eaac2c6a90f4f91a9035e6067ed8b03a26bbdbfc2581d61d2f038c9811ce13516a7f4eb29a31103463fd70805c622580810c377406",
+    ASSERT_EQ("3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da01070081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e080081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e8102010081faa75f741ef614b0e35fcc8c90dfa3b0b9572100169e93479cae07dabd59095f205fc101e34d00b10b93e5d6f3f442053fb32af6051e8c2c05a327052adec68c126460533c4b1400b5705bfe19d9d5e6c013550e",
               output.output());
 }
 
