@@ -34,11 +34,6 @@ struct TWNULSAddress* _Nullable TWNULSAddressCreateWithString(TWString* _Nonnull
     }
 }
 
-struct TWNULSAddress* _Nullable TWNULSAddressCreateWithData(TWData* _Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWNULSAddress{Address(*d)};
-}
-
 /// Creates an address from a public key.
 struct TWNULSAddress* _Nonnull TWNULSAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey) {

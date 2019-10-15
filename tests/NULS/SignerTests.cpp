@@ -45,7 +45,7 @@ TEST(NULSSigner, Sign) {
     auto input = makeInput("9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b",
                            "NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H", "NULSd6Hgied7ym6qMEfVzZanMaa9qeqA6TZSe",
                            10000000, 1, 1, "0000000000000000", "", 100000000);
-    auto signer = NULS::Signer(input);
+    auto signer = Signer(input);
     Data signature = signer.sign();
     std::string signedTransaction = hex(signature);
 

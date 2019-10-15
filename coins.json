@@ -718,7 +718,7 @@
         "info": {
             "url": "https://nuls.io",
             "client": "https://github.com/nuls-io/nuls-v2",
-            "clientPublic": "",
+            "clientPublic": "https://public1.nuls.io/",
             "clientDocs": "https://docs.nuls.io/"
         }
     },

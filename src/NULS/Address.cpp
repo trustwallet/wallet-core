@@ -11,6 +11,7 @@
 #include "../BinaryCoding.h"
 #include "../HexCoding.h"
 
+using namespace TW;
 using namespace TW::NULS;
 
 const std::string Address::prefix("NULSd");
@@ -99,7 +100,6 @@ TW::PrivateKey Address::importHexPrivateKey(const std::string& hexPrivateKey) {
 }
 
 std::string Address::string() const {
-    std::string temp = prefix;
-    return temp.append(TW::Base58::bitcoin.encode(bytes.begin(), bytes.end()));
+    return prefix + TW::Base58::bitcoin.encode(bytes.begin(), bytes.end());
 }
 

@@ -42,7 +42,6 @@
 #include "Zcash/TAddress.h"
 #include "NULS/Address.h"
 #include "Steem/Address.h"
-#include "EOS/Address.h"
 #include "IoTeX/Address.h"
 #include "Zilliqa/Address.h"
 
