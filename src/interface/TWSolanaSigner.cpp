@@ -9,20 +9,11 @@
 #include "../Solana/Signer.h"
 #include "../proto/Solana.pb.h"
 
-#include <TrezorCrypto/rand.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWSolanaSigner.h>
 
 using namespace TW;
 using namespace TW::Solana;
-
-Address generateRandomPubkey() {
-    byte buf[32];
-    random_buffer(buf, 32);
-    auto data = Data();
-    data.insert(data.begin(), buf, buf + 32);
-    return Address(PublicKey(data, TWPublicKeyTypeED25519));
-}
 
 TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput data) {
     Proto::SigningInput input;
@@ -45,32 +36,38 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
     } else if (input.has_stake_transaction()) {
         auto protoMessage = input.stake_transaction();
         auto key = PrivateKey(protoMessage.private_key());
-        auto stakeAccount = protoMessage.stake_pubkey().length() > 0
-                                ? Address(protoMessage.stake_pubkey())
-                                : generateRandomPubkey();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto validatorAddress = Address(protoMessage.validator_pubkey());
+        auto stakeAccount = hashTwoAddresses(userAddress, validatorAddress);
         stakePubkey = stakeAccount.string();
         message = Message(
-            /* signer */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+            /* signer */ userAddress,
             /* stakeAccount */ stakeAccount,
-            /* voteAccount */ Address(protoMessage.vote_pubkey()),
+            /* voteAccount */ validatorAddress,
             /* value */ protoMessage.value(),
             /* recent_blockhash */ blockhash);
         signerKeys.push_back(key);
     } else if (input.has_deactivate_stake_transaction()) {
         auto protoMessage = input.deactivate_stake_transaction();
         auto key = PrivateKey(protoMessage.private_key());
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto validatorAddress = Address(protoMessage.validator_pubkey());
+        auto stakeAccount = hashTwoAddresses(userAddress, validatorAddress);
         message = Message(
-            /* signer */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
-            /* stakeAccount */ Address(protoMessage.stake_pubkey()),
+            /* signer */ userAddress,
+            /* stakeAccount */ stakeAccount,
             /* type */ Deactivate,
             /* recent_blockhash */ blockhash);
         signerKeys.push_back(key);
     } else if (input.has_withdraw_transaction()) {
         auto protoMessage = input.withdraw_transaction();
         auto key = PrivateKey(protoMessage.private_key());
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto validatorAddress = Address(protoMessage.validator_pubkey());
+        auto stakeAccount = hashTwoAddresses(userAddress, validatorAddress);
         message = Message(
-            /* signer */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
-            /* stakeAccount */ Address(protoMessage.stake_pubkey()),
+            /* signer */ userAddress,
+            /* stakeAccount */ stakeAccount,
             /* value */ protoMessage.value(),
             /* type */ Withdraw,
             /* recent_blockhash */ blockhash);
@@ -84,9 +81,6 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
     auto protoOutput = Proto::SigningOutput();
     auto encoded = transaction.serialize();
     protoOutput.set_encoded(encoded.data(), encoded.size());
-    if (stakePubkey.length() > 0) {
-        protoOutput.set_stake_pubkey(stakePubkey);
-    }
 
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),

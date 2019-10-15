@@ -14,6 +14,13 @@ using namespace std;
 using namespace TW;
 using namespace TW::Solana;
 
+TEST(SolanaAddress, hashTwoAddresses) {
+    auto user = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    auto validator = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    auto expected = Address("GEueoLV9YvXituQAfW1BvcsiQPKHYMhg9nbefuLSNUMf");
+    ASSERT_EQ(hashTwoAddresses(user, validator), expected);
+}
+
 TEST(SolanaAddress, FromPublicKey) {
     const auto addressString = "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST";
     const auto publicKey = PublicKey(Base58::bitcoin.decode(addressString), TWPublicKeyTypeED25519);

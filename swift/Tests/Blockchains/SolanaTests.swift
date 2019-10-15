@@ -55,12 +55,10 @@ class SolanaTests: XCTestCase {
     }
 
     func testDelegateStakeSigner() throws {
-        let stakePubkey = "Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk"
         let delegateStakeMessage = SolanaStake.with {
             $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
-            $0.votePubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
+            $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
-            $0.stakePubkey = stakePubkey
         }
         let input = SolanaSigningInput.with {
             $0.stakeTransaction = delegateStakeMessage
@@ -70,9 +68,9 @@ class SolanaTests: XCTestCase {
         let output = SolanaSigner.sign(input: input)
 
         let expectedHexString = """
-        0146236d3c6553ad8120c3ac0e97a1bb75ec2ceebe388982bf01a14e8b0d9c3453415120a0db0fa1a1125d88e9\
-        c12219d6660560338261e957dcadd9ac4afda40d010005080eba44e56f060007284dc037275a15094c1d6c0697\
-        ddb28b2be661dfb0f4bab8a106312279be880f9aef61c849c4ec109af4766f3fdcbe7db3ff48c06e9f90c306a7\
+        018efed47208bf63df029951cea09600a6fa697c1a8b715a24347e4b43750694af40d870dbaad894d7b5a8d45c\
+        cd9eeaa366a1c3d5ccca93d5c707f8221f9d5904010005080eba44e56f060007284dc037275a15094c1d6c0697\
+        ddb28b2be661dfb0f4bab8e26f634c7f6a8f05eea8b1e74a93d6aaee9a07c907e9a825931fe678b26c5f3206a7\
         d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a00000000378ba8d9f9881e9be69cf1d70ee0a9\
         3ed0378b83203f42fa29f9df5c887f1c0d06a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b21\
         0000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000\
@@ -85,13 +83,12 @@ class SolanaTests: XCTestCase {
         """
 
         XCTAssertEqual(output.encoded.hexString, expectedHexString)
-        XCTAssertEqual(output.stakePubkey, stakePubkey)
     }
 
     func testDeactivateStakeSigner() throws {
         let deactivateStakeMessage = SolanaDeactivateStake.with {
             $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
-            $0.stakePubkey = "Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk"
+            $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
         }
         let input = SolanaSigningInput.with {
             $0.deactivateStakeTransaction = deactivateStakeMessage
@@ -101,9 +98,9 @@ class SolanaTests: XCTestCase {
         let output = SolanaSigner.sign(input: input)
 
         let expectedHexString = """
-        0124674a20521c703145836f7e4911fff52841971379157677a3dcfee3d89142605d8adb0429c534eb0e57d2b8\
-        e58fd9a6d2e67e378cdd21322d0c219c169e2600010002040eba44e56f060007284dc037275a15094c1d6c0697\
-        ddb28b2be661dfb0f4bab8a106312279be880f9aef61c849c4ec109af4766f3fdcbe7db3ff48c06e9f90c306a7\
+        010edc9131bbfd79536d9e7fc403f5a0fcb36095c1fd2561147f1086173104d028dbe0ff228d11d2e5ea03752e\
+        2ef0c66d2a8d232387cf7bf311068e992566e40f010002040eba44e56f060007284dc037275a15094c1d6c0697\
+        ddb28b2be661dfb0f4bab8e26f634c7f6a8f05eea8b1e74a93d6aaee9a07c907e9a825931fe678b26c5f3206a7\
         d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d8179137542a983437bdfe2a7a\
         b2557f535c8a78722b68a49dc00000000000000000000000000000000000000000000000000000000000000000\
         000000000103030102000405000000
@@ -115,7 +112,7 @@ class SolanaTests: XCTestCase {
     func testWithdrawStakeSigner() throws {
         let withdrawMessage = SolanaWithdrawStake.with {
             $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
-            $0.stakePubkey = "Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk"
+            $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
         }
         let input = SolanaSigningInput.with {
@@ -126,9 +123,9 @@ class SolanaTests: XCTestCase {
         let output = SolanaSigner.sign(input: input)
 
         let expectedHexString = """
-        013ee82cbcbed84f7fb6ff7c931978bc8dac0de77d1e9588d4a3f77677f9e29648c9bad480fb332aefa1dad655\
-        22c3fe5c3abfb22439da445fa6079d435b1ee40b010003050eba44e56f060007284dc037275a15094c1d6c0697\
-        ddb28b2be661dfb0f4bab8a106312279be880f9aef61c849c4ec109af4766f3fdcbe7db3ff48c06e9f90c306a7\
+        015095806889455cdef7ff520bf8e7ed4cf67e3d04559c806400995273f4d88a20d85203e9aa15012dd3210224\
+        20dc6c9ae6a6776fb81496819b1fd9756b20bf0f010003050eba44e56f060007284dc037275a15094c1d6c0697\
+        ddb28b2be661dfb0f4bab8e26f634c7f6a8f05eea8b1e74a93d6aaee9a07c907e9a825931fe678b26c5f3206a7\
         d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a7d517193584d0feed9bb3431d13\
         206be544281b57b8566cc5375ff400000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0\
         000000000000000000000000000000000000000000000000000000000000000000000000010404010002030c04\

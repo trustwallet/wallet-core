@@ -38,6 +38,8 @@ class Address : public Base58Address<32> {
 
 } // namespace TW::Solana
 
+TW::Solana::Address hashTwoAddresses(TW::Solana::Address &address0, TW::Solana::Address &address1);
+
 /// Wrapper for C interface.
 struct TWSolanaAddress {
     TW::Solana::Address impl;

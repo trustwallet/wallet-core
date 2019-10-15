@@ -40,3 +40,11 @@ Data Address::vector() const {
     Data vec(std::begin(bytes), std::end(bytes));
     return vec;
 }
+
+Address hashTwoAddresses(Address &address0, Address &address1) {
+    Data extended = address0.vector();
+    Data additional = address1.vector();
+    extended.insert(extended.end(), additional.begin(), additional.end());
+    Data hash = TW::Hash::sha256(extended);
+    return Address(PublicKey(hash, TWPublicKeyTypeED25519));
+}

@@ -11,19 +11,18 @@ message Transfer {
 
 message Stake {
     bytes private_key = 1;
-    string vote_pubkey = 2;
+    string validator_pubkey = 2;
     uint64 value = 3;
-    string stake_pubkey = 4;
 }
 
 message DeactivateStake {
     bytes private_key = 1;
-    string stake_pubkey = 2;
+    string validator_pubkey = 2;
 }
 
 message WithdrawStake {
     bytes private_key = 1;
-    string stake_pubkey = 2;
+    string validator_pubkey = 2;
     uint64 value = 3;
 }
 
@@ -41,5 +40,4 @@ message SigningInput {
 // Transaction signing output.
 message SigningOutput {
     bytes encoded = 1;
-    string stake_pubkey = 2;
 }
