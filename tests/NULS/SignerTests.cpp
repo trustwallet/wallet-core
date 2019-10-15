@@ -17,10 +17,13 @@ inline auto makeInput(std::string priKey, std::string addressFrom, std::string a
                       uint256_t amount, uint32_t chainId, uint32_t assetId, std::string nonce, std::string remark,
                       uint256_t balance) {
     Proto::SigningInput input;
-    input.set_private_key(priKey);
+    Data key = parse_hex(priKey); 
+    std::string keyStr;
+    keyStr.insert(keyStr.begin(), key.begin(), key.end());
+    input.set_private_key(keyStr);
 
-    input.set_from_address(addressFrom);
-    input.set_to_address(addressTo);
+    input.set_from(addressFrom);
+    input.set_to(addressTo);
 
     Data amountData = store(amount);
     std::string amountStr;

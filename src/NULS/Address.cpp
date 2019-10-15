@@ -73,30 +73,8 @@ uint8_t Address::type() const {
     return bytes[2];
 }
 
-TW::PrivateKey Address::importHexPrivateKey(const std::string& hexPrivateKey) {
-    Data privKey = parse_hex(hexPrivateKey);
-    Data data = Data();
-    switch (privKey.size()) {
-    case 31: {
-        data.push_back(static_cast<uint8_t>(0x00));
-        std::copy(privKey.begin(), privKey.end(), std::back_inserter(data));
-    } break;
-    case 32: {
-        std::copy(privKey.begin(), privKey.end(), std::back_inserter(data));
-    } break;
-    case 33: {
-        if (privKey[0] != 0x00) {
-            throw std::invalid_argument("Invalid private key");
-        }
-        std::copy(privKey.begin() + 1, privKey.end(), std::back_inserter(data));
-    } break;
-    default: {
-        throw std::invalid_argument("Invalid private key");
-    }
-    }
-
-    auto key = PrivateKey(data);
-    return key;
+TW::PrivateKey Address::getPrivateKey(const Data& privKey) {
+    return PrivateKey(privKey);
 }
 
 std::string Address::string() const {

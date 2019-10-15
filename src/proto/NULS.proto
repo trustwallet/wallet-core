@@ -48,8 +48,8 @@ message Transaction {
 // Input data necessary to create a signed order.
 message SigningInput {
     bytes private_key = 1;
-    string from_address = 2;
-    string to_address = 3;
+    string from = 2;
+    string to = 3;
     bytes  amount = 4;
     uint32 chain_id = 5;
     uint32 idassets_id = 6;

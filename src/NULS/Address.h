@@ -26,8 +26,8 @@ class Address : public Base58Address<24> {
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    /// Process NULS private key length is 31 or 33
-    static PrivateKey importHexPrivateKey(const std::string& hexPrivateKey);
+    /// get NULS private key
+    static PrivateKey getPrivateKey(const Data& privKey);
 
     /// Initializes an address from a string representation.
     explicit Address(const std::string& string);

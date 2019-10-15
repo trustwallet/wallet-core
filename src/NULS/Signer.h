@@ -38,6 +38,8 @@ class Signer {
     /// \returns the transaction signature or an empty vector if there is an error.
     Data sign() const;
 
+    Data sign(Proto::SigningInput& input) const;
+
 private:
     uint64_t CalculatorTransactionFee(uint64_t size) const;
     int32_t CalculatorMaxInput(uint32_t remarkSize) const;

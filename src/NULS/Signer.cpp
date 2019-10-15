@@ -16,7 +16,7 @@ using namespace TW::NULS;
 
 Signer::Signer(Proto::SigningInput& input) : input(input) {
     Proto::TransactionCoinFrom coinFrom;
-    coinFrom.set_from_address(input.from_address());
+    coinFrom.set_from_address(input.from());
     coinFrom.set_assets_chainid(input.chain_id());
     coinFrom.set_assets_id(input.idassets_id());
     //need to update with amount + fee
@@ -27,7 +27,7 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
     *tx.mutable_input() = coinFrom;
 
     Proto::TransactionCoinTo coinTo;
-    coinTo.set_to_address(input.to_address());
+    coinTo.set_to_address(input.to());
     coinTo.set_id_amount(input.amount());
     coinTo.set_assets_chainid(input.chain_id());
     coinTo.set_assets_id(input.idassets_id());
@@ -72,34 +72,41 @@ Data Signer::sign() const {
     amountToStr.append((unsigned long)(amountTo.capacity() - amountTo.size()), '\0');
     coinTo.set_id_amount(amountToStr);
 
-    auto data = Data();
+    auto dataRet = Data();
     // Transaction Type
-    encode16LE(tx.type(), data);
+    encode16LE((uint16_t)tx.type(), dataRet);
     // Timestamp
-    encode32LE(tx.timestamp(), data);
+    encode32LE(tx.timestamp(), dataRet);
      // Remark
     std::string remark = tx.remark();
-    serializerRemark(remark, data);
+    serializerRemark(remark, dataRet);
     // txData
-    encodeVarInt(0, data);
+    encodeVarInt(0, dataRet);
 
     //coinFrom and coinTo size
-    encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, data);
+    encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, dataRet);
 
     // CoinData Input
-    serializerInput(tx.input(), data);
+    serializerInput(tx.input(), dataRet);
 
     // CoinData Output
-    serializerOutput(tx.output(), data);
+    serializerOutput(tx.output(), dataRet);
 
     // Calc transaction hash
-    Data txHash = calcTransactionDigest(data);
-    auto priv = Address::importHexPrivateKey(input.private_key());
+    Data txHash = calcTransactionDigest(dataRet);
+   
+    Data privKey = data(input.private_key());
+    auto priv = Address::getPrivateKey(privKey);
     auto transactionSignature = makeTransactionSignature(priv, txHash);
-    encodeVarInt(transactionSignature.size(), data);
-    std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(data));
+    encodeVarInt(transactionSignature.size(), dataRet);
+    std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(dataRet));
 
-    return data;
+    return dataRet;
+}
+
+Data Signer::sign(Proto::SigningInput& input) const {
+    Signer signer = Signer(input);
+    return signer.sign();
 }
 
 uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {
