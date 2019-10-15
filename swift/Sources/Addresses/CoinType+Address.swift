@@ -31,8 +31,8 @@ public extension CoinType {
             }
         case .dash, .dogecoin, .zcoin, .ravencoin:
             return BitcoinAddress(string: string)
-        case .callisto, .ellaism, .ethereum, .ethereumClassic, .ethersocial, .goChain,
-             .poanetwork, .theta, .thunderToken, .tomoChain, .veChain, .xdai, .dexon:
+        case .callisto, .ethereum, .ethereumClassic, .goChain,
+             .poanetwork, .theta, .thunderToken, .tomoChain, .veChain:
             return EthereumAddress(string: string)
         case .wanchain:
             return WanchainAddress(string: string)

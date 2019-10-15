@@ -46,17 +46,11 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .digiByte:
                     let expectedResult = "dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .ellaism:
-                    let expectedResult = "0x1Ae593CAdb8BAC47D0394617396650474c303F9C"
-                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereum:
                     let expectedResult = "0x8f348F300873Fd5DA36950B2aC75a26584584feE"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .ethereumClassic:
                     let expectedResult = "0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c"
-                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .ethersocial:
-                    let expectedResult = "0x182dd55D97C1F8D3781CDaDFC275948Ac38Ea1fe"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .goChain:
                     let expectedResult = "0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2"
@@ -93,9 +87,6 @@ class CoinAddressDerivationTests: XCTestCase {
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .wanchain:
                     let expectedResult = "0xd5CA90B928279fe5d06144136A25dEd90127Ac15"
-                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .xdai:
-                    let expectedResult = "0x364d0551599B97EAf997bc06c8c40Aaf73124402"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zcash:
                     let expectedResult = "t1YYnByMzdGhQv3W3rnjHMrJs6HH4Y231gy"
@@ -160,9 +151,6 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .semux:
                     let expectedResult = "0xfe604170382452f77bc922bc19eb4b53504b09c2"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .dexon:
-                    let expectedResult = "0x6F3E6a6dDf2C2B4B32B8Bb452eA3F36B2BB489BF"
-                  AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .zelcash:
                     let expectedResult = "t1UKbRPzL4WN8Rs8aZ8RNiWoD2ftCMHKGUf"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)

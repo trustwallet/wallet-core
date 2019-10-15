@@ -210,40 +210,6 @@
         }
     },
     {
-        "id": "ellaism",
-        "name": "Ellaism",
-        "symbol": "ELLA",
-        "decimals": 18,
-        "blockchain": "Ethereum",
-        "derivationPath": "m/44'/163'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explorer.ellaism.org/tx/",
-        "info": {
-            "url": "https://ellaism.org",
-            "client": "https://github.com/ellaism/go-ellaism",
-            "clientPublic": "",
-            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-        }
-    },
-    {
-        "id": "ethersocial",
-        "name": "Ethersocial",
-        "symbol": "ESN",
-        "decimals": 18,
-        "blockchain": "Ethereum",
-        "derivationPath": "m/44'/31102'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1Extended",
-        "explorer": "https://ethersocial.net/tx/",
-        "info": {
-            "url": "https://ethersocial.org",
-            "client": "https://github.com/Ethersocial/go-ethersocial",
-            "clientPublic": "",
-            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-        }
-    },
-    {
         "id": "gochain",
         "name": "GoChain",
         "symbol": "GO",
@@ -481,23 +447,6 @@
         "info": {
             "url": "https://wanchain.org",
             "client": "https://github.com/wanchain/go-wanchain",
-            "clientPublic": "",
-            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
-        }
-    },
-    {
-        "id": "xdai",
-        "name": "xDai",
-        "symbol": "xDAI",
-        "decimals": 18,
-        "blockchain": "Ethereum",
-        "derivationPath": "m/44'/700'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1Extended",
-        "explorer": "https://blockscout.com/poa/dai/tx/",
-        "info": {
-            "url": "https://poa.network/xdai",
-            "client": "https://github.com/poanetwork/parity-ethereum",
             "clientPublic": "",
             "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
         }
@@ -866,23 +815,6 @@
             "client": "https://github.com/semuxproject/semux-core",
             "clientPublic": "",
             "clientDocs": "https://www.semux.org"
-        }
-    },
-    {
-        "id": "dexon",
-        "name": "DEXON",
-        "symbol": "DXN",
-        "decimals": 18,
-        "blockchain": "Ethereum",
-        "derivationPath": "m/44'/237'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1Extended",
-        "explorer": "https://dexonscan.app/transaction/",
-        "info": {
-            "url": "https://dexon.org",
-            "client": "https://dexon.org",
-            "clientPublic": "",
-            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
         }
     },
     {

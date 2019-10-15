@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
-apply from: 'maven-push.gradle'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
 group='com.github.trustwallet'
 
 android {
@@ -13,6 +12,11 @@ android {
         versionName "1.0"
     }
 
+    lintOptions {
+        abortOnError false
+        disable 'InvalidPackage'
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -22,17 +26,19 @@ android {
     sourceSets {
         main.java.srcDirs += '../../jni/java'
     }
+
     externalNativeBuild {
         cmake {
             version "3.10.2"
             path "../../CMakeLists.txt"
         }
     }
-    lintOptions {
-        abortOnError false
-    }
 }
 
 dependencies {
     implementation 'io.grpc:grpc-protobuf:1.9.0'
 }
+
+apply from: 'maven-push.gradle'
+
+

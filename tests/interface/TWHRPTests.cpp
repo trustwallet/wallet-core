@@ -63,11 +63,9 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDecred));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDogecoin));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEllaism));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEOS));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEthereum));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEthereumClassic));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeEthersocial));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeGoChain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeICON));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeIOST));
@@ -88,11 +86,9 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeTron));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeVeChain));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeWanchain));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeXDai));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZcash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZcoin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeSemux));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDEXON));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZelcash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeARK));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeRavencoin));
