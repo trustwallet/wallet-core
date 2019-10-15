@@ -24,8 +24,7 @@ message DeactivateStake {
 message WithdrawStake {
     bytes private_key = 1;
     string stake_pubkey = 2;
-    string recipient = 3;
-    uint64 value = 4;
+    uint64 value = 3;
 }
 
 // Input data necessary to create a signed transaction.

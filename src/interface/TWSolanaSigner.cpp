@@ -71,7 +71,6 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         message = Message(
             /* signer */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
             /* stakeAccount */ Address(protoMessage.stake_pubkey()),
-            /* to */ Address(protoMessage.recipient()),
             /* value */ protoMessage.value(),
             /* type */ Withdraw,
             /* recent_blockhash */ blockhash);
@@ -86,7 +85,7 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
     auto encoded = transaction.serialize();
     protoOutput.set_encoded(encoded.data(), encoded.size());
     if (stakePubkey.length() > 0) {
-      protoOutput.set_stake_pubkey(stakePubkey);
+        protoOutput.set_stake_pubkey(stakePubkey);
     }
 
     auto serialized = protoOutput.SerializeAsString();

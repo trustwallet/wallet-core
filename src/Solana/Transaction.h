@@ -99,7 +99,7 @@ struct CompiledInstruction {
     // This constructor creates a Withdraw Stake instruction
     CompiledInstruction(uint8_t programIdIndex, StakeInstruction type, uint64_t value)
         : programIdIndex(programIdIndex) {
-        std::vector<uint8_t> accounts = {1, 2, 3, 4, 0};
+        std::vector<uint8_t> accounts = {1, 0, 2, 3};
         this->accounts = accounts;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
@@ -233,7 +233,7 @@ class Message {
     // This constructor creates a deactivate_stake message
     Message(Address signer, Address stakeAccount, StakeInstruction type, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 1, 2};
+        MessageHeader header = {1, 0, 2};
         this->header = header;
 
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
@@ -246,21 +246,21 @@ class Message {
         this->instructions = instructions;
     }
 
-    // This constructor creates a withdraw message
-    Message(Address signer, Address stakeAccount, Address to, uint64_t value, StakeInstruction type,
+    // This constructor creates a withdraw message, with the signer as the default recipient
+    Message(Address signer, Address stakeAccount, uint64_t value, StakeInstruction type,
             Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 1, 4};
+        MessageHeader header = {1, 0, 3};
         this->header = header;
 
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         auto sysvarStakeHistoryId = Address("SysvarStakeHistory1111111111111111111111111");
         auto programId = Address("Stake11111111111111111111111111111111111111");
-        std::vector<Address> accountKeys = {signer, stakeAccount, to, sysvarClockId, sysvarStakeHistoryId,
-                                            programId};
+        std::vector<Address> accountKeys = {signer, stakeAccount, sysvarClockId,
+                                            sysvarStakeHistoryId, programId};
         this->accountKeys = accountKeys;
         std::vector<CompiledInstruction> instructions;
-        auto instruction = CompiledInstruction(5, Withdraw, value);
+        auto instruction = CompiledInstruction(4, Withdraw, value);
         instructions.push_back(instruction);
         this->instructions = instructions;
     }
