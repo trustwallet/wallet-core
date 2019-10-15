@@ -22,16 +22,16 @@ class TestNULSSigner {
             .set_private_key("9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b")
             .set_from_address("NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H")
             .to_address("NULSd6Hgied7ym6qMEfVzZanMaa9qeqA6TZSe")
-            .set_amount("")
+            .set_amount("10000000".toHexByteArray())
             .set_chain_id(1)
             .idassets_id(1)
             .set_nonce("0000000000000000")
             .set_remark("")
-            .set_balance()
+            .set_balance("100000000".toHexByteArray())
             .set_timestamp(0x5d8885f8)
             .build()
 
-        val signer: NULSSigner(signingInput)
+        val signer = NULSSigner(signingInput)
         val output = signer.sign()
 
         assertEquals(
