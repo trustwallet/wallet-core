@@ -27,15 +27,15 @@ class TestHarmonyStakingDelegateSigner {
         }
         val r = Harmony.Decimal.newBuilder()
         r.apply {
-            value = ByteString.copyFrom("0x56bc75e2d63100000".toHexByteArray())
+            value = ByteString.copyFrom("0x64".toHexByteArray())
         }
         val mr = Harmony.Decimal.newBuilder()
         mr.apply {
-            value = ByteString.copyFrom("0x821ab0d4414980000".toHexByteArray())
+            value = ByteString.copyFrom("0x96".toHexByteArray())
         }
         val mcr = Harmony.Decimal.newBuilder()
         mcr.apply {
-            value = ByteString.copyFrom("0x4563918244f40000".toHexByteArray())
+            value = ByteString.copyFrom("0x05".toHexByteArray())
         }
         val cRate = Harmony.CommissionRate.newBuilder()
         cRate.apply {
@@ -50,7 +50,7 @@ class TestHarmonyStakingDelegateSigner {
             minSelfDelegation = ByteString.copyFrom("0xa".toHexByteArray())
             stakingAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             pubKey = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
-            amount = ByteString.copyFrom("0xa".toHexByteArray())
+            amount = ByteString.copyFrom("0x64".toHexByteArray())
         }
         val signingInput = Harmony.StakingTransactionInput.newBuilder()
         signingInput.apply {
@@ -88,7 +88,7 @@ class TestHarmonyStakingDelegateSigner {
         }
         val rate = Harmony.Decimal.newBuilder()
         rate.apply {
-            value = ByteString.copyFrom("0x56bc75e2d63100000".toHexByteArray())
+            value = ByteString.copyFrom("0x64".toHexByteArray())
         }
         val editValidator = Harmony.DirectiveEditValidator.newBuilder()
         editValidator.apply {

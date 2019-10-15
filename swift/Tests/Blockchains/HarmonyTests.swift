@@ -41,13 +41,13 @@ class HarmonyTests: XCTestCase {
             $0.details = "Don't mess with me!!!"
         }
         let rate = TW_Harmony_Proto_Decimal.with {
-            $0.value = Data(hexString: "0x56bc75e2d63100000")!
+            $0.value = Data(hexString: "64")!
         }
         let maxRate = TW_Harmony_Proto_Decimal.with {
-            $0.value = Data(hexString: "0x821ab0d4414980000")!
+            $0.value = Data(hexString: "96")!
         }
         let maxChangeRate = TW_Harmony_Proto_Decimal.with {
-            $0.value = Data(hexString: "0x4563918244f40000")!
+            $0.value = Data(hexString: "5")!
         }
         let commission = TW_Harmony_Proto_CommissionRate.with {
             $0.rate = rate
@@ -60,7 +60,7 @@ class HarmonyTests: XCTestCase {
             $0.minSelfDelegation = Data(hexString: "0xa")!
             $0.stakingAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             $0.pubKey = Data(hexString: "b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611")!
-            $0.amount = Data(hexString: "0xa")!
+            $0.amount = Data(hexString: "0x64")!
         }
         let input = TW_Harmony_Proto_StakingTransactionInput.with {
             $0.chainID = Data(hexString: localNet)!
@@ -95,7 +95,7 @@ class HarmonyTests: XCTestCase {
             $0.details = "Don't mess with me!!!"
         }
         let commissionRate = TW_Harmony_Proto_Decimal.with {
-            $0.value = Data(hexString: "0x56bc75e2d63100000")!
+            $0.value = Data(hexString: "64")!
         }
         let editValidator = TW_Harmony_Proto_DirectiveEditValidator.with {
             $0.description_p = desc
