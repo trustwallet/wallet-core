@@ -1053,7 +1053,7 @@
         "blockchain": "Polkadot",
         "derivationPath": "m/44'/354'/0'/0'/0'",
         "curve": "ed25519",
-        "publicKeyType": "ed25519Blake2b",
+        "publicKeyType": "ed25519",
         "explorer": "https://polkadot.js.org/apps/#/explorer",
         "info": {
             "url": "https://polkadot.network",
