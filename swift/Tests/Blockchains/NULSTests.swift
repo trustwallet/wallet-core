@@ -10,8 +10,8 @@ import XCTest
 class NULSTests: XCTestCase {
 
     func testAddress() {
-        let key = PrivateKey(data: Data(hexString: "a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a")!)!
-        let pubkey = key.getPublicKeySecp256k1(compressed: false)
+        let privateKey = PrivateKey(data: Data(hexString: "0xa1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a")!)!
+        let pubkey = privateKey.getPublicKeySecp256k1(compressed: true)
         let address = NULSAddress(publicKey: pubkey)
         let addressFromString = NULSAddress(string: "NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L")!
 
@@ -20,15 +20,15 @@ class NULSTests: XCTestCase {
 
     func testSign() {
         let input = NULSSigningInput.with {
-            $0.privateKey = Data(hexString: "9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b")!
+            $0.privateKey = Data(hexString: "0x9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b")!
             $0.from = "NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H"
             $0.to = "NULSd6Hgied7ym6qMEfVzZanMaa9qeqA6TZSe"
-            $0.amount = Data(hexString: "989680")!
+            $0.amount = Data(hexString: "0x989680")!
             $0.chainID = 1
             $0.idassetsID = 1
-            $0.nonce = Data(hexString: "0000000000000000")!
+            $0.nonce = Data(hexString: "0x0000000000000000")!
             $0.remark = ""
-            $0.balance = Data(hexString: "05f5e100")!
+            $0.balance = Data(hexString: "0x05f5e100")!
             $0.timestamp = 0x5d8885f8
         }
 
