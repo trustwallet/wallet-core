@@ -11,7 +11,7 @@ class NULSTests: XCTestCase {
 
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a")!)!
-        let pubkey = key.getPublicKeySecp256k1()
+        let pubkey = key.getPublicKeySecp256k1(compressed: false)
         let address = NULSAddress(publicKey: pubkey)
         let addressFromString = NULSAddress(string: "NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L")!
 
