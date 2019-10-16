@@ -18,7 +18,7 @@ class TestNULSAddress {
     @Test
     fun testAddress() {
         //val priKey = PrivateKey(("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a").toHexByteArray())
-        val priKey = ByteString.copyFrom(PrivateKey("0xa1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a".toHexByteArray()).data())
+        val priKey = PrivateKey(Numeric.hexStringToByteArray("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"))
         val pubkey = priKey.getPublicKeySecp256k1(true)
         val address = NULSAddress(pubkey)
         val expected = NULSAddress("NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L")
