@@ -26,7 +26,7 @@ class NULSTests: XCTestCase {
             $0.amount = Data(hexString: "0x989680")!
             $0.chainID = 1
             $0.idassetsID = 1
-            $0.nonce = Data(hexString: "0x0000000000000000")!
+            $0.nonce = "0000000000000000".data(using: .utf8)!
             $0.remark = ""
             $0.balance = Data(hexString: "0x05f5e100")!
             $0.timestamp = 0x5d8885f8

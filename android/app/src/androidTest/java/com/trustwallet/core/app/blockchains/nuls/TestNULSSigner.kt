@@ -25,7 +25,7 @@ class TestNULSSigner {
             .setAmount(ByteString.copyFrom("0x989680".toHexByteArray()))
             .setChainId(1)
             .setIdassetsId(1)
-            .setNonce(ByteString.copyFrom("0x0000000000000000".toHexByteArray()))
+            .setNonce(ByteString.CopyFromUtf8("0000000000000000"))
             .setRemark("")
             .setBalance(ByteString.copyFrom("0x05f5e100".toHexByteArray()))
             .setTimestamp(0x5d8885f8)
