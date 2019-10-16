@@ -2,6 +2,7 @@ package com.trustwallet.core.app.blockchains.nuls
 
 import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
+import com.trustwallet.core.app.utils.Numeric
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.NULSAddress
