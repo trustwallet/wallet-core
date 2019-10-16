@@ -19,15 +19,15 @@ class TestNULSSigner {
     @Test
     fun NULSTransactionSigning() { 
         val signingInput = NULS.SigningInput.newBuilder()
-            .setPrivateKey(ByteString.copyFrom("9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b".toHexBytesInByteString()))
+            .setPrivateKey("9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b".toHexBytesInByteString())
             .setFrom("NULSd6Hgj7ZoVgsPN9ybB4C1N2TbvkgLc8Z9H")
             .setTo("NULSd6Hgied7ym6qMEfVzZanMaa9qeqA6TZSe")
-            .setAmount(ByteString.copyFrom("10000000".toHexByteArray()))
+            .setAmount(ByteString.copyFrom("989680".toHexByteArray()))
             .setChainId(1)
             .setIdassetsId(1)
             .setNonce(ByteString.copyFrom("0000000000000000".toHexByteArray()))
             .setRemark("")
-            .setBalance(ByteString.copyFrom("100000000".toHexByteArray()))
+            .setBalance(ByteString.copyFrom("05f5e100".toHexByteArray()))
             .setTimestamp(0x5d8885f8)
             .build()
 
