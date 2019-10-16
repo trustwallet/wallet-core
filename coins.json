@@ -205,7 +205,7 @@
         "info": {
             "url": "https://ethereumclassic.org",
             "client": "https://github.com/ethereumclassic/go-ethereum",
-            "clientPublic": "",
+            "clientPublic": "https://www.ethercluster.com/etc",
             "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
         }
     },
@@ -222,7 +222,7 @@
         "info": {
             "url": "https://gochain.io",
             "client": "https://github.com/gochain-io/gochain",
-            "clientPublic": "",
+            "clientPublic": "https://rpc.gochain.io",
             "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
         }
     },
@@ -263,7 +263,7 @@
         "info": {
             "url": "https://icon.foundation",
             "client": "https://github.com/icon-project/icon-rpc-server",
-            "clientPublic": "",
+            "clientPublic": "http://ctz.icxstation.com:9000/api/v3",
             "clientDocs": "https://www.icondev.io/docs/icon-json-rpc-v3"
         }
     },
@@ -321,7 +321,7 @@
         "info": {
             "url": "https://ont.io",
             "client": "https://github.com/ontio/ontology",
-            "clientPublic": "",
+            "clientPublic": "http://dappnode1.ont.io:20336",
             "clientDocs": "https://github.com/ontio/ontology/blob/master/docs/specifications/rpc_api.md"
         }
     },
@@ -362,7 +362,7 @@
         "info": {
             "url": "https://poa.network",
             "client": "https://github.com/poanetwork/parity-ethereum",
-            "clientPublic": "",
+            "clientPublic": "https://core.poa.network",
             "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
         }
     },
@@ -379,7 +379,7 @@
         "info": {
             "url": "https://thundercore.com",
             "client": "https://github.com/thundercore/pala",
-            "clientPublic": "",
+            "clientPublic": "https://mainnet-rpc.thundercore.com",
             "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
         }
     },
@@ -543,11 +543,11 @@
         "derivationPath": "m/44'/1729'/0'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://tzscan.io/",
+        "explorer": "https://tezos.id/",
         "info": {
             "url": "https://tezos.com",
             "client": "https://gitlab.com/tezos/tezos",
-            "clientPublic": "https://s2.ripple.com:51234",
+            "clientPublic": "https://rpc.tulip.tools/mainnet",
             "clientDocs": "https://tezos.gitlab.io/tezos/api/rpc.html"
         }
     },
@@ -990,7 +990,7 @@
         "info": {
             "url": "https://harmony.one",
             "client": "https://github.com/harmony-one/go-sdk",
-            "clientPublic": "https://github.com/harmony-one/go-sdk",
+            "clientPublic": "",
             "clientDocs": "https://app.gitbook.com/@harmony-one/s/sdk-wiki"
         }
     },
