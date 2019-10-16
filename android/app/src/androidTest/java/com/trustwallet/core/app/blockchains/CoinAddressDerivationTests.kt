@@ -82,5 +82,6 @@ class CoinAddressDerivationTests {
         HARMONY -> assertEquals("one12fk20wmvgypdkn59n4hq8e3aa5899xfx4vsu09", address)
         SOLANA -> assertEquals("2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m", address)
         ALGORAND -> assertEquals("JTJWO524JXIHVPGBDWFLJE7XUIA32ECOZOBLF2QP3V5TQBT3NKZSCG67BQ", address)
+        POLKADOT -> assertEquals(1, 1) // nothing for now
     }
 }
