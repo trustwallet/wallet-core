@@ -8,6 +8,7 @@
 #include "../Data.h"
 #include "../HexCoding.h"
 #include "../PublicKey.h"
+#include "../PrivateKey.h"
 
 #include <TrezorCrypto/ecdsa.h>
 #include <string>
@@ -34,4 +35,16 @@ PublicKey parsePublicKey(const std::string& publicKey) {
     append(pk, Data(decoded.begin() + prefix.size(), decoded.end()));
 
     return PublicKey(pk, TWPublicKeyTypeED25519);
+}
+
+PrivateKey parsePrivateKey(const std::string& privateKey) {
+    const auto decoded = Base58::bitcoin.decodeCheck(privateKey);
+    auto pk = Data();
+    auto prefix_size = 4;
+
+    if (decoded.size() != 32 + prefix_size) {
+        throw std::invalid_argument("Invalid Public Key");
+    }
+    append(pk, Data(decoded.begin() + prefix_size, decoded.end()));
+    return PrivateKey(pk);
 }

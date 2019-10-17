@@ -17,7 +17,7 @@ using namespace TW;
 using namespace TW::Tezos;
 
 Data Signer::signOperationList(const PrivateKey& privateKey, const OperationList& operationList) {
-    auto forged = operationList.forge();
+    auto forged = operationList.forge(privateKey);
     return signData(privateKey, forged);
 }
 

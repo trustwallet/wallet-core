@@ -2,6 +2,7 @@
 
 #include "../Data.h"
 #include "proto/Tezos.pb.h"
+#include "../PrivateKey.h"
 #include <string>
 
 using namespace TW::Tezos;
@@ -16,7 +17,7 @@ class OperationList {
     OperationList(const std::string& string);
     void addOperation(const Operation& transaction);
     /// Returns a data representation of the operations.
-    Data forge() const;
+    Data forge(const PrivateKey& privateKey) const;
     Data forgeBranch() const;
 };
 
