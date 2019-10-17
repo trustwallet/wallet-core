@@ -26,6 +26,8 @@ class Signer {
     /// 0.001 NULS per KB
     static const uint64_t MIN_PRICE_PRE_1024_BYTES = 100000;
 
+    static const uint16_t TX_TYPE = 2;
+
     Proto::Transaction tx;
 
     Proto::SigningInput input;

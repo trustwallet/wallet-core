@@ -26,9 +26,6 @@ class Address : public Base58Address<24> {
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    /// get NULS private key
-    static PrivateKey getPrivateKey(const Data& privKey);
-
     /// Initializes an address from a string representation.
     explicit Address(const std::string& string);
 
@@ -36,7 +33,7 @@ class Address : public Base58Address<24> {
     explicit Address(const PublicKey& publicKey);
 
     /// Initializes an address with a collection of bytes.
-    explicit Address(const std::vector<uint8_t>& data) : TW::Base58Address<24>(data) {}
+    explicit Address(const Data& data) : TW::Base58Address<24>(data) {}
 
     /// Determines is a valid address.
     bool isValid() const;

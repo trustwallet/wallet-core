@@ -35,7 +35,7 @@ Signer::Signer(Proto::SigningInput& input) : input(input) {
     *tx.mutable_output() = coinTo;
 
     tx.set_remark(input.remark());
-    tx.set_type(2);
+    tx.set_type(TX_TYPE);
     tx.set_timestamp(input.timestamp());
     tx.set_tx_data("");
 }
@@ -60,7 +60,7 @@ Data Signer::sign() const {
     std::reverse(amount.begin(), amount.end());
     std::string amountStr;
     amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
-    amountStr.append((unsigned long)(amount.capacity() - amount.size()), '\0');
+    amountStr.append(static_cast<unsigned long>(amount.capacity() - amount.size()), '\0');
     coinFrom.set_id_amount(amountStr);
 
     Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.output();
@@ -69,12 +69,12 @@ Data Signer::sign() const {
     std::reverse(amountTo.begin(), amountTo.end());
     std::string amountToStr;
     amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());
-    amountToStr.append((unsigned long)(amountTo.capacity() - amountTo.size()), '\0');
+    amountToStr.append(static_cast<unsigned long>(amountTo.capacity() - amountTo.size()), '\0');
     coinTo.set_id_amount(amountToStr);
 
     auto dataRet = Data();
     // Transaction Type
-    encode16LE((uint16_t)tx.type(), dataRet);
+    encode16LE(static_cast<uint16_t>(tx.type()), dataRet);
     // Timestamp
     encode32LE(tx.timestamp(), dataRet);
      // Remark
@@ -96,7 +96,7 @@ Data Signer::sign() const {
     Data txHash = calcTransactionDigest(dataRet);
    
     Data privKey = data(input.private_key());
-    auto priv = Address::getPrivateKey(privKey);
+    auto priv = PrivateKey(privKey);
     auto transactionSignature = makeTransactionSignature(priv, txHash);
     encodeVarInt(transactionSignature.size(), dataRet);
     std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(dataRet));

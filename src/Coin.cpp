@@ -29,6 +29,7 @@
 #include "Nano/Address.h"
 #include "Nebulas/Address.h"
 #include "Nimiq/Address.h"
+#include "NULS/Address.h"
 #include "Ontology/Address.h"
 #include "Ripple/Address.h"
 #include "Semux/Address.h"
@@ -40,8 +41,6 @@
 #include "Wanchain/Address.h"
 #include "Waves/Address.h"
 #include "Zcash/TAddress.h"
-#include "NULS/Address.h"
-#include "Steem/Address.h"
 #include "IoTeX/Address.h"
 #include "Zilliqa/Address.h"
 

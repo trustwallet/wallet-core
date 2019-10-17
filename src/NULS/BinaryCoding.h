@@ -12,13 +12,12 @@
 using namespace TW;
 using namespace TW::NULS;
 
-static inline void serializerRemark(std::string& remark, std::vector<uint8_t>& data) {
+static inline void serializerRemark(std::string& remark, Data& data) {
     encodeVarInt(remark.length(), data);
     std::copy(remark.begin(), remark.end(), std::back_inserter(data));
 }
 
-static inline void serializerInput(const Proto::TransactionCoinFrom& input,
-    std::vector<uint8_t>& data) {
+static inline void serializerInput(const Proto::TransactionCoinFrom& input, Data& data) {
     encodeVarInt(1, data);  //there is one coinFrom
     const auto& fromAddress = input.from_address();
     if (!NULS::Address::isValid(fromAddress)) {
@@ -27,8 +26,8 @@ static inline void serializerInput(const Proto::TransactionCoinFrom& input,
     const auto& addr = NULS::Address(fromAddress);
     encodeVarInt(addr.bytes.size() - 1, data);
     std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
-    encode16LE((uint16_t)input.assets_chainid(), data);
-    encode16LE((uint16_t)input.assets_id(), data);
+    encode16LE(static_cast<uint16_t>(input.assets_chainid()), data);
+    encode16LE(static_cast<uint16_t>(input.assets_id()), data);
     std::copy(input.id_amount().begin(), input.id_amount().end(), std::back_inserter(data));
     Data nonce = parse_hex(input.nonce());
     encodeVarInt(nonce.size(), data);
@@ -36,8 +35,7 @@ static inline void serializerInput(const Proto::TransactionCoinFrom& input,
     data.push_back(static_cast<uint8_t>(input.locked()));
 }
 
-static inline void serializerOutput(const Proto::TransactionCoinTo& output,
-    std::vector<uint8_t>& data) {
+static inline void serializerOutput(const Proto::TransactionCoinTo& output, Data& data) {
     encodeVarInt(1, data); //there is one coinTo
 
     const auto& toAddress = output.to_address();
@@ -47,8 +45,8 @@ static inline void serializerOutput(const Proto::TransactionCoinTo& output,
     const auto& addr = NULS::Address(toAddress);
     encodeVarInt(addr.bytes.size() - 1, data);
     std::copy(addr.bytes.begin(), addr.bytes.end() - 1, std::back_inserter(data));
-    encode16LE((uint16_t)output.assets_chainid(), data);
-    encode16LE((uint16_t)output.assets_id(), data);
+    encode16LE(static_cast<uint16_t>(output.assets_chainid()), data);
+    encode16LE(static_cast<uint16_t>(output.assets_id()), data);
     std::copy(output.id_amount().begin(), output.id_amount().end(), std::back_inserter(data));
     encode64LE(output.lock_time(), data);
 }

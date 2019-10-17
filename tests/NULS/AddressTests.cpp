@@ -54,8 +54,7 @@ TEST(NULSAddress, FromCompressedPublicKey) {
 }
 
 TEST(NULSAddress, FromPrivateKey33) {
-    const auto privateKey = NULS::Address::getPrivateKey(
-       parse_hex("d77580833f0b3c35b7114c23d6b66790d726c308baf237ec8c369152f2c08d27"));
+    const auto privateKey = PrivateKey(parse_hex("d77580833f0b3c35b7114c23d6b66790d726c308baf237ec8c369152f2c08d27"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey);
 

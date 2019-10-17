@@ -25,7 +25,7 @@ bool Address::isValid(const std::string& string) {
     }
 
     std::string address = string.substr(prefix.length(), string.length() - prefix.length());
-    Data decoded = TW::Base58::bitcoin.decode(address);
+    Data decoded = Base58::bitcoin.decode(address);
     if (decoded.size() != size) {
         return false;
     }
@@ -73,11 +73,7 @@ uint8_t Address::type() const {
     return bytes[2];
 }
 
-TW::PrivateKey Address::getPrivateKey(const Data& privKey) {
-    return PrivateKey(privKey);
-}
-
 std::string Address::string() const {
-    return prefix + TW::Base58::bitcoin.encode(bytes.begin(), bytes.end());
+    return prefix + Base58::bitcoin.encode(bytes.begin(), bytes.end());
 }
 
