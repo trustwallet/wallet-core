@@ -47,7 +47,8 @@ class Address : public Base58Address<24> {
     /// Returns a string representation of the address.
     std::string string() const;
 
-    uint8_t Address::checksum(std::array<byte, size>& byteArray) const;
+    /// calculate checksum
+    uint8_t checksum(std::array<byte, size>& byteArray) const;
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {
