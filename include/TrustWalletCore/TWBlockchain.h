@@ -45,6 +45,7 @@ enum TWBlockchain {
     TWBlockchainHarmony = 30,
     TWBlockchainNEAR = 31,
     TWBlockchainAlgorand = 32,
+    TWBlockchainTON = 33,
 };
 
 TW_EXTERN_C_END
