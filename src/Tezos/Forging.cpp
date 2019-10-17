@@ -55,7 +55,7 @@ Data forgePublicKey(PublicKey publicKey) {
     append(data, bytes);
 
     auto pk = Base58::bitcoin.encodeCheck(data);
-    auto decoded = base58ToHex(pk, 4, prefix.data());
+    auto decoded = "00" + base58ToHex(pk, 4, prefix.data());
     return parse_hex(decoded);
 }
 
@@ -99,7 +99,6 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedCounter);
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
-        append(forged, forgeBool(false));
         append(forged, forgedPublicKey);
         return forged;
     }

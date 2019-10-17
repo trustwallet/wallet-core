@@ -103,7 +103,7 @@ TEST(Forging, forge_tz3) {
 }
 
 TEST(Forging, ForgePublicKey) {
-    auto expected = "311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
+    auto expected = "00311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95";
   
     auto privateKey = PrivateKey(parse_hex("c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8"));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
