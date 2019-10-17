@@ -74,9 +74,9 @@ class TezosTests: XCTestCase {
         signingInput.privateKey = Data(privateKeyBytes)
 
         let signingOuput = TezosSigner.sign(input: signingInput);
-        let expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da01070081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95080081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e8102010081faa75f741ef614b0e35fcc8c90dfa3b0b95721009322e52e493b002d4a201a59b501441079070f2c1d296c99380eded7175a9db88663a5ed2ba610f7df875d95675891e5b1eab69251190e02ac196a388ed9fa0e"
+        let expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff956c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721000217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a10db70c98774cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05"
 
-        XCTAssertEqual(signingOuput.signedBytes, Data(hexString: expected))
+        XCTAssertEqual(signingOuput.signedBytes.hexString, expected)
     }
 }
 

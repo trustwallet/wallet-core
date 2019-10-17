@@ -72,53 +72,92 @@ Data forgeZarith(uint64_t input) {
 
 // Forge the given operation.
 Data forgeOperation(const Operation& operation) {
-  auto forged = Data();
-  auto source = Address(operation.source());
-  auto forgedSource = source.forge();
-  auto forgedFee = forgeZarith(operation.fee());
-  auto forgedCounter = forgeZarith(operation.counter());
-  auto forgedGasLimit = forgeZarith(operation.gas_limit());
-  auto forgedStorageLimit = forgeZarith(operation.storage_limit());
+    auto forged = Data();
+    auto source = Address(operation.source());
+    auto forgedSource = source.forge();
+    auto forgedFee = forgeZarith(operation.fee());
+    auto forgedCounter = forgeZarith(operation.counter());
+    auto forgedGasLimit = forgeZarith(operation.gas_limit());
+    auto forgedStorageLimit = forgeZarith(operation.storage_limit());
 
-  if (operation.kind() == Operation_OperationKind_REVEAL) {
-      auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), TWPublicKeyTypeED25519);
-      forged.push_back(0x07);
-      append(forged, forgedSource);
-      append(forged, forgedFee);
-      append(forged, forgedCounter);
-      append(forged, forgedGasLimit);
-      append(forged, forgedStorageLimit);
-      append(forged, forgePublicKey(publicKey));
-      return forged;
-  }
+    if (operation.kind() == Operation_OperationKind_REVEAL) {
+        auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), TWPublicKeyTypeED25519);
+        auto forgedPublicKey = forgePublicKey(publicKey);
 
-  if (operation.kind() == Operation_OperationKind_DELEGATION) {
-      auto delegate = operation.delegation_operation_data().delegate();
-      forged.push_back(0x0a);
-      append(forged, forgedSource);
-      append(forged, forgedFee);
-      append(forged, forgedCounter);
-      append(forged, forgedGasLimit);
-      append(forged, forgedStorageLimit);
-      if (!delegate.empty()) {
-          append(forged, forgeBool(true));
-          append(forged, forgePublicKeyHash(delegate));
-      } else {
-          append(forged, forgeBool(false));
-      }
-      return forged;
-  }
+        /* Uncomment for debugging
+        auto forgedSourceHex = hex(forgedSource.begin(), forgedSource.end());
+        auto forgedFeeHex = hex(forgedFee.begin(), forgedFee.end());
+        auto forgedCounterHex = hex(forgedCounter.begin(), forgedCounter.end());
+        auto forgedGasLimitHex = hex(forgedGasLimit.begin(), forgedGasLimit.end());
+        auto forgedStorageLimitHex = hex(forgedStorageLimit.begin(), forgedStorageLimit.end());
+        auto forgedPublicKeyHex = hex(forgedPublicKey.begin(), forgedPublicKey.end());
+        */
 
-  auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
-  auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
-  forged.push_back(0x08);
-  append(forged, forgedSource);
-  append(forged, forgedFee);
-  append(forged, forgedCounter);
-  append(forged, forgedGasLimit);
-  append(forged, forgedStorageLimit);
-  append(forged, forgedAmount);
-  append(forged, forgedDestination);
-  append(forged, forgeBool(false));
-  return forged;
+        forged.push_back(Operation_OperationKind_REVEAL);
+        append(forged, forgedSource);
+        append(forged, forgedFee);
+        append(forged, forgedCounter);
+        append(forged, forgedGasLimit);
+        append(forged, forgedStorageLimit);
+        append(forged, forgeBool(false));
+        append(forged, forgedPublicKey);
+        return forged;
+    }
+
+    if (operation.kind() == Operation_OperationKind_DELEGATION) {
+        auto delegate = operation.delegation_operation_data().delegate();
+        auto forgedPublicKey = forgePublicKeyHash(delegate);
+
+        /* Uncomment for debugging
+        auto forgedSourceHex = hex(forgedSource.begin(), forgedSource.end());
+        auto forgedFeeHex = hex(forgedFee.begin(), forgedFee.end());
+        auto forgedCounterHex = hex(forgedCounter.begin(), forgedCounter.end());
+        auto forgedGasLimitHex = hex(forgedGasLimit.begin(), forgedGasLimit.end());
+        auto forgedStorageLimitHex = hex(forgedStorageLimit.begin(), forgedStorageLimit.end());
+        auto forgedPublicKeyHex = hex(forgedPublicKey.begin(), forgedPublicKey.end());
+        */
+
+        forged.push_back(Operation_OperationKind_DELEGATION);
+        append(forged, forgedSource);
+        append(forged, forgedFee);
+        append(forged, forgedCounter);
+        append(forged, forgedGasLimit);
+        append(forged, forgedStorageLimit);
+        if (!delegate.empty()) {
+            append(forged, forgeBool(true));
+            append(forged, forgedPublicKey);
+        } else {
+            append(forged, forgeBool(false));
+        }
+        return forged;
+    }
+
+    if (operation.kind() == Operation_OperationKind_TRANSACTION) {
+        auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
+        auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
+
+        /* Uncomment for debug
+        auto forgedSourceHex = hex(forgedSource.begin(), forgedSource.end());
+        auto forgedFeeHex = hex(forgedFee.begin(), forgedFee.end());
+        auto forgedCounterHex = hex(forgedCounter.begin(), forgedCounter.end());
+        auto forgedGasLimitHex = hex(forgedGasLimit.begin(), forgedGasLimit.end());
+        auto forgedStorageLimitHex = hex(forgedStorageLimit.begin(), forgedStorageLimit.end());
+        auto forgedAmountHex = hex(forgedAmount.begin(), forgedAmount.end());
+        auto forgedDestinationHex = hex(forgedDestination.begin(), forgedDestination.end());
+        */
+
+        forged.push_back(Operation_OperationKind_TRANSACTION);
+        append(forged, forgedSource);
+        append(forged, forgedFee);
+        append(forged, forgedCounter);
+        append(forged, forgedGasLimit);
+        append(forged, forgedStorageLimit);
+        append(forged, forgedAmount);
+        append(forged, forgeBool(false));
+        append(forged, forgedDestination);
+        append(forged, forgeBool(false));
+        return forged;
+    }
+
+    throw std::invalid_argument("Invalid operation kind");
 }
