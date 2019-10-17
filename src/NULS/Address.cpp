@@ -15,6 +15,7 @@ using namespace TW;
 using namespace TW::NULS;
 
 const std::string Address::prefix("NULSd");
+const std::array<byte, 2> Address::mainnetId = {0x01, 0x00};
 
 bool Address::isValid(const std::string& string) {
     if (string.empty()) {
@@ -70,7 +71,7 @@ std::string Address::string() const {
     return prefix + Base58::bitcoin.encode(bytes.begin(), bytes.end());
 }
 
-uint8_t Address::checksum(std::array<byte, Address::size>& byteArray) const{
+uint8_t Address::checksum(std::array<byte, size>& byteArray) const{
     uint8_t checkSum = 0x00;
     for (int i = 0; i < 23; ++i) {
         checkSum ^= byteArray[i];
