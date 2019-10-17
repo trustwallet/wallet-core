@@ -41,7 +41,6 @@
 #include "Wanchain/Address.h"
 #include "Waves/Address.h"
 #include "Zcash/TAddress.h"
-#include "IoTeX/Address.h"
 #include "Zilliqa/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>

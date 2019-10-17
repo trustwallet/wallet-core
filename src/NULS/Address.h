@@ -14,8 +14,8 @@ namespace TW::NULS {
 
 class Address : public Base58Address<24> {
   public:
-    /// NULS Main Net Chain ID
-    static const uint16_t MainNetID = 1;
+    /// NULS Main Net Chain ID = 1
+    static const std::array<byte, 2> mainnetId =  {0x01, 0x00};
 
     /// NULS address prefix
     static const std::string prefix;
@@ -38,12 +38,16 @@ class Address : public Base58Address<24> {
     /// Determines is a valid address.
     bool isValid() const;
 
+    /// Mainnet chain id
     uint16_t chainID() const;
 
+    /// TX type
     uint8_t type() const;
 
     /// Returns a string representation of the address.
     std::string string() const;
+
+    uint8_t Address::checksum(std::array<byte, Address::size>& byteArray) const;
 };
 
 static inline bool operator==(const Address& lhs, const Address& rhs) {

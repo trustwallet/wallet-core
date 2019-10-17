@@ -7,7 +7,7 @@ message TransactionCoinFrom {
     string from_address = 1;
     uint32 assets_chainid = 2;
     uint32 assets_id = 3;
-    //tranaction out amount (128-bit number)
+    //tranaction out amount (256-bit number)
     bytes id_amount = 4;
     //8 bytes
     bytes nonce = 5;
@@ -19,7 +19,7 @@ message TransactionCoinTo {
     string to_address = 1;
     uint32 assets_chainid = 2;
     uint32 assets_id = 3;
-    // tranaction amount (128-bit number)
+    // tranaction amount (256-bit number)
     bytes id_amount = 4;
     uint32 lock_time = 5;
 }
@@ -58,6 +58,7 @@ message SigningInput {
     string remark = 8;
     // Account balance 
     bytes  balance = 9;
+    // time, accurate to the second
     uint32 timestamp = 10;
 }
 

@@ -41,19 +41,12 @@ bool Address::isValid(const std::string& string) {
 
 Address::Address(const TW::PublicKey& publicKey) {
     // Main-Net chainID
-    bytes[0] = MainNetID;
-    bytes[1] = 0x00;
+    bytes[0] = mainnetId[0];
+    bytes[1] = mainnetId[1];
     // Address Type
     bytes[2] = addressType;
-
     ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.begin() + 3);
-
-    // Calc chechsum
-    uint8_t checkSum = 0x00;
-    for (int i = 0; i < 23; ++i) {
-        checkSum ^= bytes[i];
-    }
-    bytes[23] = checkSum;
+    bytes[23] = checksum(bytes);
 }
 
 Address::Address(const std::string& string) {
@@ -76,4 +69,13 @@ uint8_t Address::type() const {
 std::string Address::string() const {
     return prefix + Base58::bitcoin.encode(bytes.begin(), bytes.end());
 }
+
+uint8_t Address::checksum(std::array<byte, Address::size>& byteArray) const{
+    uint8_t checkSum = 0x00;
+    for (int i = 0; i < 23; ++i) {
+        checkSum ^= byteArray[i];
+    }
+    return checkSum;
+}
+
 
