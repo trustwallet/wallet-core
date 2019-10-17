@@ -246,7 +246,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(zec, "https://chain.so/tx/ZEC/123");
 
     auto xtz = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
-    assertStringsEqual(xtz, "https://tzscan.io/123");
+    assertStringsEqual(xtz, "https://tezos.id/123");
 
     auto xlm = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
     assertStringsEqual(xlm, "https://stellarscan.io/transaction/123");
