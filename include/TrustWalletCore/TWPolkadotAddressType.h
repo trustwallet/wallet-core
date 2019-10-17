@@ -11,9 +11,8 @@ TW_EXTERN_C_BEGIN
 
 /// Icon address types
 TW_EXPORT_ENUM(uint32_t)
-
 enum TWPolkadotAddressType {
-	TWPolkadotAddressTypePolkaDotLiveSS58 = 0x0, // Polkadot Live (SS58 checksum preimage)
+    TWPolkadotAddressTypePolkaDotLiveSS58 = 0x0, // Polkadot Live (SS58 checksum preimage)
     TWPolkadotAddressTypePolkaDotLiveAccountID = 0x1, // Polkadot Live (AccountId checksum preimage)
     TWPolkadotAddressTypePolkaDotCanarySS58 = 0x2, // Polkadot Canary (SS58 checksum preimage)
     TWPolkadotAddressTypePolkaDotLiveCanaryAccountID = 0x3, // Polkadot Canary (AccountId checksum preimage)
