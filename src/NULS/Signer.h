@@ -17,7 +17,7 @@ namespace TW::NULS {
 class Signer {
   public:
 
-    static const uint16_t TRANSACTION_FIX_SIZE = 11; //type 2, time 4, txData 1, hash 4
+    static const uint16_t TRANSACTION_FIX_SIZE = 11; //type size 2, time size 4, txData size 1, hash size 4
     static const uint16_t TRANSACTION_SIG_MAX_SIZE = 110;
     static const uint16_t TRANSACTION_INPUT_SIZE = 70;
     static const uint16_t TRANSACTION_OUTPUT_SIZE = 70;
