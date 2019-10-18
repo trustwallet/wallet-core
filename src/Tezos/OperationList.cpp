@@ -35,11 +35,21 @@ Data TW::Tezos::OperationList::forgeBranch() const {
     return forged;
 }
 
-Data TW::Tezos::OperationList::forge() const {
+Data TW::Tezos::OperationList::forge(const PrivateKey& privateKey) const {
     auto forged = forgeBranch();
 
     for (auto operation : operation_list) {
+        // If it's REVEAL operation, inject the public key if not specified
+        if (operation.kind() == Tezos::Proto::Operation::REVEAL && operation.has_reveal_operation_data()) {
+            auto revealOperationData = operation.mutable_reveal_operation_data();
+            if (revealOperationData->public_key().empty()) {
+                auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+                revealOperationData->set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+            }
+        }
+
         append(forged, forgeOperation(operation));
     }
+
     return forged;
 }

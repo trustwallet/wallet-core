@@ -18,7 +18,8 @@ using namespace TW::Tezos;
 TEST(TezosPublicKey, forge) {
     auto input = parsePublicKey("edpkuAfEJCEatRgFpRGg3gn3FdWniLXBoubARreRwuVZPWufkgDBvR");
     auto expected = "00451bde832454ba73e6e0de313fcf5d1565ec51080edc73bb19287b8e0ab2122b";
-    ASSERT_EQ(forgePublicKey(input), parse_hex(expected));
+    auto serialized = forgePublicKey(input);
+    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
 }
 
 TEST(TezosPublicKey, parse) {

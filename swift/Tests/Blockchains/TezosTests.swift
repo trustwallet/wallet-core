@@ -27,16 +27,6 @@ class TezosTests: XCTestCase {
         XCTAssertEqual(address.description, "tz1cG2jx3W4bZFeVGBjsTxUAG8tdpTXtE8PT")
     }
 
-    public func testDeriveOriginatedAddress() {
-        let operationHash = "oo7VeTEPjEusPKnsHtKcGYbYa7i4RWpcEhUVo3Suugbbs6K62Ro"
-        let operationIndex: Int32 = 0
-
-        let expected = "KT1WrtjtAYQSrUVvSNJPTZTebiUWoopQL5hw";
-        let actual = TezosAddress.deriveOriginatedAddress(operationHash: operationHash, operationIndex: operationIndex)
-
-        XCTAssertEqual(actual, expected)
-    }
-
     public func testSigning() {
         let privateKeyData = Data(hexString: "c6377a4cc490dc913fc3f0d9cf67d293a32df4547c46cb7e9e33c3b7b97c64d8")!
         let privateKey = PrivateKey(data: privateKeyData)!
@@ -84,9 +74,9 @@ class TezosTests: XCTestCase {
         signingInput.privateKey = Data(privateKeyBytes)
 
         let signingOuput = TezosSigner.sign(input: signingInput);
-        let expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da0107000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff9508000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721000cb9f42851890ab52582efa5a523fc3a119a1e5e392ffe90012d1af00d202339ecd0853106aff708ca52bc0742a894eae8d83b5f59fc4b83b9f59514e212410d"
+        let expected = "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff956c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721000217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a10db70c98774cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05"
 
-        XCTAssertEqual(signingOuput.signedBytes, Data(hexString: expected))
+        XCTAssertEqual(signingOuput.signedBytes.hexString, expected)
     }
 }
 
