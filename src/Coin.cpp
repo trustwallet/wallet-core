@@ -29,6 +29,7 @@
 #include "Nano/Address.h"
 #include "Nebulas/Address.h"
 #include "Nimiq/Address.h"
+#include "NULS/Address.h"
 #include "Ontology/Address.h"
 #include "Ripple/Address.h"
 #include "Semux/Address.h"
@@ -158,6 +159,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeNEO:
         return NEO::Address::isValid(string);
+
+    case TWCoinTypeNULS:
+        return NULS::Address::isValid(string);
 
     case TWCoinTypeSemux:
         return Semux::Address::isValid(string);
@@ -293,6 +297,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
     case TWCoinTypeNEO:
         return NEO::Address(publicKey).string();
 
+    case TWCoinTypeNULS:
+        return NULS::Address(publicKey).string();
+        
     case TWCoinTypeNEAR:
         return NEAR::Address(publicKey).string();
 

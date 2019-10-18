@@ -184,6 +184,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .algorand:
                     let expectedResult = "JTJWO524JXIHVPGBDWFLJE7XUIA32ECOZOBLF2QP3V5TQBT3NKZSCG67BQ"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .nuls:
+                    let expectedResult = "NULSd6HgU8MoRnNjBgvJpa9tqvGxYdv5ne4en"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }

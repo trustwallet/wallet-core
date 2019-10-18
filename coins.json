@@ -655,6 +655,23 @@
         }
     },
     {
+        "id": "nuls",
+        "name": "NULS",
+        "symbol": "NULS",
+        "decimals": 8,
+        "blockchain": "NULS",
+        "derivationPath": "m/44'/8964'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "explorer": "https://nulscan.io/",
+        "info": {
+            "url": "https://nuls.io",
+            "client": "https://github.com/nuls-io/nuls-v2",
+            "clientPublic": "https://public1.nuls.io/",
+            "clientDocs": "https://docs.nuls.io/"
+        }
+    },
+    {
         "id": "theta",
         "name": "Theta",
         "symbol": "THETA",

@@ -64,6 +64,7 @@ class CoinAddressDerivationTests {
         VIACOIN -> assertEquals("via1qnmsgjd6cvfprnszdgmyg9kewtjfgqflz67wwhc", address)
         IOST -> assertEquals("EKRQPgX7nKt8hJABwm9m3BKWGj7kcSECkJnCBauHQWin", address)
         QTUM -> assertEquals("QhceuaTdeCZtcxmVc6yyEDEJ7Riu5gWFoF", address)
+        NULS -> assertEquals("NULSd6HgU8MoRnNjBgvJpa9tqvGxYdv5ne4en", address)
         BRAVOCOIN -> assertEquals("BRV8g4c7Uve8NNsqDMeADLqPeFyohMQ7d9MzarSE23KogTS71BaiQ", address)
         STEEM -> assertEquals("STM6WSusVTidc1e7TbLjhqQPYctbsndTRwXHpi82gMuJyKEkJVLvg", address)
         EOS -> assertEquals("EOS6hs8sRvGSzuQtq223zwJipMzqTJpXUVjyvHPvPwBSZWWrJTJkg", address)

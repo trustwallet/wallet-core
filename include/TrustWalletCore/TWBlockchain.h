@@ -36,6 +36,7 @@ enum TWBlockchain {
     TWBlockchainNano = 21,
     TWBlockchainNEO = 22,
     TWBlockchainSteem = 23,
+    TWBlockchainNULS = 24,
     TWBlockchainWaves = 25,
     TWBlockchainAeternity = 26,
     TWBlockchainNebulas = 27,

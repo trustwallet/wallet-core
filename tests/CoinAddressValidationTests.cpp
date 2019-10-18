@@ -124,6 +124,11 @@ TEST(Coin, validateAddressGroestlcoin){
     EXPECT_FALSE(validateAddress(TWCoinTypeGroestlcoin,"bc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z00ppggv"));
 }
 
+TEST(Coin, validateAddressNULS){
+    EXPECT_TRUE(validateAddress(TWCoinTypeNULS, "NULSd6HgbwcM8wz48f6UkFYHLVriT1L81X9z2"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeNULS, "NULSd6HgUxmcJWc88iELEJ7RH9XHsazBQqnJd"));
+}
+
 TEST(Coin, validateAddressQtum) {
     EXPECT_TRUE(validateAddress(TWCoinTypeQtum, "qc1qn9gjawre2t6xmcv5gyqkujqhd8cfvvyx0rx2mp"));
     EXPECT_TRUE(validateAddress(TWCoinTypeQtum, "Qbmj3ufB1TaRSSP5DYR4KQxsyHBNrk8Y4p"));
