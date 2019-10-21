@@ -27,7 +27,7 @@ Add this dependency to build.gradle:
 
 ```groovy
 dependencies {
-    implementation 'com.trustwallet:wallet-core:0.12.23'
+    implementation 'com.trustwallet:wallet-core:0.12.24'
 }
 ```
 
