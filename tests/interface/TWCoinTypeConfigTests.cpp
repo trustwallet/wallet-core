@@ -231,7 +231,7 @@ TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     assertStringsEqual(tron, "https://tronscan.org/#/transaction/123");
 
     auto vet = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeVeChain, txId));
-    assertStringsEqual(vet, "https://explore.veforge.com/transactions/123");
+    assertStringsEqual(vet, "https://insight.vecha.in/#/txs/123");
 
     auto wan = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWanchain, txId));
     assertStringsEqual(wan, "https://explorer.wanchain.org/tx/123");

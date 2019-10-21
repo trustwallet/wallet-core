@@ -426,7 +426,7 @@
         "derivationPath": "m/44'/818'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explore.veforge.com/transactions/",
+        "explorer": "https://insight.vecha.in/#/txs/",
         "info": {
             "url": "https://vechain.org",
             "client": "https://github.com/vechain/thor",
