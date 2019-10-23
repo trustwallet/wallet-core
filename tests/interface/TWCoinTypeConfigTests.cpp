@@ -11,825 +11,1084 @@
 #include <gtest/gtest.h>
 
 
-TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetSymbol) {
-    auto aeternity = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
-    assertStringsEqual(aeternity, "AE");
+TEST(TWCoinTypeConfiguration, TWCoinTypeAeternity) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
+    assertStringsEqual(symbol, "AE");
 
-    auto aion = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
-    assertStringsEqual(aion, "AION");
-
-    auto algorand = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAlgorand));
-    assertStringsEqual(algorand, "ALGO");
-
-    auto ark = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeARK));
-    assertStringsEqual(ark, "ARK");
-
-    auto binance = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinance));
-    assertStringsEqual(binance, "BNB");
-
-    auto bitcoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBitcoin));
-    assertStringsEqual(bitcoin, "BTC");
-
-    auto bitcoincash = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBitcoinCash));
-    assertStringsEqual(bitcoincash, "BCH");
-
-    auto bravocoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBravoCoin));
-    assertStringsEqual(bravocoin, "BRAVO");
-
-    auto callisto = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCallisto));
-    assertStringsEqual(callisto, "CLO");
-
-    auto classic = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereumClassic));
-    assertStringsEqual(classic, "ETC");
-
-    auto cosmos = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCosmos));
-    assertStringsEqual(cosmos, "ATOM");
-
-    auto dash = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDash));
-    assertStringsEqual(dash, "DASH");
-
-    auto decred = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDecred));
-    assertStringsEqual(decred, "DCR");
-
-    auto digibyte = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDigiByte));
-    assertStringsEqual(digibyte, "DGB");
-
-    auto doge = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDogecoin));
-    assertStringsEqual(doge, "DOGE");
-
-    auto eos = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
-    assertStringsEqual(eos, "EOS");
-
-    auto ethereum = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereum));
-    assertStringsEqual(ethereum, "ETH");
-
-    auto fio = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeFIO));
-    assertStringsEqual(fio, "FIO");
-
-    auto gochain = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGoChain));
-    assertStringsEqual(gochain, "GO");
-
-    auto groestlcoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
-    assertStringsEqual(groestlcoin, "GRS");
-
-    auto harmony = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeHarmony));
-    assertStringsEqual(harmony, "ONE");
-
-    auto icon = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeICON));
-    assertStringsEqual(icon, "ICX");
-
-    auto iost = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIOST));
-    assertStringsEqual(iost, "IOST");
-
-    auto iotex = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIoTeX));
-    assertStringsEqual(iotex, "IOTX");
-
-    auto kin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeKin));
-    assertStringsEqual(kin, "KIN");
-
-    auto litecoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLitecoin));
-    assertStringsEqual(litecoin, "LTC");
-
-    auto monacoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonacoin));
-    assertStringsEqual(monacoin, "MONA");
-
-    auto nano = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNano));
-    assertStringsEqual(nano, "NANO");
-
-    auto near = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNEAR));
-    assertStringsEqual(near, "NEAR");
-
-    auto nebulas = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNebulas));
-    assertStringsEqual(nebulas, "NAS");
-
-    auto neo = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNEO));
-    assertStringsEqual(neo, "NEO");
-
-    auto nimiq = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNimiq));
-    assertStringsEqual(nimiq, "NIM");
-
-    auto nuls = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNULS));
-    assertStringsEqual(nuls, "NULS");
-
-    auto ontology = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeOntology));
-    assertStringsEqual(ontology, "ONT");
-
-    auto poa = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePOANetwork));
-    assertStringsEqual(poa, "POA");
-
-    auto qtum = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
-    assertStringsEqual(qtum, "QTUM");
-
-    auto ravencoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeRavencoin));
-    assertStringsEqual(ravencoin, "RVN");
-
-    auto ripple = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXRP));
-    assertStringsEqual(ripple, "XRP");
-
-    auto semux = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSemux));
-    assertStringsEqual(semux, "SEM");
-
-    auto solana = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSolana));
-    assertStringsEqual(solana, "SOL");
-
-    auto steem = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSteem));
-    assertStringsEqual(steem, "STEEM");
-
-    auto stellar = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
-    assertStringsEqual(stellar, "XLM");
-
-    auto terra = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra));
-    assertStringsEqual(terra, "LUNA");
-
-    auto tezos = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
-    assertStringsEqual(tezos, "XTZ");
-
-    auto theta = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTheta));
-    assertStringsEqual(theta, "THETA");
-
-    auto thundertoken = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeThunderToken));
-    assertStringsEqual(thundertoken, "TT");
-
-    auto tomochain = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTomoChain));
-    assertStringsEqual(tomochain, "TOMO");
-
-    auto tron = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTron));
-    assertStringsEqual(tron, "TRX");
-
-    auto vechain = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeVeChain));
-    assertStringsEqual(vechain, "VET");
-
-    auto viacoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeViacoin));
-    assertStringsEqual(viacoin, "VIA");
-
-    auto wanchain = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWanchain));
-    assertStringsEqual(wanchain, "WAN");
-
-    auto waves = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWaves));
-    assertStringsEqual(waves, "WAVES");
-
-    auto zcash = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcash));
-    assertStringsEqual(zcash, "ZEC");
-
-    auto zcoin = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcoin));
-    assertStringsEqual(zcoin, "XZC");
-
-    auto zelcash = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZelcash));
-    assertStringsEqual(zelcash, "ZEL");
-
-    auto zilliqa = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZilliqa));
-    assertStringsEqual(zilliqa, "ZIL");
-}
-
-TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetDecimals) {
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAlgorand), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinCash), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravoCoin), 3);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCallisto), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDash), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDigiByte), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDogecoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 4);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereum), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGoChain), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeHarmony), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIOST), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKin), 5);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonacoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNano), 30);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEAR), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebulas), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEO), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNimiq), 5);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNULS), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOntology), 0);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOANetwork), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeQtum), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRavencoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXRP), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 13);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSteem), 3);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderToken), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTomoChain), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTron), 6);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVeChain), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeViacoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWanchain), 18);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcash), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZelcash), 8);
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
-}
 
-TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetTransactionURL) {
     auto txId = TWStringCreateWithUTF8Bytes("123");
-    auto aeternity = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
-    assertStringsEqual(aeternity, "https://explorer.aepps.com/#/tx/123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
+    assertStringsEqual(txUrl, "https://explorer.aepps.com/#/tx/123");
 
-    auto aion = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
-    assertStringsEqual(aion, "https://mainnet.aion.network/#/transaction/123");
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
+    assertStringsEqual(id, "aeternity");
 
-    auto algorand = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAlgorand, txId));
-    assertStringsEqual(algorand, "https://algoexplorer.io/tx/123");
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAeternity));
+    assertStringsEqual(name, "Aeternity");
 
-    auto ark = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeARK, txId));
-    assertStringsEqual(ark, "https://explorer.ark.io/transaction/123");
-
-    auto binance = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
-    assertStringsEqual(binance, "https://explorer.binance.org/tx/123");
-
-    auto bitcoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoin, txId));
-    assertStringsEqual(bitcoin, "https://blockchair.com/bitcoin/transaction/123");
-
-    auto bitcoincash = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoinCash, txId));
-    assertStringsEqual(bitcoincash, "https://blockchair.com/bitcoin-cash/transaction/123");
-
-    auto bravocoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBravoCoin, txId));
-    assertStringsEqual(bravocoin, "https://explorer.bravocoin.com/txid/123");
-
-    auto callisto = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCallisto, txId));
-    assertStringsEqual(callisto, "https://explorer2.callisto.network/tx/123");
-
-    auto classic = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereumClassic, txId));
-    assertStringsEqual(classic, "https://gastracker.io/tx/123");
-
-    auto cosmos = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
-    assertStringsEqual(cosmos, "https://www.mintscan.io/txs/123");
-
-    auto dash = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDash, txId));
-    assertStringsEqual(dash, "https://blockchair.com/dash/transaction/123");
-
-    auto decred = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDecred, txId));
-    assertStringsEqual(decred, "https://dcrdata.decred.org/tx/123");
-
-    auto digibyte = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDigiByte, txId));
-    assertStringsEqual(digibyte, "https://digiexplorer.info/tx/123");
-
-    auto doge = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
-    assertStringsEqual(doge, "https://blockchair.com/dogecoin/transaction/123");
-
-    auto eos = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
-    assertStringsEqual(eos, "https://bloks.io/transaction/123");
-
-    auto ethereum = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereum, txId));
-    assertStringsEqual(ethereum, "https://etherscan.io/tx/123");
-
-    auto fio = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeFIO, txId));
-    assertStringsEqual(fio, "https://fio.foundation123");
-
-    auto gochain = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGoChain, txId));
-    assertStringsEqual(gochain, "https://explorer.gochain.io/tx/123");
-
-    auto groestlcoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
-    assertStringsEqual(groestlcoin, "https://blockchair.com/groestlcoin/transaction/123");
-
-    auto harmony = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeHarmony, txId));
-    assertStringsEqual(harmony, "https://explorer.harmony.one/#/tx/123");
-
-    auto icon = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeICON, txId));
-    assertStringsEqual(icon, "https://tracker.icon.foundation/transaction/123");
-
-    auto iost = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIOST, txId));
-    assertStringsEqual(iost, "https://www.iostabc.com/tx/123");
-
-    auto iotex = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIoTeX, txId));
-    assertStringsEqual(iotex, "https://iotexscan.io/action/123");
-
-    auto kin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeKin, txId));
-    assertStringsEqual(kin, "https://kinexplorer.com/tx/123");
-
-    auto litecoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLitecoin, txId));
-    assertStringsEqual(litecoin, "https://blockchair.com/litecoin/transaction/123");
-
-    auto monacoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonacoin, txId));
-    assertStringsEqual(monacoin, "https://blockbook.electrum-mona.org/tx/123");
-
-    auto nano = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNano, txId));
-    assertStringsEqual(nano, "https://www.nanode.co/block/123");
-
-    auto near = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNEAR, txId));
-    assertStringsEqual(near, "https://explorer.nearprotocol.com123");
-
-    auto nebulas = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNebulas, txId));
-    assertStringsEqual(nebulas, "https://explorer.nebulas.io/#/tx/123");
-
-    auto neo = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNEO, txId));
-    assertStringsEqual(neo, "https://neoscan.io/transaction/123");
-
-    auto nimiq = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNimiq, txId));
-    assertStringsEqual(nimiq, "https://nimiq.watch/#123");
-
-    auto nuls = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNULS, txId));
-    assertStringsEqual(nuls, "https://nulscan.io/123");
-
-    auto ontology = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeOntology, txId));
-    assertStringsEqual(ontology, "https://explorer.ont.io/transaction/123");
-
-    auto poa = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOANetwork, txId));
-    assertStringsEqual(poa, "https://poaexplorer.com/txid/search/123");
-
-    auto qtum = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
-    assertStringsEqual(qtum, "https://qtum.info/tx/123");
-
-    auto ravencoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeRavencoin, txId));
-    assertStringsEqual(ravencoin, "https://ravencoin.network/tx/123");
-
-    auto ripple = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXRP, txId));
-    assertStringsEqual(ripple, "https://bithomp.com/explorer/123");
-
-    auto semux = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSemux, txId));
-    assertStringsEqual(semux, "https://semux.info/explorer/transaction/123");
-
-    auto solana = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSolana, txId));
-    assertStringsEqual(solana, "https://explorer.solana.com/tx/123");
-
-    auto steem = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSteem, txId));
-    assertStringsEqual(steem, "https://steemblockexplorer.com/tx/123");
-
-    auto stellar = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
-    assertStringsEqual(stellar, "https://stellarscan.io/transaction/123");
-
-    auto terra = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra, txId));
-    assertStringsEqual(terra, "https://terra.stake.id/?#/tx/123");
-
-    auto tezos = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
-    assertStringsEqual(tezos, "https://tezos.id/123");
-
-    auto theta = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTheta, txId));
-    assertStringsEqual(theta, "https://explorer.thetatoken.org/txs/123");
-
-    auto thundertoken = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeThunderToken, txId));
-    assertStringsEqual(thundertoken, "https://scan.thundercore.com/transactions/123");
-
-    auto tomochain = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTomoChain, txId));
-    assertStringsEqual(tomochain, "https://scan.tomochain.com/txs/123");
-
-    auto tron = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTron, txId));
-    assertStringsEqual(tron, "https://tronscan.org/#/transaction/123");
-
-    auto vechain = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeVeChain, txId));
-    assertStringsEqual(vechain, "https://insight.vecha.in/#/txs/123");
-
-    auto viacoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeViacoin, txId));
-    assertStringsEqual(viacoin, "https://explorer.viacoin.org/tx/123");
-
-    auto wanchain = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWanchain, txId));
-    assertStringsEqual(wanchain, "https://explorer.wanchain.org/tx/123");
-
-    auto waves = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWaves, txId));
-    assertStringsEqual(waves, "https://wavesexplorer.com/tx/123");
-
-    auto zcash = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, txId));
-    assertStringsEqual(zcash, "https://chain.so/tx/ZEC/123");
-
-    auto zcoin = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcoin, txId));
-    assertStringsEqual(zcoin, "https://explorer.zcoin.io/tx/123");
-
-    auto zelcash = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
-    assertStringsEqual(zelcash, "https://explorer.zel.cash/tx/123");
-
-    auto zilliqa = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZilliqa, txId));
-    assertStringsEqual(zilliqa, "https://viewblock.io/zilliqa/tx/123");
-}
-
-TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetID) {
-    auto aeternity = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
-    assertStringsEqual(aeternity, "aeternity");
-
-    auto aion = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
-    assertStringsEqual(aion, "aion");
-
-    auto algorand = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
-    assertStringsEqual(algorand, "algorand");
-
-    auto ark = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeARK));
-    assertStringsEqual(ark, "ark");
-
-    auto binance = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinance));
-    assertStringsEqual(binance, "binance");
-
-    auto bitcoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoin));
-    assertStringsEqual(bitcoin, "bitcoin");
-
-    auto bitcoincash = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoinCash));
-    assertStringsEqual(bitcoincash, "bitcoincash");
-
-    auto bravocoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBravoCoin));
-    assertStringsEqual(bravocoin, "bravocoin");
-
-    auto callisto = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCallisto));
-    assertStringsEqual(callisto, "callisto");
-
-    auto classic = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereumClassic));
-    assertStringsEqual(classic, "classic");
-
-    auto cosmos = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
-    assertStringsEqual(cosmos, "cosmos");
-
-    auto dash = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDash));
-    assertStringsEqual(dash, "dash");
-
-    auto decred = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDecred));
-    assertStringsEqual(decred, "decred");
-
-    auto digibyte = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDigiByte));
-    assertStringsEqual(digibyte, "digibyte");
-
-    auto doge = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDogecoin));
-    assertStringsEqual(doge, "doge");
-
-    auto eos = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
-    assertStringsEqual(eos, "eos");
-
-    auto ethereum = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereum));
-    assertStringsEqual(ethereum, "ethereum");
-
-    auto fio = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFIO));
-    assertStringsEqual(fio, "fio");
-
-    auto gochain = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGoChain));
-    assertStringsEqual(gochain, "gochain");
-
-    auto groestlcoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
-    assertStringsEqual(groestlcoin, "groestlcoin");
-
-    auto harmony = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeHarmony));
-    assertStringsEqual(harmony, "harmony");
-
-    auto icon = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeICON));
-    assertStringsEqual(icon, "icon");
-
-    auto iost = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIOST));
-    assertStringsEqual(iost, "iost");
-
-    auto iotex = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIoTeX));
-    assertStringsEqual(iotex, "iotex");
-
-    auto kin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKin));
-    assertStringsEqual(kin, "kin");
-
-    auto litecoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLitecoin));
-    assertStringsEqual(litecoin, "litecoin");
-
-    auto monacoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonacoin));
-    assertStringsEqual(monacoin, "monacoin");
-
-    auto nano = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNano));
-    assertStringsEqual(nano, "nano");
-
-    auto near = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEAR));
-    assertStringsEqual(near, "near");
-
-    auto nebulas = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
-    assertStringsEqual(nebulas, "nebulas");
-
-    auto neo = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEO));
-    assertStringsEqual(neo, "neo");
-
-    auto nimiq = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNimiq));
-    assertStringsEqual(nimiq, "nimiq");
-
-    auto nuls = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNULS));
-    assertStringsEqual(nuls, "nuls");
-
-    auto ontology = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOntology));
-    assertStringsEqual(ontology, "ontology");
-
-    auto poa = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOANetwork));
-    assertStringsEqual(poa, "poa");
-
-    auto qtum = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
-    assertStringsEqual(qtum, "qtum");
-
-    auto ravencoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRavencoin));
-    assertStringsEqual(ravencoin, "ravencoin");
-
-    auto ripple = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXRP));
-    assertStringsEqual(ripple, "ripple");
-
-    auto semux = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSemux));
-    assertStringsEqual(semux, "semux");
-
-    auto solana = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
-    assertStringsEqual(solana, "solana");
-
-    auto steem = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSteem));
-    assertStringsEqual(steem, "steem");
-
-    auto stellar = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
-    assertStringsEqual(stellar, "stellar");
-
-    auto terra = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
-    assertStringsEqual(terra, "terra");
-
-    auto tezos = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
-    assertStringsEqual(tezos, "tezos");
-
-    auto theta = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTheta));
-    assertStringsEqual(theta, "theta");
-
-    auto thundertoken = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeThunderToken));
-    assertStringsEqual(thundertoken, "thundertoken");
-
-    auto tomochain = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTomoChain));
-    assertStringsEqual(tomochain, "tomochain");
-
-    auto tron = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTron));
-    assertStringsEqual(tron, "tron");
-
-    auto vechain = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeVeChain));
-    assertStringsEqual(vechain, "vechain");
-
-    auto viacoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeViacoin));
-    assertStringsEqual(viacoin, "viacoin");
-
-    auto wanchain = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWanchain));
-    assertStringsEqual(wanchain, "wanchain");
-
-    auto waves = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
-    assertStringsEqual(waves, "waves");
-
-    auto zcash = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcash));
-    assertStringsEqual(zcash, "zcash");
-
-    auto zcoin = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcoin));
-    assertStringsEqual(zcoin, "zcoin");
-
-    auto zelcash = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
-    assertStringsEqual(zelcash, "zelcash");
-
-    auto zilliqa = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZilliqa));
-    assertStringsEqual(zilliqa, "zilliqa");
-}
-
-TEST(TWCoinTypeConfiguration, TWCoinTypeConfigurationGetName) {
-    auto aeternity = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAeternity));
-    assertStringsEqual(aeternity, "Aeternity");
-
-    auto aion = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
-    assertStringsEqual(aion, "Aion");
-
-    auto algorand = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
-    assertStringsEqual(algorand, "Algorand");
-
-    auto ark = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
-    assertStringsEqual(ark, "ARK");
-
-    auto binance = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
-    assertStringsEqual(binance, "BNB");
-
-    auto bitcoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoin));
-    assertStringsEqual(bitcoin, "Bitcoin");
-
-    auto bitcoincash = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinCash));
-    assertStringsEqual(bitcoincash, "Bitcoin Cash");
-
-    auto bravocoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBravoCoin));
-    assertStringsEqual(bravocoin, "BravoCoin");
-
-    auto callisto = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCallisto));
-    assertStringsEqual(callisto, "Callisto");
-
-    auto classic = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereumClassic));
-    assertStringsEqual(classic, "Ethereum Classic");
-
-    auto cosmos = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
-    assertStringsEqual(cosmos, "Cosmos");
-
-    auto dash = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDash));
-    assertStringsEqual(dash, "Dash");
-
-    auto decred = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDecred));
-    assertStringsEqual(decred, "Decred");
-
-    auto digibyte = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDigiByte));
-    assertStringsEqual(digibyte, "DigiByte");
-
-    auto doge = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDogecoin));
-    assertStringsEqual(doge, "Dogecoin");
-
-    auto eos = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
-    assertStringsEqual(eos, "EOS");
-
-    auto ethereum = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereum));
-    assertStringsEqual(ethereum, "Ethereum");
-
-    auto fio = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFIO));
-    assertStringsEqual(fio, "FIO");
-
-    auto gochain = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGoChain));
-    assertStringsEqual(gochain, "GoChain");
-
-    auto groestlcoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
-    assertStringsEqual(groestlcoin, "Groestlcoin");
-
-    auto harmony = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeHarmony));
-    assertStringsEqual(harmony, "Harmony");
-
-    auto icon = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeICON));
-    assertStringsEqual(icon, "ICON");
-
-    auto iost = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIOST));
-    assertStringsEqual(iost, "IOST");
-
-    auto iotex = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIoTeX));
-    assertStringsEqual(iotex, "IoTeX");
-
-    auto kin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKin));
-    assertStringsEqual(kin, "Kin");
-
-    auto litecoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLitecoin));
-    assertStringsEqual(litecoin, "Litecoin");
-
-    auto monacoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonacoin));
-    assertStringsEqual(monacoin, "Monacoin");
-
-    auto nano = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNano));
-    assertStringsEqual(nano, "Nano");
-
-    auto near = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEAR));
-    assertStringsEqual(near, "NEAR");
-
-    auto nebulas = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
-    assertStringsEqual(nebulas, "Nebulas");
-
-    auto neo = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEO));
-    assertStringsEqual(neo, "NEO");
-
-    auto nimiq = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNimiq));
-    assertStringsEqual(nimiq, "Nimiq");
-
-    auto nuls = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNULS));
-    assertStringsEqual(nuls, "NULS");
-
-    auto ontology = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOntology));
-    assertStringsEqual(ontology, "Ontology");
-
-    auto poa = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOANetwork));
-    assertStringsEqual(poa, "POA Network");
-
-    auto qtum = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
-    assertStringsEqual(qtum, "Qtum");
-
-    auto ravencoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRavencoin));
-    assertStringsEqual(ravencoin, "Ravencoin");
-
-    auto ripple = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
-    assertStringsEqual(ripple, "XRP");
-
-    auto semux = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSemux));
-    assertStringsEqual(semux, "Semux");
-
-    auto solana = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
-    assertStringsEqual(solana, "Solana");
-
-    auto steem = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSteem));
-    assertStringsEqual(steem, "Steem");
-
-    auto stellar = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
-    assertStringsEqual(stellar, "Stellar");
-
-    auto terra = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
-    assertStringsEqual(terra, "Terra");
-
-    auto tezos = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
-    assertStringsEqual(tezos, "Tezos");
-
-    auto theta = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTheta));
-    assertStringsEqual(theta, "Theta");
-
-    auto thundertoken = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeThunderToken));
-    assertStringsEqual(thundertoken, "Thunder Token");
-
-    auto tomochain = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTomoChain));
-    assertStringsEqual(tomochain, "TomoChain");
-
-    auto tron = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTron));
-    assertStringsEqual(tron, "Tron");
-
-    auto vechain = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeVeChain));
-    assertStringsEqual(vechain, "VeChain");
-
-    auto viacoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeViacoin));
-    assertStringsEqual(viacoin, "Viacoin");
-
-    auto wanchain = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWanchain));
-    assertStringsEqual(wanchain, "Wanchain");
-
-    auto waves = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
-    assertStringsEqual(waves, "Waves");
-
-    auto zcash = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcash));
-    assertStringsEqual(zcash, "Zcash");
-
-    auto zcoin = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcoin));
-    assertStringsEqual(zcoin, "Zcoin");
-
-    auto zelcash = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
-    assertStringsEqual(zelcash, "Zelcash");
-
-    auto zilliqa = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZilliqa));
-    assertStringsEqual(zilliqa, "Zilliqa");
-}
-
-TEST(TWCoinTypeConfiguration, TWCoinTypeBlockchain) {
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeAion) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
+    assertStringsEqual(symbol, "AION");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
+    assertStringsEqual(txUrl, "https://mainnet.aion.network/#/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
+    assertStringsEqual(id, "aion");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
+    assertStringsEqual(name, "Aion");
+
     ASSERT_EQ(TWBlockchainAion, TWCoinTypeBlockchain(TWCoinTypeAion));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeAlgorand) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAlgorand));
+    assertStringsEqual(symbol, "ALGO");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAlgorand), 6);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAlgorand, txId));
+    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
+    assertStringsEqual(id, "algorand");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
+    assertStringsEqual(name, "Algorand");
+
     ASSERT_EQ(TWBlockchainAlgorand, TWCoinTypeBlockchain(TWCoinTypeAlgorand));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeARK) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeARK));
+    assertStringsEqual(symbol, "ARK");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeARK, txId));
+    assertStringsEqual(txUrl, "https://explorer.ark.io/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeARK));
+    assertStringsEqual(id, "ark");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
+    assertStringsEqual(name, "ARK");
+
     ASSERT_EQ(TWBlockchainArk, TWCoinTypeBlockchain(TWCoinTypeARK));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeBinance) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinance));
+    assertStringsEqual(symbol, "BNB");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
+    assertStringsEqual(txUrl, "https://explorer.binance.org/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinance));
+    assertStringsEqual(id, "binance");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
+    assertStringsEqual(name, "BNB");
+
     ASSERT_EQ(TWBlockchainBinance, TWCoinTypeBlockchain(TWCoinTypeBinance));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeBitcoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBitcoin));
+    assertStringsEqual(symbol, "BTC");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoin), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoin, txId));
+    assertStringsEqual(txUrl, "https://blockchair.com/bitcoin/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoin));
+    assertStringsEqual(id, "bitcoin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoin));
+    assertStringsEqual(name, "Bitcoin");
+
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoin));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoinCash));
-    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeBravoCoin));
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeCallisto));
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereumClassic));
-    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeCosmos));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDash));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDecred));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDigiByte));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDogecoin));
-    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeEOS));
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereum));
-    ASSERT_EQ(TWBlockchainFIO, TWCoinTypeBlockchain(TWCoinTypeFIO));
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeGoChain));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeGroestlcoin));
-    ASSERT_EQ(TWBlockchainHarmony, TWCoinTypeBlockchain(TWCoinTypeHarmony));
-    ASSERT_EQ(TWBlockchainIcon, TWCoinTypeBlockchain(TWCoinTypeICON));
-    ASSERT_EQ(TWBlockchainIOST, TWCoinTypeBlockchain(TWCoinTypeIOST));
-    ASSERT_EQ(TWBlockchainIoTeX, TWCoinTypeBlockchain(TWCoinTypeIoTeX));
-    ASSERT_EQ(TWBlockchainStellar, TWCoinTypeBlockchain(TWCoinTypeKin));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeLitecoin));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeMonacoin));
-    ASSERT_EQ(TWBlockchainNano, TWCoinTypeBlockchain(TWCoinTypeNano));
-    ASSERT_EQ(TWBlockchainNEAR, TWCoinTypeBlockchain(TWCoinTypeNEAR));
-    ASSERT_EQ(TWBlockchainNebulas, TWCoinTypeBlockchain(TWCoinTypeNebulas));
-    ASSERT_EQ(TWBlockchainNEO, TWCoinTypeBlockchain(TWCoinTypeNEO));
-    ASSERT_EQ(TWBlockchainNimiq, TWCoinTypeBlockchain(TWCoinTypeNimiq));
-    ASSERT_EQ(TWBlockchainNULS, TWCoinTypeBlockchain(TWCoinTypeNULS));
-    ASSERT_EQ(TWBlockchainOntology, TWCoinTypeBlockchain(TWCoinTypeOntology));
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePOANetwork));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeQtum));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeRavencoin));
-    ASSERT_EQ(TWBlockchainRipple, TWCoinTypeBlockchain(TWCoinTypeXRP));
-    ASSERT_EQ(TWBlockchainSemux, TWCoinTypeBlockchain(TWCoinTypeSemux));
-    ASSERT_EQ(TWBlockchainSolana, TWCoinTypeBlockchain(TWCoinTypeSolana));
-    ASSERT_EQ(TWBlockchainSteem, TWCoinTypeBlockchain(TWCoinTypeSteem));
-    ASSERT_EQ(TWBlockchainStellar, TWCoinTypeBlockchain(TWCoinTypeStellar));
-    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
-    ASSERT_EQ(TWBlockchainTezos, TWCoinTypeBlockchain(TWCoinTypeTezos));
-    ASSERT_EQ(TWBlockchainTheta, TWCoinTypeBlockchain(TWCoinTypeTheta));
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeThunderToken));
-    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeTomoChain));
-    ASSERT_EQ(TWBlockchainTron, TWCoinTypeBlockchain(TWCoinTypeTron));
-    ASSERT_EQ(TWBlockchainVechain, TWCoinTypeBlockchain(TWCoinTypeVeChain));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeViacoin));
-    ASSERT_EQ(TWBlockchainWanchain, TWCoinTypeBlockchain(TWCoinTypeWanchain));
-    ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZcash));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZcoin));
-    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZelcash));
-    ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
-}
-
-TEST(TWCoinTypeConfiguration, P2SHPrefix) {
     ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeBitcoin));
-    ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinCash));
-    ASSERT_EQ(0x10, TWCoinTypeP2shPrefix(TWCoinTypeDash));
-    ASSERT_EQ(0x1a, TWCoinTypeP2shPrefix(TWCoinTypeDecred));
-    ASSERT_EQ(0x3f, TWCoinTypeP2shPrefix(TWCoinTypeDigiByte));
-    ASSERT_EQ(0x16, TWCoinTypeP2shPrefix(TWCoinTypeDogecoin));
-    ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
-    ASSERT_EQ(0x32, TWCoinTypeP2shPrefix(TWCoinTypeLitecoin));
-    ASSERT_EQ(0x37, TWCoinTypeP2shPrefix(TWCoinTypeMonacoin));
-    ASSERT_EQ(0x32, TWCoinTypeP2shPrefix(TWCoinTypeQtum));
-    ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
-    ASSERT_EQ(0x21, TWCoinTypeP2shPrefix(TWCoinTypeViacoin));
-    ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZcash));
-    ASSERT_EQ(0x07, TWCoinTypeP2shPrefix(TWCoinTypeZcoin));
-    ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZelcash));
 }
 
-TEST(TWCoinTypeConfiguration, StaticPrefix) {
+TEST(TWCoinTypeConfiguration, TWCoinTypeBitcoinCash) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBitcoinCash));
+    assertStringsEqual(symbol, "BCH");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinCash), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoinCash, txId));
+    assertStringsEqual(txUrl, "https://blockchair.com/bitcoin-cash/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoinCash));
+    assertStringsEqual(id, "bitcoincash");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinCash));
+    assertStringsEqual(name, "Bitcoin Cash");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoinCash));
+    ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinCash));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeBravoCoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBravoCoin));
+    assertStringsEqual(symbol, "BRAVO");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravoCoin), 3);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBravoCoin, txId));
+    assertStringsEqual(txUrl, "https://explorer.bravocoin.com/txid/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBravoCoin));
+    assertStringsEqual(id, "bravocoin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBravoCoin));
+    assertStringsEqual(name, "BravoCoin");
+
+    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeBravoCoin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeCallisto) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCallisto));
+    assertStringsEqual(symbol, "CLO");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCallisto), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCallisto, txId));
+    assertStringsEqual(txUrl, "https://explorer2.callisto.network/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCallisto));
+    assertStringsEqual(id, "callisto");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCallisto));
+    assertStringsEqual(name, "Callisto");
+
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeCallisto));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeEthereumClassic) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereumClassic));
+    assertStringsEqual(symbol, "ETC");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereumClassic, txId));
+    assertStringsEqual(txUrl, "https://gastracker.io/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereumClassic));
+    assertStringsEqual(id, "classic");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereumClassic));
+    assertStringsEqual(name, "Ethereum Classic");
+
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereumClassic));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeCosmos) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCosmos));
+    assertStringsEqual(symbol, "ATOM");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
+    assertStringsEqual(txUrl, "https://www.mintscan.io/txs/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
+    assertStringsEqual(id, "cosmos");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
+    assertStringsEqual(name, "Cosmos");
+
+    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeCosmos));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeDash) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDash));
+    assertStringsEqual(symbol, "DASH");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDash), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDash, txId));
+    assertStringsEqual(txUrl, "https://blockchair.com/dash/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDash));
+    assertStringsEqual(id, "dash");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDash));
+    assertStringsEqual(name, "Dash");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDash));
+    ASSERT_EQ(0x10, TWCoinTypeP2shPrefix(TWCoinTypeDash));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeDecred) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDecred));
+    assertStringsEqual(symbol, "DCR");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDecred, txId));
+    assertStringsEqual(txUrl, "https://dcrdata.decred.org/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDecred));
+    assertStringsEqual(id, "decred");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDecred));
+    assertStringsEqual(name, "Decred");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDecred));
+    ASSERT_EQ(0x1a, TWCoinTypeP2shPrefix(TWCoinTypeDecred));
     ASSERT_EQ(0x07, TWCoinTypeStaticPrefix(TWCoinTypeDecred));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeDigiByte) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDigiByte));
+    assertStringsEqual(symbol, "DGB");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDigiByte), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDigiByte, txId));
+    assertStringsEqual(txUrl, "https://digiexplorer.info/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDigiByte));
+    assertStringsEqual(id, "digibyte");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDigiByte));
+    assertStringsEqual(name, "DigiByte");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDigiByte));
+    ASSERT_EQ(0x3f, TWCoinTypeP2shPrefix(TWCoinTypeDigiByte));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeDogecoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDogecoin));
+    assertStringsEqual(symbol, "DOGE");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDogecoin), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
+    assertStringsEqual(txUrl, "https://blockchair.com/dogecoin/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDogecoin));
+    assertStringsEqual(id, "doge");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDogecoin));
+    assertStringsEqual(name, "Dogecoin");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDogecoin));
+    ASSERT_EQ(0x16, TWCoinTypeP2shPrefix(TWCoinTypeDogecoin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeEOS) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEOS));
+    assertStringsEqual(symbol, "EOS");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 4);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEOS, txId));
+    assertStringsEqual(txUrl, "https://bloks.io/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
+    assertStringsEqual(id, "eos");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
+    assertStringsEqual(name, "EOS");
+
+    ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeEOS));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeEthereum) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereum));
+    assertStringsEqual(symbol, "ETH");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereum), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereum, txId));
+    assertStringsEqual(txUrl, "https://etherscan.io/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereum));
+    assertStringsEqual(id, "ethereum");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereum));
+    assertStringsEqual(name, "Ethereum");
+
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereum));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeFIO) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeFIO));
+    assertStringsEqual(symbol, "FIO");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeFIO, txId));
+    assertStringsEqual(txUrl, "https://fio.foundation123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFIO));
+    assertStringsEqual(id, "fio");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFIO));
+    assertStringsEqual(name, "FIO");
+
+    ASSERT_EQ(TWBlockchainFIO, TWCoinTypeBlockchain(TWCoinTypeFIO));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeGoChain) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGoChain));
+    assertStringsEqual(symbol, "GO");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGoChain), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGoChain, txId));
+    assertStringsEqual(txUrl, "https://explorer.gochain.io/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGoChain));
+    assertStringsEqual(id, "gochain");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGoChain));
+    assertStringsEqual(name, "GoChain");
+
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeGoChain));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeGroestlcoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
+    assertStringsEqual(symbol, "GRS");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
+    assertStringsEqual(txUrl, "https://blockchair.com/groestlcoin/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
+    assertStringsEqual(id, "groestlcoin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
+    assertStringsEqual(name, "Groestlcoin");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeGroestlcoin));
+    ASSERT_EQ(0x05, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeHarmony) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeHarmony));
+    assertStringsEqual(symbol, "ONE");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeHarmony), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeHarmony, txId));
+    assertStringsEqual(txUrl, "https://explorer.harmony.one/#/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeHarmony));
+    assertStringsEqual(id, "harmony");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeHarmony));
+    assertStringsEqual(name, "Harmony");
+
+    ASSERT_EQ(TWBlockchainHarmony, TWCoinTypeBlockchain(TWCoinTypeHarmony));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeICON) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeICON));
+    assertStringsEqual(symbol, "ICX");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeICON, txId));
+    assertStringsEqual(txUrl, "https://tracker.icon.foundation/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeICON));
+    assertStringsEqual(id, "icon");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeICON));
+    assertStringsEqual(name, "ICON");
+
+    ASSERT_EQ(TWBlockchainIcon, TWCoinTypeBlockchain(TWCoinTypeICON));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeIOST) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIOST));
+    assertStringsEqual(symbol, "IOST");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIOST), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIOST, txId));
+    assertStringsEqual(txUrl, "https://www.iostabc.com/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIOST));
+    assertStringsEqual(id, "iost");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIOST));
+    assertStringsEqual(name, "IOST");
+
+    ASSERT_EQ(TWBlockchainIOST, TWCoinTypeBlockchain(TWCoinTypeIOST));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeIoTeX) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIoTeX));
+    assertStringsEqual(symbol, "IOTX");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIoTeX, txId));
+    assertStringsEqual(txUrl, "https://iotexscan.io/action/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIoTeX));
+    assertStringsEqual(id, "iotex");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIoTeX));
+    assertStringsEqual(name, "IoTeX");
+
+    ASSERT_EQ(TWBlockchainIoTeX, TWCoinTypeBlockchain(TWCoinTypeIoTeX));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeKin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeKin));
+    assertStringsEqual(symbol, "KIN");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKin), 5);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeKin, txId));
+    assertStringsEqual(txUrl, "https://kinexplorer.com/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKin));
+    assertStringsEqual(id, "kin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKin));
+    assertStringsEqual(name, "Kin");
+
+    ASSERT_EQ(TWBlockchainStellar, TWCoinTypeBlockchain(TWCoinTypeKin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeLitecoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeLitecoin));
+    assertStringsEqual(symbol, "LTC");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeLitecoin, txId));
+    assertStringsEqual(txUrl, "https://blockchair.com/litecoin/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLitecoin));
+    assertStringsEqual(id, "litecoin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLitecoin));
+    assertStringsEqual(name, "Litecoin");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeLitecoin));
+    ASSERT_EQ(0x32, TWCoinTypeP2shPrefix(TWCoinTypeLitecoin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeMonacoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonacoin));
+    assertStringsEqual(symbol, "MONA");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeMonacoin), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonacoin, txId));
+    assertStringsEqual(txUrl, "https://blockbook.electrum-mona.org/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonacoin));
+    assertStringsEqual(id, "monacoin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonacoin));
+    assertStringsEqual(name, "Monacoin");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeMonacoin));
+    ASSERT_EQ(0x37, TWCoinTypeP2shPrefix(TWCoinTypeMonacoin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeNano) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNano));
+    assertStringsEqual(symbol, "NANO");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNano), 30);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNano, txId));
+    assertStringsEqual(txUrl, "https://www.nanode.co/block/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNano));
+    assertStringsEqual(id, "nano");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNano));
+    assertStringsEqual(name, "Nano");
+
+    ASSERT_EQ(TWBlockchainNano, TWCoinTypeBlockchain(TWCoinTypeNano));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeNEAR) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNEAR));
+    assertStringsEqual(symbol, "NEAR");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEAR), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNEAR, txId));
+    assertStringsEqual(txUrl, "https://explorer.nearprotocol.com123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEAR));
+    assertStringsEqual(id, "near");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEAR));
+    assertStringsEqual(name, "NEAR");
+
+    ASSERT_EQ(TWBlockchainNEAR, TWCoinTypeBlockchain(TWCoinTypeNEAR));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeNebulas) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNebulas));
+    assertStringsEqual(symbol, "NAS");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebulas), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNebulas, txId));
+    assertStringsEqual(txUrl, "https://explorer.nebulas.io/#/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
+    assertStringsEqual(id, "nebulas");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
+    assertStringsEqual(name, "Nebulas");
+
+    ASSERT_EQ(TWBlockchainNebulas, TWCoinTypeBlockchain(TWCoinTypeNebulas));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeNEO) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNEO));
+    assertStringsEqual(symbol, "NEO");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEO), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNEO, txId));
+    assertStringsEqual(txUrl, "https://neoscan.io/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEO));
+    assertStringsEqual(id, "neo");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEO));
+    assertStringsEqual(name, "NEO");
+
+    ASSERT_EQ(TWBlockchainNEO, TWCoinTypeBlockchain(TWCoinTypeNEO));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeNimiq) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNimiq));
+    assertStringsEqual(symbol, "NIM");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNimiq), 5);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNimiq, txId));
+    assertStringsEqual(txUrl, "https://nimiq.watch/#123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNimiq));
+    assertStringsEqual(id, "nimiq");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNimiq));
+    assertStringsEqual(name, "Nimiq");
+
+    ASSERT_EQ(TWBlockchainNimiq, TWCoinTypeBlockchain(TWCoinTypeNimiq));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeNULS) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNULS));
+    assertStringsEqual(symbol, "NULS");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNULS), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNULS, txId));
+    assertStringsEqual(txUrl, "https://nulscan.io/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNULS));
+    assertStringsEqual(id, "nuls");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNULS));
+    assertStringsEqual(name, "NULS");
+
+    ASSERT_EQ(TWBlockchainNULS, TWCoinTypeBlockchain(TWCoinTypeNULS));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeOntology) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeOntology));
+    assertStringsEqual(symbol, "ONT");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOntology), 0);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeOntology, txId));
+    assertStringsEqual(txUrl, "https://explorer.ont.io/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOntology));
+    assertStringsEqual(id, "ontology");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOntology));
+    assertStringsEqual(name, "Ontology");
+
+    ASSERT_EQ(TWBlockchainOntology, TWCoinTypeBlockchain(TWCoinTypeOntology));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypePOANetwork) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePOANetwork));
+    assertStringsEqual(symbol, "POA");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOANetwork), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOANetwork, txId));
+    assertStringsEqual(txUrl, "https://poaexplorer.com/txid/search/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOANetwork));
+    assertStringsEqual(id, "poa");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOANetwork));
+    assertStringsEqual(name, "POA Network");
+
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePOANetwork));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeQtum) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
+    assertStringsEqual(symbol, "QTUM");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeQtum), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
+    assertStringsEqual(txUrl, "https://qtum.info/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
+    assertStringsEqual(id, "qtum");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
+    assertStringsEqual(name, "Qtum");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeQtum));
+    ASSERT_EQ(0x32, TWCoinTypeP2shPrefix(TWCoinTypeQtum));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeRavencoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeRavencoin));
+    assertStringsEqual(symbol, "RVN");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRavencoin), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeRavencoin, txId));
+    assertStringsEqual(txUrl, "https://ravencoin.network/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRavencoin));
+    assertStringsEqual(id, "ravencoin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRavencoin));
+    assertStringsEqual(name, "Ravencoin");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeRavencoin));
+    ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeXRP) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXRP));
+    assertStringsEqual(symbol, "XRP");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXRP), 6);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXRP, txId));
+    assertStringsEqual(txUrl, "https://bithomp.com/explorer/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXRP));
+    assertStringsEqual(id, "ripple");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
+    assertStringsEqual(name, "XRP");
+
+    ASSERT_EQ(TWBlockchainRipple, TWCoinTypeBlockchain(TWCoinTypeXRP));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeSemux) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSemux));
+    assertStringsEqual(symbol, "SEM");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSemux, txId));
+    assertStringsEqual(txUrl, "https://semux.info/explorer/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSemux));
+    assertStringsEqual(id, "semux");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSemux));
+    assertStringsEqual(name, "Semux");
+
+    ASSERT_EQ(TWBlockchainSemux, TWCoinTypeBlockchain(TWCoinTypeSemux));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeSolana) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSolana));
+    assertStringsEqual(symbol, "SOL");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 13);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSolana, txId));
+    assertStringsEqual(txUrl, "https://explorer.solana.com/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
+    assertStringsEqual(id, "solana");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
+    assertStringsEqual(name, "Solana");
+
+    ASSERT_EQ(TWBlockchainSolana, TWCoinTypeBlockchain(TWCoinTypeSolana));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeSteem) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSteem));
+    assertStringsEqual(symbol, "STEEM");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSteem), 3);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeSteem, txId));
+    assertStringsEqual(txUrl, "https://steemblockexplorer.com/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSteem));
+    assertStringsEqual(id, "steem");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSteem));
+    assertStringsEqual(name, "Steem");
+
+    ASSERT_EQ(TWBlockchainSteem, TWCoinTypeBlockchain(TWCoinTypeSteem));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeStellar) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
+    assertStringsEqual(symbol, "XLM");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
+    assertStringsEqual(txUrl, "https://stellarscan.io/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
+    assertStringsEqual(id, "stellar");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
+    assertStringsEqual(name, "Stellar");
+
+    ASSERT_EQ(TWBlockchainStellar, TWCoinTypeBlockchain(TWCoinTypeStellar));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeTerra) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra));
+    assertStringsEqual(symbol, "LUNA");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra, txId));
+    assertStringsEqual(txUrl, "https://terra.stake.id/?#/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
+    assertStringsEqual(id, "terra");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
+    assertStringsEqual(name, "Terra");
+
+    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeTezos) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
+    assertStringsEqual(symbol, "XTZ");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
+    assertStringsEqual(txUrl, "https://tezos.id/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
+    assertStringsEqual(id, "tezos");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
+    assertStringsEqual(name, "Tezos");
+
+    ASSERT_EQ(TWBlockchainTezos, TWCoinTypeBlockchain(TWCoinTypeTezos));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeTheta) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTheta));
+    assertStringsEqual(symbol, "THETA");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTheta, txId));
+    assertStringsEqual(txUrl, "https://explorer.thetatoken.org/txs/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTheta));
+    assertStringsEqual(id, "theta");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTheta));
+    assertStringsEqual(name, "Theta");
+
+    ASSERT_EQ(TWBlockchainTheta, TWCoinTypeBlockchain(TWCoinTypeTheta));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeThunderToken) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeThunderToken));
+    assertStringsEqual(symbol, "TT");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderToken), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeThunderToken, txId));
+    assertStringsEqual(txUrl, "https://scan.thundercore.com/transactions/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeThunderToken));
+    assertStringsEqual(id, "thundertoken");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeThunderToken));
+    assertStringsEqual(name, "Thunder Token");
+
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeThunderToken));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeTomoChain) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTomoChain));
+    assertStringsEqual(symbol, "TOMO");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTomoChain), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTomoChain, txId));
+    assertStringsEqual(txUrl, "https://scan.tomochain.com/txs/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTomoChain));
+    assertStringsEqual(id, "tomochain");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTomoChain));
+    assertStringsEqual(name, "TomoChain");
+
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeTomoChain));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeTron) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTron));
+    assertStringsEqual(symbol, "TRX");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTron), 6);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTron, txId));
+    assertStringsEqual(txUrl, "https://tronscan.org/#/transaction/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTron));
+    assertStringsEqual(id, "tron");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTron));
+    assertStringsEqual(name, "Tron");
+
+    ASSERT_EQ(TWBlockchainTron, TWCoinTypeBlockchain(TWCoinTypeTron));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeVeChain) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeVeChain));
+    assertStringsEqual(symbol, "VET");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVeChain), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeVeChain, txId));
+    assertStringsEqual(txUrl, "https://insight.vecha.in/#/txs/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeVeChain));
+    assertStringsEqual(id, "vechain");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeVeChain));
+    assertStringsEqual(name, "VeChain");
+
+    ASSERT_EQ(TWBlockchainVechain, TWCoinTypeBlockchain(TWCoinTypeVeChain));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeViacoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeViacoin));
+    assertStringsEqual(symbol, "VIA");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeViacoin), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeViacoin, txId));
+    assertStringsEqual(txUrl, "https://explorer.viacoin.org/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeViacoin));
+    assertStringsEqual(id, "viacoin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeViacoin));
+    assertStringsEqual(name, "Viacoin");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeViacoin));
+    ASSERT_EQ(0x21, TWCoinTypeP2shPrefix(TWCoinTypeViacoin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeWanchain) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWanchain));
+    assertStringsEqual(symbol, "WAN");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWanchain), 18);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWanchain, txId));
+    assertStringsEqual(txUrl, "https://explorer.wanchain.org/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWanchain));
+    assertStringsEqual(id, "wanchain");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWanchain));
+    assertStringsEqual(name, "Wanchain");
+
+    ASSERT_EQ(TWBlockchainWanchain, TWCoinTypeBlockchain(TWCoinTypeWanchain));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeWaves) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWaves));
+    assertStringsEqual(symbol, "WAVES");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWaves, txId));
+    assertStringsEqual(txUrl, "https://wavesexplorer.com/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
+    assertStringsEqual(id, "waves");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
+    assertStringsEqual(name, "Waves");
+
+    ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeZcash) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcash));
+    assertStringsEqual(symbol, "ZEC");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcash), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, txId));
+    assertStringsEqual(txUrl, "https://chain.so/tx/ZEC/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcash));
+    assertStringsEqual(id, "zcash");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcash));
+    assertStringsEqual(name, "Zcash");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZcash));
+    ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZcash));
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZcash));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeZcoin) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcoin));
+    assertStringsEqual(symbol, "XZC");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcoin, txId));
+    assertStringsEqual(txUrl, "https://explorer.zcoin.io/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcoin));
+    assertStringsEqual(id, "zcoin");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcoin));
+    assertStringsEqual(name, "Zcoin");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZcoin));
+    ASSERT_EQ(0x07, TWCoinTypeP2shPrefix(TWCoinTypeZcoin));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeZelcash) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZelcash));
+    assertStringsEqual(symbol, "ZEL");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZelcash), 8);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
+    assertStringsEqual(txUrl, "https://explorer.zel.cash/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
+    assertStringsEqual(id, "zelcash");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
+    assertStringsEqual(name, "Zelcash");
+
+    ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZelcash));
+    ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZelcash));
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZelcash));
+}
+
+TEST(TWCoinTypeConfiguration, TWCoinTypeZilliqa) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZilliqa));
+    assertStringsEqual(symbol, "ZIL");
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
+
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZilliqa, txId));
+    assertStringsEqual(txUrl, "https://viewblock.io/zilliqa/tx/123");
+
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZilliqa));
+    assertStringsEqual(id, "zilliqa");
+
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZilliqa));
+    assertStringsEqual(name, "Zilliqa");
+
+    ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
 }
