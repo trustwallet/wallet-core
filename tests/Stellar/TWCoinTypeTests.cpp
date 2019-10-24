@@ -20,12 +20,12 @@ TEST(TWStellarCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
 
-    assertStringsEqual(symbol, "XLM");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeStellar), 7);
-    assertStringsEqual(txUrl, "https://stellarscan.io/transaction/123");
-    assertStringsEqual(id, "stellar");
-    assertStringsEqual(name, "Stellar");
     ASSERT_EQ(TWBlockchainStellar, TWCoinTypeBlockchain(TWCoinTypeStellar));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeStellar));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeStellar));
+    assertStringsEqual(symbol, "XLM");
+    assertStringsEqual(txUrl, "https://stellarscan.io/transaction/123");
+    assertStringsEqual(id, "stellar");
+    assertStringsEqual(name, "Stellar");
 }

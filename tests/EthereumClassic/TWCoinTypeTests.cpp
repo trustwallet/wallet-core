@@ -20,12 +20,12 @@ TEST(TWEthereumClassicCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereumClassic));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereumClassic));
 
-    assertStringsEqual(symbol, "ETC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereumClassic), 18);
-    assertStringsEqual(txUrl, "https://gastracker.io/tx/123");
-    assertStringsEqual(id, "classic");
-    assertStringsEqual(name, "Ethereum Classic");
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereumClassic));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeEthereumClassic));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeEthereumClassic));
+    assertStringsEqual(symbol, "ETC");
+    assertStringsEqual(txUrl, "https://gastracker.io/tx/123");
+    assertStringsEqual(id, "classic");
+    assertStringsEqual(name, "Ethereum Classic");
 }

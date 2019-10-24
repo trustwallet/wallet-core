@@ -20,12 +20,12 @@ TEST(TWPOANetworkCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOANetwork));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOANetwork));
 
-    assertStringsEqual(symbol, "POA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypePOANetwork), 18);
-    assertStringsEqual(txUrl, "https://poaexplorer.com/txid/search/123");
-    assertStringsEqual(id, "poa");
-    assertStringsEqual(name, "POA Network");
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypePOANetwork));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypePOANetwork));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypePOANetwork));
+    assertStringsEqual(symbol, "POA");
+    assertStringsEqual(txUrl, "https://poaexplorer.com/txid/search/123");
+    assertStringsEqual(id, "poa");
+    assertStringsEqual(name, "POA Network");
 }

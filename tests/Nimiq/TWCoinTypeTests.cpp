@@ -20,12 +20,12 @@ TEST(TWNimiqCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNimiq));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNimiq));
 
-    assertStringsEqual(symbol, "NIM");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNimiq), 5);
-    assertStringsEqual(txUrl, "https://nimiq.watch/#123");
-    assertStringsEqual(id, "nimiq");
-    assertStringsEqual(name, "Nimiq");
     ASSERT_EQ(TWBlockchainNimiq, TWCoinTypeBlockchain(TWCoinTypeNimiq));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNimiq));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNimiq));
+    assertStringsEqual(symbol, "NIM");
+    assertStringsEqual(txUrl, "https://nimiq.watch/#123");
+    assertStringsEqual(id, "nimiq");
+    assertStringsEqual(name, "Nimiq");
 }

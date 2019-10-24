@@ -20,12 +20,12 @@ TEST(TWXRPCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXRP));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
 
-    assertStringsEqual(symbol, "XRP");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXRP), 6);
-    assertStringsEqual(txUrl, "https://bithomp.com/explorer/123");
-    assertStringsEqual(id, "ripple");
-    assertStringsEqual(name, "XRP");
     ASSERT_EQ(TWBlockchainRipple, TWCoinTypeBlockchain(TWCoinTypeXRP));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeXRP));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeXRP));
+    assertStringsEqual(symbol, "XRP");
+    assertStringsEqual(txUrl, "https://bithomp.com/explorer/123");
+    assertStringsEqual(id, "ripple");
+    assertStringsEqual(name, "XRP");
 }

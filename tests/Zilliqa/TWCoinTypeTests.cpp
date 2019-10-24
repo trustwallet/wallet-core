@@ -20,12 +20,12 @@ TEST(TWZilliqaCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZilliqa));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZilliqa));
 
-    assertStringsEqual(symbol, "ZIL");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZilliqa), 12);
-    assertStringsEqual(txUrl, "https://viewblock.io/zilliqa/tx/123");
-    assertStringsEqual(id, "zilliqa");
-    assertStringsEqual(name, "Zilliqa");
     ASSERT_EQ(TWBlockchainZilliqa, TWCoinTypeBlockchain(TWCoinTypeZilliqa));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeZilliqa));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeZilliqa));
+    assertStringsEqual(symbol, "ZIL");
+    assertStringsEqual(txUrl, "https://viewblock.io/zilliqa/tx/123");
+    assertStringsEqual(id, "zilliqa");
+    assertStringsEqual(name, "Zilliqa");
 }

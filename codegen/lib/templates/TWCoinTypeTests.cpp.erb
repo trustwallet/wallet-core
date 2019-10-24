@@ -20,12 +20,12 @@ TEST(TW<%= format_name(coin['name']) %>CoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinType<%= format_name(coin['name']) %>));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinType<%= format_name(coin['name']) %>));
 
-    assertStringsEqual(symbol, "<%= coin['symbol'] %>");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinType<%= format_name(coin['name']) %>), <%= coin['decimals'] %>);
-    assertStringsEqual(txUrl, "<%= coin['explorer'] %>123");
-    assertStringsEqual(id, "<%= coin['id'] %>");
-    assertStringsEqual(name, "<%= display_name(coin) %>");
     ASSERT_EQ(TWBlockchain<%= coin['blockchain'] %>, TWCoinTypeBlockchain(TWCoinType<%= format_name(coin['name']) %>));
     ASSERT_EQ(0x<%= to_hex(coin['p2shPrefix']) %>, TWCoinTypeP2shPrefix(TWCoinType<%= format_name(coin['name']) %>));
     ASSERT_EQ(0x<%= to_hex(coin['staticPrefix']) %>, TWCoinTypeStaticPrefix(TWCoinType<%= format_name(coin['name']) %>));
+    assertStringsEqual(symbol, "<%= coin['symbol'] %>");
+    assertStringsEqual(txUrl, "<%= coin['explorer'] %>123");
+    assertStringsEqual(id, "<%= coin['id'] %>");
+    assertStringsEqual(name, "<%= display_name(coin) %>");
 }

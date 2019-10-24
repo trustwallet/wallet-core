@@ -20,12 +20,12 @@ TEST(TWNanoCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNano));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNano));
 
-    assertStringsEqual(symbol, "NANO");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNano), 30);
-    assertStringsEqual(txUrl, "https://www.nanode.co/block/123");
-    assertStringsEqual(id, "nano");
-    assertStringsEqual(name, "Nano");
     ASSERT_EQ(TWBlockchainNano, TWCoinTypeBlockchain(TWCoinTypeNano));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNano));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNano));
+    assertStringsEqual(symbol, "NANO");
+    assertStringsEqual(txUrl, "https://www.nanode.co/block/123");
+    assertStringsEqual(id, "nano");
+    assertStringsEqual(name, "Nano");
 }

@@ -20,12 +20,12 @@ TEST(TWEthereumCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereum));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereum));
 
-    assertStringsEqual(symbol, "ETH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEthereum), 18);
-    assertStringsEqual(txUrl, "https://etherscan.io/tx/123");
-    assertStringsEqual(id, "ethereum");
-    assertStringsEqual(name, "Ethereum");
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeEthereum));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeEthereum));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeEthereum));
+    assertStringsEqual(symbol, "ETH");
+    assertStringsEqual(txUrl, "https://etherscan.io/tx/123");
+    assertStringsEqual(id, "ethereum");
+    assertStringsEqual(name, "Ethereum");
 }

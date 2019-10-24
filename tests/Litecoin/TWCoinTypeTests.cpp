@@ -20,12 +20,12 @@ TEST(TWLitecoinCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeLitecoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeLitecoin));
 
-    assertStringsEqual(symbol, "LTC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeLitecoin), 8);
-    assertStringsEqual(txUrl, "https://blockchair.com/litecoin/transaction/123");
-    assertStringsEqual(id, "litecoin");
-    assertStringsEqual(name, "Litecoin");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeLitecoin));
     ASSERT_EQ(0x32, TWCoinTypeP2shPrefix(TWCoinTypeLitecoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeLitecoin));
+    assertStringsEqual(symbol, "LTC");
+    assertStringsEqual(txUrl, "https://blockchair.com/litecoin/transaction/123");
+    assertStringsEqual(id, "litecoin");
+    assertStringsEqual(name, "Litecoin");
 }

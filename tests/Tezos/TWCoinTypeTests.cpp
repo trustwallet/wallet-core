@@ -20,12 +20,12 @@ TEST(TWTezosCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
 
-    assertStringsEqual(symbol, "XTZ");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTezos), 6);
-    assertStringsEqual(txUrl, "https://tezos.id/123");
-    assertStringsEqual(id, "tezos");
-    assertStringsEqual(name, "Tezos");
     ASSERT_EQ(TWBlockchainTezos, TWCoinTypeBlockchain(TWCoinTypeTezos));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTezos));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTezos));
+    assertStringsEqual(symbol, "XTZ");
+    assertStringsEqual(txUrl, "https://tezos.id/123");
+    assertStringsEqual(id, "tezos");
+    assertStringsEqual(name, "Tezos");
 }

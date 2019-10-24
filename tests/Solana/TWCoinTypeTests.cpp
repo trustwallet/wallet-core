@@ -20,12 +20,12 @@ TEST(TWSolanaCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
 
-    assertStringsEqual(symbol, "SOL");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 13);
-    assertStringsEqual(txUrl, "https://explorer.solana.com/tx/123");
-    assertStringsEqual(id, "solana");
-    assertStringsEqual(name, "Solana");
     ASSERT_EQ(TWBlockchainSolana, TWCoinTypeBlockchain(TWCoinTypeSolana));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeSolana));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeSolana));
+    assertStringsEqual(symbol, "SOL");
+    assertStringsEqual(txUrl, "https://explorer.solana.com/tx/123");
+    assertStringsEqual(id, "solana");
+    assertStringsEqual(name, "Solana");
 }

@@ -20,12 +20,12 @@ TEST(TWDecredCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDecred));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDecred));
 
-    assertStringsEqual(symbol, "DCR");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDecred), 8);
-    assertStringsEqual(txUrl, "https://dcrdata.decred.org/tx/123");
-    assertStringsEqual(id, "decred");
-    assertStringsEqual(name, "Decred");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDecred));
     ASSERT_EQ(0x1a, TWCoinTypeP2shPrefix(TWCoinTypeDecred));
     ASSERT_EQ(0x7, TWCoinTypeStaticPrefix(TWCoinTypeDecred));
+    assertStringsEqual(symbol, "DCR");
+    assertStringsEqual(txUrl, "https://dcrdata.decred.org/tx/123");
+    assertStringsEqual(id, "decred");
+    assertStringsEqual(name, "Decred");
 }

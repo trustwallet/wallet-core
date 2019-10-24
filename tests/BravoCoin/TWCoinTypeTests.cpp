@@ -20,12 +20,12 @@ TEST(TWBravoCoinCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBravoCoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBravoCoin));
 
-    assertStringsEqual(symbol, "BRAVO");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBravoCoin), 3);
-    assertStringsEqual(txUrl, "https://explorer.bravocoin.com/txid/123");
-    assertStringsEqual(id, "bravocoin");
-    assertStringsEqual(name, "BravoCoin");
     ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeBravoCoin));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeBravoCoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBravoCoin));
+    assertStringsEqual(symbol, "BRAVO");
+    assertStringsEqual(txUrl, "https://explorer.bravocoin.com/txid/123");
+    assertStringsEqual(id, "bravocoin");
+    assertStringsEqual(name, "BravoCoin");
 }

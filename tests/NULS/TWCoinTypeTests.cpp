@@ -20,12 +20,12 @@ TEST(TWNULSCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNULS));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNULS));
 
-    assertStringsEqual(symbol, "NULS");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNULS), 8);
-    assertStringsEqual(txUrl, "https://nulscan.io/123");
-    assertStringsEqual(id, "nuls");
-    assertStringsEqual(name, "NULS");
     ASSERT_EQ(TWBlockchainNULS, TWCoinTypeBlockchain(TWCoinTypeNULS));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNULS));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNULS));
+    assertStringsEqual(symbol, "NULS");
+    assertStringsEqual(txUrl, "https://nulscan.io/123");
+    assertStringsEqual(id, "nuls");
+    assertStringsEqual(name, "NULS");
 }

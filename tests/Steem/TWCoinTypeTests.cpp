@@ -20,12 +20,12 @@ TEST(TWSteemCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSteem));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSteem));
 
-    assertStringsEqual(symbol, "STEEM");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSteem), 3);
-    assertStringsEqual(txUrl, "https://steemblockexplorer.com/tx/123");
-    assertStringsEqual(id, "steem");
-    assertStringsEqual(name, "Steem");
     ASSERT_EQ(TWBlockchainSteem, TWCoinTypeBlockchain(TWCoinTypeSteem));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeSteem));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeSteem));
+    assertStringsEqual(symbol, "STEEM");
+    assertStringsEqual(txUrl, "https://steemblockexplorer.com/tx/123");
+    assertStringsEqual(id, "steem");
+    assertStringsEqual(name, "Steem");
 }

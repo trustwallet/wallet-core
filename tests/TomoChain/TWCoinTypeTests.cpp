@@ -20,12 +20,12 @@ TEST(TWTomoChainCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTomoChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTomoChain));
 
-    assertStringsEqual(symbol, "TOMO");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTomoChain), 18);
-    assertStringsEqual(txUrl, "https://scan.tomochain.com/txs/123");
-    assertStringsEqual(id, "tomochain");
-    assertStringsEqual(name, "TomoChain");
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeTomoChain));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTomoChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTomoChain));
+    assertStringsEqual(symbol, "TOMO");
+    assertStringsEqual(txUrl, "https://scan.tomochain.com/txs/123");
+    assertStringsEqual(id, "tomochain");
+    assertStringsEqual(name, "TomoChain");
 }

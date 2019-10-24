@@ -20,12 +20,12 @@ TEST(TWZcashCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcash));
 
-    assertStringsEqual(symbol, "ZEC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcash), 8);
-    assertStringsEqual(txUrl, "https://chain.so/tx/ZEC/123");
-    assertStringsEqual(id, "zcash");
-    assertStringsEqual(name, "Zcash");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZcash));
     ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZcash));
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZcash));
+    assertStringsEqual(symbol, "ZEC");
+    assertStringsEqual(txUrl, "https://chain.so/tx/ZEC/123");
+    assertStringsEqual(id, "zcash");
+    assertStringsEqual(name, "Zcash");
 }

@@ -20,12 +20,12 @@ TEST(TWRavencoinCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRavencoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRavencoin));
 
-    assertStringsEqual(symbol, "RVN");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRavencoin), 8);
-    assertStringsEqual(txUrl, "https://ravencoin.network/tx/123");
-    assertStringsEqual(id, "ravencoin");
-    assertStringsEqual(name, "Ravencoin");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeRavencoin));
     ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeRavencoin));
+    assertStringsEqual(symbol, "RVN");
+    assertStringsEqual(txUrl, "https://ravencoin.network/tx/123");
+    assertStringsEqual(id, "ravencoin");
+    assertStringsEqual(name, "Ravencoin");
 }

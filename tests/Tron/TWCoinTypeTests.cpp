@@ -20,12 +20,12 @@ TEST(TWTronCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTron));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTron));
 
-    assertStringsEqual(symbol, "TRX");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTron), 6);
-    assertStringsEqual(txUrl, "https://tronscan.org/#/transaction/123");
-    assertStringsEqual(id, "tron");
-    assertStringsEqual(name, "Tron");
     ASSERT_EQ(TWBlockchainTron, TWCoinTypeBlockchain(TWCoinTypeTron));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTron));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTron));
+    assertStringsEqual(symbol, "TRX");
+    assertStringsEqual(txUrl, "https://tronscan.org/#/transaction/123");
+    assertStringsEqual(id, "tron");
+    assertStringsEqual(name, "Tron");
 }

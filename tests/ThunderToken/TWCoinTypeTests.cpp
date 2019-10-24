@@ -20,12 +20,12 @@ TEST(TWThunderTokenCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeThunderToken));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeThunderToken));
 
-    assertStringsEqual(symbol, "TT");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeThunderToken), 18);
-    assertStringsEqual(txUrl, "https://scan.thundercore.com/transactions/123");
-    assertStringsEqual(id, "thundertoken");
-    assertStringsEqual(name, "Thunder Token");
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeThunderToken));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeThunderToken));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeThunderToken));
+    assertStringsEqual(symbol, "TT");
+    assertStringsEqual(txUrl, "https://scan.thundercore.com/transactions/123");
+    assertStringsEqual(id, "thundertoken");
+    assertStringsEqual(name, "Thunder Token");
 }

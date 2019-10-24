@@ -20,12 +20,12 @@ TEST(TWNEARCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEAR));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEAR));
 
-    assertStringsEqual(symbol, "NEAR");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEAR), 18);
-    assertStringsEqual(txUrl, "https://explorer.nearprotocol.com123");
-    assertStringsEqual(id, "near");
-    assertStringsEqual(name, "NEAR");
     ASSERT_EQ(TWBlockchainNEAR, TWCoinTypeBlockchain(TWCoinTypeNEAR));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNEAR));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNEAR));
+    assertStringsEqual(symbol, "NEAR");
+    assertStringsEqual(txUrl, "https://explorer.nearprotocol.com123");
+    assertStringsEqual(id, "near");
+    assertStringsEqual(name, "NEAR");
 }

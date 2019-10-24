@@ -20,12 +20,12 @@ TEST(TWDogecoinCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDogecoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDogecoin));
 
-    assertStringsEqual(symbol, "DOGE");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDogecoin), 8);
-    assertStringsEqual(txUrl, "https://blockchair.com/dogecoin/transaction/123");
-    assertStringsEqual(id, "doge");
-    assertStringsEqual(name, "Dogecoin");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDogecoin));
     ASSERT_EQ(0x16, TWCoinTypeP2shPrefix(TWCoinTypeDogecoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeDogecoin));
+    assertStringsEqual(symbol, "DOGE");
+    assertStringsEqual(txUrl, "https://blockchair.com/dogecoin/transaction/123");
+    assertStringsEqual(id, "doge");
+    assertStringsEqual(name, "Dogecoin");
 }

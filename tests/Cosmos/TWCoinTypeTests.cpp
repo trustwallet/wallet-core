@@ -20,12 +20,12 @@ TEST(TWCosmosCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
 
-    assertStringsEqual(symbol, "ATOM");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCosmos), 6);
-    assertStringsEqual(txUrl, "https://www.mintscan.io/txs/123");
-    assertStringsEqual(id, "cosmos");
-    assertStringsEqual(name, "Cosmos");
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeCosmos));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeCosmos));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeCosmos));
+    assertStringsEqual(symbol, "ATOM");
+    assertStringsEqual(txUrl, "https://www.mintscan.io/txs/123");
+    assertStringsEqual(id, "cosmos");
+    assertStringsEqual(name, "Cosmos");
 }

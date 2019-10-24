@@ -20,12 +20,12 @@ TEST(TWDashCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDash));
 
-    assertStringsEqual(symbol, "DASH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDash), 8);
-    assertStringsEqual(txUrl, "https://blockchair.com/dash/transaction/123");
-    assertStringsEqual(id, "dash");
-    assertStringsEqual(name, "Dash");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDash));
     ASSERT_EQ(0x10, TWCoinTypeP2shPrefix(TWCoinTypeDash));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeDash));
+    assertStringsEqual(symbol, "DASH");
+    assertStringsEqual(txUrl, "https://blockchair.com/dash/transaction/123");
+    assertStringsEqual(id, "dash");
+    assertStringsEqual(name, "Dash");
 }

@@ -20,12 +20,12 @@ TEST(TWNebulasCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNebulas));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNebulas));
 
-    assertStringsEqual(symbol, "NAS");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNebulas), 18);
-    assertStringsEqual(txUrl, "https://explorer.nebulas.io/#/tx/123");
-    assertStringsEqual(id, "nebulas");
-    assertStringsEqual(name, "Nebulas");
     ASSERT_EQ(TWBlockchainNebulas, TWCoinTypeBlockchain(TWCoinTypeNebulas));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNebulas));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNebulas));
+    assertStringsEqual(symbol, "NAS");
+    assertStringsEqual(txUrl, "https://explorer.nebulas.io/#/tx/123");
+    assertStringsEqual(id, "nebulas");
+    assertStringsEqual(name, "Nebulas");
 }

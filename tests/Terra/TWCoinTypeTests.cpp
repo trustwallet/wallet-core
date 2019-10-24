@@ -20,12 +20,12 @@ TEST(TWTerraCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
 
-    assertStringsEqual(symbol, "LUNA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTerra), 6);
-    assertStringsEqual(txUrl, "https://terra.stake.id/?#/tx/123");
-    assertStringsEqual(id, "terra");
-    assertStringsEqual(name, "Terra");
     ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeTerra));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTerra));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTerra));
+    assertStringsEqual(symbol, "LUNA");
+    assertStringsEqual(txUrl, "https://terra.stake.id/?#/tx/123");
+    assertStringsEqual(id, "terra");
+    assertStringsEqual(name, "Terra");
 }

@@ -20,12 +20,12 @@ TEST(TWKinCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeKin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKin));
 
-    assertStringsEqual(symbol, "KIN");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKin), 5);
-    assertStringsEqual(txUrl, "https://kinexplorer.com/tx/123");
-    assertStringsEqual(id, "kin");
-    assertStringsEqual(name, "Kin");
     ASSERT_EQ(TWBlockchainStellar, TWCoinTypeBlockchain(TWCoinTypeKin));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeKin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeKin));
+    assertStringsEqual(symbol, "KIN");
+    assertStringsEqual(txUrl, "https://kinexplorer.com/tx/123");
+    assertStringsEqual(id, "kin");
+    assertStringsEqual(name, "Kin");
 }

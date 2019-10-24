@@ -20,12 +20,12 @@ TEST(TWZcoinCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcoin));
 
-    assertStringsEqual(symbol, "XZC");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeZcoin), 8);
-    assertStringsEqual(txUrl, "https://explorer.zcoin.io/tx/123");
-    assertStringsEqual(id, "zcoin");
-    assertStringsEqual(name, "Zcoin");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeZcoin));
     ASSERT_EQ(0x7, TWCoinTypeP2shPrefix(TWCoinTypeZcoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeZcoin));
+    assertStringsEqual(symbol, "XZC");
+    assertStringsEqual(txUrl, "https://explorer.zcoin.io/tx/123");
+    assertStringsEqual(id, "zcoin");
+    assertStringsEqual(name, "Zcoin");
 }

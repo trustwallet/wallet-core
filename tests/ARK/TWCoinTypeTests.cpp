@@ -20,12 +20,12 @@ TEST(TWARKCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeARK));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeARK));
 
-    assertStringsEqual(symbol, "ARK");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeARK), 8);
-    assertStringsEqual(txUrl, "https://explorer.ark.io/transaction/123");
-    assertStringsEqual(id, "ark");
-    assertStringsEqual(name, "ARK");
     ASSERT_EQ(TWBlockchainArk, TWCoinTypeBlockchain(TWCoinTypeARK));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeARK));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeARK));
+    assertStringsEqual(symbol, "ARK");
+    assertStringsEqual(txUrl, "https://explorer.ark.io/transaction/123");
+    assertStringsEqual(id, "ark");
+    assertStringsEqual(name, "ARK");
 }

@@ -20,12 +20,12 @@ TEST(TWGroestlcoinCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
 
-    assertStringsEqual(symbol, "GRS");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeGroestlcoin), 8);
-    assertStringsEqual(txUrl, "https://blockchair.com/groestlcoin/transaction/123");
-    assertStringsEqual(id, "groestlcoin");
-    assertStringsEqual(name, "Groestlcoin");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeGroestlcoin));
     ASSERT_EQ(0x5, TWCoinTypeP2shPrefix(TWCoinTypeGroestlcoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeGroestlcoin));
+    assertStringsEqual(symbol, "GRS");
+    assertStringsEqual(txUrl, "https://blockchair.com/groestlcoin/transaction/123");
+    assertStringsEqual(id, "groestlcoin");
+    assertStringsEqual(name, "Groestlcoin");
 }

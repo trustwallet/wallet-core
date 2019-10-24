@@ -20,12 +20,12 @@ TEST(TWAionCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
 
-    assertStringsEqual(symbol, "AION");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAion), 18);
-    assertStringsEqual(txUrl, "https://mainnet.aion.network/#/transaction/123");
-    assertStringsEqual(id, "aion");
-    assertStringsEqual(name, "Aion");
     ASSERT_EQ(TWBlockchainAion, TWCoinTypeBlockchain(TWCoinTypeAion));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAion));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAion));
+    assertStringsEqual(symbol, "AION");
+    assertStringsEqual(txUrl, "https://mainnet.aion.network/#/transaction/123");
+    assertStringsEqual(id, "aion");
+    assertStringsEqual(name, "Aion");
 }

@@ -20,12 +20,12 @@ TEST(TWOntologyCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOntology));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOntology));
 
-    assertStringsEqual(symbol, "ONT");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeOntology), 0);
-    assertStringsEqual(txUrl, "https://explorer.ont.io/transaction/123");
-    assertStringsEqual(id, "ontology");
-    assertStringsEqual(name, "Ontology");
     ASSERT_EQ(TWBlockchainOntology, TWCoinTypeBlockchain(TWCoinTypeOntology));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeOntology));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeOntology));
+    assertStringsEqual(symbol, "ONT");
+    assertStringsEqual(txUrl, "https://explorer.ont.io/transaction/123");
+    assertStringsEqual(id, "ontology");
+    assertStringsEqual(name, "Ontology");
 }

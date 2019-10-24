@@ -20,12 +20,12 @@ TEST(TWCallistoCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCallisto));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCallisto));
 
-    assertStringsEqual(symbol, "CLO");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCallisto), 18);
-    assertStringsEqual(txUrl, "https://explorer2.callisto.network/tx/123");
-    assertStringsEqual(id, "callisto");
-    assertStringsEqual(name, "Callisto");
     ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeCallisto));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeCallisto));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeCallisto));
+    assertStringsEqual(symbol, "CLO");
+    assertStringsEqual(txUrl, "https://explorer2.callisto.network/tx/123");
+    assertStringsEqual(id, "callisto");
+    assertStringsEqual(name, "Callisto");
 }

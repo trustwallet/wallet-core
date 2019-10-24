@@ -20,12 +20,12 @@ TEST(TWDigiByteCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDigiByte));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDigiByte));
 
-    assertStringsEqual(symbol, "DGB");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeDigiByte), 8);
-    assertStringsEqual(txUrl, "https://digiexplorer.info/tx/123");
-    assertStringsEqual(id, "digibyte");
-    assertStringsEqual(name, "DigiByte");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeDigiByte));
     ASSERT_EQ(0x3f, TWCoinTypeP2shPrefix(TWCoinTypeDigiByte));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeDigiByte));
+    assertStringsEqual(symbol, "DGB");
+    assertStringsEqual(txUrl, "https://digiexplorer.info/tx/123");
+    assertStringsEqual(id, "digibyte");
+    assertStringsEqual(name, "DigiByte");
 }

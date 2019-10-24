@@ -20,12 +20,12 @@ TEST(TWAeternityCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAeternity));
 
-    assertStringsEqual(symbol, "AE");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAeternity), 18);
-    assertStringsEqual(txUrl, "https://explorer.aepps.com/#/tx/123");
-    assertStringsEqual(id, "aeternity");
-    assertStringsEqual(name, "Aeternity");
     ASSERT_EQ(TWBlockchainAeternity, TWCoinTypeBlockchain(TWCoinTypeAeternity));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAeternity));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAeternity));
+    assertStringsEqual(symbol, "AE");
+    assertStringsEqual(txUrl, "https://explorer.aepps.com/#/tx/123");
+    assertStringsEqual(id, "aeternity");
+    assertStringsEqual(name, "Aeternity");
 }

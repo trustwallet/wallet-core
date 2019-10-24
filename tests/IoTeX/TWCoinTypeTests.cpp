@@ -20,12 +20,12 @@ TEST(TWIoTeXCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIoTeX));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIoTeX));
 
-    assertStringsEqual(symbol, "IOTX");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIoTeX), 18);
-    assertStringsEqual(txUrl, "https://iotexscan.io/action/123");
-    assertStringsEqual(id, "iotex");
-    assertStringsEqual(name, "IoTeX");
     ASSERT_EQ(TWBlockchainIoTeX, TWCoinTypeBlockchain(TWCoinTypeIoTeX));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeIoTeX));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeIoTeX));
+    assertStringsEqual(symbol, "IOTX");
+    assertStringsEqual(txUrl, "https://iotexscan.io/action/123");
+    assertStringsEqual(id, "iotex");
+    assertStringsEqual(name, "IoTeX");
 }

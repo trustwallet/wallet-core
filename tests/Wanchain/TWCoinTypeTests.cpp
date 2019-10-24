@@ -20,12 +20,12 @@ TEST(TWWanchainCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWanchain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWanchain));
 
-    assertStringsEqual(symbol, "WAN");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWanchain), 18);
-    assertStringsEqual(txUrl, "https://explorer.wanchain.org/tx/123");
-    assertStringsEqual(id, "wanchain");
-    assertStringsEqual(name, "Wanchain");
     ASSERT_EQ(TWBlockchainWanchain, TWCoinTypeBlockchain(TWCoinTypeWanchain));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeWanchain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeWanchain));
+    assertStringsEqual(symbol, "WAN");
+    assertStringsEqual(txUrl, "https://explorer.wanchain.org/tx/123");
+    assertStringsEqual(id, "wanchain");
+    assertStringsEqual(name, "Wanchain");
 }

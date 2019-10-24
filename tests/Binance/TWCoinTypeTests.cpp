@@ -20,12 +20,12 @@ TEST(TWBinanceCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinance));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
 
-    assertStringsEqual(symbol, "BNB");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBinance), 8);
-    assertStringsEqual(txUrl, "https://explorer.binance.org/tx/123");
-    assertStringsEqual(id, "binance");
-    assertStringsEqual(name, "BNB");
     ASSERT_EQ(TWBlockchainBinance, TWCoinTypeBlockchain(TWCoinTypeBinance));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeBinance));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBinance));
+    assertStringsEqual(symbol, "BNB");
+    assertStringsEqual(txUrl, "https://explorer.binance.org/tx/123");
+    assertStringsEqual(id, "binance");
+    assertStringsEqual(name, "BNB");
 }

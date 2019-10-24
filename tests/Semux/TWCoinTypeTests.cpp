@@ -20,12 +20,12 @@ TEST(TWSemuxCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSemux));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSemux));
 
-    assertStringsEqual(symbol, "SEM");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSemux), 9);
-    assertStringsEqual(txUrl, "https://semux.info/explorer/transaction/123");
-    assertStringsEqual(id, "semux");
-    assertStringsEqual(name, "Semux");
     ASSERT_EQ(TWBlockchainSemux, TWCoinTypeBlockchain(TWCoinTypeSemux));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeSemux));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeSemux));
+    assertStringsEqual(symbol, "SEM");
+    assertStringsEqual(txUrl, "https://semux.info/explorer/transaction/123");
+    assertStringsEqual(id, "semux");
+    assertStringsEqual(name, "Semux");
 }

@@ -20,12 +20,12 @@ TEST(TWVeChainCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeVeChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeVeChain));
 
-    assertStringsEqual(symbol, "VET");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeVeChain), 18);
-    assertStringsEqual(txUrl, "https://insight.vecha.in/#/txs/123");
-    assertStringsEqual(id, "vechain");
-    assertStringsEqual(name, "VeChain");
     ASSERT_EQ(TWBlockchainVechain, TWCoinTypeBlockchain(TWCoinTypeVeChain));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeVeChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeVeChain));
+    assertStringsEqual(symbol, "VET");
+    assertStringsEqual(txUrl, "https://insight.vecha.in/#/txs/123");
+    assertStringsEqual(id, "vechain");
+    assertStringsEqual(name, "VeChain");
 }

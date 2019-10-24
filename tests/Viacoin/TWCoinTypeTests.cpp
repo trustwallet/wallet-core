@@ -20,12 +20,12 @@ TEST(TWViacoinCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeViacoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeViacoin));
 
-    assertStringsEqual(symbol, "VIA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeViacoin), 8);
-    assertStringsEqual(txUrl, "https://explorer.viacoin.org/tx/123");
-    assertStringsEqual(id, "viacoin");
-    assertStringsEqual(name, "Viacoin");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeViacoin));
     ASSERT_EQ(0x21, TWCoinTypeP2shPrefix(TWCoinTypeViacoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeViacoin));
+    assertStringsEqual(symbol, "VIA");
+    assertStringsEqual(txUrl, "https://explorer.viacoin.org/tx/123");
+    assertStringsEqual(id, "viacoin");
+    assertStringsEqual(name, "Viacoin");
 }

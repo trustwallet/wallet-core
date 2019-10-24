@@ -20,12 +20,12 @@ TEST(TWWavesCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWaves));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWaves));
 
-    assertStringsEqual(symbol, "WAVES");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeWaves), 8);
-    assertStringsEqual(txUrl, "https://wavesexplorer.com/tx/123");
-    assertStringsEqual(id, "waves");
-    assertStringsEqual(name, "Waves");
     ASSERT_EQ(TWBlockchainWaves, TWCoinTypeBlockchain(TWCoinTypeWaves));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeWaves));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeWaves));
+    assertStringsEqual(symbol, "WAVES");
+    assertStringsEqual(txUrl, "https://wavesexplorer.com/tx/123");
+    assertStringsEqual(id, "waves");
+    assertStringsEqual(name, "Waves");
 }

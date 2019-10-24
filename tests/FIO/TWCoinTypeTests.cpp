@@ -20,12 +20,12 @@ TEST(TWFIOCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeFIO));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeFIO));
 
-    assertStringsEqual(symbol, "FIO");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeFIO), 9);
-    assertStringsEqual(txUrl, "https://fio.foundation123");
-    assertStringsEqual(id, "fio");
-    assertStringsEqual(name, "FIO");
     ASSERT_EQ(TWBlockchainFIO, TWCoinTypeBlockchain(TWCoinTypeFIO));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeFIO));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeFIO));
+    assertStringsEqual(symbol, "FIO");
+    assertStringsEqual(txUrl, "https://fio.foundation123");
+    assertStringsEqual(id, "fio");
+    assertStringsEqual(name, "FIO");
 }

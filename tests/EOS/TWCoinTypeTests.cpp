@@ -20,12 +20,12 @@ TEST(TWEOSCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEOS));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEOS));
 
-    assertStringsEqual(symbol, "EOS");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeEOS), 4);
-    assertStringsEqual(txUrl, "https://bloks.io/transaction/123");
-    assertStringsEqual(id, "eos");
-    assertStringsEqual(name, "EOS");
     ASSERT_EQ(TWBlockchainEOS, TWCoinTypeBlockchain(TWCoinTypeEOS));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeEOS));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeEOS));
+    assertStringsEqual(symbol, "EOS");
+    assertStringsEqual(txUrl, "https://bloks.io/transaction/123");
+    assertStringsEqual(id, "eos");
+    assertStringsEqual(name, "EOS");
 }

@@ -20,12 +20,12 @@ TEST(TWHarmonyCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeHarmony));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeHarmony));
 
-    assertStringsEqual(symbol, "ONE");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeHarmony), 18);
-    assertStringsEqual(txUrl, "https://explorer.harmony.one/#/tx/123");
-    assertStringsEqual(id, "harmony");
-    assertStringsEqual(name, "Harmony");
     ASSERT_EQ(TWBlockchainHarmony, TWCoinTypeBlockchain(TWCoinTypeHarmony));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeHarmony));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeHarmony));
+    assertStringsEqual(symbol, "ONE");
+    assertStringsEqual(txUrl, "https://explorer.harmony.one/#/tx/123");
+    assertStringsEqual(id, "harmony");
+    assertStringsEqual(name, "Harmony");
 }

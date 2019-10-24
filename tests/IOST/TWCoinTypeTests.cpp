@@ -20,12 +20,12 @@ TEST(TWIOSTCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIOST));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIOST));
 
-    assertStringsEqual(symbol, "IOST");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeIOST), 8);
-    assertStringsEqual(txUrl, "https://www.iostabc.com/tx/123");
-    assertStringsEqual(id, "iost");
-    assertStringsEqual(name, "IOST");
     ASSERT_EQ(TWBlockchainIOST, TWCoinTypeBlockchain(TWCoinTypeIOST));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeIOST));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeIOST));
+    assertStringsEqual(symbol, "IOST");
+    assertStringsEqual(txUrl, "https://www.iostabc.com/tx/123");
+    assertStringsEqual(id, "iost");
+    assertStringsEqual(name, "IOST");
 }

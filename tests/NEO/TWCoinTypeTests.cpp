@@ -20,12 +20,12 @@ TEST(TWNEOCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNEO));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNEO));
 
-    assertStringsEqual(symbol, "NEO");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeNEO), 8);
-    assertStringsEqual(txUrl, "https://neoscan.io/transaction/123");
-    assertStringsEqual(id, "neo");
-    assertStringsEqual(name, "NEO");
     ASSERT_EQ(TWBlockchainNEO, TWCoinTypeBlockchain(TWCoinTypeNEO));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNEO));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNEO));
+    assertStringsEqual(symbol, "NEO");
+    assertStringsEqual(txUrl, "https://neoscan.io/transaction/123");
+    assertStringsEqual(id, "neo");
+    assertStringsEqual(name, "NEO");
 }

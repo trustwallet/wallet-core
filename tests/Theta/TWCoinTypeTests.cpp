@@ -20,12 +20,12 @@ TEST(TWThetaCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTheta));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTheta));
 
-    assertStringsEqual(symbol, "THETA");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeTheta), 18);
-    assertStringsEqual(txUrl, "https://explorer.thetatoken.org/txs/123");
-    assertStringsEqual(id, "theta");
-    assertStringsEqual(name, "Theta");
     ASSERT_EQ(TWBlockchainTheta, TWCoinTypeBlockchain(TWCoinTypeTheta));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTheta));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTheta));
+    assertStringsEqual(symbol, "THETA");
+    assertStringsEqual(txUrl, "https://explorer.thetatoken.org/txs/123");
+    assertStringsEqual(id, "theta");
+    assertStringsEqual(name, "Theta");
 }

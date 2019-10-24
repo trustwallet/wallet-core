@@ -20,12 +20,12 @@ TEST(TWAlgorandCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
 
-    assertStringsEqual(symbol, "ALGO");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeAlgorand), 6);
-    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/123");
-    assertStringsEqual(id, "algorand");
-    assertStringsEqual(name, "Algorand");
     ASSERT_EQ(TWBlockchainAlgorand, TWCoinTypeBlockchain(TWCoinTypeAlgorand));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAlgorand));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAlgorand));
+    assertStringsEqual(symbol, "ALGO");
+    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/123");
+    assertStringsEqual(id, "algorand");
+    assertStringsEqual(name, "Algorand");
 }

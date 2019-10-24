@@ -20,12 +20,12 @@ TEST(TWICONCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeICON));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeICON));
 
-    assertStringsEqual(symbol, "ICX");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeICON), 18);
-    assertStringsEqual(txUrl, "https://tracker.icon.foundation/transaction/123");
-    assertStringsEqual(id, "icon");
-    assertStringsEqual(name, "ICON");
     ASSERT_EQ(TWBlockchainIcon, TWCoinTypeBlockchain(TWCoinTypeICON));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeICON));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeICON));
+    assertStringsEqual(symbol, "ICX");
+    assertStringsEqual(txUrl, "https://tracker.icon.foundation/transaction/123");
+    assertStringsEqual(id, "icon");
+    assertStringsEqual(name, "ICON");
 }

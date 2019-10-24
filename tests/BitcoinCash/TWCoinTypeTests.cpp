@@ -20,12 +20,12 @@ TEST(TWBitcoinCashCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoinCash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinCash));
 
-    assertStringsEqual(symbol, "BCH");
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeBitcoinCash), 8);
-    assertStringsEqual(txUrl, "https://blockchair.com/bitcoin-cash/transaction/123");
-    assertStringsEqual(id, "bitcoincash");
-    assertStringsEqual(name, "Bitcoin Cash");
     ASSERT_EQ(TWBlockchainBitcoin, TWCoinTypeBlockchain(TWCoinTypeBitcoinCash));
     ASSERT_EQ(0x5, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinCash));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBitcoinCash));
+    assertStringsEqual(symbol, "BCH");
+    assertStringsEqual(txUrl, "https://blockchair.com/bitcoin-cash/transaction/123");
+    assertStringsEqual(id, "bitcoincash");
+    assertStringsEqual(name, "Bitcoin Cash");
 }
