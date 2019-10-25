@@ -47,7 +47,7 @@ inline std::string encode(const Data& val, const char* alphabet = nullptr) {
     char* retval = base32_encode(val.data(), inLen, buf, outLen, alphabet);
     assert(retval != nullptr);
     // make sure there is a terminator ath the end
-    buf[outLen-1] = '\0';
+    buf[outLen - 1] = '\0';
     return std::string(buf);
 }
 

@@ -26,7 +26,7 @@ bool Address::isValid(const std::string& string) {
 
     // Check that it decodes correctly
     Data decoded;
-    valid = TW::Base32::decode(string, decoded);
+    valid = Base32::decode(string, decoded);
 
     // ... and that version byte is 0x30
     if (valid && TWStellarVersionByte(decoded[0]) != TWStellarVersionByte::TWStellarVersionByteAccountID) {
@@ -51,7 +51,7 @@ Address::Address(const std::string& string) {
     }
 
     Data decoded;
-    TW::Base32::decode(string, decoded);
+    Base32::decode(string, decoded);
     std::copy(decoded.begin() + 1, decoded.begin() + 1 + bytes.size(), bytes.begin());
     memzero(decoded.data(), decoded.size());
 }
@@ -79,6 +79,6 @@ std::string Address::string() const {
 
     Data bytesAsData;
     bytesAsData.assign(bytes_full.begin(), bytes_full.end());
-    auto out = TW::Base32::encode(bytesAsData);
+    auto out = Base32::encode(bytesAsData);
     return out;
 }

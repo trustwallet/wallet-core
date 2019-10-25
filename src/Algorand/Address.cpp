@@ -18,7 +18,7 @@ bool Address::isValid(const std::string& string) {
         return false;
     }
     Data decoded;
-    if (!TW::Base32::decode(string, decoded)) {
+    if (!Base32::decode(string, decoded)) {
         return false;
     }
     // compute public key hash
@@ -38,7 +38,7 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
     Data decoded;
-    if (!TW::Base32::decode(string, decoded)) {
+    if (!Base32::decode(string, decoded)) {
         throw std::invalid_argument("Invalid address string");
     }
     std::copy(decoded.begin(), decoded.begin() + PublicKey::ed25519Size, bytes.begin());
@@ -60,6 +60,6 @@ std::string Address::string() const {
     // base32_encode(publickey + checksum)
     std::copy(bytes.begin(), bytes.end(), data.data());
     std::copy(hash.end() - checksumSize, hash.end(), data.data() + PublicKey::ed25519Size);
-    std::string encoded = TW::Base32::encode(data);
+    std::string encoded = Base32::encode(data);
     return encoded;
 }

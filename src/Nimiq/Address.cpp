@@ -38,7 +38,7 @@ bool Address::isValid(const std::string& stringPadded) {
 
     // Check if valid Base32
     Data hash;
-    if (!TW::Base32::decode(string.data() + 4, hash, BASE32_ALPHABET_NIMIQ)) {
+    if (!Base32::decode(string.data() + 4, hash, BASE32_ALPHABET_NIMIQ)) {
         return false;
     }
 
@@ -76,7 +76,7 @@ Address::Address(const std::string& stringPadded) {
     // Decode address
     auto base32 = string.substr(4, 32);
     Data data;
-    if (!TW::Base32::decode(base32, data, BASE32_ALPHABET_NIMIQ)) {
+    if (!Base32::decode(base32, data, BASE32_ALPHABET_NIMIQ)) {
         throw std::invalid_argument("Invalid address data");
     }
     if (data.size() != size) {
@@ -107,7 +107,7 @@ std::string Address::string() const {
     // Calculate Base32 sum
     Data bytesAsData;
     bytesAsData.assign(bytes.begin(), bytes.end());
-    auto base32 = TW::Base32::encode(bytesAsData, BASE32_ALPHABET_NIMIQ);
+    auto base32 = Base32::encode(bytesAsData, BASE32_ALPHABET_NIMIQ);
 
     for (auto i = 0; i < 32; i += 4) {
         // Add spaces to output
