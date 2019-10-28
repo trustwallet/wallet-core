@@ -443,7 +443,7 @@
         "derivationPath": "m/44'/5718350'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
-        "explorer": "https://explorer.wanchain.org/tx/",
+        "explorer": "https://www.wanscan.org/tx/",
         "info": {
             "url": "https://wanchain.org",
             "client": "https://github.com/wanchain/go-wanchain",
