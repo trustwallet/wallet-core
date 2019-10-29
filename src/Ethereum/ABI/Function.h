@@ -46,6 +46,26 @@ inline void encode(const Function<Params...>& f, Data& data) {
 }
 
 template <typename... Params>
+inline bool decode(const Data& encoded, Function<Params...>& function, size_t& offset_inout) {
+    // read 4-byte hash
+    std::array<byte, 4> hash;
+    if (!decode(encoded, hash, offset_inout)) { return false; }
+    // adjust offset; hash is NOT padded to 32 bytes
+    offset_inout = offset_inout - 32 + 4;
+    // verify hash
+    auto string = type_string(function);
+    Data hashExpect = Hash::keccak256(Data(string.begin(), string.end()));
+    hashExpect = Data(hashExpect.begin(), hashExpect.begin() + 4);
+    if (Data(hash.begin(), hash.end()) != hashExpect) {
+        // invalid hash
+        return false;
+    }
+    // read parameters
+    if (!decode(encoded, function.parameters, offset_inout)) { return false; }
+    return true;
+}
+
+template <typename... Params>
 inline std::string type_string(const Function<Params...>& f) {
     return f.name + "(" + type_string(f.parameters) + ")";
 }

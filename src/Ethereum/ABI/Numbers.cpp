@@ -15,9 +15,29 @@ void encode(uint256_t value, Data& data) {
     append(data, bytes);
 }
 
+bool decode(const Data& encoded, uint256_t& decoded, size_t& offset_inout) {
+    decoded = 0u;
+    if (encoded.empty() || (encoded.size() < (encodedIntSize + offset_inout))) {
+        return false;
+    }
+    decoded = loadWithOffset(encoded, offset_inout);
+    offset_inout += encodedIntSize;
+    return true;
+}
+
 void encode(bool v, Data& data) {
     append(data, Data(encodedIntSize - 1));
     data.push_back(v ? 1 : 0);
+}
+
+bool decode(const Data& encoded, uint8_t& decoded, size_t& offset_inout) {
+    decoded = 0u;
+    if (encoded.empty() || (encoded.size() < (offset_inout + 1))) {
+        return false;
+    }
+    decoded = encoded[offset_inout];
+    offset_inout += 1;
+    return true;
 }
 
 } // namespace TW::Ethereum

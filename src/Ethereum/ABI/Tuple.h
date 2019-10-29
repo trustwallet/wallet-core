@@ -110,4 +110,49 @@ inline std::string type_string(const std::tuple<T...>& tuple) {
     return string;
 }
 
+inline bool decodeTuple_small(const Data& encoded, std::tuple<>& tuple_inout, size_t& offset_inout) { return true; }
+
+/// Process small values and extract indices for larger values
+template <typename First, typename... T>
+inline bool decodeTuple_small(const Data& encoded, std::tuple<First, T...>& tuple_inout, size_t& offset_inout) {
+    auto headTuple = head(tuple_inout);
+    if (is_dynamic(headTuple)) {
+        uint256_t index;
+        if (!decode(encoded, index, offset_inout)) { return false; }
+        // index is read but not used
+    } else {
+        if (!decode(encoded, headTuple, offset_inout)) { return false; }
+    }
+    // process recursively, must recreate L-value
+    std::tuple tailTuple = tail(tuple_inout);
+    bool res = decodeTuple_small(encoded, tailTuple, offset_inout);
+    tuple_inout = std::tuple_cat(std::make_tuple(headTuple), tailTuple);
+    return res;
+}
+
+inline bool decodeTuple_large(const Data& encoded, std::tuple<>& tuple_inout, size_t& offset_inout) { return true; }
+
+/// Process large values
+template <typename First, typename... T>
+inline bool decodeTuple_large(const Data& encoded, std::tuple<First, T...>& tuple_inout, size_t& offset_inout) {
+    auto headTuple = head(tuple_inout);
+    if (is_dynamic(headTuple)) {
+        if (!decode(encoded, headTuple, offset_inout)) { return false; }
+    }
+    // process recursively, must recreate L-value
+    std::tuple tailTuple = tail(tuple_inout);
+    bool res = decodeTuple_large(encoded, tailTuple, offset_inout);
+    tuple_inout = std::tuple_cat(std::make_tuple(headTuple), tailTuple);
+    return res;
+}
+
+/// Decode a tuple.  The tuple has to be provided, the types must be known.  The provided tuple is filled with values.
+template <typename... T>
+inline bool decode(const Data& encoded, std::tuple<T...>& tuple_inout, size_t& offset_inout) {
+    // pass 1: process small values
+    if (!decodeTuple_small(encoded, tuple_inout, offset_inout)) { return false; }
+    // pass 2: process large values
+    return decodeTuple_large(encoded, tuple_inout, offset_inout);
+}
+
 } // namespace TW::Ethereum
