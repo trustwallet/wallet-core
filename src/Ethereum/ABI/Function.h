@@ -27,17 +27,17 @@ class Function {
 };
 
 template <typename... Params>
-bool is_dynamic(const Function<Params...>& f) {
+inline bool is_dynamic(const Function<Params...>& f) {
     return is_dynaic(f.parameters);
 }
 
 template <typename... Params>
-bool size(const Function<Params...>& f) {
+inline bool size(const Function<Params...>& f) {
     return 4 + size(f.parameters);
 }
 
 template <typename... Params>
-void encode(const Function<Params...>& f, Data& data) {
+inline void encode(const Function<Params...>& f, Data& data) {
     auto string = type_string(f);
     auto hash = Hash::keccak256(Data(string.begin(), string.end()));
     auto signature = Data(hash.begin(), hash.begin() + 4);
@@ -46,7 +46,7 @@ void encode(const Function<Params...>& f, Data& data) {
 }
 
 template <typename... Params>
-std::string type_string(const Function<Params...>& f) {
+inline std::string type_string(const Function<Params...>& f) {
     return f.name + "(" + type_string(f.parameters) + ")";
 }
 

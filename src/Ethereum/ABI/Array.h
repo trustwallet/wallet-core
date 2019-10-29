@@ -15,18 +15,18 @@
 namespace TW::Ethereum {
 
 template <typename T>
-bool is_dynamic(std::vector<T>) {
+inline bool is_dynamic(std::vector<T>) {
     return true;
 }
 
 template <typename T>
-std::size_t size(const std::vector<T>& array) {
+inline std::size_t size(const std::vector<T>& array) {
     return 32 + std::accumulate(array.begin(), array.end(), 0u,
                                 [](size_t sum, auto x) { return sum + size(x); });
 }
 
 template <typename T>
-void encode(const std::vector<T>& array, Data& data) {
+inline void encode(const std::vector<T>& array, Data& data) {
     encode(uint256_t(array.size()), data);
 
     std::size_t headSize = 0;
@@ -55,7 +55,7 @@ void encode(const std::vector<T>& array, Data& data) {
 }
 
 template <typename T>
-std::string type_string(const std::vector<T>& array) {
+inline std::string type_string(const std::vector<T>& array) {
     return type_string(array[0]) + "[]";
 }
 
