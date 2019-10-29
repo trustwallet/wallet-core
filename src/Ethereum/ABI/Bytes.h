@@ -60,7 +60,7 @@ inline bool is_dynamic(std::string) {
 }
 
 inline std::size_t size(const std::string& string) {
-    return string.size();
+    return 32 + ((string.size() + 31) / 32) * 32;
 }
 
 inline void encode(const std::string& string, Data& data) {

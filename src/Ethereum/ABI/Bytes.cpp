@@ -11,7 +11,7 @@ namespace TW::Ethereum {
 void encode(const Data& bytes, Data& data) {
     encode(uint256_t(bytes.size()), data);
 
-    const auto count = std::min(std::size_t(32), bytes.size());
+    const auto count = bytes.size();
     const auto padding = ((count + 31) / 32) * 32 - count;
     data.insert(data.end(), bytes.begin(), bytes.begin() + count);
     append(data, Data(padding));
