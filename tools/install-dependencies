@@ -68,6 +68,7 @@ tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz
 # Build Protobuf
 cd protobuf-$PROTOBUF_VERSION
 ./configure --prefix="$PREFIX"
+make clean
 make -j4
 make install
 "$PREFIX/bin/protoc" --version
