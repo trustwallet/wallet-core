@@ -16,7 +16,7 @@ class TestHarmonyStakingDelegateSigner {
     }
 
     @Test
-    fun testHarmonyStakingTransactionNewValidatorSigning() {
+    fun testHarmonyStakingTransactionCreateValidatorSigning() {
         val desc = Harmony.Description.newBuilder()
         desc.apply {
             name = "Alice"
@@ -27,15 +27,15 @@ class TestHarmonyStakingDelegateSigner {
         }
         val r = Harmony.Decimal.newBuilder()
         r.apply {
-            value = ByteString.copyFrom("0x64".toHexByteArray())
+            value = "0.1"
         }
         val mr = Harmony.Decimal.newBuilder()
         mr.apply {
-            value = ByteString.copyFrom("0x96".toHexByteArray())
+            value = "0.9"
         }
         val mcr = Harmony.Decimal.newBuilder()
         mcr.apply {
-            value = ByteString.copyFrom("0x05".toHexByteArray())
+            value = "0.05"
         }
         val cRate = Harmony.CommissionRate.newBuilder()
         cRate.apply {
@@ -43,37 +43,39 @@ class TestHarmonyStakingDelegateSigner {
             maxRate = mr.build()
             maxChangeRate = mcr.build()
         }
-        val newValidator = Harmony.DirectiveNewValidator.newBuilder()
-        newValidator.apply {
+        val pubKey = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
+        val createValidator = Harmony.DirectiveCreateValidator.newBuilder()
+        createValidator.apply {
+            validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             description = desc.build()
-            commission = cRate.build()
+            commissionRates = cRate.build()
             minSelfDelegation = ByteString.copyFrom("0xa".toHexByteArray())
-            stakingAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            pubKey = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
+            maxTotalDelegation = ByteString.copyFrom("0x0bb8".toHexByteArray())
+            addAllSlotPubKeys(listOf(pubKey))
             amount = ByteString.copyFrom("0x64".toHexByteArray())
         }
         val signingInput = Harmony.StakingTransactionInput.newBuilder()
         signingInput.apply {
             privateKey = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
-            newValidatorMessage = newValidator.build()
+            createValidatorMessage = createValidator.build()
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
         }
         val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
 
-        val e1 = "0xf8ec80f8a3f83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e"
-        val e2 = "2774206d6573732077697468206d65212121e0ca89056bc75e2d63100000ca890821ab0d4414980000c9884563"
-        val e3 = "918244f400000a94ebcd16e8c1d8f493ba04e99a56474122d81a9c58b0b9486167ab9087ab818dc4ce026edb5b"
-        val e4 = "f216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b622476086116402806428a00b1a797d11f7b0"
-        val e5 = "dad42abd66c542fab8af0f028b7159bb70e44fe68b2e4d9f2ca07b223662bdb4e1a084f8c506095886a1f5eda0"
-        val e6 = "51927fab3516ab9258efc34cd7"
+        val e1 = "0xf8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
+        val e2 = "652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345"
+        val e3 = "785d8a0000c9880c7d713b49da0000c887b1a2bc2ec500000a820bb8f1b0b9486167ab9087ab818dc4ce026edb"
+        val e4 = "5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b622476086116402806428a0476e8a0fe478"
+        val e5 = "e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28a03b2be18e73b2f99d7e2691485a0e166f28e6"
+        val e6 = "2815079c126e68f876dc97339f8f"
 
         assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), e1 + e2 + e3 + e4 + e5 + e6)
         assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x28")
-        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x0b1a797d11f7b0dad42abd66c542fab8af0f028b7159bb70e44fe68b2e4d9f2c")
-        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x7b223662bdb4e1a084f8c506095886a1f5eda051927fab3516ab9258efc34cd7")
+        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x476e8a0fe478e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28")
+        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x3b2be18e73b2f99d7e2691485a0e166f28e62815079c126e68f876dc97339f8f")
     }
 
     @Test
@@ -88,14 +90,17 @@ class TestHarmonyStakingDelegateSigner {
         }
         val rate = Harmony.Decimal.newBuilder()
         rate.apply {
-            value = ByteString.copyFrom("0x64".toHexByteArray())
+            value = "0.1"
         }
         val editValidator = Harmony.DirectiveEditValidator.newBuilder()
         editValidator.apply {
+            validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             description = desc.build()
-            stakingAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             commissionRate = rate.build()
             minSelfDelegation = ByteString.copyFrom("0xa".toHexByteArray())
+            maxTotalDelegation = ByteString.copyFrom("0x0bb8".toHexByteArray())
+            slotKeyToRemove = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
+            slotKeyToAdd = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
         }
         val signingInput = Harmony.StakingTransactionInput.newBuilder()
         signingInput.apply {
@@ -108,15 +113,17 @@ class TestHarmonyStakingDelegateSigner {
         }
         val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
 
-        val e1 = "0xf8a401f85bf83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e"
-        val e2 = "2774206d6573732077697468206d6521212194ebcd16e8c1d8f493ba04e99a56474122d81a9c58ca89056bc75e"
-        val e3 = "2d631000000a02806428a071b68b38864e75af60bf05e52b53278e864dbf2eb4a33adeacaa6e1b31f21e59a01e"
-        val e4 = "e06acb4d2bc22105454a79ef089fc0794ddba6e2849d9e4236180b47e973ed"
+        val e1 = "0xf9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
+        val e2 = "6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121c9880163"
+        val e3 = "45785d8a00000a820bb8b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7"
+        val e4 = "d12f0e6dd5307a73b62247608611b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced"
+        val e5 = "1ad181e7d12f0e6dd5307a73b6224760861102806427a05e54b55272f6bf5ffeca10d85976749d6b844cc9f30b"
+        val e6 = "a3285b9ab8a82d53e3e3a03ce04d9a9f834e20b22aa918ead346c84a04b1504fe3ff9e38f21c5e5712f013"
 
-        assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), e1 + e2 + e3 + e4)
-        assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x28")
-        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x71b68b38864e75af60bf05e52b53278e864dbf2eb4a33adeacaa6e1b31f21e59")
-        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x1ee06acb4d2bc22105454a79ef089fc0794ddba6e2849d9e4236180b47e973ed")
+        assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), e1 + e2 + e3 + e4 + e5 + e6)
+        assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x27")
+        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x5e54b55272f6bf5ffeca10d85976749d6b844cc9f30ba3285b9ab8a82d53e3e3")
+        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x3ce04d9a9f834e20b22aa918ead346c84a04b1504fe3ff9e38f21c5e5712f013")
     }
 
     @Test
@@ -149,37 +156,6 @@ class TestHarmonyStakingDelegateSigner {
     }
 
     @Test
-    fun testHarmonyStakingTransactionRedelegateSigning() {
-        val signingInput = Harmony.StakingTransactionInput.newBuilder()
-        val redelegate = Harmony.DirectiveRedelegate.newBuilder()
-        redelegate.apply {
-            delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            validatorSrcAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            validatorDstAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            amount = ByteString.copyFrom("0xa".toHexByteArray())
-        }
-        signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
-            chainId = ByteString.copyFrom("0x02".toHexByteArray())
-            redelegateMessage = redelegate.build()
-            nonce = ByteString.copyFrom("0x2".toHexByteArray())
-            gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
-            gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
-        }
-        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
-
-        val e1 = "0xf88903f84094ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba0"
-        val e2 = "4e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c580a02806428"
-        val e3 = "a0c479121bf1ea02fa1052a4d54743703fa6eeb16e50ff002d34fcfde736c21d75a07a1b9"
-        val e4 = "dac1761ab9fb38cadcdd4b0b28aafc39d1707e913f6b758e05e09b1e517"
-
-        assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), e1 + e2 + e3 + e4)
-        assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x28")
-        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0xc479121bf1ea02fa1052a4d54743703fa6eeb16e50ff002d34fcfde736c21d75")
-        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x7a1b9dac1761ab9fb38cadcdd4b0b28aafc39d1707e913f6b758e05e09b1e517")
-    }
-
-    @Test
     fun testHarmonyStakingTransactionUndelegateSigning() {
         val signingInput = Harmony.StakingTransactionInput.newBuilder()
         val undelegate = Harmony.DirectiveUndelegate.newBuilder()
@@ -198,14 +174,40 @@ class TestHarmonyStakingDelegateSigner {
         }
         val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
 
-        val e1 = "0xf87304eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a"
-        val e2 = "9c580a02806427a0d6af2488d3b45658f37ff6bb89f7eaa86f7c1dfce19a68697e778be28efd2320a05b9837bd"
-        val e3 = "5c7041318859f9fb444a255f32f4d7e7b49f18830ba75abecdc02390"
+        val e1 = "0xf87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
+        val e2 = "580a02806428a05bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2a05202c4b516"
+        val e3 = "52d5144c6a30d14d1a7a316b5a4a6b49be985b4bc6980e49f7acb7"
 
         assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), e1 + e2 + e3)
-        assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x27")
-        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0xd6af2488d3b45658f37ff6bb89f7eaa86f7c1dfce19a68697e778be28efd2320")
-        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x5b9837bd5c7041318859f9fb444a255f32f4d7e7b49f18830ba75abecdc02390")
+        assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x28")
+        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x5bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2")
+        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x5202c4b51652d5144c6a30d14d1a7a316b5a4a6b49be985b4bc6980e49f7acb7")
+    }
+
+    @Test
+    fun testHarmonyStakingTransactionCollectRewardsSigning() {
+        val signingInput = Harmony.StakingTransactionInput.newBuilder()
+        val cRewards = Harmony.DirectiveCollectRewards.newBuilder()
+        cRewards.apply {
+            delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
+        }
+        signingInput.apply {
+            privateKey = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
+            chainId = ByteString.copyFrom("0x02".toHexByteArray())
+            collectRewards = cRewards.build()
+            nonce = ByteString.copyFrom("0x2".toHexByteArray())
+            gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
+            gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
+        }
+        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
+
+        val e1 = "0xf85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f425"
+        val e2 = "77001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd9"
+        val e3 = "1f2988c7e7673950bac5a08c174f2d0af27a82039f1e3d"
+
+        assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), e1 + e2 + e3)
+        assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x28")
+        assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x4c15c72f42577001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625")
+        assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x55c13ea17c3efd1cd91f2988c7e7673950bac5a08c174f2d0af27a82039f1e3d")
     }
 }
-

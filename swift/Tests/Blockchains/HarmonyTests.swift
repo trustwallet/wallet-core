@@ -31,7 +31,7 @@ class HarmonyTests: XCTestCase {
         XCTAssertEqual(output.s.hexString, "6c19085d3376c30f6dc47cec795991cd37d6d0ebddfa633b0a8f494bc19cd01b")
     }
 
-    func testStakingNewValidator() {
+    func testStakingCreateValidator() {
         let localNet = "0x02"
         let description = TW_Harmony_Proto_Description.with {
             $0.name = "Alice"
@@ -41,25 +41,27 @@ class HarmonyTests: XCTestCase {
             $0.details = "Don't mess with me!!!"
         }
         let rate = TW_Harmony_Proto_Decimal.with {
-            $0.value = Data(hexString: "64")!
+            $0.value = "0.1"
         }
         let maxRate = TW_Harmony_Proto_Decimal.with {
-            $0.value = Data(hexString: "96")!
+            $0.value = "0.9"
         }
         let maxChangeRate = TW_Harmony_Proto_Decimal.with {
-            $0.value = Data(hexString: "5")!
+            $0.value = "0.05"
         }
         let commission = TW_Harmony_Proto_CommissionRate.with {
             $0.rate = rate
             $0.maxRate = maxRate
             $0.maxChangeRate = maxChangeRate
         }
-        let newValidator = TW_Harmony_Proto_DirectiveNewValidator.with {
+        let pubKey = Data(hexString: "b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611")!
+        let createValidator = TW_Harmony_Proto_DirectiveCreateValidator.with {
+            $0.validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             $0.description_p = description
-            $0.commission = commission
+            $0.commissionRates = commission
             $0.minSelfDelegation = Data(hexString: "0xa")!
-            $0.stakingAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            $0.pubKey = Data(hexString: "b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611")!
+            $0.maxTotalDelegation = Data(hexString: "0x0bb8")!
+            $0.slotPubKeys = [pubKey]
             $0.amount = Data(hexString: "0x64")!
         }
         let input = TW_Harmony_Proto_StakingTransactionInput.with {
@@ -68,21 +70,21 @@ class HarmonyTests: XCTestCase {
             $0.nonce = Data(hexString: "0x2")!
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x64")!
-            $0.newValidatorMessage = newValidator
+            $0.createValidatorMessage = createValidator
         }
         let output = HarmonyStakingSigner.sign(input: input)
 
-        let e1 = "f8ec80f8a3f83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e"
-        let e2 = "2774206d6573732077697468206d65212121e0ca89056bc75e2d63100000ca890821ab0d4414980000c9884563"
-        let e3 = "918244f400000a94ebcd16e8c1d8f493ba04e99a56474122d81a9c58b0b9486167ab9087ab818dc4ce026edb5b"
-        let e4 = "f216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b622476086116402806428a00b1a797d11f7b0"
-        let e5 = "dad42abd66c542fab8af0f028b7159bb70e44fe68b2e4d9f2ca07b223662bdb4e1a084f8c506095886a1f5eda0"
-        let e6 = "51927fab3516ab9258efc34cd7"
+        let e1 = "f8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
+        let e2 = "652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345"
+        let e3 = "785d8a0000c9880c7d713b49da0000c887b1a2bc2ec500000a820bb8f1b0b9486167ab9087ab818dc4ce026edb"
+        let e4 = "5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b622476086116402806428a0476e8a0fe478"
+        let e5 = "e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28a03b2be18e73b2f99d7e2691485a0e166f28e6"
+        let e6 = "2815079c126e68f876dc97339f8f"
 
         XCTAssertEqual(output.encoded.hexString, e1 + e2 + e3 + e4 + e5 + e6)
         XCTAssertEqual(output.v.hexString, "28")
-        XCTAssertEqual(output.r.hexString, "0b1a797d11f7b0dad42abd66c542fab8af0f028b7159bb70e44fe68b2e4d9f2c")
-        XCTAssertEqual(output.s.hexString, "7b223662bdb4e1a084f8c506095886a1f5eda051927fab3516ab9258efc34cd7")
+        XCTAssertEqual(output.r.hexString, "476e8a0fe478e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28")
+        XCTAssertEqual(output.s.hexString, "3b2be18e73b2f99d7e2691485a0e166f28e62815079c126e68f876dc97339f8f")
     }
 
     func testStakingEditValidator() {
@@ -95,13 +97,16 @@ class HarmonyTests: XCTestCase {
             $0.details = "Don't mess with me!!!"
         }
         let commissionRate = TW_Harmony_Proto_Decimal.with {
-            $0.value = Data(hexString: "64")!
+            $0.value = "0.1"
         }
         let editValidator = TW_Harmony_Proto_DirectiveEditValidator.with {
+            $0.validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             $0.description_p = desc
-            $0.stakingAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             $0.commissionRate = commissionRate
             $0.minSelfDelegation = Data(hexString: "0xa")!
+            $0.maxTotalDelegation = Data(hexString: "0x0bb8")!
+            $0.slotKeyToRemove = Data(hexString: "b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611")!
+            $0.slotKeyToAdd = Data(hexString: "b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611")!
         }
         let input = TW_Harmony_Proto_StakingTransactionInput.with {
             $0.chainID = Data(hexString: localNet)!
@@ -113,15 +118,17 @@ class HarmonyTests: XCTestCase {
         }
         let output = HarmonyStakingSigner.sign(input: input)
 
-        let e1 = "f8a401f85bf83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e"
-        let e2 = "2774206d6573732077697468206d6521212194ebcd16e8c1d8f493ba04e99a56474122d81a9c58ca89056bc75e"
-        let e3 = "2d631000000a02806428a071b68b38864e75af60bf05e52b53278e864dbf2eb4a33adeacaa6e1b31f21e59a01e"
-        let e4 = "e06acb4d2bc22105454a79ef089fc0794ddba6e2849d9e4236180b47e973ed"
+        let e1 = "f9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
+        let e2 = "6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121c9880163"
+        let e3 = "45785d8a00000a820bb8b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7"
+        let e4 = "d12f0e6dd5307a73b62247608611b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced"
+        let e5 = "1ad181e7d12f0e6dd5307a73b6224760861102806427a05e54b55272f6bf5ffeca10d85976749d6b844cc9f30b"
+        let e6 = "a3285b9ab8a82d53e3e3a03ce04d9a9f834e20b22aa918ead346c84a04b1504fe3ff9e38f21c5e5712f013"
 
-        XCTAssertEqual(output.encoded.hexString, e1 + e2 + e3 + e4)
-        XCTAssertEqual(output.v.hexString, "28")
-        XCTAssertEqual(output.r.hexString, "71b68b38864e75af60bf05e52b53278e864dbf2eb4a33adeacaa6e1b31f21e59")
-        XCTAssertEqual(output.s.hexString, "1ee06acb4d2bc22105454a79ef089fc0794ddba6e2849d9e4236180b47e973ed")
+        XCTAssertEqual(output.encoded.hexString, e1 + e2 + e3 + e4 + e5 + e6)
+        XCTAssertEqual(output.v.hexString, "27")
+        XCTAssertEqual(output.r.hexString, "5e54b55272f6bf5ffeca10d85976749d6b844cc9f30ba3285b9ab8a82d53e3e3")
+        XCTAssertEqual(output.s.hexString, "3ce04d9a9f834e20b22aa918ead346c84a04b1504fe3ff9e38f21c5e5712f013")
     }
 
     func testStakingDelegate() {
@@ -151,35 +158,6 @@ class HarmonyTests: XCTestCase {
         XCTAssertEqual(output.s.hexString, "5c28dbc41763dc2391263e1aae30f842f90734d7ec68cee2352af0d4b0662b54")
     }
 
-    func testStakingRedelegate() {
-        let localNet = "0x02"
-        let redelegate = TW_Harmony_Proto_DirectiveRedelegate.with {
-            $0.delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            $0.validatorSrcAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            $0.validatorDstAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            $0.amount = Data(hexString: "0xa")!
-        }
-        let input = TW_Harmony_Proto_StakingTransactionInput.with {
-            $0.chainID = Data(hexString: localNet)!
-            $0.privateKey = Data(hexString: "4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48")!
-            $0.nonce = Data(hexString: "0x2")!
-            $0.gasPrice = Data(hexString: "0x")!
-            $0.gasLimit = Data(hexString: "0x64")!
-            $0.redelegateMessage = redelegate
-        }
-        let output = HarmonyStakingSigner.sign(input: input)
-
-        let e1 = "f88903f84094ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba0"
-        let e2 = "4e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c580a02806428"
-        let e3 = "a0c479121bf1ea02fa1052a4d54743703fa6eeb16e50ff002d34fcfde736c21d75a07a1b9"
-        let e4 = "dac1761ab9fb38cadcdd4b0b28aafc39d1707e913f6b758e05e09b1e517"
-
-        XCTAssertEqual(output.encoded.hexString, e1 + e2 + e3 + e4)
-        XCTAssertEqual(output.v.hexString, "28")
-        XCTAssertEqual(output.r.hexString, "c479121bf1ea02fa1052a4d54743703fa6eeb16e50ff002d34fcfde736c21d75")
-        XCTAssertEqual(output.s.hexString, "7a1b9dac1761ab9fb38cadcdd4b0b28aafc39d1707e913f6b758e05e09b1e517")
-    }
-
     func testStakingUndelegate() {
         let localNet = "0x02"
         let undelegate = TW_Harmony_Proto_DirectiveUndelegate.with {
@@ -197,13 +175,38 @@ class HarmonyTests: XCTestCase {
         }
         let output = HarmonyStakingSigner.sign(input: input)
 
-        let e1 = "f87304eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a"
-        let e2 = "9c580a02806427a0d6af2488d3b45658f37ff6bb89f7eaa86f7c1dfce19a68697e778be28efd2320a05b9837bd"
-        let e3 = "5c7041318859f9fb444a255f32f4d7e7b49f18830ba75abecdc02390"
+        let e1 = "f87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
+        let e2 = "580a02806428a05bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2a05202c4b516"
+        let e3 = "52d5144c6a30d14d1a7a316b5a4a6b49be985b4bc6980e49f7acb7"
 
         XCTAssertEqual(output.encoded.hexString, e1 + e2 + e3)
-        XCTAssertEqual(output.v.hexString, "27")
-        XCTAssertEqual(output.r.hexString, "d6af2488d3b45658f37ff6bb89f7eaa86f7c1dfce19a68697e778be28efd2320")
-        XCTAssertEqual(output.s.hexString, "5b9837bd5c7041318859f9fb444a255f32f4d7e7b49f18830ba75abecdc02390")
+        XCTAssertEqual(output.v.hexString, "28")
+        XCTAssertEqual(output.r.hexString, "5bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2")
+        XCTAssertEqual(output.s.hexString, "5202c4b51652d5144c6a30d14d1a7a316b5a4a6b49be985b4bc6980e49f7acb7")
+    }
+
+    func testStakingCollectRewards() {
+        let localNet = "0x02"
+        let collectRewards = TW_Harmony_Proto_DirectiveCollectRewards.with {
+            $0.delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
+        }
+        let input = TW_Harmony_Proto_StakingTransactionInput.with {
+            $0.chainID = Data(hexString: localNet)!
+            $0.privateKey = Data(hexString: "4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48")!
+            $0.nonce = Data(hexString: "0x2")!
+            $0.gasPrice = Data(hexString: "0x")!
+            $0.gasLimit = Data(hexString: "0x64")!
+            $0.collectRewards = collectRewards
+        }
+        let output = HarmonyStakingSigner.sign(input: input)
+
+        let e1 = "f85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f425"
+        let e2 = "77001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd9"
+        let e3 = "1f2988c7e7673950bac5a08c174f2d0af27a82039f1e3d"
+
+        XCTAssertEqual(output.encoded.hexString, e1 + e2 + e3)
+        XCTAssertEqual(output.v.hexString, "28")
+        XCTAssertEqual(output.r.hexString, "4c15c72f42577001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625")
+        XCTAssertEqual(output.s.hexString, "55c13ea17c3efd1cd91f2988c7e7673950bac5a08c174f2d0af27a82039f1e3d")
     }
 }

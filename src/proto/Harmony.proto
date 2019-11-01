@@ -49,11 +49,11 @@ message SigningOutput {
 message StakingTransactionInput {
     // StakeMsg 
     oneof stake_msg {
-        DirectiveNewValidator new_validator_message = 1;
+        DirectiveCreateValidator create_validator_message = 1;
         DirectiveEditValidator edit_validator_message = 2;
         DirectiveDelegate delegate_message = 3;
-        DirectiveRedelegate redelegate_message = 4;
-        DirectiveUndelegate undelegate_message = 5;
+        DirectiveUndelegate undelegate_message = 4;
+        DirectiveCollectRewards collect_rewards = 5;
     }
 
     // Nonce (256-bit number)
@@ -90,8 +90,7 @@ message Description {
 }
 
 message Decimal {
-    bytes value = 1;
-    bytes precision = 2;
+    string value = 1;
 }
 
 message CommissionRate {
@@ -100,20 +99,24 @@ message CommissionRate {
     Decimal max_change_rate = 3;
 }
 
-message DirectiveNewValidator {
-    Description description = 1;
-    CommissionRate commission = 2;
-    bytes min_self_delegation = 3;
-    string staking_address = 4;
-    bytes pub_key = 5;
-    bytes amount = 6;
+message DirectiveCreateValidator {
+    string validator_address = 1;
+    Description description = 2;
+    CommissionRate commission_rates = 3;
+    bytes min_self_delegation = 4;
+    bytes max_total_delegation = 5;
+    repeated bytes slot_pub_keys = 6;
+    bytes amount = 7;
 }
 
 message DirectiveEditValidator {
-    Description description = 1;
-    string staking_address = 2;
+    string validator_address = 1;
+    Description description = 2;
     Decimal commission_rate = 3;
     bytes min_self_delegation = 4;
+    bytes max_total_delegation = 5;
+    bytes slot_key_to_remove = 6;
+    bytes slot_key_to_add = 7;
 }
 
 message DirectiveDelegate {
@@ -122,15 +125,12 @@ message DirectiveDelegate {
     bytes amount = 3;
 }
 
-message DirectiveRedelegate {
-    string delegator_address = 1;
-    string validator_src_address = 2;
-    string validator_dst_address = 3;
-    bytes amount = 4;
-}
-
 message DirectiveUndelegate {
     string delegator_address = 1;
     string validator_address = 2;
     bytes amount = 3;
+}
+
+message DirectiveCollectRewards {
+    string delegator_address = 1;
 }
