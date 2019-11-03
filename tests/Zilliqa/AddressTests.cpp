@@ -23,7 +23,7 @@ TEST(ZilliqaAddress, FromPrivateKey) {
     const auto address = Address(publicKey);
     auto expectedAddress = "zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg";
 
-    ASSERT_EQ(address.hrp, stringForHRP(TWHRPZilliqa));
+    ASSERT_EQ(address.getHrp(), stringForHRP(TWHRPZilliqa));
     ASSERT_EQ(address.string(), expectedAddress);
 }
 
@@ -37,12 +37,12 @@ TEST(ZilliqaAddress, FromKeyhash) {
 }
 
 TEST(ZilliqaAddress, Validation) {
-    ASSERT_FALSE(Zilliqa::isValidAddress("0x91cddcebe846ce4d47712287eee53cf17c2cfb7"));
-    ASSERT_FALSE(Zilliqa::isValidAddress(""));
-    ASSERT_FALSE(Zilliqa::isValidAddress("0x"));
-    ASSERT_FALSE(Zilliqa::isValidAddress("91cddcebe846ce4d47712287eee53cf17c2cfb7"));
+    ASSERT_FALSE(Zilliqa::Address::isValid("0x91cddcebe846ce4d47712287eee53cf17c2cfb7"));
+    ASSERT_FALSE(Zilliqa::Address::isValid(""));
+    ASSERT_FALSE(Zilliqa::Address::isValid("0x"));
+    ASSERT_FALSE(Zilliqa::Address::isValid("91cddcebe846ce4d47712287eee53cf17c2cfb7"));
 
-    ASSERT_TRUE(Zilliqa::isValidAddress("zil1fwh4ltdguhde9s7nysnp33d5wye6uqpugufkz7"));
+    ASSERT_TRUE(Zilliqa::Address::isValid("zil1fwh4ltdguhde9s7nysnp33d5wye6uqpugufkz7"));
 }
 
 TEST(ZilliqaAddress, Checksum) {

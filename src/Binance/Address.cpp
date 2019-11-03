@@ -1,4 +1,5 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017 Pieter Wuille
+// Copyright © 2017-2019 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,6 +9,7 @@
 
 #include <TrustWalletCore/TWHRP.h>
 
-using namespace TW::Zilliqa;
+using namespace TW::Binance;
 
-const std::string Address::hrp = HRP_ZILLIQA;
+const std::string Address::hrp = HRP_BINANCE;
+
