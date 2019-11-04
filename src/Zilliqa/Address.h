@@ -16,6 +16,7 @@
 
 namespace TW::Zilliqa {
 
+/// Zilliqa address is a Bech32Address, with "zil" prefix and Sha2 hash.
 class Address: public Bech32Address {
 public:
     static const std::string hrp; // HRP_ZILLIQA

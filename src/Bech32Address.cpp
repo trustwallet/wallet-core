@@ -68,9 +68,18 @@ Bech32Address::Bech32Address(std::string hrp, HasherType hasher, const PublicKey
         
         case HASHER_SHA2:
             {
-                const auto hashed = Hash::sha256(publicKey.bytes);
+                const auto hash = Hash::sha256(publicKey.bytes);
                 auto key = Data(20);
-                std::copy(hashed.end() - 20, hashed.end(), key.begin());
+                std::copy(hash.end() - 20, hash.end(), key.begin());
+                setKey(key);
+            }
+            break;
+
+        case HASHER_SHA3K:
+            {
+                const auto hash = publicKey.hash({}, static_cast<Data (*)(const byte *, const byte *)>(Hash::keccak256), true);
+                auto key = Data(20);
+                std::copy(hash.end() - 20, hash.end(), key.begin());
                 setKey(key);
             }
             break;

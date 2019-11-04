@@ -19,14 +19,14 @@
 using namespace TW;
 using namespace Harmony;
 
-static auto TEST_RECEIVER = Address("one129r9pj3sk0re76f7zs3qz92rggmdgjhtwge62k");
+static auto TEST_RECEIVER = "one129r9pj3sk0re76f7zs3qz92rggmdgjhtwge62k";
 
 static uint256_t LOCAL_NET = 0x2;
 
 TEST(TWHarmonySigner, Sign) {
     Proto::SigningInput input;
 
-    input.set_to_address(TEST_RECEIVER.string());
+    input.set_to_address(TEST_RECEIVER);
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     auto payload = parse_hex("");

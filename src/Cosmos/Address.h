@@ -14,7 +14,7 @@
 
 namespace TW::Cosmos {
 
-/// A Bech32 Cosmos address.  Hrp has to be specified (e.g. "cosmos", "terra"...)
+/// A Bech32 Cosmos address.  Hrp has to be specified (e.g. "cosmos", "terra"...), hash is HASHER_SHA2_RIPEMD.
 class Address: public Bech32Address {
 public:
     Address() : Bech32Address("") {}
