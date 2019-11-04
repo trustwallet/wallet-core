@@ -55,8 +55,8 @@ bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, cons
     return true;
 }
 
-Bech32Address::Bech32Address(std::string hrp, HasherType hasher, const PublicKey& publicKey)
-: _hrp(hrp) {
+Bech32Address::Bech32Address(const std::string& hrp, HasherType hasher, const PublicKey& publicKey)
+: hrp(hrp) {
     switch (hasher) {
         case HASHER_SHA2_RIPEMD:
             {
@@ -91,13 +91,13 @@ Bech32Address::Bech32Address(std::string hrp, HasherType hasher, const PublicKey
 
 std::string Bech32Address::string() const {
     Data enc;
-    if (!Bech32::convertBits<8, 5, true>(enc, _keyHash)) {
+    if (!Bech32::convertBits<8, 5, true>(enc, keyHash)) {
         return "";
     }
-    std::string result = Bech32::encode(_hrp, enc);
+    std::string result = Bech32::encode(hrp, enc);
     // check back
     Bech32Address obj;
-    if (!decode(result, obj, _hrp)) {
+    if (!decode(result, obj, hrp)) {
         return "";
     }
     return result;

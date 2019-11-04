@@ -20,10 +20,10 @@ class Bech32Address {
 private:
     /// Chain-specific human-readable part.  If missing (""), no prefix check is done.
     /// \see https://github.com/satoshilabs/slips/blob/master/slip-0173.md
-    std::string _hrp;
+    std::string hrp;
 
     /// Public key hash.
-    Data _keyHash;
+    Data keyHash;
 
 public:
     /// Determines whether a string makes a valid Bech32 address.
@@ -39,26 +39,26 @@ public:
     static bool decode(const std::string& addr, Bech32Address& obj_out, const std::string& hrp);
 
     /// Initializes an empty address.
-    Bech32Address(std::string hrp) : _hrp(std::move(hrp)) {}
+    Bech32Address(const std::string& hrp_in) : hrp(std::move(hrp_in)) {}
 
     /// Initializes an address with a key hash.
-    Bech32Address(std::string hrp, Data keyHash) : _hrp(std::move(hrp)), _keyHash(std::move(keyHash)) {}
+    Bech32Address(const std::string& hrp, Data keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
 
     /// Initialization from public key --> chain specific hash methods
-    Bech32Address(std::string hrp, HasherType hasher, const PublicKey& publicKey);
+    Bech32Address(const std::string& hrp, HasherType hasher, const PublicKey& publicKey);
 
-    void setHrp(std::string hrp) { _hrp = std::move(hrp); }
-    void setKey(Data keyHash) { _keyHash = std::move(keyHash); }
+    void setHrp(const std::string& hrp_in) { hrp = std::move(hrp_in); }
+    void setKey(Data keyHash_in) { keyHash = std::move(keyHash_in); }
 
-    inline const std::string& getHrp() const { return _hrp; }
+    inline const std::string& getHrp() const { return hrp; }
 
-    inline const Data& getKeyHash() const { return _keyHash; }
+    inline const Data& getKeyHash() const { return keyHash; }
 
     /// Encodes the address.
     /// \returns encoded address string, or empty string on failure.
     std::string string() const;
 
-    bool operator==(const Bech32Address& rhs) const { return _hrp == rhs._hrp && _keyHash == rhs._keyHash; }
+    bool operator==(const Bech32Address& rhs) const { return hrp == rhs.hrp && keyHash == rhs.keyHash; }
 
 private:
     Bech32Address() = default;
