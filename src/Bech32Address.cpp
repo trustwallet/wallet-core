@@ -17,11 +17,11 @@ bool Bech32Address::isValid(const std::string& addr) {
 
 bool Bech32Address::isValid(const std::string& addr, const std::string& hrp) {
     auto dec = Bech32::decode(addr);
-    if (dec.second.empty()) {
-        return false;
-    }
     // check hrp prefix (if given)
     if (hrp.length() > 0 && dec.first.compare(0, hrp.length(), hrp) != 0) {
+        return false;
+    }
+    if (dec.second.empty()) {
         return false;
     }
 
@@ -36,11 +36,11 @@ bool Bech32Address::isValid(const std::string& addr, const std::string& hrp) {
 
 bool Bech32Address::decode(const std::string& addr, Bech32Address& obj_out, const std::string& hrp) {
     auto dec = Bech32::decode(addr);
-    if (dec.second.empty()) {
-        return false;
-    }
     // check hrp prefix (if given)
     if (hrp.length() > 0 && dec.first.compare(0, hrp.length(), hrp) != 0) {
+        return false;
+    }
+    if (dec.second.empty()) {
         return false;
     }
 

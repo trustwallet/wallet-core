@@ -20,11 +20,12 @@ public:
     Address() : Bech32Address("") {}
 
     /// Initializes an address with a key hash.
-    Address(std::string hrp, Data keyHash) : Bech32Address(hrp, keyHash) {}
+    Address(const std::string& hrp, Data keyHash) : Bech32Address(hrp, keyHash) {}
 
     /// Initializes an address with a public key.
-    Address(std::string hrp, const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
+    Address(const std::string& hrp, const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
 
+    /// Creates an address object from the given string, if valid.  Returns success.
     static bool decode(const std::string& addr, Address& obj_out) {
         return Bech32Address::decode(addr, obj_out, "");
     }

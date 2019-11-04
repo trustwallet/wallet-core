@@ -42,7 +42,7 @@ public:
     Bech32Address(const std::string& hrp_in) : hrp(std::move(hrp_in)) {}
 
     /// Initializes an address with a key hash.
-    Bech32Address(const std::string& hrp, Data keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
+    Bech32Address(const std::string& hrp, const Data& keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
 
     /// Initialization from public key --> chain specific hash methods
     Bech32Address(const std::string& hrp, HasherType hasher, const PublicKey& publicKey);
