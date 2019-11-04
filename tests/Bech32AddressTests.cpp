@@ -101,3 +101,40 @@ TEST(Bech32Address, FromPublicKey) {
         ASSERT_EQ("zil1j8xae6lggm8y63m3y2r7aefu797ze7mhzulnqg", address.string());
     }
 }
+
+// From same public key, but different hashes: different results
+TEST(Bech32Address, Hashes) {
+    const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
+
+    auto publicKey1 = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    ASSERT_EQ("02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d", hex(publicKey1.bytes.begin(), publicKey1.bytes.end()));
+
+    const auto address1 = Bech32Address("hrp", HASHER_SHA2_RIPEMD, publicKey1);
+    ASSERT_EQ("hrp186zwn9h0z9fyvwfqs4jl92cw3kexusm4xw6ptp", address1.string());
+
+    const auto address2 = Bech32Address("hrp", HASHER_SHA2, publicKey1);
+    ASSERT_EQ("hrp1j8xae6lggm8y63m3y2r7aefu797ze7mhgfetvu", address2.string());
+
+    auto publicKey2 = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+    ASSERT_EQ(
+        "04b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d83c307736082c09f1f22328e0fbeab40ddd198cf0f70fcdaa1e5969ca400c098",
+        hex(publicKey2.bytes.begin(), publicKey2.bytes.end()));
+
+    const auto address3 = Bech32Address("hrp", HASHER_SHA3K, publicKey2);
+    ASSERT_EQ("hrp17hff3s97m5uxpjcdq3nzqxxatt8cmumnsf03su", address3.string());
+}
+
+// From same public key, but different prefixes: different results (checksum)
+TEST(Bech32Address, Prefixes) {
+    const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
+
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    ASSERT_EQ("02b65744e8bd0ba7666468abaff2aeb862c88a25ed605e0153100aa8f2661c1c3d", hex(publicKey.bytes.begin(), publicKey.bytes.end()));
+
+    const auto address1 = Bech32Address("hrpone", HASHER_SHA2_RIPEMD, publicKey);
+    ASSERT_EQ("hrpone186zwn9h0z9fyvwfqs4jl92cw3kexusm47das6p", address1.string());
+    const auto address2 = Bech32Address("hrptwo", HASHER_SHA2_RIPEMD, publicKey);
+    ASSERT_EQ("hrptwo186zwn9h0z9fyvwfqs4jl92cw3kexusm4qzr8p7", address2.string());
+    const auto address3 = Bech32Address("hrpthree", HASHER_SHA2_RIPEMD, publicKey);
+    ASSERT_EQ("hrpthree186zwn9h0z9fyvwfqs4jl92cw3kexusm4wuqkvd", address3.string());
+}
