@@ -24,6 +24,8 @@ TEST(Bech32Address, Valid) {
     ASSERT_TRUE(Bech32Address::isValid("one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe", "one"));
     ASSERT_TRUE(Bech32Address::isValid("one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p", "one"));
 
+    ASSERT_TRUE(Bech32Address::isValid("io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j", "io"));
+
     ASSERT_TRUE(Bech32Address::isValid("zil1fwh4ltdguhde9s7nysnp33d5wye6uqpugufkz7", "zil"));
 }
 
@@ -38,20 +40,30 @@ TEST(Bech32Address, Invalid) {
     ASSERT_FALSE(Bech32Address::isValid("one1a50tun737ulcvwy0yvve0pe", "one"));
     ASSERT_FALSE(Bech32Address::isValid("oe1tp7xdd9ewwnmyvws96au0ee7e7mz6f8hjqr3g3p", "one"));
 
+    ASSERT_FALSE(Bech32Address::isValid("io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8", "io"));
+    ASSERT_FALSE(Bech32Address::isValid("io187wzp08vnhjpkydnr97qlh8kh0dpkkytfam8j", "io"));
+    ASSERT_FALSE(Bech32Address::isValid("it187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j", "io"));
+
     ASSERT_FALSE(Bech32Address::isValid("0x91cddcebe846ce4d47712287eee53cf17c2cfb7"));
     ASSERT_FALSE(Bech32Address::isValid(""));
     ASSERT_FALSE(Bech32Address::isValid("0x"));
     ASSERT_FALSE(Bech32Address::isValid("91cddcebe846ce4d47712287eee53cf17c2cfb7"));
 }
 
-void TestDecodeFromString(const char* stringAddr, const char* hrp, const char* expectdKey) {
+void TestDecodeFromString(const char* stringAddr, const char* hrp, const char* expectdKeyHash) {
     Bech32Address address("");
+    // decode
     ASSERT_TRUE(Bech32Address::decode(stringAddr, address, hrp));
-    ASSERT_EQ(expectdKey, hex(address.getKeyHash()));
+    // verify expected hash
+    ASSERT_EQ(expectdKeyHash, hex(address.getKeyHash()));
+    // verify back to string
+    ASSERT_EQ(stringAddr, address.string());
 }
 
 TEST(Bech32Address, FromString) {
     TestDecodeFromString("one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe", "one", "ed1ebe4fd1f73f86388f231997859ca42c07da5d");
+
+    TestDecodeFromString("io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j", "io", "3f9c20bcec9de520d88d98cbe07ee7b5ded0dac4");
 }
 
 TEST(Bech32Address, FromKeyHash) {
@@ -91,6 +103,12 @@ TEST(Bech32Address, FromPublicKey) {
         auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         auto address = Bech32Address("one", HASHER_SHA3K, publicKey);
         ASSERT_EQ(address.string(), "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe");
+    }
+    {
+        auto privateKey = PrivateKey(parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f"));
+        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+        auto address = Bech32Address("io", HASHER_SHA3K, publicKey);
+        ASSERT_EQ(address.string(), "io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j");
     }
     {
         const auto privateKey = PrivateKey(parse_hex("3382266517e2ebe6df51faf4bfe612236ad46fb8bd59ac982a223b045e080ac6"));
