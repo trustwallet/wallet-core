@@ -9,21 +9,22 @@
 
 #include <gtest/gtest.h>
 
-namespace TW::Ethereum {
+using namespace TW;
+using namespace TW::Ethereum::ABI;
 
 TEST(ABI, pad32) {
-    EXPECT_EQ(64, paddedTo32(40));
-    EXPECT_EQ(32, paddedTo32(32));
-    EXPECT_EQ(64, paddedTo32(33));
-    EXPECT_EQ(64, paddedTo32(63));
-    EXPECT_EQ(64, paddedTo32(64));
-    EXPECT_EQ(96, paddedTo32(65));
-    EXPECT_EQ(24, padNeeded32(40));
-    EXPECT_EQ(0, padNeeded32(32));
-    EXPECT_EQ(31, padNeeded32(33));
-    EXPECT_EQ(1, padNeeded32(63));
-    EXPECT_EQ(0, padNeeded32(64));
-    EXPECT_EQ(31, padNeeded32(65));
+    EXPECT_EQ(64, Util::paddedTo32(40));
+    EXPECT_EQ(32, Util::paddedTo32(32));
+    EXPECT_EQ(64, Util::paddedTo32(33));
+    EXPECT_EQ(64, Util::paddedTo32(63));
+    EXPECT_EQ(64, Util::paddedTo32(64));
+    EXPECT_EQ(96, Util::paddedTo32(65));
+    EXPECT_EQ(24, Util::padNeeded32(40));
+    EXPECT_EQ(0, Util::padNeeded32(32));
+    EXPECT_EQ(31, Util::padNeeded32(33));
+    EXPECT_EQ(1, Util::padNeeded32(63));
+    EXPECT_EQ(0, Util::padNeeded32(64));
+    EXPECT_EQ(31, Util::padNeeded32(65));
 }
 
 TEST(ABI, EncodeBool) {
@@ -42,35 +43,31 @@ TEST(ABI, EncodeBool) {
 TEST(ABI, EncodeUInt) {
     Data encoded;
     encode(69u, encoded);
-    
     EXPECT_EQ(hex(encoded), "0000000000000000000000000000000000000000000000000000000000000045");
 }
 
 TEST(ABI, EncodeNegativeInt) {
     Data encoded;
     encode(-1, encoded);
-    
     EXPECT_EQ(hex(encoded), "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 }
 
 TEST(ABI, EncodeBigUInt) {
     Data encoded;
     encode(uint256_t("0x1234567890123456789012345678901234567890"), encoded);
-    
     EXPECT_EQ(hex(encoded), "0000000000000000000000001234567890123456789012345678901234567890");
 }
 
 TEST(ABI, EncodeNegativeBigInt) {
     Data encoded;
-    encode(int256_t("-1"), encoded);
-    
+    encode(uint256_t(int256_t("-1")), encoded);
     EXPECT_EQ(hex(encoded), "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
 }
 
 TEST(ABI, EncodeBigIntOverflow) {
     Data encoded;
     try {
-        encode(int256_t("F123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0"), encoded);
+        encode(uint256_t(int256_t("F123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0")), encoded);
     } catch (std::exception ex) {
         // expected exception
         return;
@@ -79,18 +76,24 @@ TEST(ABI, EncodeBigIntOverflow) {
 }
 
 TEST(ABI, EncodeString) {
+    auto p = ParamString("Hello World!    Hello World!    Hello World!");
+    EXPECT_EQ("string", p.getType());
     Data encoded;
-    encode(std::string("Hello World!    Hello World!    Hello World!"), encoded);
+    p.encode(encoded);
     EXPECT_EQ(hex(encoded), 
         "000000000000000000000000000000000000000000000000000000000000002c"
         "48656c6c6f20576f726c64212020202048656c6c6f20576f726c642120202020"
         "48656c6c6f20576f726c64210000000000000000000000000000000000000000");
 }
 
-TEST(ABI, EncodeTupleSimple) {
+TEST(ABI, EncodeParamsSimple) {
+    auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{ 
+        std::make_shared<ParamUInt256>(16u),
+        std::make_shared<ParamUInt256>(17u),
+        std::make_shared<ParamBool>(true) });
+    EXPECT_EQ("(uint256,uint256,bool)", p.getType());
     Data encoded;
-    auto tuple = std::make_tuple(uint256_t(16u), uint256_t(17u), true);
-    encode(tuple, encoded);
+    p.encode(encoded);
 
     EXPECT_EQ(3 * 32, encoded.size());
     EXPECT_EQ(
@@ -100,10 +103,21 @@ TEST(ABI, EncodeTupleSimple) {
         hex(encoded));
 }
 
-TEST(ABI, EncodeTupleMixed) {
+TEST(ABI, EncodeParamsMixed) {
+    auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(69u), 
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt256>(1),
+            std::make_shared<ParamUInt256>(2),
+            std::make_shared<ParamUInt256>(3)
+        }),
+        std::make_shared<ParamBool>(true),
+        std::make_shared<ParamString>("Hello"),
+        std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65})
+    });
+    EXPECT_EQ("(uint256,uint256[],bool,string,bytes)", p.getType());
     Data encoded;
-    auto tuple = std::make_tuple(uint256_t(69u), std::vector<uint256_t>{1, 2, 3}, true, std::string("Hello"), Data{0x64, 0x61, 0x76, 0x65});
-    encode(tuple, encoded);
+    p.encode(encoded);
 
     EXPECT_EQ(13 * 32, encoded.size());
     EXPECT_EQ(
@@ -139,22 +153,27 @@ TEST(ABI, EncodeTupleMixed) {
      */
 }
 
-TEST(ABI, DecodeTupleSimple) {
+TEST(ABI, DecodeParamsSimple) {
     Data encoded;
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000010"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000011"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000001"));
-    auto tuple = std::make_tuple(uint256_t(0), uint256_t(0), false);
+    auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(0),
+        std::make_shared<ParamUInt256>(0),
+        std::make_shared<ParamBool>(false)
+    });
+    EXPECT_EQ("(uint256,uint256,bool)", p.getType());
     size_t offset = 0;
-    bool res = decode(encoded, tuple, offset);
+    bool res = p.decode(encoded, offset);
     EXPECT_TRUE(res);
-    EXPECT_EQ(uint256_t(16u), std::get<0>(tuple));
-    EXPECT_EQ(uint256_t(17u), std::get<1>(tuple));
-    EXPECT_EQ(true, std::get<2>(tuple));
+    EXPECT_EQ(uint256_t(16u), (std::dynamic_pointer_cast<ParamUInt256>(p.getParam(0)))->getVal());
+    EXPECT_EQ(uint256_t(17u), (std::dynamic_pointer_cast<ParamUInt256>(p.getParam(1)))->getVal());
+    EXPECT_EQ(true, (std::dynamic_pointer_cast<ParamBool>(p.getParam(2)))->getVal());
     EXPECT_EQ(3 * 32, offset);
 }
 
-TEST(ABI, DecodeTupleMixed) {
+TEST(ABI, DecodeParamsMixed) {
     Data encoded;
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000045"));
     append(encoded, parse_hex("00000000000000000000000000000000000000000000000000000000000000a0"));
@@ -169,23 +188,38 @@ TEST(ABI, DecodeTupleMixed) {
     append(encoded, parse_hex("48656c6c6f000000000000000000000000000000000000000000000000000000"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000004"));
     append(encoded, parse_hex("6461766500000000000000000000000000000000000000000000000000000000"));
-    auto tuple = std::make_tuple(uint256_t(0), std::vector<uint256_t>{0}, false, std::string(), Data(0));
+    auto p = Parameters(std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(), 
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt256>(),
+            std::make_shared<ParamUInt256>(),
+            std::make_shared<ParamUInt256>()
+        }),
+        std::make_shared<ParamBool>(),
+        std::make_shared<ParamString>(),
+        std::make_shared<ParamByteArray>()
+    });
+    EXPECT_EQ("(uint256,uint256[],bool,string,bytes)", p.getType());
     size_t offset = 0;
-    bool res = decode(encoded, tuple, offset);
+    bool res = p.decode(encoded, offset);
     EXPECT_TRUE(res);
-    EXPECT_EQ(uint256_t(69u), std::get<0>(tuple));
-    EXPECT_EQ(3, std::get<1>(tuple).size());
-    EXPECT_EQ(1, std::get<1>(tuple)[0]);
-    EXPECT_EQ(3, std::get<1>(tuple)[2]);
-    EXPECT_EQ(true, std::get<2>(tuple));
-    EXPECT_EQ(std::string("Hello"), std::get<3>(tuple));
+    EXPECT_EQ(uint256_t(69u), (std::dynamic_pointer_cast<ParamUInt256>(p.getParam(0)))->getVal());
+    EXPECT_EQ(3, (std::dynamic_pointer_cast<ParamArray>(p.getParam(1)))->getCount());
+    EXPECT_EQ(1, (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(p.getParam(1)))->getParam(0)))->getVal());
+    EXPECT_EQ(3, (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(p.getParam(1)))->getParam(2)))->getVal());
+    EXPECT_EQ(true, (std::dynamic_pointer_cast<ParamBool>(p.getParam(2)))->getVal());
+    EXPECT_EQ("Hello", (std::dynamic_pointer_cast<ParamString>(p.getParam(3)))->getVal());
     EXPECT_EQ(13 * 32, offset);
 }
 
 TEST(ABI, EncodeSignature) {
+    auto func = Function("baz", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(69u),
+        std::make_shared<ParamBool>(true)
+    });
+    EXPECT_EQ("baz(uint256,bool)", func.getType());
     Data encoded;
-    auto function = Function("baz", std::make_tuple(uint256_t(69u), true));
-    encode(function, encoded);
+    func.encode(encoded);
 
     EXPECT_EQ(encoded.size(), 32 * 2 + 4);
     EXPECT_EQ(hex(encoded.begin(), encoded.begin() + 4), "72ed38b6");
@@ -194,9 +228,18 @@ TEST(ABI, EncodeSignature) {
 }
 
 TEST(ABI, EncodeFunctionWithDynamicArgumentsCase1) {
+    auto func = Function("sam", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
+        std::make_shared<ParamBool>(true),
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt256>(1),
+            std::make_shared<ParamUInt256>(2),
+            std::make_shared<ParamUInt256>(3)
+        })
+    });
+    EXPECT_EQ("sam(bytes,bool,uint256[])", func.getType());
     Data encoded;
-    auto function = Function("sam", std::make_tuple(Data{0x64, 0x61, 0x76, 0x65}, true, std::vector<uint256_t>{1, 2, 3}));
-    encode(function, encoded);
+    func.encode(encoded);
 
     EXPECT_EQ(encoded.size(), 32 * 9 + 4);
     EXPECT_EQ(hex(encoded.begin() +   0, encoded.begin() + 4  ), "a5643bf2");
@@ -212,14 +255,18 @@ TEST(ABI, EncodeFunctionWithDynamicArgumentsCase1) {
 }
 
 TEST(ABI, EncodeFunctionWithDynamicArgumentsCase2) {
+    auto func = Function("f", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(0x123),
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt32>(0x456),
+            std::make_shared<ParamUInt32>(0x789)
+        }),
+        std::make_shared<ParamByteArrayFix>(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30}),
+        std::make_shared<ParamString>("Hello, world!")
+    });
+    EXPECT_EQ("f(uint256,uint32[],bytes10,string)", func.getType());
     Data encoded;
-    auto function = Function("f", std::make_tuple(
-        uint256_t(0x123),
-        std::vector<uint32_t>{0x456, 0x789},
-        std::array<byte, 10>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30},
-        std::string("Hello, world!")
-    ));
-    encode(function, encoded);
+    func.encode(encoded);
 
     EXPECT_EQ(encoded.size(), 32 * 9 + 4);
     EXPECT_EQ(hex(encoded.begin() +   0, encoded.begin() + 4  ), "47b941bf");
@@ -239,13 +286,19 @@ TEST(ABI, DecodeSignature) {
     append(encoded, parse_hex("72ed38b6"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000045"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000001"));
-    auto function = Function("baz", std::make_tuple(uint256_t(0), false));
+    auto func = Function("baz", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(), std::make_shared<ParamBool>()
+    });
+    EXPECT_EQ("baz(uint256,bool)", func.getType());
     size_t offset = 0;
-    bool res = decode(encoded, function, offset);
+    bool res = func.decode(encoded, offset);
     EXPECT_TRUE(res);
-    EXPECT_EQ(69u, std::get<0>(function.parameters));
-    EXPECT_EQ(true, std::get<1>(function.parameters));
-    EXPECT_EQ(4 + 2 * 32, offset);
+    std::shared_ptr<ParamBase> param;
+    EXPECT_TRUE(func.getInParam(0, param));
+    EXPECT_EQ(69u, (std::dynamic_pointer_cast<ParamUInt256>(param))->getVal());
+    EXPECT_TRUE(func.getInParam(1, param));
+    EXPECT_EQ(true, (std::dynamic_pointer_cast<ParamBool>(param))->getVal());
+    EXPECT_EQ(4 + 2 * 32, offset);  
 }
 
 TEST(ABI, DecodeFunctionWithDynamicArgumentsCase1) {
@@ -260,17 +313,32 @@ TEST(ABI, DecodeFunctionWithDynamicArgumentsCase1) {
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000001"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000002"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000003"));
-    auto function = Function("sam", std::make_tuple(Data{0}, false, std::vector<uint256_t>{0}));
+
+    auto func = Function("sam", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamByteArray>(Data{0x64, 0x61, 0x76, 0x65}),
+        std::make_shared<ParamBool>(true),
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt256>(1),
+            std::make_shared<ParamUInt256>(2),
+            std::make_shared<ParamUInt256>(3)
+        })
+    });
+    EXPECT_EQ("sam(bytes,bool,uint256[])", func.getType());
+
     size_t offset = 0;
-    bool res = decode(encoded, function, offset);
+    bool res = func.decode(encoded, offset);
     EXPECT_TRUE(res);
-    EXPECT_EQ(4, std::get<0>(function.parameters).size());
-    EXPECT_EQ(0x64, std::get<0>(function.parameters)[0]);
-    EXPECT_EQ(0x65, std::get<0>(function.parameters)[3]);
-    EXPECT_EQ(true, std::get<1>(function.parameters));
-    EXPECT_EQ(3, std::get<2>(function.parameters).size());
-    EXPECT_EQ(1, std::get<2>(function.parameters)[0]);
-    EXPECT_EQ(3, std::get<2>(function.parameters)[2]);
+    std::shared_ptr<ParamBase> param;
+    EXPECT_TRUE(func.getInParam(0, param));
+    EXPECT_EQ(4, (std::dynamic_pointer_cast<ParamByteArray>(param))->getCount());
+    EXPECT_EQ(0x64, (std::dynamic_pointer_cast<ParamByteArray>(param))->getVal()[0]);
+    EXPECT_EQ(0x65, (std::dynamic_pointer_cast<ParamByteArray>(param))->getVal()[3]);
+    EXPECT_TRUE(func.getInParam(1, param));
+    EXPECT_EQ(true, (std::dynamic_pointer_cast<ParamBool>(param))->getVal());
+    EXPECT_TRUE(func.getInParam(2, param));
+    EXPECT_EQ(3, (std::dynamic_pointer_cast<ParamArray>(param))->getCount());
+    EXPECT_EQ(uint256_t(1), (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(param))->getVal()[0]))->getVal());
+    EXPECT_EQ(uint256_t(3), (std::dynamic_pointer_cast<ParamUInt256>((std::dynamic_pointer_cast<ParamArray>(param))->getVal()[2]))->getVal());
     EXPECT_EQ(4 + 9 * 32, offset);
 }
 
@@ -286,39 +354,49 @@ TEST(ABI, DecodeFunctionWithDynamicArgumentsCase2) {
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000789"));
     append(encoded, parse_hex("000000000000000000000000000000000000000000000000000000000000000d"));
     append(encoded, parse_hex("48656c6c6f2c20776f726c642100000000000000000000000000000000000000"));
-    auto function = Function("f", std::make_tuple(
-        uint256_t(0x123),
-        std::vector<uint32_t>{0x456, 0x789},
-        std::array<byte, 10>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30},
-        std::string("Hello, world!")
-    ));
+
+    auto func = Function("f", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamUInt256>(0x123),
+        std::make_shared<ParamArray>(std::vector<std::shared_ptr<ParamBase>>{
+            std::make_shared<ParamUInt32>(0x456),
+            std::make_shared<ParamUInt32>(0x789)
+        }),
+        std::make_shared<ParamByteArrayFix>(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30}),
+        std::make_shared<ParamString>("Hello, world!")
+    });
+    EXPECT_EQ("f(uint256,uint32[],bytes10,string)", func.getType());
+
     size_t offset = 0;
-    bool res = decode(encoded, function, offset);
+    bool res = func.decode(encoded, offset);
     EXPECT_TRUE(res);
-    EXPECT_EQ(uint256_t(0x123), std::get<0>(function.parameters));
-    EXPECT_EQ(2, std::get<1>(function.parameters).size());
-    EXPECT_EQ(0x456, std::get<1>(function.parameters)[0]);
-    EXPECT_EQ(0x789, std::get<1>(function.parameters)[1]);
-    EXPECT_EQ(10, std::get<2>(function.parameters).size());
-    EXPECT_EQ(0x31, std::get<2>(function.parameters)[0]);
-    EXPECT_EQ(0x30, std::get<2>(function.parameters)[9]);
-    EXPECT_EQ(std::string("Hello, world!"), std::get<3>(function.parameters));
+    std::shared_ptr<ParamBase> param;
+    EXPECT_TRUE(func.getInParam(0, param));
+    EXPECT_EQ(uint256_t(0x123), (std::dynamic_pointer_cast<ParamUInt256>(param))->getVal());
+    EXPECT_TRUE(func.getInParam(1, param));
+    EXPECT_EQ(2, (std::dynamic_pointer_cast<ParamArray>(param))->getCount());
+    EXPECT_EQ(0x456, (std::dynamic_pointer_cast<ParamUInt32>((std::dynamic_pointer_cast<ParamArray>(param))->getVal()[0]))->getVal());
+    EXPECT_EQ(0x789, (std::dynamic_pointer_cast<ParamUInt32>((std::dynamic_pointer_cast<ParamArray>(param))->getVal()[1]))->getVal());
+    EXPECT_TRUE(func.getInParam(2, param));
+    EXPECT_EQ(10, (std::dynamic_pointer_cast<ParamByteArrayFix>(param))->getCount());
+    EXPECT_EQ("31323334353637383930", hex((std::dynamic_pointer_cast<ParamByteArrayFix>(param))->getVal()));
+    EXPECT_TRUE(func.getInParam(3, param));
+    EXPECT_EQ(std::string("Hello, world!"), (std::dynamic_pointer_cast<ParamString>(param))->getVal());
     EXPECT_EQ(4 + 9 * 32, offset);
 }
 
-TEST(ABI, EncodeArrayByte10) {
-    auto arr = std::array<byte, 10>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30};
+TEST(ABI, EncodeVectorByte10) {
+    auto p = ParamByteArrayFix(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30});
+    EXPECT_EQ("bytes10", p.getType());
     Data encoded;
-    encode(arr, encoded);
-
+    p.encode(encoded);
     EXPECT_EQ("3132333435363738393000000000000000000000000000000000000000000000", hex(encoded));
 }
 
 TEST(ABI, EncodeVectorByte) {
-    auto arr = std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30};
+    auto p = ParamByteArray(std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30});
+    EXPECT_EQ("bytes", p.getType());
     Data encoded;
-    encode(arr, encoded);
-
+    p.encode(encoded);
     EXPECT_EQ(
         "000000000000000000000000000000000000000000000000000000000000000a"
         "3132333435363738393000000000000000000000000000000000000000000000", hex(encoded));
@@ -328,30 +406,30 @@ TEST(ABI, DecodeUInt) {
     Data encoded = parse_hex("000000000000000000000000000000000000000000000000000000000000002a");
     size_t offset = 0;
     uint256_t decoded;
-    bool res = decode(encoded, decoded, offset);
+    bool res = ParamNumber<uint256_t>::decodeNumber(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(uint256_t(42), decoded);
     EXPECT_EQ(32, offset);
 }
 
 TEST(ABI, DecodeUInt8) {
-    Data encoded = parse_hex("18");
+    Data encoded = parse_hex("0000000000000000000000000000000000000000000000000000000000000018");
     size_t offset = 0;
     uint8_t decoded;
-    bool res = decode(encoded, decoded, offset);
+    bool res = ParamNumber<uint8_t>::decodeNumber(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(24, decoded);
-    EXPECT_EQ(1, offset);
+    EXPECT_EQ(32, offset);
 }
 
 TEST(ABI, DecodeUInt8WithOffset) {
-    Data encoded = parse_hex("abcdef18");
+    Data encoded = parse_hex("abcdef0000000000000000000000000000000000000000000000000000000000000018");
     size_t offset = 3;
     uint8_t decoded;
-    bool res = decode(encoded, decoded, offset);
+    bool res = ParamNumber<uint8_t>::decodeNumber(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(24, decoded);
-    EXPECT_EQ(3 + 1, offset);
+    EXPECT_EQ(3 + 32, offset);
 }
 
 TEST(ABI, DecodeUIntWithOffset) {
@@ -380,7 +458,7 @@ TEST(ABI, DecodeArrayUint) {
     append(encoded, parse_hex("3132333435363738393000000000000000000000000000000000000000000000"));
     size_t offset = 0;
     std::vector<byte> decoded;
-    bool res = decode(encoded, decoded, offset);
+    bool res = ParamByteArray::decodeBytes(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(10, decoded.size());
     if (decoded.size() >= 2) {
@@ -396,7 +474,7 @@ TEST(ABI, DecodeArrayTooShort) {
     append(encoded, parse_hex("313233343536373839"));
     size_t offset = 0;
     std::vector<byte> decoded;
-    bool res = decode(encoded, decoded, offset);
+    bool res = ParamByteArray::decodeBytes(encoded, decoded, offset);
     EXPECT_FALSE(res);
 }
 
@@ -404,17 +482,17 @@ TEST(ABI, DecodeArrayInvalidLen) {
     Data encoded = parse_hex("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
     size_t offset = 0;
     std::vector<byte> decoded;
-    bool res = decode(encoded, decoded, offset);
+    bool res = ParamByteArray::decodeBytes(encoded, decoded, offset);
     EXPECT_FALSE(res);
 }
 
-TEST(ABI, DecodeData) {
+TEST(ABI, DecodeByteArray) {
     Data encoded;
     append(encoded, parse_hex("000000000000000000000000000000000000000000000000000000000000000a"));
     append(encoded, parse_hex("3132333435363738393000000000000000000000000000000000000000000000"));
     size_t offset = 0;
     Data decoded;
-    bool res = decode(encoded, decoded, offset);
+    bool res = ParamByteArray::decodeBytes(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ("31323334353637383930", hex(decoded));
     EXPECT_EQ(32 + 32, offset);
@@ -423,9 +501,10 @@ TEST(ABI, DecodeData) {
 TEST(ABI, DecodeByteArray10) {
     Data encoded = parse_hex("3132333435363738393000000000000000000000000000000000000000000000");
     size_t offset = 0;
-    std::array<byte, 10> decoded;
-    bool res = decode(encoded, decoded, offset);
+    Data decoded;
+    bool res = ParamByteArrayFix::decodeBytesFix(encoded, 10, decoded, offset);
     EXPECT_TRUE(res);
+    EXPECT_EQ(10, decoded.size());
     EXPECT_EQ(49u, decoded[0]);
     EXPECT_EQ(50u, decoded[1]);
     EXPECT_EQ(32, offset);
@@ -438,10 +517,8 @@ TEST(ABI, DecodeString) {
     append(encoded, parse_hex("48656c6c6f20576f726c64210000000000000000000000000000000000000000"));
     size_t offset = 0;
     std::string decoded;
-    bool res = decode(encoded, decoded, offset);
+    bool res = ParamString::decodeString(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ("Hello World!    Hello World!    Hello World!", decoded);
     EXPECT_EQ(32 + 2 * 32, offset);
 }
-
-} // namespace TW::Ethereum
