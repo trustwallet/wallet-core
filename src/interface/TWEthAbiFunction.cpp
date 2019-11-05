@@ -16,7 +16,6 @@ using namespace TW::Ethereum::ABI;
 
 struct TWEthAbiFunction *_Nullable TWEthAbiFunctionCreateWithString(TWString *_Nonnull name) {
     auto func = Function(TWStringUTF8Bytes(name));
-    TWStringDelete(name);
     return new TWEthAbiFunction{ func };
 }
 
@@ -48,7 +47,7 @@ int TWEthAbiFunctionAddInParamUInt256(struct TWEthAbiFunction *_Nonnull func, TW
     Function& function = func->impl;
 
     uint256_t val2 = load(*static_cast<const Data*>(val));
-    TWDataDelete(val); // remove original
+
     auto param = std::make_shared<ParamUInt256>(val2);
     auto idx = function.addInParam(param);
     return idx;
@@ -78,7 +77,7 @@ int TWEthAbiFunctionAddInParamByteArray(struct TWEthAbiFunction *_Nonnull func, 
     Function& function = func->impl;
 
     Data data = TW::data(TWDataBytes(val), TWDataSize(val));
-    TWDataDelete(val); // remove original
+
     auto param = std::make_shared<ParamByteArray>(data);
     auto idx = function.addInParam(param);
     return idx;    
@@ -89,7 +88,7 @@ int TWEthAbiFunctionAddInParamByteArrayFix(struct TWEthAbiFunction *_Nonnull fun
     Function& function = func->impl;
 
     Data data = TW::data(TWDataBytes(val), TWDataSize(val));
-    TWDataDelete(val); // remove original
+
     auto param = std::make_shared<ParamByteArrayFix>(count, data);
     auto idx = function.addInParam(param);
     return idx;    
@@ -178,7 +177,7 @@ int TWEthAbiFunctionAddInArrayParamUInt256(struct TWEthAbiFunction *_Nonnull fun
     }
     std::shared_ptr<ParamArray> paramArr = std::dynamic_pointer_cast<ParamArray>(param);
     uint256_t val2 = load(*static_cast<const Data*>(val));
-    TWDataDelete(val); // remove original
+
     auto paramChild = std::make_shared<ParamUInt256>(val2);
     int idxChild = paramArr->addParam(paramChild);
     return idxChild;

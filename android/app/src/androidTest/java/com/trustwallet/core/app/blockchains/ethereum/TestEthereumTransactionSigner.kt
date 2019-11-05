@@ -7,6 +7,7 @@ import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.EthereumSigner
 import wallet.core.jni.proto.Ethereum
+import wallet.core.jni.EthAbiFunction
 import com.trustwallet.core.app.utils.Numeric
 
 class TestEthereumTransactionSigner {
@@ -33,5 +34,22 @@ class TestEthereumTransactionSigner {
         assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x25")
         assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276")
         assertEquals(Numeric.toHexString(sign.s.toByteArray()), "0x67cbe9d8997f761aecb703304b3800ccf555c9f3dc64214b297fb1966a3b6d83")
+    }
+
+    @Test
+    fun testEthereumABIEncoder() {
+        val encoder = EthAbiFunction("sam")
+        encoder.addInParamByteArray("0x64617665".toHexByteArray())
+        encoder.addInParamBool(true)
+        encoder.addInParamArray()
+
+        encoder.addInArrayParamUInt256(2, "0x01".toHexByteArray())
+        encoder.addInArrayParamUInt256(2, "0x02".toHexByteArray())
+        encoder.addInArrayParamUInt256(2, "0x03".toHexByteArray())
+
+        assertEquals(encoder.type, "sam(bytes,bool,uint256[])")
+
+        val encoded = encoder.encode()
+        assertEquals(Numeric.toHexString(encoded), "0xa5643bf20000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000000464617665000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003")
     }
 }
