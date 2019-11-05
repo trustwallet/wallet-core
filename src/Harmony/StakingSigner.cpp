@@ -168,12 +168,6 @@ Proto::StakingTransactionOutput StakingSigner::sign<CollectRewards>(
 }
 
 template <typename Directive>
-Proto::StakingTransactionOutput
-StakingSigner::sign(const TW::Harmony::Proto::StakingTransactionInput &input) noexcept {
-    throw std::invalid_argument("invalid proto input for StakingTransactionInput");
-}
-
-template <typename Directive>
 void StakingSigner::sign(const PrivateKey &privateKey,
                          StakingTransaction<Directive> &transaction) const noexcept {
     auto hash = this->hash<Directive>(transaction);
