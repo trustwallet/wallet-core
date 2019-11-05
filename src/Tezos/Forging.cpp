@@ -121,11 +121,11 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
         if (!delegate.empty()) {
-            auto forgedPublickKeyHash = forgePublicKeyHash(delegate);
-            // auto forgedPublickKeyHashHex = hex(forgedPublickKeyHash.begin(), forgedPublickKeyHash.end()); // Uncomment for debugging
+            auto forgedPublicKeyHash = forgePublicKeyHash(delegate);
+            // auto forgedPublicKeyHashHex = hex(forgedPublickKeyHash.begin(), forgedPublickKeyHash.end()); // Uncomment for debugging
 
             append(forged, forgeBool(true));
-            append(forged, forgedPublickKeyHash);
+            append(forged, forgedPublicKeyHash);
         } else {
             append(forged, forgeBool(false));
         }
