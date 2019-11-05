@@ -164,13 +164,13 @@ class EditValidator {
   public:
     Address validatorAddress;
     Description description;
-    Decimal commissionRate;
+    Decimal *commissionRate;
     uint256_t minSelfDelegation;
     uint256_t maxTotalDelegation;
     vector<uint8_t> slotKeyToRemove;
     vector<uint8_t> slotKeyToAdd;
 
-    EditValidator(Address validatorAddress, Description description, Decimal commissionRate,
+    EditValidator(Address validatorAddress, Description description, Decimal *commissionRate,
                   uint256_t minSelfDelegation, uint256_t maxTotalDelegation, Data slotKeyToRemove,
                   Data slotKeyToAdd)
         : validatorAddress(move(validatorAddress))

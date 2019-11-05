@@ -87,8 +87,13 @@ Proto::StakingTransactionOutput StakingSigner::sign<EditValidator>(
         /* securityContact */ input.edit_validator_message().description().security_contact(),
         /* details */ input.edit_validator_message().description().details());
 
-    auto commissionRate = Decimal(
-        /* value */ input.edit_validator_message().commission_rate().value());
+    Decimal *commissionRate = nullptr;
+
+    if (input.edit_validator_message().has_commission_rate()) {
+        Decimal decimal = Decimal(
+            /* value */ input.edit_validator_message().commission_rate().value());
+        commissionRate = &decimal;
+    }
 
     auto editValidator = EditValidator(
         /* ValidatorAddress */ Address(input.edit_validator_message().validator_address()),
@@ -239,7 +244,9 @@ Data StakingSigner::rlpNoHashDirective(const StakingTransaction<EditValidator> &
     append(encoded, RLP::encodeList(descriptionEncoded));
 
     auto decEncoded = Data();
-    append(decEncoded, RLP::encode(transaction.stakeMsg.commissionRate.value));
+    if (transaction.stakeMsg.commissionRate != nullptr) {
+        append(decEncoded, RLP::encode(transaction.stakeMsg.commissionRate->value));
+    }
     append(encoded, RLP::encodeList(decEncoded));
 
     append(encoded, RLP::encode(transaction.stakeMsg.minSelfDelegation));
