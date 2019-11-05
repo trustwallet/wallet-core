@@ -35,7 +35,6 @@ bool Function::decode(const Data& encoded, size_t& offset_inout) {
     // adjust offset; hash is NOT padded to 32 bytes
     offset_inout = offset_inout - 32 + 4;
     // verify hash
-    auto string = getType();
     Data hashExpect = getSignature();
     if (hash != hashExpect) {
         // invalid hash

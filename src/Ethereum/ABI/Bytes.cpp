@@ -58,7 +58,7 @@ bool ParamByteArrayFix::decodeBytesFix(const Data& encoded, size_t n, Data& deco
     return true;
 }
 
-void ParamString::encodeString(const std::string decoded, Data& data) {
+void ParamString::encodeString(const std::string& decoded, Data& data) {
     auto bytes = Data(decoded.begin(), decoded.end());
     ParamByteArray::encodeBytes(bytes, data);
 }

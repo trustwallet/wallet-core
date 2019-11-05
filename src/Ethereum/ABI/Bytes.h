@@ -70,8 +70,8 @@ public:
     virtual size_t getSize() const { return 32 + Util::paddedTo32(_str.size()); }
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _str.size(); }
-    static void encodeString(const std::string decoded, Data& data);
-    virtual void encode(Data& data) const { encodeString(_str, data); }
+    static void encodeString(const std::string& decoded, Data& data);
+    virtual void encode(Data& data) const { ParamString::encodeString(_str, data); }
     static bool decodeString(const Data& encoded, std::string& decoded, size_t& offset_inout);
     virtual bool decode(const Data& encoded, size_t& offset_inout) {
         return decodeString(encoded, _str, offset_inout);
