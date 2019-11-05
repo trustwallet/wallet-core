@@ -61,6 +61,7 @@ class Description {
     string website;
     string securityContact;
     string details;
+
     Description(string name, string identity, string website, string securityContact,
                 string details)
         : name(move(name))
@@ -71,6 +72,8 @@ class Description {
 };
 
 #define PRECISION 18
+#define MAX_DECIMAL 1000000000000000000
+
 class Decimal {
   public:
     uint256_t value;
@@ -81,36 +84,47 @@ class Decimal {
         }
         string value1 = value;
         if (value[0] == '-') {
-            // ignore the negative
+            throw invalid_argument("decimal fraction should be be between [0, 1]");
+        }
+        if (value[0] == '+') {
             value1 = value.substr(1);
         }
         if (value1.length() == 0) {
             throw invalid_argument("decimal string is empty");
         }
         vector<string> strs;
+        boost::split(strs, value1, boost::is_any_of(" "));
+        if (strs.size() > 1) {
+            throw invalid_argument("bad decimal string");
+        }
         boost::split(strs, value1, boost::is_any_of("."));
         int lenDecs = 0;
         string combinedStr = strs[0];
         if (strs.size() == 2) {
-            lenDecs = (int)strs[1].length();
+            lenDecs = static_cast<int>(strs[1].length());
             if (lenDecs == 0 || combinedStr.length() == 0) {
                 throw invalid_argument("bad decimal length");
+            }
+            if (strs[1][0] == '-') {
+                throw invalid_argument("bad decimal string");
             }
             combinedStr += strs[1];
         } else if (strs.size() > 2) {
             throw invalid_argument("too many periods to be a decimal string");
         }
-
         if (lenDecs > PRECISION) {
             throw invalid_argument("too much precision");
         }
-
-        int zerosToAdd = (int)(PRECISION - lenDecs);
+        int zerosToAdd = static_cast<int>(PRECISION - lenDecs);
         char zeros[PRECISION];
         sprintf(zeros, "%0*d", zerosToAdd, 0);
         combinedStr += zeros;
         combinedStr.erase(0, combinedStr.find_first_not_of('0'));
-        this->value = uint256_t(combinedStr);
+        uint256_t val = uint256_t(combinedStr);
+        if (val > static_cast<uint256_t>(MAX_DECIMAL)) {
+            throw invalid_argument("too large decimal fraction");
+        }
+        this->value = val;
     }
 };
 
@@ -119,6 +133,7 @@ class CommissionRate {
     Decimal rate;
     Decimal maxRate;
     Decimal maxChangeRate;
+
     CommissionRate(Decimal rate, Decimal maxRate, Decimal maxChangeRate)
         : rate(move(rate)), maxRate(move(maxRate)), maxChangeRate(move(maxChangeRate)) {}
 };
@@ -130,8 +145,9 @@ class CreateValidator {
     CommissionRate commissionRates;
     uint256_t minSelfDelegation;
     uint256_t maxTotalDelegation;
-    vector<vector<uint8_t>> slotPubKeys;
     uint256_t amount;
+    vector<vector<uint8_t>> slotPubKeys;
+
     CreateValidator(Address validatorAddress, Description description,
                     CommissionRate commissionRates, uint256_t minSelfDelegation,
                     uint256_t maxTotalDelegation, vector<Data> slotPubKeys, uint256_t amount)
@@ -153,6 +169,7 @@ class EditValidator {
     uint256_t maxTotalDelegation;
     vector<uint8_t> slotKeyToRemove;
     vector<uint8_t> slotKeyToAdd;
+
     EditValidator(Address validatorAddress, Description description, Decimal commissionRate,
                   uint256_t minSelfDelegation, uint256_t maxTotalDelegation, Data slotKeyToRemove,
                   Data slotKeyToAdd)
@@ -182,6 +199,7 @@ class Undelegate {
     Address delegatorAddress;
     Address validatorAddress;
     uint256_t amount;
+
     Undelegate(Address delegatorAddress, Address validatorAddress, uint256_t amount)
         : delegatorAddress(move(delegatorAddress))
         , validatorAddress(move(validatorAddress))

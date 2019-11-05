@@ -11,21 +11,6 @@
 using namespace TW;
 using namespace TW::Harmony;
 
-std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
-                                                           const Data &signature) noexcept {
-    auto r = load(Data(signature.begin(), signature.begin() + 32));
-    auto s = load(Data(signature.begin() + 32, signature.begin() + 64));
-    auto v = load(Data(signature.begin() + 64, signature.begin() + 65));
-    v += 35 + chainID + chainID;
-    return std::make_tuple(r, s, v);
-}
-
-std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept {
-    auto signature = privateKey.sign(hash, TWCurveSECP256k1);
-    return values(chainID, signature);
-}
-
 Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     Address toAddr;
@@ -59,7 +44,7 @@ Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input)
 
 void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
     auto hash = this->hash(transaction);
-    auto tuple = Signer::sign(chainID, privateKey, hash);
+    auto tuple = SignerUtils::sign(chainID, privateKey, hash);
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
     transaction.v = std::get<2>(tuple);

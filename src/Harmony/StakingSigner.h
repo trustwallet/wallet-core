@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "SignerUtils.h"
 #include "StakingTransaction.h"
 #include "Transaction.h"
 #include "../Data.h"
@@ -28,7 +29,12 @@ class StakingSigner {
     /// Initializes a signer with a chain identifier.
     explicit StakingSigner(uint256_t chainID) : chainID(std::move(chainID)) {}
 
+    template <typename Directive>
+    static Proto::StakingTransactionOutput
+    prepareOutput(const Data encoded, const StakingTransaction<Directive> stakingTx) noexcept;
+
     /// Signs a Proto::SigningInput transaction
+    template <typename Directive>
     static Proto::StakingTransactionOutput
     sign(const Proto::StakingTransactionInput &input) noexcept;
 
@@ -36,18 +42,6 @@ class StakingSigner {
     template <typename Directive>
     void sign(const PrivateKey &privateKey, StakingTransaction<Directive> &transaction) const
         noexcept;
-
-    /// Signs a hash with the given private key for the given chain identifier.
-    ///
-    /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t>
-    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept;
-
-    /// R, S, and V values for the given chain identifier and signature.
-    ///
-    /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
-                                                              const Data &signature) noexcept;
 
     template <typename Directive>
     std::string txnAsRLPHex(StakingTransaction<Directive> &transaction) const noexcept;

@@ -1,43 +1,3 @@
-
-diff --git a/bootstrap.sh b/bootstrap.sh
-index e5ddf64..58305ad 100755
---- a/bootstrap.sh
-+++ b/bootstrap.sh
-@@ -4,20 +4,22 @@
- set -e
-
- echo "#### Initializing... ####"
--tools/install-dependencies
-+# tools/install-dependencies
-
- echo "#### Generating files... ####"
--tools/generate-files
-+# tools/generate-files
-
- echo "#### Building... ####"
--cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
--make -Cbuild tests TrezorCryptoTests
-+# cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
-+make -Cbuild tests TrezorCryptoTests -j8
-
- if [ -x "$(command -v clang-tidy)" ]; then
-     echo "#### Linting... ####"
-     tools/lint
- fi
-
-+export GTEST_FILTER="*Harmony*"
-+
- echo "#### Testing... ####"
- export CK_TIMEOUT_MULTIPLIER=4
- build/trezor-crypto/tests/TrezorCryptoTests
-
-
-
-
-
-
-
-
 <img src="docs/banner.png" align="center" title="Trust logo">
 
 Trust Wallet Core is a cross-platform library that implements low-level cryptographic wallet functionality for all supported blockchains. Most of the code is C++ with a set of strict exported C interfaces. The library provides idiomatic interfaces for all supported languages (currently Swift for iOS and Java for Android).
@@ -91,7 +51,7 @@ The best way to submit feedback and report bugs is to [open a GitHub issue](http
 If you want to contribute code please see [Contributing](https://developer.trustwallet.com/wallet-core/contributing).
 If you want to add support for a new blockchain also see [Adding Support for a New Blockchain](https://developer.trustwallet.com/wallet-core/newblockchain), make sure you have read the [requirements](https://developer.trustwallet.com/wallet-core/newblockchain#requirements) section.
 
-Thanks to all the people who contribute. 
+Thanks to all the people who contribute.
 <a href="https://github.com/trustwallet/wallet-core/graphs/contributors"><img src="https://opencollective.com/wallet-core/contributors.svg?width=890&button=false" /></a>
 
 # License

@@ -68,7 +68,7 @@ TEST(HarmonyStaking, SignCreateValidator) {
     value = store(uint256_t("0x64")); // 0x5208
     input.set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign(input);
+    auto proto_output = StakingSigner::sign<CreateValidator>(input);
 
     auto expectEncoded =
         "f8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
@@ -131,7 +131,7 @@ TEST(HarmonyStaking, SignEditValidator) {
     value = store(uint256_t("0x64")); // 0x5208
     input.set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign(input);
+    auto proto_output = StakingSigner::sign<EditValidator>(input);
 
     auto expectEncoded =
         "f9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
@@ -160,7 +160,6 @@ TEST(HarmonyStaking, SignDelegate) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    // value = store(uint8_t(DirectiveDelegate))
     auto delegateMsg = input.mutable_delegate_message();
     delegateMsg->set_delegator_address(TEST_ACCOUNT.string());
     delegateMsg->set_validator_address(TEST_ACCOUNT.string());
@@ -177,7 +176,7 @@ TEST(HarmonyStaking, SignDelegate) {
     value = store(uint256_t("0x64")); // 0x5208
     input.set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign(input);
+    auto proto_output = StakingSigner::sign<Delegate>(input);
 
     auto expectEncoded =
         "f87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a"
@@ -219,7 +218,7 @@ TEST(HarmonyStaking, SignUndelegate) {
     value = store(uint256_t("0x64")); // 0x5208
     input.set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign(input);
+    auto proto_output = StakingSigner::sign<Undelegate>(input);
 
     auto expectEncoded =
         "f87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
@@ -257,7 +256,7 @@ TEST(HarmonyStaking, SignCollectRewards) {
     value = store(uint256_t("0x64")); // 0x5208
     input.set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign(input);
+    auto proto_output = StakingSigner::sign<CollectRewards>(input);
 
     auto expectEncoded = "f85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f425"
                          "77001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd9"
@@ -271,6 +270,25 @@ TEST(HarmonyStaking, SignCollectRewards) {
     ASSERT_EQ(hex(proto_output.v()), v);
     ASSERT_EQ(hex(proto_output.r()), r);
     ASSERT_EQ(hex(proto_output.s()), s);
+}
+
+TEST(HarmonyStaking, DecimalCreation) {
+    ASSERT_THROW(Decimal(""), invalid_argument);
+    ASSERT_THROW(Decimal("-"), invalid_argument);
+    ASSERT_THROW(Decimal("0."), invalid_argument);
+    ASSERT_THROW(Decimal(".1"), invalid_argument);
+    ASSERT_THROW(Decimal("1.2.3"), invalid_argument);
+    ASSERT_THROW(Decimal("0.1234567891234567891"), invalid_argument);
+    ASSERT_THROW(Decimal("123.45"), invalid_argument);
+    ASSERT_THROW(Decimal("-123.455"), invalid_argument);
+    ASSERT_THROW(Decimal("-0.0"), invalid_argument);
+    ASSERT_THROW(Decimal("0.-23"), invalid_argument);
+    ASSERT_THROW(Decimal("- 23"), invalid_argument);
+    ASSERT_THROW(Decimal("+2.3"), invalid_argument);
+    ASSERT_THROW(Decimal("+2.4 - 34"), invalid_argument);
+    ASSERT_NO_THROW(Decimal("0"));
+    ASSERT_NO_THROW(Decimal("0.0"));
+    ASSERT_NO_THROW(Decimal("0.123"));
 }
 
 } // namespace TW::Harmony

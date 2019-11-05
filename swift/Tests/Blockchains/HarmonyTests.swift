@@ -8,8 +8,9 @@ import TrustWalletCore
 import XCTest
 
 class HarmonyTests: XCTestCase {
+    let localNet = "0x02"
+
     func testSigner() {
-        let localNet = "0x02"
         let input = TW_Harmony_Proto_SigningInput.with {
             $0.chainID = Data(hexString: localNet)!
             $0.nonce = Data(hexString: "0x9")!
@@ -32,7 +33,6 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingCreateValidator() {
-        let localNet = "0x02"
         let description = TW_Harmony_Proto_Description.with {
             $0.name = "Alice"
             $0.identity = "alice"
@@ -72,7 +72,7 @@ class HarmonyTests: XCTestCase {
             $0.gasLimit = Data(hexString: "0x64")!
             $0.createValidatorMessage = createValidator
         }
-        let output = HarmonyStakingSigner.sign(input: input)
+        let output = HarmonyStakingSigner.signCreateValidator(input: input)
 
         let e1 = "f8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
         let e2 = "652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345"
@@ -88,7 +88,6 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingEditValidator() {
-        let localNet = "0x02"
         let desc = TW_Harmony_Proto_Description.with {
             $0.name = "Alice"
             $0.identity = "alice"
@@ -116,7 +115,7 @@ class HarmonyTests: XCTestCase {
             $0.gasLimit = Data(hexString: "0x64")!
             $0.editValidatorMessage = editValidator
         }
-        let output = HarmonyStakingSigner.sign(input: input)
+        let output = HarmonyStakingSigner.signEditValidator(input: input)
 
         let e1 = "f9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
         let e2 = "6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121c9880163"
@@ -132,7 +131,6 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingDelegate() {
-        let localNet = "0x02"
         let delegate = TW_Harmony_Proto_DirectiveDelegate.with {
             $0.delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             $0.validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
@@ -146,7 +144,7 @@ class HarmonyTests: XCTestCase {
             $0.gasLimit = Data(hexString: "0x64")!
             $0.delegateMessage = delegate
         }
-        let output = HarmonyStakingSigner.sign(input: input)
+        let output = HarmonyStakingSigner.signDelegate(input: input)
 
         let e1 = "f87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a"
         let e2 = "9c580a02806428a0ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80a05c28dbc4"
@@ -159,7 +157,6 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingUndelegate() {
-        let localNet = "0x02"
         let undelegate = TW_Harmony_Proto_DirectiveUndelegate.with {
             $0.delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
             $0.validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
@@ -173,7 +170,7 @@ class HarmonyTests: XCTestCase {
             $0.gasLimit = Data(hexString: "0x64")!
             $0.undelegateMessage = undelegate
         }
-        let output = HarmonyStakingSigner.sign(input: input)
+        let output = HarmonyStakingSigner.signUndelegate(input: input)
 
         let e1 = "f87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
         let e2 = "580a02806428a05bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2a05202c4b516"
@@ -186,7 +183,6 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingCollectRewards() {
-        let localNet = "0x02"
         let collectRewards = TW_Harmony_Proto_DirectiveCollectRewards.with {
             $0.delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
         }
@@ -198,7 +194,7 @@ class HarmonyTests: XCTestCase {
             $0.gasLimit = Data(hexString: "0x64")!
             $0.collectRewards = collectRewards
         }
-        let output = HarmonyStakingSigner.sign(input: input)
+        let output = HarmonyStakingSigner.signCollectRewards(input: input)
 
         let e1 = "f85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f425"
         let e2 = "77001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd9"

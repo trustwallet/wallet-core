@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "SignerUtils.h"
 #include "Transaction.h"
 #include "../Data.h"
 #include "../Hash.h"

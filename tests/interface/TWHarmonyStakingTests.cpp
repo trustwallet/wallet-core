@@ -22,7 +22,7 @@ using namespace Harmony;
 static auto TEST_ACCOUNT = Address("one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9");
 
 TEST(TWHarmonyStakingSigner, CreateValidator) {
-    Proto::StakingTransactionInput input;
+    auto input = Proto::StakingTransactionInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -66,12 +66,12 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     value = store(uint256_t("0x0"));
     input.set_gas_price(value.data(), value.size());
 
-    value = store(uint256_t("0x64")); // 0x5208
+    value = store(uint256_t("0x64"));
     input.set_gas_limit(value.data(), value.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSign(inputTWData);
+    auto outputTWData = TWHarmonyStakingSignerSignCreateValidator(inputTWData);
 
     auto output = Proto::StakingTransactionOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
@@ -86,7 +86,7 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
 }
 
 TEST(TWHarmonyStakingSigner, EditValidator) {
-    Proto::StakingTransactionInput input;
+    auto input = Proto::StakingTransactionInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -126,12 +126,12 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
     value = store(uint256_t("0x0"));
     input.set_gas_price(value.data(), value.size());
 
-    value = store(uint256_t("0x64")); // 0x5208
+    value = store(uint256_t("0x64"));
     input.set_gas_limit(value.data(), value.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSign(inputTWData);
+    auto outputTWData = TWHarmonyStakingSignerSignEditValidator(inputTWData);
 
     auto output = Proto::StakingTransactionOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
@@ -146,7 +146,7 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
 }
 
 TEST(TWHarmonyStakingSigner, Delegate) {
-    Proto::StakingTransactionInput input;
+    auto input = Proto::StakingTransactionInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -173,7 +173,7 @@ TEST(TWHarmonyStakingSigner, Delegate) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSign(inputTWData);
+    auto outputTWData = TWHarmonyStakingSignerSignDelegate(inputTWData);
 
     auto output = Proto::StakingTransactionOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
@@ -188,7 +188,7 @@ TEST(TWHarmonyStakingSigner, Delegate) {
 }
 
 TEST(TWHarmonyStakingSigner, Undelegate) {
-    Proto::StakingTransactionInput input;
+    auto input = Proto::StakingTransactionInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -215,7 +215,7 @@ TEST(TWHarmonyStakingSigner, Undelegate) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSign(inputTWData);
+    auto outputTWData = TWHarmonyStakingSignerSignUndelegate(inputTWData);
 
     auto output = Proto::StakingTransactionOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
@@ -230,7 +230,7 @@ TEST(TWHarmonyStakingSigner, Undelegate) {
 }
 
 TEST(TWHarmonyStakingSigner, CollectRewards) {
-    Proto::StakingTransactionInput input;
+    auto input = Proto::StakingTransactionInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -253,7 +253,7 @@ TEST(TWHarmonyStakingSigner, CollectRewards) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSign(inputTWData);
+    auto outputTWData = TWHarmonyStakingSignerSignCollectRewards(inputTWData);
 
     auto output = Proto::StakingTransactionOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));

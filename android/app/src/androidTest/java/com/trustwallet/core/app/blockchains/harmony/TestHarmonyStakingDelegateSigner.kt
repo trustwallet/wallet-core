@@ -63,7 +63,7 @@ class TestHarmonyStakingDelegateSigner {
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
         }
-        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
+        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.signCreateValidator(signingInput.build())
 
         val e1 = "0xf8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
         val e2 = "652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345"
@@ -111,7 +111,7 @@ class TestHarmonyStakingDelegateSigner {
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
         }
-        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
+        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.signEditValidator(signingInput.build())
 
         val e1 = "0xf9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
         val e2 = "6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121c9880163"
@@ -143,7 +143,7 @@ class TestHarmonyStakingDelegateSigner {
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
         }
-        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
+        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.signDelegate(signingInput.build())
 
         val e1 = "0xf87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
         val e2 = "580a02806428a0ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80a05c28dbc417"
@@ -172,7 +172,7 @@ class TestHarmonyStakingDelegateSigner {
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
         }
-        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
+        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.signUndelegate(signingInput.build())
 
         val e1 = "0xf87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
         val e2 = "580a02806428a05bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2a05202c4b516"
@@ -199,7 +199,7 @@ class TestHarmonyStakingDelegateSigner {
             gasPrice = ByteString.copyFrom("0x0".toHexByteArray())
             gasLimit = ByteString.copyFrom("0x64".toHexByteArray())
         }
-        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.sign(signingInput.build())
+        val sign: Harmony.StakingTransactionOutput = HarmonyStakingSigner.signCollectRewards(signingInput.build())
 
         val e1 = "0xf85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f425"
         val e2 = "77001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd9"
