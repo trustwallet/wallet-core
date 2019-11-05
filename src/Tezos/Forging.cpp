@@ -84,14 +84,14 @@ Data forgeOperation(const Operation& operation) {
         auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), TWPublicKeyTypeED25519);
         auto forgedPublicKey = forgePublicKey(publicKey);
 
-        /* Uncomment for debugging */
+        /* Uncomment for debugging
         auto forgedSourceHex = hex(forgedSource.begin(), forgedSource.end());
         auto forgedFeeHex = hex(forgedFee.begin(), forgedFee.end());
         auto forgedCounterHex = hex(forgedCounter.begin(), forgedCounter.end());
         auto forgedGasLimitHex = hex(forgedGasLimit.begin(), forgedGasLimit.end());
         auto forgedStorageLimitHex = hex(forgedStorageLimit.begin(), forgedStorageLimit.end());
         auto forgedPublicKeyHex = hex(forgedPublicKey.begin(), forgedPublicKey.end());
-
+        */
 
         forged.push_back(Operation_OperationKind_REVEAL);
         append(forged, forgedSource);
@@ -105,7 +105,6 @@ Data forgeOperation(const Operation& operation) {
 
     if (operation.kind() == Operation_OperationKind_DELEGATION) {
         auto delegate = operation.delegation_operation_data().delegate();
-        auto forgedPublicKey = forgePublicKeyHash(delegate);
 
         /* Uncomment for debugging
         auto forgedSourceHex = hex(forgedSource.begin(), forgedSource.end());
@@ -113,7 +112,6 @@ Data forgeOperation(const Operation& operation) {
         auto forgedCounterHex = hex(forgedCounter.begin(), forgedCounter.end());
         auto forgedGasLimitHex = hex(forgedGasLimit.begin(), forgedGasLimit.end());
         auto forgedStorageLimitHex = hex(forgedStorageLimit.begin(), forgedStorageLimit.end());
-        auto forgedPublicKeyHex = hex(forgedPublicKey.begin(), forgedPublicKey.end());
         */
 
         forged.push_back(Operation_OperationKind_DELEGATION);
@@ -124,7 +122,7 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedStorageLimit);
         if (!delegate.empty()) {
             append(forged, forgeBool(true));
-            append(forged, forgedPublicKey);
+            append(forged, forgePublicKeyHash(delegate));
         } else {
             append(forged, forgeBool(false));
         }
