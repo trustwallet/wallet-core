@@ -155,8 +155,6 @@ TEST(TezosTransaction, forgeReveal) {
 }
 
 TEST(TezosTransaction, forgeDelegate) {
-    PublicKey publicKey = parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
-
     auto delegateOperationData = new TW::Tezos::Proto::DelegationOperationData();
     delegateOperationData->set_delegate("tz1RKLoYm4vtLzo7TAgGifMDAkiWhjfyXwP4");
 
@@ -176,8 +174,6 @@ TEST(TezosTransaction, forgeDelegate) {
 }
 
 TEST(TezosTransaction, forgeUndelegate) {
-    PublicKey publicKey = parsePublicKey("edpku9ZF6UUAEo1AL3NWy1oxHLL6AfQcGYwA5hFKrEKVHMT3Xx889A");
-
     auto delegateOperationData = new TW::Tezos::Proto::DelegationOperationData();
     delegateOperationData->set_delegate("");
 
