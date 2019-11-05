@@ -33,8 +33,3 @@ public:
 };
 
 } // namespace TW::Binance
-
-/// Wrapper for C interface.
-struct TWBinanceAddress {
-    TW::Binance::Address impl;
-};

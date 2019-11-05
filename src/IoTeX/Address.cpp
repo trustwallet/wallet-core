@@ -6,8 +6,8 @@
 
 #include "Address.h"
 
-//#include <TrustWalletCore/TWHRP.h>
+#include <TrustWalletCore/TWHRP.h>
 
 using namespace TW::IoTeX;
 
-const std::string Address::hrp = "io";
+const std::string Address::hrp = HRP_IOTEX;
