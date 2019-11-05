@@ -50,6 +50,11 @@ TEST(Bech32Address, Invalid) {
     ASSERT_FALSE(Bech32Address::isValid("91cddcebe846ce4d47712287eee53cf17c2cfb7"));
 }
 
+TEST(Bech32Address, InvalidWrongPrefix) {
+    ASSERT_TRUE(Bech32Address::isValid("one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe", "one"));
+    ASSERT_FALSE(Bech32Address::isValid("one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe", "two"));
+}
+
 void TestDecodeFromString(const char* stringAddr, const char* hrp, const char* expectdKeyHash) {
     Bech32Address address("");
     // decode
