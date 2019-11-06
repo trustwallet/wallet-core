@@ -33,6 +33,16 @@ message StakeMessage {
     string type_prefix = 4;
 }
 
+// Message for restaking.
+message ReStakeMessage {
+    string delegator_address = 1;
+    string validator_src_address = 2;
+    string validator_dst_address = 3;
+    Amount amount = 4;
+    // cosmos-sdk/MsgBeginRedelegate
+    string type_prefix = 5;
+}
+
 // Message for staking.
 message WithdrawStakeRewardMessage {
     string delegator_address = 1;
@@ -57,7 +67,8 @@ message Transaction {
         SendCoinsMessage send_coins_message = 4;
         StakeMessage stake_message = 5;
         StakeMessage unstake_message = 6;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 7;
+        ReStakeMessage restake_message = 7;
+        WithdrawStakeRewardMessage withdraw_stake_reward_message = 8;
     }
 }
 
@@ -75,10 +86,11 @@ message SigningInput {
         SendCoinsMessage send_coins_message = 7;
         StakeMessage stake_message = 8;
         StakeMessage unstake_message = 9;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 10;
+        ReStakeMessage restake_message = 10;
+        WithdrawStakeRewardMessage withdraw_stake_reward_message = 11;
     }
     // default is cosmos-sdk/MsgSend
-    string type_prefix = 11;
+    string type_prefix = 12;
 }
 
 // Transaction signing output.

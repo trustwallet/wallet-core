@@ -12,6 +12,7 @@
 extern const std::string AMINO_PREFIX_SEND_COIN_MESSAGE;
 extern const std::string AMINO_PREFIX_STAKE_MESSAGE;
 extern const std::string AMINO_PREFIX_UNSTAKE_MESSAGE;
+extern const std::string AMINO_PREFIX_RESTAKE_MESSAGE;
 extern const std::string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE;
 extern const std::string AMINO_PREFIX_PUBLIC_KEY;
 
