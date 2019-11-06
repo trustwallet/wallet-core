@@ -1,4 +1,10 @@
-#include <TrustWalletCore/TWEthAbiFunction.h>
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#include <TrustWalletCore/TWEthereumAbiFunction.h>
 
 #include "Ethereum/ABI.h"
 #include "Data.h"
@@ -13,18 +19,17 @@ using namespace TW;
 using namespace TW::Ethereum;
 using namespace TW::Ethereum::ABI;
 
-
-struct TWEthAbiFunction *_Nullable TWEthAbiFunctionCreateWithString(TWString *_Nonnull name) {
+struct TWEthereumAbiFunction *_Nullable TWEthereumAbiFunctionCreateWithString(TWString *_Nonnull name) {
     auto func = Function(TWStringUTF8Bytes(name));
-    return new TWEthAbiFunction{ func };
+    return new TWEthereumAbiFunction{ func };
 }
 
-void TWEthAbiFunctionDelete(struct TWEthAbiFunction *_Nonnull func) {
+void TWEthereumAbiFunctionDelete(struct TWEthereumAbiFunction *_Nonnull func) {
     assert(func != nullptr);
     delete func;
 }
 
-TWString *_Nonnull TWEthAbiFunctionGetType(struct TWEthAbiFunction *_Nonnull func) {
+TWString *_Nonnull TWEthereumAbiFunctionGetType(struct TWEthereumAbiFunction *_Nonnull func) {
     assert(func != nullptr);
     auto function = func->impl;
     std::string sign = function.getType();
@@ -33,7 +38,7 @@ TWString *_Nonnull TWEthAbiFunctionGetType(struct TWEthAbiFunction *_Nonnull fun
 
 ///// AddInParam
 
-int TWEthAbiFunctionAddInParamInt32(struct TWEthAbiFunction *_Nonnull func, uint64_t val) {
+int TWEthereumAbiFunctionAddInParamInt32(struct TWEthereumAbiFunction *_Nonnull func, uint64_t val) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -42,7 +47,7 @@ int TWEthAbiFunctionAddInParamInt32(struct TWEthAbiFunction *_Nonnull func, uint
     return idx;
 }
 
-int TWEthAbiFunctionAddInParamUInt256(struct TWEthAbiFunction *_Nonnull func, TWData *_Nonnull val) {
+int TWEthereumAbiFunctionAddInParamUInt256(struct TWEthereumAbiFunction *_Nonnull func, TWData *_Nonnull val) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -53,7 +58,7 @@ int TWEthAbiFunctionAddInParamUInt256(struct TWEthAbiFunction *_Nonnull func, TW
     return idx;
 }
 
-int TWEthAbiFunctionAddInParamBool(struct TWEthAbiFunction *_Nonnull func, bool val) {
+int TWEthereumAbiFunctionAddInParamBool(struct TWEthereumAbiFunction *_Nonnull func, bool val) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -62,7 +67,7 @@ int TWEthAbiFunctionAddInParamBool(struct TWEthAbiFunction *_Nonnull func, bool 
     return idx;
 }
 
-int TWEthAbiFunctionAddInParamString(struct TWEthAbiFunction *_Nonnull func, TWString *_Nonnull val) {
+int TWEthereumAbiFunctionAddInParamString(struct TWEthereumAbiFunction *_Nonnull func, TWString *_Nonnull val) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -72,7 +77,7 @@ int TWEthAbiFunctionAddInParamString(struct TWEthAbiFunction *_Nonnull func, TWS
     return idx;
 }
 
-int TWEthAbiFunctionAddInParamByteArray(struct TWEthAbiFunction *_Nonnull func, TWData *_Nonnull val) {
+int TWEthereumAbiFunctionAddInParamByteArray(struct TWEthereumAbiFunction *_Nonnull func, TWData *_Nonnull val) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -83,7 +88,7 @@ int TWEthAbiFunctionAddInParamByteArray(struct TWEthAbiFunction *_Nonnull func, 
     return idx;    
 }
 
-int TWEthAbiFunctionAddInParamByteArrayFix(struct TWEthAbiFunction *_Nonnull func, size_t count, TWData *_Nonnull val) {
+int TWEthereumAbiFunctionAddInParamByteArrayFix(struct TWEthereumAbiFunction *_Nonnull func, size_t count, TWData *_Nonnull val) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -94,7 +99,7 @@ int TWEthAbiFunctionAddInParamByteArrayFix(struct TWEthAbiFunction *_Nonnull fun
     return idx;    
 }
 
-int TWEthAbiFunctionAddInParamArray(struct TWEthAbiFunction *_Nonnull func) {
+int TWEthereumAbiFunctionAddInParamArray(struct TWEthereumAbiFunction *_Nonnull func) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -105,7 +110,7 @@ int TWEthAbiFunctionAddInParamArray(struct TWEthAbiFunction *_Nonnull func) {
 
 ///// AddOutParam
 
-int TWEthAbiFunctionAddOutParamInt32(struct TWEthAbiFunction *_Nonnull func) {
+int TWEthereumAbiFunctionAddOutParamInt32(struct TWEthereumAbiFunction *_Nonnull func) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -114,7 +119,7 @@ int TWEthAbiFunctionAddOutParamInt32(struct TWEthAbiFunction *_Nonnull func) {
     return idx;
 }
 
-int TWEthAbiFunctionAddOutParamUInt256(struct TWEthAbiFunction *_Nonnull func) {
+int TWEthereumAbiFunctionAddOutParamUInt256(struct TWEthereumAbiFunction *_Nonnull func) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -125,7 +130,7 @@ int TWEthAbiFunctionAddOutParamUInt256(struct TWEthAbiFunction *_Nonnull func) {
 
 ///// GetOutParam
 
-uint64_t TWEthAbiFunctionGetOutParamInt32(struct TWEthAbiFunction *_Nonnull func, int idx) {
+uint64_t TWEthereumAbiFunctionGetOutParamInt32(struct TWEthereumAbiFunction *_Nonnull func, int idx) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -137,7 +142,7 @@ uint64_t TWEthAbiFunctionGetOutParamInt32(struct TWEthAbiFunction *_Nonnull func
     return val;
 }
 
-TWData *_Nonnull TWEthAbiFunctionGetOutParamUInt256(struct TWEthAbiFunction *_Nonnull func, int idx) {
+TWData *_Nonnull TWEthereumAbiFunctionGetOutParamUInt256(struct TWEthereumAbiFunction *_Nonnull func, int idx) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -153,7 +158,7 @@ TWData *_Nonnull TWEthAbiFunctionGetOutParamUInt256(struct TWEthAbiFunction *_No
 
 ///// AddInArrayParam
 
-int TWEthAbiFunctionAddInArrayParamUInt32(struct TWEthAbiFunction *_Nonnull func, int arrayIdx, uint64_t val) {
+int TWEthereumAbiFunctionAddInArrayParamUInt32(struct TWEthereumAbiFunction *_Nonnull func, int arrayIdx, uint64_t val) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -167,7 +172,7 @@ int TWEthAbiFunctionAddInArrayParamUInt32(struct TWEthAbiFunction *_Nonnull func
     return idxChild;
 }
 
-int TWEthAbiFunctionAddInArrayParamUInt256(struct TWEthAbiFunction *_Nonnull func, int arrayIdx, TWData *_Nonnull val) {
+int TWEthereumAbiFunctionAddInArrayParamUInt256(struct TWEthereumAbiFunction *_Nonnull func, int arrayIdx, TWData *_Nonnull val) {
     assert(func != nullptr);
     Function& function = func->impl;
 
@@ -181,15 +186,4 @@ int TWEthAbiFunctionAddInArrayParamUInt256(struct TWEthAbiFunction *_Nonnull fun
     auto paramChild = std::make_shared<ParamUInt256>(val2);
     int idxChild = paramArr->addParam(paramChild);
     return idxChild;
-}
-
-///// Encode
-
-TWData*_Nonnull TWEthAbiFunctionEncode(struct TWEthAbiFunction *_Nonnull func) {
-    assert(func != nullptr);
-    Function& function = func->impl;
-
-    Data encoded;
-    function.encode(encoded);
-    return TWDataCreateWithData(&encoded);
 }

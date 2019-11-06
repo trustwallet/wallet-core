@@ -7,7 +7,6 @@ import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.EthereumSigner
 import wallet.core.jni.proto.Ethereum
-import wallet.core.jni.EthAbiFunction
 import com.trustwallet.core.app.utils.Numeric
 
 class TestEthereumTransactionSigner {

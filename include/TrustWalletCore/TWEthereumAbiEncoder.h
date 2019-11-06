@@ -1,0 +1,37 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+#pragma once
+
+#include "TWBase.h"
+#include "TWString.h"
+#include "TWData.h"
+
+//
+// Wrapper class for Ethereum ABI encoding & decoding.  Also builder for Function objects.
+//
+
+TW_EXTERN_C_BEGIN
+
+struct TWEthereumAbiFunction;
+
+TW_EXPORT_CLASS
+struct TWEthereumAbiEncoder;
+
+/// Creates a function object, with the given name and empty parameter list.  It must be deleted at the end.
+/// Note: Create name is reserved for own-class creation in the codegen toolchain
+TW_EXPORT_STATIC_METHOD
+struct TWEthereumAbiFunction *_Nullable TWEthereumAbiEncoderBuildFunction(TWString *_Nonnull name);
+
+/// Deletes a function object created with a 'TWEthereumAbiEncoderCreateWithString' method.
+TW_EXPORT_STATIC_METHOD
+void TWEthereumAbiEncoderDeleteFunction(struct TWEthereumAbiFunction *_Nonnull func);
+
+/// Encode function to Eth ABI binary
+TW_EXPORT_STATIC_METHOD
+TWData*_Nonnull TWEthereumAbiEncoderEncode(struct TWEthereumAbiFunction *_Nonnull func);
+
+TW_EXTERN_C_END

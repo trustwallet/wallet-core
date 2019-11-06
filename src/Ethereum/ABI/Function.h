@@ -64,6 +64,6 @@ inline void encode(const Function& func, Data& data) {
 } // namespace TW::Ethereum::ABI
 
 /// Wrapper for C interface.
-struct TWEthAbiFunction {
+struct TWEthereumAbiFunction {
     TW::Ethereum::ABI::Function impl;
 };
