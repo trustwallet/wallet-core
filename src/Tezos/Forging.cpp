@@ -83,16 +83,7 @@ Data forgeOperation(const Operation& operation) {
     if (operation.kind() == Operation_OperationKind_REVEAL) {
         auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), TWPublicKeyTypeED25519);
         auto forgedPublicKey = forgePublicKey(publicKey);
-
-        /* Uncomment for debugging */
-        auto forgedSourceHex = hex(forgedSource.begin(), forgedSource.end());
-        auto forgedFeeHex = hex(forgedFee.begin(), forgedFee.end());
-        auto forgedCounterHex = hex(forgedCounter.begin(), forgedCounter.end());
-        auto forgedGasLimitHex = hex(forgedGasLimit.begin(), forgedGasLimit.end());
-        auto forgedStorageLimitHex = hex(forgedStorageLimit.begin(), forgedStorageLimit.end());
-        auto forgedPublicKeyHex = hex(forgedPublicKey.begin(), forgedPublicKey.end());
-
-
+        
         forged.push_back(Operation_OperationKind_REVEAL);
         append(forged, forgedSource);
         append(forged, forgedFee);
@@ -105,16 +96,6 @@ Data forgeOperation(const Operation& operation) {
 
     if (operation.kind() == Operation_OperationKind_DELEGATION) {
         auto delegate = operation.delegation_operation_data().delegate();
-        auto forgedPublicKey = forgePublicKeyHash(delegate);
-
-        /* Uncomment for debugging
-        auto forgedSourceHex = hex(forgedSource.begin(), forgedSource.end());
-        auto forgedFeeHex = hex(forgedFee.begin(), forgedFee.end());
-        auto forgedCounterHex = hex(forgedCounter.begin(), forgedCounter.end());
-        auto forgedGasLimitHex = hex(forgedGasLimit.begin(), forgedGasLimit.end());
-        auto forgedStorageLimitHex = hex(forgedStorageLimit.begin(), forgedStorageLimit.end());
-        auto forgedPublicKeyHex = hex(forgedPublicKey.begin(), forgedPublicKey.end());
-        */
 
         forged.push_back(Operation_OperationKind_DELEGATION);
         append(forged, forgedSource);
@@ -123,8 +104,10 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
         if (!delegate.empty()) {
+            auto forgedPublicKeyHash = forgePublicKeyHash(delegate);
+
             append(forged, forgeBool(true));
-            append(forged, forgedPublicKey);
+            append(forged, forgedPublicKeyHash);
         } else {
             append(forged, forgeBool(false));
         }
@@ -134,16 +117,6 @@ Data forgeOperation(const Operation& operation) {
     if (operation.kind() == Operation_OperationKind_TRANSACTION) {
         auto forgedAmount = forgeZarith(operation.transaction_operation_data().amount());
         auto forgedDestination = Address(operation.transaction_operation_data().destination()).forge();
-
-        /* Uncomment for debug
-        auto forgedSourceHex = hex(forgedSource.begin(), forgedSource.end());
-        auto forgedFeeHex = hex(forgedFee.begin(), forgedFee.end());
-        auto forgedCounterHex = hex(forgedCounter.begin(), forgedCounter.end());
-        auto forgedGasLimitHex = hex(forgedGasLimit.begin(), forgedGasLimit.end());
-        auto forgedStorageLimitHex = hex(forgedStorageLimit.begin(), forgedStorageLimit.end());
-        auto forgedAmountHex = hex(forgedAmount.begin(), forgedAmount.end());
-        auto forgedDestinationHex = hex(forgedDestination.begin(), forgedDestination.end());
-        */
 
         forged.push_back(Operation_OperationKind_TRANSACTION);
         append(forged, forgedSource);
