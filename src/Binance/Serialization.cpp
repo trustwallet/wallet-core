@@ -6,17 +6,17 @@
 
 #include "Serialization.h"
 
-#include "../Cosmos/Address.h"
-#include <TrustWalletCore/TWHRP.h>
+#include "Address.h"
 #include "../HexCoding.h"
 
 using namespace TW;
+using namespace TW::Binance;
 
 using json = nlohmann::json;
 
 static inline std::string addressString(const std::string& bytes) {
     auto data = std::vector<uint8_t>(bytes.begin(), bytes.end());
-    auto address = Cosmos::Address(HRP_BINANCE, data);
+    auto address = Address(data);
     return address.string();
 }
 

@@ -10,6 +10,7 @@
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Algorand/Address.h"
+#include "Binance/Address.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
@@ -62,6 +63,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Aion::Address::isValid(string);
 
     case TWCoinTypeBinance:
+        return Binance::Address::isValid(string);
+
     case TWCoinTypeCosmos:
     case TWCoinTypeTerra:
         return Cosmos::Address::isValid(string, hrp);
@@ -149,7 +152,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
                                                  {Zcash::TAddress::staticPrefix, p2sh}});
 
     case TWCoinTypeZilliqa:
-        return Zilliqa::isValidAddress(string);
+        return Zilliqa::Address::isValid(string);
 
     case TWCoinTypeNano:
         return Nano::Address::isValid(string);
@@ -176,7 +179,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Nebulas::Address::isValid(string);
 
     case TWCoinTypeHarmony:
-        return Harmony::Address::isValid(string).first;
+        return Harmony::Address::isValid(string);
 
     case TWCoinTypeSolana:
         return Solana::Address::isValid(string);
@@ -200,7 +203,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
         return Aeternity::Address(publicKey).string();
 
     case TWCoinTypeBinance:
-        return Cosmos::Address(HRP_BINANCE, publicKey).string();
+        return Binance::Address(publicKey).string();
 
     case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
