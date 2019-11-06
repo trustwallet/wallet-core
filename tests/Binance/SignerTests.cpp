@@ -8,11 +8,10 @@
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "proto/Binance.pb.h"
-#include "Cosmos/Address.h"
+#include "Binance/Address.h"
 #include "Binance/Signer.h"
 #include "proto/Binance.pb.h"
 
-#include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
 
 namespace TW::Binance {
@@ -29,9 +28,9 @@ TEST(BinanceSigner, Sign) {
     input.set_private_key(key.data(), key.size());
 
     auto& order = *input.mutable_trade_order();
-    auto result = Cosmos::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu");
-    ASSERT_TRUE(result.second);
-    auto keyhash = result.first.keyHash;
+    Binance::Address address;
+    ASSERT_TRUE(Binance::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu", address));
+    auto keyhash = address.getKeyHash();
     order.set_sender(keyhash.data(), keyhash.size());
     order.set_id("BA36F0FAD74D8F41045463E4774F328F4AF779E5-36");
     order.set_symbol("NNB-338_BNB");
@@ -57,8 +56,8 @@ TEST(BinanceSigner, Build) {
     input.set_private_key(key.data(), key.size());
 
     auto& order = *input.mutable_trade_order();
-    auto address = Cosmos::Address(HRP_BINANCE, parse_hex("b6561dcc104130059a7c08f48c64610c1f6f9064"));
-    auto keyhash = address.keyHash;
+    auto address = Binance::Address(parse_hex("b6561dcc104130059a7c08f48c64610c1f6f9064"));
+    auto keyhash = address.getKeyHash();
     order.set_sender(keyhash.data(), keyhash.size());
     order.set_id("B6561DCC104130059A7C08F48C64610C1F6F9064-11");
     order.set_symbol("BTC-5C4_BNB");
@@ -107,10 +106,10 @@ TEST(BinanceSigner, BuildSend) {
     auto& order = *signingInput.mutable_send_order();
 
     auto fromKeyhash = parse_hex("40c2979694bbc961023d1d27be6fc4d21a9febe6");
-    auto fromAddress = Cosmos::Address(HRP_BINANCE, fromKeyhash);
+    auto fromAddress = Binance::Address(fromKeyhash);
 
     auto toKeyhash = parse_hex("88b37d5e05f3699e2a1406468e5d87cb9dcceb95");
-    auto toAddress = Cosmos::Address(HRP_BINANCE, toKeyhash);
+    auto toAddress = Binance::Address(toKeyhash);
 
     auto input = order.add_inputs();
     input->set_address(fromKeyhash.data(), fromKeyhash.size());
@@ -170,12 +169,12 @@ TEST(BinanceSigner, BuildSend2) {
     token.set_amount(100000000000000);
 
     auto input =  Proto::SendOrder::Input();
-    auto fromKeyHash = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromKeyHash = Binance::Address(fromPublicKey).getKeyHash();
     input.set_address(fromKeyHash.data(), fromKeyHash.size());
     *input.add_coins() = token;
 
     auto output =  Proto::SendOrder::Output();
-    auto toKeyHash = Cosmos::Address(HRP_BINANCE, toPublicKey).keyHash;
+    auto toKeyHash = Binance::Address(toPublicKey).getKeyHash();
     output.set_address(toKeyHash.data(), toKeyHash.size());
     *output.add_coins() = token;
 
@@ -205,11 +204,11 @@ TEST(BinanceSigner, BuildSend2) {
 TEST(BinanceSigner, BuildHTLT) {
     const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
     const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
 
     const auto toPrivateKey = PrivateKey(parse_hex("851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a"));
     const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto toAddr = Cosmos::Address(HRP_BINANCE, toPublicKey).keyHash;
+    auto toAddr = Binance::Address(toPublicKey).getKeyHash();
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("test-chain");
@@ -249,7 +248,7 @@ TEST(BinanceSigner, BuildHTLT) {
 TEST(BinanceSigner, BuildDepositHTLT) {
     const auto fromPrivateKey = PrivateKey(parse_hex("851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a"));
     const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("test-chain");
@@ -280,7 +279,7 @@ TEST(BinanceSigner, BuildDepositHTLT) {
 TEST(BinanceSigner, BuildClaimHTLT) {
     const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
     const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("test-chain");
@@ -310,7 +309,7 @@ TEST(BinanceSigner, BuildClaimHTLT) {
 TEST(BinanceSigner, BuildRefundHTLT) {
     const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
     const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("test-chain");

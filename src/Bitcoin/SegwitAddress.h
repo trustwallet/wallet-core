@@ -13,6 +13,8 @@
 
 namespace TW::Bitcoin {
 
+/// A Segwit address.
+/// Note: Similar to Bech32Address, but it differs enough so that reuse makes no sense.
 class SegwitAddress {
   public:
     /// Human-readable part.

@@ -28,13 +28,18 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data 
 
 Proto::SigningOutput Signer::sign(const TW::Harmony::Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    Address toAddr;
+    if (!Address::decode(input.to_address(), toAddr)) {
+        // invalid to address
+        return Proto::SigningOutput();
+    }
     auto transaction = Transaction(
         /* nonce: */ load(input.nonce()),
         /* gasPrice: */ load(input.gas_price()),
         /* gasLimit: */ load(input.gas_limit()),
         /* fromShardID */ load(input.from_shard_id()),
         /* toShardID */ load(input.to_shard_id()),
-        /* to: */ Address(input.to_address()),
+        /* to: */ toAddr,
         /* amount: */ load(input.amount()),
         /* payload: */ Data(input.payload().begin(), input.payload().end()));
 
@@ -68,7 +73,7 @@ Data Signer::rlpNoHash(const Transaction &transaction, const bool include_vrs) c
     append(encoded, RLP::encode(transaction.gasLimit));
     append(encoded, RLP::encode(transaction.fromShardID));
     append(encoded, RLP::encode(transaction.toShardID));
-    append(encoded, RLP::encode(transaction.to.bytes));
+    append(encoded, RLP::encode(transaction.to.getKeyHash()));
     append(encoded, RLP::encode(transaction.amount));
     append(encoded, RLP::encode(transaction.payload));
     if (include_vrs) {

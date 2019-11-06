@@ -29,20 +29,11 @@ TEST(IoTeXAddress, Valid) {
 }
 
 TEST(IoTeXAddress, FromString) {
-    const auto address = Address("io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j");
-    ASSERT_EQ(address.string(), "io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j");
+    Address address;
+    ASSERT_TRUE(Address::decode("io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j", address));
+    ASSERT_EQ("io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j", address.string());
 
-    EXPECT_THROW({
-        try
-        {
-            const auto address = Address("io187wzp08vnhjbpkydnr97qlh8kh0dpkkytfam8j");
-        }
-        catch( const std::invalid_argument& e )
-        {
-            EXPECT_STREQ("IoTeX: Invalid address data", e.what());
-            throw;
-        }
-    }, std::invalid_argument);
+    ASSERT_FALSE(Address::decode("io187wzp08vnhjbpkydnr97qlh8kh0dpkkytfam8j", address));
 }
 
 TEST(IoTeXAddress, FromPrivateKey) {
@@ -59,7 +50,7 @@ TEST(IoTeXAddress, FromPrivateKey) {
         }
         catch( const std::invalid_argument& e )
         {
-            EXPECT_STREQ("IoTeX: Address needs an extended SECP256k1 public key", e.what());
+            EXPECT_STREQ("address may only be an extended SECP256k1 public key", e.what());
             throw;
         }
     }, std::invalid_argument);
@@ -78,7 +69,7 @@ TEST(IoTeXAddress, FromKeyHash) {
         }
         catch( const std::invalid_argument& e )
         {
-            EXPECT_STREQ("IoTeX: Invalid address data", e.what());
+            EXPECT_STREQ("invalid address data", e.what());
             throw;
         }
     }, std::invalid_argument);
