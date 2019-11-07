@@ -34,13 +34,13 @@ class TestEthereumAbiEncoder {
     fun testEthereumAbiEncoderEncodeFuncCase1() {
         val function = EthereumAbiEncoder.buildFunction("sam")
         // add params
-        assertEquals(0, function.addParamByteArray("0x64617665".toHexByteArray(), false))
+        assertEquals(0, function.addParamBytes("0x64617665".toHexByteArray(), false))
         assertEquals(1, function.addParamBool(true, false))
         assertEquals(2, function.addParamArray(false))
         assertEquals(0, function.addInArrayParamUInt256(2, "0x01".toHexByteArray()))
         assertEquals(1, function.addInArrayParamUInt256(2, "0x02".toHexByteArray()))
         assertEquals(2, function.addInArrayParamUInt256(2, "0x03".toHexByteArray()))
-        assertEquals(0, function.addParamUInt54(true, true))
+        assertEquals(0, function.addParamUInt64(true, true))
         // check signature
         assertEquals("sam(bytes,bool,uint256[])", function.type)
         // encode

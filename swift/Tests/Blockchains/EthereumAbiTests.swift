@@ -10,7 +10,7 @@ import TrustWalletCore
 class EthereumAbiTests: XCTestCase {
     func testEncoder() {
         let function = EthereumAbiEncoder.buildFunction(name: "sam")!
-        XCTAssertEqual(0, function.addParamByteArray(val: Data(hexString: "0x64617665")!, isOutput: false))
+        XCTAssertEqual(0, function.addParamBytes(val: Data(hexString: "0x64617665")!, isOutput: false))
         XCTAssertEqual(1, function.addParamBool(val: true, isOutput: false))
         let idx = function.addParamArray(isOutput: false)
         XCTAssertEqual(2, idx)
