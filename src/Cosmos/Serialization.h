@@ -12,12 +12,13 @@
 extern const std::string AMINO_PREFIX_SEND_COIN_MESSAGE;
 extern const std::string AMINO_PREFIX_STAKE_MESSAGE;
 extern const std::string AMINO_PREFIX_UNSTAKE_MESSAGE;
+extern const std::string AMINO_PREFIX_RESTAKE_MESSAGE;
 extern const std::string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE;
 extern const std::string AMINO_PREFIX_PUBLIC_KEY;
 
 namespace TW::Cosmos {
 
 nlohmann::json signaturePreimageJSON(const Proto::SigningInput& input);
-nlohmann::json transactionJSON(const Proto::Transaction& transaction, std::string type_prefix);
+nlohmann::json transactionJSON(const Proto::Transaction& transaction, const std::string& type_prefix);
 
 } // namespace

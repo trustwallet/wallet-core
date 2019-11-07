@@ -8,11 +8,9 @@
 #include "Serialization.h"
 
 #include "../Hash.h"
-#include "../HexCoding.h"
 #include "../PrivateKey.h"
 #include "../Data.h"
 
-#include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 #include <string>
 
@@ -50,7 +48,14 @@ Signer::Signer(Proto::SigningInput&& input) {
             message.set_type_prefix(AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE);
         }
         *input.mutable_withdraw_stake_reward_message() = message;
+    } else if(input.has_restake_message()) {
+        auto message = input.restake_message();
+        if (message.type_prefix().empty()) {
+            message.set_type_prefix(AMINO_PREFIX_RESTAKE_MESSAGE);
+        }
+        *input.mutable_restake_message() = message;
     }
+
     this->input = input;
 }
 
@@ -82,6 +87,8 @@ json Signer::buildTransactionJSON(const Data& signature) const {
         *transaction.mutable_stake_message() = input.stake_message();
     } else if (input.has_unstake_message()) {
         *transaction.mutable_unstake_message() = input.unstake_message();
+    } else if (input.has_restake_message()) {
+        *transaction.mutable_restake_message() = input.restake_message();
     } else if (input.has_withdraw_stake_reward_message()) {
         *transaction.mutable_withdraw_stake_reward_message() = input.withdraw_stake_reward_message();
     }
