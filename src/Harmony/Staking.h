@@ -21,7 +21,7 @@ using namespace std;
 namespace TW::Harmony {
 
 template <typename Directive>
-class StakingTransaction {
+class Staking {
   public:
     uint8_t directive;
     Directive stakeMsg;
@@ -34,8 +34,8 @@ class StakingTransaction {
     uint256_t r = uint256_t();
     uint256_t s = uint256_t();
 
-    StakingTransaction(uint8_t directive, Directive stakeMsg, uint256_t nonce, uint256_t gasPrice,
-                       uint256_t gasLimit, uint256_t v, uint256_t r, uint256_t s)
+    Staking(uint8_t directive, Directive stakeMsg, uint256_t nonce, uint256_t gasPrice,
+            uint256_t gasLimit, uint256_t v, uint256_t r, uint256_t s)
         : directive(move(directive))
         , stakeMsg(move(stakeMsg))
         , nonce(move(nonce))
@@ -78,53 +78,13 @@ class Decimal {
   public:
     uint256_t value;
 
-    Decimal(string value) {
-        if (value.length() == 0) {
-            throw invalid_argument("decimal string is empty");
+    Decimal(uint256_t value, uint256_t precision) {
+        if (precision < 1 || precision > PRECISION) {
+            throw std::invalid_argument("invalid precision, must be between 1 and 17");
         }
-        string value1 = value;
-        if (value[0] == '-') {
-            throw invalid_argument("decimal fraction should be be between [0, 1]");
-        }
-        if (value[0] == '+') {
-            value1 = value.substr(1);
-        }
-        if (value1.length() == 0) {
-            throw invalid_argument("decimal string is empty");
-        }
-        vector<string> strs;
-        boost::split(strs, value1, boost::is_any_of(" "));
-        if (strs.size() > 1) {
-            throw invalid_argument("bad decimal string");
-        }
-        boost::split(strs, value1, boost::is_any_of("."));
-        int lenDecs = 0;
-        string combinedStr = strs[0];
-        if (strs.size() == 2) {
-            lenDecs = static_cast<int>(strs[1].length());
-            if (lenDecs == 0 || combinedStr.length() == 0) {
-                throw invalid_argument("bad decimal length");
-            }
-            if (strs[1][0] == '-') {
-                throw invalid_argument("bad decimal string");
-            }
-            combinedStr += strs[1];
-        } else if (strs.size() > 2) {
-            throw invalid_argument("too many periods to be a decimal string");
-        }
-        if (lenDecs > PRECISION) {
-            throw invalid_argument("too much precision");
-        }
-        int zerosToAdd = static_cast<int>(PRECISION - lenDecs);
-        char zeros[PRECISION];
-        sprintf(zeros, "%0*d", zerosToAdd, 0);
-        combinedStr += zeros;
-        combinedStr.erase(0, combinedStr.find_first_not_of('0'));
-        uint256_t val = uint256_t(combinedStr);
-        if (val > static_cast<uint256_t>(MAX_DECIMAL)) {
-            throw invalid_argument("too large decimal fraction");
-        }
-        this->value = val;
+        int zerosToAdd = static_cast<int>(PRECISION - precision);
+        uint256_t multiplier = (uint256_t)pow(10, zerosToAdd);
+        this->value = value * multiplier;
     }
 };
 
@@ -150,7 +110,8 @@ class CreateValidator {
 
     CreateValidator(Address validatorAddress, Description description,
                     CommissionRate commissionRates, uint256_t minSelfDelegation,
-                    uint256_t maxTotalDelegation, vector<Data> slotPubKeys, uint256_t amount)
+                    uint256_t maxTotalDelegation, vector<vector<uint8_t>> slotPubKeys,
+                    uint256_t amount)
         : validatorAddress(move(validatorAddress))
         , description(move(description))
         , commissionRates(move(commissionRates))
@@ -171,8 +132,8 @@ class EditValidator {
     vector<uint8_t> slotKeyToAdd;
 
     EditValidator(Address validatorAddress, Description description, Decimal *commissionRate,
-                  uint256_t minSelfDelegation, uint256_t maxTotalDelegation, Data slotKeyToRemove,
-                  Data slotKeyToAdd)
+                  uint256_t minSelfDelegation, uint256_t maxTotalDelegation,
+                  vector<uint8_t> slotKeyToRemove, vector<uint8_t> slotKeyToAdd)
         : validatorAddress(move(validatorAddress))
         , description(move(description))
         , commissionRate(move(commissionRate))

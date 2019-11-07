@@ -8,7 +8,7 @@
 #include "Coin.h"
 #include "HDWallet.h"
 #include "Harmony/Address.h"
-#include "Harmony/StakingSigner.h"
+#include "Harmony/Signer.h"
 #include "HexCoding.h"
 #include "proto/Harmony.pb.h"
 
@@ -22,7 +22,7 @@ static uint256_t LOCAL_NET = 0x2;
 static auto TEST_ACCOUNT = Address("one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9");
 
 TEST(HarmonyStaking, SignCreateValidator) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -30,7 +30,8 @@ TEST(HarmonyStaking, SignCreateValidator) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto createValidatorMsg = input.mutable_create_validator_message();
+    auto stakingMessage = input.mutable_staking_message();
+    auto createValidatorMsg = stakingMessage->mutable_create_validator_message();
 
     createValidatorMsg->set_validator_address(TEST_ACCOUNT.string());
 
@@ -42,9 +43,23 @@ TEST(HarmonyStaking, SignCreateValidator) {
     description->set_details("Don't mess with me!!!");
     auto commission = createValidatorMsg->mutable_commission_rates();
 
-    commission->mutable_rate()->set_value("0.1");
-    commission->mutable_max_rate()->set_value("0.9");
-    commission->mutable_max_change_rate()->set_value("0.05");
+    // (value, precision): (1, 1) represents 0.1
+    value = store(uint256_t("1"));
+    commission->mutable_rate()->set_value(value.data(), value.size());
+    value = store(uint256_t("1"));
+    commission->mutable_rate()->set_precision(value.data(), value.size());
+
+    // (value, precision): (9, 1) represents 0.9
+    value = store(uint256_t("9"));
+    commission->mutable_max_rate()->set_value(value.data(), value.size());
+    value = store(uint256_t("1"));
+    commission->mutable_max_rate()->set_precision(value.data(), value.size());
+
+    // (value, precision): (5, 2) represents 0.05
+    value = store(uint256_t("5"));
+    commission->mutable_max_change_rate()->set_value(value.data(), value.size());
+    value = store(uint256_t("2"));
+    commission->mutable_max_change_rate()->set_precision(value.data(), value.size());
 
     value = store(uint256_t("10"));
     createValidatorMsg->set_min_self_delegation(value.data(), value.size());
@@ -60,15 +75,15 @@ TEST(HarmonyStaking, SignCreateValidator) {
     createValidatorMsg->set_amount(value.data(), value.size());
 
     value = store(uint256_t("0x02"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
-    value = store(uint256_t("0x64")); // 0x5208
-    input.set_gas_limit(value.data(), value.size());
+    value = store(uint256_t("0x64"));
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign<CreateValidator>(input);
+    auto proto_output = Signer::sign<Staking<CreateValidator>>(input);
 
     auto expectEncoded =
         "f8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
@@ -89,7 +104,7 @@ TEST(HarmonyStaking, SignCreateValidator) {
 }
 
 TEST(HarmonyStaking, SignEditValidator) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -97,7 +112,8 @@ TEST(HarmonyStaking, SignEditValidator) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto editValidatorMsg = input.mutable_edit_validator_message();
+    auto stakingMessage = input.mutable_staking_message();
+    auto editValidatorMsg = stakingMessage->mutable_edit_validator_message();
 
     editValidatorMsg->set_validator_address(TEST_ACCOUNT.string());
 
@@ -109,7 +125,12 @@ TEST(HarmonyStaking, SignEditValidator) {
     description->set_details("Don't mess with me!!!");
 
     auto commissionRate = editValidatorMsg->mutable_commission_rate();
-    commissionRate->set_value("0.1");
+
+    // (value, precision): (1, 1) represents 0.1
+    value = store(uint256_t("1"));
+    commissionRate->set_value(value.data(), value.size());
+    value = store(uint256_t("1"));
+    commissionRate->set_precision(value.data(), value.size());
 
     value = store(uint256_t("10"));
     editValidatorMsg->set_min_self_delegation(value.data(), value.size());
@@ -123,15 +144,15 @@ TEST(HarmonyStaking, SignEditValidator) {
     editValidatorMsg->set_slot_key_to_add(value.data(), value.size());
 
     value = store(uint256_t("0x02"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x64")); // 0x5208
-    input.set_gas_limit(value.data(), value.size());
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign<EditValidator>(input);
+    auto proto_output = Signer::sign<Staking<EditValidator>>(input);
 
     auto expectEncoded =
         "f9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
@@ -152,7 +173,7 @@ TEST(HarmonyStaking, SignEditValidator) {
 }
 
 TEST(HarmonyStaking, SignDelegate) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -160,7 +181,8 @@ TEST(HarmonyStaking, SignDelegate) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto delegateMsg = input.mutable_delegate_message();
+    auto stakingMessage = input.mutable_staking_message();
+    auto delegateMsg = stakingMessage->mutable_delegate_message();
     delegateMsg->set_delegator_address(TEST_ACCOUNT.string());
     delegateMsg->set_validator_address(TEST_ACCOUNT.string());
 
@@ -168,15 +190,15 @@ TEST(HarmonyStaking, SignDelegate) {
     delegateMsg->set_amount(value.data(), value.size());
 
     value = store(uint256_t("0x02"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
-    value = store(uint256_t("0x64")); // 0x5208
-    input.set_gas_limit(value.data(), value.size());
+    value = store(uint256_t("0x64"));
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign<Delegate>(input);
+    auto proto_output = Signer::sign<Staking<Delegate>>(input);
 
     auto expectEncoded =
         "f87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a"
@@ -194,7 +216,7 @@ TEST(HarmonyStaking, SignDelegate) {
 }
 
 TEST(HarmonyStaking, SignUndelegate) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -202,7 +224,8 @@ TEST(HarmonyStaking, SignUndelegate) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto undelegateMsg = input.mutable_undelegate_message();
+    auto stakingMessage = input.mutable_staking_message();
+    auto undelegateMsg = stakingMessage->mutable_undelegate_message();
     undelegateMsg->set_delegator_address(TEST_ACCOUNT.string());
     undelegateMsg->set_validator_address(TEST_ACCOUNT.string());
 
@@ -210,15 +233,15 @@ TEST(HarmonyStaking, SignUndelegate) {
     undelegateMsg->set_amount(value.data(), value.size());
 
     value = store(uint256_t("0x02"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
-    value = store(uint256_t("0x64")); // 0x5208
-    input.set_gas_limit(value.data(), value.size());
+    value = store(uint256_t("0x64"));
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign<Undelegate>(input);
+    auto proto_output = Signer::sign<Staking<Undelegate>>(input);
 
     auto expectEncoded =
         "f87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
@@ -236,7 +259,7 @@ TEST(HarmonyStaking, SignUndelegate) {
 }
 
 TEST(HarmonyStaking, SignCollectRewards) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
@@ -244,19 +267,20 @@ TEST(HarmonyStaking, SignCollectRewards) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto collectRewardsMsg = input.mutable_collect_rewards();
+    auto stakingMessage = input.mutable_staking_message();
+    auto collectRewardsMsg = stakingMessage->mutable_collect_rewards();
     collectRewardsMsg->set_delegator_address(TEST_ACCOUNT.string());
 
     value = store(uint256_t("0x02"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
-    value = store(uint256_t("0x64")); // 0x5208
-    input.set_gas_limit(value.data(), value.size());
+    value = store(uint256_t("0x64"));
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = StakingSigner::sign<CollectRewards>(input);
+    auto proto_output = Signer::sign<Staking<CollectRewards>>(input);
 
     auto expectEncoded = "f85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f425"
                          "77001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd9"
@@ -270,25 +294,6 @@ TEST(HarmonyStaking, SignCollectRewards) {
     ASSERT_EQ(hex(proto_output.v()), v);
     ASSERT_EQ(hex(proto_output.r()), r);
     ASSERT_EQ(hex(proto_output.s()), s);
-}
-
-TEST(HarmonyStaking, DecimalCreation) {
-    ASSERT_THROW(Decimal(""), invalid_argument);
-    ASSERT_THROW(Decimal("-"), invalid_argument);
-    ASSERT_THROW(Decimal("0."), invalid_argument);
-    ASSERT_THROW(Decimal(".1"), invalid_argument);
-    ASSERT_THROW(Decimal("1.2.3"), invalid_argument);
-    ASSERT_THROW(Decimal("0.1234567891234567891"), invalid_argument);
-    ASSERT_THROW(Decimal("123.45"), invalid_argument);
-    ASSERT_THROW(Decimal("-123.455"), invalid_argument);
-    ASSERT_THROW(Decimal("-0.0"), invalid_argument);
-    ASSERT_THROW(Decimal("0.-23"), invalid_argument);
-    ASSERT_THROW(Decimal("- 23"), invalid_argument);
-    ASSERT_THROW(Decimal("+2.3"), invalid_argument);
-    ASSERT_THROW(Decimal("+2.4 - 34"), invalid_argument);
-    ASSERT_NO_THROW(Decimal("0"));
-    ASSERT_NO_THROW(Decimal("0.0"));
-    ASSERT_NO_THROW(Decimal("0.123"));
 }
 
 } // namespace TW::Harmony

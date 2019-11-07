@@ -74,35 +74,37 @@ TEST(HarmonySigner, SignAssumeLocalNet) {
 
 TEST(HarmonySigner, SignProtoBufAssumeLocalNet) {
     auto input = Proto::SigningInput();
-    input.set_to_address(TEST_RECEIVER.string());
+    auto trasactionMsg = input.mutable_transaction_message();
+
+    trasactionMsg->set_to_address(TEST_RECEIVER.string());
     const auto privateKey =
         PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
     auto payload = parse_hex("");
-    input.set_payload(payload.data(), payload.size());
+    trasactionMsg->set_payload(payload.data(), payload.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     auto value = store(LOCAL_NET);
     input.set_chain_id(value.data(), value.size());
 
     value = store(uint256_t("0x9"));
-    input.set_nonce(value.data(), value.size());
+    trasactionMsg->set_nonce(value.data(), value.size());
 
     value = store(uint256_t(""));
-    input.set_gas_price(value.data(), value.size());
+    trasactionMsg->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x5208"));
-    input.set_gas_limit(value.data(), value.size());
+    trasactionMsg->set_gas_limit(value.data(), value.size());
 
     value = store(uint256_t("0x1"));
-    input.set_from_shard_id(value.data(), value.size());
+    trasactionMsg->set_from_shard_id(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_to_shard_id(value.data(), value.size());
+    trasactionMsg->set_to_shard_id(value.data(), value.size());
 
     value = store(uint256_t("0x4c53ecdc18a60000"));
-    input.set_amount(value.data(), value.size());
+    trasactionMsg->set_amount(value.data(), value.size());
 
-    auto proto_output = Signer::sign(input);
+    auto proto_output = Signer::sign<Transaction>(input);
 
     auto shouldBeV = "28";
     auto shouldBeR = "325aed6caa01a5235b7a508c8ab67f0c43946b05a1ea6a3e0628de4033fe372d";
@@ -115,35 +117,36 @@ TEST(HarmonySigner, SignProtoBufAssumeLocalNet) {
 
 TEST(HarmonySigner, SignOverProtoBufAssumeMainNet) {
     auto input = Proto::SigningInput();
-    input.set_to_address(TEST_RECEIVER.string());
+    auto trasactionMsg = input.mutable_transaction_message();
+    trasactionMsg->set_to_address(TEST_RECEIVER.string());
     const auto privateKey =
         PrivateKey(parse_hex("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e"));
     auto payload = parse_hex("");
-    input.set_payload(payload.data(), payload.size());
+    trasactionMsg->set_payload(payload.data(), payload.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     auto value = store(MAIN_NET);
     input.set_chain_id(value.data(), value.size());
 
     value = store(uint256_t("0xa"));
-    input.set_nonce(value.data(), value.size());
+    trasactionMsg->set_nonce(value.data(), value.size());
 
     value = store(uint256_t(""));
-    input.set_gas_price(value.data(), value.size());
+    trasactionMsg->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x5208"));
-    input.set_gas_limit(value.data(), value.size());
+    trasactionMsg->set_gas_limit(value.data(), value.size());
 
     value = store(uint256_t("0x1"));
-    input.set_from_shard_id(value.data(), value.size());
+    trasactionMsg->set_from_shard_id(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_to_shard_id(value.data(), value.size());
+    trasactionMsg->set_to_shard_id(value.data(), value.size());
 
     value = store(uint256_t("0x4c53ecdc18a60000"));
-    input.set_amount(value.data(), value.size());
+    trasactionMsg->set_amount(value.data(), value.size());
 
-    auto proto_output = Signer::sign(input);
+    auto proto_output = Signer::sign<Transaction>(input);
 
     auto expectEncoded = "f8690a808252080180946a87346f3ba9958d08d09484a2b7fdbbe42b0df6884c53ecdc18a"
                          "600008026a074acbc63a58e7861e54ca24babf1cb800c5b694da25c3ae2b1543045053667"

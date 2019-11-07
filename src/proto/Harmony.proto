@@ -8,32 +8,13 @@ message SigningInput {
     // Chain identifier (256-bit number)
     bytes chain_id = 1;
 
-    // Nonce (256-bit number)
-    bytes nonce = 2;
-
-    // Gas price (256-bit number)
-    bytes gas_price = 3;
-
-    // Gas limit (256-bit number)
-    bytes gas_limit = 4;
-
-    // Recipient's address.
-    string to_address = 5;
-
-    // Amount to send in wei (256-bit number)
-    bytes amount = 6;
-
-    // Optional payload
-    bytes payload = 7;
-
     // Private key.
-    bytes private_key = 8;
+    bytes private_key = 2;
 
-    // From shard ID (256-bit number)
-    bytes from_shard_id = 9;
-
-    // To Shard ID (256-bit number)
-    bytes to_shard_id = 10;
+    oneof message_oneof {
+        TransactionMessage transaction_message = 3;
+        StakingMessage staking_message = 4;
+    }
 }
 
 // Transaction signing output.
@@ -46,7 +27,33 @@ message SigningOutput {
     bytes s = 4;
 }
 
-message StakingTransactionInput {
+message TransactionMessage {
+    // Nonce (256-bit number)
+    bytes nonce = 1;
+
+    // Gas price (256-bit number)
+    bytes gas_price = 2;
+
+    // Gas limit (256-bit number)
+    bytes gas_limit = 3;
+
+    // Recipient's address.
+    string to_address = 4;
+
+    // Amount to send in wei (256-bit number)
+    bytes amount = 5;
+
+    // Optional payload
+    bytes payload = 6;
+
+    // From shard ID (256-bit number)
+    bytes from_shard_id = 7;
+
+    // To Shard ID (256-bit number)
+    bytes to_shard_id = 8;
+}
+
+message StakingMessage {
     // StakeMsg 
     oneof stake_msg {
         DirectiveCreateValidator create_validator_message = 1;
@@ -63,22 +70,7 @@ message StakingTransactionInput {
     bytes gas_price = 7;
 
     // Gas limit (256-bit number)
-    bytes gas_limit = 8;    
-
-    // Chain identifier (256-bit number)
-    bytes chain_id = 9; 
-
-    // Private key.
-    bytes private_key = 10;
-}
-
-message StakingTransactionOutput {
-    // Signed and encoded transaction bytes.
-    bytes encoded = 1;
-
-    bytes v = 2;
-    bytes r = 3;
-    bytes s = 4;
+    bytes gas_limit = 8;   
 }
 
 message Description {
@@ -90,7 +82,8 @@ message Description {
 }
 
 message Decimal {
-    string value = 1;
+    bytes value = 1;
+    bytes precision = 2;
 }
 
 message CommissionRate {

@@ -6,13 +6,13 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Data.h"
-#include "Harmony/StakingTransaction.h"
+#include "Harmony/Staking.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "TWTestUtilities.h"
 #include "proto/Harmony.pb.h"
 #include "uint256.h"
-#include <TrustWalletCore/TWHarmonyStakingSigner.h>
+#include <TrustWalletCore/TWHarmonySigner.h>
 
 #include <gtest/gtest.h>
 
@@ -22,7 +22,7 @@ using namespace Harmony;
 static auto TEST_ACCOUNT = Address("one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9");
 
 TEST(TWHarmonyStakingSigner, CreateValidator) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -31,7 +31,8 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto createValidatorMsg = input.mutable_create_validator_message();
+    auto stakingMessage = input.mutable_staking_message();
+    auto createValidatorMsg = stakingMessage->mutable_create_validator_message();
 
     createValidatorMsg->set_validator_address(TEST_ACCOUNT.string());
 
@@ -41,11 +42,26 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     description->set_website("alice.harmony.one");
     description->set_security_contact("Bob");
     description->set_details("Don't mess with me!!!");
+
     auto commission = createValidatorMsg->mutable_commission_rates();
 
-    commission->mutable_rate()->set_value("0.1");
-    commission->mutable_max_rate()->set_value("0.9");
-    commission->mutable_max_change_rate()->set_value("0.05");
+    // (value, precision): (1, 1) represents 0.1
+    value = store(uint256_t("1"));
+    commission->mutable_rate()->set_value(value.data(), value.size());
+    value = store(uint256_t("1"));
+    commission->mutable_rate()->set_precision(value.data(), value.size());
+
+    // (value, precision): (9, 1) represents 0.9
+    value = store(uint256_t("9"));
+    commission->mutable_max_rate()->set_value(value.data(), value.size());
+    value = store(uint256_t("1"));
+    commission->mutable_max_rate()->set_precision(value.data(), value.size());
+
+    // (value, precision): (5, 2) represents 0.05
+    value = store(uint256_t("5"));
+    commission->mutable_max_change_rate()->set_value(value.data(), value.size());
+    value = store(uint256_t("2"));
+    commission->mutable_max_change_rate()->set_precision(value.data(), value.size());
 
     value = store(uint256_t("10"));
     createValidatorMsg->set_min_self_delegation(value.data(), value.size());
@@ -61,19 +77,19 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     createValidatorMsg->set_amount(value.data(), value.size());
 
     value = store(uint256_t("0x02"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x64"));
-    input.set_gas_limit(value.data(), value.size());
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSignCreateValidator(inputTWData);
+    auto outputTWData = TWHarmonySignerSignStakingCreateValidator(inputTWData);
 
-    auto output = Proto::StakingTransactionOutput();
+    auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
     auto shouldBeV = "28";
@@ -86,7 +102,7 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
 }
 
 TEST(TWHarmonyStakingSigner, EditValidator) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -95,7 +111,8 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto editValidatorMsg = input.mutable_edit_validator_message();
+    auto stakingMessage = input.mutable_staking_message();
+    auto editValidatorMsg = stakingMessage->mutable_edit_validator_message();
 
     editValidatorMsg->set_validator_address(TEST_ACCOUNT.string());
 
@@ -107,7 +124,12 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
     description->set_details("Don't mess with me!!!");
 
     auto commissionRate = editValidatorMsg->mutable_commission_rate();
-    commissionRate->set_value("0.1");
+
+    // (value, precision): (1, 1) represents 0.1
+    value = store(uint256_t("1"));
+    commissionRate->set_value(value.data(), value.size());
+    value = store(uint256_t("1"));
+    commissionRate->set_precision(value.data(), value.size());
 
     value = store(uint256_t("10"));
     editValidatorMsg->set_min_self_delegation(value.data(), value.size());
@@ -121,19 +143,19 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
     editValidatorMsg->set_slot_key_to_add(value.data(), value.size());
 
     value = store(uint256_t("0x02"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x64"));
-    input.set_gas_limit(value.data(), value.size());
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSignEditValidator(inputTWData);
+    auto outputTWData = TWHarmonySignerSignStakingEditValidator(inputTWData);
 
-    auto output = Proto::StakingTransactionOutput();
+    auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
     auto shouldBeV = "27";
@@ -146,7 +168,7 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
 }
 
 TEST(TWHarmonyStakingSigner, Delegate) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -155,7 +177,8 @@ TEST(TWHarmonyStakingSigner, Delegate) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto delegateMsg = input.mutable_delegate_message();
+    auto stakingMessage = input.mutable_staking_message();
+    auto delegateMsg = stakingMessage->mutable_delegate_message();
     delegateMsg->set_delegator_address(TEST_ACCOUNT.string());
     delegateMsg->set_validator_address(TEST_ACCOUNT.string());
 
@@ -163,19 +186,19 @@ TEST(TWHarmonyStakingSigner, Delegate) {
     delegateMsg->set_amount(value.data(), value.size());
 
     value = store(uint256_t("0x2"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x64"));
-    input.set_gas_limit(value.data(), value.size());
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSignDelegate(inputTWData);
+    auto outputTWData = TWHarmonySignerSignStakingDelegate(inputTWData);
 
-    auto output = Proto::StakingTransactionOutput();
+    auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
     auto shouldBeV = "28";
@@ -188,7 +211,7 @@ TEST(TWHarmonyStakingSigner, Delegate) {
 }
 
 TEST(TWHarmonyStakingSigner, Undelegate) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -197,7 +220,8 @@ TEST(TWHarmonyStakingSigner, Undelegate) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto undelegateMsg = input.mutable_undelegate_message();
+    auto stakingMessage = input.mutable_staking_message();
+    auto undelegateMsg = stakingMessage->mutable_undelegate_message();
     undelegateMsg->set_delegator_address(TEST_ACCOUNT.string());
     undelegateMsg->set_validator_address(TEST_ACCOUNT.string());
 
@@ -205,19 +229,19 @@ TEST(TWHarmonyStakingSigner, Undelegate) {
     undelegateMsg->set_amount(value.data(), value.size());
 
     value = store(uint256_t("0x2"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x64"));
-    input.set_gas_limit(value.data(), value.size());
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSignUndelegate(inputTWData);
+    auto outputTWData = TWHarmonySignerSignStakingUndelegate(inputTWData);
 
-    auto output = Proto::StakingTransactionOutput();
+    auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
     auto shouldBeV = "28";
@@ -230,7 +254,7 @@ TEST(TWHarmonyStakingSigner, Undelegate) {
 }
 
 TEST(TWHarmonyStakingSigner, CollectRewards) {
-    auto input = Proto::StakingTransactionInput();
+    auto input = Proto::SigningInput();
 
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -239,23 +263,24 @@ TEST(TWHarmonyStakingSigner, CollectRewards) {
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
 
-    auto collectRewardsMsg = input.mutable_collect_rewards();
+    auto stakingMessage = input.mutable_staking_message();
+    auto collectRewardsMsg = stakingMessage->mutable_collect_rewards();
     collectRewardsMsg->set_delegator_address(TEST_ACCOUNT.string());
 
     value = store(uint256_t("0x2"));
-    input.set_nonce(value.data(), value.size());
+    stakingMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_gas_price(value.data(), value.size());
+    stakingMessage->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x64"));
-    input.set_gas_limit(value.data(), value.size());
+    stakingMessage->set_gas_limit(value.data(), value.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonyStakingSignerSignCollectRewards(inputTWData);
+    auto outputTWData = TWHarmonySignerSignStakingCollectRewards(inputTWData);
 
-    auto output = Proto::StakingTransactionOutput();
+    auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
     auto shouldBeV = "28";
