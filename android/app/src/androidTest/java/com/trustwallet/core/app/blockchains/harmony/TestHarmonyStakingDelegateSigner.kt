@@ -11,6 +11,10 @@ import wallet.core.jni.proto.Harmony
 
 class TestHarmonyStakingDelegateSigner {
 
+    val oneAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
+    val privateKeyData = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
+    val pubKeyData = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
+
     init {
         System.loadLibrary("TrustWalletCore")
     }
@@ -46,10 +50,10 @@ class TestHarmonyStakingDelegateSigner {
             maxRate = mr.build()
             maxChangeRate = mcr.build()
         }
-        val pubKey = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
+        val pubKey = pubKeyData
         val createValidator = Harmony.DirectiveCreateValidator.newBuilder()
         createValidator.apply {
-            validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
+            validatorAddress = oneAddress
             description = desc.build()
             commissionRates = cRate.build()
             minSelfDelegation = ByteString.copyFrom("0xa".toHexByteArray())
@@ -66,7 +70,7 @@ class TestHarmonyStakingDelegateSigner {
         }
         val signingInput = Harmony.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
+            privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
@@ -97,13 +101,13 @@ class TestHarmonyStakingDelegateSigner {
         }
         val editValidator = Harmony.DirectiveEditValidator.newBuilder()
         editValidator.apply {
-            validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
+            validatorAddress = oneAddress
             description = desc.build()
             commissionRate = rate.build()
             minSelfDelegation = ByteString.copyFrom("0xa".toHexByteArray())
             maxTotalDelegation = ByteString.copyFrom("0x0bb8".toHexByteArray())
-            slotKeyToRemove = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
-            slotKeyToAdd = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
+            slotKeyToRemove = pubKeyData
+            slotKeyToAdd = pubKeyData
         }
         val staking = Harmony.StakingMessage.newBuilder()
         staking.apply {
@@ -114,7 +118,7 @@ class TestHarmonyStakingDelegateSigner {
         }
         val signingInput = Harmony.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
+            privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
@@ -132,8 +136,8 @@ class TestHarmonyStakingDelegateSigner {
     fun testHarmonyStakingTransactionDelegateSigning() {
         val delegate = Harmony.DirectiveDelegate.newBuilder()
         delegate.apply {
-            delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
+            delegatorAddress = oneAddress
+            validatorAddress = oneAddress
             amount = ByteString.copyFrom("0xa".toHexByteArray())
         }
         val staking = Harmony.StakingMessage.newBuilder()
@@ -145,7 +149,7 @@ class TestHarmonyStakingDelegateSigner {
         }
         val signingInput = Harmony.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
+            privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
@@ -163,8 +167,8 @@ class TestHarmonyStakingDelegateSigner {
     fun testHarmonyStakingTransactionUndelegateSigning() {
         val undelegate = Harmony.DirectiveUndelegate.newBuilder()
         undelegate.apply {
-            delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
-            validatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
+            delegatorAddress = oneAddress
+            validatorAddress = oneAddress
             amount = ByteString.copyFrom("0xa".toHexByteArray())
         }
         val staking = Harmony.StakingMessage.newBuilder()
@@ -176,7 +180,7 @@ class TestHarmonyStakingDelegateSigner {
         }
         val signingInput = Harmony.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
+            privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
@@ -194,7 +198,7 @@ class TestHarmonyStakingDelegateSigner {
     fun testHarmonyStakingTransactionCollectRewardsSigning() {
         val cRewards = Harmony.DirectiveCollectRewards.newBuilder()
         cRewards.apply {
-            delegatorAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
+            delegatorAddress = oneAddress
         }
         val staking = Harmony.StakingMessage.newBuilder()
         staking.apply {
@@ -205,7 +209,7 @@ class TestHarmonyStakingDelegateSigner {
         }
         val signingInput = Harmony.SigningInput.newBuilder()
         signingInput.apply {
-            privateKey = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
+            privateKey = privateKeyData
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }

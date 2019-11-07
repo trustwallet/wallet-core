@@ -21,11 +21,12 @@ static uint256_t LOCAL_NET = 0x2;
 
 static auto TEST_ACCOUNT = Address("one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9");
 
+static auto PRIVATE_KEY =
+    PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
+
 TEST(HarmonyStaking, SignCreateValidator) {
     auto input = Proto::SigningInput();
-    const auto privateKey =
-        PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_private_key(PRIVATE_KEY.bytes.data(), PRIVATE_KEY.bytes.size());
 
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
@@ -105,9 +106,7 @@ TEST(HarmonyStaking, SignCreateValidator) {
 
 TEST(HarmonyStaking, SignEditValidator) {
     auto input = Proto::SigningInput();
-    const auto privateKey =
-        PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_private_key(PRIVATE_KEY.bytes.data(), PRIVATE_KEY.bytes.size());
 
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
@@ -174,9 +173,7 @@ TEST(HarmonyStaking, SignEditValidator) {
 
 TEST(HarmonyStaking, SignDelegate) {
     auto input = Proto::SigningInput();
-    const auto privateKey =
-        PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_private_key(PRIVATE_KEY.bytes.data(), PRIVATE_KEY.bytes.size());
 
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
@@ -217,9 +214,7 @@ TEST(HarmonyStaking, SignDelegate) {
 
 TEST(HarmonyStaking, SignUndelegate) {
     auto input = Proto::SigningInput();
-    const auto privateKey =
-        PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_private_key(PRIVATE_KEY.bytes.data(), PRIVATE_KEY.bytes.size());
 
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());
@@ -260,9 +255,7 @@ TEST(HarmonyStaking, SignUndelegate) {
 
 TEST(HarmonyStaking, SignCollectRewards) {
     auto input = Proto::SigningInput();
-    const auto privateKey =
-        PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    input.set_private_key(PRIVATE_KEY.bytes.data(), PRIVATE_KEY.bytes.size());
 
     auto value = store(uint256_t("0x2"));
     input.set_chain_id(value.data(), value.size());

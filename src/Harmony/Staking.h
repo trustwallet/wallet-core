@@ -72,7 +72,6 @@ class Description {
 };
 
 #define PRECISION 18
-#define MAX_DECIMAL 1000000000000000000
 
 class Decimal {
   public:

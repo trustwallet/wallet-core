@@ -64,8 +64,9 @@ TEST(HarmonySigner, SignAssumeLocalNet) {
     uint256_t s("0x6c19085d3376c30f6dc47cec795991cd37d6d0ebddfa633b0a8f494bc19cd01b");
 
     auto transaction = Transaction(TEST_TRANSACTION);
+    auto hash = signer.hash(transaction);
 
-    signer.sign(key, transaction);
+    signer.sign(key, hash, transaction);
 
     ASSERT_EQ(transaction.v, v);
     ASSERT_EQ(transaction.r, r);

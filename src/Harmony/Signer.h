@@ -36,11 +36,8 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput &input) noexcept;
 
     /// Signs the given transaction.
-    void sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept;
-
-    /// Signs the given staking transaction.
-    template <typename Directive>
-    void sign(const PrivateKey &privateKey, Staking<Directive> &transaction) const noexcept;
+    template <typename T>
+    void sign(const PrivateKey &privateKey, const Data &hash, T &transaction) const noexcept;
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///

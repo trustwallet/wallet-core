@@ -27,12 +27,12 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data 
 }
 
 template <typename T>
-Proto::SigningOutput Signer::prepareOutput(const Data &encoded, const T stakingTx) noexcept {
+Proto::SigningOutput Signer::prepareOutput(const Data &encoded, const T transaction) noexcept {
     auto protoOutput = Proto::SigningOutput();
 
-    auto v = store(stakingTx.v);
-    auto r = store(stakingTx.r);
-    auto s = store(stakingTx.s);
+    auto v = store(transaction.v);
+    auto r = store(transaction.r);
+    auto s = store(transaction.s);
 
     protoOutput.set_encoded(encoded.data(), encoded.size());
     protoOutput.set_v(v.data(), v.size());
@@ -64,7 +64,8 @@ Signer::sign<Transaction>(const TW::Harmony::Proto::SigningInput &input) noexcep
              input.transaction_message().payload().end()));
 
     auto signer = Signer(uint256_t(load(input.chain_id())));
-    signer.sign(key, transaction);
+    auto hash = signer.hash(transaction);
+    signer.sign(key, hash, transaction);
     auto protoOutput = Proto::SigningOutput();
     auto encoded = signer.rlpNoHash(transaction, true);
 
@@ -138,7 +139,8 @@ Signer::sign<Staking<CreateValidator>>(const TW::Harmony::Proto::SigningInput &i
         load(input.chain_id()), 0, 0);
 
     auto signer = Signer(uint256_t(load(input.chain_id())));
-    signer.sign<CreateValidator>(key, stakingTx);
+    auto hash = signer.hash<CreateValidator>(stakingTx);
+    signer.sign(key, hash, stakingTx);
     auto encoded = signer.rlpNoHash<CreateValidator>(stakingTx, true);
 
     return prepareOutput<Staking<CreateValidator>>(encoded, stakingTx);
@@ -189,7 +191,8 @@ Signer::sign<Staking<EditValidator>>(const TW::Harmony::Proto::SigningInput &inp
         load(input.chain_id()), 0, 0);
 
     auto signer = Signer(uint256_t(load(input.chain_id())));
-    signer.sign<EditValidator>(key, stakingTx);
+    auto hash = signer.hash<EditValidator>(stakingTx);
+    signer.sign(key, hash, stakingTx);
     auto encoded = signer.rlpNoHash<EditValidator>(stakingTx, true);
 
     return prepareOutput<Staking<EditValidator>>(encoded, stakingTx);
@@ -210,7 +213,8 @@ Signer::sign<Staking<Delegate>>(const TW::Harmony::Proto::SigningInput &input) n
                           load(input.staking_message().gas_limit()), load(input.chain_id()), 0, 0);
 
     auto signer = Signer(uint256_t(load(input.chain_id())));
-    signer.sign<Delegate>(key, stakingTx);
+    auto hash = signer.hash<Delegate>(stakingTx);
+    signer.sign(key, hash, stakingTx);
     auto encoded = signer.rlpNoHash<Delegate>(stakingTx, true);
 
     return prepareOutput<Staking<Delegate>>(encoded, stakingTx);
@@ -231,7 +235,8 @@ Signer::sign<Staking<Undelegate>>(const TW::Harmony::Proto::SigningInput &input)
         load(input.chain_id()), 0, 0);
 
     auto signer = Signer(uint256_t(load(input.chain_id())));
-    signer.sign<Undelegate>(key, stakingTx);
+    auto hash = signer.hash<Undelegate>(stakingTx);
+    signer.sign(key, hash, stakingTx);
     auto encoded = signer.rlpNoHash<Undelegate>(stakingTx, true);
 
     return prepareOutput<Staking<Undelegate>>(encoded, stakingTx);
@@ -250,23 +255,15 @@ Signer::sign<Staking<CollectRewards>>(const TW::Harmony::Proto::SigningInput &in
         load(input.chain_id()), 0, 0);
 
     auto signer = Signer(uint256_t(load(input.chain_id())));
-    signer.sign<CollectRewards>(key, stakingTx);
+    auto hash = signer.hash<CollectRewards>(stakingTx);
+    signer.sign(key, hash, stakingTx);
     auto encoded = signer.rlpNoHash<CollectRewards>(stakingTx, true);
 
     return prepareOutput<Staking<CollectRewards>>(encoded, stakingTx);
 }
 
-void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {
-    auto hash = this->hash(transaction);
-    auto tuple = sign(chainID, privateKey, hash);
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
-}
-
-template <typename Directive>
-void Signer::sign(const PrivateKey &privateKey, Staking<Directive> &transaction) const noexcept {
-    auto hash = this->hash<Directive>(transaction);
+template <typename T>
+void Signer::sign(const PrivateKey &privateKey, const Data &hash, T &transaction) const noexcept {
     auto tuple = sign(chainID, privateKey, hash);
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);
