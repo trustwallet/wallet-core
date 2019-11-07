@@ -54,12 +54,12 @@ class TestEthereumAbiEncoder {
             str32_3 + str32_1 + str32_2 + str32_3,
             Numeric.toHexString(encoded));
         // original output value
-        assertEquals(0, function.getParamUInt64(function, 0))
+        assertEquals(0, function.getParamUInt64(0, true))
         // decode output
         val encodedOutput = "0000000000000000000000000000000000000000000000000000000000000045".toHexByteArray()
-        val decodeRes = EthereumAbiEncoder.decodeOutput(decodeOutput, encodedOutput)
-        assertEquals(true, decodedRes)
+        val decodeRes = EthereumAbiEncoder.decodeOutput(function, encodedOutput)
+        assertEquals(true, decodeRes)
         // new output value
-        assertEquals(0x45, function.getParamUInt64(function, 0))
+        assertEquals(0x45, function.getParamUInt64(0, true))
     }
 }
