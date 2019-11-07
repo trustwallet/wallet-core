@@ -21,7 +21,7 @@ class TestEthereumAbiEncoder {
     @Test
     fun testEthereumAbiEncoderFuncSimple1() {
         val function = EthereumAbiEncoder.buildFunction("sam")
-        assertEquals(0, function.addInParamBool(true))
+        assertEquals(0, function.addParamBool(true, false))
 
         assertEquals("sam(bool)", function.type)
 
@@ -34,9 +34,9 @@ class TestEthereumAbiEncoder {
     fun testEthereumAbiEncoderEncodeFuncCase1() {
         val function = EthereumAbiEncoder.buildFunction("sam")
 
-        assertEquals(0, function.addInParamByteArray("0x64617665".toHexByteArray()))
-        assertEquals(1, function.addInParamBool(true))
-        assertEquals(2, function.addInParamArray())
+        assertEquals(0, function.addParamByteArray("0x64617665".toHexByteArray(), false))
+        assertEquals(1, function.addParamBool(true, false))
+        assertEquals(2, function.addParamArray(0, false))
         assertEquals(0, function.addInArrayParamUInt256(2, "0x01".toHexByteArray()))
         assertEquals(1, function.addInArrayParamUInt256(2, "0x02".toHexByteArray()))
         assertEquals(2, function.addInArrayParamUInt256(2, "0x03".toHexByteArray()))

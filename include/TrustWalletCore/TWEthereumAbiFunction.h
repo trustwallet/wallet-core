@@ -27,32 +27,28 @@ void TWEthereumAbiFunctionDelete(struct TWEthereumAbiFunction *_Nonnull func_in)
 TW_EXPORT_METHOD
 TWString *_Nonnull TWEthereumAbiFunctionGetType(struct TWEthereumAbiFunction *_Nonnull func_in);
 
-/// Methods for adding an input parameter of the given type.  Returns the index of the parameter (0-based).
+/// Methods for adding parameters of the given type (input or output).  
+/// For output parameters (isOutput=true) a value has to be specified, although usually not needd.
+/// Returns the index of the parameter (0-based).
 TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddInParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, uint64_t val);
+int TWEthereumAbiFunctionAddParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, uint64_t val, bool isOutput);
 TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddInParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val);
+int TWEthereumAbiFunctionAddParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput);
 TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddInParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, bool val);
+int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, bool val, bool isOutput);
 TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddInParamString(struct TWEthereumAbiFunction *_Nonnull func_in, TWString *_Nonnull val);
+int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction *_Nonnull func_in, TWString *_Nonnull val, bool isOutput);
 TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddInParamByteArray(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val);
+int TWEthereumAbiFunctionAddParamByteArray(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull val, bool isOutput);
 TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddInParamByteArrayFix(struct TWEthereumAbiFunction *_Nonnull func_in, size_t count, TWData *_Nonnull val);
+int TWEthereumAbiFunctionAddParamByteArrayFix(struct TWEthereumAbiFunction *_Nonnull func_in, size_t count, TWData *_Nonnull val, bool isOutput);
 TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddInParamArray(struct TWEthereumAbiFunction *_Nonnull func_in);
+int TWEthereumAbiFunctionAddParamArray(struct TWEthereumAbiFunction *_Nonnull func_in, bool isOutput);
 
-/// Methods for adding an output parameter of the given type.  Returns the index of the parameter (0-based).
+/// Methods for accessing the value of an input or output parameter, of different types.
 TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddOutParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in);
-TW_EXPORT_METHOD
-int TWEthereumAbiFunctionAddOutParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in);
-
-/// Methods for accessing the value of an output parameter, of different types.
-TW_EXPORT_METHOD
-uint64_t TWEthereumAbiFunctionGetOutParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int idx);
-TWData *_Nonnull TWEthereumAbiFunctionGetOutParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int idx);
+uint64_t TWEthereumAbiFunctionGetParamInt32(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput);
+TWData *_Nonnull TWEthereumAbiFunctionGetParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput);
 
 /// Methods for adding a parameter of the given type to a top-level input parameter array.  Returns the index of the parameter (0-based).
 /// Note that nested ParamArrays are not possible through this API, could be done by using index paths like "1/0"

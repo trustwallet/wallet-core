@@ -36,119 +36,99 @@ TWString *_Nonnull TWEthereumAbiFunctionGetType(struct TWEthereumAbiFunction *_N
     return TWStringCreateWithUTF8Bytes(sign.c_str());
 }
 
-///// AddInParam
+///// AddParam
 
-int TWEthereumAbiFunctionAddInParamInt32(struct TWEthereumAbiFunction *_Nonnull func, uint64_t val) {
+int TWEthereumAbiFunctionAddParamInt32(struct TWEthereumAbiFunction *_Nonnull func, uint64_t val, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     auto param = std::make_shared<ParamInt32>(static_cast<int32_t>(val));
-    auto idx = function.addInParam(param);
+    auto idx = function.addParam(param, isOutput);
     return idx;
 }
 
-int TWEthereumAbiFunctionAddInParamUInt256(struct TWEthereumAbiFunction *_Nonnull func, TWData *_Nonnull val) {
+int TWEthereumAbiFunctionAddParamUInt256(struct TWEthereumAbiFunction *_Nonnull func, TWData *_Nonnull val, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     uint256_t val2 = load(*static_cast<const Data*>(val));
 
     auto param = std::make_shared<ParamUInt256>(val2);
-    auto idx = function.addInParam(param);
+    auto idx = function.addParam(param, isOutput);
     return idx;
 }
 
-int TWEthereumAbiFunctionAddInParamBool(struct TWEthereumAbiFunction *_Nonnull func, bool val) {
+int TWEthereumAbiFunctionAddParamBool(struct TWEthereumAbiFunction *_Nonnull func, bool val, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     auto param = std::make_shared<ParamBool>(val);
-    auto idx = function.addInParam(param);
+    auto idx = function.addParam(param, isOutput);
     return idx;
 }
 
-int TWEthereumAbiFunctionAddInParamString(struct TWEthereumAbiFunction *_Nonnull func, TWString *_Nonnull val) {
+int TWEthereumAbiFunctionAddParamString(struct TWEthereumAbiFunction *_Nonnull func, TWString *_Nonnull val, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     assert(val != nullptr);
     auto param = std::make_shared<ParamString>(TWStringUTF8Bytes(val));
-    auto idx = function.addInParam(param);
+    auto idx = function.addParam(param, isOutput);
     return idx;
 }
 
-int TWEthereumAbiFunctionAddInParamByteArray(struct TWEthereumAbiFunction *_Nonnull func, TWData *_Nonnull val) {
+int TWEthereumAbiFunctionAddParamByteArray(struct TWEthereumAbiFunction *_Nonnull func, TWData *_Nonnull val, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     Data data = TW::data(TWDataBytes(val), TWDataSize(val));
 
     auto param = std::make_shared<ParamByteArray>(data);
-    auto idx = function.addInParam(param);
+    auto idx = function.addParam(param, isOutput);
     return idx;    
 }
 
-int TWEthereumAbiFunctionAddInParamByteArrayFix(struct TWEthereumAbiFunction *_Nonnull func, size_t count, TWData *_Nonnull val) {
+int TWEthereumAbiFunctionAddParamByteArrayFix(struct TWEthereumAbiFunction *_Nonnull func, size_t count, TWData *_Nonnull val, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     Data data = TW::data(TWDataBytes(val), TWDataSize(val));
 
     auto param = std::make_shared<ParamByteArrayFix>(count, data);
-    auto idx = function.addInParam(param);
+    auto idx = function.addParam(param, isOutput);
     return idx;    
 }
 
-int TWEthereumAbiFunctionAddInParamArray(struct TWEthereumAbiFunction *_Nonnull func) {
+int TWEthereumAbiFunctionAddParamArray(struct TWEthereumAbiFunction *_Nonnull func, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     auto param = std::make_shared<ParamArray>();
-    auto idx = function.addInParam(param);
+    auto idx = function.addParam(param, isOutput);
     return idx;    
 }
 
-///// AddOutParam
+///// GetParam
 
-int TWEthereumAbiFunctionAddOutParamInt32(struct TWEthereumAbiFunction *_Nonnull func) {
-    assert(func != nullptr);
-    Function& function = func->impl;
-
-    auto param = std::make_shared<ParamInt32>(0);
-    auto idx = function.addOutParam(param);
-    return idx;
-}
-
-int TWEthereumAbiFunctionAddOutParamUInt256(struct TWEthereumAbiFunction *_Nonnull func) {
-    assert(func != nullptr);
-    Function& function = func->impl;
-
-    auto param = std::make_shared<ParamUInt256>(0);
-    auto idx = function.addOutParam(param);
-    return idx;
-}
-
-///// GetOutParam
-
-uint64_t TWEthereumAbiFunctionGetOutParamInt32(struct TWEthereumAbiFunction *_Nonnull func, int idx) {
+uint64_t TWEthereumAbiFunctionGetParamInt32(struct TWEthereumAbiFunction *_Nonnull func, int idx, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     std::shared_ptr<ParamBase> param;
-    if (!function.getOutParam(idx, param)) {
+    if (!function.getParam(idx, param, isOutput)) {
         return 0;
     }
     uint64_t val = (std::dynamic_pointer_cast<ParamInt32>(param))->getVal();
     return val;
 }
 
-TWData *_Nonnull TWEthereumAbiFunctionGetOutParamUInt256(struct TWEthereumAbiFunction *_Nonnull func, int idx) {
+TWData *_Nonnull TWEthereumAbiFunctionGetParamUInt256(struct TWEthereumAbiFunction *_Nonnull func, int idx, bool isOutput) {
     assert(func != nullptr);
     Function& function = func->impl;
 
     TW::Data valDat;
     std::shared_ptr<ParamBase> param;
-    if (!function.getOutParam(idx, param)) {
+    if (!function.getParam(idx, param, isOutput)) {
         return TWDataCreateWithData(&valDat);
     }
     uint256_t val256 = (std::dynamic_pointer_cast<ParamUInt256>(param))->getVal();

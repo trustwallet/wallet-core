@@ -34,12 +34,12 @@ TEST(TWEthereumAbi, FuncCreate1) {
     TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("baz"));
     EXPECT_TRUE(func != nullptr);
 
-    int p1index = TWEthereumAbiFunctionAddInParamInt32(func, 69);
+    int p1index = TWEthereumAbiFunctionAddParamInt32(func, 69, false);
     EXPECT_EQ(0, p1index);
-    int p2index = TWEthereumAbiFunctionAddOutParamInt32(func);
+    int p2index = TWEthereumAbiFunctionAddParamInt32(func, 0, true);
     EXPECT_EQ(0, p2index);
     // check back get value
-    int p2val2 = TWEthereumAbiFunctionGetOutParamInt32(func, p2index);
+    int p2val2 = TWEthereumAbiFunctionGetParamInt32(func, p2index, true);
     EXPECT_EQ(0, p2val2);
 
     TWString* type = TWEthereumAbiFunctionGetType(func);
@@ -56,16 +56,17 @@ TEST(TWEthereumAbi, FuncCreate2) {
 
     TWString* p1valStr = TWStringCreateWithUTF8Bytes("0045");
     TWData* p1val = TWDataCreateWithHexString(p1valStr);
-    int p1index = TWEthereumAbiFunctionAddInParamUInt256(func, p1val);
+    int p1index = TWEthereumAbiFunctionAddParamUInt256(func, p1val, false);
     EXPECT_EQ(0, p1index);
     //TWDataDelete(p1val);
     TWStringDelete(p1valStr);
 
-    int p2index = TWEthereumAbiFunctionAddOutParamUInt256(func);
+    Data dummy(0);
+    int p2index = TWEthereumAbiFunctionAddParamUInt256(func, &dummy, true);
     EXPECT_EQ(0, p2index);
 
     // check back get value
-    TWData* p2val2 = TWEthereumAbiFunctionGetOutParamUInt256(func, p2index);
+    TWData* p2val2 = TWEthereumAbiFunctionGetParamUInt256(func, p2index, true);
     Data p2val3 = data(TWDataBytes(p2val2), TWDataSize(p2val2));
     EXPECT_EQ("00", hex(p2val3));
 
@@ -80,9 +81,9 @@ TEST(TWEthereumAbi, EncodeFuncCase1) {
     TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("sam"));
     EXPECT_TRUE(func != nullptr);
     
-    EXPECT_EQ(0, TWEthereumAbiFunctionAddInParamByteArray(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("64617665"))));
-    EXPECT_EQ(1, TWEthereumAbiFunctionAddInParamBool(func, true));
-    int paramArrIdx = TWEthereumAbiFunctionAddInParamArray(func);
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamByteArray(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("64617665")), false));
+    EXPECT_EQ(1, TWEthereumAbiFunctionAddParamBool(func, true, false));
+    int paramArrIdx = TWEthereumAbiFunctionAddParamArray(func, false);
     EXPECT_EQ(2, paramArrIdx);
     EXPECT_EQ(0, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("01"))));
     EXPECT_EQ(1, TWEthereumAbiFunctionAddInArrayParamUInt256(func, paramArrIdx, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("02"))));
@@ -113,13 +114,13 @@ TEST(TWEthereumAbi, EncodeFuncCase2) {
     TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("f"));
     EXPECT_TRUE(func != nullptr);
     
-    EXPECT_EQ(0, TWEthereumAbiFunctionAddInParamUInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123"))));
-    int paramArrIdx = TWEthereumAbiFunctionAddInParamArray(func);
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt256(func, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0123")), false));
+    int paramArrIdx = TWEthereumAbiFunctionAddParamArray(func, false);
     EXPECT_EQ(1, paramArrIdx);
     EXPECT_EQ(0, TWEthereumAbiFunctionAddInArrayParamUInt32(func, paramArrIdx, 0x456));
     EXPECT_EQ(1, TWEthereumAbiFunctionAddInArrayParamUInt32(func, paramArrIdx, 0x789));
-    EXPECT_EQ(2, TWEthereumAbiFunctionAddInParamByteArrayFix(func, 10, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353637383930"))));
-    EXPECT_EQ(3, TWEthereumAbiFunctionAddInParamString(func, TWStringCreateWithUTF8Bytes("Hello, world!")));
+    EXPECT_EQ(2, TWEthereumAbiFunctionAddParamByteArrayFix(func, 10, TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("31323334353637383930")), false));
+    EXPECT_EQ(3, TWEthereumAbiFunctionAddParamString(func, TWStringCreateWithUTF8Bytes("Hello, world!"), false));
 
     TWString* type = TWEthereumAbiFunctionGetType(func);
     EXPECT_EQ("f(uint256,uint32[],bytes10,string)", std::string(TWStringUTF8Bytes(type)));
