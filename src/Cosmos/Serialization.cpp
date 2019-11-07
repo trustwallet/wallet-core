@@ -14,13 +14,14 @@ using namespace TW::Cosmos;
 using namespace TW::Cosmos::Proto;
 
 using json = nlohmann::json;
+using string = std::string;
 
-const std::string AMINO_PREFIX_SEND_COIN_MESSAGE = "cosmos-sdk/MsgSend";
-const std::string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
-const std::string AMINO_PREFIX_UNSTAKE_MESSAGE = "cosmos-sdk/MsgUndelegate";
-const std::string AMINO_PREFIX_RESTAKE_MESSAGE = "cosmos-sdk/MsgBeginRedelegate";
-const std::string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE = "cosmos-sdk/MsgWithdrawDelegationReward";
-const std::string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
+const string AMINO_PREFIX_SEND_COIN_MESSAGE = "cosmos-sdk/MsgSend";
+const string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
+const string AMINO_PREFIX_UNSTAKE_MESSAGE = "cosmos-sdk/MsgUndelegate";
+const string AMINO_PREFIX_RESTAKE_MESSAGE = "cosmos-sdk/MsgBeginRedelegate";
+const string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE = "cosmos-sdk/MsgWithdrawDelegationReward";
+const string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
 static json broadcastJSON(json& jsonObj) {
     json jsonMsgWrapper;
@@ -31,7 +32,7 @@ static json broadcastJSON(json& jsonObj) {
     return jsonMsgWrapper;
 }
 
-static json wrapperJSON(const std::string& type, json& jsonObj) {
+static json wrapperJSON(const string& type, json& jsonObj) {
     json jsonMsgWrapper;
 
     jsonMsgWrapper["type"] = type;
@@ -40,7 +41,7 @@ static json wrapperJSON(const std::string& type, json& jsonObj) {
     return jsonMsgWrapper;
 }
 
-static json amountJSON(std::string amount, std::string denom) {
+static json amountJSON(const string& amount, const string& denom) {
     json jsonAmount;
 
     jsonAmount["amount"] = amount;
@@ -65,7 +66,7 @@ static json feeJSON(const Fee& fee) {
     return jsonFee;
 }
 
-static json sendCoinsMessageJSON(json& amounts, std::string from_address, std::string to_address, const std::string& type_prefix) {
+static json sendCoinsMessageJSON(json& amounts, const string& from_address, const string& to_address, const string& type_prefix) {
     json jsonMsg;
 
     jsonMsg["amount"] = amounts;
@@ -75,7 +76,7 @@ static json sendCoinsMessageJSON(json& amounts, std::string from_address, std::s
     return wrapperJSON(type_prefix, jsonMsg);
 }
 
-static json stakeMessageJSON(json& amount, std::string delegator_address, std::string validator_address, const std::string& type_prefix) {
+static json stakeMessageJSON(json& amount, const string& delegator_address, const string& validator_address, const string& type_prefix) {
     json jsonMsg;
 
     jsonMsg["amount"] = amount;
@@ -85,7 +86,7 @@ static json stakeMessageJSON(json& amount, std::string delegator_address, std::s
     return wrapperJSON(type_prefix, jsonMsg);
 }
 
-static json restakeMessageJSON(json& amount, std::string delegator_address, std::string validator_src_address, std::string validator_dst_address, const std::string& type_prefix) {
+static json restakeMessageJSON(json& amount, const string& delegator_address, const string& validator_src_address, const string& validator_dst_address, const string& type_prefix) {
     json jsonMsg;
 
     jsonMsg["amount"] = amount;
@@ -96,7 +97,7 @@ static json restakeMessageJSON(json& amount, std::string delegator_address, std:
     return wrapperJSON(type_prefix, jsonMsg);
 }
 
-static json withdrawStakeRewardMessageJSON(std::string delegator_address, std::string validator_address, const std::string& type_prefix) {
+static json withdrawStakeRewardMessageJSON(const string& delegator_address, const string& validator_address, const string& type_prefix) {
     json jsonMsg;
 
     jsonMsg["delegator_address"] = delegator_address;
@@ -191,7 +192,7 @@ json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
     return jsonForSigning;
 }
 
-json TW::Cosmos::transactionJSON(const Transaction& transaction, const std::string& type_prefix) {
+json TW::Cosmos::transactionJSON(const Transaction& transaction, const string& type_prefix) {
     json jsonTx;
 
     jsonTx["type"] = type_prefix;
