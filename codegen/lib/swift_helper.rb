@@ -65,6 +65,14 @@ module SwiftHelper
       'UInt32'
     when :uint64
       'UInt64'
+    when :int8
+      'Int8'
+    when :int16
+      'Int16'
+    when :int32
+      'Int32'
+    when :int64
+      'Int64'
     when :size
       'Int'
     when :data
