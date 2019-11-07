@@ -27,7 +27,13 @@ void Function::encode(Data& data) const {
     _inParams.encode(data);
 }
 
-bool Function::decode(const Data& encoded, size_t& offset_inout) {
+bool Function::decodeOutput(const Data& encoded, size_t& offset_inout) {
+    // read parameter values
+    if (!_outParams.decode(encoded, offset_inout)) { return false; }
+    return true;
+}
+
+bool Function::decodeInput(const Data& encoded, size_t& offset_inout) {
     // read 4-byte hash
     auto p = ParamByteArrayFix(4);
     if (!p.decode(encoded, offset_inout)) { return false; }

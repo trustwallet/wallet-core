@@ -30,18 +30,28 @@ struct TWEthereumAbiFunction *_Nullable TWEthereumAbiEncoderBuildFunction(TWStri
     return new TWEthereumAbiFunction{ func };
 }
 
-void TWEthereumAbiEncoderDeleteFunction(struct TWEthereumAbiFunction *_Nonnull func) {
-    assert(func != nullptr);
-    delete func;
+void TWEthereumAbiEncoderDeleteFunction(struct TWEthereumAbiFunction *_Nonnull func_in) {
+    assert(func_in != nullptr);
+    delete func_in;
 }
 
-///// Encode
+///// Encode & decode
 
-TWData*_Nonnull TWEthereumAbiEncoderEncode(struct TWEthereumAbiFunction *_Nonnull func) {
-    assert(func != nullptr);
-    Function& function = func->impl;
+TWData*_Nonnull TWEthereumAbiEncoderEncode(struct TWEthereumAbiFunction *_Nonnull func_in) {
+    assert(func_in != nullptr);
+    Function& function = func_in->impl;
 
     Data encoded;
     function.encode(encoded);
     return TWDataCreateWithData(&encoded);
+}
+
+bool TWEthereumAbiEncoderDecodeOutput(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull encoded) {
+    assert(func_in != nullptr);
+    Function& function = func_in->impl;
+    assert(encoded != nullptr);
+    Data encData = data(TWDataBytes(encoded), TWDataSize(encoded));
+
+    size_t offset = 0;
+    return function.decodeOutput(encData, offset);
 }

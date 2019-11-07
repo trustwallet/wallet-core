@@ -64,7 +64,10 @@ public:
 
     virtual void encode(Data& data) const;
 
-    bool decode(const Data& encoded, size_t& offset_inout);
+    /// Decode binary, fill output parameters
+    bool decodeOutput(const Data& encoded, size_t& offset_inout);
+    /// Decode binary, fill input parameters
+    bool decodeInput(const Data& encoded, size_t& offset_inout);
 };
 
 inline void encode(const Function& func, Data& data) {

@@ -35,4 +35,8 @@ void TWEthereumAbiEncoderDeleteFunction(struct TWEthereumAbiFunction *_Nonnull f
 TW_EXPORT_STATIC_METHOD
 TWData*_Nonnull TWEthereumAbiEncoderEncode(struct TWEthereumAbiFunction *_Nonnull func_in);
 
+/// Decode function output from Eth ABI binary, fill output parameters
+TW_EXPORT_STATIC_METHOD
+bool TWEthereumAbiEncoderDecodeOutput(struct TWEthereumAbiFunction *_Nonnull func_in, TWData *_Nonnull encoded);
+
 TW_EXTERN_C_END

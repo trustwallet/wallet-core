@@ -862,7 +862,32 @@ TEST(EthereumAbi, EncodeFunctionWithDynamicArgumentsCase2) {
     EXPECT_EQ(hex(encoded.begin() + 260, encoded.begin() + 292), "48656c6c6f2c20776f726c642100000000000000000000000000000000000000");
 }
 
-TEST(EthereumAbi, DecodeSignature) {
+TEST(EthereumAbi, DecodeFunctionOutputCase1) {
+    Data encoded;
+    append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000045"));
+
+    auto func = Function("readout", std::vector<std::shared_ptr<ParamBase>>{
+        std::make_shared<ParamAddress>(parse_hex("f784682c82526e245f50975190ef0fff4e4fc077")),
+        std::make_shared<ParamUInt64>(1000)
+    });
+    func.addOutParam(std::make_shared<ParamUInt64>());
+    EXPECT_EQ("readout(address,uint64)", func.getType());
+
+    // original output value
+    std::shared_ptr<ParamBase> param;
+    EXPECT_TRUE(func.getOutParam(0, param));
+    EXPECT_EQ(0, (std::dynamic_pointer_cast<ParamUInt64>(param))->getVal());
+
+    size_t offset = 0;
+    bool res = func.decodeOutput(encoded, offset);
+    EXPECT_TRUE(res);
+    EXPECT_EQ(32, offset);
+
+    // new output value
+    EXPECT_EQ(0x45, (std::dynamic_pointer_cast<ParamUInt64>(param))->getVal());
+}
+
+TEST(EthereumAbi, DecodeInputSignature) {
     Data encoded;
     append(encoded, parse_hex("72ed38b6"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000045"));
@@ -872,7 +897,7 @@ TEST(EthereumAbi, DecodeSignature) {
     });
     EXPECT_EQ("baz(uint256,bool)", func.getType());
     size_t offset = 0;
-    bool res = func.decode(encoded, offset);
+    bool res = func.decodeInput(encoded, offset);
     EXPECT_TRUE(res);
     std::shared_ptr<ParamBase> param;
     EXPECT_TRUE(func.getInParam(0, param));
@@ -882,7 +907,7 @@ TEST(EthereumAbi, DecodeSignature) {
     EXPECT_EQ(4 + 2 * 32, offset);  
 }
 
-TEST(EthereumAbi, DecodeFunctionWithDynamicArgumentsCase1) {
+TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase1) {
     Data encoded;
     append(encoded, parse_hex("a5643bf2"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000060"));
@@ -907,7 +932,7 @@ TEST(EthereumAbi, DecodeFunctionWithDynamicArgumentsCase1) {
     EXPECT_EQ("sam(bytes,bool,uint256[])", func.getType());
 
     size_t offset = 0;
-    bool res = func.decode(encoded, offset);
+    bool res = func.decodeInput(encoded, offset);
     EXPECT_TRUE(res);
     std::shared_ptr<ParamBase> param;
     EXPECT_TRUE(func.getInParam(0, param));
@@ -923,7 +948,7 @@ TEST(EthereumAbi, DecodeFunctionWithDynamicArgumentsCase1) {
     EXPECT_EQ(4 + 9 * 32, offset);
 }
 
-TEST(EthereumAbi, DecodeFunctionWithDynamicArgumentsCase2) {
+TEST(EthereumAbi, DecodeFunctionInputWithDynamicArgumentsCase2) {
     Data encoded;
     append(encoded, parse_hex("47b941bf"));
     append(encoded, parse_hex("0000000000000000000000000000000000000000000000000000000000000123"));
@@ -948,7 +973,7 @@ TEST(EthereumAbi, DecodeFunctionWithDynamicArgumentsCase2) {
     EXPECT_EQ("f(uint256,uint32[],bytes10,string)", func.getType());
 
     size_t offset = 0;
-    bool res = func.decode(encoded, offset);
+    bool res = func.decodeInput(encoded, offset);
     EXPECT_TRUE(res);
     std::shared_ptr<ParamBase> param;
     EXPECT_TRUE(func.getInParam(0, param));

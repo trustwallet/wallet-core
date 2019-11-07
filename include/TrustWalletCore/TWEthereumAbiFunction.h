@@ -70,10 +70,15 @@ int TWEthereumAbiFunctionAddParamArray(struct TWEthereumAbiFunction *_Nonnull fu
 /// Methods for accessing the value of an output or input parameter, of different types.
 TW_EXPORT_METHOD
 uint8_t TWEthereumAbiFunctionGetParamUInt8(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput);
+TW_EXPORT_METHOD
 uint64_t TWEthereumAbiFunctionGetParamUInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput);
+TW_EXPORT_METHOD
 TWData *_Nonnull TWEthereumAbiFunctionGetParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput);
+TW_EXPORT_METHOD
 bool TWEthereumAbiFunctionGetParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput);
+TW_EXPORT_METHOD
 TWString *_Nonnull TWEthereumAbiFunctionGetParamString(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput);
+TW_EXPORT_METHOD
 TWData *_Nonnull TWEthereumAbiFunctionGetParamAddress(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput);
 
 /// Methods for adding a parameter of the given type to a top-level input parameter array.  Returns the index of the parameter (0-based).

@@ -207,4 +207,27 @@ TEST(TWEthereumAbi, EncodeFuncMonster) {
     TWEthereumAbiEncoderDeleteFunction(func);
 }
 
+TEST(TWEthereumAbi, DecodeOutputFuncCase1) {
+    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("readout"));
+    EXPECT_TRUE(func != nullptr);
+
+    TWEthereumAbiFunctionAddParamAddress(func, 
+        TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("f784682c82526e245f50975190ef0fff4e4fc077")), false);
+    TWEthereumAbiFunctionAddParamUInt64(func, 1000, false);
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt64(func, 0, true));
+
+    // original output value
+    EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt64(func, 0, true));
+
+    // decode
+    auto encoded = TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("0000000000000000000000000000000000000000000000000000000000000045"));
+    EXPECT_EQ(true, TWEthereumAbiEncoderDecodeOutput(func, encoded));
+
+    // new output value
+    EXPECT_EQ(0x45, TWEthereumAbiFunctionGetParamUInt64(func, 0, true));
+
+    // delete
+    TWEthereumAbiEncoderDeleteFunction(func);
+}
+
 } // namespace TW::Ethereum
