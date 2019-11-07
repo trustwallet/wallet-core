@@ -74,6 +74,15 @@ public:
     uint256_t getVal() const { return ParamNumberType<uint256_t>::getVal(); }
 };
 
+class ParamInt256 : public ParamNumberType<int256_t>
+{
+public:
+    ParamInt256() : ParamNumberType<int256_t>(int256_t(0)) {}
+    ParamInt256(int256_t val) : ParamNumberType<int256_t>(val) {}
+    virtual std::string getType() const { return "int256"; }
+    int256_t getVal() const { return ParamNumberType<int256_t>::getVal(); }
+};
+
 class ParamBool : public ParamNumberType<bool>
 {
 public:
@@ -149,79 +158,50 @@ public:
 
 /// Generic parameter class for Uint8, 16, 24, 32, 40, ... 256.  For smaller sizes use the sepcial name like UInt32.
 /// Stored on 256 bits.
-template<size_t N> 
-class ParamUInt : public ParamBase
+class ParamUIntN : public ParamBase
 {
 public:
-    ParamUInt() { setMask(); }
-    ParamUInt(uint256_t val) { setMask(); setVal(val); }
-    void setVal(uint256_t val)
-    {
-        // mask it to the given bits
-        _val = val & _mask;
-    }
+    const size_t bits;
+    ParamUIntN(size_t bits_in) : bits(bits_in) { init(); }
+    ParamUIntN(size_t bits_in, uint256_t val) : bits(bits_in) { init(); setVal(val); }
+    void setVal(uint256_t val);
     uint256_t getVal() const { return _val; }
-    virtual std::string getType() const { return "uint" + std::to_string(N); }
+    virtual std::string getType() const { return "uint" + std::to_string(bits); }
     virtual size_t getSize() const { return Util::encodedUInt256Size; }
     virtual bool isDynamic() const { return false; }
-    virtual void encode(Data& data) const {
-        TW::Ethereum::ABI::encode(_val, data);
-    }
+    virtual void encode(Data& data) const { TW::Ethereum::ABI::encode(_val, data); }
     static bool decodeNumber(const Data& encoded, uint256_t& decoded, size_t& offset_inout) {
         return TW::Ethereum::ABI::decode(encoded, decoded, offset_inout);
     }
-    virtual bool decode(const Data& encoded, size_t& offset_inout) {
-        uint256_t temp;
-        auto res = decodeNumber(encoded, temp, offset_inout);
-        setVal(temp);
-        return res;
-    }
+    virtual bool decode(const Data& encoded, size_t& offset_inout);
+
 private:
-    void setMask() { _mask = (uint256_t(1) << N) - 1; }
+    void init();
     uint256_t _val;
     uint256_t _mask;
 };
 
 /// Generic parameter class for Int8, 16, 24, 32, 40, ... 256.  For smaller sizes use the sepcial name like Int32.
 /// Stored on 256 bits.
-template<size_t N> 
-class ParamInt : public ParamBase
+class ParamIntN : public ParamBase
 {
 public:
-    ParamInt() { setMask(); }
-    ParamInt(int256_t val) { setMask(); setVal(val); }
+    const size_t bits;
+    ParamIntN(size_t bits_in) : bits(bits_in) { init(); }
+    ParamIntN(size_t bits_in, int256_t val) : bits(bits_in) { init(); setVal(val); }
     // signed conversion helper
-    static int256_t fromUInt256(uint256_t x) { if(x > (uint256_t(1) << 255)) return -((int256_t)~x)-1; else return (int256_t)x; }
-    void setVal(int256_t val)
-    {
-        // mask it to the given bits
-        if (val < 0) {
-            _val = fromUInt256(~((~((uint256_t)val)) & _mask));
-        } else {
-            _val = fromUInt256(((uint256_t)val) & _mask);
-        }
-    }
+    static int256_t fromUInt256(uint256_t x);
+    void setVal(int256_t val);
     int256_t getVal() const { return _val; }
-    virtual std::string getType() const { return "int" + std::to_string(N); }
+    virtual std::string getType() const { return "int" + std::to_string(bits); }
     virtual size_t getSize() const { return Util::encodedUInt256Size; }
     virtual bool isDynamic() const { return false; }
-    virtual void encode(Data& data) const {
-        TW::Ethereum::ABI::encode((uint256_t)_val, data);
-    }
-    static bool decodeNumber(const Data& encoded, int256_t& decoded, size_t& offset_inout) {
-        uint256_t valU;
-        auto res = TW::Ethereum::ABI::decode(encoded, valU, offset_inout);
-        decoded = fromUInt256(valU);
-        return res;
-    }
-    virtual bool decode(const Data& encoded, size_t& offset_inout) {
-        int256_t temp;
-        auto res = decodeNumber(encoded, temp, offset_inout);
-        setVal(temp);
-        return res;
-    }
+    virtual void encode(Data& data) const { TW::Ethereum::ABI::encode((uint256_t)_val, data); }
+    static bool decodeNumber(const Data& encoded, int256_t& decoded, size_t& offset_inout);
+    virtual bool decode(const Data& encoded, size_t& offset_inout);
+
 private:
-    void setMask() { _mask = (uint256_t(1) << N) - 1; }
+    void init();
     int256_t _val;
     uint256_t _mask;
 };
