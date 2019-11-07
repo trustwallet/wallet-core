@@ -23,13 +23,13 @@ private:
 
 public:
     ParamSet() = default;
-    ParamSet(std::shared_ptr<ParamBase> param1) { addParam(param1); }
-    ParamSet(std::vector<std::shared_ptr<ParamBase>> params) { addParams(params); }
+    ParamSet(const std::shared_ptr<ParamBase>& param1) { addParam(param1); }
+    ParamSet(const std::vector<std::shared_ptr<ParamBase>>& params) { addParams(params); }
     ~ParamSet();
 
     /// Returns the index of the parameter
-    int addParam(std::shared_ptr<ParamBase> param);
-    void addParams(std::vector<std::shared_ptr<ParamBase>> params);
+    int addParam(const std::shared_ptr<ParamBase>& param);
+    void addParams(const std::vector<std::shared_ptr<ParamBase>>& params);
     bool getParam(int paramIndex, std::shared_ptr<ParamBase>& param_out) const;
     std::shared_ptr<ParamBase> getParamUnsafe(int paramIndex) const;
     size_t getCount() const { return _params.size(); }
@@ -50,9 +50,9 @@ private:
 
 public:
     Parameters() = default;
-    Parameters(std::vector<std::shared_ptr<ParamBase>> params) : ParamCollection(), _params(ParamSet(params)) {}
-    void addParam(std::shared_ptr<ParamBase> param) { _params.addParam(param); }
-    void addParams(std::vector<std::shared_ptr<ParamBase>> params) { _params.addParams(params); }
+    Parameters(const std::vector<std::shared_ptr<ParamBase>>& params) : ParamCollection(), _params(ParamSet(params)) {}
+    void addParam(const std::shared_ptr<ParamBase>& param) { _params.addParam(param); }
+    void addParams(const std::vector<std::shared_ptr<ParamBase>>& params) { _params.addParams(params); }
     std::shared_ptr<ParamBase> getParam(int paramIndex) const { return _params.getParamUnsafe(paramIndex); }
     virtual std::string getType() const { return _params.getType(); }
     virtual size_t getSize() const { return _params.getSize(); }

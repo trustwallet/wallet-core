@@ -36,7 +36,7 @@ class TestEthereumAbiEncoder {
 
         assertEquals(0, function.addParamByteArray("0x64617665".toHexByteArray(), false))
         assertEquals(1, function.addParamBool(true, false))
-        assertEquals(2, function.addParamArray(0, false))
+        assertEquals(2, function.addParamArray(false))
         assertEquals(0, function.addInArrayParamUInt256(2, "0x01".toHexByteArray()))
         assertEquals(1, function.addInArrayParamUInt256(2, "0x02".toHexByteArray()))
         assertEquals(2, function.addInArrayParamUInt256(2, "0x03".toHexByteArray()))

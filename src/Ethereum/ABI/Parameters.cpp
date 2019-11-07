@@ -16,14 +16,14 @@ ParamSet::~ParamSet() {
 }
 
 /// Returns the index of the parameter
-int ParamSet::addParam(std::shared_ptr<ParamBase> param) {
+int ParamSet::addParam(const std::shared_ptr<ParamBase>& param) {
     if (param.get() == nullptr) return -1;
     assert(param.get() != nullptr);
     _params.push_back(param);
     return static_cast<int>(_params.size() - 1);
 }
 
-void ParamSet::addParams(std::vector<std::shared_ptr<ParamBase>> params) {
+void ParamSet::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
     for (auto p: params) addParam(p);
 }
 

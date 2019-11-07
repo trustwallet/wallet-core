@@ -22,12 +22,12 @@ private:
 
 public:
     ParamArray() = default;
-    ParamArray(std::shared_ptr<ParamBase> param1) : ParamCollection() { addParam(param1); }
-    ParamArray(std::vector<std::shared_ptr<ParamBase>> params) : ParamCollection() { setVal(params); }
-    void setVal(std::vector<std::shared_ptr<ParamBase>> params) { addParams(params); }
+    ParamArray(const std::shared_ptr<ParamBase>& param1) : ParamCollection() { addParam(param1); }
+    ParamArray(const std::vector<std::shared_ptr<ParamBase>>& params) : ParamCollection() { setVal(params); }
+    void setVal(const std::vector<std::shared_ptr<ParamBase>>& params) { addParams(params); }
     std::vector<std::shared_ptr<ParamBase>> const& getVal() const { return _params.getParams(); }
-    int addParam(std::shared_ptr<ParamBase> param);
-    void addParams(std::vector<std::shared_ptr<ParamBase>> params);
+    int addParam(const std::shared_ptr<ParamBase>& param);
+    void addParams(const std::vector<std::shared_ptr<ParamBase>>& params);
     std::string getFirstType() const;
     std::shared_ptr<ParamBase> getParam(int paramIndex) { return _params.getParamUnsafe(paramIndex); }
     virtual std::string getType() const { return getFirstType() + "[]"; }

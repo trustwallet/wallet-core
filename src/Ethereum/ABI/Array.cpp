@@ -10,14 +10,14 @@
 
 using namespace TW::Ethereum::ABI;
 
-int ParamArray::addParam(std::shared_ptr<ParamBase> param) {
+int ParamArray::addParam(const std::shared_ptr<ParamBase>& param) {
     if (param == nullptr) return -1;
     assert(param != nullptr);
     if (_params.getCount() >= 1 && param->getType() != getFirstType()) return -2; // do not add different types
     return _params.addParam(param);
 }
 
-void ParamArray::addParams(std::vector<std::shared_ptr<ParamBase>> params) {
+void ParamArray::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
     for (auto p: params) addParam(p);
 }
 

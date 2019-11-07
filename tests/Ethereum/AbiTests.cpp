@@ -298,8 +298,8 @@ TEST(EthereumAbi, ParamUInt80) {
 
 TEST(EthereumAbi, ParamInt80) {
     // large negative, above number of bits, and its counterpart truncated to 80 bits
-    int256_t largeNeg2 = ParamIntN::fromUInt256(load(Data(parse_hex("ffff101010101010101010101010101010101010101010101010101010101010"))));
-    int256_t largeNeg1 = ParamIntN::fromUInt256(load(Data(parse_hex("ffffffffffffffffffffffffffffffffffffffffffff10101010101010101010"))));
+    int256_t largeNeg2 = Util::int256FromUint256(load(Data(parse_hex("ffff101010101010101010101010101010101010101010101010101010101010"))));
+    int256_t largeNeg1 = Util::int256FromUint256(load(Data(parse_hex("ffffffffffffffffffffffffffffffffffffffffffff10101010101010101010"))));
     {
         auto param = ParamIntN(80, 0);
         EXPECT_EQ(0, param.getVal());
@@ -530,7 +530,7 @@ TEST(EthereumAbi, EncodeBigIntOverflow) {
     Data encoded;
     try {
         encode(uint256_t(int256_t("F123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0")), encoded);
-    } catch (std::exception ex) {
+    } catch (std::exception& ex) {
         // expected exception
         return;
     }

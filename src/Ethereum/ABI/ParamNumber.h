@@ -189,8 +189,6 @@ public:
     const size_t bits;
     ParamIntN(size_t bits_in) : bits(bits_in) { init(); }
     ParamIntN(size_t bits_in, int256_t val) : bits(bits_in) { init(); setVal(val); }
-    // signed conversion helper
-    static int256_t fromUInt256(uint256_t x);
     void setVal(int256_t val);
     int256_t getVal() const { return _val; }
     virtual std::string getType() const { return "int" + std::to_string(bits); }
