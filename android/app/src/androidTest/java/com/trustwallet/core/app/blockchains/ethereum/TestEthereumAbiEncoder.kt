@@ -40,7 +40,7 @@ class TestEthereumAbiEncoder {
         assertEquals(0, function.addInArrayParamUInt256(2, "0x01".toHexByteArray()))
         assertEquals(1, function.addInArrayParamUInt256(2, "0x02".toHexByteArray()))
         assertEquals(2, function.addInArrayParamUInt256(2, "0x03".toHexByteArray()))
-        assertEquals(0, function.addParamUInt64(true, true))
+        assertEquals(0, function.addParamUInt64(0, true))
         // check signature
         assertEquals("sam(bytes,bool,uint256[])", function.type)
         // encode
