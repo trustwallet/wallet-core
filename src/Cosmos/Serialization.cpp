@@ -65,7 +65,7 @@ static json feeJSON(const Fee& fee) {
     return jsonFee;
 }
 
-static json sendCoinsMessageJSON(json& amounts, std::string from_address, std::string to_address, std::string type_prefix) {
+static json sendCoinsMessageJSON(json& amounts, std::string from_address, std::string to_address, const std::string& type_prefix) {
     json jsonMsg;
 
     jsonMsg["amount"] = amounts;
@@ -75,7 +75,7 @@ static json sendCoinsMessageJSON(json& amounts, std::string from_address, std::s
     return wrapperJSON(type_prefix, jsonMsg);
 }
 
-static json stakeMessageJSON(json& amount, std::string delegator_address, std::string validator_address, std::string type_prefix) {
+static json stakeMessageJSON(json& amount, std::string delegator_address, std::string validator_address, const std::string& type_prefix) {
     json jsonMsg;
 
     jsonMsg["amount"] = amount;
@@ -85,7 +85,7 @@ static json stakeMessageJSON(json& amount, std::string delegator_address, std::s
     return wrapperJSON(type_prefix, jsonMsg);
 }
 
-static json restakeMessageJSON(json& amount, std::string delegator_address, std::string validator_src_address, std::string validator_dst_address, std::string type_prefix) {
+static json restakeMessageJSON(json& amount, std::string delegator_address, std::string validator_src_address, std::string validator_dst_address, const std::string& type_prefix) {
     json jsonMsg;
 
     jsonMsg["amount"] = amount;
@@ -96,7 +96,7 @@ static json restakeMessageJSON(json& amount, std::string delegator_address, std:
     return wrapperJSON(type_prefix, jsonMsg);
 }
 
-static json withdrawStakeRewardMessageJSON(std::string delegator_address, std::string validator_address, std::string type_prefix) {
+static json withdrawStakeRewardMessageJSON(std::string delegator_address, std::string validator_address, const std::string& type_prefix) {
     json jsonMsg;
 
     jsonMsg["delegator_address"] = delegator_address;
@@ -191,7 +191,7 @@ json TW::Cosmos::signaturePreimageJSON(const SigningInput& input) {
     return jsonForSigning;
 }
 
-json TW::Cosmos::transactionJSON(const Transaction& transaction, std::string type_prefix) {
+json TW::Cosmos::transactionJSON(const Transaction& transaction, const std::string& type_prefix) {
     json jsonTx;
 
     jsonTx["type"] = type_prefix;
