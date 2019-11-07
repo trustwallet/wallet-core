@@ -11,4 +11,5 @@
 #include "ABI/Parameters.h"
 #include "ABI/Array.h"
 #include "ABI/Bytes.h"
+#include "ABI/ParamAddress.h"
 #include "ABI/Function.h"

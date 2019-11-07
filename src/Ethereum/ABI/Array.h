@@ -14,7 +14,7 @@
 
 namespace TW::Ethereum::ABI {
 
-/// Dynamic array of the same types
+/// Dynamic array of the same types, "<type>[]"
 class ParamArray: public ParamCollection
 {
 private:

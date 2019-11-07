@@ -42,7 +42,7 @@ public:
     virtual bool decode(const Data& encoded, size_t& offset_inout);
 };
 
-/// Collection of different parameters, dynamic length.
+/// Collection of different parameters, dynamic length, "(<par1>,<par2>,...)".
 class Parameters: public ParamCollection
 {
 private:

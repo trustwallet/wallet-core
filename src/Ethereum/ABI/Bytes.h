@@ -12,7 +12,7 @@
 
 namespace TW::Ethereum::ABI {
 
-/// Dynamic array of bytes
+/// Dynamic array of bytes "bytes"
 class ParamByteArray: public ParamCollection
 {
 private:
@@ -34,7 +34,7 @@ public:
     }
 };
 
-/// Fixed-size array of bytes
+/// Fixed-size array of bytes, "bytes<N>"
 class ParamByteArrayFix: public ParamCollection
 {
 private:

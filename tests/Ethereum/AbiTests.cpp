@@ -27,16 +27,182 @@ TEST(EthereumAbi, pad32) {
     EXPECT_EQ(31, Util::padNeeded32(65));
 }
 
-TEST(EthereumAbi, EncodeBool) {
-    {   // True
-        Data encoded;
-        encode(true, encoded);
-        EXPECT_EQ(hex(encoded), "0000000000000000000000000000000000000000000000000000000000000001");
+TEST(EthereumAbi, ParamBool) {
+    {
+        auto param = ParamBool(false);
+        EXPECT_FALSE(param.getVal());
+        param.setVal(true);
+        EXPECT_TRUE(param.getVal());
+
+        EXPECT_EQ("bool", param.getType());
+        EXPECT_FALSE(param.isDynamic());
+        EXPECT_EQ(32, param.getSize());
     }
-    {   // False
+    {
+        auto param = ParamBool(false);
         Data encoded;
-        encode(false, encoded);
-        EXPECT_EQ(hex(encoded), "0000000000000000000000000000000000000000000000000000000000000000");
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000000", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_FALSE(param.getVal());
+    }
+    {
+        auto param = ParamBool(true);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000001", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_TRUE(param.getVal());
+    }
+}
+
+TEST(EthereumAbi, ParamUInt64) {
+    {
+        auto param = ParamUInt64(101);
+        EXPECT_EQ(101, param.getVal());
+        param.setVal(1234);
+        EXPECT_EQ(1234, param.getVal());
+
+        EXPECT_EQ("uint64", param.getType());
+        EXPECT_FALSE(param.isDynamic());
+        EXPECT_EQ(32, param.getSize());
+    }
+    {
+        auto param = ParamUInt64(101);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000065", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(101, param.getVal());
+    }
+    {
+        auto param = ParamUInt64(1234);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("00000000000000000000000000000000000000000000000000000000000004d2", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(1234, param.getVal());
+    }
+}
+
+TEST(EthereumAbi, ParamUInt80) {
+    {
+        auto param = ParamUInt<80>(0);
+        EXPECT_EQ(0, param.getVal());
+        param.setVal(100);
+        EXPECT_EQ(100, param.getVal());
+
+        EXPECT_EQ("uint80", param.getType());
+        EXPECT_FALSE(param.isDynamic());
+        EXPECT_EQ(32, param.getSize());
+
+        // above number of bits, masked
+        param.setVal(load(Data(parse_hex("1010101010101010101010101010101010101010101010101010101010101010"))));
+        EXPECT_EQ(load(Data(parse_hex("00000010101010101010101010"))), param.getVal());
+    }
+    {
+        auto param = ParamUInt<80>(1);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000001", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(1, param.getVal());
+    }
+    {
+        auto param = ParamUInt<80>(0x123);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000123", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(0x123, param.getVal());
+    }
+}
+
+TEST(EthereumAbi, ParamInt80) {
+    // large negative, above number of bits, and its counterpart truncated to 80 bits
+    int256_t largeNeg2 = ParamInt<80>::fromUInt256(load(Data(parse_hex("ffff101010101010101010101010101010101010101010101010101010101010"))));
+    int256_t largeNeg1 = ParamInt<80>::fromUInt256(load(Data(parse_hex("ffffffffffffffffffffffffffffffffffffffffffff10101010101010101010"))));
+    {
+        auto param = ParamInt<80>(0);
+        EXPECT_EQ(0, param.getVal());
+        param.setVal(int256_t(101));
+        EXPECT_EQ(int256_t(101), param.getVal());
+
+        EXPECT_EQ("int80", param.getType());
+        EXPECT_FALSE(param.isDynamic());
+        EXPECT_EQ(32, param.getSize());
+
+        param.setVal(int256_t(-101));
+        EXPECT_EQ(int256_t(-101), param.getVal());
+        param.setVal(largeNeg1);
+        EXPECT_EQ(largeNeg1, param.getVal());
+        // large negative, above number of bits, masked
+        param.setVal(largeNeg2);
+        EXPECT_EQ(largeNeg1, param.getVal());
+    }
+    {
+        auto param = ParamInt<80>(1);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000001", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(1, param.getVal());
+    }
+    {
+        auto param = ParamInt<80>(int256_t(-1234));
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb2e", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(int256_t(-1234), param.getVal());
+    }
+    {
+        auto param = ParamInt<80>(largeNeg1);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("ffffffffffffffffffffffffffffffffffffffffffff10101010101010101010", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(int256_t(largeNeg1), param.getVal());
+    }
+    {
+        auto param = ParamInt<80>(largeNeg2);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("ffffffffffffffffffffffffffffffffffffffffffff10101010101010101010", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(int256_t(largeNeg1), param.getVal());
+    }
+}
+
+TEST(EthereumAbi, ParamAddress) {
+    std::string val1Str("f784682c82526e245f50975190ef0fff4e4fc077");
+    Data val1(parse_hex(val1Str));
+    {
+        auto param = ParamAddress(val1);
+        EXPECT_EQ(val1, param.getVal());
+
+        EXPECT_EQ("address", param.getType());
+        EXPECT_FALSE(param.isDynamic());
+        EXPECT_EQ(32, param.getSize());
+    }
+    {
+        auto param = ParamAddress(val1);
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("f784682c82526e245f50975190ef0fff4e4fc077000000000000000000000000", hex(encoded));
+        size_t offset = 0;
+        EXPECT_TRUE(param.decode(encoded, offset));
+        EXPECT_EQ(val1, param.getVal());
     }
 }
 
@@ -406,7 +572,7 @@ TEST(EthereumAbi, DecodeUInt) {
     Data encoded = parse_hex("000000000000000000000000000000000000000000000000000000000000002a");
     size_t offset = 0;
     uint256_t decoded;
-    bool res = ParamNumber<uint256_t>::decodeNumber(encoded, decoded, offset);
+    bool res = ParamNumberType<uint256_t>::decodeNumber(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(uint256_t(42), decoded);
     EXPECT_EQ(32, offset);
@@ -416,7 +582,7 @@ TEST(EthereumAbi, DecodeUInt8) {
     Data encoded = parse_hex("0000000000000000000000000000000000000000000000000000000000000018");
     size_t offset = 0;
     uint8_t decoded;
-    bool res = ParamNumber<uint8_t>::decodeNumber(encoded, decoded, offset);
+    bool res = ParamNumberType<uint8_t>::decodeNumber(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(24, decoded);
     EXPECT_EQ(32, offset);
@@ -426,7 +592,7 @@ TEST(EthereumAbi, DecodeUInt8WithOffset) {
     Data encoded = parse_hex("abcdef0000000000000000000000000000000000000000000000000000000000000018");
     size_t offset = 3;
     uint8_t decoded;
-    bool res = ParamNumber<uint8_t>::decodeNumber(encoded, decoded, offset);
+    bool res = ParamNumberType<uint8_t>::decodeNumber(encoded, decoded, offset);
     EXPECT_TRUE(res);
     EXPECT_EQ(24, decoded);
     EXPECT_EQ(3 + 32, offset);

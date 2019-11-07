@@ -34,13 +34,13 @@ inline bool decode(const Data& encoded, uint256_t& decoded, size_t& offset_inout
     return true;
 }
 
-/// Generic parameter class for scalar types that fit into 256 bits.
+/// Generic parameter class for numeric types, like bool, uint32, int64, etc.  All are stored on 256 bits.
 template<typename T> 
-class ParamNumber : public ParamBase
+class ParamNumberType : public ParamBase
 {
 public:
-    ParamNumber() = default;
-    ParamNumber(T val) { _val = val; }
+    ParamNumberType() = default;
+    ParamNumberType(T val) { _val = val; }
     void setVal(T val) { _val = val; }
     T getVal() const { return _val; }
     virtual std::string getType() const = 0;
@@ -65,70 +65,165 @@ private:
     T _val;
 };
 
-class ParamUInt256 : public ParamNumber<uint256_t>
+class ParamUInt256 : public ParamNumberType<uint256_t>
 {
 public:
-    ParamUInt256() : ParamNumber<uint256_t>(uint256_t(0)) {}
-    ParamUInt256(uint256_t val) : ParamNumber<uint256_t>(val) {}
+    ParamUInt256() : ParamNumberType<uint256_t>(uint256_t(0)) {}
+    ParamUInt256(uint256_t val) : ParamNumberType<uint256_t>(val) {}
     virtual std::string getType() const { return "uint256"; }
-    uint256_t getVal() const { return ParamNumber<uint256_t>::getVal(); }
+    uint256_t getVal() const { return ParamNumberType<uint256_t>::getVal(); }
 };
 
-class ParamInt256 : public ParamNumber<int256_t>
+class ParamBool : public ParamNumberType<bool>
 {
 public:
-    ParamInt256() : ParamNumber<int256_t>(int256_t(0)) {}
-    ParamInt256(int256_t val) : ParamNumber<int256_t>(val) {}
-    virtual std::string getType() const { return "int256"; }
-};
-
-class ParamBool : public ParamNumber<bool>
-{
-public:
-    ParamBool() : ParamNumber<bool>(false) {}
-    ParamBool(bool val) : ParamNumber<bool>(val) {}
+    ParamBool() : ParamNumberType<bool>(false) {}
+    ParamBool(bool val) : ParamNumberType<bool>(val) {}
     virtual std::string getType() const { return "bool"; }
-    bool getVal() const { return ParamNumber<bool>::getVal(); }
+    bool getVal() const { return ParamNumberType<bool>::getVal(); }
 };
 
-class ParamByte : public ParamNumber<uint8_t>
+class ParamUInt8 : public ParamNumberType<uint8_t>
 {
 public:
-    ParamByte() : ParamNumber<uint8_t>(0) {}
-    ParamByte(uint8_t val) : ParamNumber<uint8_t>(val) {}
+    ParamUInt8() : ParamNumberType<uint8_t>(0) {}
+    ParamUInt8(uint8_t val) : ParamNumberType<uint8_t>(val) {}
     virtual std::string getType() const { return "uint8"; }
 };
 
-class ParamInt32 : public ParamNumber<int32_t>
+class ParamInt8 : public ParamNumberType<int8_t>
 {
 public:
-    ParamInt32() : ParamNumber<int32_t>(0) {}
-    ParamInt32(int32_t val) : ParamNumber<int32_t>(val) {}
-    virtual std::string getType() const { return "int32"; }
+    ParamInt8() : ParamNumberType<int8_t>(0) {}
+    ParamInt8(int8_t val) : ParamNumberType<int8_t>(val) {}
+    virtual std::string getType() const { return "int8"; }
 };
 
-class ParamUInt32 : public ParamNumber<uint32_t>
+class ParamUInt16 : public ParamNumberType<uint16_t>
 {
 public:
-    ParamUInt32() : ParamNumber<uint32_t>(0) {}
-    ParamUInt32(uint32_t val) : ParamNumber<uint32_t>(val) {}
+    ParamUInt16() : ParamNumberType<uint16_t>(0) {}
+    ParamUInt16(uint16_t val) : ParamNumberType<uint16_t>(val) {}
+    virtual std::string getType() const { return "uint16"; }
+};
+
+class ParamInt16 : public ParamNumberType<int16_t>
+{
+public:
+    ParamInt16() : ParamNumberType<int16_t>(0) {}
+    ParamInt16(int16_t val) : ParamNumberType<int16_t>(val) {}
+    virtual std::string getType() const { return "int16"; }
+};
+
+class ParamUInt32 : public ParamNumberType<uint32_t>
+{
+public:
+    ParamUInt32() : ParamNumberType<uint32_t>(0) {}
+    ParamUInt32(uint32_t val) : ParamNumberType<uint32_t>(val) {}
     virtual std::string getType() const { return "uint32"; }
 };
 
-class ParamInt64 : public ParamNumber<int64_t>
+class ParamInt32 : public ParamNumberType<int32_t>
 {
 public:
-    ParamInt64() : ParamNumber<int64_t>(0) {}
-    ParamInt64(int64_t val) : ParamNumber<int64_t>(val) {}
+    ParamInt32() : ParamNumberType<int32_t>(0) {}
+    ParamInt32(int32_t val) : ParamNumberType<int32_t>(val) {}
+    virtual std::string getType() const { return "int32"; }
+};
+
+class ParamUInt64 : public ParamNumberType<uint64_t>
+{
+public:
+    ParamUInt64() : ParamNumberType<uint64_t>(0) {}
+    ParamUInt64(uint64_t val) : ParamNumberType<uint64_t>(val) {}
+    virtual std::string getType() const { return "uint64"; }
+};
+
+class ParamInt64 : public ParamNumberType<int64_t>
+{
+public:
+    ParamInt64() : ParamNumberType<int64_t>(0) {}
+    ParamInt64(int64_t val) : ParamNumberType<int64_t>(val) {}
     virtual std::string getType() const { return "int64"; }
 };
 
-class ParamUInt64 : public ParamNumber<uint64_t>
+/// Generic parameter class for Uint8, 16, 24, 32, 40, ... 256.  For smaller sizes use the sepcial name like UInt32.
+/// Stored on 256 bits.
+template<size_t N> 
+class ParamUInt : public ParamBase
 {
 public:
-    ParamUInt64() : ParamNumber<uint64_t>(0) {}
-    ParamUInt64(uint64_t val) : ParamNumber<uint64_t>(val) {}
-    virtual std::string getType() const { return "uint64"; }
+    ParamUInt() { setMask(); }
+    ParamUInt(uint256_t val) { setMask(); setVal(val); }
+    void setVal(uint256_t val)
+    {
+        // mask it to the given bits
+        _val = val & _mask;
+    }
+    uint256_t getVal() const { return _val; }
+    virtual std::string getType() const { return "uint" + std::to_string(N); }
+    virtual size_t getSize() const { return Util::encodedUInt256Size; }
+    virtual bool isDynamic() const { return false; }
+    virtual void encode(Data& data) const {
+        TW::Ethereum::ABI::encode(_val, data);
+    }
+    static bool decodeNumber(const Data& encoded, uint256_t& decoded, size_t& offset_inout) {
+        return TW::Ethereum::ABI::decode(encoded, decoded, offset_inout);
+    }
+    virtual bool decode(const Data& encoded, size_t& offset_inout) {
+        uint256_t temp;
+        auto res = decodeNumber(encoded, temp, offset_inout);
+        setVal(temp);
+        return res;
+    }
+private:
+    void setMask() { _mask = (uint256_t(1) << N) - 1; }
+    uint256_t _val;
+    uint256_t _mask;
+};
+
+/// Generic parameter class for Int8, 16, 24, 32, 40, ... 256.  For smaller sizes use the sepcial name like Int32.
+/// Stored on 256 bits.
+template<size_t N> 
+class ParamInt : public ParamBase
+{
+public:
+    ParamInt() { setMask(); }
+    ParamInt(int256_t val) { setMask(); setVal(val); }
+    // signed conversion helper
+    static int256_t fromUInt256(uint256_t x) { if(x > (uint256_t(1) << 255)) return -((int256_t)~x)-1; else return (int256_t)x; }
+    void setVal(int256_t val)
+    {
+        // mask it to the given bits
+        if (val < 0) {
+            _val = fromUInt256(~((~((uint256_t)val)) & _mask));
+        } else {
+            _val = fromUInt256(((uint256_t)val) & _mask);
+        }
+    }
+    int256_t getVal() const { return _val; }
+    virtual std::string getType() const { return "int" + std::to_string(N); }
+    virtual size_t getSize() const { return Util::encodedUInt256Size; }
+    virtual bool isDynamic() const { return false; }
+    virtual void encode(Data& data) const {
+        TW::Ethereum::ABI::encode((uint256_t)_val, data);
+    }
+    static bool decodeNumber(const Data& encoded, int256_t& decoded, size_t& offset_inout) {
+        uint256_t valU;
+        auto res = TW::Ethereum::ABI::decode(encoded, valU, offset_inout);
+        decoded = fromUInt256(valU);
+        return res;
+    }
+    virtual bool decode(const Data& encoded, size_t& offset_inout) {
+        int256_t temp;
+        auto res = decodeNumber(encoded, temp, offset_inout);
+        setVal(temp);
+        return res;
+    }
+private:
+    void setMask() { _mask = (uint256_t(1) << N) - 1; }
+    int256_t _val;
+    uint256_t _mask;
 };
 
 } // namespace TW::Ethereum::ABI
