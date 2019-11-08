@@ -27,7 +27,7 @@ Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data 
 }
 
 template <typename T>
-Proto::SigningOutput Signer::prepareOutput(const Data &encoded, const T transaction) noexcept {
+Proto::SigningOutput Signer::prepareOutput(const Data &encoded, const T &transaction) noexcept {
     auto protoOutput = Proto::SigningOutput();
 
     auto v = store(transaction.v);

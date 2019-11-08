@@ -29,7 +29,7 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     template <typename T>
-    static Proto::SigningOutput prepareOutput(const Data &encoded, const T transaction) noexcept;
+    static Proto::SigningOutput prepareOutput(const Data &encoded, const T &transaction) noexcept;
 
     /// Signs a Proto::SigningInput transaction or staking
     template <typename T>
