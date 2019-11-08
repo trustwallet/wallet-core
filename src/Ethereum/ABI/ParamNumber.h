@@ -13,7 +13,6 @@
 #include "../../uint256.h"
 
 #include <string>
-#include <cassert>
 
 namespace TW::Ethereum::ABI {
 
@@ -49,11 +48,11 @@ public:
     virtual void encode(Data& data) const {
         // cast up
         uint256_t val256 = static_cast<uint256_t>(_val);
-        TW::Ethereum::ABI::encode(val256, data);
+        ABI::encode(val256, data);
     }
     static bool decodeNumber(const Data& encoded, T& decoded, size_t& offset_inout) {
         uint256_t val256;
-        if (!TW::Ethereum::ABI::decode(encoded, val256, offset_inout)) { return false; }
+        if (!ABI::decode(encoded, val256, offset_inout)) { return false; }
         // cast down
         decoded = static_cast<T>(val256);
         return true;
@@ -169,9 +168,9 @@ public:
     virtual std::string getType() const { return "uint" + std::to_string(bits); }
     virtual size_t getSize() const { return Util::encodedUInt256Size; }
     virtual bool isDynamic() const { return false; }
-    virtual void encode(Data& data) const { TW::Ethereum::ABI::encode(_val, data); }
+    virtual void encode(Data& data) const { ABI::encode(_val, data); }
     static bool decodeNumber(const Data& encoded, uint256_t& decoded, size_t& offset_inout) {
-        return TW::Ethereum::ABI::decode(encoded, decoded, offset_inout);
+        return ABI::decode(encoded, decoded, offset_inout);
     }
     virtual bool decode(const Data& encoded, size_t& offset_inout);
 
@@ -194,7 +193,7 @@ public:
     virtual std::string getType() const { return "int" + std::to_string(bits); }
     virtual size_t getSize() const { return Util::encodedUInt256Size; }
     virtual bool isDynamic() const { return false; }
-    virtual void encode(Data& data) const { TW::Ethereum::ABI::encode((uint256_t)_val, data); }
+    virtual void encode(Data& data) const { ABI::encode((uint256_t)_val, data); }
     static bool decodeNumber(const Data& encoded, int256_t& decoded, size_t& offset_inout);
     virtual bool decode(const Data& encoded, size_t& offset_inout);
 

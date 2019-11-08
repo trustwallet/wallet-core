@@ -11,24 +11,24 @@
 using namespace TW::Ethereum::ABI;
 
 int ParamArray::addParam(const std::shared_ptr<ParamBase>& param) {
-    if (param == nullptr) return -1;
     assert(param != nullptr);
-    if (_params.getCount() >= 1 && param->getType() != getFirstType()) return -2; // do not add different types
+    if (param == nullptr) { return -1; }
+    if (_params.getCount() >= 1 && param->getType() != getFirstType()) { return -2; } // do not add different types
     return _params.addParam(param);
 }
 
 void ParamArray::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
-    for (auto p: params) addParam(p);
+    for (auto p: params) { addParam(p); }
 }
 
 std::string ParamArray::getFirstType() const {
-    if (_params.getCount() == 0) return "empty";
+    if (_params.getCount() == 0) { return "empty"; }
     return _params.getParamUnsafe(0)->getType();
 }
 
 void ParamArray::encode(Data& data) const {
     size_t n = _params.getCount();
-    TW::Ethereum::ABI::encode(uint256_t(n), data);
+    ABI::encode(uint256_t(n), data);
 
     size_t headSize = 0;
     for (auto i = 0; i < n; ++i) {
@@ -44,7 +44,7 @@ void ParamArray::encode(Data& data) const {
     for (auto i = 0; i < n; ++i) {
         auto p = _params.getParamUnsafe(i);
         if (p->isDynamic()) {
-            TW::Ethereum::ABI::encode(uint256_t(headSize + dynamicOffset), data);
+            ABI::encode(uint256_t(headSize + dynamicOffset), data);
             dynamicOffset += p->getSize();
         } else {
             p->encode(data);
@@ -63,15 +63,15 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     size_t origOffset = offset_inout;
     // read length
     uint256_t len256;
-    if (!TW::Ethereum::ABI::decode(encoded, len256, offset_inout)) { return false; }
+    if (!ABI::decode(encoded, len256, offset_inout)) { return false; }
     // check if length is in the size_t range
     size_t len = static_cast<size_t>(len256);
     if (len256 != static_cast<uint256_t>(len)) { return false; }
     // read values
     auto n = _params.getCount();
     if (n != len) {
-        // Element number mismatch: the proto has to have exact same number of values as in the encded form
-        // TODO how to relax this, and create values if needed?
+        // Element number mismatch: the proto has to have exact same number of values as in the encoded form
+        // Note: this could be handles in a smarter way, and create more elements as needed
         return false;
     }
     for (auto i = 0; i < n; ++i) {
@@ -79,6 +79,5 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
     }
     // padding
     offset_inout = origOffset + Util::paddedTo32(offset_inout - origOffset);
-    // TODO handle dynamic types
     return true;
 }

@@ -44,7 +44,7 @@ void ParamIntN::setVal(int256_t val) {
 
 bool ParamIntN::decodeNumber(const Data& encoded, int256_t& decoded, size_t& offset_inout) {
     uint256_t valU;
-    auto res = TW::Ethereum::ABI::decode(encoded, valU, offset_inout);
+    auto res = ABI::decode(encoded, valU, offset_inout);
     decoded = Util::int256FromUint256(valU);
     return res;
 }

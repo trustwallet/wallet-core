@@ -10,8 +10,6 @@
 #include "ParamNumber.h"
 #include "Parameters.h"
 
-#include <cassert>
-
 namespace TW::Ethereum::ABI {
 
 /// Dynamic array of the same types, "<type>[]"

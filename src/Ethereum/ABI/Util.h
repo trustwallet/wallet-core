@@ -9,7 +9,6 @@
 #include "../../uint256.h"
 
 #include <string>
-#include <cassert>
 
 /// Some common utility methods
 namespace TW::Ethereum::ABI::Util {

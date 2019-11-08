@@ -17,14 +17,14 @@ ParamSet::~ParamSet() {
 
 /// Returns the index of the parameter
 int ParamSet::addParam(const std::shared_ptr<ParamBase>& param) {
-    if (param.get() == nullptr) return -1;
     assert(param.get() != nullptr);
+    if (param.get() == nullptr) { return -1; }
     _params.push_back(param);
     return static_cast<int>(_params.size() - 1);
 }
 
 void ParamSet::addParams(const std::vector<std::shared_ptr<ParamBase>>& params) {
-    for (auto p: params) addParam(p);
+    for (auto p: params) { addParam(p); }
 }
 
 bool ParamSet::getParam(int paramIndex, std::shared_ptr<ParamBase>& param_out) const {
@@ -89,7 +89,7 @@ void ParamSet::encode(Data& data) const {
     for(auto p: _params) {
         if (p->isDynamic() || p->getSize() > Util::encodedUInt256Size) {
             // include only offset
-            TW::Ethereum::ABI::encode(uint256_t(headSize + dynamicOffset), data);
+            ABI::encode(uint256_t(headSize + dynamicOffset), data);
             dynamicOffset += p->getSize();
         } else {
             // encode small data
@@ -111,7 +111,7 @@ bool ParamSet::decode(const Data& encoded, size_t& offset_inout) {
     for(auto p: _params) {
         if (p->isDynamic()) {
             uint256_t index;
-            if (!TW::Ethereum::ABI::decode(encoded, index, offset_inout)) { return false; }
+            if (!ABI::decode(encoded, index, offset_inout)) { return false; }
             // index is read but not used
         } else {
             if (!p->decode(encoded, offset_inout)) { return false; }

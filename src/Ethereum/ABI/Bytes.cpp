@@ -11,7 +11,7 @@
 namespace TW::Ethereum::ABI {
 
 void ParamByteArray::encodeBytes(const Data& bytes, Data& data) {
-    TW::Ethereum::ABI::encode(uint256_t(bytes.size()), data);
+    ABI::encode(uint256_t(bytes.size()), data);
 
     const auto count = bytes.size();
     const auto padding = Util::padNeeded32(count);
@@ -23,7 +23,7 @@ bool ParamByteArray::decodeBytes(const Data& encoded, Data& decoded, size_t& off
     size_t origOffset = offset_inout;
     // read len
     uint256_t len256;
-    if (!TW::Ethereum::ABI::decode(encoded, len256, offset_inout)) { return false; }
+    if (!ABI::decode(encoded, len256, offset_inout)) { return false; }
     // check if length is in the size_t range
     size_t len = static_cast<size_t>(len256);
     if (len256 != static_cast<uint256_t>(len)) { return false; }
@@ -50,7 +50,7 @@ bool ParamByteArrayFix::decodeBytesFix(const Data& encoded, size_t n, Data& deco
         // not enough data
         return false;
     }
-    if (decoded.size() < n) append(decoded, Data(n - decoded.size()));
+    if (decoded.size() < n) { append(decoded, Data(n - decoded.size())); }
     std::copy(encoded.begin() + offset_inout, encoded.begin() + (offset_inout + n), decoded.begin());
     offset_inout += n;
     // padding

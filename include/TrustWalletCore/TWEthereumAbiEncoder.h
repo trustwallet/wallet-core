@@ -10,9 +10,8 @@
 #include "TWString.h"
 #include "TWData.h"
 
-//
 // Wrapper class for Ethereum ABI encoding & decoding.  Also builder for Function objects.
-//
+// See also TWEthereumAbiFunction.
 
 TW_EXTERN_C_BEGIN
 
@@ -26,7 +25,7 @@ struct TWEthereumAbiEncoder;
 TW_EXPORT_STATIC_METHOD
 struct TWEthereumAbiFunction *_Nullable TWEthereumAbiEncoderBuildFunction(TWString *_Nonnull name);
 
-/// Deletes a function object created with a 'TWEthereumAbiEncoderCreateWithString' method.
+/// Deletes a function object created with a 'TWEthereumAbiEncoderBuildFunction' method.
 /// Note: func is a reserved keyword in codegenerated swift.
 TW_EXPORT_STATIC_METHOD
 void TWEthereumAbiEncoderDeleteFunction(struct TWEthereumAbiFunction *_Nonnull func_in);
