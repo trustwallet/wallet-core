@@ -28,8 +28,8 @@ TEST(Address, CoinexFromKeyHash) {
     ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
 
     auto publicKey = PublicKey(publicKeyData);
-    //auto address = Address("coinex", publicKey);
-    //ASSERT_EQ(address.string(), "coinex1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0juwxvr");
+    auto address = Address("coinex", publicKey);
+    ASSERT_EQ(address.string(), "coinex1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0juwxvr");
     auto address = Address("cettest", publicKey);
     ASSERT_EQ(address.string(), "cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j");
 }

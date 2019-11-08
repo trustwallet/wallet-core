@@ -35,7 +35,7 @@ json coinexHigherWrapperJSON(json& jsonObj) {
     json jsonMsgWrapper;
 
     jsonMsgWrapper["tx"] = jsonObj;
-    jsonMsgWrapper["mode"] = "block";
+    jsonMsgWrapper["mode"] = "sync";
 
     return jsonMsgWrapper;
 }
