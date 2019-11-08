@@ -121,9 +121,14 @@ Signer::sign<Staking<CreateValidator>>(const TW::Harmony::Proto::SigningInput &i
     for (auto pk : input.staking_message().create_validator_message().slot_pub_keys()) {
         slotPubKeys.push_back(Data(pk.begin(), pk.end()));
     }
+    Address validatorAddr;
+    if (!Address::decode(input.staking_message().create_validator_message().validator_address(),
+                         validatorAddr)) {
+        // invalid to address
+        return Proto::SigningOutput();
+    }
     auto createValidator = CreateValidator(
-        /* ValidatorAddress */ Address(
-            input.staking_message().create_validator_message().validator_address()),
+        /* ValidatorAddress */ validatorAddr,
         /* Description */ description,
         /* Commission */ commissionRates,
         /* MinSelfDelegation */
@@ -169,9 +174,14 @@ Signer::sign<Staking<EditValidator>>(const TW::Harmony::Proto::SigningInput &inp
         commissionRate = &decimal;
     }
 
+    Address validatorAddr;
+    if (!Address::decode(input.staking_message().edit_validator_message().validator_address(),
+                         validatorAddr)) {
+        // invalid to address
+        return Proto::SigningOutput();
+    }
     auto editValidator = EditValidator(
-        /* ValidatorAddress */ Address(
-            input.staking_message().edit_validator_message().validator_address()),
+        /* ValidatorAddress */ validatorAddr,
         /* Description */ description,
         /* CommissionRate */ commissionRate,
         /* MinSelfDelegation */
@@ -203,10 +213,20 @@ Proto::SigningOutput
 Signer::sign<Staking<Delegate>>(const TW::Harmony::Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
-    auto delegate =
-        Delegate(Address(input.staking_message().delegate_message().delegator_address()),
-                 Address(input.staking_message().delegate_message().validator_address()),
-                 load(input.staking_message().delegate_message().amount()));
+    Address delegatorAddr;
+    if (!Address::decode(input.staking_message().delegate_message().delegator_address(),
+                         delegatorAddr)) {
+        // invalid to address
+        return Proto::SigningOutput();
+    }
+    Address validatorAddr;
+    if (!Address::decode(input.staking_message().delegate_message().validator_address(),
+                         validatorAddr)) {
+        // invalid to address
+        return Proto::SigningOutput();
+    }
+    auto delegate = Delegate(delegatorAddr, validatorAddr,
+                             load(input.staking_message().delegate_message().amount()));
     auto stakingTx =
         Staking<Delegate>(DirectiveDelegate, delegate, load(input.staking_message().nonce()),
                           load(input.staking_message().gas_price()),
@@ -225,10 +245,20 @@ Proto::SigningOutput
 Signer::sign<Staking<Undelegate>>(const TW::Harmony::Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
-    auto undelegate =
-        Undelegate(Address(input.staking_message().undelegate_message().delegator_address()),
-                   Address(input.staking_message().undelegate_message().validator_address()),
-                   load(input.staking_message().undelegate_message().amount()));
+    Address delegatorAddr;
+    if (!Address::decode(input.staking_message().undelegate_message().delegator_address(),
+                         delegatorAddr)) {
+        // invalid to address
+        return Proto::SigningOutput();
+    }
+    Address validatorAddr;
+    if (!Address::decode(input.staking_message().undelegate_message().validator_address(),
+                         validatorAddr)) {
+        // invalid to address
+        return Proto::SigningOutput();
+    }
+    auto undelegate = Undelegate(delegatorAddr, validatorAddr,
+                                 load(input.staking_message().undelegate_message().amount()));
     auto stakingTx = Staking<Undelegate>(
         DirectiveUndelegate, undelegate, load(input.staking_message().nonce()),
         load(input.staking_message().gas_price()), load(input.staking_message().gas_limit()),
@@ -247,8 +277,13 @@ Proto::SigningOutput
 Signer::sign<Staking<CollectRewards>>(const TW::Harmony::Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
-    auto collectRewards =
-        CollectRewards(Address(input.staking_message().collect_rewards().delegator_address()));
+    Address delegatorAddr;
+    if (!Address::decode(input.staking_message().collect_rewards().delegator_address(),
+                         delegatorAddr)) {
+        // invalid to address
+        return Proto::SigningOutput();
+    }
+    auto collectRewards = CollectRewards(delegatorAddr);
     auto stakingTx = Staking<CollectRewards>(
         DirectiveCollectRewards, collectRewards, load(input.staking_message().nonce()),
         load(input.staking_message().gas_price()), load(input.staking_message().gas_limit()),
@@ -320,7 +355,7 @@ Data Signer::rlpNoHashDirective(const Staking<CreateValidator> &transaction) con
     auto encoded = Data();
     using namespace TW::Ethereum;
 
-    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.getKeyHash()));
 
     auto descriptionEncoded = Data();
     append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.name));
@@ -365,7 +400,7 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const
     auto encoded = Data();
     using namespace TW::Ethereum;
 
-    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.getKeyHash()));
 
     auto descriptionEncoded = Data();
     append(descriptionEncoded, RLP::encode(transaction.stakeMsg.description.name));
@@ -393,8 +428,8 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const
 Data Signer::rlpNoHashDirective(const Staking<Delegate> &transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
-    append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.bytes));
-    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
+    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.getKeyHash()));
     append(encoded, RLP::encode(transaction.stakeMsg.amount));
     return RLP::encodeList(encoded);
 }
@@ -402,8 +437,8 @@ Data Signer::rlpNoHashDirective(const Staking<Delegate> &transaction) const noex
 Data Signer::rlpNoHashDirective(const Staking<Undelegate> &transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
-    append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.bytes));
-    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
+    append(encoded, RLP::encode(transaction.stakeMsg.validatorAddress.getKeyHash()));
     append(encoded, RLP::encode(transaction.stakeMsg.amount));
     return RLP::encodeList(encoded);
 }
@@ -411,7 +446,7 @@ Data Signer::rlpNoHashDirective(const Staking<Undelegate> &transaction) const no
 Data Signer::rlpNoHashDirective(const Staking<CollectRewards> &transaction) const noexcept {
     auto encoded = Data();
     using namespace TW::Ethereum;
-    append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.bytes));
+    append(encoded, RLP::encode(transaction.stakeMsg.delegatorAddress.getKeyHash()));
     return RLP::encodeList(encoded);
 }
 
