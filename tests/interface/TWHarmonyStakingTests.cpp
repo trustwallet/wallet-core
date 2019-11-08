@@ -19,7 +19,7 @@
 using namespace TW;
 using namespace Harmony;
 
-static auto TEST_ACCOUNT = Address("one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9");
+static auto TEST_ACCOUNT = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9";
 
 static auto PRIVATE_KEY =
     PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
@@ -34,7 +34,7 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     auto stakingMessage = input.mutable_staking_message();
     auto createValidatorMsg = stakingMessage->mutable_create_validator_message();
 
-    createValidatorMsg->set_validator_address(TEST_ACCOUNT.string());
+    createValidatorMsg->set_validator_address(TEST_ACCOUNT);
 
     auto description = createValidatorMsg->mutable_description();
     description->set_name("Alice");
@@ -111,7 +111,7 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
     auto stakingMessage = input.mutable_staking_message();
     auto editValidatorMsg = stakingMessage->mutable_edit_validator_message();
 
-    editValidatorMsg->set_validator_address(TEST_ACCOUNT.string());
+    editValidatorMsg->set_validator_address(TEST_ACCOUNT);
 
     auto description = editValidatorMsg->mutable_description();
     description->set_name("Alice");
@@ -173,8 +173,8 @@ TEST(TWHarmonyStakingSigner, Delegate) {
 
     auto stakingMessage = input.mutable_staking_message();
     auto delegateMsg = stakingMessage->mutable_delegate_message();
-    delegateMsg->set_delegator_address(TEST_ACCOUNT.string());
-    delegateMsg->set_validator_address(TEST_ACCOUNT.string());
+    delegateMsg->set_delegator_address(TEST_ACCOUNT);
+    delegateMsg->set_validator_address(TEST_ACCOUNT);
 
     value = store(uint256_t("0xa"));
     delegateMsg->set_amount(value.data(), value.size());
@@ -213,8 +213,8 @@ TEST(TWHarmonyStakingSigner, Undelegate) {
 
     auto stakingMessage = input.mutable_staking_message();
     auto undelegateMsg = stakingMessage->mutable_undelegate_message();
-    undelegateMsg->set_delegator_address(TEST_ACCOUNT.string());
-    undelegateMsg->set_validator_address(TEST_ACCOUNT.string());
+    undelegateMsg->set_delegator_address(TEST_ACCOUNT);
+    undelegateMsg->set_validator_address(TEST_ACCOUNT);
 
     value = store(uint256_t("0xa"));
     undelegateMsg->set_amount(value.data(), value.size());
@@ -253,7 +253,7 @@ TEST(TWHarmonyStakingSigner, CollectRewards) {
 
     auto stakingMessage = input.mutable_staking_message();
     auto collectRewardsMsg = stakingMessage->mutable_collect_rewards();
-    collectRewardsMsg->set_delegator_address(TEST_ACCOUNT.string());
+    collectRewardsMsg->set_delegator_address(TEST_ACCOUNT);
 
     value = store(uint256_t("0x2"));
     stakingMessage->set_nonce(value.data(), value.size());
