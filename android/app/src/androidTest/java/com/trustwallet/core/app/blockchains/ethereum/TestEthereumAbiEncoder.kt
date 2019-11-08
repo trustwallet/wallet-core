@@ -21,7 +21,8 @@ class TestEthereumAbiEncoder {
         assertEquals("sam(bool)", function.type)
 
         val encoded = EthereumAbiEncoder.encode(function)
-        assertEquals("0xa35856da" + str32_1,
+        assertEquals("0xa35856da" +
+            "0000000000000000000000000000000000000000000000000000000000000001",
             Numeric.toHexString(encoded));
     }
 

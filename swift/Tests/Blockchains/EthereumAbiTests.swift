@@ -33,6 +33,6 @@ class EthereumAbiTests: XCTestCase {
         let decodeRes = EthereumAbiEncoder.decodeOutput(func_in: function, encoded: encodedOutput)
         XCTAssertEqual(true, decodeRes)
         // new output value
-        XCTAssertEqual(0x45, function.getParamUInt64(idx: 0, isOutput: true))        
+        XCTAssertEqual(0x45, function.getParamUInt64(idx: 0, isOutput: true))
     }
 }
