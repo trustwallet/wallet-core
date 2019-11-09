@@ -8,6 +8,7 @@
 
 #include "Data.h"
 
+#include <array>
 #include <string>
 #include <tuple>
 
@@ -16,9 +17,9 @@ namespace TW {
 std::tuple<uint8_t, bool> value(uint8_t c);
 
 /// Converts a range of bytes to a hexadecimal string representation.
-template<typename Iter>
+template <typename Iter>
 inline std::string hex(const Iter begin, const Iter end) {
-    static const char hexmap[16] = {
+    static constexpr std::array<char, 16> hexmap = {
         '0', '1', '2', '3', '4', '5', '6', '7',
         '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
     };
@@ -36,7 +37,7 @@ inline std::string hex(const Iter begin, const Iter end) {
 }
 
 /// Converts a collection of bytes to a hexadecimal string representation.
-template<typename T>
+template <typename T>
 inline std::string hex(const T& collection) {
     return hex(std::begin(collection), std::end(collection));
 }
@@ -44,15 +45,14 @@ inline std::string hex(const T& collection) {
 /// Converts a `uint64_t` value to a hexadecimal string.
 inline std::string hex(uint64_t value) {
     auto bytes = reinterpret_cast<const uint8_t*>(&value);
-    return hex(
-        std::reverse_iterator<const uint8_t*>(bytes + sizeof(value)),
-        std::reverse_iterator<const uint8_t*>(bytes)
-    );
+    return hex(std::reverse_iterator<const uint8_t*>(bytes + sizeof(value)),
+               std::reverse_iterator<const uint8_t*>(bytes));
 }
 
 /// Parses a string of hexadecimal values.
 ///
-/// \returns the array or parsed bytes or an empty array if the string is not valid hexadecimal.
+/// \returns the array or parsed bytes or an empty array if the string is not
+/// valid hexadecimal.
 template <typename Iter>
 inline Data parse_hex(const Iter begin, const Iter end) {
     auto it = begin;
@@ -83,7 +83,7 @@ inline Data parse_hex(const Iter begin, const Iter end) {
         }
         it += 1;
 
-        result.push_back((std::get<0>(high) << 4) | std::get<0>(low));
+        result.push_back(static_cast<uint8_t>((std::get<0>(high) << 4) | std::get<0>(low)));
     }
 
     return result;
@@ -91,9 +91,10 @@ inline Data parse_hex(const Iter begin, const Iter end) {
 
 /// Parses a string of hexadecimal values.
 ///
-/// \returns the array or parsed bytes or an empty array if the string is not valid hexadecimal.
+/// \returns the array or parsed bytes or an empty array if the string is not
+/// valid hexadecimal.
 inline Data parse_hex(const std::string& string) {
     return parse_hex(string.begin(), string.end());
 }
 
-} // namespace
+} // namespace TW

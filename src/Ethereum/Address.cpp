@@ -5,45 +5,43 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-
 #include "AddressChecksum.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrezorCrypto/sha3.h>
-
-#include <cassert>
-
 using namespace TW::Ethereum;
 
 bool Address::isValid(const std::string& string) {
+    if (string.size() != 42 || string[0] != '0' || string[1] != 'x') {
+        return false;
+    }
     const auto data = parse_hex(string);
     return Address::isValid(data);
 }
 
 Address::Address(const std::string& string) {
-    const auto data = parse_hex(string);
-    assert(Address::isValid(data));
-    if (data.size() != size) {
+    if (!isValid(string)) {
         throw std::invalid_argument("Invalid address data");
     }
+    const auto data = parse_hex(string);
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const std::vector<uint8_t>& data) {
-    assert(Address::isValid(data));
-    if (data.size() != size) {
+Address::Address(const Data& data) {
+    if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
-    auto hash = std::array<uint8_t, Hash::sha256Size>();
-    keccak_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
-    std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
+    if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+        throw std::invalid_argument("Ethereum::Address needs an extended SECP256k1 public key.");
+    }
+    const auto data = publicKey.hash({}, static_cast<Data(*)(const byte*, const byte*)>(Hash::keccak256), true);
+    std::copy(data.end() - Address::size, data.end(), bytes.begin());
 }
 
 std::string Address::string() const {
-    return checksumed(*this);
+    return checksumed(*this, ChecksumType::eip55);
 }

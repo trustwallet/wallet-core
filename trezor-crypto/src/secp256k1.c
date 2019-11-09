@@ -71,6 +71,15 @@ const curve_info secp256k1_decred_info = {
 	.hasher_script = HASHER_BLAKE,
 };
 
+const curve_info secp256k1_groestl_info = {
+	.bip32_name = "Bitcoin seed",
+	.params = &secp256k1,
+	.hasher_base58 = HASHER_GROESTLD_TRUNC,
+	.hasher_sign = HASHER_SHA2,
+	.hasher_pubkey = HASHER_SHA2_RIPEMD,
+	.hasher_script = HASHER_SHA2,
+};
+
 const curve_info secp256k1_smart_info = {
 	.bip32_name = "Bitcoin seed",
 	.params = &secp256k1,

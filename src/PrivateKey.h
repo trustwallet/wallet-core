@@ -17,7 +17,7 @@
 namespace TW {
 
 class PrivateKey {
-public:
+  public:
     /// The number of bytes in a private key.
     static const size_t size = 32;
 
@@ -25,7 +25,7 @@ public:
     std::array<uint8_t, size> bytes;
 
     /// Determines if a collection of bytes makes a valid private key.
-    template<typename T>
+    template <typename T>
     static bool isValid(const T& data) {
         // Check length
         if (data.size() != size) {
@@ -42,10 +42,13 @@ public:
         return false;
     }
 
+    /// Determines if a collection of bytes and curve make a valid private key.
+    static bool isValid(const Data& data, TWCurve curve);
+
     /// Initializes a private key with a collection of bytes.
-    template<typename T>
+    template <typename T>
     explicit PrivateKey(const T& data) {
-        if (data.size() != size) {
+        if (!isValid(data)) {
             throw std::invalid_argument("Invalid private key data");
         }
         std::copy(std::begin(data), std::end(data), std::begin(bytes));
@@ -54,22 +57,40 @@ public:
     /// Initializes a private key with a static array of bytes.
     PrivateKey(std::array<uint8_t, size>&& array) : bytes(array) {}
 
-    ~PrivateKey();
+    PrivateKey(const PrivateKey& other) = default;
+    PrivateKey& operator=(const PrivateKey& other) = default;
+
+    PrivateKey(PrivateKey&& other) = default;
+    PrivateKey& operator=(PrivateKey&& other) = default;
+
+    virtual ~PrivateKey();
 
     /// Returns the public key for this private key.
-    PublicKey getPublicKey(PublicKeyType type) const;
+    PublicKey getPublicKey(enum TWPublicKeyType type) const;
 
     /// Signs a digest using the given ECDSA curve.
     Data sign(const Data& digest, TWCurve curve) const;
 
-    /// Signs a digest using the given ECDSA curve. The result is encoded with DER.
+    /// Signs a digest using the given ECDSA curve and prepends the recovery id (a la graphene)
+    /// Only a sig that passes canonicalChecker is returned
+    Data sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(uint8_t by, uint8_t sig[64])) const;
+
+    /// Signs a digest using the given ECDSA curve. The result is encoded with
+    /// DER.
     Data signAsDER(const Data& digest, TWCurve curve) const;
+
+    /// Signs a digest using given ECDSA curve, returns schnorr signature
+    Data signSchnorr(const Data& message, TWCurve curve) const;
 };
 
-inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes == rhs.bytes; }
-inline bool operator!=(const PrivateKey& lhs, const PrivateKey& rhs) { return lhs.bytes != rhs.bytes; }
+inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) {
+    return lhs.bytes == rhs.bytes;
+}
+inline bool operator!=(const PrivateKey& lhs, const PrivateKey& rhs) {
+    return lhs.bytes != rhs.bytes;
+}
 
-} // namespace
+} // namespace TW
 
 /// Wrapper for C interface.
 struct TWPrivateKey {

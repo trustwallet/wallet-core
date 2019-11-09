@@ -10,8 +10,7 @@
 
 #include <nlohmann/json.hpp>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
 // AES128 parameters.
 struct AESParameters {
@@ -29,4 +28,4 @@ struct AESParameters {
     nlohmann::json json() const;
 };
 
-}} // namespace
+} // namespace TW::Keystore

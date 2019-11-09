@@ -35,12 +35,6 @@
 #define USE_BIP32_25519_CURVES    1
 #endif
 
-// implement BIP39 caching
-#ifndef USE_BIP39_CACHE
-#define USE_BIP39_CACHE 0
-#define BIP39_CACHE_SIZE 4
-#endif
-
 // add way how to mark confidential data
 #ifndef CONFIDENTIAL
 #define CONFIDENTIAL

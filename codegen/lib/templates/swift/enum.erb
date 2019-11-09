@@ -1,6 +1,6 @@
 <%  has_string = entity.cases.all? { |c| !c.string.nil? } -%>
 <%  type = entity.raw_type ? SwiftHelper.type(entity.raw_type) : 'UInt32' -%>
-public enum <%= entity.name %>: <%= type %><% if has_string %>, CustomStringConvertible <% end %> {
+public enum <%= entity.name %>: <%= type %>, CaseIterable<% if has_string %>, CustomStringConvertible <% end %> {
 <%# Cases -%>
 <%  entity.cases.each do |c| -%>
     case <%= SwiftHelper.format_name(c.name) %><% unless c.value.nil? %> = <%= c.value %><% end %>
@@ -9,13 +9,13 @@ public enum <%= entity.name %>: <%= type %><% if has_string %>, CustomStringConv
 <%- entity.properties.each do |property| -%>
 
     public var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {
-<%=   render('swift/method_forward.erb', { method: property, arguments: ['TWCoinType(rawValue: rawValue)'] }) -%>
+<%=   render('swift/method_forward.erb', { method: property, arguments: ["TW#{entity.name}(rawValue: rawValue)"] }) -%>
     }
 <%- end -%>
 <%# Methods -%>
 <% entity.methods.each do |method| -%>
 
-<%   arguments = ['TWCoinType(rawValue: rawValue)'] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
+<%   arguments = ["TW#{entity.name}(rawValue: rawValue)"] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
 <%=  render('swift/method.erb', { method: method, arguments: arguments }) %>
 <% end -%>
 <%# Description -%>

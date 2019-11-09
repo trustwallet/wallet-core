@@ -7,7 +7,7 @@
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWString.h>
 
-#include <string.h>
+#include <memory>
 
 static inline char low_char(uint8_t v) {
     uint8_t lv = v & 0x0f;

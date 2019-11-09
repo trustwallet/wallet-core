@@ -6,10 +6,10 @@
 
 #include "Address.h"
 
+#include "../Base32.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrezorCrypto/base32.h>
 #include <TrezorCrypto/blake2b.h>
 
 #include <algorithm>
@@ -18,7 +18,7 @@
 
 using namespace TW::Nimiq;
 
-static const char *BASE32_ALPHABET_NIMIQ = "0123456789ABCDEFGHJKLMNPQRSTUVXY";
+static const char* BASE32_ALPHABET_NIMIQ = "0123456789ABCDEFGHJKLMNPQRSTUVXY";
 
 static int check_append(int, uint8_t);
 static inline int check_add(int, int);
@@ -31,17 +31,16 @@ bool Address::isValid(const std::string& stringPadded) {
     std::string string = stringPadded;
 
     // Remove spaces
-    string.erase(
-        std::remove(string.begin(), string.end(), ' '),
-        string.end());
+    string.erase(std::remove(string.begin(), string.end(), ' '), string.end());
 
     if (string.length() != 36)
         return false;
 
     // Check if valid Base32
-    auto hash = std::array<uint8_t, Address::size>();
-    if (base32_decode(string.data() + 4, 32, hash.data(), hash.size(), BASE32_ALPHABET_NIMIQ) == NULL)
+    Data hash;
+    if (!Base32::decode(string.data() + 4, hash, BASE32_ALPHABET_NIMIQ)) {
         return false;
+    }
 
     // Calculate checksum
     int check = 0;
@@ -54,7 +53,7 @@ bool Address::isValid(const std::string& stringPadded) {
     int check_is;
     try {
         check_is = std::stoi(string.substr(2, 2));
-    } catch (const std::invalid_argument &ia) {
+    } catch (const std::invalid_argument& ia) {
         return false;
     }
 
@@ -65,28 +64,37 @@ bool Address::isValid(const std::string& stringPadded) {
 }
 
 Address::Address(const std::string& stringPadded) {
-    assert(isValid(stringPadded));
+    if (!isValid(stringPadded)) {
+        throw std::invalid_argument("Invalid address data");
+    }
 
     std::string string = stringPadded;
 
     // Remove spaces
-    string.erase(
-        std::remove(string.begin(), string.end(), ' '),
-        string.end());
+    string.erase(std::remove(string.begin(), string.end(), ' '), string.end());
 
     // Decode address
     auto base32 = string.substr(4, 32);
-    base32_decode(base32.data(), base32.length(), bytes.data(), bytes.size(), BASE32_ALPHABET_NIMIQ);
+    Data data;
+    if (!Base32::decode(base32, data, BASE32_ALPHABET_NIMIQ)) {
+        throw std::invalid_argument("Invalid address data");
+    }
+    if (data.size() != size) {
+        throw std::invalid_argument("Invalid address data");
+    }
+    std::copy(data.begin(), data.end(), bytes.data());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    assert(Address::isValid(data));
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid address data");
+    }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey &publicKey) {
+Address::Address(const PublicKey& publicKey) {
     auto hash = std::array<uint8_t, 32>();
-    blake2b(publicKey.bytes.data() + 1, 32, hash.data(), hash.size());
+    blake2b(publicKey.bytes.data(), 32, hash.data(), hash.size());
     std::copy(hash.begin(), hash.begin() + Address::size, bytes.begin());
 }
 
@@ -97,9 +105,9 @@ std::string Address::string() const {
     int check = 0;
 
     // Calculate Base32 sum
-    auto base32 = std::array<uint8_t, 33>();
-    base32_encode(bytes.begin(), Address::size,
-        reinterpret_cast<char *>(base32.data()), 33, BASE32_ALPHABET_NIMIQ);
+    Data bytesAsData;
+    bytesAsData.assign(bytes.begin(), bytes.end());
+    auto base32 = Base32::encode(bytesAsData, BASE32_ALPHABET_NIMIQ);
 
     for (auto i = 0; i < 32; i += 4) {
         // Add spaces to output
@@ -107,10 +115,10 @@ std::string Address::string() const {
         // Copy Base32 data
         string.append(base32.begin() + i, base32.begin() + i + 4);
         // Progress checksum state
-        check = check_append(check, base32[i+0]);
-        check = check_append(check, base32[i+1]);
-        check = check_append(check, base32[i+2]);
-        check = check_append(check, base32[i+3]);
+        check = check_append(check, base32[i + 0]);
+        check = check_append(check, base32[i + 1]);
+        check = check_append(check, base32[i + 2]);
+        check = check_append(check, base32[i + 3]);
     }
 
     // Finalize checksum
@@ -118,7 +126,7 @@ std::string Address::string() const {
     check = 98 - check;
 
     // Set checksum in address
-    string[2] = '0' + (check / 10);
+    string[2] = '0' + static_cast<uint8_t>((check / 10));
     string[3] = '0' + (check % 10);
 
     return string;
@@ -138,10 +146,7 @@ static inline int check_add(int check, int num) {
         return (check * 10) % 97;
 
     // check = check * 10^(log_10(num))
-    for (
-        int remainder = num;
-        remainder > 0;
-        check *= 10, remainder /= 10
-    );
+    for (int remainder = num; remainder > 0; check *= 10, remainder /= 10)
+        ;
     return (check + num) % 97;
 }

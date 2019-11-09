@@ -6,50 +6,36 @@
 
 #pragma once
 
+#include "../Base58Address.h"
 #include "../Data.h"
 #include "../PublicKey.h"
 
 #include <array>
 #include <string>
 
-namespace TW {
-namespace Tron {
+namespace TW::Tron {
 
-class Address {
-public:
-    /// Number of bytes in an address.
-    static const size_t size = 21;
-
+class Address : public TW::Base58Address<21> {
+  public:
     /// Address prefix.
     static const byte prefix = 0x41;
-
-    /// Address data consisting of a prefix byte followed by the public key hash.
-    std::array<byte, size> bytes;
-
-    /// Determines whether a collection of bytes makes a valid  address.
-    template<typename T>
-    static bool isValid(const T& data) {
-        return data.size() == size;
-    }
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    /// Initializes a  address with a string representation.
-    Address(const std::string& string);
+    /// Initializes an address with a string representation.
+    explicit Address(const std::string& string) : TW::Base58Address<21>(string) {}
 
-    /// Initializes a  address with a collection of bytes.
-    Address(const Data& data);
+    /// Initializes an address with a collection of bytes.
+    explicit Address(const Data& data) : TW::Base58Address<21>(data) {}
 
     /// Initializes a  address with a public key and a prefix.
-    Address(const PublicKey& publicKey);
-
-    /// Returns a string representation of the address.
-    std::string string() const;
+    explicit Address(const PublicKey& publicKey);
 };
 
-static inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
-}
+} // namespace TW::Tron
 
-}} // namespace
+/// Wrapper for C interface.
+struct TWTronAddress {
+    TW::Tron::Address impl;
+};

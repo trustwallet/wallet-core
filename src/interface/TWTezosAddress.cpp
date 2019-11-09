@@ -4,16 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWTezosAddress.h>
-
 #include "../Tezos/Address.h"
 
+#include <TrezorCrypto/ecdsa.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPublicKey.h>
-
-#include <TrezorCrypto/ecdsa.h>
-#include <string.h>
-#include <memory>
+#include <TrustWalletCore/TWTezosAddress.h>
 
 using namespace TW;
 using namespace TW::Tezos;
@@ -27,10 +23,20 @@ bool TWTezosAddressIsValidString(TWString *_Nonnull string) {
     return Address::isValid(*s);
 }
 
+TWString *_Nonnull TWTezosAddressDeriveOriginatedAddress(TWString *_Nonnull operationHash, int operationIndex) {
+    auto s = reinterpret_cast<const std::string*>(operationHash);
+    auto derivedAddress = Address::deriveOriginatedAddress(*s, operationIndex);
+    return TWStringCreateWithUTF8Bytes(derivedAddress.c_str());
+}
+
 struct TWTezosAddress *_Nullable TWTezosAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWTezosAddress{ std::move(address) };
+    try {
+        const auto address = Address(*s);
+        return new TWTezosAddress{ std::move(address) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWTezosAddress *_Nonnull TWTezosAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {

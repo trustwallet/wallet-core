@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package TW.NEAR.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message PublicKey {
+    uint32 key_type = 1;
+    bytes data = 2;
+}
+
+message FunctionCallPermission {
+    bytes allowance = 1; // uint128
+    string receiver_id = 2;
+}
+
+message FullAccessPermission {
+}
+
+message AccessKey {
+    uint64 nonce = 1;
+    oneof permission {
+        FunctionCallPermission function_call = 2;
+        FullAccessPermission full_access = 3;
+    }
+}
+
+message CreateAccount {
+}
+
+message DeployContract {
+    bytes code = 1;
+}
+
+message FunctionCall {
+    bytes method_name = 1;
+    bytes args = 2;
+    uint64 gas = 3;
+    bytes deposit = 4; // uint128
+}
+
+message Transfer {
+    bytes deposit = 1; // uint128
+}
+
+message Stake {
+    bytes stake = 1; // uint128
+    string public_key = 2;
+}
+
+message AddKey {
+    PublicKey public_key = 1;
+    AccessKey access_key = 2;
+}
+
+message DeleteKey {
+    PublicKey public_key = 1;
+}
+
+message DeleteAccount {
+    string beneficiary_id = 1;
+}
+
+message Action {
+    oneof payload {
+        CreateAccount create_account = 1;
+        DeployContract deploy_contract = 2;
+        FunctionCall function_call = 3;
+        Transfer transfer = 4;
+        Stake stake = 5;
+        AddKey add_key = 6;
+        DeleteKey delete_key = 7;
+        DeleteAccount delete_account = 8;
+    }
+}
+
+// Input data necessary to create a signed order.
+message SigningInput {
+    string signer_id = 1;
+    uint64 nonce = 2;
+    string receiver_id = 3;
+    bytes block_hash = 4;
+    repeated Action actions = 5;
+
+    bytes private_key = 6;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed transaction blob
+    bytes signed_transaction = 1;
+}

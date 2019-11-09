@@ -1,4 +1,4 @@
-version = '0.7.0'
+version = '0.10.1'
 
 Pod::Spec.new do |s|
   s.name         = 'TrustWalletCore'
@@ -8,9 +8,9 @@ Pod::Spec.new do |s|
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
 
-  s.ios.deployment_target = '10.0'
+  s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
-  s.swift_version = '4.2'
+  s.swift_version = '5.0'
 
   s.source = {
     git: 'git@github.com:TrustWallet/wallet-core.git',
@@ -129,6 +129,8 @@ Pod::Spec.new do |s|
     "#{protobuf_dir}/src/google/protobuf/wire_format_lite.cc",
     "#{protobuf_dir}/src/google/protobuf/wire_format.cc",
     "#{protobuf_dir}/src/google/protobuf/wrappers.pb.cc",
+    "#{protobuf_dir}/src/google/protobuf/port_def.inc",
+    "#{protobuf_dir}/src/google/protobuf/port_undef.inc",
   s.exclude_files =
     'trezor-crypto/src/rand.c'
   s.public_header_files =
@@ -160,5 +162,5 @@ Pod::Spec.new do |s|
   }
   s.prepare_command = 'tools/install-dependencies && tools/generate-files'
 
-  s.dependency 'SwiftProtobuf', '~> 1.3.0'
+  s.dependency 'SwiftProtobuf', '~> 1.5.0'
 end

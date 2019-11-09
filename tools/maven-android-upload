@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# This script uploads android build to bintray.
+
+set -e
+
+version=`git describe --long --tags | cut -f 1 -d "-"`
+snapshot=$1
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+pushd android
+
+if [ "$snapshot" = true ]; then
+  version=`git rev-parse --short HEAD`"-SNAPSHOT"
+  ./gradlew clean build assembleRelease artifactoryPublish -Pversion="$version"
+else
+  ./gradlew clean build assembleRelease bintrayUpload -Pversion="$version"
+fi
+
+echo "Android build uploaded"

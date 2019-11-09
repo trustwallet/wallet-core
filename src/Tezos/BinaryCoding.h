@@ -8,14 +8,12 @@
 
 #include "../Data.h"
 #include "../PublicKey.h"
+#include "../PrivateKey.h"
 
 #include <string>
 
 using namespace TW;
 
-int base58CheckDecodePrefix(const std::string& input, size_t prefixLength, uint8_t *prefix, uint8_t *output);
-PublicKey parsePublicKey(std::string publicKey);
-std::string bytesToBase58(const uint8_t *data, size_t dataSize);
-std::string base58ToHex(const std::string data, size_t prefixLength, uint8_t *prefix);
-std::string forgeBool(bool input);
-std::string forgePublicKey(PublicKey publicKey);
+PublicKey parsePublicKey(const std::string& publicKey);
+PrivateKey parsePrivateKey(const std::string& privateKey);
+std::string base58ToHex(const std::string& data, size_t prefixLength, uint8_t* prefix);

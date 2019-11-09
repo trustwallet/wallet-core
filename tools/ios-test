@@ -5,5 +5,7 @@
 set -e
 
 pushd swift
-xcrun xcodebuild -workspace TrustWalletCore.xcworkspace -scheme TrustWalletCore -sdk iphonesimulator test
+xcodegen
+pod install
+xcrun xcodebuild -workspace TrustWalletCore.xcworkspace -scheme TrustWalletCore -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11,OS=13.0' test
 popd

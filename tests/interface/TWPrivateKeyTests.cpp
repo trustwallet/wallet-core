@@ -6,7 +6,9 @@
 
 #include "TWTestUtilities.h"
 
+#include "PrivateKey.h"
 #include "PublicKey.h"
+#include "HexCoding.h"
 
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
@@ -22,11 +24,31 @@ TEST(PrivateKeyTests, CreateInvalid) {
     ASSERT_EQ(privateKey.get(), nullptr);
 }
 
+TEST(PrivateKeyTests, AllZeros) {
+    auto bytes = TW::Data(32);
+    auto data = WRAPD(TWDataCreateWithBytes(bytes.data(), bytes.size()));
+    auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(data.get()));
+
+    ASSERT_EQ(privateKey.get(), nullptr);
+}
+
+TEST(PrivateKeyTests, Invalid) {
+    auto bytes = TW::parse_hex("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
+    auto valid = TW::PrivateKey::isValid(bytes, TWCurveSECP256k1);
+
+    auto bytes2 = TW::parse_hex("0000000000000000000000000000000000000000000000000000000000000000");
+    auto valid2 = TW::PrivateKey::isValid(bytes2, TWCurveSECP256k1);
+
+    ASSERT_EQ(valid, false);
+    ASSERT_EQ(valid2, false);
+}
+
 TEST(PrivateKeyTests, IsValid) {
     uint8_t bytes[] = {0xaf, 0xee, 0xfc, 0xa7, 0x4d, 0x9a, 0x32, 0x5c, 0xf1, 0xd6, 0xb6, 0x91, 0x1d, 0x61, 0xa6, 0x5c, 0x32, 0xaf, 0xa8, 0xe0, 0x2b, 0xd5, 0xe7, 0x8e, 0x2e, 0x4a, 0xc2, 0x91, 0x0b, 0xab, 0x45, 0xf5};
     auto data = WRAPD(TWDataCreateWithBytes(bytes, 32));
 
-    ASSERT_TRUE(TWPrivateKeyIsValid(data.get()));
+    ASSERT_TRUE(TWPrivateKeyIsValid(data.get(), TWCurveSECP256k1));
+    ASSERT_TRUE(TWPrivateKeyIsValid(data.get(), TWCurveED25519));
 }
 
 TEST(PrivateKeyTests, PublicKey) {
@@ -45,9 +67,9 @@ TEST(PrivateKeyTests, ClearMemory) {
     uint8_t bytes[] = {0xaf, 0xee, 0xfc, 0xa7, 0x4d, 0x9a, 0x32, 0x5c, 0xf1, 0xd6, 0xb6, 0x91, 0x1d, 0x61, 0xa6, 0x5c, 0x32, 0xaf, 0xa8, 0xe0, 0x2b, 0xd5, 0xe7, 0x8e, 0x2e, 0x4a, 0xc2, 0x91, 0x0b, 0xab, 0x45, 0xf5};
     auto data = WRAPD(TWDataCreateWithBytes(bytes, 32));
     auto privateKey = TWPrivateKeyCreateWithData(data.get());
+    auto ptr = privateKey->impl.bytes.data();
     TWPrivateKeyDelete(privateKey);
 
-    uint8_t *ptr = reinterpret_cast<uint8_t *>(privateKey);
     for (auto i = 0; i < TWPrivateKeySize; i += 1) {
         ASSERT_EQ(ptr[i], 0);
     }

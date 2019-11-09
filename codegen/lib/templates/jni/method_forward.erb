@@ -22,8 +22,13 @@
 <%
   # Method returns a string
   elsif should_return_string(method) -%>
-    jstring result = TWStringJString(<%= call %>, env);
-
+    const jstring resultString = <%= call %>;
+<%  if method.return_type.is_nullable %>
+    if (resultString == NULL) {
+        return NULL;
+    }
+<%  end -%>
+    jstring result = TWStringJString(resultString, env);
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
 <%=   render('jni/instance_release.erb', { entity: entity }) %>

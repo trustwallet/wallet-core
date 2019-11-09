@@ -11,8 +11,7 @@
 
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Ethereum {
+namespace TW::Ethereum {
 
 using boost::multiprecision::uint256_t;
 
@@ -23,7 +22,7 @@ public:
 };
 
 TEST(Signer, Hash) {
-    auto address = Address("0x3535353535353535353535353535353535353535");
+    auto address = parse_hex("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
@@ -39,7 +38,7 @@ TEST(Signer, Hash) {
 }
 
 TEST(Signer, Sign) {
-    auto address = Address("0x3535353535353535353535353535353535353535");
+    auto address = parse_hex("0x3535353535353535353535353535353535353535");
     auto transaction = Transaction(
         /* nonce: */ 9,
         /* gasPrice: */ 20000000000,
@@ -58,4 +57,4 @@ TEST(Signer, Sign) {
     ASSERT_EQ(transaction.s, uint256_t("46948507304638947509940763649030358759909902576025900602547168820602576006531"));
 }
 
-}} // namespace
+} // namespace TW::Ethereum

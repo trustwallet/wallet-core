@@ -4,8 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <string>
-
 #include "OperationList.h"
 #include "Signer.h"
 #include "../Hash.h"
@@ -13,20 +11,26 @@
 
 #include <TrustWalletCore/TWCurve.h>
 
+#include <string>
+
 using namespace TW;
 using namespace TW::Tezos;
 
-std::string Signer::signOperationList(const PrivateKey& privateKey, OperationList operationList) {
-  auto forgedBytes = operationList.forge();
-  return signHexString(privateKey, forgedBytes);
+Data Signer::signOperationList(const PrivateKey& privateKey, const OperationList& operationList) {
+    auto forged = operationList.forge(privateKey);
+    return signData(privateKey, forged);
 }
 
-std::string Signer::signHexString(const PrivateKey& privateKey, std::string forgedBytes) {
-  auto watermark = "03";
-  auto watermarkedForgedBytesHex = parse_hex(watermark + forgedBytes);
-  auto hash = Hash::blake2b(watermarkedForgedBytesHex, 32);
-  TW::PublicKey pk = privateKey.getPublicKey(PublicKeyType::ed25519);
-  Data signature = privateKey.sign(hash, TWCurve::TWCurveEd25519);
+Data Signer::signData(const PrivateKey& privateKey, Data data) {
+    Data watermarkedData = Data();
+    watermarkedData.push_back(0x03);
+    append(watermarkedData, data);
 
-  return forgedBytes + hex(signature);
+    Data hash = Hash::blake2b(watermarkedData, 32);
+    Data signature = privateKey.sign(hash, TWCurve::TWCurveED25519);
+
+    Data signedData = Data();
+    append(signedData, data);
+    append(signedData, signature);
+    return signedData;
 }

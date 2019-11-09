@@ -4,20 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWBitcoinAddress.h>
-
+#include "../Base58.h"
 #include "../Bitcoin/Address.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWBitcoinAddress.h>
+#include <TrustWalletCore/TWPublicKey.h>
 
 #include <cstring>
 
 using namespace TW::Bitcoin;
 
-bool TWBitcoinAddressEqual(struct TWBitcoinAddress lhs, struct TWBitcoinAddress rhs) {
-    return std::memcmp(lhs.bytes, rhs.bytes, Address::size) == 0;
+bool TWBitcoinAddressEqual(struct TWBitcoinAddress *_Nonnull lhs, struct TWBitcoinAddress *_Nonnull rhs) {
+    return lhs->impl == rhs->impl;
 }
 
 bool TWBitcoinAddressIsValid(TWData *_Nonnull data) {
@@ -25,60 +24,48 @@ bool TWBitcoinAddressIsValid(TWData *_Nonnull data) {
 }
 
 bool TWBitcoinAddressIsValidString(TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
+    auto& s = *reinterpret_cast<const std::string*>(string);
+    return Address::isValid(s);
+}
 
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size) {
-        return false;
+struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithString(TWString *_Nonnull string) {
+    auto& s = *reinterpret_cast<const std::string*>(string);
+    try {
+        return new TWBitcoinAddress{ Address(s) };
+    } catch (...) {
+        return nullptr;
     }
-
-    return true;
 }
 
-bool TWBitcoinAddressInitWithString(struct TWBitcoinAddress *_Nonnull address, TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
-
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != Address::size) {
-        return false;
+struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithData(TWData *_Nonnull data) {
+    auto& d = *reinterpret_cast<const TW::Data*>(data);
+    try {
+        return new TWBitcoinAddress{ Address(d) };
+    } catch (...) {
+        return nullptr;
     }
-
-    memcpy(address->bytes, buffer, Address::size);
-    return true;
 }
 
-bool TWBitcoinAddressInitWithData(struct TWBitcoinAddress *_Nonnull address, TWData *_Nonnull data) {
-    if (TWDataSize(data) != Address::size) {
-        return false;
+struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
+    try {
+        return new TWBitcoinAddress{ Address(publicKey->impl, prefix) };
+    } catch (...) {
+        return nullptr;
     }
-    TWDataCopyBytes(data, 0, Address::size, address->bytes);
-    return true;
 }
 
-void TWBitcoinAddressInitWithPublicKey(struct TWBitcoinAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
-    address->bytes[0] = prefix;
-
-    ecdsa_get_pubkeyhash(publicKey->impl.compressed().bytes.data(), HASHER_SHA2_RIPEMD,  address->bytes + 1);
+void TWBitcoinAddressDelete(struct TWBitcoinAddress *_Nonnull address) {
+    delete address;
 }
 
-TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress address) {
-    size_t size = 0;
-    b58enc(nullptr, &size, address.bytes, Address::size);
-    size += 16;
-
-    std::string str(size, '\0');
-    const auto actualSize = base58_encode_check(address.bytes, Address::size, HASHER_SHA2D, &str[0], size);
-    str.erase(str.begin() + actualSize - 1, str.end());
-
-    return TWStringCreateWithUTF8Bytes(str.data());
+TWString *_Nonnull TWBitcoinAddressDescription(struct TWBitcoinAddress *_Nonnull address) {
+    return TWStringCreateWithUTF8Bytes(address->impl.string().c_str());
 }
 
-TWData *_Nonnull TWBitcoinAddressData(struct TWBitcoinAddress address) {
-    return TWDataCreateWithBytes(address.bytes, Address::size);
+uint8_t TWBitcoinAddressPrefix(struct TWBitcoinAddress *_Nonnull address) {
+    return address->impl.bytes[0];
+}
+
+TWData *_Nonnull TWBitcoinAddressKeyhash(struct TWBitcoinAddress *_Nonnull address) {
+    return TWDataCreateWithBytes(address->impl.bytes.data() + 1, Address::size - 1);
 }

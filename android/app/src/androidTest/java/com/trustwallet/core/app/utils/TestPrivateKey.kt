@@ -8,9 +8,7 @@ import wallet.core.jni.PrivateKey
 
 
 class TestPrivateKey {
-    private val validPrivateKeyData = intArrayOf(0xaf, 0xee, 0xfc, 0xa7, 0x4d, 0x9a, 0x32, 0x5c, 0xf1, 0xd6, 0xb6, 0x91, 0x1d, 0x61, 0xa6, 0x5c, 0x32, 0xaf, 0xa8, 0xe0, 0x2b, 0xd5, 0xe7, 0x8e, 0x2e, 0x4a, 0xc2, 0x91, 0x0b, 0xab, 0x45, 0xf5)
-            .map { it.toByte() }
-            .toByteArray()
+    private val validPrivateKeyData = Numeric.hexStringToByteArray("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
 
     init {
         System.loadLibrary("TrustWalletCore")
@@ -25,7 +23,7 @@ class TestPrivateKey {
 
     @Test
     fun testInvalid() {
-        val bytes = byteArrayOf(0xde.toByte(), 0xad.toByte(), 0xbe.toByte(), 0xef.toByte())
+        val bytes = Numeric.hexStringToByteArray("deadbeaf")
         var privateKey: PrivateKey? = null
         try {
             privateKey = PrivateKey(bytes)
@@ -36,18 +34,27 @@ class TestPrivateKey {
 
     @Test
     fun isValidForInvalidData() {
-        val bytes = byteArrayOf(0xde.toByte(), 0xad.toByte(), 0xbe.toByte(), 0xef.toByte())
-        assertFalse(PrivateKey.isValid(bytes))
+        val bytes = Numeric.hexStringToByteArray("deadbeaf")
+        assertFalse(PrivateKey.isValid(bytes, Curve.SECP256K1))
+        assertFalse(PrivateKey.isValid(bytes, Curve.ED25519))
+
+        val bytes2 = Numeric.hexStringToByteArray("0000000000000000000000000000000000000000000000000000000000000000")
+        assertFalse(PrivateKey.isValid(bytes2, Curve.SECP256K1))
+        assertFalse(PrivateKey.isValid(bytes2, Curve.ED25519))
+
+        val bytes3 = Numeric.hexStringToByteArray("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141")
+        assertFalse(PrivateKey.isValid(bytes3, Curve.SECP256K1))
     }
 
     @Test
     fun isValidForValidData() {
-        assertTrue(PrivateKey.isValid(validPrivateKeyData))
+        assertTrue(PrivateKey.isValid(validPrivateKeyData, Curve.SECP256K1))
+        assertTrue(PrivateKey.isValid(validPrivateKeyData, Curve.ED25519))
     }
 
     @Test
     fun testValid() {
-        assertTrue(PrivateKey.isValid(validPrivateKeyData))
+        assertTrue(PrivateKey.isValid(validPrivateKeyData, Curve.SECP256K1))
         var privateKey: PrivateKey? = null
         try {
             privateKey = PrivateKey(validPrivateKeyData)

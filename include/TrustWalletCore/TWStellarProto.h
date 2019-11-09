@@ -8,5 +8,9 @@
 
 #include "TWData.h"
 
+typedef TWData *_Nonnull TW_Stellar_Proto_MemoVoid;
+typedef TWData *_Nonnull TW_Stellar_Proto_MemoText;
+typedef TWData *_Nonnull TW_Stellar_Proto_MemoId;
+typedef TWData *_Nonnull TW_Stellar_Proto_MemoHash;
 typedef TWData *_Nonnull TW_Stellar_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Stellar_Proto_SigningOutput;

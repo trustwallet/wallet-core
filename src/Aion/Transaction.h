@@ -11,36 +11,34 @@
 
 #include <boost/multiprecision/cpp_int.hpp>
 
-namespace TW {
-namespace Aion {
+namespace TW::Aion {
 
 class Transaction {
-public:
-    typedef boost::multiprecision::uint128_t uint128_t;
-    
+  public:
+    using uint128_t = boost::multiprecision::uint128_t;
+
     uint128_t nonce;
     uint128_t gasPrice;
     uint128_t gasLimit;
     Address to;
     uint128_t amount;
     std::vector<uint8_t> payload;
-    
+
     /// Transaction signature.
     std::vector<uint8_t> signature;
-    
-    Transaction() = default;
-    Transaction(uint128_t nonce, uint128_t gasPrice, uint128_t gasLimit, Address to, uint128_t amount, const std::vector<uint8_t>& payload)
-    : nonce(nonce)
-    , gasPrice(gasPrice)
-    , gasLimit(gasLimit)
-    , to(to)
-    , amount(amount)
-    , payload(payload)
-    {}
-    
-public:
+
+    Transaction(uint128_t nonce, uint128_t gasPrice, uint128_t gasLimit, Address to,
+                uint128_t amount, Data payload)
+        : nonce(std::move(nonce))
+        , gasPrice(std::move(gasPrice))
+        , gasLimit(std::move(gasLimit))
+        , to(std::move(to))
+        , amount(std::move(amount))
+        , payload(std::move(payload)) {}
+
+  public:
     /// Encodes the transaction.
     Data encode() const noexcept;
 };
 
-}} // namespace
+} // namespace TW::Aion

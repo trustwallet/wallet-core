@@ -1,11 +1,13 @@
-#include <TrustWalletCore/TWStellarAddress.h>
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
 
 #include "../Stellar/Address.h"
 
 #include <TrustWalletCore/TWPublicKey.h>
-
-#include <string.h>
-#include <memory>
+#include <TrustWalletCore/TWStellarAddress.h>
 
 using namespace TW;
 using namespace TW::Stellar;
@@ -21,13 +23,12 @@ bool TWStellarAddressIsValidString(TWString *_Nonnull string) {
 
 struct TWStellarAddress *_Nullable TWStellarAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
-    const auto address = Address(*s);
-    return new TWStellarAddress{ std::move(address) };
-}
-
-struct TWStellarAddress *_Nullable TWStellarAddressCreateWithData(TWData *_Nonnull data) {
-    auto d = reinterpret_cast<const std::vector<uint8_t>*>(data);
-    return new TWStellarAddress{ Address(*d) };
+    try {
+        const auto address = Address(*s);
+        return new TWStellarAddress{ std::move(address) };
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 struct TWStellarAddress *_Nonnull TWStellarAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
@@ -44,5 +45,5 @@ TWString *_Nonnull TWStellarAddressDescription(struct TWStellarAddress *_Nonnull
 }
 
 TWData *_Nonnull TWStellarAddressKeyHash(struct TWStellarAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::size);
+    return TWDataCreateWithBytes(address->impl.bytes.data(), address->impl.bytes.size());
 }

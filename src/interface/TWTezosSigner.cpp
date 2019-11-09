@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWTezosSigner.h>
 
 #include "../Tezos/BinaryCoding.h"
@@ -12,46 +14,23 @@
 
 using namespace TW;
 using namespace TW::Tezos;
+using namespace TW::Tezos::Proto;
 
 TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    auto operationList = OperationList(input.operation_list().branch());
-    for (auto& operationProto : input.operation_list().operations()) {
-        if (operationProto.has_reveal_operation_data()) {
-            auto source = Address(operationProto.source());
-            auto publicKey = parsePublicKey(operationProto.reveal_operation_data().public_key());
-            auto operation = Transaction(source,
-                                         operationProto.fee(),
-                                         operationProto.counter(),
-                                         operationProto.gas_limit(),
-                                         operationProto.storage_limit(),
-                                         0,
-                                         publicKey,
-                                         operationtype::REVEAL);
-            operationList.add_operation(operation);
-        } else {
-            auto source = Address(operationProto.source());
-            auto destination = Address(operationProto.transaction_operation_data().destination());
-            auto operation = Transaction(source,
-                                         operationProto.fee(),
-                                         operationProto.counter(),
-                                         operationProto.gas_limit(),
-                                         operationProto.storage_limit(),
-                                         operationProto.transaction_operation_data().amount(),
-                                         destination,
-                                         operationtype::TRANSACTION);
-            operationList.add_operation(operation);
-        }
+    auto operationList = TW::Tezos::OperationList(input.operation_list().branch());
+    for (TW::Tezos::Proto::Operation operation : input.operation_list().operations()) {
+      operationList.addOperation(operation);
     }
 
     auto signer = Signer();
     PrivateKey key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto signedBytesHex = signer.signOperationList(key, operationList);
+    Data signedBytes = signer.signOperationList(key, operationList);
 
     auto protoOutput = Proto::SigningOutput();
-    protoOutput.set_signed_bytes(signedBytesHex);
+    protoOutput.set_signed_bytes(signedBytes.data(), signedBytes.size());
     auto serialized = protoOutput.SerializeAsString();
 
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());

@@ -13,3 +13,19 @@ lib/json
 lib/protobuf
 
 .idea/
+.vscode/
+
+# Generated files
+jni/cpp/generated
+jni/java
+swift/Sources/Generated
+src/Generated
+include/TrustWalletCore/TWHRP.h
+
+# Code coverage files
+coverage.info
+coverage/
+
+cmake-build-debug/
+.cquery_cache/
+.cxx/

@@ -8,15 +8,7 @@ import XCTest
 import TrustWalletCore
 
 class ZcoinTests: XCTestCase {
-    let zcoin = Zcoin()
-
-    func testWIF() {
-        let wif = "YAWpCGY26oVprEs8gqEAcBmJYZKU9PxbjE39CwumegK248fPn5To"
-        let privKey = PrivateKey(wif: wif)!
-        let pubKey = privKey.getPublicKeySecp256k1(compressed: true)
-
-        XCTAssertEqual(pubKey.data.hexString, "025bb27ffa8dde90ea269e591fcf93e01e58a31077d76c92924cb42c7c7ea39090")
-    }
+    let zcoin = CoinType.zcoin
 
     func testValidAddresses() {
         XCTAssertTrue(zcoin.validate(address: "a4YtT82mWWxHZhLmdx7e5aroW92dqJoRs3"))
@@ -31,7 +23,7 @@ class ZcoinTests: XCTestCase {
             "Xm1iDLBP5tdxTxc6t7uJBCVjC4L2A5vB2J",
             "TKjdnbJxP4yHeLTHZ86DGnFFY6QhTjuBv2",
             ] {
-                XCTAssertFalse(zcoin.validate(address: addr))
+            XCTAssertFalse(zcoin.validate(address: addr))
         }
     }
 }

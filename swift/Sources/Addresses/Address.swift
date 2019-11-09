@@ -7,14 +7,8 @@
 import Foundation
 
 public protocol Address: CustomStringConvertible {
-    /// Validates that the raw data is a valid address.
-    static func isValid(data: Data) -> Bool
-
     /// Validates that the string is a valid address.
     static func isValidString(string: String) -> Bool
-
-    /// Raw representation of the address.
-    var data: Data { get }
 
     /// Creates a address from a string representation.
     init?(string: String)

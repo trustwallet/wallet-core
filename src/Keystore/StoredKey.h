@@ -11,54 +11,67 @@
 #include "../Data.h"
 #include "../HDWallet.h"
 
-#include <nlohmann/json.hpp>
 #include <TrustWalletCore/TWCoinType.h>
+#include <nlohmann/json.hpp>
 
 #include <optional>
 #include <string>
 
-namespace TW {
-namespace Keystore {
+namespace TW::Keystore {
 
-/// An stored key can be either a private key or a mnemonic phrase for a HD wallet.
-enum class StoredKeyType {
-    privateKey,
-    mnemonicPhrase,
-    watchOnly
-};
+/// An stored key can be either a private key or a mnemonic phrase for a HD
+/// wallet.
+enum class StoredKeyType { privateKey, mnemonicPhrase };
 
 /// Represents a key stored as an encrypted file.
 struct StoredKey {
     /// Type of key stored.
     StoredKeyType type;
 
-    /// Encrypted payload.
-    EncryptionParameters payload;
-
     /// Unique identifier.
     std::optional<std::string> id;
+
+    /// Name.
+    std::string name;
+
+    /// Encrypted payload.
+    EncryptionParameters payload;
 
     /// Active accounts.
     std::vector<Account> accounts;
 
     /// Initializes a `StoredKey` with a type and an encrypted payload.
-    StoredKey(StoredKeyType type, EncryptionParameters payload);
+    StoredKey(StoredKeyType type, std::string name, EncryptionParameters payload);
 
-    /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
+    /// Initializes a `StoredKey` with a type, an encryption password, and
+    /// unencrypted data.
     ///
-    /// This contstructor will encrypt the provided data with default encryption parameters.
-    StoredKey(StoredKeyType type, const std::string& password, Data data);
+    /// This contstructor will encrypt the provided data with default encryption
+    /// parameters.
+    StoredKey(StoredKeyType type, std::string name, const std::string& password, Data data);
 
     /// Returns the HDWallet for this key.
     ///
-    /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase`.
+    /// @throws std::invalid_argument if this key is of a type other than
+    /// `mnemonicPhrase`.
     HDWallet wallet(const std::string& password);
 
-    /// Returns the account for a specific coin, creating it if necessary.
+    /// Returns the account for a specific coin, creating it if necessary and
+    /// the provided wallet is not `nullptr`.
+    const Account* account(TWCoinType coin, const HDWallet* wallet);
+
+    /// Returns the account for a specific coin if it exists.
+    const Account* account(TWCoinType coin) const;
+    
+    /// Remove the account for a specific coin
+    void removeAccount(TWCoinType coin);
+    
+    /// Returns the private key for a specific coin, creating an account if
+    /// necessary.
     ///
-    /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase` and an account
-    /// other than the default is requested.
-    const Account& account(TWCoinType coin, const std::string& password);
+    /// @throws std::invalid_argument if this key is of a type other than
+    /// `mnemonicPhrase` and a coin other than the default is requested.
+    const PrivateKey privateKey(TWCoinType coin, const std::string& password);
 
     /// Loads and decrypts a stored key from a file.
     ///
@@ -77,9 +90,15 @@ struct StoredKey {
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
+
+    /// Fills in all empty and invalid addresses.
+    ///
+    /// Use to fix legacy wallets with invalid address data. This method needs
+    /// the encryption password to re-derive addresses from private keys.
+    void fixAddresses(const std::string& password);
 };
 
-}} // namespace
+} // namespace TW::Keystore
 
 /// Wrapper for C interface.
 struct TWStoredKey {

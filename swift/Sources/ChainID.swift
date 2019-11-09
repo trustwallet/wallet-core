@@ -13,4 +13,5 @@ public enum ChainID: UInt32 {
     case veChain = 74
     case thunderToken = 18
     case tomoChain = 88
+    case waves = 5741564
 }

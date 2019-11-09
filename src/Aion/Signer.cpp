@@ -14,12 +14,12 @@ using namespace TW::Aion;
 void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) noexcept {
     auto encoded = transaction.encode();
     auto hashData = Hash::blake2b(encoded, 32);
-    auto hashSignature = privateKey.sign(hashData, TWCurveEd25519);
-    auto publicKeyData = privateKey.getPublicKey(PublicKeyType::ed25519).bytes;
-    
+    auto hashSignature = privateKey.sign(hashData, TWCurveED25519);
+    auto publicKeyData = privateKey.getPublicKey(TWPublicKeyTypeED25519).bytes;
+
     // Aion signature = pubKeyBytes + signatureBytes
-    Data result(publicKeyData.begin() + 1, publicKeyData.end());
+    Data result(publicKeyData.begin(), publicKeyData.end());
     result.insert(result.end(), hashSignature.begin(), hashSignature.end());
-    
+
     transaction.signature = result;
 }

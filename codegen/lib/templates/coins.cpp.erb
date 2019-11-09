@@ -1,0 +1,212 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+#include "Coin.h"
+#include <TrustWalletCore/TWCoinTypeConfiguration.h>
+
+using namespace TW;
+
+TWBlockchain TW::blockchain(TWCoinType coin) {
+    switch (coin) {
+<% coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return TWBlockchain<%= format_name(coin['blockchain']) %>;
+<% end -%>
+    }
+}
+
+TWPurpose TW::purpose(TWCoinType coin) {
+    switch (coin) {
+<% coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return TWPurposeBIP<%= /^m\/(\d+)'?(\/\d+'?)+$/.match(coin['derivationPath'])[1] %>;
+<% end -%>
+    }
+}
+
+TWCurve TW::curve(TWCoinType coin) {
+    switch (coin) {
+<% coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return TWCurve<%= format_name(coin['curve']) %>;
+<% end -%>
+    }
+}
+
+TWHDVersion TW::xpubVersion(TWCoinType coin) {
+    switch (coin) {
+<% coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+<%   if coin['xpub'].nil? -%>
+        return TWHDVersionNone;
+<%   else -%>
+        return TWHDVersion<%= format_name(coin['xpub']) %>;
+<%   end -%>
+<% end -%>
+    }
+}
+
+TWHDVersion TW::xprvVersion(TWCoinType coin) {
+    switch (coin) {
+<% coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+<%   if coin['xprv'].nil? -%>
+        return TWHDVersionNone;
+<%   else -%>
+        return TWHDVersion<%= format_name(coin['xprv']) %>;
+<%   end -%>
+<% end -%>
+    }
+}
+
+DerivationPath TW::derivationPath(TWCoinType coin) {
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return DerivationPath("<%= coin['derivationPath'] %>");
+<% end -%>
+    }
+}
+
+enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return TWPublicKeyType<%= format_name(coin['publicKeyType']) %>;
+<% end -%>
+    }
+}
+
+byte TW::staticPrefix(TWCoinType coin) {
+    switch (coin) {
+<%  coins.select{ |coin| coin.has_key?('staticPrefix') }.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return <%= coin['staticPrefix'] %>;
+<% end -%>
+    default: return 0;
+    }
+}
+
+byte TW::p2pkhPrefix(TWCoinType coin) {
+    switch (coin) {
+<%  coins.select{ |coin| coin.has_key?('p2pkhPrefix') }.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return <%= coin['p2pkhPrefix'] %>;
+<% end -%>
+    default: return 0;
+    }
+}
+
+byte TW::p2shPrefix(TWCoinType coin) {
+    switch (coin) {
+<%  coins.select{ |coin| coin.has_key?('p2shPrefix') }.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return <%= coin['p2shPrefix'] %>;
+<% end -%>
+    default: return 0;
+    }
+}
+
+enum TWHRP TW::hrp(TWCoinType coin) {
+    switch (coin) {
+<%  coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return TWHRP<%= format_name(coin['name']) %>;
+<% end -%>
+    default: return TWHRPUnknown;
+    }
+}
+
+Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+<%   if coin['publicKeyHasher'].nil? -%>
+        return Hash::sha256ripemd;
+<%   else -%>
+        return Hash::<%= coin['publicKeyHasher'] %>;
+<%   end -%>
+<% end -%>
+    }
+}
+
+Hash::Hasher TW::base58Hasher(TWCoinType coin) {
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+<%   if coin['base58Hasher'].nil? -%>
+        return Hash::sha256d;
+<%   else -%>
+        return Hash::<%= coin['base58Hasher'] %>;
+<%   end -%>
+<% end -%>
+    }
+}
+
+TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {
+    std::string string;
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        string = "<%= coin['symbol'] %>";
+        break;
+<% end -%>
+    }
+    return TWStringCreateWithUTF8Bytes(string.c_str());
+}
+
+int TWCoinTypeConfigurationGetDecimals(enum TWCoinType coin) {
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        return <%= coin['decimals'] %>;
+<% end -%>
+    }
+}
+
+TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType coin, TWString *_Nonnull transactionID) {
+    std::string url;
+    std::string txId = TWStringUTF8Bytes(transactionID);
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        url = "<%= coin['explorer'] %>" + txId;
+        break;
+<% end -%>
+    }
+    return TWStringCreateWithUTF8Bytes(url.c_str());
+}
+
+TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
+    std::string string;
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        string = "<%= coin['id'] %>";
+        break;
+<% end -%>
+    }
+    return TWStringCreateWithUTF8Bytes(string.c_str());
+}
+
+TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
+    std::string string;
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+<%  if coin['displayName'].nil? -%>
+    string = "<%= coin['name'] %>";
+<%  else -%>
+    string = "<%= coin['displayName'] %>";
+<%  end -%>
+        break;
+<% end -%>
+    }
+    return TWStringCreateWithUTF8Bytes(string.c_str());
+}

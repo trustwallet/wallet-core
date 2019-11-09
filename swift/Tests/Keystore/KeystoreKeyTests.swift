@@ -38,7 +38,7 @@ class KeystoreKeyTests: XCTestCase {
 
     func testCreateWallet() {
         let privateKeyData = Data(hexString: "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266")!
-        let key = StoredKey.importPrivateKey(privateKey: privateKeyData, password: "password", coin: .ethereum)
+        let key = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "name", password: "password", coin: .ethereum)!
         let decrypted = key.decryptPrivateKey(password: "password")!
 
         XCTAssertEqual(decrypted.hexString, privateKeyData.hexString)
@@ -47,7 +47,7 @@ class KeystoreKeyTests: XCTestCase {
     func testDecodingEthereumAddress() {
         let url = Bundle(for: type(of: self)).url(forResource: "key", withExtension: "json")!
         let key = StoredKey.load(path: url.path)!
-        let account = key.accountForCoin(coin: .ethereum, password: "")!
+        let account = key.accountForCoin(coin: .ethereum, wallet: nil)!
 
         XCTAssertEqual(account.address.description, "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b")
     }
@@ -55,7 +55,7 @@ class KeystoreKeyTests: XCTestCase {
     func testDecodingBitcoinAddress() {
         let url = Bundle(for: type(of: self)).url(forResource: "key_bitcoin", withExtension: "json")!
         let key = StoredKey.load(path: url.path)!
-        let account = key.accountForCoin(coin: .bitcoin, password: "")!
+        let account = key.accountForCoin(coin: .bitcoin, wallet: nil)!
 
         XCTAssertEqual(account.address.description, "3PWazDi9n1Hfyq9gXFxDxzADNL8RNYyK2y")
     }

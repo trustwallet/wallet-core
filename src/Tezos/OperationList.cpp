@@ -5,37 +5,51 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "BinaryCoding.h"
+#include "Forging.h"
 #include "HexCoding.h"
 #include "OperationList.h"
-#include "Transaction.h"
+#include "../Base58.h"
+#include "../proto/Tezos.pb.h"
 
 using namespace TW;
 using namespace TW::Tezos;
+using namespace TW::Tezos::Proto;
 
-OperationList::OperationList(const std::string& str) {
+TW::Tezos::OperationList::OperationList(const std::string& str) {
     branch = str;
 }
 
-void OperationList::add_operation(Transaction transaction) {
-    operation_list.push_back(transaction);
+void TW::Tezos::OperationList::addOperation(const Operation& operation) {
+    operation_list.push_back(operation);
 }
 
 // Forge the given branch to a hex encoded string.
-std::string OperationList::forgeBranch() const {
-    size_t capacity = 128;
-    uint8_t decoded[capacity];
-    size_t prefixLength = 2;
-    uint8_t prefix[] = {1, 52};
-
-    int decodedLength = base58CheckDecodePrefix(branch, prefixLength, prefix, decoded);
-    return hex(decoded, decoded + decodedLength);
+Data TW::Tezos::OperationList::forgeBranch() const {
+    std::array<byte, 2> prefix = {1, 52};
+    const auto decoded = Base58::bitcoin.decodeCheck(branch);
+    if (decoded.size() != 34 || !std::equal(prefix.begin(), prefix.end(), decoded.begin())) {
+        throw std::invalid_argument("Invalid branch for forge");
+    }
+    auto forged = Data();
+    forged.insert(forged.end(), decoded.begin() + prefix.size(), decoded.end());
+    return forged;
 }
 
-std::string OperationList::forge() const {
-    std::string result = forgeBranch();
+Data TW::Tezos::OperationList::forge(const PrivateKey& privateKey) const {
+    auto forged = forgeBranch();
 
     for (auto operation : operation_list) {
-      result += operation.forge();
+        // If it's REVEAL operation, inject the public key if not specified
+        if (operation.kind() == Tezos::Proto::Operation::REVEAL && operation.has_reveal_operation_data()) {
+            auto revealOperationData = operation.mutable_reveal_operation_data();
+            if (revealOperationData->public_key().empty()) {
+                auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+                revealOperationData->set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
+            }
+        }
+
+        append(forged, forgeOperation(operation));
     }
-    return result;
+
+    return forged;
 }

@@ -4,22 +4,22 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWZcashTAddress.h>
-
+#include "../Base58.h"
 #include "../PublicKey.h"
+#include "../Zcash/TAddress.h"
 
-#include <TrustWalletCore/TWPublicKey.h>
-#include <TrezorCrypto/base58.h>
 #include <TrezorCrypto/ecdsa.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWZcashTAddress.h>
 
 #include <cstring>
 #include <string>
 #include <vector>
 
-using TW::PublicKey;
+using namespace TW;
 
-bool TWZcashTAddressEqual(struct TWZcashTAddress lhs, struct TWZcashTAddress rhs) {
-    return std::memcmp(lhs.bytes, rhs.bytes, TWZcashTAddressSize) == 0;
+bool TWZcashTAddressEqual(struct TWZcashTAddress *_Nonnull lhs, struct TWZcashTAddress *_Nonnull rhs) {
+    return lhs->impl == rhs->impl;
 }
 
 bool TWZcashTAddressIsValid(TWData *_Nonnull data) {
@@ -27,65 +27,40 @@ bool TWZcashTAddressIsValid(TWData *_Nonnull data) {
 }
 
 bool TWZcashTAddressIsValidString(TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
+    auto& s = *reinterpret_cast<const std::string*>(string);
+    return Zcash::TAddress::isValid(s);
+}
 
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != TWZcashTAddressSize) {
-        return false;
+struct TWZcashTAddress *_Nullable TWZcashTAddressCreateWithString(TWString *_Nonnull string) {
+    auto& s = *reinterpret_cast<const std::string*>(string);
+    try {
+        return new TWZcashTAddress{ Zcash::TAddress(s) };
+    } catch (...) {
+        return nullptr;
     }
-
-    return true;
 }
 
-bool TWZcashTAddressInitWithString(struct TWZcashTAddress *_Nonnull address, TWString *_Nonnull string) {
-    auto str = TWStringUTF8Bytes(string);
-
-    size_t capacity = 128;
-    uint8_t buffer[capacity];
-
-    int size = base58_decode_check(str, HASHER_SHA2D, buffer, (int)capacity);
-    if (size != TWZcashTAddressSize) {
-        return false;
+struct TWZcashTAddress *_Nullable TWZcashTAddressCreateWithData(TWData *_Nonnull data) {
+    auto& d = *reinterpret_cast<const TW::Data*>(data);
+    try {
+        return new TWZcashTAddress{ Zcash::TAddress(d) };
+    } catch (...) {
+        return nullptr;
     }
-
-    memcpy(address->bytes, buffer, TWZcashTAddressSize);
-    return true;
 }
 
-bool TWZcashTAddressInitWithData(struct TWZcashTAddress *_Nonnull address, TWData *_Nonnull data) {
-    if (TWDataSize(data) != TWZcashTAddressSize) {
-        return false;
+struct TWZcashTAddress *_Nullable TWZcashTAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
+    try {
+        return new TWZcashTAddress{ Zcash::TAddress(publicKey->impl, prefix) };
+    } catch (...) {
+        return nullptr;
     }
-    TWDataCopyBytes(data, 0, TWZcashTAddressSize, address->bytes);
-    return true;
 }
 
-bool TWZcashTAddressInitWithPublicKey(struct TWZcashTAddress *_Nonnull address, struct TWPublicKey *_Nonnull publicKey, uint8_t prefix) {
-    // Zcash taddr has two prefix bytes, the first byte is the same 0x1c -> t
-    address->bytes[0] = 0x1c;
-    address->bytes[1] = prefix;
-
-    auto compressed = publicKey->impl.compressed();
-    ecdsa_get_pubkeyhash(compressed.bytes.data(), HASHER_SHA2_RIPEMD,  address->bytes + 2);
-
-    return true;
+void TWZcashTAddressDelete(struct TWZcashTAddress *_Nonnull address) {
+    delete address;
 }
 
-TWString *_Nonnull TWZcashTAddressDescription(struct TWZcashTAddress address) {
-    size_t size = 0;
-    b58enc(nullptr, &size, address.bytes, TWZcashTAddressSize);
-    size += 16;
-
-    std::string str(size, '\0');
-    const auto actualSize = base58_encode_check(address.bytes, TWZcashTAddressSize, HASHER_SHA2D, &str[0], size);
-    str.erase(str.begin() + actualSize - 1, str.end());
-
-    return TWStringCreateWithUTF8Bytes(str.data());
-}
-
-TWData *_Nonnull TWZcashTAddressData(struct TWZcashTAddress address) {
-    return TWDataCreateWithBytes(address.bytes, TWZcashTAddressSize);
+TWString *_Nonnull TWZcashTAddressDescription(struct TWZcashTAddress *_Nonnull address) {
+    return TWStringCreateWithUTF8Bytes(address->impl.string().c_str());
 }

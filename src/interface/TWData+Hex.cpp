@@ -7,8 +7,6 @@
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWString.h>
 
-#include <string.h>
-
 static inline uint8_t value(uint8_t c) {
     if (c >= '0' && c <= '9')
         return c - '0';
@@ -26,7 +24,7 @@ TWData *TWDataCreateWithHexString(const TWString *hex) {
     if (TWStringSize(hex) >= 2 && TWStringGet(hex, 0) == '0' && TWStringGet(hex, 1) == 'x') {
         stringIndex += 2;
     }
-    
+
     const size_t count = (TWStringSize(hex) - stringIndex + 1) / 2;
     TWData *data = TWDataCreateWithSize(count);
 
@@ -42,7 +40,7 @@ TWData *TWDataCreateWithHexString(const TWString *hex) {
         uint8_t low = value(TWStringGet(hex, stringIndex));
         stringIndex += 1;
 
-        TWDataSet(data, dataIndex, (high << 4) | low);
+        TWDataSet(data, dataIndex, static_cast<uint8_t>((high << 4) | low));
         dataIndex += 1;
     }
 

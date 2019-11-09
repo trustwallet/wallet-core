@@ -4,9 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Transaction.h"
-
 #include "RLP.h"
+#include "Transaction.h"
 #include "../Ethereum/RLP.h"
 
 using namespace TW;
@@ -19,7 +18,8 @@ Data Transaction::encode() const noexcept {
     append(encoded, Ethereum::RLP::encode(to.bytes));
     append(encoded, Ethereum::RLP::encode(amount));
     append(encoded, Ethereum::RLP::encode(payload));
-    append(encoded, Ethereum::RLP::encode(uint128_t(155157377101))); // Huge timestamp
+    append(encoded,
+           Ethereum::RLP::encode(uint128_t(155157377101))); // Huge timestamp
     append(encoded, RLP::encodeLong(gasLimit));
     append(encoded, RLP::encodeLong(gasPrice));
     append(encoded, RLP::encodeLong(uint128_t(1))); // Aion transaction type

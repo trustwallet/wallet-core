@@ -1,0 +1,60 @@
+#!/usr/bin/env ruby
+
+# Sript for creating/updating CoinType unit tests, based on the coins.json file
+# It is intended as a one-time or occasional generation, not every time! (that way the tests would have zero added value)
+# Usage: codegen/bin/cointests
+# Files are generated to: tests/<Coin>/TWCoinTypeTests.cpp
+
+require 'erb'
+require 'fileutils'
+require 'json'
+
+# Transforms a coin name to a C++ name
+def self.format_name(n)
+  formatted = n
+  #formatted = formatted.sub(/^([a-z]+)/, &:upcase)
+  formatted = formatted.sub(/\s/, '')
+  formatted
+end
+
+# Transforms number to hex
+def self.to_hex(i)
+  hex = i.to_i().to_s(16)
+  hex
+end
+
+# Display name, or name if not specified
+def display_name(coin)
+  name = coin['displayName']
+  if name == nil
+    name = coin['name']
+  end
+  name
+end
+
+def self.coin_type(path)
+  path.split('/')[2].chomp("'")
+end
+
+json_string = File.read('coins.json')
+coins = JSON.parse(json_string).sort_by { |x| x['name'] }
+coins_md = coins.sort_by { |x| Integer(coin_type(x['derivationPath'])) }
+
+erbs = [
+  {'template' => 'TWCoinTypeTests.cpp.erb', 'folder' => 'tests/interface', 'file' => 'TWCoinTypeTests.cpp'}
+]
+
+templateFile = 'TWCoinTypeTests.cpp.erb'
+
+coins.each do |coin|
+  path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
+  template = ERB.new(File.read(path), nil, '-')
+  result = template.result(binding)
+
+  folder = 'tests/' + format_name(coin['name'])
+  file = 'TWCoinTypeTests.cpp'
+  FileUtils.mkdir_p folder
+  path = File.join(folder, file)
+  File.write(path, result)
+  puts "Generated file " + path
+end

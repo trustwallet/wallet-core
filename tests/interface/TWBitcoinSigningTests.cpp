@@ -15,7 +15,7 @@
 #include "proto/Bitcoin.pb.h"
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBech32Address.h>
+#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWBitcoinTransactionSigner.h>
 #include <TrustWalletCore/TWHash.h>
@@ -77,7 +77,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
 
     // Setup input
     Proto::SigningInput input;
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(335'790'000);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
@@ -161,7 +161,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
 TEST(BitcoinSigning, SignP2WSH) {
     // Setup input
     Proto::SigningInput input;
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(1000);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
@@ -238,14 +238,14 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
 TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     // Setup input
     Proto::SigningInput input;
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(200'000'000);
     input.set_byte_fee(1);
     input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
     input.set_change_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU");
 
     auto utxoKey0 = PrivateKey(parse_hex("eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf"));
-    auto pubKey0 = utxoKey0.getPublicKey(PublicKeyType::secp256k1);
+    auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
     auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
     ASSERT_EQ(hex(utxoPubkeyHash.begin(), utxoPubkeyHash.end()), "79091972186c449eb1ded22b78e40d009bdf0089");
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());

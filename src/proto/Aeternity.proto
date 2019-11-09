@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package TW.Aeternity.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Address of the sender with "ak_" prefix
+    string from_address = 1;
+
+    // Address of the recipient with "ak_" prefix
+    string to_address = 2;
+
+    bytes amount = 3;
+
+    bytes fee = 4;
+
+    // Message, optional
+    string payload = 5;
+
+    // Time to live until block height
+    uint64 ttl = 6;
+
+    uint64 nonce = 7;
+
+    bytes private_key = 8;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes, Base64 with checksum
+    string encoded = 1;
+    // Signature, Base58 with checksum
+    string signature = 2;
+}

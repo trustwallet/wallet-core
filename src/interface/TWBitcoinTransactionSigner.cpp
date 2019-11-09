@@ -4,30 +4,31 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <algorithm>
-#include <TrustWalletCore/TWBitcoinTransactionSigner.h>
 #include "../Bitcoin/TransactionBuilder.h"
 #include "../Bitcoin/TransactionSigner.h"
-
 #include "../Data.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
-#include "../proto/Common.pb.h"
 #include "../proto/Bitcoin.pb.h"
+#include "../proto/Common.pb.h"
+
+#include <TrustWalletCore/TWBitcoinTransactionSigner.h>
+
+#include <algorithm>
 
 using namespace TW::Bitcoin;
 
 struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreate(TW_Bitcoin_Proto_SigningInput data) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     return new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input)) };
 }
 
 struct TWBitcoinTransactionSigner *_Nonnull TWBitcoinTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
     Proto::SigningInput input;
-    input.ParseFromArray(TWDataBytes(data), TWDataSize(data));
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     Proto::TransactionPlan plan;
-    plan.ParseFromArray(TWDataBytes(planData), TWDataSize(planData));
+    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
     return new TWBitcoinTransactionSigner{ TransactionSigner<Transaction>(std::move(input), std::move(plan)) };
 }
 

@@ -13,7 +13,6 @@ using namespace TW;
 using namespace TW::Ripple;
 
 const int NETWORK_PREFIX = 0x53545800;
-const int64_t MAX_ALLOWED_AMOUNT = 100000000000;
 
 Data Transaction::serialize() const {
     auto data = Data();
@@ -23,14 +22,14 @@ Data Transaction::serialize() const {
     encode16BE(uint16_t(TransactionType::payment), data);
     /// "flags"
     encodeType(FieldType::int32, 2, data);
-    encode32BE(flags, data);
+    encode32BE(static_cast<uint32_t>(flags), data);
     /// "sequence"
     encodeType(FieldType::int32, 4, data);
     encode32BE(sequence, data);
     /// "destinationTag"
     if (destination_tag > 0) {
         encodeType(FieldType::int32, 14, data);
-        encode32BE(destination_tag, data);
+        encode32BE(static_cast<uint32_t>(destination_tag), data);
     }
     /// "lastLedgerSequence"
     if (last_ledger_sequence > 0) {
@@ -70,7 +69,7 @@ Data Transaction::getPreImage() const {
 }
 
 Data Transaction::serializeAmount(int64_t amount) {
-    if (amount > MAX_ALLOWED_AMOUNT || amount < 0) {
+    if (amount < 0) {
         return Data();
     }
     auto data = Data();

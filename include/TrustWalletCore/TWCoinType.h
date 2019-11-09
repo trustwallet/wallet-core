@@ -7,7 +7,10 @@
 #pragma once
 
 #include "TWBase.h"
+#include "TWBlockchain.h"
 #include "TWCurve.h"
+#include "TWHDVersion.h"
+#include "TWHRP.h"
 #include "TWPrivateKey.h"
 #include "TWPurpose.h"
 #include "TWString.h"
@@ -19,31 +22,67 @@ TW_EXTERN_C_BEGIN
 /// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0044.md
 TW_EXPORT_ENUM(uint32_t)
 enum TWCoinType {
+    TWCoinTypeAeternity = 457,
+    TWCoinTypeAion = 425,
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
+    TWCoinTypeBravoCoin = 282,
     TWCoinTypeCallisto = 820,
+    TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
+    TWCoinTypeDecred = 42,
+    TWCoinTypeDigiByte = 20,
+    TWCoinTypeDogecoin = 3,
+    TWCoinTypeEOS = 194,
     TWCoinTypeEthereum = 60,
     TWCoinTypeEthereumClassic = 61,
-    TWCoinTypeGo = 6060,
+    TWCoinTypeFIO = 235,
+    TWCoinTypeGoChain = 6060,
+    TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
+    TWCoinTypeIOST = 291,
+    TWCoinTypeIoTeX = 304,
+    TWCoinTypeKin = 2017,
     TWCoinTypeLitecoin = 2,
-    TWCoinTypePoa = 178,
-    TWCoinTypeRipple = 144,
+    TWCoinTypeMonacoin = 22,
+    TWCoinTypeNebulas = 2718,
+    TWCoinTypeNULS = 8964,
+    TWCoinTypeNano = 165,
+    TWCoinTypeNEAR = 397,
+    TWCoinTypeNEO = 888,
+    TWCoinTypeNimiq = 242,
+    TWCoinTypeOntology = 1024,
+    TWCoinTypePOANetwork = 178,
+    TWCoinTypeQtum = 2301,
+    TWCoinTypeXRP = 144,
+    TWCoinTypeSolana = 501,
+    TWCoinTypeSteem = 135,
+    TWCoinTypeStellar = 148,
     TWCoinTypeTezos = 1729,
+    TWCoinTypeTheta = 500,
     TWCoinTypeThunderToken = 1001,
     TWCoinTypeTomoChain = 889,
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
-    TWCoinTypeWanChain = 5718350,
-    TWCoinTypeXDai = 700,
+    TWCoinTypeViacoin = 14,
+    TWCoinTypeWanchain = 5718350,
     TWCoinTypeZcash = 133,
     TWCoinTypeZcoin = 136,
-    TWCoinTypeNimiq = 242,
-    TWCoinTypeStellar = 148,
-    TWCoinTypeAion = 425,
+    TWCoinTypeZilliqa = 313,
+    TWCoinTypeSemux = 7562605,
+    TWCoinTypeZelcash = 19167,
+    TWCoinTypeARK = 111,
+    TWCoinTypeRavencoin = 175,
+    TWCoinTypeWaves = 5741564,
+    TWCoinTypeTerra = 330,
+    TWCoinTypeHarmony = 1023,
+    TWCoinTypeAlgorand = 283,
 };
+
+/// Returns the blockchain for a coin type.
+TW_EXPORT_PROPERTY
+enum TWBlockchain TWCoinTypeBlockchain(enum TWCoinType coin);
 
 /// Returns the purpose for a coin type.
 TW_EXPORT_PROPERTY
@@ -52,6 +91,14 @@ enum TWPurpose TWCoinTypePurpose(enum TWCoinType coin);
 /// Returns the curve that should be used for a coin type.
 TW_EXPORT_PROPERTY
 enum TWCurve TWCoinTypeCurve(enum TWCoinType coin);
+
+/// Returns the xpub HD version that should be used for a coin type.
+TW_EXPORT_PROPERTY
+enum TWHDVersion TWCoinTypeXpubVersion(enum TWCoinType coin);
+
+/// Returns the xprv HD version that should be used for a coin type.
+TW_EXPORT_PROPERTY
+enum TWHDVersion TWCoinTypeXprvVersion(enum TWCoinType coin);
 
 /// Validates an address string.
 TW_EXPORT_METHOD
@@ -63,6 +110,28 @@ TWString *_Nonnull TWCoinTypeDerivationPath(enum TWCoinType coin);
 
 /// Derives the address for a particular coin from the private key.
 TW_EXPORT_METHOD
-TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin, struct TWPrivateKey *_Nonnull privateKey);
+TWString *_Nonnull TWCoinTypeDeriveAddress(enum TWCoinType coin,
+                                           struct TWPrivateKey *_Nonnull privateKey);
+
+/// Derives the address for a particular coin from the public key.
+TW_EXPORT_METHOD
+TWString *_Nonnull TWCoinTypeDeriveAddressFromPublicKey(enum TWCoinType coin,
+                                                        struct TWPublicKey *_Nonnull publicKey);
+
+/// HRP for this coin type
+TW_EXPORT_PROPERTY
+enum TWHRP TWCoinTypeHRP(enum TWCoinType coin);
+
+/// P2PKH prefix for this coin type
+TW_EXPORT_PROPERTY
+uint8_t TWCoinTypeP2pkhPrefix(enum TWCoinType coin);
+
+/// P2SH prefix for this coin type
+TW_EXPORT_PROPERTY
+uint8_t TWCoinTypeP2shPrefix(enum TWCoinType coin);
+
+/// Static prefix for this coin type
+TW_EXPORT_PROPERTY
+uint8_t TWCoinTypeStaticPrefix(enum TWCoinType coin);
 
 TW_EXTERN_C_END

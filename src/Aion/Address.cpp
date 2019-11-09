@@ -17,29 +17,26 @@ bool Address::isValid(const std::string& string) {
 
 Address::Address(const std::string& string) {
     const auto data = parse_hex(string);
-    assert(Address::isValid(data));
-    if (data.size() != size) {
+    if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
-    assert(Address::isValid(data));
-    if (data.size() != size) {
+    if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {
-    Data publicKeyData(publicKey.bytes.begin() + 1, publicKey.bytes.begin() + 33);
+    Data publicKeyData(publicKey.bytes.begin(), publicKey.bytes.end());
     auto hash = TW::Hash::blake2b(publicKeyData, size);
     std::copy(hash.end() - size, hash.end(), bytes.begin());
     bytes[0] = 0xa0;
 }
 
 std::string Address::string() const {
-    const std::string addressString = "0x";
-    return addressString + hex(bytes);
+    return "0x" + hex(bytes);
 }

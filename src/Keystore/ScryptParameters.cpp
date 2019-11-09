@@ -26,7 +26,8 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
     if ((n & (n - 1)) != 0 || n < 2) {
         return ScryptValidationError::invalidCostFactor;
     }
-    if ((r > std::numeric_limits<uint32_t>::max() / 128 / p) || (n > std::numeric_limits<uint32_t>::max() / 128 / r)) {
+    if ((r > std::numeric_limits<uint32_t>::max() / 128 / p) ||
+        (n > std::numeric_limits<uint32_t>::max() / 128 / r)) {
         return ScryptValidationError::overflow;
     }
     return {};
@@ -37,19 +38,22 @@ std::optional<ScryptValidationError> ScryptParameters::validate() const {
 // -----------------
 
 namespace CodingKeys {
-    static const auto salt = "salt";
-    static const auto desiredKeyLength = "dklen";
-    static const auto n = "n";
-    static const auto p = "p";
-    static const auto r = "r";
-}
+static const auto salt = "salt";
+static const auto desiredKeyLength = "dklen";
+static const auto n = "n";
+static const auto p = "p";
+static const auto r = "r";
+} // namespace CodingKeys
 
 ScryptParameters::ScryptParameters(const nlohmann::json& json) {
     salt = parse_hex(json[CodingKeys::salt].get<std::string>());
     desiredKeyLength = json[CodingKeys::desiredKeyLength];
-    n = json[CodingKeys::n];
-    p = json[CodingKeys::p];
-    r = json[CodingKeys::r];
+    if (json.count(CodingKeys::n) != 0)
+        n = json[CodingKeys::n];
+    if (json.count(CodingKeys::n) != 0)
+        p = json[CodingKeys::p];
+    if (json.count(CodingKeys::n) != 0)
+        r = json[CodingKeys::r];
 }
 
 /// Saves `this` as a JSON object.

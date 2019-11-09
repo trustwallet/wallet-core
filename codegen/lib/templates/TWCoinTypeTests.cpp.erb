@@ -1,0 +1,31 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here MAY BE LOST.
+// Generated one-time (codegen/bin/cointests)
+//
+
+#include "../interface/TWTestUtilities.h"
+#include <TrustWalletCore/TWCoinTypeConfiguration.h>
+#include <gtest/gtest.h>
+
+
+TEST(TW<%= format_name(coin['name']) %>CoinType, TWCoinType) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinType<%= format_name(coin['name']) %>));
+    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinType<%= format_name(coin['name']) %>, txId));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinType<%= format_name(coin['name']) %>));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinType<%= format_name(coin['name']) %>));
+
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinType<%= format_name(coin['name']) %>), <%= coin['decimals'] %>);
+    ASSERT_EQ(TWBlockchain<%= coin['blockchain'] %>, TWCoinTypeBlockchain(TWCoinType<%= format_name(coin['name']) %>));
+    ASSERT_EQ(0x<%= to_hex(coin['p2shPrefix']) %>, TWCoinTypeP2shPrefix(TWCoinType<%= format_name(coin['name']) %>));
+    ASSERT_EQ(0x<%= to_hex(coin['staticPrefix']) %>, TWCoinTypeStaticPrefix(TWCoinType<%= format_name(coin['name']) %>));
+    assertStringsEqual(symbol, "<%= coin['symbol'] %>");
+    assertStringsEqual(txUrl, "<%= coin['explorer'] %>123");
+    assertStringsEqual(id, "<%= coin['id'] %>");
+    assertStringsEqual(name, "<%= display_name(coin) %>");
+}

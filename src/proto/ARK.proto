@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package TW.ARK.Proto;
+option java_package = "wallet.core.jni.proto";
+
+enum TransactionType {
+    Transfer = 0;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Transaction type
+    TransactionType type = 1;
+
+    // Amount to send
+    uint64 amount = 2;
+
+    // Fee
+    uint64 fee = 3;
+
+    // Recipient's address.
+    string to_address = 4;
+
+    // Timestamp
+    uint32 timestamp = 5;
+
+    // Private key.
+    bytes private_key = 6;
+}
+
+message SigningOutput {
+    // JSON-encoded transaction parameters.
+    string encoded = 1;
+
+    // Signature.
+    bytes signature = 2;
+}

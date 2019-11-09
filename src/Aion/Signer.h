@@ -7,28 +7,26 @@
 #pragma once
 
 #include "Transaction.h"
-#include "../PrivateKey.h"
 #include "../Data.h"
 #include "../Hash.h"
+#include "../PrivateKey.h"
 
 #include <cstdint>
 #include <tuple>
 #include <vector>
 
-namespace TW {
-namespace Aion {
+namespace TW::Aion {
 
 /// Helper class that performs Aion transaction signing.
 class Signer {
-public:
-    
+  public:
     Signer() = delete;
-    
+
     /// Signs the given transaction.
     static void sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
 };
 
-}} // namespace
+} // namespace TW::Aion
 
 /// Wrapper for C interface.
 struct TWAionSigner {

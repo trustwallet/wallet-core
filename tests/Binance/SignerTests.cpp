@@ -8,16 +8,13 @@
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "proto/Binance.pb.h"
-#include "Tendermint/Address.h"
+#include "Binance/Address.h"
 #include "Binance/Signer.h"
-#include "Tendermint/Address.h"
 #include "proto/Binance.pb.h"
 
-#include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
 
-namespace TW {
-namespace Binance {
+namespace TW::Binance {
 
 TEST(BinanceSigner, Sign) {
     auto input = Proto::SigningInput();
@@ -31,9 +28,9 @@ TEST(BinanceSigner, Sign) {
     input.set_private_key(key.data(), key.size());
 
     auto& order = *input.mutable_trade_order();
-    auto result = Tendermint::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu");
-    ASSERT_TRUE(result.second);
-    auto keyhash = result.first.keyHash;
+    Binance::Address address;
+    ASSERT_TRUE(Binance::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu", address));
+    auto keyhash = address.getKeyHash();
     order.set_sender(keyhash.data(), keyhash.size());
     order.set_id("BA36F0FAD74D8F41045463E4774F328F4AF779E5-36");
     order.set_symbol("NNB-338_BNB");
@@ -42,7 +39,7 @@ TEST(BinanceSigner, Sign) {
     order.set_price(136350000);
     order.set_quantity(100000000);
     order.set_timeinforce(1);
-    
+
     auto signer = Binance::Signer(std::move(input));
     auto signature = signer.sign();
 
@@ -59,8 +56,8 @@ TEST(BinanceSigner, Build) {
     input.set_private_key(key.data(), key.size());
 
     auto& order = *input.mutable_trade_order();
-    auto address = Tendermint::Address(HRP_BINANCE, parse_hex("b6561dcc104130059a7c08f48c64610c1f6f9064"));
-    auto keyhash = address.keyHash;
+    auto address = Binance::Address(parse_hex("b6561dcc104130059a7c08f48c64610c1f6f9064"));
+    auto keyhash = address.getKeyHash();
     order.set_sender(keyhash.data(), keyhash.size());
     order.set_id("B6561DCC104130059A7C08F48C64610C1F6F9064-11");
     order.set_symbol("BTC-5C4_BNB");
@@ -69,7 +66,7 @@ TEST(BinanceSigner, Build) {
     order.set_price(100000000);
     order.set_quantity(1200000000);
     order.set_timeinforce(1);
-    
+
     auto signer = Binance::Signer(std::move(input));
     auto result = signer.build();
 
@@ -109,10 +106,10 @@ TEST(BinanceSigner, BuildSend) {
     auto& order = *signingInput.mutable_send_order();
 
     auto fromKeyhash = parse_hex("40c2979694bbc961023d1d27be6fc4d21a9febe6");
-    auto fromAddress = Tendermint::Address(HRP_BINANCE, fromKeyhash);
+    auto fromAddress = Binance::Address(fromKeyhash);
 
     auto toKeyhash = parse_hex("88b37d5e05f3699e2a1406468e5d87cb9dcceb95");
-    auto toAddress = Tendermint::Address(HRP_BINANCE, toKeyhash);
+    auto toAddress = Binance::Address(toKeyhash);
 
     auto input = order.add_inputs();
     input->set_address(fromKeyhash.data(), fromKeyhash.size());
@@ -155,11 +152,11 @@ TEST(BinanceSigner, BuildSend2) {
 
     const auto fromWallet = HDWallet("swift slam quote sail high remain mandate sample now stamp title among fiscal captain joy puppy ghost arrow attract ozone situate install gain mean", "");
     const auto fromPrivateKey = fromWallet.getKey(derivationPath);
-    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(PublicKeyType::secp256k1));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
 
     const auto toWallet = HDWallet( "bottom quick strong ranch section decide pepper broken oven demand coin run jacket curious business achieve mule bamboo remain vote kid rigid bench rubber", "");
     const auto toPrivateKey = toWallet.getKey(derivationPath);
-    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(PublicKeyType::secp256k1));
+    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("bnbchain-1000");
@@ -172,12 +169,12 @@ TEST(BinanceSigner, BuildSend2) {
     token.set_amount(100000000000000);
 
     auto input =  Proto::SendOrder::Input();
-    auto fromKeyHash = Tendermint::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromKeyHash = Binance::Address(fromPublicKey).getKeyHash();
     input.set_address(fromKeyHash.data(), fromKeyHash.size());
     *input.add_coins() = token;
 
     auto output =  Proto::SendOrder::Output();
-    auto toKeyHash = Tendermint::Address(HRP_BINANCE, toPublicKey).keyHash;
+    auto toKeyHash = Binance::Address(toPublicKey).getKeyHash();
     output.set_address(toKeyHash.data(), toKeyHash.size());
     *output.add_coins() = token;
 
@@ -204,4 +201,135 @@ TEST(BinanceSigner, BuildSend2) {
     );
 }
 
-}} // namespace
+TEST(BinanceSigner, BuildHTLT) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    const auto toPrivateKey = PrivateKey(parse_hex("851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a"));
+    const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    auto toAddr = Binance::Address(toPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(0);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto token = Proto::SendOrder::Token();
+    token.set_denom("BNB");
+    token.set_amount(100000000);
+
+    auto randomNumberHash =
+            parse_hex("e8eae926261ab77d018202434791a335249b470246a7b02e28c3b2fb6ffad8f3");
+
+    auto &htltOrder = *signingInput.mutable_htlt_order();
+    htltOrder.set_from(fromAddr.data(), fromAddr.size());
+    htltOrder.set_to(toAddr.data(), toAddr.size());
+    htltOrder.set_recipient_other_chain("");
+    htltOrder.set_sender_other_chain("");
+    *htltOrder.add_amount() = token;
+    htltOrder.set_height_span(400);
+    htltOrder.set_expected_income("100000000:BTC-1DC");
+    htltOrder.set_timestamp(1567746273);
+    htltOrder.set_random_number_hash(randomNumberHash.data(), randomNumberHash.size());
+    htltOrder.set_cross_chain(false);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+              "ee01f0625dee0a7ab33f9a240a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e112140153f11d6db7"
+              "e69c7d51e771c697378018fb6c242a20e8eae926261ab77d018202434791a335249b470246a7b02e28c3"
+              "b2fb6ffad8f330e1d1c7eb053a0a0a03424e421080c2d72f42113130303030303030303a4254432d3144"
+              "43489003126c0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f"
+              "6b6a8fc7124051439de2da19fe9fd22137c903cfc5dc87553bf05dca0bb202c0e07c47f9b51269efa272"
+              "43eb7b55888f5384a84ac1eac6d325c830d1be0ed042838e2dc0f6a9180f");
+}
+
+TEST(BinanceSigner, BuildDepositHTLT) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(16);
+    signingInput.set_sequence(0);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto token = Proto::SendOrder::Token();
+    token.set_denom("BTC-1DC");
+    token.set_amount(100000000);
+
+    auto swapID = parse_hex("dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5");
+
+    auto &depositHTLTOrder = *signingInput.mutable_deposithtlt_order();
+    depositHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
+    depositHTLTOrder.set_swap_id(swapID.data(), swapID.size());
+    *depositHTLTOrder.add_amount() = token;
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+              "c001f0625dee0a4c639864960a140153f11d6db7e69c7d51e771c697378018fb6c24120e0a074254432d"
+              "3144431080c2d72f1a20dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5"
+              "126c0a26eb5ae98721038df6960084e20b2d07d50e1422f94105c6241d9f1482a4eb79ce8bfd460f19e4"
+              "12400ca4144c6818e2836d09b4faf3161781d85f9adfc00badb2eaa0953174610a233b81413dafcf8471"
+              "6abad48a4ed3aeb9884d90eb8416eec5d5c0c6930ab60bd01810");
+}
+
+TEST(BinanceSigner, BuildClaimHTLT) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto randomNumber =
+            parse_hex("bda6933c7757d0ca428aa01fb9d0935a231f87bf2deeb9b409cea3f2d580a2cc");
+    auto swapID = parse_hex("dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5");
+
+    auto &claimHTLTOrder = *signingInput.mutable_claimhtlt_order();
+    claimHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
+    claimHTLTOrder.set_swap_id(swapID.data(), swapID.size());
+    claimHTLTOrder.set_random_number(randomNumber.data(), randomNumber.size());
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(
+            hex(data.begin(), data.end()),
+            "d401f0625dee0a5ec16653000a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220dd8fd4719741844d35"
+            "eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e51a20bda6933c7757d0ca428aa01fb9d0935a231f87bf"
+            "2deeb9b409cea3f2d580a2cc126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561a"
+            "ac993dbe0f6b6a8fc71240fa30ba50111aa31d8329dacb6d044c1c7d54f1cb782bc9aa2a50c3fabce02a4579d7"
+            "5b76ca69a9fab11b676d9da66b5af7aa4c9ad3d18e24fffeb16433be39fb180f2001");
+}
+
+TEST(BinanceSigner, BuildRefundHTLT) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto swapID = parse_hex("dd8fd4719741844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5");
+
+    auto &refundHTLTOrder = *signingInput.mutable_refundhtlt_order();
+    refundHTLTOrder.set_from(fromAddr.data(), fromAddr.size());
+    refundHTLTOrder.set_swap_id(swapID.data(), swapID.size());
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+              "b201f0625dee0a3c3454a27c0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e11220dd8fd4719741"
+              "844d35eb35ddbeca9531d5493a8e4667689c55e73c77503dd9e5126e0a26eb5ae9872103a9a55c040c8e"
+              "b8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240c9f36142534d16ec8ce656f8eb73"
+              "70b32206a2d15198b7165acf1e2a18952c9e4570b0f862e1ab7bb868c30781a42c9e3ec0ae08982e8d6c"
+              "91c55b83c71b7b1e180f2001");
+}
+
+} // namespace TW::Binance

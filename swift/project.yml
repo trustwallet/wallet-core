@@ -1,0 +1,237 @@
+name: TrustWalletCore
+options:
+  bundleIdPrefix: com.trustwallet
+  createIntermediateGroups: true
+settings:
+  base:
+    HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/src
+    SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
+    CLANG_CXX_LANGUAGE_STANDARD: gnu++17
+    SWIFT_VERSION: 5.0
+  configs:
+    release:
+      SWIFT_OPTIMIZATION_LEVEL: -Owholemodule
+      SWIFT_COMPILATION_MODE: wholemodule
+targets:
+  TrustWalletCore:
+    type: framework
+    platform: iOS
+    deploymentTarget: "10.0"
+    sources:
+      - path: include
+        headerVisibility: public
+      - path: wallet-core
+        headerVisibility: project
+        excludes:
+        - ".vscode"
+      - Sources
+    dependencies:
+      - target: trezor-crypto
+        link: true
+      - target: protobuf
+        link: true
+      - sdk: libc++.tbd
+    scheme:
+      testTargets:
+        - TrustWalletCoreTests
+      gatherCoverageData: true
+    settings:
+      CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
+    postCompileScripts:
+      - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml
+        name: SwiftLint
+
+  TrustWalletCoreTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Tests]
+    dependencies:
+      - target: TrustWalletCore
+      - sdk: libc++.tbd
+
+  trezor-crypto:
+    type: library.static
+    platform: iOS
+    sources:
+      - trezor-crypto/src/bignum.c
+      - trezor-crypto/src/ecdsa.c
+      - trezor-crypto/src/curves.c
+      - trezor-crypto/src/secp256k1.c
+      - trezor-crypto/src/rand.c
+      - trezor-crypto/src/hmac.c
+      - trezor-crypto/src/bip32.c
+      - trezor-crypto/src/bip39.c
+      - trezor-crypto/src/pbkdf2.c
+      - trezor-crypto/src/base58.c
+      - trezor-crypto/src/base32.c
+      - trezor-crypto/src/address.c
+      - trezor-crypto/src/script.c
+      - trezor-crypto/src/ripemd160.c
+      - trezor-crypto/src/sha2.c
+      - trezor-crypto/src/sha3.c
+      - trezor-crypto/src/hasher.c
+      - trezor-crypto/src/aes/aescrypt.c
+      - trezor-crypto/src/aes/aeskey.c
+      - trezor-crypto/src/aes/aestab.c
+      - trezor-crypto/src/aes/aes_modes.c
+      - trezor-crypto/src/ed25519-donna/curve25519-donna-32bit.c
+      - trezor-crypto/src/ed25519-donna/curve25519-donna-helpers.c
+      - trezor-crypto/src/ed25519-donna/modm-donna-32bit.c
+      - trezor-crypto/src/ed25519-donna/ed25519-donna-basepoint-table.c
+      - trezor-crypto/src/ed25519-donna/ed25519-donna-32bit-tables.c
+      - trezor-crypto/src/ed25519-donna/ed25519-donna-impl-base.c
+      - trezor-crypto/src/ed25519-donna/ed25519.c
+      - trezor-crypto/src/ed25519-donna/curve25519-donna-scalarmult-base.c
+      - trezor-crypto/src/ed25519-donna/ed25519-blake2b.c
+      - trezor-crypto/src/ed25519-donna/ed25519-sha3.c
+      - trezor-crypto/src/ed25519-donna/ed25519-keccak.c
+      - trezor-crypto/src/monero/base58.c
+      - trezor-crypto/src/monero/serialize.c
+      - trezor-crypto/src/monero/xmr.c
+      - trezor-crypto/src/monero/range_proof.c
+      - trezor-crypto/src/blake256.c
+      - trezor-crypto/src/blake2b.c
+      - trezor-crypto/src/blake2s.c
+      - trezor-crypto/src/chacha20poly1305/chacha20poly1305.c
+      - trezor-crypto/src/chacha20poly1305/chacha_merged.c
+      - trezor-crypto/src/chacha20poly1305/poly1305-donna.c
+      - trezor-crypto/src/chacha20poly1305/rfc7539.c
+      - trezor-crypto/src/rc4.c
+      - trezor-crypto/src/nano.c
+      - trezor-crypto/src/nem.c
+      - trezor-crypto/src/cash_addr.c
+      - trezor-crypto/src/memzero.c
+      - trezor-crypto/src/scrypt.c
+      - trezor-crypto/src/ripple/base58.c
+      - trezor-crypto/src/nist256p1.c
+      - trezor-crypto/src/groestl.c
+      - trezor-crypto/src/schnorr.c
+      - trezor-crypto/src/sodium/private/fe_25_5/fe.c
+      - trezor-crypto/src/sodium/private/ed25519_ref10.c
+      - trezor-crypto/src/sodium/private/ed25519_ref10_fe_25_5.c
+      - trezor-crypto/src/sodium/keypair.c
+    settings:
+      GCC_WARN_64_TO_32_BIT_CONVERSION: NO
+
+  protobuf:
+    type: library.static
+    platform: iOS
+    sources:
+      - protobuf/google/protobuf/stubs/bytestream.cc
+      - protobuf/google/protobuf/stubs/bytestream.h
+      - protobuf/google/protobuf/stubs/common.cc
+      - protobuf/google/protobuf/stubs/hash.h
+      - protobuf/google/protobuf/stubs/int128.cc
+      - protobuf/google/protobuf/stubs/int128.h
+      - protobuf/google/protobuf/stubs/map_util.h
+      - protobuf/google/protobuf/stubs/mathutil.h
+      - protobuf/google/protobuf/stubs/status.cc
+      - protobuf/google/protobuf/stubs/status.h
+      - protobuf/google/protobuf/stubs/status_macros.h
+      - protobuf/google/protobuf/stubs/statusor.cc
+      - protobuf/google/protobuf/stubs/statusor.h
+      - protobuf/google/protobuf/stubs/stringpiece.cc
+      - protobuf/google/protobuf/stubs/stringpiece.h
+      - protobuf/google/protobuf/stubs/stringprintf.cc
+      - protobuf/google/protobuf/stubs/stringprintf.h
+      - protobuf/google/protobuf/stubs/structurally_valid.cc
+      - protobuf/google/protobuf/stubs/strutil.cc
+      - protobuf/google/protobuf/stubs/time.cc
+      - protobuf/google/protobuf/stubs/time.h
+      - protobuf/google/protobuf/arena.cc
+      - protobuf/google/protobuf/extension_set.cc
+      - protobuf/google/protobuf/generated_message_util.cc
+      - protobuf/google/protobuf/generated_message_table_driven_lite.h
+      - protobuf/google/protobuf/generated_message_table_driven_lite.cc
+      - protobuf/google/protobuf/implicit_weak_message.cc
+      - protobuf/google/protobuf/message_lite.cc
+      - protobuf/google/protobuf/repeated_field.cc
+      - protobuf/google/protobuf/wire_format_lite.cc
+      - protobuf/google/protobuf/io/coded_stream.cc
+      - protobuf/google/protobuf/io/coded_stream_inl.h
+      - protobuf/google/protobuf/io/strtod.cc
+      - protobuf/google/protobuf/io/zero_copy_stream.cc
+      - protobuf/google/protobuf/io/zero_copy_stream_impl_lite.cc
+      - protobuf/google/protobuf/any.pb.cc
+      - protobuf/google/protobuf/api.pb.cc
+      - protobuf/google/protobuf/stubs/mathlimits.cc
+      - protobuf/google/protobuf/stubs/mathlimits.h
+      - protobuf/google/protobuf/any.cc
+      - protobuf/google/protobuf/descriptor.cc
+      - protobuf/google/protobuf/descriptor_database.cc
+      - protobuf/google/protobuf/descriptor.pb.cc
+      - protobuf/google/protobuf/duration.pb.cc
+      - protobuf/google/protobuf/dynamic_message.cc
+      - protobuf/google/protobuf/empty.pb.cc
+      - protobuf/google/protobuf/extension_set_heavy.cc
+      - protobuf/google/protobuf/field_mask.pb.cc
+      - protobuf/google/protobuf/generated_message_reflection.cc
+      - protobuf/google/protobuf/generated_message_table_driven_lite.h
+      - protobuf/google/protobuf/generated_message_table_driven.cc
+      - protobuf/google/protobuf/map_field.cc
+      - protobuf/google/protobuf/message.cc
+      - protobuf/google/protobuf/reflection_internal.h
+      - protobuf/google/protobuf/reflection_ops.cc
+      - protobuf/google/protobuf/service.cc
+      - protobuf/google/protobuf/source_context.pb.cc
+      - protobuf/google/protobuf/struct.pb.cc
+      - protobuf/google/protobuf/stubs/substitute.cc
+      - protobuf/google/protobuf/stubs/substitute.h
+      - protobuf/google/protobuf/text_format.cc
+      - protobuf/google/protobuf/timestamp.pb.cc
+      - protobuf/google/protobuf/type.pb.cc
+      - protobuf/google/protobuf/unknown_field_set.cc
+      - protobuf/google/protobuf/wire_format.cc
+      - protobuf/google/protobuf/wrappers.pb.cc
+      - protobuf/google/protobuf/io/gzip_stream.cc
+      - protobuf/google/protobuf/io/printer.cc
+      - protobuf/google/protobuf/io/strtod.cc
+      - protobuf/google/protobuf/io/tokenizer.cc
+      - protobuf/google/protobuf/io/zero_copy_stream_impl.cc
+      - protobuf/google/protobuf/compiler/importer.cc
+      - protobuf/google/protobuf/compiler/parser.cc
+      - protobuf/google/protobuf/util/delimited_message_util.cc
+      - protobuf/google/protobuf/util/field_comparator.cc
+      - protobuf/google/protobuf/util/field_mask_util.cc
+      - protobuf/google/protobuf/util/internal/constants.h
+      - protobuf/google/protobuf/util/internal/datapiece.cc
+      - protobuf/google/protobuf/util/internal/datapiece.h
+      - protobuf/google/protobuf/util/internal/default_value_objectwriter.cc
+      - protobuf/google/protobuf/util/internal/default_value_objectwriter.h
+      - protobuf/google/protobuf/util/internal/error_listener.cc
+      - protobuf/google/protobuf/util/internal/error_listener.h
+      - protobuf/google/protobuf/util/internal/expecting_objectwriter.h
+      - protobuf/google/protobuf/util/internal/field_mask_utility.cc
+      - protobuf/google/protobuf/util/internal/field_mask_utility.h
+      - protobuf/google/protobuf/util/internal/json_escaping.cc
+      - protobuf/google/protobuf/util/internal/json_escaping.h
+      - protobuf/google/protobuf/util/internal/json_objectwriter.cc
+      - protobuf/google/protobuf/util/internal/json_objectwriter.h
+      - protobuf/google/protobuf/util/internal/json_stream_parser.cc
+      - protobuf/google/protobuf/util/internal/json_stream_parser.h
+      - protobuf/google/protobuf/util/internal/location_tracker.h
+      - protobuf/google/protobuf/util/internal/mock_error_listener.h
+      - protobuf/google/protobuf/util/internal/object_location_tracker.h
+      - protobuf/google/protobuf/util/internal/object_source.h
+      - protobuf/google/protobuf/util/internal/object_writer.cc
+      - protobuf/google/protobuf/util/internal/object_writer.h
+      - protobuf/google/protobuf/util/internal/protostream_objectsource.cc
+      - protobuf/google/protobuf/util/internal/protostream_objectsource.h
+      - protobuf/google/protobuf/util/internal/protostream_objectwriter.cc
+      - protobuf/google/protobuf/util/internal/protostream_objectwriter.h
+      - protobuf/google/protobuf/util/internal/proto_writer.cc
+      - protobuf/google/protobuf/util/internal/proto_writer.h
+      - protobuf/google/protobuf/util/internal/structured_objectwriter.h
+      - protobuf/google/protobuf/util/internal/type_info.cc
+      - protobuf/google/protobuf/util/internal/type_info.h
+      - protobuf/google/protobuf/util/internal/type_info_test_helper.cc
+      - protobuf/google/protobuf/util/internal/type_info_test_helper.h
+      - protobuf/google/protobuf/util/internal/utility.cc
+      - protobuf/google/protobuf/util/internal/utility.h
+      - protobuf/google/protobuf/util/json_util.cc
+      - protobuf/google/protobuf/util/message_differencer.cc
+      - protobuf/google/protobuf/util/time_util.cc
+      - protobuf/google/protobuf/util/type_resolver_util.cc
+    settings:
+      GCC_WARN_64_TO_32_BIT_CONVERSION: NO
+      OTHER_CFLAGS: -DHAVE_PTHREAD=1

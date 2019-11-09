@@ -18,9 +18,8 @@ enum TWEthereumChainID {
     TWEthereumChainIDCallisto = 820,
     TWEthereumChainIDEthereumClassic = 61,
     TWEthereumChainIDVeChain = 74,
-    TWEthereumChainIDThunderToken = 18,
+    TWEthereumChainIDThunderToken = 108,
     TWEthereumChainIDTomoChain = 88,
-    TWEthereumChainIDXDai = 100,
 };
 
 TW_EXTERN_C_END

@@ -12,8 +12,8 @@
 using namespace TW;
 using namespace TW::Nimiq;
 
-void Signer::sign(const PrivateKey& privateKey, Transaction &transaction) const noexcept {
+void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
     auto preImage = transaction.getPreImage();
-    auto signature = privateKey.sign(preImage, TWCurveEd25519);
+    auto signature = privateKey.sign(preImage, TWCurveED25519);
     std::copy(signature.begin(), signature.end(), transaction.signature.begin());
 }

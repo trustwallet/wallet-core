@@ -16,6 +16,7 @@ using namespace TW::Ethereum;
 TEST(EthereumAddress, Invalid) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_FALSE(Address::isValid("aaeb60f3e94c9b9a09f33669435e7ef1beaed"));
+    ASSERT_FALSE(Address::isValid("fB6916095ca1df60bB79Ce92cE3Ea74c37c5d359"));
 }
 
 TEST(EthereumAddress, EIP55) {
@@ -48,7 +49,7 @@ TEST(EthereumAddress, String) {
 
 TEST(EthereumAddress, FromPrivateKey) {
     const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    const auto publicKey = PublicKey(privateKey.getPublicKey(PublicKeyType::secp256k1Extended));
+    const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended));
     const auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
@@ -56,6 +57,5 @@ TEST(EthereumAddress, FromPrivateKey) {
 
 TEST(EthereumAddress, IsValid) {
     ASSERT_FALSE(Address::isValid("abc"));
-    ASSERT_TRUE(Address::isValid("5aaeb6053f3e94c9b9a09f33669435e7ef1beaed"));
     ASSERT_TRUE(Address::isValid("0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"));
 }

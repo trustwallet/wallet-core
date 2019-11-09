@@ -7,7 +7,7 @@
 import Foundation
 
 /// Coin wallet.
-public final class Wallet: Hashable {
+public final class Wallet: Hashable, Equatable {
     /// Unique wallet identifier.
     public let identifier: String
 
@@ -28,18 +28,47 @@ public final class Wallet: Hashable {
         self.key = key
     }
 
-    /// Returns the only account for non HD-wallets.
+    /// Returns the account for a specific coin.
     ///
     /// - Parameters:
     ///   - password: wallet encryption password
-    ///   - type: blockchain type
+    ///   - coin: coin type
     /// - Returns: the account
     /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
     public func getAccount(password: String, coin: CoinType) throws -> Account {
-        guard let account = key.accountForCoin(coin: coin, password: password) else {
+        let wallet = key.wallet(password: password)
+        guard let account = key.accountForCoin(coin: coin, wallet: wallet) else {
             throw KeyStore.Error.invalidPassword
         }
         return account
+    }
+
+    /// Returns the accounts for a specific coins.
+    ///
+    /// - Parameters:
+    ///   - password: wallet encryption password
+    ///   - coins: coins to add accounts for
+    /// - Returns: the added accounts
+    /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
+    public func getAccounts(password: String, coins: [CoinType]) throws -> [Account] {
+        guard let wallet = key.wallet(password: password) else {
+            throw KeyStore.Error.invalidPassword
+        }
+        return coins.compactMap({ key.accountForCoin(coin: $0, wallet: wallet) })
+    }
+
+    /// Returns the private key for a specific coin.
+    ///
+    /// - Parameters:
+    ///   - password: wallet encryption password
+    ///   - coin: coin type
+    /// - Returns: the private key
+    /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
+    public func privateKey(password: String, coin: CoinType) throws -> PrivateKey {
+        guard let pk = key.privateKey(coin: coin, password: password) else {
+            throw KeyStore.Error.invalidPassword
+        }
+        return pk
     }
 
     public func hash(into hasher: inout Hasher) {

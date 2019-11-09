@@ -1,0 +1,33 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE from \coins.json, changes made here WILL BE LOST.
+//
+
+#pragma once
+#include "TWBase.h"
+
+TW_EXTERN_C_BEGIN
+
+///  Registered human-readable parts for BIP-0173
+///
+/// - SeeAlso: https://github.com/satoshilabs/slips/blob/master/slip-0173.md
+TW_EXPORT_ENUM()
+enum TWHRP {
+    TWHRPUnknown     /* "" */,
+<% coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+    TWHRP<%= format_name(coin['name']) %>     /* "<%= coin['hrp'] %>" */,
+<% end -%>
+};
+
+<% coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+static const char *_Nonnull HRP_<%= coin['id'].upcase %> = "<%= coin['hrp'] %>";
+<% end -%>
+
+const char *_Nullable stringForHRP(enum TWHRP hrp);
+enum TWHRP hrpForString(const char *_Nonnull string);
+
+TW_EXTERN_C_END

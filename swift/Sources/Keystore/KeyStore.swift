@@ -8,15 +8,25 @@ import Foundation
 
 /// Manages directories of key and wallet files and presents them as accounts.
 public final class KeyStore {
+    static let watchesFileName = "watches.json"
+
     /// The key file directory.
     public let keyDirectory: URL
+
+    /// The watches file URL.
+    public let watchesFile: URL
 
     /// List of wallets.
     public private(set) var wallets = [Wallet]()
 
+    /// List of accounts being watched
+    public var watches = [Watch]()
+
     /// Creates a `KeyStore` for the given directory.
     public init(keyDirectory: URL) throws {
         self.keyDirectory = keyDirectory
+        self.watchesFile = keyDirectory.appendingPathComponent(KeyStore.watchesFileName)
+
         try load()
     }
 
@@ -24,8 +34,17 @@ public final class KeyStore {
         let fileManager = FileManager.default
         try? fileManager.createDirectory(at: keyDirectory, withIntermediateDirectories: true, attributes: nil)
 
+        if fileManager.fileExists(atPath: watchesFile.path) {
+            let data = try Data(contentsOf: watchesFile)
+            watches = try JSONDecoder().decode([Watch].self, from: data)
+        }
+
         let accountURLs = try fileManager.contentsOfDirectory(at: keyDirectory, includingPropertiesForKeys: [], options: [.skipsHiddenFiles])
         for url in accountURLs {
+            if url.lastPathComponent == KeyStore.watchesFileName {
+                // Skip watches file
+                continue
+            }
             guard let key = StoredKey.load(path: url.path) else {
                 // Ignore invalid keys
                 continue
@@ -35,9 +54,28 @@ public final class KeyStore {
         }
     }
 
+    /// Watches a list of accounts.
+    public func watch(_ watches: [Watch]) throws {
+        self.watches.append(contentsOf: watches)
+
+        let data = try JSONEncoder().encode(watches)
+        try data.write(to: watchesFile)
+    }
+
+    /// Stop watching an account.
+    public func removeWatch(_ watch: Watch) throws {
+        guard let index = watches.firstIndex(of: watch) else {
+            return
+        }
+        watches.remove(at: index)
+
+        let data = try JSONEncoder().encode(watches)
+        try data.write(to: watchesFile)
+    }
+
     /// Creates a new wallet. HD default by default
-    public func createWallet(password: String, coins: [CoinType]) throws -> Wallet {
-        let key = StoredKey(password: password)
+    public func createWallet(name: String, password: String, coins: [CoinType]) throws -> Wallet {
+        let key = StoredKey(name: name, password: password)
         return try saveCreatedWallet(for: key, password: password, coins: coins)
     }
 
@@ -56,12 +94,28 @@ public final class KeyStore {
 
     /// Adds accounts to a wallet.
     public func addAccounts(wallet: Wallet, coins: [CoinType], password: String) throws -> [Account] {
-        var accounts = [Account]()
-        for coin in coins {
-            accounts.append(try wallet.getAccount(password: password, coin: coin))
-        }
+        let accounts = try wallet.getAccounts(password: password, coins: coins)
         try save(wallet: wallet)
         return accounts
+    }
+
+    /// Remove accounts from a wallet.
+    public func removeAccounts(wallet: Wallet, coins: [CoinType], password: String) throws -> Wallet {
+        guard wallet.key.decryptPrivateKey(password: password) != nil else {
+            throw Error.invalidPassword
+        }
+
+        guard let index = wallets.firstIndex(of: wallet) else {
+            fatalError("Missing wallet")
+        }
+
+        for coin in coins {
+            wallet.key.removeAccountForCoin(coin: coin)
+        }
+
+        wallets[index] = wallet
+        try save(wallet: wallet)
+        return wallet
     }
 
     /// Imports an encrypted JSON key.
@@ -70,9 +124,9 @@ public final class KeyStore {
     /// - json: json wallet
     /// - password: key password
     /// - newPassword: password to use for the imported key
-    /// - coin: coin to use for this wallet
+    /// - coins: coins to use for this wallet
     /// - Returns: new account
-    public func `import`(json: Data, password: String, newPassword: String, coin: CoinType) throws -> Wallet {
+    public func `import`(json: Data, name: String, password: String, newPassword: String, coins: [CoinType]) throws -> Wallet {
         guard let key = StoredKey.importJSON(json: json) else {
             throw Error.invalidKey
         }
@@ -81,13 +135,13 @@ public final class KeyStore {
         }
 
         if let mnemonic = checkMnemonic(data) {
-            return try self.import(mnemonic: mnemonic, encryptPassword: newPassword, coin: coin)
+            return try self.import(mnemonic: mnemonic, name: name, encryptPassword: newPassword, coins: coins)
         }
 
         guard let privateKey = PrivateKey(data: data) else {
             throw Error.invalidKey
         }
-        return try self.import(privateKey: privateKey, password: newPassword, coin: coin)
+        return try self.import(privateKey: privateKey, name: name, password: newPassword, coin: coins.first ?? .ethereum)
     }
 
     private func checkMnemonic(_ data: Data) -> String? {
@@ -104,11 +158,13 @@ public final class KeyStore {
     ///   - password: password to use for the imported private key
     ///   - coin: coin to use for this wallet
     /// - Returns: new wallet
-    public func `import`(privateKey: PrivateKey, password: String, coin: CoinType) throws -> Wallet {
-        let newKey = StoredKey.importPrivateKey(privateKey: privateKey.data, password: password, coin: coin)
+    public func `import`(privateKey: PrivateKey, name: String, password: String, coin: CoinType) throws -> Wallet {
+        guard let newKey = StoredKey.importPrivateKey(privateKey: privateKey.data, name: name, password: password, coin: coin) else {
+            throw Error.invalidKey
+        }
         let url = makeAccountURL()
         let wallet = Wallet(keyURL: url, key: newKey)
-        let _ = try wallet.getAccount(password: password, coin: coin)
+        _ = try wallet.getAccount(password: password, coin: coin)
         wallets.append(wallet)
 
         try save(wallet: wallet)
@@ -121,16 +177,15 @@ public final class KeyStore {
     /// - Parameters:
     ///   - mnemonic: wallet's mnemonic phrase
     ///   - encryptPassword: password to use for encrypting
-    ///   - coin: coin to add as the wallet's first account
+    ///   - coins: coins to add
     /// - Returns: new account
-    public func `import`(mnemonic: String, encryptPassword: String, coin: CoinType) throws -> Wallet {
-        guard HDWallet.isValid(mnemonic: mnemonic) else {
+    public func `import`(mnemonic: String, name: String, encryptPassword: String, coins: [CoinType]) throws -> Wallet {
+        guard let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: name, password: encryptPassword, coin: coins.first ?? .ethereum) else {
             throw Error.invalidMnemonic
         }
-
-        let key = StoredKey.importHDWallet(mnemonic: mnemonic, password: encryptPassword, coin: coin)
         let url = makeAccountURL()
         let wallet = Wallet(keyURL: url, key: key)
+        _ = try wallet.getAccounts(password: encryptPassword, coins: coins)
 
         wallets.append(wallet)
 
@@ -156,19 +211,19 @@ public final class KeyStore {
             throw Error.accountNotFound
         }
 
-        if let mnemonic = checkMnemonic(privateKeyData) {
-            let newKey = StoredKey.importHDWallet(mnemonic: mnemonic, password: newPassword, coin: coin)
+        if let mnemonic = checkMnemonic(privateKeyData), let newKey = StoredKey.importHDWallet(mnemonic: mnemonic, name: "", password: newPassword, coin: coin) {
             guard let json = newKey.exportJSON() else {
                 throw Error.invalidKey
             }
             return json
-        } else {
-            let newKey = StoredKey.importPrivateKey(privateKey: privateKeyData, password: newPassword, coin: coin)
+        } else if let newKey = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "", password: newPassword, coin: coin) {
             guard let json = newKey.exportJSON() else {
                 throw Error.invalidKey
             }
             return json
         }
+
+        throw Error.invalidKey
     }
 
     /// Exports a wallet as private key data.
@@ -205,7 +260,21 @@ public final class KeyStore {
     ///   - password: current password
     ///   - newPassword: new password
     public func update(wallet: Wallet, password: String, newPassword: String) throws {
-        guard let index = wallets.index(of: wallet) else {
+        try update(wallet: wallet, password: password, newPassword: newPassword, newName: wallet.key.name)
+    }
+
+    /// Updates the name of an existing account.
+    ///
+    /// - Parameters:
+    ///   - wallet: wallet to update
+    ///   - password: current password
+    ///   - newName: new name
+    public func update(wallet: Wallet, password: String, newName: String) throws {
+        try update(wallet: wallet, password: password, newPassword: password, newName: newName)
+    }
+
+    private func update(wallet: Wallet, password: String, newPassword: String, newName: String) throws {
+        guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")
         }
 
@@ -216,20 +285,28 @@ public final class KeyStore {
             privateKeyData.resetBytes(in: 0 ..< privateKeyData.count)
         }
 
-        guard let coin = wallet.key.account(index: 0)?.coin else {
+        let coins = wallet.accounts.map({ $0.coin })
+        guard !coins.isEmpty else {
             throw Error.accountNotFound
         }
 
-        if let mnemonic = checkMnemonic(privateKeyData) {
-            wallets[index].key = StoredKey.importHDWallet(mnemonic: mnemonic, password: newPassword, coin: coin)
+        if let mnemonic = checkMnemonic(privateKeyData),
+            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: newName, password: newPassword, coin: coins[0]) {
+            wallets[index].key = key
+        } else if let key = StoredKey.importPrivateKey(
+                privateKey: privateKeyData, name: newName, password: newPassword, coin: coins[0]) {
+            wallets[index].key = key
         } else {
-            wallets[index].key = StoredKey.importPrivateKey(privateKey: privateKeyData, password: newPassword, coin: coin)
+            throw Error.invalidKey
         }
+
+        _ = try wallets[index].getAccounts(password: newPassword, coins: coins)
+        try save(wallet: wallets[index])
     }
 
     /// Deletes an account including its key if the password is correct.
     public func delete(wallet: Wallet, password: String) throws {
-        guard let index = wallets.index(of: wallet) else {
+        guard let index = wallets.firstIndex(of: wallet) else {
             fatalError("Missing wallet")
         }
 
@@ -244,10 +321,21 @@ public final class KeyStore {
         try FileManager.default.removeItem(at: wallet.keyURL)
     }
 
+    /// Removes all wallets.
+    public func destroy() throws {
+        wallets.removeAll(keepingCapacity: false)
+
+        let fileManager = FileManager.default
+        let accountURLs = try fileManager.contentsOfDirectory(at: keyDirectory, includingPropertiesForKeys: [], options: [.skipsHiddenFiles])
+        for url in accountURLs {
+            try? fileManager.removeItem(at: url)
+        }
+    }
+
     // MARK: Helpers
 
     private func makeAccountURL(for address: Address) -> URL {
-        return keyDirectory.appendingPathComponent(generateFileName(identifier: address.data.hexString))
+        return keyDirectory.appendingPathComponent(generateFileName(identifier: address.description))
     }
 
     private func makeAccountURL() -> URL {
@@ -275,6 +363,10 @@ public final class KeyStore {
         }
 
         let components = Calendar(identifier: .iso8601).dateComponents(in: timeZone, from: date)
-        return String(format: "%04d-%02d-%02dT%02d-%02d-%02d.%09d%@", components.year!, components.month!, components.day!, components.hour!, components.minute!, components.second!, components.nanosecond!, tz)
+        return String(format: "%04d-%02d-%02dT%02d-%02d-%02d.%09d%@",
+                      components.year!, components.month!,
+                      components.day!, components.hour!,
+                      components.minute!, components.second!,
+                      components.nanosecond!, tz)
     }
 }

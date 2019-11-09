@@ -8,13 +8,12 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
-namespace TW {
-namespace Bitcoin {
+namespace TW::Bitcoin {
 
 /// Amount in satoshis (can be negative)
-typedef int64_t Amount;
+using Amount = int64_t;
 
 /// One bitcoin in satoshis
 static const Amount coin = 100000000;
@@ -27,4 +26,4 @@ inline bool isValidAmount(const Amount& amount) {
     return (amount >= 0 && amount <= maxAmount);
 }
 
-}} // namespace
+} // namespace TW::Bitcoin

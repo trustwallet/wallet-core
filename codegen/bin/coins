@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+require 'erb'
+require 'fileutils'
+require 'json'
+
+# Transforms a coin name to a C++ name
+def self.format_name(n)
+  formatted = n
+  formatted = formatted.sub(/^([a-z]+)/, &:upcase)
+  formatted = formatted.sub(/\s/, '')
+  formatted
+end
+
+def self.coin_type(path)
+  path.split('/')[2].chomp("'")
+end
+
+def self.coin_img(coin)
+  "<img src=\"https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/#{coin}/info/logo.png\" width=\"32\" />"
+end
+
+json_string = File.read('coins.json')
+coins = JSON.parse(json_string).sort_by { |x| x['name'] }
+coins_md = coins.sort_by { |x| Integer(coin_type(x['derivationPath'])) }
+
+erbs = [
+  {'template' => 'coins.cpp.erb', 'folder' => 'src/Generated', 'file' => 'Coins.cpp'},
+  {'template' => 'coins.md.erb', 'folder' => 'docs', 'file' => 'coins.md'},
+  {'template' => 'hrp.cpp.erb', 'folder' => 'src/Generated', 'file' => 'TWHRP.cpp'},
+  {'template' => 'hrp.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWHRP.h'}
+]
+
+FileUtils.mkdir_p File.join('src', 'Generated')
+erbs.each do |erb|
+  path = File.expand_path(erb['template'], File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
+  template = ERB.new(File.read(path), nil, '-')
+  result = template.result(binding)
+
+  path = File.join(erb['folder'], erb['file'])
+  File.write(path, result)
+end

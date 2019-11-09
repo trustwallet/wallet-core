@@ -19,8 +19,8 @@ AESParameters::AESParameters() {
 }
 
 namespace CodingKeys {
-    static const auto iv = "iv";
-}
+static const auto iv = "iv";
+} // namespace CodingKeys
 
 /// Initializes `AESParameters` with a JSON object.
 AESParameters::AESParameters(const nlohmann::json& json) {
