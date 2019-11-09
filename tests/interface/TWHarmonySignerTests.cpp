@@ -57,7 +57,7 @@ TEST(TWHarmonySigner, Sign) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonySignerSignTransaction(inputTWData);
+    auto outputTWData = TWHarmonySignerSign(inputTWData);
 
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));

@@ -71,17 +71,17 @@ class Description {
         , details(move(details)) {}
 };
 
-#define PRECISION 18
+const uint256_t MAX_PRECISION = 18;
 
 class Decimal {
   public:
     uint256_t value;
 
     Decimal(uint256_t value, uint256_t precision) {
-        if (precision < 1 || precision > PRECISION) {
+        if (precision < 1 || precision > MAX_PRECISION) {
             throw std::invalid_argument("invalid precision, must be between 1 and 17");
         }
-        int zerosToAdd = static_cast<int>(PRECISION - precision);
+        int zerosToAdd = static_cast<int>(MAX_PRECISION - precision);
         uint256_t multiplier = (uint256_t)pow(10, zerosToAdd);
         this->value = value * multiplier;
     }

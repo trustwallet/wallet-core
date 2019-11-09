@@ -22,6 +22,25 @@ namespace TW::Harmony {
 
 /// Helper class that performs Harmony transaction signing.
 class Signer {
+  private:
+    static Proto::SigningOutput
+    signTransaction(const TW::Harmony::Proto::SigningInput &input) noexcept;
+
+    static Proto::SigningOutput
+    signCreateValidator(const TW::Harmony::Proto::SigningInput &input) noexcept;
+
+    static Proto::SigningOutput
+    signEditValidator(const TW::Harmony::Proto::SigningInput &input) noexcept;
+
+    static Proto::SigningOutput
+    signDelegate(const TW::Harmony::Proto::SigningInput &input) noexcept;
+
+    static Proto::SigningOutput
+    signUndelegate(const TW::Harmony::Proto::SigningInput &input) noexcept;
+
+    static Proto::SigningOutput
+    signCollectRewards(const TW::Harmony::Proto::SigningInput &input) noexcept;
+
   public:
     uint256_t chainID;
 
@@ -32,7 +51,6 @@ class Signer {
     static Proto::SigningOutput prepareOutput(const Data &encoded, const T &transaction) noexcept;
 
     /// Signs a Proto::SigningInput transaction or staking
-    template <typename T>
     static Proto::SigningOutput sign(const Proto::SigningInput &input) noexcept;
 
     /// Signs the given transaction.

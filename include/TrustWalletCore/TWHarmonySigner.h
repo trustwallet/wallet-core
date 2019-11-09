@@ -18,26 +18,5 @@ struct TWHarmonySigner;
 
 /// Signs a transactions.
 TW_EXPORT_STATIC_METHOD
-TW_Harmony_Proto_SigningOutput TWHarmonySignerSignTransaction(TW_Harmony_Proto_SigningInput input);
-
-TW_EXPORT_STATIC_METHOD
-TW_Harmony_Proto_SigningOutput
-TWHarmonySignerSignStakingCreateValidator(TW_Harmony_Proto_SigningInput input);
-
-TW_EXPORT_STATIC_METHOD
-TW_Harmony_Proto_SigningOutput
-TWHarmonySignerSignStakingEditValidator(TW_Harmony_Proto_SigningInput input);
-
-TW_EXPORT_STATIC_METHOD
-TW_Harmony_Proto_SigningOutput
-TWHarmonySignerSignStakingDelegate(TW_Harmony_Proto_SigningInput input);
-
-TW_EXPORT_STATIC_METHOD
-TW_Harmony_Proto_SigningOutput
-TWHarmonySignerSignStakingUndelegate(TW_Harmony_Proto_SigningInput input);
-
-TW_EXPORT_STATIC_METHOD
-TW_Harmony_Proto_SigningOutput
-TWHarmonySignerSignStakingCollectRewards(TW_Harmony_Proto_SigningInput input);
-
+TW_Harmony_Proto_SigningOutput TWHarmonySignerSign(TW_Harmony_Proto_SigningInput input);
 TW_EXTERN_C_END

@@ -156,56 +156,7 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
         parse(transaction, &message, output);
         if (output.success()) {
             message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            Harmony::Proto::SigningOutput signerOutput;
-            switch (message.message_oneof_case()) {
-            case message.kTransactionMessage: {
-                signerOutput = Harmony::Signer::sign<Harmony::Transaction>(message);
-                break;
-            }
-            case message.kStakingMessage: {
-                Harmony::Proto::StakingMessage stakingMsg = message.staking_message();
-                switch (stakingMsg.stake_msg_case()) {
-                case stakingMsg.kCreateValidatorMessage: {
-                    signerOutput =
-                        Harmony::Signer::sign<Harmony::Staking<Harmony::CreateValidator>>(message);
-                    break;
-                }
-                case stakingMsg.kEditValidatorMessage: {
-                    signerOutput =
-                        Harmony::Signer::sign<Harmony::Staking<Harmony::EditValidator>>(message);
-                    break;
-                }
-                case stakingMsg.kDelegateMessage: {
-                    signerOutput =
-                        Harmony::Signer::sign<Harmony::Staking<Harmony::Delegate>>(message);
-                    break;
-                }
-                case stakingMsg.kUndelegateMessage: {
-                    signerOutput =
-                        Harmony::Signer::sign<Harmony::Staking<Harmony::Undelegate>>(message);
-                    break;
-                }
-                case stakingMsg.kCollectRewards: {
-                    signerOutput =
-                        Harmony::Signer::sign<Harmony::Staking<Harmony::CollectRewards>>(message);
-                    break;
-                }
-                default: {
-                    auto error = new Proto::SigningOutput_Error();
-                    error->set_code(SignerErrorCodeNotSupported);
-                    error->set_description("Staking message not supported");
-                    output.set_allocated_error(error);
-                }
-                }
-                break;
-            }
-            default: {
-                auto error = new Proto::SigningOutput_Error();
-                error->set_code(SignerErrorCodeNotSupported);
-                error->set_description("Harmony transaction not supported");
-                output.set_allocated_error(error);
-            }
-            }
+            auto signerOutput = Harmony::Signer::sign(message);
             auto encoded = signerOutput.encoded();
             output.set_output(hex(encoded.begin(), encoded.end()));
         }

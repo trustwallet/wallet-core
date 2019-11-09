@@ -30,7 +30,8 @@ static uint256_t LOCAL_NET = 0x2;
 static uint256_t TEST_AMOUNT = uint256_t("0x4c53ecdc18a60000");
 
 static Address TEST_RECEIVER;
-static bool testReceiverDecodeResult = Address::decode("one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc", TEST_RECEIVER);
+static bool testReceiverDecodeResult =
+    Address::decode("one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc", TEST_RECEIVER);
 
 static auto TEST_TRANSACTION = Transaction(/* nonce: */ 0x9,
                                            /* gasPrice: */ 0x0,
@@ -105,7 +106,7 @@ TEST(HarmonySigner, SignProtoBufAssumeLocalNet) {
     value = store(uint256_t("0x4c53ecdc18a60000"));
     trasactionMsg->set_amount(value.data(), value.size());
 
-    auto proto_output = Signer::sign<Transaction>(input);
+    auto proto_output = Signer::sign(input);
 
     auto shouldBeV = "28";
     auto shouldBeR = "325aed6caa01a5235b7a508c8ab67f0c43946b05a1ea6a3e0628de4033fe372d";
@@ -128,7 +129,7 @@ TEST(HarmonySigner, SignOverProtoBufAssumeMainNet) {
 
     auto value = store(MAIN_NET);
     input.set_chain_id(value.data(), value.size());
-
+    
     value = store(uint256_t("0xa"));
     trasactionMsg->set_nonce(value.data(), value.size());
 
@@ -147,7 +148,7 @@ TEST(HarmonySigner, SignOverProtoBufAssumeMainNet) {
     value = store(uint256_t("0x4c53ecdc18a60000"));
     trasactionMsg->set_amount(value.data(), value.size());
 
-    auto proto_output = Signer::sign<Transaction>(input);
+    auto proto_output = Signer::sign(input);
 
     auto expectEncoded = "f8690a808252080180946a87346f3ba9958d08d09484a2b7fdbbe42b0df6884c53ecdc18a"
                          "600008026a074acbc63a58e7861e54ca24babf1cb800c5b694da25c3ae2b1543045053667"

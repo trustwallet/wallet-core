@@ -87,7 +87,7 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonySignerSignStakingCreateValidator(inputTWData);
+    auto outputTWData = TWHarmonySignerSign(inputTWData);
 
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
@@ -150,7 +150,7 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonySignerSignStakingEditValidator(inputTWData);
+    auto outputTWData = TWHarmonySignerSign(inputTWData);
 
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
@@ -190,7 +190,7 @@ TEST(TWHarmonyStakingSigner, Delegate) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonySignerSignStakingDelegate(inputTWData);
+    auto outputTWData = TWHarmonySignerSign(inputTWData);
 
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
@@ -230,7 +230,7 @@ TEST(TWHarmonyStakingSigner, Undelegate) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonySignerSignStakingUndelegate(inputTWData);
+    auto outputTWData = TWHarmonySignerSign(inputTWData);
 
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
@@ -266,7 +266,7 @@ TEST(TWHarmonyStakingSigner, CollectRewards) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonySignerSignStakingCollectRewards(inputTWData);
+    auto outputTWData = TWHarmonySignerSign(inputTWData);
 
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));

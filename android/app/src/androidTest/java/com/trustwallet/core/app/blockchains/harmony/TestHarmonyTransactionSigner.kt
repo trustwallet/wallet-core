@@ -33,7 +33,7 @@ class TestHarmonyTransactionSigner {
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             transactionMessage = transaction.build()
         }
-        val sign: Harmony.SigningOutput = HarmonySigner.signTransaction(signingInput.build())
+        val sign: Harmony.SigningOutput = HarmonySigner.sign(signingInput.build())
         val expected = "0xf86909808252080180946a87346f3ba9958d08d09484a2b7fdbbe42b0df6884c53ecdc18a600008028a0325aed6caa01a5235b7a508c8ab67f0c43946b05a1ea6a3e0628de4033fe372da06c19085d3376c30f6dc47cec795991cd37d6d0ebddfa633b0a8f494bc19cd01b"
 
         assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), expected)

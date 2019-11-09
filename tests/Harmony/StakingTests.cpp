@@ -86,7 +86,7 @@ TEST(HarmonyStaking, SignCreateValidator) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = Signer::sign<Staking<CreateValidator>>(input);
+    auto proto_output = Signer::sign(input);
 
     auto expectEncoded =
         "f8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
@@ -153,7 +153,7 @@ TEST(HarmonyStaking, SignEditValidator) {
     value = store(uint256_t("0x64")); // 0x5208
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = Signer::sign<Staking<EditValidator>>(input);
+    auto proto_output = Signer::sign(input);
 
     auto expectEncoded =
         "f9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
@@ -197,7 +197,7 @@ TEST(HarmonyStaking, SignDelegate) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = Signer::sign<Staking<Delegate>>(input);
+    auto proto_output = Signer::sign(input);
 
     auto expectEncoded =
         "f87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a"
@@ -238,7 +238,7 @@ TEST(HarmonyStaking, SignUndelegate) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = Signer::sign<Staking<Undelegate>>(input);
+    auto proto_output = Signer::sign(input);
 
     auto expectEncoded =
         "f87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
@@ -275,7 +275,7 @@ TEST(HarmonyStaking, SignCollectRewards) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto proto_output = Signer::sign<Staking<CollectRewards>>(input);
+    auto proto_output = Signer::sign(input);
 
     auto expectEncoded = "f85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f425"
                          "77001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd9"
