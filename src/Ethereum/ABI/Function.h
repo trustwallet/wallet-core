@@ -6,68 +6,76 @@
 
 #pragma once
 
-#include "Tuple.h"
+#include "ParamBase.h"
+#include "Parameters.h"
+#include "Bytes.h"
 
+#include "../../uint256.h"
 #include "../../Hash.h"
 
 #include <string>
-#include <tuple>
 
-namespace TW::Ethereum {
+namespace TW::Ethereum::ABI {
 
-template <typename... Params>
+/// Non-generic version of Function, templated version is impossible to pass around to and back over C interface
+/// (void* looses the temaplate parameters).
 class Function {
-  public:
+public:
     std::string name;
-    std::tuple<Params...> parameters;
+    ParamSet _inParams;
+    ParamSet _outParams;
 
-    Function() = default;
-    Function(std::string name, std::tuple<Params...> parameters)
-        : name(std::move(name)), parameters(std::move(parameters)) {}
+    Function(std::string name) : name(std::move(name)) {}
+    Function(std::string name, std::vector<std::shared_ptr<ParamBase>> inParams)
+        : name(std::move(name)), _inParams(ParamSet(inParams)) {}
+    virtual ~Function() {}
+    /// Add an input parameter. Returns the index of the parameter.
+    int addInParam(std::shared_ptr<ParamBase> param) {
+        return _inParams.addParam(param);
+    }
+    /// Add an output parameter. Returns the index of the parameter.
+    int addOutParam(std::shared_ptr<ParamBase> param) {
+        return _outParams.addParam(param);
+    }
+    /// Add an input or output parameter. Returns the index of the parameter.
+    int addParam(std::shared_ptr<ParamBase> param, bool isOutput = false) {
+        return isOutput ? _outParams.addParam(param) : _inParams.addParam(param);
+    }
+    /// Get an input parameter.
+    bool getInParam(int paramIndex, std::shared_ptr<ParamBase>& param_out) {
+        return _inParams.getParam(paramIndex, param_out);
+    }
+    /// Get an output parameter.
+    bool getOutParam(int paramIndex, std::shared_ptr<ParamBase>& param_out) {
+        return _outParams.getParam(paramIndex, param_out);
+    }
+    /// Get an input or output parameter.
+    bool getParam(int paramIndex, std::shared_ptr<ParamBase>& param_out, bool isOutput = false) {
+        return isOutput ? _outParams.getParam(paramIndex, param_out) : _inParams.getParam(paramIndex, param_out);
+    }
+    /// Return the function type signature, of the form "baz(int32,uint256)"
+    std::string getType() const {
+        return name + _inParams.getType();
+    }
+
+    /// Return the 4-byte function signature
+    Data getSignature() const;
+
+    virtual void encode(Data& data) const;
+
+    /// Decode binary, fill output parameters
+    bool decodeOutput(const Data& encoded, size_t& offset_inout);
+    /// Decode binary, fill input parameters
+    bool decodeInput(const Data& encoded, size_t& offset_inout);
 };
 
-template <typename... Params>
-inline bool is_dynamic(const Function<Params...>& f) {
-    return is_dynaic(f.parameters);
+inline void encode(const Function& func, Data& data) {
+    func.encode(data);
 }
 
-template <typename... Params>
-inline bool size(const Function<Params...>& f) {
-    return 4 + size(f.parameters);
-}
+} // namespace TW::Ethereum::ABI
 
-template <typename... Params>
-inline void encode(const Function<Params...>& f, Data& data) {
-    auto string = type_string(f);
-    auto hash = Hash::keccak256(Data(string.begin(), string.end()));
-    auto signature = Data(hash.begin(), hash.begin() + 4);
-    append(data, signature);
-    encode(f.parameters, data);
-}
-
-template <typename... Params>
-inline bool decode(const Data& encoded, Function<Params...>& function, size_t& offset_inout) {
-    // read 4-byte hash
-    std::array<byte, 4> hash;
-    if (!decode(encoded, hash, offset_inout)) { return false; }
-    // adjust offset; hash is NOT padded to 32 bytes
-    offset_inout = offset_inout - 32 + 4;
-    // verify hash
-    auto string = type_string(function);
-    Data hashExpect = Hash::keccak256(Data(string.begin(), string.end()));
-    hashExpect = Data(hashExpect.begin(), hashExpect.begin() + 4);
-    if (Data(hash.begin(), hash.end()) != hashExpect) {
-        // invalid hash
-        return false;
-    }
-    // read parameters
-    if (!decode(encoded, function.parameters, offset_inout)) { return false; }
-    return true;
-}
-
-template <typename... Params>
-inline std::string type_string(const Function<Params...>& f) {
-    return f.name + "(" + type_string(f.parameters) + ")";
-}
-
-} // namespace TW::Ethereum
+/// Wrapper for C interface.
+struct TWEthereumAbiFunction {
+    TW::Ethereum::ABI::Function impl;
+};

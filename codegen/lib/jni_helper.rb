@@ -76,6 +76,14 @@ module JNIHelper
       'jint'
     when :uint64
       'jlong'
+    when :int8
+      'jbyte'
+    when :int16
+      'jshort'
+    when :int32
+      'jint'
+    when :int64
+      'jlong'
     when :size
       'jsize'
     when :data
