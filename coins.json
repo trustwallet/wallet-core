@@ -1030,6 +1030,23 @@
         }
     },
     {
+        "id": "sample",
+        "name": "SampleCoin",
+        "symbol": "SPL",
+        "decimals": 18,
+        "blockchain": "Sample",
+        "derivationPath": "m/44'/60'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": "https://etherscan.io/tx/",
+        "info": {
+            "url": "https://ethereum.org",
+            "client": "https://github.com/ethereum/go-ethereum",
+            "clientPublic": "https://mainnet.infura.io",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
+    },
+    {
         "id": "near",
         "name": "NEAR",
         "symbol": "NEAR",
