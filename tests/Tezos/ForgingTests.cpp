@@ -153,3 +153,41 @@ TEST(TezosTransaction, forgeReveal) {
 
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
 }
+
+TEST(TezosTransaction, forgeDelegate) {
+    auto delegateOperationData = new TW::Tezos::Proto::DelegationOperationData();
+    delegateOperationData->set_delegate("tz1RKLoYm4vtLzo7TAgGifMDAkiWhjfyXwP4");
+
+    auto delegateOperation = TW::Tezos::Proto::Operation();
+    delegateOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    delegateOperation.set_fee(1272);
+    delegateOperation.set_counter(30738);
+    delegateOperation.set_gas_limit(10100);
+    delegateOperation.set_storage_limit(257);
+    delegateOperation.set_kind(TW::Tezos::Proto::Operation::DELEGATION);
+    delegateOperation.set_allocated_delegation_operation_data(delegateOperationData);
+
+    auto expected = "6e0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102ff003e47f837f0467b4acde406ed5842f35e2414b1a8";
+    auto serialized = forgeOperation(delegateOperation);
+
+    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+}
+
+TEST(TezosTransaction, forgeUndelegate) {
+    auto delegateOperationData = new TW::Tezos::Proto::DelegationOperationData();
+    delegateOperationData->set_delegate("");
+
+    auto delegateOperation = TW::Tezos::Proto::Operation();
+    delegateOperation.set_source("tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW");
+    delegateOperation.set_fee(1272);
+    delegateOperation.set_counter(30738);
+    delegateOperation.set_gas_limit(10100);
+    delegateOperation.set_storage_limit(257);
+    delegateOperation.set_kind(TW::Tezos::Proto::Operation::DELEGATION);
+    delegateOperation.set_allocated_delegation_operation_data(delegateOperationData);
+
+    auto expected = "6e0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200";
+    auto serialized = forgeOperation(delegateOperation);
+
+    ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
+}

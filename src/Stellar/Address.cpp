@@ -4,11 +4,11 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../HexCoding.h"
 #include "Address.h"
+#include "../Base32.h"
+#include "../HexCoding.h"
 #include "Crc.h"
 
-#include <TrezorCrypto/base32.h>
 #include <TrezorCrypto/memzero.h>
 #include <TrustWalletCore/TWStellarVersionByte.h>
 
@@ -19,15 +19,14 @@ using namespace TW::Stellar;
 
 bool Address::isValid(const std::string& string) {
     bool valid = false;
-    std::array<uint8_t, rawSize> decoded;
 
     if (string.length() != size) {
         return false;
     }
 
     // Check that it decodes correctly
-    uint8_t* ret = base32_decode(string.data(), size, decoded.data(), decoded.size(), BASE32_ALPHABET_RFC4648);
-    valid = (ret != nullptr);
+    Data decoded;
+    valid = Base32::decode(string, decoded);
 
     // ... and that version byte is 0x30
     if (valid && TWStellarVersionByte(decoded[0]) != TWStellarVersionByte::TWStellarVersionByteAccountID) {
@@ -51,8 +50,8 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address data");
     }
 
-    std::array<uint8_t, rawSize> decoded;
-    base32_decode(string.data(), size, decoded.data(), decoded.size(), BASE32_ALPHABET_RFC4648);
+    Data decoded;
+    Base32::decode(string, decoded);
     std::copy(decoded.begin() + 1, decoded.begin() + 1 + bytes.size(), bytes.begin());
     memzero(decoded.data(), decoded.size());
 }
@@ -66,7 +65,6 @@ Address::Address(const PublicKey& publicKey) {
 }
 
 std::string Address::string() const {
-    std::array<char, 56 + 1> out = {0};
     // version + key bytes + checksum
     constexpr uint8_t keylen = 1 + 32 + 2;
     std::array<uint8_t, keylen> bytes_full;
@@ -79,8 +77,8 @@ std::string Address::string() const {
     bytes_full[keylen - 2] = checksum & 0x00ff;
     bytes_full[keylen - 1] = (checksum >> 8) & 0x00ff;
 
-    base32_encode(bytes_full.data(), keylen, out.data(), out.size(), BASE32_ALPHABET_RFC4648);
-
-    out[out.size() - 1] = 0;
-    return std::string(out.data());
+    Data bytesAsData;
+    bytesAsData.assign(bytes_full.begin(), bytes_full.end());
+    auto out = Base32::encode(bytesAsData);
+    return out;
 }

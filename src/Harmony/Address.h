@@ -6,46 +6,40 @@
 
 #pragma once
 
-#include "../PublicKey.h"
-
-#include <array>
-#include <cstdint>
-#include <vector>
+#include "../Bech32Address.h"
 
 namespace TW::Harmony {
 
-class Address {
-  public:
+/// Harmony address is a Bech32Address, with "one" prefix and Sha3 Keccak hash.
+class Address: public Bech32Address {
+public:
     /// Number of bytes in an address.
     static constexpr size_t size = 20;
 
-    std::array<uint8_t, size> bytes;
+    static const std::string hrp; // HRP_HARMONY
 
-    /// Determines whether a collection of bytes makes a valid address.
-    static bool isValid(const Data &data);
+    static bool isValid(const std::string addr) { return Bech32Address::isValid(addr, hrp); }
 
-    /// Determines whether a string makes a valid address, nonempty data payload if valid
-    static std::pair<bool, std::vector<uint8_t>> isValid(const std::string &string);
+    Address() : Bech32Address(hrp) {}
 
-    /// Initializes an address with a string representation.
-    explicit Address(const std::string &string);
-
-    /// Initializes an address with a collection of bytes.
-    explicit Address(const Data &data);
+    /// Initializes an address with a key hash.
+    Address(Data keyHash) : Bech32Address(hrp, keyHash) {
+        if (getKeyHash().size() != Address::size) {
+            throw std::invalid_argument("invalid address data");
+        }
+    }
 
     /// Initializes an address with a public key.
-    explicit Address(const PublicKey &publicKey);
+    Address(const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA3K, publicKey) {
+        if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+            throw std::invalid_argument("address may only be an extended SECP256k1 public key");
+        }      
+    }
 
-    /// Returns a bech32 representation of the address.
-    std::string string() const;
-
-    /// Provide hex representation of address
-    std::string hexDump() const;
+    static bool decode(const std::string& addr, Address& obj_out) {
+        return Bech32Address::decode(addr, obj_out, hrp);
+    }
 };
-
-inline bool operator==(const Address &lhs, const Address &rhs) {
-    return lhs.bytes == rhs.bytes;
-}
 
 } // namespace TW::Harmony
 

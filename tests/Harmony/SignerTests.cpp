@@ -29,7 +29,8 @@ static uint256_t LOCAL_NET = 0x2;
 
 static uint256_t TEST_AMOUNT = uint256_t("0x4c53ecdc18a60000");
 
-static auto TEST_RECEIVER = Address("one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc");
+static Address TEST_RECEIVER;
+static bool testReceiverDecodeResult = Address::decode("one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc", TEST_RECEIVER);
 
 static auto TEST_TRANSACTION = Transaction(/* nonce: */ 0x9,
                                            /* gasPrice: */ 0x0,

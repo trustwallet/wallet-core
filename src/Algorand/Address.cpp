@@ -4,11 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Address.h"
 #include "../HexCoding.h"
 #include "../Hash.h"
-#include "Address.h"
-
-#include <TrezorCrypto/base32.h>
+#include "../Base32.h"
 
 #include <array>
 
@@ -18,14 +17,12 @@ bool Address::isValid(const std::string& string) {
     if (string.size() != encodedSize) {
         return false;
     }
-    const size_t dataSize = PublicKey::ed25519Size + checksumSize;
-    std::array<byte, dataSize> decoded;
-    // base32 decode
-    if (base32_decode(string.data(), string.size(), decoded.data(), dataSize, BASE32_ALPHABET_RFC4648) == nullptr) {
+    Data decoded;
+    if (!Base32::decode(string, decoded)) {
         return false;
     }
     // compute public key hash
-    auto hash = Hash::sha512_256(decoded.begin(), decoded.end() - checksumSize);
+    auto hash = Hash::sha512_256(decoded.data(), decoded.data() + decoded.size() - checksumSize);
     // last 4 bytes are checksum
     std::array<byte, checksumSize> checksum;
     std::copy(hash.end() - checksumSize, hash.end(), checksum.data());
@@ -40,10 +37,10 @@ Address::Address(const std::string& string) {
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }
-
-    const size_t dataSize = PublicKey::ed25519Size + checksumSize;
-    std::array<byte, dataSize> decoded;
-    base32_decode(string.data(), string.size(), decoded.data(), dataSize, BASE32_ALPHABET_RFC4648);
+    Data decoded;
+    if (!Base32::decode(string, decoded)) {
+        throw std::invalid_argument("Invalid address string");
+    }
     std::copy(decoded.begin(), decoded.begin() + PublicKey::ed25519Size, bytes.begin());
 }
 
@@ -57,13 +54,12 @@ Address::Address(const PublicKey& publicKey) {
 std::string Address::string() const {
     auto hash = Hash::sha512_256(bytes);
     const size_t dataSize = PublicKey::ed25519Size + checksumSize;
-    std::array<byte, dataSize> data;
-    std::vector<char> encoded;
-    encoded.resize(64);
+    Data data;
+    data.resize(dataSize);
 
     // base32_encode(publickey + checksum)
     std::copy(bytes.begin(), bytes.end(), data.data());
     std::copy(hash.end() - checksumSize, hash.end(), data.data() + PublicKey::ed25519Size);
-    base32_encode(data.data(), dataSize, encoded.data(), encoded.size(), BASE32_ALPHABET_RFC4648);
-    return std::string(encoded.begin(), encoded.begin() + encodedSize);
+    std::string encoded = Base32::encode(data);
+    return encoded;
 }
