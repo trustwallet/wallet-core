@@ -32,19 +32,19 @@ class Address {
     static const uint8_t AddressLength = 32;
 
     // Address: 256 bits (for chains -1 and 0)
-    std::array<byte, AddressLength> addrBytes;
+    TW::Data addrBytes;
 
     bool isBounceable{true};
     bool isTestOnly{false};
 
     /// Initializes a TON address with a string representation, either raw or user friendly
-    explicit Address(const std::string &address);
+    explicit Address(const std::string& address);
 
     /// Initializes a TON address with a public key.
-    explicit Address(const PublicKey &publicKey);
+    explicit Address(const PublicKey& publicKey);
 
     /// Determines whether a string makes a valid address, in any format
-    static bool isValid(const std::string &address);
+    static bool isValid(const std::string& address);
 
     /// Returns a string representation of the address (user friendly format)
     std::string string() const;
@@ -56,15 +56,15 @@ class Address {
     /// Empty constructor
     Address() = default;
 
-    static bool parseAddress(const std::string &addressStr_in, Address &addr_inout);
-    static bool parseRawAddress(const std::string &addressStr_in, Address &addr_inout);
+    static bool parseAddress(const std::string& addressStr_in, Address& addr_inout);
+    static bool parseRawAddress(const std::string& addressStr_in, Address& addr_inout);
     // Accepts user-friendly base64 format, also accepts Base64Url format
-    static bool parseUserAddress(const std::string &addressStr_in, Address &addr_inout);
+    static bool parseUserAddress(const std::string& addressStr_in, Address& addr_inout);
     // Try to convert Base64Url format to standard format
-    static bool convertBase64Url(const std::string &base64Url_in, std::string &base64Std_out);
+    static bool convertBase64Url(const std::string& base64Url_in, std::string& base64Std_out);
 };
 
-inline bool operator==(const Address &lhs, const Address &rhs) {
+inline bool operator==(const Address& lhs, const Address& rhs) {
     return (lhs.workchainId == rhs.workchainId && lhs.addrBytes == rhs.addrBytes &&
             lhs.isBounceable == rhs.isBounceable && lhs.isTestOnly == rhs.isTestOnly);
 }

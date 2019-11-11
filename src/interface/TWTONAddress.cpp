@@ -17,22 +17,21 @@ bool TWTONAddressEqual(struct TWTONAddress *_Nonnull lhs, struct TWTONAddress *_
 }
 
 bool TWTONAddressIsValidString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string *>(string);
+    auto s = reinterpret_cast<const std::string*>(string);
     return Address::isValid(*s);
 }
 
 struct TWTONAddress *_Nullable TWTONAddressCreateWithString(TWString *_Nonnull string) {
-    auto s = reinterpret_cast<const std::string *>(string);
+    auto s = reinterpret_cast<const std::string*>(string);
     try {
         const auto address = Address(*s);
-        return new TWTONAddress{std::move(address)};
+        return new TWTONAddress{ std::move(address) };
     } catch (...) {
         return nullptr;
     }
 }
 
-struct TWTONAddress *_Nonnull TWTONAddressCreateWithPublicKey(
-    struct TWPublicKey *_Nonnull publicKey) {
+struct TWTONAddress *_Nonnull TWTONAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey) {
     return new TWTONAddress{ Address(publicKey->impl) };
 }
 

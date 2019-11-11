@@ -20,7 +20,7 @@ bool Workchain::isValid(WorkchainId_t workchainId) {
     return (workchainId == MasterChainId || workchainId == BasicChainId);
 }
 
-Address::Address(const std::string &address) {
+Address::Address(const std::string& address) {
     bool valid = parseAddress(address, *this);
 
     // Ensure address is valid
@@ -29,7 +29,7 @@ Address::Address(const std::string &address) {
     }
 }
 
-Address::Address(const PublicKey &publicKey) {
+Address::Address(const PublicKey& publicKey) {
     // Steps: a StateInit account state cell is created (containing code and data), its hash is
     // taken, and new address is derived from the hash
 
@@ -65,18 +65,18 @@ Address::Address(const PublicKey &publicKey) {
 
     // fill members
     workchainId = Workchain::MasterChainId;
-    std::copy(hash.begin(), hash.end(), addrBytes.begin());
+    addrBytes = hash;
     isBounceable = true;
     isTestOnly = false;
 }
 
-bool Address::isValid(const std::string &address) {
+bool Address::isValid(const std::string& address) {
     Address addr;
     bool isValid = parseAddress(address, addr);
     return isValid;
 }
 
-bool Address::parseAddress(const std::string &addressStr_in, Address &addr_inout) {
+bool Address::parseAddress(const std::string& addressStr_in, Address& addr_inout) {
     // try several formats, start with the common one, stop if one matches
     bool isValidUser = parseUserAddress(addressStr_in, addr_inout);
     if (isValidUser) {
@@ -86,7 +86,7 @@ bool Address::parseAddress(const std::string &addressStr_in, Address &addr_inout
     return isValidRaw;
 }
 
-bool Address::parseRawAddress(const std::string &addressStr_in, Address &addr_inout) {
+bool Address::parseRawAddress(const std::string& addressStr_in, Address& addr_inout) {
     // split by colon ':'
     auto colidx = addressStr_in.find(':');
 
@@ -104,7 +104,7 @@ bool Address::parseRawAddress(const std::string &addressStr_in, Address &addr_in
     WorkchainId_t workchainId;
     try {
         workchainId = std::stoi(workchainStr);
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
         // workchain ID is invalid (not a decimal number)
         return false;
     }
@@ -119,8 +119,7 @@ bool Address::parseRawAddress(const std::string &addressStr_in, Address &addr_in
         return false;
     }
 
-    auto hexParse = parse_hex(addressStr);
-    std::copy(hexParse.begin(), hexParse.end(), addr_inout.addrBytes.begin());
+    addr_inout.addrBytes = parse_hex(addressStr);
 
     addr_inout.isBounceable = true;
     addr_inout.isTestOnly = false;
@@ -128,7 +127,7 @@ bool Address::parseRawAddress(const std::string &addressStr_in, Address &addr_in
     return true;
 }
 
-bool Address::convertBase64Url(const std::string &base64Url_in, std::string &base64Std_out) {
+bool Address::convertBase64Url(const std::string& base64Url_in, std::string& base64Std_out) {
     // Base64URL format ('+' and '/' are replaced by '-' and '_')
     if (base64Url_in.find('-') == std::string::npos &&
         base64Url_in.find('_') == std::string::npos) {
@@ -146,11 +145,11 @@ bool Address::convertBase64Url(const std::string &base64Url_in, std::string &bas
     return true;
 }
 
-bool Address::parseUserAddress(const std::string &addressStr_in, Address &addr_inout) {
+bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_inout) {
     Data bytes;
     try {
         bytes = Base64::decode(addressStr_in);
-    } catch (const std::exception &ex) {
+    } catch (const std::exception& ex) {
         // 2nd try: Base64URL format ('+' and '/' are replaced by '-' and '_')
         std::string base64Url;
         if (!convertBase64Url(addressStr_in, base64Url)) {
@@ -160,7 +159,7 @@ bool Address::parseUserAddress(const std::string &addressStr_in, Address &addr_i
         // looks to be URL format
         try {
             bytes = Base64::decode(base64Url);
-        } catch (const std::exception &ex) {
+        } catch (const std::exception& ex) {
             // not valid base64url
             return false;
         }
@@ -203,6 +202,7 @@ bool Address::parseUserAddress(const std::string &addressStr_in, Address &addr_i
     }
 
     // 32 bytes address
+    addr_inout.addrBytes = Data(AddressLength);
     std::copy(bytes.begin() + 2, bytes.begin() + 2 + AddressLength, addr_inout.addrBytes.begin());
 
     // check CRC
@@ -234,8 +234,7 @@ std::string Address::string() const {
         break; // invalid
     }
     bytes.push_back(chainId);
-    for (auto i = addrBytes.begin(), n = addrBytes.end(); i != n; ++i)
-        bytes.push_back(*i);
+    append(bytes, addrBytes);
     // add crc checksumS
     uint16_t crc = Crc::crc16(bytes.data(), static_cast<uint32_t>(bytes.size()));
     bytes.push_back(crc >> 8);
