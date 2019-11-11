@@ -7,8 +7,8 @@ import com.trustwallet.core.app.utils.toHexBytes
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.SampleCoinSigner
-import wallet.core.jni.proto.SampleCoin
+//import wallet.core.jni.SampleCoinSigner
+//import wallet.core.jni.proto.SampleCoin
 
 class TestSampleCoinSigner {
 
