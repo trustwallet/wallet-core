@@ -45,28 +45,29 @@ Proto::SigningOutput Signer::prepareOutput(const Data &encoded, const T &transac
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     if (input.has_transaction_message()) {
         return signTransaction(input);
-    } else if (input.has_staking_message()) {
+    }
+    if (input.has_staking_message()) {
         Harmony::Proto::StakingMessage stakingMessage = input.staking_message();
         if (stakingMessage.has_create_validator_message()) {
             return signCreateValidator(input);
-        } else if (stakingMessage.has_edit_validator_message()) {
-            return signEditValidator(input);
-        } else if (stakingMessage.has_delegate_message()) {
-            return signDelegate(input);
-        } else if (stakingMessage.has_undelegate_message()) {
-            return signUndelegate(input);
-        } else if (stakingMessage.has_collect_rewards()) {
-            return signCollectRewards(input);
-        } else {
-            return Proto::SigningOutput();
         }
-    } else {
-        return Proto::SigningOutput();
+        if (stakingMessage.has_edit_validator_message()) {
+            return signEditValidator(input);
+        }
+        if (stakingMessage.has_delegate_message()) {
+            return signDelegate(input);
+        }
+        if (stakingMessage.has_undelegate_message()) {
+            return signUndelegate(input);
+        }
+        if (stakingMessage.has_collect_rewards()) {
+            return signCollectRewards(input);
+        }
     }
+    return Proto::SigningOutput();
 }
 
-Proto::SigningOutput
-Signer::signTransaction(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::signTransaction(const Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     Address toAddr;
     if (!Address::decode(input.transaction_message().to_address(), toAddr)) {
@@ -94,8 +95,7 @@ Signer::signTransaction(const Proto::SigningInput &input) noexcept {
     return prepareOutput<Transaction>(encoded, transaction);
 }
 
-Proto::SigningOutput
-Signer::signCreateValidator(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::signCreateValidator(const Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto description = Description(
         /* name */ input.staking_message().create_validator_message().description().name(),
@@ -172,8 +172,7 @@ Signer::signCreateValidator(const Proto::SigningInput &input) noexcept {
     return prepareOutput<Staking<CreateValidator>>(encoded, stakingTx);
 }
 
-Proto::SigningOutput
-Signer::signEditValidator(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::signEditValidator(const Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
     auto description = Description(
@@ -258,8 +257,7 @@ Proto::SigningOutput Signer::signDelegate(const Proto::SigningInput &input) noex
     return prepareOutput<Staking<Delegate>>(encoded, stakingTx);
 }
 
-Proto::SigningOutput
-Signer::signUndelegate(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::signUndelegate(const Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
     Address delegatorAddr;
@@ -289,8 +287,7 @@ Signer::signUndelegate(const Proto::SigningInput &input) noexcept {
     return prepareOutput<Staking<Undelegate>>(encoded, stakingTx);
 }
 
-Proto::SigningOutput
-Signer::signCollectRewards(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::signCollectRewards(const Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
     Address delegatorAddr;
