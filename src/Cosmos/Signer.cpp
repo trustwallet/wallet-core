@@ -117,16 +117,28 @@ Proto::SigningOutput Signer::build() const {
 }
 
 Data Signer::encodeTransaction(const Data& signature) const {
-    auto output = Proto::SigningOutput();
+    auto transaction = Cosmos::Proto::Transaction();
+    *transaction.mutable_fee() = input.fee();
+    transaction.set_memo(input.memo());
 
-    auto txJson = buildTransactionJSON(signature);
+    if (input.has_send_coins_message()) {
+        *transaction.mutable_send_coins_message() = input.send_coins_message();
+    } else if (input.has_stake_message()) {
+        *transaction.mutable_stake_message() = input.stake_message();
+    } else if (input.has_unstake_message()) {
+        *transaction.mutable_unstake_message() = input.unstake_message();
+    } else if (input.has_withdraw_stake_reward_message()) {
+        *transaction.mutable_withdraw_stake_reward_message() = input.withdraw_stake_reward_message();
+    }
 
-    output.set_json(txJson.dump());
-    output.set_signature(signature.data(), signature.size());
+    auto sig = Cosmos::Proto::Signature();
+    sig.set_signature(signature.data(), signature.size());
 
-    auto txString = output.SerializeAsString();
+    *transaction.mutable_signature() = sig;
 
-    return std::vector<uint8_t>(txString.begin(), txString.end());
+    auto output =  transactionJSON(transaction, input.type_prefix()).dump();
+
+    return std::vector<uint8_t>(output.begin(), output.end());
 }
 
 Data Signer::encodeSignature(const PublicKey& publicKey, const Data& signature) const {
