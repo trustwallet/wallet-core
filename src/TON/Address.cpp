@@ -12,6 +12,8 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
+#include <sstream>
 
 using namespace TW;
 using namespace TW::TON;
@@ -127,42 +129,12 @@ bool Address::parseRawAddress(const std::string& addressStr_in, Address& addr_in
     return true;
 }
 
-bool Address::convertBase64Url(const std::string& base64Url_in, std::string& base64Std_out) {
-    // Base64URL format ('+' and '/' are replaced by '-' and '_')
-    if (base64Url_in.find('-') == std::string::npos &&
-        base64Url_in.find('_') == std::string::npos) {
-        // no Base64Url-specific characters
-        return false;
-    }
-    // make copy, replace
-    base64Std_out = std::string(base64Url_in.c_str());
-    for (auto i = base64Std_out.begin(), n = base64Std_out.end(); i != n; ++i) {
-        if (*i == '-')
-            *i = '+';
-        else if (*i == '_')
-            *i = '/';
-    }
-    return true;
-}
-
 bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_inout) {
     Data bytes;
     try {
-        bytes = Base64::decode(addressStr_in);
+        bytes = Base64::decodeBase64Url(addressStr_in);
     } catch (const std::exception& ex) {
-        // 2nd try: Base64URL format ('+' and '/' are replaced by '-' and '_')
-        std::string base64Url;
-        if (!convertBase64Url(addressStr_in, base64Url)) {
-            // not valid base64url
-            return false;
-        }
-        // looks to be URL format
-        try {
-            bytes = Base64::decode(base64Url);
-        } catch (const std::exception& ex) {
-            // not valid base64url
-            return false;
-        }
+        return false;
     }
 
     // check length
