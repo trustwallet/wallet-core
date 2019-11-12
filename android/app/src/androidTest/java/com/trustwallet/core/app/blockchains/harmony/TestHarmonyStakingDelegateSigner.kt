@@ -19,8 +19,7 @@ class TestHarmonyStakingDelegateSigner {
         System.loadLibrary("TrustWalletCore")
     }
 
-    @Test
-    fun testHarmonyStakingTransactionCreateValidatorSigning() {
+    fun createValidator(): Harmony.DirectiveCreateValidator.Builder {
         val desc = Harmony.Description.newBuilder()
         desc.apply {
             name = "Alice"
@@ -61,6 +60,12 @@ class TestHarmonyStakingDelegateSigner {
             addAllSlotPubKeys(listOf(pubKey))
             amount = ByteString.copyFrom("0x64".toHexByteArray())
         }
+        return createValidator
+    }
+
+    @Test
+    fun testHarmonyStakingTransactionCreateValidatorSigning() {
+        val createValidator = createValidator();
         val staking = Harmony.StakingMessage.newBuilder()
         staking.apply {
             nonce = ByteString.copyFrom("0x2".toHexByteArray())
