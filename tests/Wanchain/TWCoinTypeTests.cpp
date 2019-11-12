@@ -15,7 +15,7 @@
 
 TEST(TWWanchainCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeWanchain));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeWanchain, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeWanchain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeWanchain));
@@ -25,7 +25,7 @@ TEST(TWWanchainCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeWanchain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeWanchain));
     assertStringsEqual(symbol, "WAN");
-    assertStringsEqual(txUrl, "https://www.wanscan.org/tx/123");
+    assertStringsEqual(txUrl, "https://www.wanscan.org/tx/0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856");
     assertStringsEqual(id, "wanchain");
     assertStringsEqual(name, "Wanchain");
 }

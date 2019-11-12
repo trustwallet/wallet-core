@@ -28,9 +28,6 @@ class Address {
 
     /// Returns a string representation of the address.
     std::string string() const;
-
-    /// Returns the binary representation of the address (key hash) 
-    const Data keyHash() const;
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {

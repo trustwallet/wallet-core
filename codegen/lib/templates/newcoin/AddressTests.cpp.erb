@@ -29,7 +29,7 @@ TEST(<%= format_name(coin) %>Address, Invalid) {
 TEST(<%= format_name(coin) %>Address, FromPrivateKey) {
     // TODO: Check public key type, finalize implementation
 
-    auto privateKey = PrivateKey(parse_hex("526d96fffdbfe787b2f00586298538f9a019e97f6587964dc61aae9ad1d7fa23"));
+    auto privateKey = PrivateKey(parse_hex("__PRIVATE_KEY_DATA__"));
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
     ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
 }
@@ -37,7 +37,7 @@ TEST(<%= format_name(coin) %>Address, FromPrivateKey) {
 TEST(<%= format_name(coin) %>Address, FromPublicKey) {
     // TODO: Check public key type, finalize implementation
     
-    auto publicKey = PublicKey(parse_hex("c2b423afa8b0095e5ae105668b91b2132db4dadbf38acfc64908d3476a00191f"), TWPublicKeyTypeED25519);
+    auto publicKey = PublicKey(parse_hex("__PUBLIC_KEY_DATS__"), TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
     ASSERT_EQ(address.string(), "__ADD_RESULTING_ADDRESS_HERE__");
 }

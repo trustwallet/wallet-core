@@ -36,7 +36,7 @@ def self.coin_type(path)
   path.split('/')[2].chomp("'")
 end
 
-def self.generateCoinTestFile(coin, templateFile)
+def self.generate_coin_test_file(coin, templateFile)
   path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
   template = ERB.new(File.read(path), nil, '-')
   result = template.result(binding)
@@ -60,5 +60,5 @@ erbs = [
 templateFile = 'TWCoinTypeTests.cpp.erb'
 
 coins.each do |coin|
-  generateCoinTestFile(coin, templateFile)
+  generate_coin_test_file(coin, templateFile)
 end
