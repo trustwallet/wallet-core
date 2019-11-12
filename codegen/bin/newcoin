@@ -31,7 +31,7 @@ def self.format_name_lowercase(coin)
   format_name(coin).downcase
 end
 
-def self.generateFile(templateFile, folder, fileName, coin)
+def self.generate_file(templateFile, folder, fileName, coin)
     @coin = coin
     path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
     template = ERB.new(File.read(path), nil, '-')
@@ -72,18 +72,18 @@ if coinSelect.length() == 0
 end
 coin = coinSelect.first
 
-generateFile("newcoin/Address.h.erb", "src/#{format_name(coin)}", "Address.h", coin)
-generateFile("newcoin/Address.cpp.erb", "src/#{format_name(coin)}", "Address.cpp", coin)
-generateFile("newcoin/Signer.h.erb", "src/#{format_name(coin)}", "Signer.h", coin)
-generateFile("newcoin/Signer.cpp.erb", "src/#{format_name(coin)}", "Signer.cpp", coin)
-generateFile("newcoin/TWAddress.h.erb", "include/TrustWalletCore", "TW#{format_name(coin)}Address.h", coin)
-generateFile("newcoin/TWAddress.cpp.erb", "src/interface", "TW#{format_name(coin)}Address.cpp", coin)
-generateFile("newcoin/TWSigner.h.erb", "include/TrustWalletCore", "TW#{format_name(coin)}Signer.h", coin)
-generateFile("newcoin/TWSigner.cpp.erb", "src/interface", "TW#{format_name(coin)}Signer.cpp", coin)
-generateFile("newcoin/AddressTests.cpp.erb", "tests/#{format_name(coin)}", "AddressTests.cpp", coin)
-generateFile("newcoin/SignerTests.cpp.erb", "tests/#{format_name(coin)}", "SignerTests.cpp", coin)
-generateFile("newcoin/TWTests.cpp.erb", "tests/interface", "TW#{format_name(coin)}Tests.cpp", coin)
+generate_file("newcoin/Address.h.erb", "src/#{format_name(coin)}", "Address.h", coin)
+generate_file("newcoin/Address.cpp.erb", "src/#{format_name(coin)}", "Address.cpp", coin)
+generate_file("newcoin/Signer.h.erb", "src/#{format_name(coin)}", "Signer.h", coin)
+generate_file("newcoin/Signer.cpp.erb", "src/#{format_name(coin)}", "Signer.cpp", coin)
+generate_file("newcoin/TWAddress.h.erb", "include/TrustWalletCore", "TW#{format_name(coin)}Address.h", coin)
+generate_file("newcoin/TWAddress.cpp.erb", "src/interface", "TW#{format_name(coin)}Address.cpp", coin)
+generate_file("newcoin/TWSigner.h.erb", "include/TrustWalletCore", "TW#{format_name(coin)}Signer.h", coin)
+generate_file("newcoin/TWSigner.cpp.erb", "src/interface", "TW#{format_name(coin)}Signer.cpp", coin)
+generate_file("newcoin/AddressTests.cpp.erb", "tests/#{format_name(coin)}", "AddressTests.cpp", coin)
+generate_file("newcoin/SignerTests.cpp.erb", "tests/#{format_name(coin)}", "SignerTests.cpp", coin)
+generate_file("newcoin/TWTests.cpp.erb", "tests/interface", "TW#{format_name(coin)}Tests.cpp", coin)
 coin_test_gen.generate_coin_test_file(coin)
-generateFile("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "AddressTests#{format_name(coin)}.kt", coin)
-generateFile("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "SignerTests#{format_name(coin)}.kt", coin)
-generateFile("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{format_name(coin)}Tests.swift", coin)
+generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "AddressTests#{format_name(coin)}.kt", coin)
+generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "SignerTests#{format_name(coin)}.kt", coin)
+generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{format_name(coin)}Tests.swift", coin)
