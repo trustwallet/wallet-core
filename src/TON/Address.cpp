@@ -32,8 +32,8 @@ Address::Address(const std::string& address) {
 }
 
 Address::Address(const PublicKey& publicKey) {
-    // Steps: a StateInit account state cell is created (containing code and data), its hash is
-    // taken, and new address is derived from the hash
+    // Steps: a StateInit account state cell is created (containing code and data), its hash is taken,
+    // and new address is derived from the hash
 
     if (publicKey.type != TWPublicKeyTypeED25519) {
         throw std::invalid_argument("Invalid public key type");
@@ -49,10 +49,9 @@ Address::Address(const PublicKey& publicKey) {
     ccode->setSliceBytesStr(accountSCCodeFixed);
 
     // data: 4 byte serial num (0), 32 byte public key
-    std::vector<unsigned char> data;
-    for (int i = 0; i < 4; ++i)
-        data.push_back(0);
-    data.insert(data.end(), publicKey.bytes.begin(), publicKey.bytes.end());
+    Data data;
+    append(data, Data(4));
+    append(data, publicKey.bytes);
     assert(data.size() == 4 + 32);
     auto cdata = std::make_shared<Cell>();
     cdata->setSliceBytes(data.data(), data.size());

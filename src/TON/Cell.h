@@ -15,8 +15,6 @@ namespace TW::TON {
 /**
  * Simplified implementation of TON Slice, Cell, etc. structures, for minimal represenatation and
  * hash computation.
- *
- * TODO: Slice load methods into constructor or static create methods
  */
 
 /**

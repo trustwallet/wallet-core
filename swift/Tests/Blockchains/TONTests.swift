@@ -13,7 +13,7 @@ class TONTests: XCTestCase {
         let address = TONAddress(publicKey: pubkey)
         let addressFromString = TONAddress(string: "Ef9gwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0KTM")!
 
-        XCTAssertEqual(pubkey.data.hexString, "F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3")
+        XCTAssertEqual(pubkey.data.hexString, "f61cf0bc8e891ad7636e0cd35229d579323aa2da827eb85d8071407464dc2fa3")
         XCTAssertEqual(address.description, addressFromString.description)
     }
 }
