@@ -9,7 +9,7 @@ import XCTest
 
 class TONTests: XCTestCase {
     func testAddress() {
-        let publicKey = PublicKey(data: Data(hexString: "F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3")!, type: PublicKeyType.ed25519)!
+        let pubkey = PublicKey(data: Data(hexString: "F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3")!, type: PublicKeyType.ed25519)!
         let address = TONAddress(publicKey: pubkey)
         let addressFromString = TONAddress(string: "Ef9gwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0KTM")!
 

@@ -48,7 +48,7 @@ Data decodeBase64Url(const std::string& val) {
         std::string base64Url;
         if (!convertBase64Url(val, base64Url)) {
             // not valid base64url
-            throw ex;
+            throw;
         }
         // looks to be URL format
         return decode(base64Url);
