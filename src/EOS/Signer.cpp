@@ -16,7 +16,7 @@ using namespace TW::EOS;
 
 void Signer::sign(const PrivateKey& privateKey, Type type, Transaction& transaction) const {
     if (!transaction.isValid()) {
-        throw std::invalid_argument("Invalid transaction!");;
+        throw std::invalid_argument("Invalid transaction!");
     }
 
     // values for Legacy and ModernK1
@@ -35,6 +35,10 @@ void Signer::sign(const PrivateKey& privateKey, Type type, Transaction& transact
 }
 
 TW::Data Signer::hash(const Transaction& transaction) const noexcept {
+    return Hash::sha256(serializeTx(transaction));
+}
+
+TW::Data Signer:: serializeTx(const Transaction& transaction) const noexcept {
     Data hashInput(chainID);
     transaction.serialize(hashInput);
 
@@ -44,7 +48,7 @@ TW::Data Signer::hash(const Transaction& transaction) const noexcept {
     }
 
     append(hashInput, cfdHash);
-    return Hash::sha256(hashInput);
+    return hashInput;
 }
 
 // canonical check for EOS

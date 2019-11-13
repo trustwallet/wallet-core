@@ -30,6 +30,9 @@ public:
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
 
+    /// Serialize the transaction.
+    Data serializeTx(const Transaction& transaction) const noexcept;
+
     static int is_canonical(uint8_t by, uint8_t sig[64]);
 };
 

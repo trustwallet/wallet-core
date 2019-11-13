@@ -90,3 +90,104 @@ TW_Proto_Result TWEOSSignerSign(TW_EOS_Proto_SigningInput input) {
         return createErrorResult(e.what());
     }
 }
+
+TWData *_Nonnull TWEOSSignerMessage(TW_EOS_Proto_SigningInput input) {
+    Proto::SigningInput in;
+    bool success = in.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)));
+
+    if (!success) {
+        return createErrorResult("Error parsing the input.");
+    }
+
+    try {
+        // create an asset object
+        auto assetData = in.asset();
+
+        if (assetData.decimals() > TW::Bravo::Asset::maxDecimals) {
+            return createErrorResult("Max decimal places supported in an asset: "
+                                     + std::to_string(TW::Bravo::Asset::maxDecimals));
+        }
+
+        TW::Bravo::Asset asset{assetData.amount(), static_cast<uint8_t>(assetData.decimals()), assetData.symbol()};
+
+        // create a transfer action
+        TransferAction action {in.currency(), in.sender(), in.recipient(), asset, in.memo()};
+
+        // create a Transaction and add the transfer action
+        Transaction tx{ TW::Data(in.reference_block_id().begin(), in.reference_block_id().end()),
+                        in.reference_block_time() };
+        tx.actions.push_back(action);
+
+        // get key type
+        TW::EOS::Type type = Type::Legacy;
+        switch (in.private_key_type()) {
+            case Proto::KeyType::LEGACY:
+                type = Type::Legacy;
+                break;
+
+            case Proto::KeyType::MODERNK1:
+                type = Type::ModernK1;
+                break;
+
+            case Proto::KeyType::MODERNR1:
+                type = Type::ModernR1;
+                break;
+            default: break;
+        }
+
+        auto chainId = TW::Data(in.chain_id().begin(), in.chain_id().end());
+        auto serialized = Signer(chainId).serializeTx(tx);
+
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    } catch (const std::exception& e) {
+        return createErrorResult(e.what());
+    } catch (const std::logic_error& e) {
+        return createErrorResult(e.what());
+    } catch (const std::runtime_error& e) {
+        return createErrorResult(e.what());
+    }
+}
+
+TWData *_Nonnull TWEOSSignerTransaction(TW_EOS_Proto_SigningInput input, TWData *_Nonnull signature) {
+    Proto::SigningInput in;
+    bool success = in.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)));
+
+    if (!success) {
+        return createErrorResult("Error parsing the input.");
+    }
+
+    try {
+        // create an asset object
+        auto assetData = in.asset();
+
+        if (assetData.decimals() > TW::Bravo::Asset::maxDecimals) {
+            return createErrorResult("Max decimal places supported in an asset: "
+                                     + std::to_string(TW::Bravo::Asset::maxDecimals));
+        }
+
+        TW::Bravo::Asset asset{assetData.amount(), static_cast<uint8_t>(assetData.decimals()), assetData.symbol()};
+
+        // create a transfer action
+        TransferAction action {in.currency(), in.sender(), in.recipient(), asset, in.memo()};
+
+        // create a Transaction and add the transfer action
+        Transaction tx{ TW::Data(in.reference_block_id().begin(), in.reference_block_id().end()),
+                        in.reference_block_time() };
+        tx.actions.push_back(action);
+
+        Signature s = Signature(*reinterpret_cast<const TW::Data *>(signature), TW::EOS::Type::ModernK1);
+        tx.signatures.push_back(s);
+
+        // Pack the transaction and add the json encoding to Signing Output
+        PackedTransaction ptx {tx, CompressionType::None};
+
+        auto serialized = ptx.serialize().dump();
+        return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+    } catch (const std::exception& e) {
+        return createErrorResult(e.what());
+    } catch (const std::logic_error& e) {
+        return createErrorResult(e.what());
+    } catch (const std::runtime_error& e) {
+        return createErrorResult(e.what());
+    }
+}
