@@ -69,7 +69,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'ARCHS[sdk=iphonesimulator*]' => '$(ARCHS_STANDARD_64_BIT)'
   }
-  s.dependency 'SwiftProtobuf', '~> 1.5.0'
+  s.dependency 'SwiftProtobuf'
 end
 PODSPEC
 file = File.new('build/TrustWalletCore.podspec', 'w')
