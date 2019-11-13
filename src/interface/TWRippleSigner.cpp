@@ -8,6 +8,7 @@
 
 #include "../Ripple/Signer.h"
 #include "../proto/Ripple.pb.h"
+#include <TrezorCrypto/ecdsa.h>
 
 using namespace TW;
 using namespace TW::Ripple;
@@ -36,5 +37,67 @@ TW_Ripple_Proto_SigningOutput TWRippleSignerSign(TW_Ripple_Proto_SigningInput da
     protoOutput.set_encoded(encoded.data(), encoded.size());
 
     auto serialized = protoOutput.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
+TWData *_Nonnull TWRippleSignerMessage(TW_Ripple_Proto_SigningInput data, TWData *_Nonnull pubKey) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    auto transaction = Transaction(
+            /* amount */input.amount(),
+            /* fee */input.fee(),
+            /* flags */input.flags(),
+            /* sequence */input.sequence(),
+            /* last_ledger_sequence */input.last_ledger_sequence(),
+            /* account */Address(input.account()),
+            /* destination */Address(input.destination()),
+            /* destination_tag*/input.destination_tag()
+    );
+
+    std::vector<uint8_t> pkVec;
+    auto rawPk = TWDataBytes(pubKey);
+    pkVec.assign(rawPk, rawPk + static_cast<int>(TWDataSize(pubKey)));
+    auto publicKey = PublicKey(pkVec, TWPublicKeyTypeSECP256k1);
+
+    transaction.pub_key = publicKey.bytes;
+
+    auto encoded = transaction.getPreImage();
+
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
+}
+
+TWData *_Nonnull TWRippleSignerTransaction(TW_Ripple_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    auto transaction = Transaction(
+            /* amount */input.amount(),
+            /* fee */input.fee(),
+            /* flags */input.flags(),
+            /* sequence */input.sequence(),
+            /* last_ledger_sequence */input.last_ledger_sequence(),
+            /* account */Address(input.account()),
+            /* destination */Address(input.destination()),
+            /* destination_tag*/input.destination_tag()
+    );
+
+    std::vector<uint8_t> signVec;
+    auto rawSign = TWDataBytes(signature);
+    signVec.assign(rawSign, rawSign + static_cast<int>(TWDataSize(signature)));
+    std::array<uint8_t, 72> sigBytes;
+    size_t size = ecdsa_sig_to_der(signVec.data(), sigBytes.data());
+    auto sig = Data{};
+    std::copy(sigBytes.begin(), sigBytes.begin() + size, std::back_inserter(sig));
+
+    std::vector<uint8_t> pkVec;
+    auto rawPk = TWDataBytes(pubKey);
+    pkVec.assign(rawPk, rawPk + static_cast<int>(TWDataSize(pubKey)));
+    auto publicKey = PublicKey(pkVec, TWPublicKeyTypeSECP256k1);
+
+    transaction.pub_key = publicKey.bytes;
+    transaction.signature = sig;
+
+    auto serialized = transaction.serialize();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

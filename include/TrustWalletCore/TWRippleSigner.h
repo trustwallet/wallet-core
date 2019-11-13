@@ -20,4 +20,11 @@ struct TWRippleSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Ripple_Proto_SigningOutput TWRippleSignerSign(TW_Ripple_Proto_SigningInput input);
 
+/// Builds a message to be signed
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWRippleSignerMessage(TW_Ripple_Proto_SigningInput data, TWData *_Nonnull pubKey);
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWRippleSignerTransaction(TW_Ripple_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature);
+
 TW_EXTERN_C_END
