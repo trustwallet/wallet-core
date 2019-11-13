@@ -51,7 +51,7 @@ The best way to submit feedback and report bugs is to [open a GitHub issue](http
 If you want to contribute code please see [Contributing](https://developer.trustwallet.com/wallet-core/contributing).
 If you want to add support for a new blockchain also see [Adding Support for a New Blockchain](https://developer.trustwallet.com/wallet-core/newblockchain), make sure you have read the [requirements](https://developer.trustwallet.com/wallet-core/newblockchain#requirements) section.
 
-Thanks to all the people who contribute. 
+Thanks to all the people who contribute.
 <a href="https://github.com/trustwallet/wallet-core/graphs/contributors"><img src="https://opencollective.com/wallet-core/contributors.svg?width=890&button=false" /></a>
 
 # License
