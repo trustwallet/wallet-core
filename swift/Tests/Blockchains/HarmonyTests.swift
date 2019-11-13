@@ -11,7 +11,7 @@ class HarmonyTests: XCTestCase {
     let localNet = "0x02"
 
     func testSigner() {
-        let transaction = TW_Harmony_Proto_TransactionMessage.with {
+        let transaction = HarmonyTransactionMessage.with {
             $0.nonce = Data(hexString: "0x9")!
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x5208")!
@@ -21,7 +21,7 @@ class HarmonyTests: XCTestCase {
             $0.toAddress = "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc"
             $0.amount = Data(hexString: "0x4c53ecdc18a60000")!
         }
-        let input = TW_Harmony_Proto_SigningInput.with {
+        let input = HarmonySigningInput.with {
             $0.transactionMessage = transaction
             $0.chainID = Data(hexString: localNet)!
             $0.privateKey = Data(hexString: "0xb578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e")!
@@ -40,32 +40,32 @@ class HarmonyTests: XCTestCase {
     let pubKeyData = Data(hexString: "b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611")!
 
     func testStakingCreateValidator() {
-        let description = TW_Harmony_Proto_Description.with {
+        let description = HarmonyDescription.with {
             $0.name = "Alice"
             $0.identity = "alice"
             $0.website = "alice.harmony.one"
             $0.securityContact = "Bob"
             $0.details = "Don't mess with me!!!"
         }
-        let rate = TW_Harmony_Proto_Decimal.with {
+        let rate = HarmonyDecimal.with {
             $0.value = Data(hexString: "0x1")!
             $0.precision = Data(hexString: "0x1")!
         }
-        let maxRate = TW_Harmony_Proto_Decimal.with {
+        let maxRate = HarmonyDecimal.with {
             $0.value = Data(hexString: "0x9")!
             $0.precision = Data(hexString: "0x1")!
         }
-        let maxChangeRate = TW_Harmony_Proto_Decimal.with {
+        let maxChangeRate = HarmonyDecimal.with {
             $0.value = Data(hexString: "0x5")!
             $0.precision = Data(hexString: "0x2")!
         }
-        let commission = TW_Harmony_Proto_CommissionRate.with {
+        let commission = HarmonyCommissionRate.with {
             $0.rate = rate
             $0.maxRate = maxRate
             $0.maxChangeRate = maxChangeRate
         }
         let pubKey = pubKeyData
-        let createValidator = TW_Harmony_Proto_DirectiveCreateValidator.with {
+        let createValidator = HarmonyDirectiveCreateValidator.with {
             $0.validatorAddress = oneAddress
             $0.description_p = description
             $0.commissionRates = commission
@@ -74,13 +74,13 @@ class HarmonyTests: XCTestCase {
             $0.slotPubKeys = [pubKey]
             $0.amount = Data(hexString: "0x64")!
         }
-        let staking = TW_Harmony_Proto_StakingMessage.with {
+        let staking = HarmonyStakingMessage.with {
             $0.createValidatorMessage = createValidator
             $0.nonce = Data(hexString: "0x2")!
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x64")!
         }
-        let input = TW_Harmony_Proto_SigningInput.with {
+        let input = HarmonySigningInput.with {
             $0.chainID = Data(hexString: localNet)!
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
@@ -101,18 +101,18 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingEditValidator() {
-        let desc = TW_Harmony_Proto_Description.with {
+        let desc = HarmonyDescription.with {
             $0.name = "Alice"
             $0.identity = "alice"
             $0.website = "alice.harmony.one"
             $0.securityContact = "Bob"
             $0.details = "Don't mess with me!!!"
         }
-        let commissionRate = TW_Harmony_Proto_Decimal.with {
+        let commissionRate = HarmonyDecimal.with {
             $0.value = Data(hexString: "0x1")!
             $0.precision = Data(hexString: "0x1")!
         }
-        let editValidator = TW_Harmony_Proto_DirectiveEditValidator.with {
+        let editValidator = HarmonyDirectiveEditValidator.with {
             $0.validatorAddress = oneAddress
             $0.description_p = desc
             $0.commissionRate = commissionRate
@@ -121,13 +121,13 @@ class HarmonyTests: XCTestCase {
             $0.slotKeyToRemove = pubKeyData
             $0.slotKeyToAdd = pubKeyData
         }
-        let staking = TW_Harmony_Proto_StakingMessage.with {
+        let staking = HarmonyStakingMessage.with {
             $0.editValidatorMessage = editValidator
             $0.nonce = Data(hexString: "0x2")!
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x64")!
         }
-        let input = TW_Harmony_Proto_SigningInput.with {
+        let input = HarmonyProto_SigningInput.with {
             $0.chainID = Data(hexString: localNet)!
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
@@ -148,18 +148,18 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingDelegate() {
-        let delegate = TW_Harmony_Proto_DirectiveDelegate.with {
+        let delegate = HarmonyDirectiveDelegate.with {
             $0.delegatorAddress = oneAddress
             $0.validatorAddress = oneAddress
             $0.amount = Data(hexString: "0xa")!
         }
-        let staking = TW_Harmony_Proto_StakingMessage.with {
+        let staking = HarmonyStakingMessage.with {
             $0.delegateMessage = delegate
             $0.nonce = Data(hexString: "0x2")!
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x64")!
         }
-        let input = TW_Harmony_Proto_SigningInput.with {
+        let input = HarmonySigningInput.with {
             $0.chainID = Data(hexString: localNet)!
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
@@ -177,18 +177,18 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingUndelegate() {
-        let undelegate = TW_Harmony_Proto_DirectiveUndelegate.with {
+        let undelegate = HarmonyDirectiveUndelegate.with {
             $0.delegatorAddress = oneAddress
             $0.validatorAddress = oneAddress
             $0.amount = Data(hexString: "0xa")!
         }
-        let staking = TW_Harmony_Proto_StakingMessage.with {
+        let staking = HarmonyStakingMessage.with {
             $0.undelegateMessage = undelegate
             $0.nonce = Data(hexString: "0x2")!
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x64")!
         }
-        let input = TW_Harmony_Proto_SigningInput.with {
+        let input = HarmonySigningInput.with {
             $0.chainID = Data(hexString: localNet)!
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
@@ -206,16 +206,16 @@ class HarmonyTests: XCTestCase {
     }
 
     func testStakingCollectRewards() {
-        let collectRewards = TW_Harmony_Proto_DirectiveCollectRewards.with {
+        let collectRewards = HarmonyDirectiveCollectRewards.with {
             $0.delegatorAddress = oneAddress
         }
-        let staking = TW_Harmony_Proto_StakingMessage.with {
+        let staking = HarmonyStakingMessage.with {
             $0.collectRewards = collectRewards
             $0.nonce = Data(hexString: "0x2")!
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x64")!
         }
-        let input = TW_Harmony_Proto_SigningInput.with {
+        let input = HarmonySigningInput.with {
             $0.chainID = Data(hexString: localNet)!
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
