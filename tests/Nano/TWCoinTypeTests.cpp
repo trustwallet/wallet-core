@@ -15,7 +15,7 @@
 
 TEST(TWNanoCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNano));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNano, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNano));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNano));
@@ -25,7 +25,7 @@ TEST(TWNanoCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNano));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNano));
     assertStringsEqual(symbol, "NANO");
-    assertStringsEqual(txUrl, "https://www.nanode.co/block/123");
+    assertStringsEqual(txUrl, "https://nanocrawler.cc/explorer/block/C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F");
     assertStringsEqual(id, "nano");
     assertStringsEqual(name, "Nano");
 }

@@ -772,7 +772,7 @@
         "derivationPath": "m/44'/165'/0'",
         "curve": "ed25519Blake2bNano",
         "publicKeyType": "ed25519Blake2b",
-        "explorer": "https://www.nanode.co/block/",
+        "explorer": "https://nanocrawler.cc/explorer/block/",
         "url": "https://nano.org",
         "rpcNodeInfo": "https://github.com/nanocurrency/nano-node",
         "info": {
