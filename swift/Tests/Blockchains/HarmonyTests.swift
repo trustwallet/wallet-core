@@ -127,7 +127,7 @@ class HarmonyTests: XCTestCase {
             $0.gasPrice = Data(hexString: "0x")!
             $0.gasLimit = Data(hexString: "0x64")!
         }
-        let input = HarmonyProto_SigningInput.with {
+        let input = HarmonySigningInput.with {
             $0.chainID = Data(hexString: localNet)!
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
