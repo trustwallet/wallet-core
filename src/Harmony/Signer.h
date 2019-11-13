@@ -24,22 +24,22 @@ namespace TW::Harmony {
 class Signer {
   private:
     static Proto::SigningOutput
-    signTransaction(const TW::Harmony::Proto::SigningInput &input) noexcept;
+    signTransaction(const Proto::SigningInput &input) noexcept;
 
     static Proto::SigningOutput
-    signCreateValidator(const TW::Harmony::Proto::SigningInput &input) noexcept;
+    signCreateValidator(const Proto::SigningInput &input) noexcept;
 
     static Proto::SigningOutput
-    signEditValidator(const TW::Harmony::Proto::SigningInput &input) noexcept;
+    signEditValidator(const Proto::SigningInput &input) noexcept;
 
     static Proto::SigningOutput
-    signDelegate(const TW::Harmony::Proto::SigningInput &input) noexcept;
+    signDelegate(const Proto::SigningInput &input) noexcept;
 
     static Proto::SigningOutput
-    signUndelegate(const TW::Harmony::Proto::SigningInput &input) noexcept;
+    signUndelegate(const Proto::SigningInput &input) noexcept;
 
     static Proto::SigningOutput
-    signCollectRewards(const TW::Harmony::Proto::SigningInput &input) noexcept;
+    signCollectRewards(const Proto::SigningInput &input) noexcept;
 
   public:
     uint256_t chainID;
