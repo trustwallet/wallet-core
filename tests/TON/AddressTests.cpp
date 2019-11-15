@@ -109,12 +109,12 @@ TEST(TONAddress, createStateInit) {
     EXPECT_EQ(2, stateInit.cellCount());
     if (stateInit.cellCount() >= 2) {
         // first cell contains smart contract code
-        EXPECT_EQ(96, stateInit.getCells()[0]->getSlice().size());
+        EXPECT_EQ(81, stateInit.getCells()[0]->getSlice().size());
         // second cell contains public key
         EXPECT_EQ("00000000f61cf0bc8e891ad7636e0cd35229d579323aa2da827eb85d8071407464dc2fa3", hex(stateInit.getCells()[1]->getSlice().data()));
     }
     auto hash = stateInit.hash();
-    EXPECT_EQ("fd0ebec7f2bcd4b5d63b492085bd331745edfa2a76576eae3071b9034af4f483", hex(hash));
+    EXPECT_EQ("240090ab66459bf6e61e3dfd43f7b9c1f1e7d4bd81d3b2a4ac7323cc1a970753", hex(hash));
 }
 
 TEST(TONAddress, AddressFromPublicKey)
@@ -123,21 +123,21 @@ TEST(TONAddress, AddressFromPublicKey)
     const auto publicKey = PublicKey(parse_hex("F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3"), TWPublicKeyTypeED25519);
     auto address = Address(publicKey);
 
-    EXPECT_EQ("0:fd0ebec7f2bcd4b5d63b492085bd331745edfa2a76576eae3071b9034af4f483", address.stringRaw());
-    EXPECT_EQ("EQD9Dr7H8rzUtdY7SSCFvTMXRe36KnZXbq4wcbkDSvT0g4mP", address.string());
+    EXPECT_EQ("0:240090ab66459bf6e61e3dfd43f7b9c1f1e7d4bd81d3b2a4ac7323cc1a970753", address.stringRaw());
+    EXPECT_EQ("EQAkAJCrZkWb9uYePf1D97nB8efUvYHTsqSscyPMGpcHUx3Y", address.string());
     // to match options 7 (non-bounceable, test only, base64url)
     address.isBounceable = false;
     address.isTestOnly = true;
-    EXPECT_EQ("0QD9Dr7H8rzUtdY7SSCFvTMXRe36KnZXbq4wcbkDSvT0g2_A", address.string());
+    EXPECT_EQ("0QAkAJCrZkWb9uYePf1D97nB8efUvYHTsqSscyPMGpcHU_uX", address.string());
 
     // MasterChain
     address.workchainId = Workchain::MasterChainId;
     address.isBounceable = true;
     address.isTestOnly = false;
-    EXPECT_EQ("-1:fd0ebec7f2bcd4b5d63b492085bd331745edfa2a76576eae3071b9034af4f483", address.stringRaw());
-    EXPECT_EQ("Ef_9Dr7H8rzUtdY7SSCFvTMXRe36KnZXbq4wcbkDSvT0g3bH", address.string());
+    EXPECT_EQ("-1:240090ab66459bf6e61e3dfd43f7b9c1f1e7d4bd81d3b2a4ac7323cc1a970753", address.stringRaw());
+    EXPECT_EQ("Ef8kAJCrZkWb9uYePf1D97nB8efUvYHTsqSscyPMGpcHU-KQ", address.string());
     // to match options 7 (non-bounceable, test only, base64url)
     address.isBounceable = false;
     address.isTestOnly = true;
-    EXPECT_EQ("0f_9Dr7H8rzUtdY7SSCFvTMXRe36KnZXbq4wcbkDSvT0g5CI", address.string());
+    EXPECT_EQ("0f8kAJCrZkWb9uYePf1D97nB8efUvYHTsqSscyPMGpcHUwTf", address.string());
 }
