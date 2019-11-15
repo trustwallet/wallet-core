@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 
 TEST(TWTONAddress, CreateWithString) {
-    auto addrStr = TWStringCreateWithUTF8Bytes("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb");
+    auto addrStr = TWStringCreateWithUTF8Bytes("Ef-BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb");
 
     // first call isValid
     bool isValid = TWTONAddressIsValidString(addrStr);
@@ -57,5 +57,5 @@ TEST(TWTONAddress, HDWallet) {
     auto address = TWTONAddressCreateWithPublicKey(publicKey);
     auto addressStr = WRAPS(TWTONAddressDescription(address));
 
-    assertStringsEqual(addressStr, "Ef9D0h+JxF6dTWY1tgwduk+ZZcCr0AVu/2t01g5IkKEsiYQJ");
+    assertStringsEqual(addressStr, "Ef9D0h-JxF6dTWY1tgwduk-ZZcCr0AVu_2t01g5IkKEsiYQJ");
 }

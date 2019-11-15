@@ -22,10 +22,7 @@ Slice::Slice() {
     _sizeBits = 0;
 }
 
-Slice::Slice(const Slice& from) {
-    _data = from._data;
-    _sizeBits = from._sizeBits;
-}
+Slice::Slice(const Slice& from) : _data(from._data), _sizeBits(from._sizeBits) {}
 
 Slice Slice::createFromData(const Data& data) {
     if (data.size() == 0) {
@@ -89,10 +86,7 @@ Data Slice::hash() const {
 }
 
 
-Cell::Cell(const Cell& from) {
-    _cells = from._cells;
-    _slice = from._slice;
-}
+Cell::Cell(const Cell& from) : _cells(from._cells), _slice(from._slice) {}
 
 void Cell::setSlice(Slice const& slice) {
     _slice = slice;

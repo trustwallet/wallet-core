@@ -16,8 +16,8 @@ using namespace TW::TON;
 
 static string TestGiverHex = "8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d";
 static string TestGiverRaw = "-1:8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d";
-static string TestGiverUser = "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb";
-static string TestGiverUserUrl = "Ef-BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb"; // base64url
+static string TestGiverUser = "Ef-BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb";  // base64url
+static string TestGiverUserRegular = "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb"; // regular base64
 
 TEST(TONAddress, WorkchainValid)
 {
@@ -73,7 +73,7 @@ TEST(TONAddress, AddressFromUser)
 
     {
         // Base64Url format
-        auto addr2 = Address(TestGiverUserUrl);
+        auto addr2 = Address(TestGiverUserRegular);
         // convert back to string, will be standard again
         auto addr22strUser = addr2.string();
         ASSERT_EQ(TestGiverUser, addr22strUser);

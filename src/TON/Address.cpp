@@ -193,8 +193,8 @@ std::string Address::string() const {
     bytes.push_back(crc >> 8);
     bytes.push_back(crc & 0xff);
 
-    // base64 encode
-    std::string addrEnc = Base64::encode(bytes);
+    // base64 encode, use Base64Url format (safer for wallets, explorer)
+    std::string addrEnc = Base64::encodeBase64Url(bytes);
     return addrEnc;
 }
 
