@@ -66,8 +66,12 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t i
     // Locktime
     encode32LE(lockTime, data);
 
-    // Sighash type
-    encode32LE(hashType, data);
+    // Sighash type (add forkid if applicable)
+    unsigned int forkHashType = static_cast<unsigned int>(hashType);
+    if (coinType == TWCoinTypeBitcoinGold) {
+        forkHashType |= (79 << 8);
+    }
+    encode32LE(forkHashType, data);
 
     return data;
 }

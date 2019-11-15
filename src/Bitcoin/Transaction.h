@@ -38,6 +38,9 @@ struct Transaction {
     /// A list of 1 or more transaction outputs or destinations for coins
     std::vector<TransactionOutput> outputs;
 
+    /// Coin type to distinguish forks
+    TWCoinType coinType;
+
     TW::Hash::Hasher hasher = TW::Hash::sha256d;
 
     Transaction() = default;

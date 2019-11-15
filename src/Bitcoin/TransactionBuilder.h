@@ -83,6 +83,8 @@ public:
             tx.inputs.emplace_back(utxo.out_point(), emptyScript, utxo.out_point().sequence());
         }
 
+        tx.coinType = coin;
+
         return tx;
     }
 };

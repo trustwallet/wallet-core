@@ -16,6 +16,7 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPBitcoin), "bc");
     ASSERT_STREQ(stringForHRP(TWHRPLitecoin), "ltc");
     ASSERT_STREQ(stringForHRP(TWHRPBitcoinCash), "bitcoincash");
+    ASSERT_STREQ(stringForHRP(TWHRPBitcoinGold), "btg");
     ASSERT_STREQ(stringForHRP(TWHRPBinance), "bnb");
     ASSERT_STREQ(stringForHRP(TWHRPCosmos), "cosmos");
     ASSERT_STREQ(stringForHRP(TWHRPDigiByte), "dgb");
@@ -33,6 +34,7 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("bc"), TWHRPBitcoin);
     ASSERT_EQ(hrpForString("ltc"), TWHRPLitecoin);
     ASSERT_EQ(hrpForString("bitcoincash"), TWHRPBitcoinCash);
+    ASSERT_EQ(hrpForString("btg"), TWHRPBitcoinGold);
     ASSERT_EQ(hrpForString("bnb"), TWHRPBinance);
     ASSERT_EQ(hrpForString("cosmos"), TWHRPCosmos);
     ASSERT_EQ(hrpForString("dgb"), TWHRPDigiByte);
@@ -48,6 +50,7 @@ TEST(TWHRP, HRPForString) {
 TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPBitcoin, TWCoinTypeHRP(TWCoinTypeBitcoin));
     ASSERT_EQ(TWHRPBitcoinCash, TWCoinTypeHRP(TWCoinTypeBitcoinCash));
+    ASSERT_EQ(TWHRPBitcoinGold, TWCoinTypeHRP(TWCoinTypeBitcoinGold));
     ASSERT_EQ(TWHRPBinance, TWCoinTypeHRP(TWCoinTypeBinance));
     ASSERT_EQ(TWHRPCosmos, TWCoinTypeHRP(TWCoinTypeCosmos));
     ASSERT_EQ(TWHRPDigiByte, TWCoinTypeHRP(TWCoinTypeDigiByte));

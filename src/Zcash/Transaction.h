@@ -28,6 +28,8 @@ struct Transaction {
     std::vector<Bitcoin::TransactionInput> inputs;
     std::vector<Bitcoin::TransactionOutput> outputs;
 
+    TWCoinType coinType;
+
     Transaction() = default;
 
     Transaction(uint32_t version, uint32_t versionGroupId, uint32_t lockTime, uint32_t expiryHeight,
