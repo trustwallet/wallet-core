@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TON/Address.h"
+#include "TON/Contract.h"
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>
@@ -98,6 +99,20 @@ TEST(TONAddress, AddressToString)
 
     auto strUserRaw = addr.stringRaw();
     ASSERT_EQ(TestGiverRaw, strUserRaw);
+}
+
+TEST(TONAddress, createStateInit) {
+    const auto publicKey = PublicKey(parse_hex("F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3"), TWPublicKeyTypeED25519);
+    Cell stateInit = Contract::createStateInit(publicKey);
+    EXPECT_EQ(2, stateInit.cellCount());
+    if (stateInit.cellCount() >= 2) {
+        // first cell contains smart contract code
+        EXPECT_EQ(70, stateInit.getCells()[0]->getSlice().size());
+        // second cell contains public key
+        EXPECT_EQ("00000000f61cf0bc8e891ad7636e0cd35229d579323aa2da827eb85d8071407464dc2fa3", hex(stateInit.getCells()[1]->getSlice().data()));
+    }
+    auto hash = stateInit.hash();
+    EXPECT_EQ("60c04141c6a7b96d68615e7a91d265ad0f3a9a922e9ae9c901d4fa83f5d3c0d0", hex(hash));
 }
 
 TEST(TONAddress, AddressFromPublicKey)

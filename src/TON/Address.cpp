@@ -6,6 +6,8 @@
 
 #include "Address.h"
 #include "Cell.h"
+#include "Contract.h"
+
 #include "../Base64.h"
 #include "../Crc.h"
 #include "../HexCoding.h"
@@ -39,29 +41,9 @@ Address::Address(const PublicKey& publicKey) {
         throw std::invalid_argument("Invalid public key type");
     }
 
-    // code
-    // const std::string
-    // accountSCCodeFixed("FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54");
-    const std::string accountSCCodeFixed(
-        "FF0020DDA4F260810200D71820D70B1FED44D0D7091FD709FFD15112BAF2A122F901541044F910F2A2F80001D7"
-        "091F3120D74A97D70907D402FB00DED1A4C8CB1FCBFFC9ED54");
-    auto ccode = std::make_shared<Cell>();
-    ccode->setSliceBytesStr(accountSCCodeFixed);
+    Cell stateInit = Contract::createStateInit(publicKey);
 
-    // data: 4 byte serial num (0), 32 byte public key
-    Data data;
-    append(data, Data(4));
-    append(data, publicKey.bytes);
-    assert(data.size() == 4 + 32);
-    auto cdata = std::make_shared<Cell>();
-    cdata->setSliceBytes(data);
-
-    Cell stateInit;
-    stateInit.setSliceBitsStr("34", 5);
-    stateInit.addCell(ccode);
-    stateInit.addCell(cdata);
-
-    // compute hash
+    // compute hash of stateInit
     auto hash = stateInit.hash();
 
     // fill members
