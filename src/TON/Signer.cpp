@@ -59,9 +59,11 @@ Data Signer::buildInitMessage(
     // build cell for message
     Slice s;
     s.appendBits(parse_hex("88"), 7); // 7 bits b{1000100}
-    s.appendBytes(data(&chainId, 1)); // chainid
+    // address (chainId + hash)
+    s.appendBytes(data(&chainId, 1));
     s.appendBytes(stateInitHash);
-    s.appendBits(parse_hex("08c0"), 12); // 12 bits:  b{000010} b{00110} b{0}
+    // 12 bits:  b{000010} b{00110} b{0}
+    s.appendBits(parse_hex("08c0"), 12);
     s.appendBytes(signature);
     s.appendBytes(msg);
     //cerr << s.size() << " " << s.asBytesStr() << endl;

@@ -55,7 +55,7 @@ Slice Slice::createFromBitsStr(std::string const& dataStr, size_t sizeBits) {
 }
 
 void Slice::appendBytes(const Data& data_in) {
-    int diffBits = size() * 8 - _sizeBits;
+    size_t diffBits = size() * 8 - _sizeBits;
     assert(diffBits >= 0 && diffBits <= 7);
     if (diffBits == 0) {
         // at byte-boundary
@@ -89,7 +89,7 @@ void Slice::appendBitsAligned(const Data& data_in, size_t sizeBits) {
     assert((_sizeBits & 7) == 0);
     size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
     assert(data_in.size() == size1);
-    int diffBitsNew = size1 * 8 - sizeBits;
+    size_t diffBitsNew = size1 * 8 - sizeBits;
     assert(diffBitsNew >= 0 && diffBitsNew <= 7);
     if (diffBitsNew == 0) {
         // both old and new are aligned, no bit operations needed
@@ -108,7 +108,7 @@ void Slice::appendBitsAligned(const Data& data_in, size_t sizeBits) {
     _data.push_back(last);
     _sizeBits += sizeBits;
     // set highest unused bit to 1
-    int diffBits = size() * 8 - _sizeBits;
+    size_t diffBits = size() * 8 - _sizeBits;
     assert(diffBits >= 1 && diffBits <= 7);
     _data[_data.size() - 1] |= (1 << (byte)(diffBits - 1));
 }
@@ -118,12 +118,12 @@ void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
     assert((_sizeBits & 7) != 0);
     size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
     assert(data_in.size() == size1);
-    int diffBitsNew = size1 * 8 - sizeBits;
+    size_t diffBitsNew = size1 * 8 - sizeBits;
     assert(diffBitsNew >= 0 && diffBitsNew <= 7);
     // all new bits have to be shifted
-    int diffBitsOld = size() * 8 - _sizeBits;
+    size_t diffBitsOld = size() * 8 - _sizeBits;
     assert(diffBitsOld >= 1 && diffBitsOld <= 7);
-    byte oldMask = ((byte)0xff << (byte)diffBitsOld);
+    byte oldMask = (byte)((byte)0xff << (byte)diffBitsOld);
     size_t newSize = data_in.size();
     for (size_t newIdx = 0; newIdx < newSize; ++newIdx) {
         // first part -- affects current last byte in old
@@ -139,13 +139,13 @@ void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
         byte first = newByte >> (byte)(8 - diffBitsOld);
         _data[_data.size() - 1] = (_data[_data.size() - 1] & oldMask) | first;
         // second part -- add as new byte
-        byte second = newByte << (byte)diffBitsOld;
+        byte second = (byte)(newByte << (byte)diffBitsOld);
         //cerr << (int)first << " " << (int)second << endl;
         if (_sizeBits > size() * 8) {
             _data.push_back(second);
         }
         // set highest unused bit to 1
-        int diffBits = size() * 8 - _sizeBits;
+        size_t diffBits = size() * 8 - _sizeBits;
         assert(diffBits >= 0 && diffBits <= 7);
         if (diffBits > 0) {
             _data[_data.size() - 1] |= (1 << (byte)(diffBits - 1));
