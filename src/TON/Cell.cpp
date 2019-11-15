@@ -55,7 +55,7 @@ Slice Slice::createFromBitsStr(std::string const& dataStr, size_t sizeBits) {
 }
 
 void Slice::appendBytes(const Data& data_in) {
-    size_t diffBits = size() * 8 - _sizeBits;
+    int diffBits = (int)(size() * 8 - _sizeBits);
     assert(diffBits >= 0 && diffBits <= 7);
     if (diffBits == 0) {
         // at byte-boundary
@@ -89,7 +89,7 @@ void Slice::appendBitsAligned(const Data& data_in, size_t sizeBits) {
     assert((_sizeBits & 7) == 0);
     size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
     assert(data_in.size() == size1);
-    size_t diffBitsNew = size1 * 8 - sizeBits;
+    int diffBitsNew = (int)(size1 * 8 - sizeBits);
     assert(diffBitsNew >= 0 && diffBitsNew <= 7);
     if (diffBitsNew == 0) {
         // both old and new are aligned, no bit operations needed
@@ -108,7 +108,7 @@ void Slice::appendBitsAligned(const Data& data_in, size_t sizeBits) {
     _data.push_back(last);
     _sizeBits += sizeBits;
     // set highest unused bit to 1
-    size_t diffBits = size() * 8 - _sizeBits;
+    int diffBits = (int)(size() * 8 - _sizeBits);
     assert(diffBits >= 1 && diffBits <= 7);
     _data[_data.size() - 1] |= (1 << (byte)(diffBits - 1));
 }
@@ -118,7 +118,7 @@ void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
     assert((_sizeBits & 7) != 0);
     size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
     assert(data_in.size() == size1);
-    size_t diffBitsNew = size1 * 8 - sizeBits;
+    int diffBitsNew = (int)(size1 * 8 - sizeBits);
     assert(diffBitsNew >= 0 && diffBitsNew <= 7);
     // all new bits have to be shifted
     size_t diffBitsOld = size() * 8 - _sizeBits;
@@ -145,7 +145,7 @@ void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
             _data.push_back(second);
         }
         // set highest unused bit to 1
-        size_t diffBits = size() * 8 - _sizeBits;
+        int diffBits = (int)(size() * 8 - _sizeBits);
         assert(diffBits >= 0 && diffBits <= 7);
         if (diffBits > 0) {
             _data[_data.size() - 1] |= (1 << (byte)(diffBits - 1));
