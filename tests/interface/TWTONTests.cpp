@@ -24,7 +24,7 @@ TEST(TWTONAddress, CreateWithString) {
     auto address = TWTONAddressCreateWithString(addrStr);
     // convert back to string
     auto str2 = TWTONAddressDescription(address);
-    ASSERT_EQ(std::string(TWStringUTF8Bytes(addrStr)), std::string(TWStringUTF8Bytes(str2)));
+    EXPECT_EQ(std::string(TWStringUTF8Bytes(addrStr)), std::string(TWStringUTF8Bytes(str2)));
 
     {
         // create a second one, also invoke compare
@@ -43,7 +43,7 @@ TEST(TWTONAddress, CreateWithPublicKey) {
     auto address = WRAP(TWTONAddress, TWTONAddressCreateWithPublicKey(publicKey.get()));
     auto addressStr = TWTONAddressDescription(address.get());
 
-    ASSERT_EQ(std::string("EQBgwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0FuE"), TWStringUTF8Bytes(addressStr));
+    EXPECT_EQ(std::string("EQD9Dr7H8rzUtdY7SSCFvTMXRe36KnZXbq4wcbkDSvT0g4mP"), TWStringUTF8Bytes(addressStr));
 }
 
 TEST(TWTONAddress, HDWallet) {
@@ -57,5 +57,5 @@ TEST(TWTONAddress, HDWallet) {
     auto address = TWTONAddressCreateWithPublicKey(publicKey);
     auto addressStr = WRAPS(TWTONAddressDescription(address));
 
-    ASSERT_EQ(std::string("EQBD0h-JxF6dTWY1tgwduk-ZZcCr0AVu_2t01g5IkKEsiXtB"), TWStringUTF8Bytes(addressStr.get()));
+    ASSERT_EQ(std::string("EQDz4-I2LxMOvPwcAg5aH3xMFzJsFZ8PMVSSjXCtyjwKxBK5"), TWStringUTF8Bytes(addressStr.get()));
 }

@@ -113,7 +113,7 @@ void Slice::appendBitsAligned(const Data& data_in, size_t sizeBits) {
 
 void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
     // old is not aligned
-    if ((_sizeBits & 7) != 0);
+    assert((_sizeBits & 7) != 0);
     size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
     assert(data_in.size() == size1);
     size_t diffBitsNew = size1 * 8 - sizeBits;
