@@ -30,8 +30,8 @@ TWData *_Nonnull TWEthereumSignerMessage(TW_Ethereum_Proto_SigningInput data) {
 
     auto signer = Signer(load(input.chain_id()));
     auto transaction = Signer::build(input);
-    auto encoded = signer.hash(transaction);
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
+    auto serialized = signer.serialize(transaction);
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
 TWData *_Nonnull TWEthereumSignerTransaction(TW_Ethereum_Proto_SigningInput data, TWData *_Nonnull signature) {

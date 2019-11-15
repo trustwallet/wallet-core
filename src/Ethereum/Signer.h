@@ -33,7 +33,9 @@ class Signer {
     Proto::SigningOutput sign(const Proto::SigningInput &input) const noexcept;
 
     /// Signs the given transaction.
-    void sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept;
+    void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
+
+    Data serialize(const Transaction& transaction) const noexcept;
 
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
