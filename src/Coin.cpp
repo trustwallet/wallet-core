@@ -40,6 +40,7 @@
 #include "Waves/Address.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
+#include "Kusama/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 
@@ -173,6 +174,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeAlgorand:
         return Algorand::Address::isValid(string);
+
+    case TWCoinTypeKusama:
+        return Kusama::Address::isValid(string);
     }
 }
 
@@ -301,6 +305,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeAlgorand:
         return Algorand::Address(publicKey).string();
+
+    case TWCoinTypeKusama:
+        return Kusama::Address(publicKey).string();
     }
 }
 

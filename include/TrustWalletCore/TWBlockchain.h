@@ -41,6 +41,7 @@ enum TWBlockchain {
     TWBlockchainNEAR = 26,
     TWBlockchainAlgorand = 27,
     TWBlockchainTON = 28,
+    TWBlockchainPolkadot = 29,
 };
 
 TW_EXTERN_C_END

@@ -49,6 +49,10 @@ TWData *_Nonnull TWHDWalletSeed(struct TWHDWallet *_Nonnull wallet);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet);
 
+/// Returns master key.
+TW_EXPORT_METHOD
+struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, enum TWCurve curve);
+
 /// Generates the default private key for the specified coin.
 TW_EXPORT_METHOD
 struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin);

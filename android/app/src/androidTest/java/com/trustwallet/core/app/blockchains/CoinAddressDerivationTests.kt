@@ -78,5 +78,6 @@ class CoinAddressDerivationTests {
         SOLANA -> assertEquals("2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m", address)
         TON -> assertEquals("EQAmXWk7P7avw96EViZULpA85Lz6Si3MeWG-vFXmbEjpL-fo", address)
         ALGORAND -> assertEquals("JTJWO524JXIHVPGBDWFLJE7XUIA32ECOZOBLF2QP3V5TQBT3NKZSCG67BQ", address)
+        KUSAMA -> assertEquals("DE2jNrgosggXWJXfYDmRgy1q8XKkbtzSxj2uWAy5fbBfZwT", address)
     }
 }

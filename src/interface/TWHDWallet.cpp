@@ -40,6 +40,10 @@ TWString *_Nonnull TWHDWalletMnemonic(struct TWHDWallet *_Nonnull wallet){
     return TWStringCreateWithUTF8Bytes(wallet->impl.mnemonic.c_str());
 }
 
+struct TWPrivateKey *_Nonnull TWHDWalletGetMasterKey(struct TWHDWallet *_Nonnull wallet, TWCurve curve) {
+    return new TWPrivateKey{ wallet->impl.getMasterKey(curve) };
+}
+
 struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
     auto derivationPath = TW::derivationPath(coin);
     return new TWPrivateKey{ wallet->impl.getKey(derivationPath) };

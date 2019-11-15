@@ -11,9 +11,6 @@
 
 #include <string>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-function"
-
 namespace TW::Zilliqa {
 
 /// Zilliqa address is a Bech32Address, with "zil" prefix and Sha2 hash.
@@ -35,6 +32,9 @@ public:
         return Bech32Address::decode(addr, obj_out, hrp);
     }
 };
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
 
 static std::string checkSum(const Data &keyHash) {
     return checksumed(keyHash);

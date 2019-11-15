@@ -58,6 +58,9 @@ class HDWallet {
 
     virtual ~HDWallet();
 
+    /// Returns master key.
+    PrivateKey getMasterKey(TWCurve curve) const;
+
     /// Returns the private key at the given derivation path.
     PrivateKey getKey(const DerivationPath& derivationPath) const;
 
