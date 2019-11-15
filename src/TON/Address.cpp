@@ -59,9 +59,6 @@ bool Address::isValid(const std::string& address) {
     bool isValid = parseAddress(address, addr);
     if (addr.workchainId != Workchain::defaultChain()) {
         // not the right chain, refuse
-        cout << "Wrong  "<< address << endl;
-        addr.workchainId = Workchain::defaultChain();
-        cout << "   "<< addr.string() << endl;
         return false;
     }
     return isValid;

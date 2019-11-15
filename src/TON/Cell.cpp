@@ -42,24 +42,8 @@ Slice Slice::createFromBits(const Data& data, size_t sizeBits) {
     if (sizeBits <= 0) {
         throw std::runtime_error("empty data");
     }
-    // compute number of bytes needed
-    size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
-    if (data.size() < size1) {
-        throw std::runtime_error("too few bytes given");
-    }
-    assert(data.size() >= size1);
-    // fill bytes ...
-    Slice s = createFromData(data);
-    // ... and adjust sizeBits and last byte
-    s._sizeBits = sizeBits;
-    if ((s._sizeBits & 7) != 0) {
-        size_t diffBits = s.size() * 8 - s._sizeBits;
-        assert(diffBits > 0 && diffBits <= 7);
-        // zero unused bits
-        s._data[s.size() - 1] &= ~((1 << diffBits) - 1);
-        // set highest unused bit to 1
-        s._data[s.size() - 1] |= (1 << (diffBits - 1));
-    }
+    Slice s;
+    s.appendBits(data, sizeBits);
     return s;
 }
 
@@ -70,11 +54,101 @@ Slice Slice::createFromBitsStr(std::string const& dataStr, size_t sizeBits) {
 
 void Slice::appendBytes(const Data& data_in) {
     size_t diffBits = size() * 8 - _sizeBits;
-    assert(diffBits == 0);
-    // at byte-boundary
-    append(_data, data_in);
-    _sizeBits = _data.size() * 8;
-    return;
+    assert(diffBits >= 0 && diffBits <= 7);
+    if (diffBits == 0) {
+        // at byte-boundary
+        append(_data, data_in);
+        _sizeBits = _data.size() * 8;
+        return;
+    }
+    // not at byte boundary, bit operations needed
+    return appendBits(data_in, data_in.size() * 8);
+}
+
+void Slice::appendBits(const Data& data_in, size_t sizeBits) {
+    if (sizeBits == 0) { return; }
+    // compute number of bytes needed
+    size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
+    if (data_in.size() != size1) {
+        // wrong number of bytes/bits
+        throw std::runtime_error("mismatch between bytes and bits size");
+    }
+    assert(data_in.size() == size1);
+    if ((_sizeBits & 7) == 0) {
+        appendBitsAligned(data_in, sizeBits);
+        return;
+    }
+    // all new bits have to be shifted
+    appendBitsNotAligned(data_in, sizeBits);
+}
+
+void Slice::appendBitsAligned(const Data& data_in, size_t sizeBits) {
+    // old is aligned
+    assert((_sizeBits & 7) == 0);
+    size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
+    assert(data_in.size() == size1);
+    size_t diffBitsNew = size1 * 8 - sizeBits;
+    assert(diffBitsNew >= 0 && diffBitsNew <= 7);
+    if (diffBitsNew == 0) {
+        // both old and new are aligned, no bit operations needed
+        return appendBytes(data_in);
+    }
+    // old is aligned, but new is not
+    assert(diffBitsNew >= 1 && diffBitsNew <= 7);
+    // bytes, except last
+    if (size1 > 1) {
+        append(_data, TW::data(data_in.data(), size1 - 1));
+    }
+    // last byte
+    byte last = data_in[size1 - 1];
+    // zero unused bits
+    last &= ~((1 << diffBitsNew) - 1);
+    _data.push_back(last);
+    _sizeBits += sizeBits;
+    // set highest unused bit to 1
+    size_t diffBits = size() * 8 - _sizeBits;
+    assert(diffBits >= 1 && diffBits <= 7);
+    _data[_data.size() - 1] |= (1 << (diffBits - 1));
+}
+
+void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
+    // old is not aligned
+    if ((_sizeBits & 7) != 0);
+    size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
+    assert(data_in.size() == size1);
+    size_t diffBitsNew = size1 * 8 - sizeBits;
+    assert(diffBitsNew >= 0 && diffBitsNew <= 7);
+    // all new bits have to be shifted
+    size_t diffBitsOld = size() * 8 - _sizeBits;
+    assert(diffBitsOld >= 1 && diffBitsOld <= 7);
+    byte oldMask = (0xff << diffBitsOld);
+    size_t newSize = data_in.size();
+    for (size_t newIdx = 0; newIdx < newSize; ++newIdx) {
+        // first part -- affects current last byte in old
+        byte newByte = data_in[newIdx];
+        if (newIdx == newSize - 1) {
+            // last byte in new
+            // zero unused bits
+            newByte &= ~((1 << diffBitsNew) - 1);
+            _sizeBits += (8 - diffBitsNew);
+        } else {
+            _sizeBits += 8;
+        }
+        byte first = newByte >> (8 - diffBitsOld);
+        _data[_data.size() - 1] = (_data[_data.size() - 1] & oldMask) | first;
+        // second part -- add as new byte
+        byte second = newByte << diffBitsOld;
+        //cerr << (int)first << " " << (int)second << endl;
+        if (_sizeBits > size() * 8) {
+            _data.push_back(second);
+        }
+        // set highest unused bit to 1
+        size_t diffBits = size() * 8 - _sizeBits;
+        assert(diffBits >= 0 && diffBits <= 7);
+        if (diffBits > 0) {
+            _data[_data.size() - 1] |= (1 << (diffBits - 1));
+        }
+    }
 }
 
 std::string Slice::asBytesStr() const {

@@ -27,7 +27,7 @@ namespace TW::TON {
  *   bf7cbe09d71a1bcc373ab9a764917f730a6ed951ffa1a7399b7abd8f8fd73cb4
  */
 class Slice {
-  public:
+public:
     Slice();
     Slice(const Slice& from);
     virtual ~Slice() {}
@@ -36,14 +36,21 @@ class Slice {
     static Slice createFromHex(std::string const& dataStr);
     static Slice createFromBits(const Data& data, size_t sizeBits);
     static Slice createFromBitsStr(std::string const& dataStr, size_t sizeBits);
-    void appendBytes(const Data& data);
+    void appendBytes(const Data& data_in);
+    /// Append bytes, possible incomplete bytes at the end.  SizeBits should be equal to data.size() * 8, or less by at most 7.
+    void appendBits(const TW::Data& data_in, size_t sizeBits);
     Data data() const { return _data; }
     inline size_t size() const { return _data.size(); }
     size_t sizeBits() const { return _sizeBits; }
     std::string asBytesStr() const;
+    void serialize(TW::Data& data_inout);
     Data hash() const;
 
-  private:
+protected:
+    void appendBitsAligned(const TW::Data& data_in, size_t sizeBits);
+    void appendBitsNotAligned(const TW::Data& data_in, size_t sizeBits);
+
+private:
     Data _data;
     size_t _sizeBits;
 };
@@ -111,13 +118,13 @@ class Slice {
  *   Data hash: 60c04141c6a7b96d68615e7a91d265ad0f3a9a922e9ae9c901d4fa83f5d3c0d0
  */
 class Cell {
-  public:
+public:
     Cell() {}
     Cell(const Cell& from);
     void setSlice(Slice const& slice);
     /// Convenience method for setting slice directly from bytes.  May throw.
     void setSliceBytes(const Data& data);
-    /// Convenience method for setting slice directly from string.  May throw.
+    /// Convenience method for setting slice directly from hex string.  May throw.
     void setSliceBytesStr(std::string const& sliceStr);
     /// Convenience method for setting slice directly from bits.  May throw.
     void setSliceBitsStr(std::string const& sliceStr, size_t sizeBits);
@@ -131,7 +138,7 @@ class Cell {
     /// second byte in length
     static size_t d2(size_t bits);
 
-  private:
+private:
     std::vector<std::shared_ptr<Cell>> _cells;
     Slice _slice;
 };
