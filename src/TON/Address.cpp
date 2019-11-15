@@ -54,7 +54,7 @@ Address::Address(const PublicKey& publicKey) {
     append(data, publicKey.bytes);
     assert(data.size() == 4 + 32);
     auto cdata = std::make_shared<Cell>();
-    cdata->setSliceBytes(data.data(), data.size());
+    cdata->setSliceBytes(data);
 
     Cell stateInit;
     stateInit.setSliceBitsStr("34", 5);

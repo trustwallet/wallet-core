@@ -107,7 +107,7 @@ TEST(TONCell, CellWithChild)
         c.addCell(c1);
         ASSERT_EQ("993e6d53d70fb05f052ce45ac751e24abd7d43e358b297694cfc19bbc796141c", hex(c.hash()));
         c.addCell(c2);
-        ASSERT_EQ(2, c.cell_count());
+        ASSERT_EQ(2, c.cellCount());
         ASSERT_EQ("3959cba26c91a21d80b6953dd646ce8b8fb3caa507ea866ee98ff92b0230d0b9", hex(c.hash()));
     }
     {
