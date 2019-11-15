@@ -138,7 +138,7 @@ public:
     void serialize(TW::Data& data_inout, bool topLevel);
     static const size_t max_cells = 4;
     /// second byte in length
-    static size_t d2(size_t bits);
+    static byte d2(size_t bits);
 
 private:
     std::vector<std::shared_ptr<Cell>> _cells;

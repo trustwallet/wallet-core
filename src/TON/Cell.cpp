@@ -55,7 +55,7 @@ Slice Slice::createFromBitsStr(std::string const& dataStr, size_t sizeBits) {
 }
 
 void Slice::appendBytes(const Data& data_in) {
-    size_t diffBits = size() * 8 - _sizeBits;
+    int diffBits = size() * 8 - _sizeBits;
     assert(diffBits >= 0 && diffBits <= 7);
     if (diffBits == 0) {
         // at byte-boundary
@@ -89,7 +89,7 @@ void Slice::appendBitsAligned(const Data& data_in, size_t sizeBits) {
     assert((_sizeBits & 7) == 0);
     size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
     assert(data_in.size() == size1);
-    size_t diffBitsNew = size1 * 8 - sizeBits;
+    int diffBitsNew = size1 * 8 - sizeBits;
     assert(diffBitsNew >= 0 && diffBitsNew <= 7);
     if (diffBitsNew == 0) {
         // both old and new are aligned, no bit operations needed
@@ -104,13 +104,13 @@ void Slice::appendBitsAligned(const Data& data_in, size_t sizeBits) {
     // last byte
     byte last = data_in[size1 - 1];
     // zero unused bits
-    last &= ~((1 << diffBitsNew) - 1);
+    last &= ~((1 << (byte)diffBitsNew) - 1);
     _data.push_back(last);
     _sizeBits += sizeBits;
     // set highest unused bit to 1
-    size_t diffBits = size() * 8 - _sizeBits;
+    int diffBits = size() * 8 - _sizeBits;
     assert(diffBits >= 1 && diffBits <= 7);
-    _data[_data.size() - 1] |= (1 << (diffBits - 1));
+    _data[_data.size() - 1] |= (1 << (byte)(diffBits - 1));
 }
 
 void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
@@ -118,12 +118,12 @@ void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
     assert((_sizeBits & 7) != 0);
     size_t size1 = sizeBits / 8 + (((sizeBits & 7) == 0) ? 0 : 1);
     assert(data_in.size() == size1);
-    size_t diffBitsNew = size1 * 8 - sizeBits;
+    int diffBitsNew = size1 * 8 - sizeBits;
     assert(diffBitsNew >= 0 && diffBitsNew <= 7);
     // all new bits have to be shifted
-    size_t diffBitsOld = size() * 8 - _sizeBits;
+    int diffBitsOld = size() * 8 - _sizeBits;
     assert(diffBitsOld >= 1 && diffBitsOld <= 7);
-    byte oldMask = (0xff << diffBitsOld);
+    byte oldMask = ((byte)0xff << (byte)diffBitsOld);
     size_t newSize = data_in.size();
     for (size_t newIdx = 0; newIdx < newSize; ++newIdx) {
         // first part -- affects current last byte in old
@@ -131,24 +131,24 @@ void Slice::appendBitsNotAligned(const Data& data_in, size_t sizeBits) {
         if (newIdx == newSize - 1) {
             // last byte in new
             // zero unused bits
-            newByte &= ~((1 << diffBitsNew) - 1);
+            newByte &= ~((1 << (byte)diffBitsNew) - 1);
             _sizeBits += (8 - diffBitsNew);
         } else {
             _sizeBits += 8;
         }
-        byte first = newByte >> (8 - diffBitsOld);
+        byte first = newByte >> (byte)(8 - diffBitsOld);
         _data[_data.size() - 1] = (_data[_data.size() - 1] & oldMask) | first;
         // second part -- add as new byte
-        byte second = newByte << diffBitsOld;
+        byte second = newByte << (byte)diffBitsOld;
         //cerr << (int)first << " " << (int)second << endl;
         if (_sizeBits > size() * 8) {
             _data.push_back(second);
         }
         // set highest unused bit to 1
-        size_t diffBits = size() * 8 - _sizeBits;
+        int diffBits = size() * 8 - _sizeBits;
         assert(diffBits >= 0 && diffBits <= 7);
         if (diffBits > 0) {
-            _data[_data.size() - 1] |= (1 << (diffBits - 1));
+            _data[_data.size() - 1] |= (1 << (byte)(diffBits - 1));
         }
     }
 }
@@ -221,7 +221,7 @@ Data Cell::hash() const {
     hashData.push_back(static_cast<byte>(cellCount()));
     // number of hex digits
     size_t bits = _slice.sizeBits(); // may be 0
-    hashData.push_back(static_cast<byte>(d2(bits)));
+    hashData.push_back(d2(bits));
     // data
     if (_slice.size() > 0) {
         append(hashData, _slice.data());
@@ -264,13 +264,13 @@ void Cell::serialize(TW::Data& data_inout, bool topLevel) {
         data_inout.push_back(0x03);
         data_inout.push_back(0x01);
         data_inout.push_back(0x00);
-        uint8_t len1 = serializedSize(topLevel);
-        data_inout.push_back(len1);
+        size_t len1 = serializedSize(topLevel);
+        data_inout.push_back((byte)len1);
         data_inout.push_back(0x00);
     }
     // slice
-    data_inout.push_back(cellCount());
-    data_inout.push_back(Cell::d2(_slice.sizeBits()));
+    data_inout.push_back((byte)cellCount());
+    data_inout.push_back(d2(_slice.sizeBits()));
     append(data_inout, _slice.data());
     // cell refs?
     uint8_t cidx = 0;
@@ -295,8 +295,8 @@ void Cell::serialize(TW::Data& data_inout, bool topLevel) {
     }
 }
 
-size_t Cell::d2(size_t bits) {
-    return (bits / 8) * 2 + (((bits & 7) == 0) ? 0 : 1);
+byte Cell::d2(size_t bits) {
+    return (byte)((bits / 8) * 2 + (((bits & 7) == 0) ? 0 : 1));
 }
 
 } // namespace TW::TON
