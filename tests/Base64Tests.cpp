@@ -48,9 +48,16 @@ TEST(Base64, decode) {
 }
 
 TEST(Base64, UrlFormat) {
-    const std::string const1 = "11ff8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d291b";
-    auto decoded = decode("Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb");
+    const std::string const1 = "11003faa8556289975ec991ac9994dfb613abec4ea000d5094e6379080f594e559b330b8";
+    
+    // Encoded string has both special characters
+    auto encoded = encode(parse_hex(const1));
+    EXPECT_EQ("EQA/qoVWKJl17JkayZlN+2E6vsTqAA1QlOY3kID1lOVZszC4", encoded);
+    encoded = encodeBase64Url(parse_hex(const1));
+    EXPECT_EQ("EQA_qoVWKJl17JkayZlN-2E6vsTqAA1QlOY3kID1lOVZszC4", encoded);
+
+    auto decoded = decode("EQA/qoVWKJl17JkayZlN+2E6vsTqAA1QlOY3kID1lOVZszC4");
     EXPECT_EQ(const1, hex(decoded));
-    decoded = decodeBase64Url("Ef-BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb");
+    decoded = decodeBase64Url("EQA_qoVWKJl17JkayZlN-2E6vsTqAA1QlOY3kID1lOVZszC4");
     EXPECT_EQ(const1, hex(decoded));
 }
