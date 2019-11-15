@@ -14,7 +14,7 @@
 #include <gtest/gtest.h>
 
 TEST(TWTONAddress, CreateWithString) {
-    auto addrStr = TWStringCreateWithUTF8Bytes("Ef-BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb");
+    auto addrStr = TWStringCreateWithUTF8Bytes("EQCBVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODdZT");
 
     // first call isValid
     bool isValid = TWTONAddressIsValidString(addrStr);
@@ -28,7 +28,7 @@ TEST(TWTONAddress, CreateWithString) {
 
     {
         // create a second one, also invoke compare
-        auto address2 = TWTONAddressCreateWithString(TWStringCreateWithUTF8Bytes("Ef-BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb"));
+        auto address2 = TWTONAddressCreateWithString(TWStringCreateWithUTF8Bytes("EQCBVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODdZT"));
         ASSERT_TRUE(TWTONAddressEqual(address, address2));
 
         TWTONAddressDelete(address2);
@@ -43,7 +43,7 @@ TEST(TWTONAddress, CreateWithPublicKey) {
     auto address = WRAP(TWTONAddress, TWTONAddressCreateWithPublicKey(publicKey.get()));
     auto addressStr = TWTONAddressDescription(address.get());
 
-    ASSERT_EQ(std::string("Ef9gwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0KTM"), TWStringUTF8Bytes(addressStr));
+    ASSERT_EQ(std::string("EQBgwEFBxqe5bWhhXnqR0mWtDzqaki6a6ckB1PqD9dPA0FuE"), TWStringUTF8Bytes(addressStr));
 }
 
 TEST(TWTONAddress, HDWallet) {
@@ -57,5 +57,5 @@ TEST(TWTONAddress, HDWallet) {
     auto address = TWTONAddressCreateWithPublicKey(publicKey);
     auto addressStr = WRAPS(TWTONAddressDescription(address));
 
-    assertStringsEqual(addressStr, "Ef9D0h-JxF6dTWY1tgwduk-ZZcCr0AVu_2t01g5IkKEsiYQJ");
+    ASSERT_EQ(std::string("EQBD0h-JxF6dTWY1tgwduk-ZZcCr0AVu_2t01g5IkKEsiXtB"), TWStringUTF8Bytes(addressStr.get()));
 }

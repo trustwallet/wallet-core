@@ -21,6 +21,8 @@ class Workchain {
     static constexpr WorkchainId_t BasicChainId = 0;
     static constexpr WorkchainId_t InvalidChainId = 0x80000000;
 
+    // The default workchain ID
+    static WorkchainId_t defaultChain() { return BasicChainId; }
     static bool isValid(WorkchainId_t workchainId_in);
 };
 

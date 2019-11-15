@@ -19,6 +19,7 @@
 
 using namespace TW;
 using namespace TW::TON;
+using namespace std;
 
 bool Workchain::isValid(WorkchainId_t workchainId) {
     return (workchainId == MasterChainId || workchainId == BasicChainId);
@@ -47,7 +48,7 @@ Address::Address(const PublicKey& publicKey) {
     auto hash = stateInit.hash();
 
     // fill members
-    workchainId = Workchain::MasterChainId;
+    workchainId = Workchain::defaultChain();
     addrBytes = hash;
     isBounceable = true;
     isTestOnly = false;
@@ -56,6 +57,13 @@ Address::Address(const PublicKey& publicKey) {
 bool Address::isValid(const std::string& address) {
     Address addr;
     bool isValid = parseAddress(address, addr);
+    if (addr.workchainId != Workchain::defaultChain()) {
+        // not the right chain, refuse
+        cout << "Wrong  "<< address << endl;
+        addr.workchainId = Workchain::defaultChain();
+        cout << "   "<< addr.string() << endl;
+        return false;
+    }
     return isValid;
 }
 

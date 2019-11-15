@@ -316,17 +316,17 @@ TEST(Coin, validateAddressFIO) {
 }
 
 TEST(Coin, validateAddressTON) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeTON, "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkb"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeTON, "EQCBVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODdZT"));
     // wrong length
-    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSk"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODSkbz"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "EQCBVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODdZ")); // shorter
+    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "EQCBVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODdZTz")); // longer
     EXPECT_FALSE(validateAddress(TWCoinTypeTON, "E"));
     EXPECT_FALSE(validateAddress(TWCoinTypeTON, ""));
-    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "Ef+BVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODQAA"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "EQCBVndbeTJeXWLnQtm5bDC2UVpc0vH2TF2ksZPAPwcODdAA")); // different
     // Raw format
-    EXPECT_TRUE(validateAddress(TWCoinTypeTON, "-1:8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeTON, "0:8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d"));
     // no colon
-    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "-1 8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTON, "0 8156775b79325e5d62e742d9b96c30b6515a5cd2f1f64c5da4b193c03f070e0d"));
     EXPECT_FALSE(validateAddress(TWCoinTypeTON, "0:0"));
     EXPECT_FALSE(validateAddress(TWCoinTypeTON, ""));
 }
