@@ -12,10 +12,9 @@
 #include "../HexCoding.h"
 #include "../Hash.h"
 
-#include <boost/crc.hpp>  // for boost::crc_32_type
-
 #include <memory>
 #include <iostream>
+#include <cassert>
 
 namespace TW::TON {
 
@@ -57,6 +56,7 @@ Data Signer::buildInitMessage(
     
     auto stateInitHash = stateInit.hash();
 
+    // build cell for message
     Slice s;
     s.appendBits(parse_hex("88"), 7); // 7 bits b{1000100}
     s.appendBytes(data(&chainId, 1)); // chainid
@@ -71,49 +71,11 @@ Data Signer::buildInitMessage(
     c.addCell(stateInit.getCells()[0]);
     c.addCell(stateInit.getCells()[1]);
 
-    // simulate Cell serial
-    Data ss;
-    append(ss, parse_hex("b5ee9c72")); // magic
-    ss.push_back(0x41);
-    ss.push_back(0x01);
-    ss.push_back(0x03);
-    ss.push_back(0x01);
-    ss.push_back(0x00);
-    uint8_t len1 = s.size() + 4 + c.getCells()[0]->getSlice().size() + 2 + c.getCells()[1]->getSlice().size() + 2;
-    //cerr << "len1 " << (int)len1 << endl;
-    ss.push_back(len1);
-    ss.push_back(0x00);
-    // slice
-    //uint16_t lens = s.size();
-    //cerr << "lens " << (int)lens << endl;
-    ss.push_back(0x02);
-    ss.push_back(Cell::d2(s.sizeBits()));
-    append(ss, s.data());
-    ss.push_back(1); // ref1
-    ss.push_back(2); // ref2
-    // cell1
-    ss.push_back(0);
-    ss.push_back(Cell::d2(c.getCells()[0]->getSlice().sizeBits()));
-    append(ss, c.getCells()[0]->getSlice().data());
-    // cell2
-    ss.push_back(0);
-    ss.push_back(Cell::d2(c.getCells()[1]->getSlice().sizeBits()));
-    append(ss, c.getCells()[1]->getSlice().data());
-    // CRC
-    //boost::crc_32_type  result;
-    using crc_32c_type = boost::crc_optimal<32, 0x1EDC6F41, 0xFFFFFFFF, 0xFFFFFFFF, true, true>;
-    crc_32c_type result;
-    result.process_bytes(ss.data(), ss.size());
-    uint32_t crc = result.checksum();
-    //cerr << std::hex << crc() << endl;
-    ss.push_back(crc & 0x000000FF);
-    ss.push_back((crc & 0x0000FF00) >> 8);
-    ss.push_back((crc & 0x00FF0000) >> 16);
-    ss.push_back((crc & 0xFF000000) >> 24);
-    
-    //cerr << "final len " << ss.size() << endl;
+    // serialize it
+    Data ss2;
+    c.serialize(ss2, true);
 
-    return ss;
+    return ss2;
 }
 
 } // namespace TW::TON

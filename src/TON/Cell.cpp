@@ -8,6 +8,8 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 
+#include <boost/crc.hpp>  // for boost::crc_32_type
+
 #include <cassert>
 #include <iostream>
 #include <memory>
@@ -155,6 +157,10 @@ std::string Slice::asBytesStr() const {
     return hex(_data);
 }
 
+void Slice::serialize(TW::Data& data_inout) {
+    append(data_inout, _data);
+}
+
 Data Slice::hash() const {
     return Hash::sha256(_data);
 }
@@ -233,6 +239,60 @@ Data Cell::hash() const {
     }
     // compute hash
     return Hash::sha256(hashData);
+}
+
+size_t Cell::serializedSize(bool topLevel) const {
+    if (cellCount() == 0) {
+        // no children
+        return _slice.size() + 2;
+    }
+    // has children
+    size_t ss = _slice.size() + 4;
+    for(auto c: _cells) {
+        ss += c->serializedSize(false);
+    }
+    return ss;
+}
+
+void Cell::serialize(TW::Data& data_inout, bool topLevel) {
+    size_t startIdx = data_inout.size();
+    if (topLevel) {
+        // magic
+        append(data_inout, parse_hex("b5ee9c72"));
+        data_inout.push_back(0x41);
+        data_inout.push_back(0x01);
+        data_inout.push_back(0x03);
+        data_inout.push_back(0x01);
+        data_inout.push_back(0x00);
+        uint8_t len1 = serializedSize(topLevel);
+        data_inout.push_back(len1);
+        data_inout.push_back(0x00);
+    }
+    // slice
+    data_inout.push_back(cellCount());
+    data_inout.push_back(Cell::d2(_slice.sizeBits()));
+    append(data_inout, _slice.data());
+    // cell refs?
+    uint8_t cidx = 0;
+    for(auto c: _cells) {
+        ++cidx;
+        data_inout.push_back(cidx);
+    }
+    // cells
+    for(auto c: _cells) {
+        c->serialize(data_inout, false);
+    }
+    if (topLevel) {
+        // CRC32-C
+        using crc_32c_type = boost::crc_optimal<32, 0x1EDC6F41, 0xFFFFFFFF, 0xFFFFFFFF, true, true>;
+        crc_32c_type result;
+        result.process_bytes(data_inout.data() + startIdx, data_inout.size() - startIdx);
+        uint32_t crc = result.checksum();
+        data_inout.push_back(crc & 0x000000FF);
+        data_inout.push_back((crc & 0x0000FF00) >> 8);
+        data_inout.push_back((crc & 0x00FF0000) >> 16);
+        data_inout.push_back((crc & 0xFF000000) >> 24);
+    }
 }
 
 size_t Cell::d2(size_t bits) {

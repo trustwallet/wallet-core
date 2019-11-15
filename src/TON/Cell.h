@@ -134,6 +134,8 @@ public:
     const std::vector<std::shared_ptr<Cell>>& getCells() const { return _cells; }
     std::string toString() const;
     Data hash() const;
+    size_t serializedSize(bool topLevel) const;
+    void serialize(TW::Data& data_inout, bool topLevel);
     static const size_t max_cells = 4;
     /// second byte in length
     static size_t d2(size_t bits);
