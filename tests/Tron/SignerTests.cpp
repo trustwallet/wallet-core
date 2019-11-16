@@ -268,7 +268,6 @@ TEST(TronSigner, SignVoteWitness) {
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     const auto output = Signer::sign(input);
-
     ASSERT_EQ(hex(output.id()), "3f923e9dd9571a66624fafeda27baa3e00aba1709d3fdc5c97c77b81fda18c1f");
     ASSERT_EQ(hex(output.signature()), "79ec1073ae1319ef9303a2f5a515876cfd67f8f0e155bdbde1115d391c05358a3c32f148bfafacf07e1619aaed728d9ffbc2c7e4a5046003c7b74feb86fc68e400");
 }

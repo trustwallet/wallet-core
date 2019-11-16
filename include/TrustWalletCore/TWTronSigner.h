@@ -20,4 +20,12 @@ struct TWTronSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Tron_Proto_SigningOutput TWTronSignerSign(TW_Tron_Proto_SigningInput input);
 
+/// Builds a message to be signed
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWTronSignerMessage(TW_Tron_Proto_SigningInput input);
+
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWTronSignerTransaction(TW_Tron_Proto_SigningInput data);
+
 TW_EXTERN_C_END

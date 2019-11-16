@@ -21,3 +21,20 @@ TW_Tron_Proto_SigningOutput TWTronSignerSign(TW_Tron_Proto_SigningInput data) {
     auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
+
+TWData *_Nonnull TWTronSignerMessage(TW_Tron_Proto_SigningInput data) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    auto serialized = Signer::buildAndSerializeTx(input);
+
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
+TWData *_Nonnull TWTronSignerTransaction(TW_Tron_Proto_SigningInput data) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    json rawData = Signer::encodeTransactionToJson(input);
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(rawData.dump().data()), rawData.dump().size());
+}
