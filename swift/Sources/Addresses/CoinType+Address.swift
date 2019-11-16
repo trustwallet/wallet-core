@@ -60,8 +60,6 @@ public extension CoinType {
             return NebulasAddress(string: string)
         case .near:
             return NEARAddress(string: string)
-        case .neo:
-            return NEOAddress(string: string)
         case .decred:
             return DecredAddress(string: string)
         case .groestlcoin:
@@ -70,14 +68,10 @@ public extension CoinType {
             } else {
                 return GroestlcoinAddress(string: string)
             }
-        case .iost:
-            return IOSTAccount(string: string)
         case .nuls:
             return NULSAddress(string: string)
         case .bravoCoin:
             return BravoAddress(string: string)
-        case .steem:
-            return SteemAddress(string: string)
         case .eos:
             return EOSAddress(string: string)
         case .fio:
@@ -90,10 +84,6 @@ public extension CoinType {
             } else {
                 return ZilliqaAddress(string: string)
             }
-        case .semux:
-            return SemuxAddress(string: string)
-        case .ark:
-            return ARKAddress(string: string)
         case .waves:
             return WavesAddress(string: string)
         case .aeternity:
@@ -107,5 +97,3 @@ public extension CoinType {
         }
     }
 }
-
-extension IOSTAccount: Address {}
