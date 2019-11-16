@@ -268,23 +268,6 @@
         }
     },
     {
-        "id": "iost",
-        "name": "IOST",
-        "symbol": "IOST",
-        "decimals": 8,
-        "blockchain": "IOST",
-        "derivationPath": "m/44'/291'/0'/0'/0'",
-        "curve": "ed25519",
-        "publicKeyType": "ed25519",
-        "explorer": "https://www.iostabc.com/tx/",
-        "info": {
-            "url": "https://iost.io",
-            "client": "https://github.com/iost-official/go-iost",
-            "clientPublic": "",
-            "clientDocs": "https://developers.iost.io/docs/en/6-reference/API.html"
-        }
-    },
-    {
         "id": "litecoin",
         "name": "Litecoin",
         "symbol": "LTC",
@@ -621,23 +604,6 @@
         }
     },
     {
-        "id": "neo",
-        "name": "NEO",
-        "symbol": "NEO",
-        "decimals": 8,
-        "blockchain": "NEO",
-        "derivationPath": "m/44'/888'/0'/0'/0'",
-        "curve": "nist256p1",
-        "publicKeyType": "nist256p1",
-        "explorer": "https://neoscan.io/transaction/",
-        "info": {
-            "url": "https://neo.org",
-            "client": "https://github.com/neo-project/neo",
-            "clientPublic": "",
-            "clientDocs": "https://www.stellar.org/developers/horizon/reference"
-        }
-    },
-    {
         "id": "kin",
         "name": "Kin",
         "symbol": "KIN",
@@ -730,23 +696,6 @@
         }
     },
     {
-        "id": "steem",
-        "name": "Steem",
-        "symbol": "STEEM",
-        "decimals": 3,
-        "blockchain": "Steem",
-        "derivationPath": "m/44'/135'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1",
-        "explorer": "https://steemblockexplorer.com/tx/",
-        "info": {
-            "url": "http://steem.io",
-            "client": "https://github.com/steemit/steem",
-            "clientPublic": "",
-            "clientDocs": "https://github.com/steemit/steem"
-        }
-    },
-    {
         "id": "eos",
         "name": "EOS",
         "symbol": "EOS",
@@ -819,23 +768,6 @@
         }
     },
     {
-        "id": "semux",
-        "name": "Semux",
-        "symbol": "SEM",
-        "decimals": 9,
-        "blockchain": "Semux",
-        "derivationPath": "m/44'/7562605'/0'/0'/0'",
-        "curve": "ed25519",
-        "publicKeyType": "ed25519",
-        "explorer": "https://semux.info/explorer/transaction/",
-        "info": {
-            "url": "https://www.semux.org",
-            "client": "https://github.com/semuxproject/semux-core",
-            "clientPublic": "",
-            "clientDocs": "https://www.semux.org"
-        }
-    },
-    {
         "id": "zelcash",
         "name": "Zelcash",
         "symbol": "ZEL",
@@ -857,23 +789,6 @@
             "client": "https://github.com/trezor/blockbook",
             "clientPublic": "https://blockbook.zel.cash",
             "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-        }
-    },
-    {
-        "id": "ark",
-        "name": "ARK",
-        "symbol": "ARK",
-        "decimals": 8,
-        "blockchain": "Ark",
-        "derivationPath": "m/44'/111'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1",
-        "explorer": "https://explorer.ark.io/transaction/",
-        "info": {
-            "url": "http://ark.io",
-            "client": "https://github.com/ArkEcosystem/core",
-            "clientPublic": "",
-            "clientDocs": "https://docs.ark.io/api/json-rpc/"
         }
     },
     {
