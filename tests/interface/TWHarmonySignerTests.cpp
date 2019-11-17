@@ -26,33 +26,34 @@ static uint256_t LOCAL_NET = 0x2;
 TEST(TWHarmonySigner, Sign) {
     Proto::SigningInput input;
 
-    input.set_to_address(TEST_RECEIVER);
+    auto transactionMessage = input.mutable_transaction_message();
+    transactionMessage->set_to_address(TEST_RECEIVER);
     const auto privateKey =
         PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
     auto payload = parse_hex("");
-    input.set_payload(payload.data(), payload.size());
+    transactionMessage->set_payload(payload.data(), payload.size());
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
     auto value = store(LOCAL_NET);
     input.set_chain_id(value.data(), value.size());
 
     value = store(uint256_t("0x1"));
-    input.set_nonce(value.data(), value.size());
+    transactionMessage->set_nonce(value.data(), value.size());
 
     value = store(uint256_t(""));
-    input.set_gas_price(value.data(), value.size());
+    transactionMessage->set_gas_price(value.data(), value.size());
 
     value = store(uint256_t("0x5208"));
-    input.set_gas_limit(value.data(), value.size());
+    transactionMessage->set_gas_limit(value.data(), value.size());
 
     value = store(uint256_t("0x1"));
-    input.set_from_shard_id(value.data(), value.size());
+    transactionMessage->set_from_shard_id(value.data(), value.size());
 
     value = store(uint256_t("0x0"));
-    input.set_to_shard_id(value.data(), value.size());
+    transactionMessage->set_to_shard_id(value.data(), value.size());
 
     value = store(uint256_t("0x6bfc8da5ee8220000"));
-    input.set_amount(value.data(), value.size());
+    transactionMessage->set_amount(value.data(), value.size());
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());

@@ -8,32 +8,13 @@ message SigningInput {
     // Chain identifier (256-bit number)
     bytes chain_id = 1;
 
-    // Nonce (256-bit number)
-    bytes nonce = 2;
-
-    // Gas price (256-bit number)
-    bytes gas_price = 3;
-
-    // Gas limit (256-bit number)
-    bytes gas_limit = 4;
-
-    // Recipient's address.
-    string to_address = 5;
-
-    // Amount to send in wei (256-bit number)
-    bytes amount = 6;
-
-    // Optional payload
-    bytes payload = 7;
-
     // Private key.
-    bytes private_key = 8;
+    bytes private_key = 2;
 
-    // From shard ID (256-bit number)
-    bytes from_shard_id = 9;
-
-    // To Shard ID (256-bit number)
-    bytes to_shard_id = 10;
+    oneof message_oneof {
+        TransactionMessage transaction_message = 3;
+        StakingMessage staking_message = 4;
+    }
 }
 
 // Transaction signing output.
@@ -44,4 +25,105 @@ message SigningOutput {
     bytes v = 2;
     bytes r = 3;
     bytes s = 4;
+}
+
+message TransactionMessage {
+    // Nonce (256-bit number)
+    bytes nonce = 1;
+
+    // Gas price (256-bit number)
+    bytes gas_price = 2;
+
+    // Gas limit (256-bit number)
+    bytes gas_limit = 3;
+
+    // Recipient's address.
+    string to_address = 4;
+
+    // Amount to send in wei (256-bit number)
+    bytes amount = 5;
+
+    // Optional payload
+    bytes payload = 6;
+
+    // From shard ID (256-bit number)
+    bytes from_shard_id = 7;
+
+    // To Shard ID (256-bit number)
+    bytes to_shard_id = 8;
+}
+
+message StakingMessage {
+    // StakeMsg 
+    oneof stake_msg {
+        DirectiveCreateValidator create_validator_message = 1;
+        DirectiveEditValidator edit_validator_message = 2;
+        DirectiveDelegate delegate_message = 3;
+        DirectiveUndelegate undelegate_message = 4;
+        DirectiveCollectRewards collect_rewards = 5;
+    }
+
+    // Nonce (256-bit number)
+    bytes nonce = 6;
+
+    // Gas price (256-bit number)
+    bytes gas_price = 7;
+
+    // Gas limit (256-bit number)
+    bytes gas_limit = 8;   
+}
+
+message Description {
+    string name = 1;
+    string identity = 2;
+    string website = 3;
+    string security_contact = 4;
+    string details = 5;
+}
+
+message Decimal {
+    bytes value = 1;
+    bytes precision = 2;
+}
+
+message CommissionRate {
+    Decimal rate = 1;
+    Decimal max_rate = 2;
+    Decimal max_change_rate = 3;
+}
+
+message DirectiveCreateValidator {
+    string validator_address = 1;
+    Description description = 2;
+    CommissionRate commission_rates = 3;
+    bytes min_self_delegation = 4;
+    bytes max_total_delegation = 5;
+    repeated bytes slot_pub_keys = 6;
+    bytes amount = 7;
+}
+
+message DirectiveEditValidator {
+    string validator_address = 1;
+    Description description = 2;
+    Decimal commission_rate = 3;
+    bytes min_self_delegation = 4;
+    bytes max_total_delegation = 5;
+    bytes slot_key_to_remove = 6;
+    bytes slot_key_to_add = 7;
+}
+
+message DirectiveDelegate {
+    string delegator_address = 1;
+    string validator_address = 2;
+    bytes amount = 3;
+}
+
+message DirectiveUndelegate {
+    string delegator_address = 1;
+    string validator_address = 2;
+    bytes amount = 3;
+}
+
+message DirectiveCollectRewards {
+    string delegator_address = 1;
 }
