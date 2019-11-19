@@ -15,8 +15,18 @@
 
 namespace TW::TON {
 
+/// Helper class that performs TON transaction signing.
 class Signer {
 public:
+    /// Hide default constructor
+    Signer() = delete;
+
+    /// Signs a Proto::SigningInput transaction
+    //static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
+    /// Signs the given transaction.
+    //static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
+
     /// sign a message
     static TW::Data sign(const PrivateKey& privateKey, const Data& message) noexcept;
     /// Build the external message for account initialization

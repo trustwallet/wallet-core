@@ -5,10 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "Address.h"
 #include "Contract.h"
 #include "Cell.h"
 
 #include "../PrivateKey.h"
+#include "../PublicKey.h"
 #include "../HexCoding.h"
 #include "../Hash.h"
 
@@ -20,6 +22,27 @@ namespace TW::TON {
 
 using namespace TW;
 using namespace std;
+
+/*
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+    // ...
+
+    auto protoOutput = Proto::SigningOutput();
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
+    auto from = Address(pubkey);
+
+    // ...
+    
+    return protoOutput;
+}
+
+Data Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexcept {
+    // ...
+
+    return Data();
+}
+*/
 
 Data Signer::sign(const PrivateKey& privateKey, const Data& message) noexcept {
     auto signature = privateKey.sign(message, TWCurveED25519);
