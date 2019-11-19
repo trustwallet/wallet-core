@@ -81,34 +81,40 @@ TEST(TONCell, CellSimple)
         cell.setSliceBytesStr("123456");
         EXPECT_EQ("123456", cell.getSlice().asBytesStr());
         EXPECT_EQ("09a6e1fb711077014e7cae82826707cace55a493501a16144cfd83fca0c8e6d6", hex(cell.hash()));
+        EXPECT_EQ(5, cell.serializedOwnSize());
     }
     {
         Cell cell;
         cell.setSliceBytesStr("FEDCBA");
         EXPECT_EQ("53a96fa8e030c2c8be0f32cba5a929ca89b5650b699c3c305150a9b8d9669176", hex(cell.hash()));
+        EXPECT_EQ(5, cell.serializedOwnSize());
     }
     {
         Cell cell;
         cell.setSliceBytesStr("00000000F61CF0BC8E891AD7636E0CD35229D579323AA2DA827EB85D8071407464DC2FA3");
         EXPECT_EQ(32 + 4, cell.getSlice().size());
         EXPECT_EQ("3a2e770059fea3557f95c7a269eb51f1675339fed6b0be624ad8b9e649791e1f", hex(cell.hash()));
+        EXPECT_EQ(38, cell.serializedOwnSize());
     }
     {
         Cell cell;
         cell.setSliceBytesStr("FF0020DDA4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F3120D74A96D307D402FB00DED1A4C8CB1FCBFFC9ED54");
         EXPECT_EQ(66, cell.getSlice().size());
         EXPECT_EQ("a0cfc2c48aee16a271f2cfc0b7382d81756cecb1017d077faaab3bb602f6868c", hex(cell.hash()));
+        EXPECT_EQ(68, cell.serializedOwnSize());
     }
     {
         Cell cell;
         cell.setSliceBytesStr("FF0020DDA4F260810200D71820D70B1FED44D0D7091FD709FFD15112BAF2A122F901541044F910F2A2F80001D7091F3120D74A97D70907D402FB00DED1A4C8CB1FCBFFC9ED54");
         EXPECT_EQ(70, cell.getSlice().size());
         EXPECT_EQ("78ad9f4d84126ddade8c3fa1d3d5fa3304b60c5600ea9f0296419cbf73cda9c4", hex(cell.hash()));
+        EXPECT_EQ(72, cell.serializedOwnSize());
     }
     {
         // Hash of empty cell
         Cell cell;
         EXPECT_EQ("96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7", hex(cell.hash()));
+        EXPECT_EQ(2, cell.serializedOwnSize());
     }
 }
 
@@ -122,6 +128,7 @@ TEST(TONCell, CellBits)
         EXPECT_EQ(1, cell.getSlice().size());
         EXPECT_EQ(5, cell.getSlice().sizeBits());
         EXPECT_EQ("ea23ba20e2f88a07af38948bfaef741741f5a464df43e87067c901e537d1c44f", hex(cell.hash()));
+        EXPECT_EQ(3, cell.serializedOwnSize());
     }
 }
 
@@ -136,6 +143,10 @@ TEST(TONCell, CellWithChild)
         EXPECT_EQ("96a296d224f285c67bee93c30f8a309157f0daa35dc5b87e410b78630a09cfc7", hex(c.hash())); // empty cell
         c.addCell(c1);
         EXPECT_EQ("993e6d53d70fb05f052ce45ac751e24abd7d43e358b297694cfc19bbc796141c", hex(c.hash()));
+        EXPECT_EQ(23, c.serializedSize(Cell::SerializationMode::WithCRC32C));
+        Data ser;
+        c.serialize(ser, Cell::SerializationMode::WithCRC32C);
+        EXPECT_EQ("b5ee9c724101020100080001000100061234567ac0b173", hex(ser));
     }
     {
         // cell with two children
@@ -152,6 +163,10 @@ TEST(TONCell, CellWithChild)
         c.addCell(c2);
         EXPECT_EQ(2, c.cellCount());
         EXPECT_EQ("3959cba26c91a21d80b6953dd646ce8b8fb3caa507ea866ee98ff92b0230d0b9", hex(c.hash()));
+        EXPECT_EQ(29, c.serializedSize(Cell::SerializationMode::WithCRC32C));
+        Data ser;
+        c.serialize(ser, Cell::SerializationMode::WithCRC32C);
+        EXPECT_EQ("b5ee9c7241010301000e000200010200061234560006fedcba50ea05ee", hex(ser));
     }
     {
         // cell with slice value and one child
@@ -164,6 +179,10 @@ TEST(TONCell, CellWithChild)
         EXPECT_EQ("09a6e1fb711077014e7cae82826707cace55a493501a16144cfd83fca0c8e6d6", hex(c.hash()));
         c.addCell(c1);
         EXPECT_EQ("45d4770b7e9816f062cb8e3f5c58e8ed16443b2387a1c6f59b777dfb005822fa", hex(c.hash()));
+        EXPECT_EQ(26, c.serializedSize(Cell::SerializationMode::WithCRC32C));
+        Data ser;
+        c.serialize(ser, Cell::SerializationMode::WithCRC32C);
+        EXPECT_EQ("b5ee9c7241010201000b000106123456010006fedcba7dc78a01", hex(ser));
     }
 }
 
@@ -210,6 +229,11 @@ TEST(TONCell, CellStateInit1)
         c.addCell(ccode);
         c.addCell(cdata);
         EXPECT_EQ("60c04141c6a7b96d68615e7a91d265ad0f3a9a922e9ae9c901d4fa83f5d3c0d0", hex(c.hash()));
+        EXPECT_EQ(130, c.serializedSize(Cell::SerializationMode::WithCRC32C));
+        Data ser;
+        c.serialize(ser, Cell::SerializationMode::WithCRC32C);
+        EXPECT_EQ("b5ee9c72410103010073000201340102008cff0020dda4f260810200d71820d70b1fed44d0d7091fd709ffd15112baf2a122f901541044f910f2a2f80001d7091f3120d74a97d70907d402fb00ded1a4c8cb1fcbffc9ed54004800000000f61cf0bc8e891ad7636e0cd35229d579323aa2da827eb85d8071407464dc2fa3984101af",
+            hex(ser));
     }
 }
 
@@ -226,5 +250,10 @@ TEST(TONCell, CellStateInit2)
         c.addCell(ccode);
         c.addCell(cdata);
         EXPECT_EQ("307c9efea683c14f572a9032086ffb8cf8168c5d49094cbffbcbf0bdc3037990", hex(c.hash()));
+        EXPECT_EQ(141, c.serializedSize(Cell::SerializationMode::WithCRC32C));
+        Data ser;
+        c.serialize(ser, Cell::SerializationMode::WithCRC32C);
+        EXPECT_EQ("b5ee9c7241010301007e00020134010200a2ff0020dd2082014c97ba9730ed44d0d70b1fe0a4f260810200d71820d70b1fed44d0d31fd3ffd15112baf2a122f901541044f910f2a2f80001d31f3120d74a96d307d402fb00ded1a4c8cb1fcbffc9ed5400480000000037f14c50f6435b11b9326e1218524f7f072d0a5ea8221cca71682e7d6ed6421381c553bd",
+            hex(ser));
     }
 }

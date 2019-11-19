@@ -75,7 +75,7 @@ Data Signer::buildInitMessage(
 
     // serialize it
     Data ss2;
-    c.serialize(ss2, true);
+    c.serialize(ss2, Cell::SerializationMode::WithCRC32C);
 
     return ss2;
 }

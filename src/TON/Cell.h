@@ -119,6 +119,34 @@ private:
  */
 class Cell {
 public:
+    enum SerializationMode: uint8_t {
+        None = 0,
+        WithIndex = 1,
+        WithCRC32C = 2,
+        WithTopHash = 4,
+        WithIntHashes = 8,
+        WithCacheBits = 16,
+        max = 31
+    };
+    class SerializationInfo {
+    public:
+        std::vector<uint8_t> magic;
+        int rootCount;
+        int cellCount;
+        //int absent_count;
+        int refByteSize;
+        int offsetByteSize;
+        //bool valid;
+        //bool has_index;
+        //bool has_roots{false};
+        bool hasCrc32c;
+        //bool has_cache_bits;
+        unsigned long dataSize;
+        unsigned long totalSize;
+        //unsigned long rootsOffset, dataOffset, indexOffset
+    };
+
+public:
     Cell() {}
     Cell(const Cell& from);
     void setSlice(Slice const& slice);
@@ -134,11 +162,20 @@ public:
     const std::vector<std::shared_ptr<Cell>>& getCells() const { return _cells; }
     std::string toString() const;
     Data hash() const;
-    size_t serializedSize(bool topLevel) const;
-    void serialize(TW::Data& data_inout, bool topLevel);
+    /// Serialized size of this cell only, without children
+    size_t serializedOwnSize(bool withHashes = false) const;
+    /// Serialized size, including children
+    size_t serializedSize(SerializationMode mode = SerializationMode::None) const;
+    /// Serialize this cell only, without children
+    void serializeOwn(TW::Data& data_inout, bool withHashes = false);
+    /// Serialize this cell, including children
+    void serialize(TW::Data& data_inout, SerializationMode mode = SerializationMode::None);
     static const size_t max_cells = 4;
     /// second byte in length
     static byte d2(size_t bits);
+private:
+    // Prepare serialization properties
+    SerializationInfo getSerializationInfo(SerializationMode mode = SerializationMode::None) const;
 
 private:
     std::vector<std::shared_ptr<Cell>> _cells;

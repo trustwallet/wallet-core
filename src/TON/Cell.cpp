@@ -241,48 +241,122 @@ Data Cell::hash() const {
     return Hash::sha256(hashData);
 }
 
-size_t Cell::serializedSize(bool topLevel) const {
-    if (cellCount() == 0) {
-        // no children
-        return _slice.size() + 2;
+Cell::SerializationInfo Cell::getSerializationInfo(SerializationMode mode) const {
+    SerializationInfo info;
+    size_t rawDataSize = serializedOwnSize();
+    for (auto c: _cells) {
+        rawDataSize += c->serializedOwnSize();
     }
-    // has children
-    size_t ss = _slice.size() + 4;
+    int intRefs = cellCount();
+    int refSize = 1;
+    while (cellCount() >= (1 << (refSize * 8))) { ++refSize; }
+    size_t hashes = 0;
+    size_t dataBytesAdj = rawDataSize + (size_t)intRefs * refSize + hashes;
+    size_t maxOffset = (mode & SerializationMode::WithCacheBits) ? dataBytesAdj * 2 : dataBytesAdj;
+    int offsetSize = 0;
+    while (maxOffset >= (1ULL << (offsetSize * 8))) { ++offsetSize; }
+    if (refSize > 4 || offsetSize > 8) { return info; }
+
+    info.refByteSize = refSize;
+    info.offsetByteSize = 1;
+    info.rootCount = 1;
+    info.cellCount = info.rootCount + cellCount();  // including self/roots
+    info.hasCrc32c = mode & SerializationMode::WithCRC32C;
+    int crcSize = info.hasCrc32c ? 4 : 0;
+    int rootCount = 0;
+    unsigned long rootsOffset = 4 + 1 + 1 + 3 * info.refByteSize + info.offsetByteSize;
+    unsigned long indexOffset = rootsOffset + rootCount * info.refByteSize;
+    unsigned long dataOffset = indexOffset;
+    //if (info.has_index) {
+        //info.data_offset += (long long)cell_count * info.offset_byte_size;
+    //}
+    // Magic num idx 68ff65f3  idxCrc32c acc3a728  generic b5ee9c72
+    info.magic = parse_hex("b5ee9c72");
+    info.dataSize = dataBytesAdj;
+    info.totalSize = dataOffset + dataBytesAdj + crcSize;
+    return info;
+}
+
+size_t Cell::serializedOwnSize(bool withHashes) const {
+    if (withHashes) { throw std::invalid_argument("Cell::serializedOwnSize: WithHashes not supported"); }
+    return _slice.size() + 2; // bits/8 rounded up + 2
+}
+
+size_t Cell::serializedSize(SerializationMode mode) const {
+    auto info = getSerializationInfo(mode);
+    size_t ss = 0;
+    ss += 4; // magic
+    ss += 5; // byte1, offsetByteSize, cellCount, rootCount, 
+    ss += info.offsetByteSize; // dataSize
+    ss += info.rootCount; // roots
+
+    ss += serializedOwnSize(false);
+    ss += cellCount(); // cell refs
+
+    // child cells
     for(auto c: _cells) {
-        ss += c->serializedSize(false);
+        ss += c->serializedOwnSize(false);
+    }
+
+    if (mode & SerializationMode::WithCRC32C) {
+        ss += 4;
     }
     return ss;
 }
 
-void Cell::serialize(TW::Data& data_inout, bool topLevel) {
-    size_t startIdx = data_inout.size();
-    if (topLevel) {
-        // magic
-        append(data_inout, parse_hex("b5ee9c72"));
-        data_inout.push_back(0x41);
-        data_inout.push_back(0x01);
-        data_inout.push_back(0x03);
-        data_inout.push_back(0x01);
-        data_inout.push_back(0x00);
-        size_t len1 = serializedSize(topLevel);
-        data_inout.push_back((byte)len1);
-        data_inout.push_back(0x00);
-    }
+void Cell::serializeOwn(TW::Data& data_inout, bool withHashes) {
+    if (withHashes) { throw std::invalid_argument("Cell::serializedOwnSize: WithHashes not supported"); }
+    //auto info = getSerializationInfo(mode);
     // slice
     data_inout.push_back((byte)cellCount());
     data_inout.push_back(d2(_slice.sizeBits()));
     append(data_inout, _slice.data());
+}
+
+void Cell::serialize(TW::Data& data_inout, SerializationMode mode) {
+    if (mode != SerializationMode::None && mode != SerializationMode::WithCRC32C) {
+        throw std::invalid_argument("Cell::serialize: Mode " + std::to_string((int)mode) + " not supported");
+    }
+    // save current start position
+    size_t startIdx = data_inout.size();
+    auto info = getSerializationInfo(mode);
+
+    // magic
+    append(data_inout, info.magic);
+
+    byte byte1 = 0;
+    //if (info.hasIndex) { byte |= 1 << 7; }
+    if (info.hasCrc32c) { byte1 |= 1 << 6; }
+    //if (info.has_cache_bits) { byte |= 1 << 5; }
+    // 3, 4 - flags
+    if (info.refByteSize < 1 || info.refByteSize > 7) {
+        //cerr << info.refByteSize << endl;
+        return;
+    }
+    byte1 |= static_cast<byte>(info.refByteSize);
+    data_inout.push_back(byte1);
+    data_inout.push_back(info.offsetByteSize);
+    data_inout.push_back(info.cellCount);
+    data_inout.push_back(info.rootCount);
+    data_inout.push_back(0);
+    data_inout.push_back((byte)info.dataSize); // offset
+    data_inout.push_back(0x00); // roots
+
+    // own cell (slice)
+    serializeOwn(data_inout, false);
     // cell refs?
     uint8_t cidx = 0;
     for(auto c: _cells) {
         ++cidx;
         data_inout.push_back(cidx);
     }
-    // cells
+
+    // child cells
     for(auto c: _cells) {
-        c->serialize(data_inout, false);
+        c->serializeOwn(data_inout, false);
     }
-    if (topLevel) {
+
+    if (mode & SerializationMode::WithCRC32C) {
         // CRC32-C
         using crc_32c_type = boost::crc_optimal<32, 0x1EDC6F41, 0xFFFFFFFF, 0xFFFFFFFF, true, true>;
         crc_32c_type result;
