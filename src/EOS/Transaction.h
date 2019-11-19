@@ -67,6 +67,6 @@ public:
 
     void setReferenceBlock(const Data& referenceBlockId);
 
-    static const int32_t ExpirySeconds = 1000;
+    static const int32_t ExpirySeconds = 30;
 };
 } // namespace TW::EOS
