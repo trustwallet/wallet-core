@@ -977,5 +977,22 @@
             "clientPublic": "https://indexer.algorand.network",
             "clientDocs": "https://developer.algorand.org/docs/algod-rest-paths"
         }
+    },
+    {
+        "id": "ton",
+        "name": "TON",
+        "symbol": "GRAM",
+        "decimals": 9,
+        "blockchain": "TON",
+        "derivationPath": "m/44'/396'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "https://test.ton.org/testnet/transaction?hash=",
+        "info": {
+            "url": "https://test.ton.org",
+            "client": "https://github.com/ton-blockchain/ton",
+            "clientPublic": "",
+            "clientDocs": "https://test.ton.org/"
+        }
     }
 ]

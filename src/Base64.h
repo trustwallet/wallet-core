@@ -8,25 +8,19 @@
 
 #include "Data.h"
 
-#include <boost/algorithm/string.hpp>
-#include <boost/archive/iterators/base64_from_binary.hpp>
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
-
 namespace TW::Base64 {
 
-inline Data decode(const std::string& val) {
-    using namespace boost::archive::iterators;
-    using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
-    return boost::algorithm::trim_right_copy_if(Data(It(std::begin(val)), It(std::end(val))),
-                                                [](char c) { return c == '\0'; });
-}
+// Decode a Base64-format string
+Data decode(const std::string& val);
 
-inline std::string encode(const Data& val) {
-    using namespace boost::archive::iterators;
-    using It = base64_from_binary<transform_width<Data::const_iterator, 6, 8>>;
-    auto encoded = std::string(It(std::begin(val)), It(std::end(val)));
-    return encoded.append((3 - val.size() % 3) % 3, '=');
-}
+// Encode bytes into Base64 string
+std::string encode(const Data& val);
+
+// Decode a Base64Url-format or a regular Base64 string.
+// Base64Url format uses '-' and '_' as the two special characters, Base64 uses '+'and '/'.
+Data decodeBase64Url(const std::string& val);
+
+// Encode bytes into Base64Url string (uses '-' and '_' as pecial characters)
+std::string encodeBase64Url(const Data& val);
 
 } // namespace TW::Base64

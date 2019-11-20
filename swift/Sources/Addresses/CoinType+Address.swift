@@ -94,6 +94,8 @@ public extension CoinType {
             return SolanaAddress(string: string)
         case .algorand:
             return AlgorandAddress(string: string)
+        case .ton:
+            return TONAddress(string: string)
         }
     }
 }

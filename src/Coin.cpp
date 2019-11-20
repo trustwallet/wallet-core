@@ -32,6 +32,7 @@
 #include "Ripple/Address.h"
 #include "Solana/Address.h"
 #include "Stellar/Address.h"
+#include "TON/Address.h"
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
@@ -166,6 +167,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
     case TWCoinTypeSolana:
         return Solana::Address::isValid(string);
 
+    case TWCoinTypeTON:
+        return TON::Address::isValid(string);
+
     case TWCoinTypeAlgorand:
         return Algorand::Address::isValid(string);
     }
@@ -290,6 +294,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeSolana:
         return Solana::Address(publicKey).string();
+
+    case TWCoinTypeTON:
+        return TON::Address(publicKey).string();
 
     case TWCoinTypeAlgorand:
         return Algorand::Address(publicKey).string();
