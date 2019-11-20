@@ -357,16 +357,21 @@ void Cell::serialize(TW::Data& data_inout, SerializationMode mode) {
     }
 
     if (mode & SerializationMode::WithCRC32C) {
-        // CRC32-C
-        using crc_32c_type = boost::crc_optimal<32, 0x1EDC6F41, 0xFFFFFFFF, 0xFFFFFFFF, true, true>;
-        crc_32c_type result;
-        result.process_bytes(data_inout.data() + startIdx, data_inout.size() - startIdx);
-        uint32_t crc = result.checksum();
+        // CRC32-C, of the serialized data so far
+        uint32_t crc = computeCrc(data_inout.data() + startIdx, data_inout.size() - startIdx);
         data_inout.push_back(crc & 0x000000FF);
         data_inout.push_back((crc & 0x0000FF00) >> 8);
         data_inout.push_back((crc & 0x00FF0000) >> 16);
         data_inout.push_back((crc & 0xFF000000) >> 24);
     }
+}
+
+uint32_t Cell::computeCrc(const byte* data, size_t len) {
+    // CRC32-C
+    using crc_32c_type = boost::crc_optimal<32, 0x1EDC6F41, 0xFFFFFFFF, 0xFFFFFFFF, true, true>;
+    crc_32c_type result;
+    result.process_bytes((const void*)data, len);
+    return result.checksum();
 }
 
 byte Cell::d2(size_t bits) {

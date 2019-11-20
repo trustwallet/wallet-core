@@ -105,6 +105,8 @@ public:
     /// second byte in length
     static byte d2(size_t bits);
 private:
+    /// Compute 4-byte CRC32-C checksum, used in serialization
+    static uint32_t computeCrc(const byte* data, size_t len);
     // Prepare serialization properties
     SerializationInfo getSerializationInfo(SerializationMode mode = SerializationMode::None) const;
 
