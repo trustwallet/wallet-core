@@ -34,7 +34,7 @@ Address::Address(const std::string& address) {
     }
 }
 
-Address::Address(const PublicKey& publicKey) {
+Address::Address(const PublicKey& publicKey, WorkchainId_t workchain) {
     // Steps: a StateInit account state cell is created (containing code and data), its hash is taken,
     // and new address is derived from the hash
 
@@ -48,29 +48,29 @@ Address::Address(const PublicKey& publicKey) {
     auto hash = stateInit.hash();
 
     // fill members
-    workchainId = Workchain::defaultChain();
+    workchainId = workchain;
     addrBytes = hash;
     isBounceable = true;
     isTestOnly = false;
 }
 
-bool Address::isValid(const std::string& address) {
+bool Address::isValid(const std::string& address, WorkchainId_t workchain) {
     Address addr;
     bool isValid = parseAddress(address, addr);
-    if (addr.workchainId != Workchain::defaultChain()) {
+    if (addr.workchainId != workchain) {
         // not the right chain, refuse
         return false;
     }
     return isValid;
 }
 
-bool Address::parseAddress(const std::string& addressStr_in, Address& addr_inout) {
+bool Address::parseAddress(const std::string& address, Address& addr_inout) {
     // try several formats, start with the common one, stop if one matches
-    bool isValidUser = parseUserAddress(addressStr_in, addr_inout);
+    bool isValidUser = parseUserAddress(address, addr_inout);
     if (isValidUser) {
         return true;
     }
-    bool isValidRaw = parseRawAddress(addressStr_in, addr_inout);
+    bool isValidRaw = parseRawAddress(address, addr_inout);
     return isValidRaw;
 }
 
@@ -123,11 +123,11 @@ bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_i
         return false;
     }
 
-    // check length
-    if (bytes.size() != 36) {
+    // check length -- 1 byte flags, 1 byte chainId, 32 hash, 2 bytes crc
+    if (bytes.size() != 2 + AddressLength + 2) {
         return false;
     }
-    assert(bytes.size() >= 36);
+    assert(bytes.size() >= 2 + AddressLength + 2);
 
     addr_inout.isBounceable = true;
     addr_inout.isTestOnly = false;
@@ -156,7 +156,8 @@ bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_i
         addr_inout.workchainId = Workchain::MasterChainId;
         break;
     default:
-        return false; // invalid chain
+        // invalid chain
+        return false;
     }
 
     // 32 bytes address
@@ -164,7 +165,7 @@ bool Address::parseUserAddress(const std::string& addressStr_in, Address& addr_i
     std::copy(bytes.begin() + 2, bytes.begin() + 2 + AddressLength, addr_inout.addrBytes.begin());
 
     // check CRC
-    uint16_t crcGiven = static_cast<uint16_t>(bytes[34] << 8) + bytes[35];
+    uint16_t crcGiven = static_cast<uint16_t>(bytes[2 + AddressLength] << 8) + bytes[2 + AddressLength + 1];
     uint16_t crcComputed = Crc::crc16(bytes.data(), 2 + AddressLength);
     if (crcGiven != crcComputed) {
         // CRC mismatch

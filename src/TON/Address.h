@@ -42,11 +42,11 @@ class Address {
     /// Initializes a TON address with a string representation, either raw or user friendly
     explicit Address(const std::string& address);
 
-    /// Initializes a TON address with a public key.
-    explicit Address(const PublicKey& publicKey);
+    /// Initializes a TON address with a public key.  WorkchainId is optional, Basic chain by default.
+    explicit Address(const PublicKey& publicKey, WorkchainId_t workchain = Workchain::defaultChain());
 
     /// Determines whether a string makes a valid address, in any format
-    static bool isValid(const std::string& address);
+    static bool isValid(const std::string& address, WorkchainId_t workchain = Workchain::defaultChain());
 
     /// Returns a string representation of the address (user friendly format)
     std::string string() const;
