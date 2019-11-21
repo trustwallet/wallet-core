@@ -132,13 +132,15 @@ Pod::Spec.new do |s|
     "#{protobuf_dir}/src/google/protobuf/port_def.inc",
     "#{protobuf_dir}/src/google/protobuf/port_undef.inc",
   s.exclude_files =
-    'trezor-crypto/src/rand.c'
+    'trezor-crypto/src/rand.c',
+    'trezor-crypto/include/TrezorCrypto/**/base58.h'
   s.public_header_files =
     'include/**/*.h',
     'swift/Sources/*.h'
 
   s.preserve_paths =
     'trezor-crypto/src/*.{table}',
+    'trezor-crypto/include/TrezorCrypto/**/base58.h',
     "#{protobuf_dir}/src/**/*.h",
     "#{include_dir}/nlohmann/**/*.hpp",
     'src/proto/*.proto'
@@ -156,6 +158,7 @@ Pod::Spec.new do |s|
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'OTHER_CFLAGS' => '-DHAVE_PTHREAD=1'
+    'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
   }
   s.pod_target_xcconfig = {
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'

@@ -116,8 +116,8 @@ class CreateValidator {
         , commissionRates(move(commissionRates))
         , minSelfDelegation(move(minSelfDelegation))
         , maxTotalDelegation(move(maxTotalDelegation))
-        , slotPubKeys(move(slotPubKeys))
-        , amount(move(amount)) {}
+        , amount(move(amount))
+        , slotPubKeys(move(slotPubKeys)) {}
 };
 
 class EditValidator {

@@ -27,7 +27,7 @@ Data Transaction::serialize() const {
     encodeType(FieldType::int32, 4, data);
     encode32BE(sequence, data);
     /// "destinationTag"
-    if (destination_tag > 0) {
+    if (encode_tag) {
         encodeType(FieldType::int32, 14, data);
         encode32BE(static_cast<uint32_t>(destination_tag), data);
     }
@@ -57,7 +57,7 @@ Data Transaction::serialize() const {
     encodeBytes(serializeAddress(account), data);
     /// "destination"
     encodeType(FieldType::account, 3, data);
-    encodeBytes(serializeAddress(destination), data);
+    encodeBytes(destination, data);
     return data;
 }
 

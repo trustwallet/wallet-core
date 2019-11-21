@@ -42,8 +42,4 @@ void TWRippleAddressDelete(struct TWRippleAddress *_Nonnull address);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWRippleAddressDescription(struct TWRippleAddress *_Nonnull address);
 
-/// Returns the key hash.
-TW_EXPORT_PROPERTY
-TWData *_Nonnull TWRippleAddressKeyHash(struct TWRippleAddress *_Nonnull address);
-
 TW_EXTERN_C_END
