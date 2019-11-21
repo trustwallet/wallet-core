@@ -43,3 +43,11 @@ Data OntTxBuilder::build(const Ontology::Proto::SigningInput &input) {
     }
     return Data();
 }
+
+Transaction OntTxBuilder::buildTransferTx(const Ontology::Proto::TransactionInput &input) {
+    auto fromSigner = Address(input.owner_address());
+    auto toAddress = Address(input.to_address());
+    auto transferTx = Ont().unsignedTransfer(fromSigner, toAddress, input.amount(),
+                                    input.gas_price(), input.gas_limit(), input.nonce());
+    return transferTx;
+}

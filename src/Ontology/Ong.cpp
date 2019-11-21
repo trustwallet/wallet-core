@@ -58,3 +58,14 @@ Transaction Ong::withdraw(const Signer &claimer, const Address &receiver, uint64
     payer.addSign(tx);
     return tx;
 }
+
+Transaction Ong::unsignedTransfer(const Address &from, const Address &to, uint64_t amount,
+                                  uint64_t gasPrice, uint64_t gasLimit,uint32_t nonce) {
+    std::list<boost::any> transferParam{from.data, to.data, amount};
+    std::vector<boost::any> args{transferParam};
+    auto invokeCode =
+            ParamsBuilder::buildNativeInvokeCode(contractAddress(), 0x00, "transfer", args);
+    auto tx = Transaction(version, txType, nonce, gasPrice, gasLimit,
+                          from.string(), invokeCode);
+    return tx;
+}

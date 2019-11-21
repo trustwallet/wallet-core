@@ -30,6 +30,28 @@ message SigningInput {
 
 }
 
+message TransactionInput {
+
+    string contract = 1;
+
+    string method = 2;
+
+    // base58 encode address string (160-bit number)
+    string owner_address = 3;
+
+    // base58 encode address string (160-bit number)
+    string to_address = 4;
+
+    uint64 amount = 5;
+
+    uint64 gas_price = 7;
+
+    uint64 gas_limit = 8;
+
+    uint32 nonce = 10;
+
+}
+
 // Transaction signing output.
 message SigningOutput {
     // Signed and encoded transaction bytes.

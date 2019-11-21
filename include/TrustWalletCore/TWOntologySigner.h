@@ -18,4 +18,12 @@ struct TWOntologySigner;
 TW_EXPORT_STATIC_METHOD
 TW_Ontology_Proto_SigningOutput TWOntologySignerSign(TW_Ontology_Proto_SigningInput input);
 
+/// Builds a message to be signed
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWOntologySignerMessage(TW_Ontology_Proto_TransactionInput input);
+
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWOntologySignerTransaction(TW_Ontology_Proto_TransactionInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature);
+
 TW_EXTERN_C_END

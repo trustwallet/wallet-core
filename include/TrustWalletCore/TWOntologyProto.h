@@ -9,4 +9,5 @@
 #include "TWData.h"
 
 typedef TWData *_Nonnull TW_Ontology_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Ontology_Proto_TransactionInput;
 typedef TWData *_Nonnull TW_Ontology_Proto_SigningOutput;
