@@ -18,24 +18,14 @@ class Address {
     /// Number of bytes in an address.
     static const size_t size = 21;
 
-    /// Address data consisting of a prefix byte followed by the public key
-    /// hash.
+    /// Address data consisting of a prefix byte followed by the public key hash
     std::array<byte, size> bytes;
 
-    /// Determines whether a collection of bytes makes a valid Ripple address.
-    template <typename T>
-    static bool isValid(const T& data) {
-        return data.size() == size;
-    }
-
-    /// Determines whether a string makes a valid  address.
+    /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
     /// Initializes a Ripple address with a string representation.
     explicit Address(const std::string& string);
-
-    /// Initializes a Ripple address with a collection of bytes.
-    explicit Address(const std::vector<uint8_t>& data);
 
     /// Initializes a Ripple address with a public key.
     explicit Address(const PublicKey& publicKey);

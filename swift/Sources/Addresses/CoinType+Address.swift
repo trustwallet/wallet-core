@@ -8,7 +8,6 @@ import Foundation
 
 public extension CoinType {
     /// Converts a string to an address for this coin type.
-    // swiftlint:disable function_body_length
     func address(string: String) -> Address? {
         guard self.validate(address: string) else {
             return nil
@@ -41,7 +40,10 @@ public extension CoinType {
         case .ontology:
             return OntologyAddress(string: string)
         case .xrp:
-            return RippleAddress(string: string)
+            if let address = RippleAddress(string: string) {
+                return address
+            }
+            return RippleXAddress(string: string)
         case .tezos:
             return TezosAddress(string: string)
         case .tron:

@@ -1,17 +1,22 @@
+# Misc
 .DS_Store
-*~
-*.orig
 
 # Build directories
 .build/
 build/
 xcode/
+cmake-build-debug/
+.cquery_cache/
+.cxx/
 
 # Dependencies
 node_modules
 lib/json
 lib/protobuf
 
+# Editor
+*~
+*.orig
 .idea/
 .vscode/
 
@@ -26,6 +31,6 @@ include/TrustWalletCore/TWHRP.h
 coverage.info
 coverage/
 
-cmake-build-debug/
-.cquery_cache/
-.cxx/
+# Sourcetrail
+*.srctrldb
+*.srctrlbm

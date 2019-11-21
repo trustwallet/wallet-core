@@ -30,6 +30,7 @@
 #include "NULS/Address.h"
 #include "Ontology/Address.h"
 #include "Ripple/Address.h"
+#include "Ripple/XAddress.h"
 #include "Solana/Address.h"
 #include "Stellar/Address.h"
 #include "TON/Address.h"
@@ -126,7 +127,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Nimiq::Address::isValid(string);
 
     case TWCoinTypeXRP:
-        return Ripple::Address::isValid(string);
+        return Ripple::Address::isValid(string) ||
+               Ripple::XAddress::isValid(string);
 
     case TWCoinTypeStellar:
     case TWCoinTypeKin:

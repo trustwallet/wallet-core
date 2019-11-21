@@ -24,7 +24,7 @@ TW_Ripple_Proto_SigningOutput TWRippleSignerSign(TW_Ripple_Proto_SigningInput da
         /* sequence */input.sequence(),
         /* last_ledger_sequence */input.last_ledger_sequence(),
         /* account */Address(input.account()),
-        /* destination */Address(input.destination()),
+        /* destination */input.destination(),
         /* destination_tag*/input.destination_tag()
     );
 

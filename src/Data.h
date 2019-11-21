@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <array>
 
 namespace TW {
 
@@ -29,6 +30,10 @@ inline Data data(const byte* data, size_t size) {
 
 inline void append(Data& data, const Data& suffix) {
     data.insert(data.end(), suffix.begin(), suffix.end());
+}
+
+inline void append(Data& data, const byte suffix) {
+    data.push_back(suffix);
 }
 
 /// Determines if a byte array has a specific prefix.
