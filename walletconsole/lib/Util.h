@@ -21,6 +21,12 @@ public:
     static bool filew(const string& filename, const string& data, string& res);
     /// Read from file
     static bool filer(const string& filename, string& res);
+
+    // Parse string into words
+    static vector<string> tokenize(const string& line);
+    // trim from start (in place)
+    static void trimLeft(std::string& s);
+    static void toLower(std::string& s);
 };
 
 } // namespace TW::WalletConsole

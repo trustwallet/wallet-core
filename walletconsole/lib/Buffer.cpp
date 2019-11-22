@@ -5,8 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Buffer.h"
-
 #include "WalletConsole.h"
+#include "Util.h"
+
 #include "Data.h"
 
 #include <iostream>
@@ -25,7 +26,7 @@ void Buffer::addResult(const string& val) {
 
 bool Buffer::prepareInput(const string& in, string& in_out) {
     string in2 = in;
-    WalletConsole::trimLeft(in2);    
+    Util::trimLeft(in2);    
     if (in2.length() < 1) { in_out = in2; return true; }
     if (in2[0] != '#') {
         // no special handling, return as it is
@@ -44,22 +45,22 @@ bool Buffer::prepareInput(const string& in, string& in_out) {
         // of the form #n
         int idx = n - 1;
         if (idx < 0 || idx >= _prev.size()) {
-            cout << "Requested " << in2 << ", but out of range of buffers (n=" << _prev.size() << ")." << endl;
+            _out << "Requested " << in2 << ", but out of range of buffers (n=" << _prev.size() << ")." << endl;
             return false;
         }
         in_out = _prev[idx].get();
         return true;
     } catch (exception& ex) {
-        cout << "Invalid input: " << in2 << endl;
+        _out << "Invalid input: " << in2 << endl;
         return false;
     }
 }
 
 void Buffer::buffer() const {
-    cout << "Last value:  " << _last.get() << endl;
-    cout << _prev.size() << " previous values:" << endl;
+    _out << "Last value:  " << _last.get() << endl;
+    _out << _prev.size() << " previous values:" << endl;
     for (int i = 0; i < _prev.size(); ++i) {
-        cout << "  #" << i + 1 << "  " << _prev[i].get() << endl;
+        _out << "  #" << i + 1 << "  " << _prev[i].get() << endl;
     }
 }
 

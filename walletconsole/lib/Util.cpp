@@ -101,4 +101,36 @@ bool Util::filer(const string& filename, string& res) {
     }
 }
 
+vector<string> Util::tokenize(const string& line) {
+    vector<string> tok;
+    size_t n = line.length();
+    size_t idx = 0;
+    while (true) {
+        auto spaceIdx = line.find(' ', idx);
+        if (spaceIdx == string::npos || spaceIdx >= n) {
+            // no more space
+            if (idx < n) {
+                tok.push_back(line.substr(idx, n - idx));
+            }
+            return tok;
+        }
+        // there is a space, take current word up to it
+        if (idx < spaceIdx) {
+            tok.push_back(line.substr(idx, spaceIdx - idx));
+        }
+        idx = spaceIdx + 1;
+    }
+}
+
+void Util::trimLeft(std::string& s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+        return !std::isspace(ch);
+    }));
+}
+
+void Util::toLower(std::string& s) {
+    std::transform(s.begin(), s.end(), s.begin(),
+        [](unsigned char c){ return std::tolower(c); });
+}
+
 } // namespace TW::WalletConsole

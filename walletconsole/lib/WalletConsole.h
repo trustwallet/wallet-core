@@ -28,15 +28,10 @@ protected:
     CommandExecutor _executor;
 
 public:
-    WalletConsole() { init(); }
+    WalletConsole() : _executor(cout) { init(); }
     void init();
     void loop();
     static bool isExit(const string& cmd);
-    static vector<string> tokenize(const string& line);
-    static string parseLine(const string& line, vector<string>& params);
-    // trim from start (in place)
-    static void trimLeft(std::string& s);
-    static void toLower(std::string& s);
 };
 
 } // namespace TW::WalletConsole

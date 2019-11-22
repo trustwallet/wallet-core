@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "CommandExecutor.h"
+#include "WalletConsole.h"
 #include "Keys.h"
 #include "Coins.h"
 #include "Util.h"
@@ -25,9 +26,11 @@ using namespace std;
 using namespace TW;
 
 
-CommandExecutor::CommandExecutor()
+CommandExecutor::CommandExecutor(ostream& out)
     : 
-    _coins(), 
+    _out(out),
+    _coins(out), 
+    _buffer(out),
     _keys(_coins),
     _address(_coins)
 {
@@ -38,62 +41,62 @@ void CommandExecutor::init() {
     setCoin("btc", true);
 }
 
-void CommandExecutor::help() {
-    cout << "Commands:" << endl;
-    cout << "  exit                    Exit" << endl;
-    cout << "  quit                    Exit" << endl;
-    cout << "  help                    This help" << endl;
-    cout << "Inputs, buffer:" << endl;
-    cout << "  #<n>                    Print nth previous result" << endl;
-    cout << "  #                       Print last result" << endl;
-    cout << "  buffer                  Print buffer values" << endl;
-    cout << "Coins:" << endl;
-    cout << "  coins                   List known coins" << endl;
-    cout << "  coin <coin>             Set active coin, selected by its ID or symbol or name" << endl;
-    cout << "Keys:" << endl;
-    cout << "  newkey                  Create new pseudo-random 32-byte key" << endl;
-    cout << "  pubpri <prikey>         Derive public key from private key (type is coin-dependent)" << endl;
-    cout << "  pripub <pubkey>         Derive private key from public key :)" << endl;
-    cout << "Addresses:" << endl;
-    cout << "  addrpub <pubkey>        Create <coin> address from public key." << endl;
-    cout << "  addrpri <prikey>        Create <coin> address from private key." << endl;
-    cout << "  addr <addr>             Check string <coin> address." << endl;
-    cout << "Coin-specific methods:" << endl;
-    cout << "  tonmsg <prikey>         Build TON account initialization message." << endl;
-    cout << "Transformations:" << endl;
-    cout << "  hex <inp>               Encode given string to hex" << endl;
-    cout << "  base64enc <inp>         Encode given hex data to Base64" << endl;
-    cout << "  base64dec <inp>         Decode given Base64 string to hex data" << endl;
-    cout << "File methods:" << endl;
-    cout << "  filew <filename> <data> Write data to a (new) binary file." << endl;
-    cout << "  filer <filename>        Read data from a binary file." << endl;
-    cout << endl;
-    cout << "Examples:" << endl;
-    cout << "> coin bitcoin <Enter> newkey <Enter> addrpri # <Enter> filew btcaddr.txt #" << endl;
-    cout << "> newkey <Enter> pubpri # <Enter> addrpub #" << endl;
-    cout << "> coin algo <Enter> addr LCSUSBOLNVT6BND6DWWGM4DLVUYJN3PGBT4T7LTCMDMKS7TR7FZAOHOVPE" << endl;
-    cout << "> hex Hello <Enter> base64enc # <Enter> base64dec # <Enter> buffer" << endl;
-    cout << endl;
+void CommandExecutor::help() const {
+    _out << "Commands:" << endl;
+    _out << "  exit                    Exit" << endl;
+    _out << "  quit                    Exit" << endl;
+    _out << "  help                    This help" << endl;
+    _out << "Inputs, buffer:" << endl;
+    _out << "  #<n>                    Print nth previous result" << endl;
+    _out << "  #                       Print last result" << endl;
+    _out << "  buffer                  Print buffer values" << endl;
+    _out << "Coins:" << endl;
+    _out << "  coins                   List known coins" << endl;
+    _out << "  coin <coin>             Set active coin, selected by its ID or symbol or name" << endl;
+    _out << "Keys:" << endl;
+    _out << "  newkey                  Create new pseudo-random 32-byte key" << endl;
+    _out << "  pubpri <prikey>         Derive public key from private key (type is coin-dependent)" << endl;
+    _out << "  pripub <pubkey>         Derive private key from public key :)" << endl;
+    _out << "Addresses:" << endl;
+    _out << "  addrpub <pubkey>        Create <coin> address from public key." << endl;
+    _out << "  addrpri <prikey>        Create <coin> address from private key." << endl;
+    _out << "  addr <addr>             Check string <coin> address." << endl;
+    _out << "Coin-specific methods:" << endl;
+    _out << "  tonmsg <prikey>         Build TON account initialization message." << endl;
+    _out << "Transformations:" << endl;
+    _out << "  hex <inp>               Encode given string to hex" << endl;
+    _out << "  base64enc <inp>         Encode given hex data to Base64" << endl;
+    _out << "  base64dec <inp>         Decode given Base64 string to hex data" << endl;
+    _out << "File methods:" << endl;
+    _out << "  filew <filename> <data> Write data to a (new) binary file." << endl;
+    _out << "  filer <filename>        Read data from a binary file." << endl;
+    _out << endl;
+    _out << "Examples:" << endl;
+    _out << "> coin bitcoin <Enter> newkey <Enter> addrpri # <Enter> filew btcaddr.txt #" << endl;
+    _out << "> newkey <Enter> pubpri # <Enter> addrpub #" << endl;
+    _out << "> coin algo <Enter> addr LCSUSBOLNVT6BND6DWWGM4DLVUYJN3PGBT4T7LTCMDMKS7TR7FZAOHOVPE" << endl;
+    _out << "> hex Hello <Enter> base64enc # <Enter> base64dec # <Enter> buffer" << endl;
+    _out << endl;
 }
 
 bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params_in, string& res) {
     if (cmd == "exit" || cmd == "quit") {
         // handled in loop
-        cout << "Bye!" << endl;
+        _out << "Bye!" << endl;
         return false;
     }
 
     // prepare inputs
     vector<string> params;
     if (!prepareInputs(params_in, params)) {
-        cout << "Error processing input(s)" << endl;
+        _out << "Error processing input(s)" << endl;
         return false;
     }
     
     if (cmd == "help") { help(); return false; }
     if (cmd[0] == '#') {
         // echo input, with substitution
-        cout << "Previous result is:  " << params[0] << endl;
+        _out << "Previous result is:  " << params[0] << endl;
         return false;
     }
     if (cmd == "buffer") { _buffer.buffer(); return false; }
@@ -119,8 +122,15 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "filer") { if (!checkMinParams(params, 1)) { return false; } return Util::filer(params[1], res); }
 
     // fallback
-    help();
+    _out << "Unknown command:  " << cmd << endl << "Type 'help' for list of commands." << endl;
     return false;
+}
+
+void CommandExecutor::executeLine(const string& line) {
+    vector<string> params;
+    auto cmd = parseLine(line, params);
+    //cerr << "Read cmd: '" << cmd << "'" << endl;
+    execute(cmd, params);
 }
 
 void CommandExecutor::execute(const string& cmd, const vector<string>& params) {
@@ -129,11 +139,11 @@ void CommandExecutor::execute(const string& cmd, const vector<string>& params) {
         bool res = executeOne(cmd, params, resultStr);
         if (res && resultStr.length() > 0) {
             // there is a new result
-            cout << "Result:  " << resultStr << endl;
+            _out << "Result:  " << resultStr << endl;
             _buffer.addResult(resultStr);
         }
     } catch (exception& ex) {
-        cout << "Error while executing command, " << ex.what() << endl;
+        _out << "Error while executing command, " << ex.what() << endl;
     }
 }
 
@@ -150,11 +160,20 @@ bool CommandExecutor::prepareInputs(const vector<string>& p_in, vector<string>& 
     return true;
 }
 
-bool CommandExecutor::checkMinParams(const vector<string>& params, int n) {
+string CommandExecutor::parseLine(const string& line, vector<string>& params) {
+    auto tokens = Util::tokenize(line);
+    assert(tokens.size() > 0);
+    auto cmd = tokens[0];
+    Util::toLower(cmd);
+    params = tokens;
+    return cmd;
+}
+
+bool CommandExecutor::checkMinParams(const vector<string>& params, int n) const {
     if (params.size() - 1 >= n) {
         return true;
     }
-    cout << "At least " << n << " parameters are needed! See 'help'" << endl;
+    _out << "At least " << n << " parameters are needed! See 'help'" << endl;
     //help();
     return false;
 }
@@ -169,7 +188,7 @@ bool CommandExecutor::setCoin(const string& coin, bool force) {
         return true;
     }
     _activeCoin = c.id;
-    cout << "Set active coin to: " << c.id << "    Use 'coin' to change.  (name: '" << c.name << "'  symbol: " << c.symbol << "  numericalid: " << c.c << ")" << endl;
+    _out << "Set active coin to: " << c.id << "    Use 'coin' to change.  (name: '" << c.name << "'  symbol: " << c.symbol << "  numericalid: " << c.c << ")" << endl;
     return true;
 }
 

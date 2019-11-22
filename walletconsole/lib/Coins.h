@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <sstream>
 
 namespace TW::WalletConsole {
 
@@ -26,15 +27,15 @@ public:
 
 class Coins {
 public:
-    Coins() {}
+    Coins(ostream& out) : _out(out) {}
     void coins() const;
-    //bool coin(const string& id) const;
     bool findCoin(const string& coin, Coin& coin_out) const;
     void init();
 protected:
     void scanCoinRange(int from, int to);
     int findCoinId(const string& coin) const;
     static int pubKeyTypeFromCurve(int cc);
+    ostream& _out;
     map<int, Coin> _coinsByNum;
     map<string, Coin> _coinsById;
     map<string, Coin> _coinsByName;

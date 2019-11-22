@@ -83,6 +83,7 @@ target_include_directories(TrustWalletCore
 
 if(NOT ANDROID AND NOT IOS_PLATFORM)
     add_subdirectory(tests)
+    add_subdirectory(walletconsole/lib)
     add_subdirectory(walletconsole)
 endif()
 

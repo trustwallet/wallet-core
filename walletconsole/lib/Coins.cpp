@@ -8,6 +8,8 @@
 #include "Coins.h"
 
 #include "WalletConsole.h"
+#include "Util.h"
+
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
 #include "Data.h"
@@ -24,22 +26,10 @@ using namespace std;
 
 void Coins::coins() const {
     for (auto c: _coinsById) {
-        cout << c.second.symbol << " \t " << c.second.id << " \t '" << c.second.name << "'" << endl;
+        _out << c.second.symbol << " \t " << c.second.id << " \t '" << c.second.name << "'" << endl;
     }
-    cout << _coinsById.size() << " coins listed." << endl;
+    _out << _coinsById.size() << " coins listed." << endl;
 }
-
-/*
-bool Coins::coin(const string& coin) const {
-    Coin c;
-    if (!findCoin(coin, c)) {
-        // not found
-        return false;
-    }
-    cout << "Coin id: " << c.id << "  name: '" << c.name << "'  symbol: " << c.symbol << "  numericalid: " << c.c << endl;
-    return false;
-}
-*/
 
 int Coins::findCoinId(const string& coin) const {
     if (_coinsById.find(coin) != _coinsById.end()) {
@@ -59,7 +49,7 @@ int Coins::findCoinId(const string& coin) const {
 bool Coins::findCoin(const string& coin, Coin& coin_out) const {
     int c = findCoinId(coin);
     if (c < 0) {
-        cout << "Error: No such coin '" << coin << "'" << endl;
+        _out << "Error: No such coin '" << coin << "'" << endl;
         return false;
     }
     coin_out = _coinsByNum.find(c)->second;
@@ -68,10 +58,10 @@ bool Coins::findCoin(const string& coin, Coin& coin_out) const {
 
 void Coins::init() {
     // not very nice method: try each ID number, and record the ones that are valid coins
-    cout << "Loading coins ... ";
+    _out << "Loading coins ... ";
     scanCoinRange(0, 65536);
     scanCoinRange(5700000, 5800000);
-    cout << _coinsById.size() << " coins loaded." << endl;
+    _out << _coinsById.size() << " coins loaded." << endl;
 }
 
 void Coins::scanCoinRange(int from, int to) {
@@ -80,11 +70,11 @@ void Coins::scanCoinRange(int from, int to) {
         auto symbolTw = WRAPS(TWCoinTypeConfigurationGetSymbol(c));
         if (TWStringSize(symbolTw.get()) == 0) { continue; }
         string id = TWStringUTF8Bytes(WRAPS(TWCoinTypeConfigurationGetID(c)).get());
-        WalletConsole::toLower(id);
+        Util::toLower(id);
         string symbol = TWStringUTF8Bytes(symbolTw.get());
-        WalletConsole::toLower(symbol);
+        Util::toLower(symbol);
         string name = TWStringUTF8Bytes(WRAPS(TWCoinTypeConfigurationGetName(c)).get());
-        WalletConsole::toLower(name);
+        Util::toLower(name);
         int curve = (int)TWCoinTypeCurve(c);
         int pubKeyType = pubKeyTypeFromCurve(curve);
         Coin coin = Coin{c, id, name, symbol, curve, pubKeyType};

@@ -24,6 +24,7 @@ using namespace std;
 
 class CommandExecutor {
 protected:
+    ostream& _out;
     Coins _coins;
     Buffer _buffer;
     Keys _keys;
@@ -31,15 +32,19 @@ protected:
     string _activeCoin;
 
 public:
-    CommandExecutor();
+    CommandExecutor(ostream& out);
     void init();
+    void executeLine(const string& line);
+protected:
     /// Put result in res.  Return true if meaningful result is returned. 
     bool executeOne(const string& cmd, const vector<string>& params, string& res);
     void execute(const string& cmd, const vector<string>& params);
     bool prepareInputs(const vector<string>& p_in, vector<string>& p_out);
     bool setCoin(const string& coin, bool force);
-    static void help();
-    static bool checkMinParams(const vector<string>& params, int n);
+    void help() const;
+    bool checkMinParams(const vector<string>& params, int n) const;
+    static vector<string> tokenize(const string& line);
+    static string parseLine(const string& line, vector<string>& params);
 };
 
 } // namespace TW::WalletConsole
