@@ -23,6 +23,7 @@ public:
     string symbol;
     int curve; // TWCurve
     int pubKeyType; // TWPublicKeyType
+    string derivPath;
 };
 
 class Coins {

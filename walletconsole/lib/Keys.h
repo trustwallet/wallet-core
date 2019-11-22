@@ -11,6 +11,7 @@
 #include "Data.h"
 
 #include <string>
+#include <iostream>
 
 namespace TW::WalletConsole {
 
@@ -18,13 +19,25 @@ using namespace std;
 
 class Keys {
 private:
+    ostream& _out;
     const Coins& _coins;
+    string _currentMnemonic;
+    
 public:
-    Keys(const Coins& coins);
+    Keys(ostream& out, const Coins& coins);
     bool newkey(string& res);
     /// Public key from private key, ED25519
     bool pubpri(const string& coinid, const string& p, string& res);
     bool pripub(const string& p, string& res);
+    string getMnemo() const { return _currentMnemonic; }
+    /// Set given menmonic; list of separate words
+    void setmnemo(const vector<string>& param);
+    /// Generate and store new mnemonic
+    bool newmnemo(const string& param1, string& res);
+    /// Print seed of current mnemonic
+    bool printseed(string& res);
+    /// Print out the current mnemonic
+    bool printmnemo(string& res);
 };
 
 } // namespace TW::WalletConsole

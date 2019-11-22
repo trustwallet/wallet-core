@@ -35,16 +35,17 @@ public:
     CommandExecutor(ostream& out);
     void init();
     void executeLine(const string& line);
+
 protected:
     /// Put result in res.  Return true if meaningful result is returned. 
     bool executeOne(const string& cmd, const vector<string>& params, string& res);
     void execute(const string& cmd, const vector<string>& params);
-    bool prepareInputs(const vector<string>& p_in, vector<string>& p_out);
-    bool setCoin(const string& coin, bool force);
-    void help() const;
-    bool checkMinParams(const vector<string>& params, int n) const;
     static vector<string> tokenize(const string& line);
     static string parseLine(const string& line, vector<string>& params);
+    bool prepareInputs(const vector<string>& p_in, vector<string>& p_out);
+    bool setCoin(const string& coin, bool force);
+    bool checkMinParams(const vector<string>& params, int n) const;
+    void help() const;
 };
 
 } // namespace TW::WalletConsole

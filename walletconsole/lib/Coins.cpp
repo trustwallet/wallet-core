@@ -13,6 +13,7 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWPublicKeyType.h>
 #include "Data.h"
+#include "Coin.h"
 
 #include <iostream>
 #include <vector>
@@ -77,7 +78,8 @@ void Coins::scanCoinRange(int from, int to) {
         Util::toLower(name);
         int curve = (int)TWCoinTypeCurve(c);
         int pubKeyType = pubKeyTypeFromCurve(curve);
-        Coin coin = Coin{c, id, name, symbol, curve, pubKeyType};
+        string derivPath = TW::derivationPath(c).string();
+        Coin coin = Coin{c, id, name, symbol, curve, pubKeyType, derivPath};
         _coinsByNum[c] = coin;
         _coinsById[id] = coin;
         _coinsByName[name] = coin;

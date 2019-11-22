@@ -11,6 +11,7 @@
 #include "Data.h"
 #include "PrivateKey.h"
 #include "HexCoding.h"
+#include "HDWallet.h"
 
 #include <iostream>
 #include <vector>
@@ -27,7 +28,7 @@ bool Address::addrpub(const string& coinid, const string& pubkey_in, string& res
     try {
         pubDat = parse_hex(pubkey_in);
     } catch (exception& ex) {
-        cout << "Error: could not parse public key data" << endl;
+        _out << "Error: could not parse public key data" << endl;
         return false; 
     }
     TWCoinType ctype = (TWCoinType)coin.c;
@@ -43,7 +44,7 @@ bool Address::addrpri(const string& coinid, const string& prikey_in, string& res
     try {
         priDat = parse_hex(prikey_in);
     } catch (exception& ex) {
-        cout << "Error: could not parse private key data" << endl;
+        _out << "Error: could not parse private key data" << endl;
         return false; 
     }
     TWCoinType ctype = (TWCoinType)coin.c;
@@ -57,11 +58,55 @@ bool Address::addr(const string& coinid, const string& addrStr, string& res) {
     if (!_coins.findCoin(coinid, coin)) { return false; }
     TWCoinType ctype = (TWCoinType)coin.c;
     if (!TW::validateAddress(ctype, addrStr)) {
-        cout << "Address is not a valid " << coin.name << " address! " << addrStr << endl;
+        _out << "Address is not a valid " << coin.name << " address! " << addrStr << endl;
         return false;
     }
-    cout << "Address is a valid " << coin.name << " address:  " << addrStr << endl;
+    _out << "Address is a valid " << coin.name << " address:  " << addrStr << endl;
     return false;
+}
+
+bool Address::addrdef(const string& coinid, string& res) {
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    TWCoinType ctype = (TWCoinType)coin.c;
+    string mnemo = _keys.getMnemo();
+    if (mnemo.length() == 0) {
+        _out << "Error: no mnemonic set." << endl;
+        return false;
+    }
+    HDWallet wallet(mnemo, "");
+
+    string addr = wallet.deriveAddress(ctype);
+
+    res = addr;
+    return true;
+}
+
+bool Address::printderiv(const string& coinid, string& res) {
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    res = coin.derivPath;
+    return true;
+}
+
+bool Address::addrdp(const string& coinid, const string& derivPath, string& res) {
+    DerivationPath dp(derivPath);
+    // get the private key
+    string mnemo = _keys.getMnemo();
+    if (mnemo.length() == 0) {
+        _out << "Error: no mnemonic set." << endl;
+        return false;
+    }
+    HDWallet wallet(mnemo, "");
+    PrivateKey prikey = wallet.getKey(dp);
+
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    TWCoinType ctype = (TWCoinType)coin.c;
+
+    // derive address
+    res = TW::deriveAddress(ctype, prikey);
+    return true;
 }
 
 } // namespace TW::WalletConsole

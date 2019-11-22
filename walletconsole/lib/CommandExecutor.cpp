@@ -31,8 +31,8 @@ CommandExecutor::CommandExecutor(ostream& out)
     _out(out),
     _coins(out), 
     _buffer(out),
-    _keys(_coins),
-    _address(_coins)
+    _keys(out, _coins),
+    _address(out, _coins, _keys)
 {
 }
 
@@ -54,13 +54,20 @@ void CommandExecutor::help() const {
     _out << "  coins                   List known coins" << endl;
     _out << "  coin <coin>             Set active coin, selected by its ID or symbol or name" << endl;
     _out << "Keys:" << endl;
-    _out << "  newkey                  Create new pseudo-random 32-byte key" << endl;
-    _out << "  pubpri <prikey>         Derive public key from private key (type is coin-dependent)" << endl;
+    _out << "  newkey                  Create new pseudo-random 32-byte key (secret!)" << endl;
+    _out << "  pubpri <prikey>         Derive public key from a secret private key (type is coin-dependent)" << endl;
     _out << "  pripub <pubkey>         Derive private key from public key :)" << endl;
+    _out << "  setmnemo <word1> ...    Set current mnemonic, several words (secret!)" << endl;
+    _out << "  newmnemo <strength>     Create and store a new mnemonic, of strength (128 -- 256) (secret!)" << endl;
+    _out << "  printseed               Print the seed of the current mnemonic (secret!)" << endl;
+    _out << "  printmnemo              Print the current mnemonic (secret!)" << endl;
     _out << "Addresses:" << endl;
-    _out << "  addrpub <pubkey>        Create <coin> address from public key." << endl;
-    _out << "  addrpri <prikey>        Create <coin> address from private key." << endl;
-    _out << "  addr <addr>             Check string <coin> address." << endl;
+    _out << "  addrpub <pubkey>        Create <coin> address from public key" << endl;
+    _out << "  addrpri <prikey>        Create <coin> address from private key" << endl;
+    _out << "  addr <addr>             Check string <coin> address" << endl;
+    _out << "  addrdef                 Derive default address, for current coin, fom current mnemonic" << endl;
+    _out << "  printderiv              Print the default derivation path of the current coin (ex.: m/84'/0'/0'/0/0)" << endl;
+    _out << "  addrdp <derivpath>      Derive a new address with the given derivation path (using current coin and mnemonic)" << endl;
     _out << "Coin-specific methods:" << endl;
     _out << "  tonmsg <prikey>         Build TON account initialization message." << endl;
     _out << "Transformations:" << endl;
@@ -76,6 +83,8 @@ void CommandExecutor::help() const {
     _out << "> newkey <Enter> pubpri # <Enter> addrpub #" << endl;
     _out << "> coin algo <Enter> addr LCSUSBOLNVT6BND6DWWGM4DLVUYJN3PGBT4T7LTCMDMKS7TR7FZAOHOVPE" << endl;
     _out << "> hex Hello <Enter> base64enc # <Enter> base64dec # <Enter> buffer" << endl;
+    _out << "> coin nano <Enter> printderiv <Enter> setmnemo word1 word2 ... word12 <Enter> addrdef <Enter> addrdp m/44'/165'/0' <Enter> addrdp m/44'/165'/1'" << endl;
+
     _out << endl;
 }
 
@@ -107,10 +116,17 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "newkey") { return _keys.newkey(res); }
     if (cmd == "pubpri") { if (!checkMinParams(params, 1)) { return false; } return _keys.pubpri(_activeCoin, params[1], res); }
     if (cmd == "pripub") { if (!checkMinParams(params, 1)) { return false; } return _keys.pripub(params[1], res); }
+    if (cmd == "setmnemo") { if (!checkMinParams(params, 1)) { return false; } _keys.setmnemo(params); return false; }
+    if (cmd == "newmnemo") { if (!checkMinParams(params, 1)) { return false; } return _keys.newmnemo(params[1], res); }
+    if (cmd == "printseed") { return _keys.printseed(res); }
+    if (cmd == "printmnemo") { return _keys.printmnemo(res); }
 
     if (cmd == "addrpub") { if (!checkMinParams(params, 1)) { return false; } return _address.addrpub(_activeCoin, params[1], res); }
     if (cmd == "addrpri") { if (!checkMinParams(params, 1)) { return false; } return _address.addrpri(_activeCoin, params[1], res); }
     if (cmd == "addr") { if (!checkMinParams(params, 1)) { return false; } return _address.addr(_activeCoin, params[1], res); }
+    if (cmd == "addrdef") { return _address.addrdef(_activeCoin, res); }
+    if (cmd == "printderiv") { return _address.printderiv(_activeCoin, res); }
+    if (cmd == "addrdp") { if (!checkMinParams(params, 1)) { return false; } return _address.addrdp(_activeCoin, params[1], res); }
 
     if (cmd == "tonmsg") { if (!checkMinParams(params, 1)) { return false; } setCoin("ton", false); return TonCoin::tonmsg(params[1], res); }
 
