@@ -27,6 +27,7 @@ public:
     // trim from start (in place)
     static void trimLeft(std::string& s);
     static void toLower(std::string& s);
+    static bool fileExists(const std::string& filename);
 };
 
 } // namespace TW::WalletConsole

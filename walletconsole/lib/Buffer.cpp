@@ -39,9 +39,8 @@ bool Buffer::prepareInput(const string& in, string& in_out) {
         return true;
     }
     // assume #n
-    int n = 0;
     try {
-        n = std::stoi(in2.substr(1));
+        int n = std::stoi(in2.substr(1));
         // of the form #n
         int idx = n - 1;
         if (idx < 0 || idx >= _prev.size()) {

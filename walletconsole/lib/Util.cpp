@@ -56,7 +56,7 @@ bool Util::base64dec(const string& p, string& res) {
 }
 
 bool Util::filew(const string& filename, const string& data, string& res) {
-    if (filesystem::exists(filename)) {
+    if (fileExists(filename)) {
         cout << "Warning: File '" << filename << "' already exists, not overwriting to be safe." << endl;
         return false;
     }
@@ -73,7 +73,7 @@ bool Util::filew(const string& filename, const string& data, string& res) {
 }
 
 bool Util::filer(const string& filename, string& res) {
-    if (!filesystem::exists(filename)) {
+    if (!fileExists(filename)) {
         cout << "Error: File not found '" << filename << "'" << endl;
         return false;
     }
@@ -83,9 +83,8 @@ bool Util::filer(const string& filename, string& res) {
         infile.seekg (0, infile.end);
         int length = infile.tellg();
         infile.seekg (0, infile.beg);
-        char * buffer = new char [length];
-        infile.read(buffer, length);
-        if (!infile) {
+        char* buffer = new char[length];
+        if (!infile.read(buffer, length)) {
             cout << "Could not read file '" << filename << "'" << endl;
             return false;
         }
@@ -131,6 +130,12 @@ void Util::trimLeft(std::string& s) {
 void Util::toLower(std::string& s) {
     std::transform(s.begin(), s.end(), s.begin(),
         [](unsigned char c){ return std::tolower(c); });
+}
+
+bool Util::fileExists(const std::string& filename) {
+    //return filesystem::exists(filesystem::path(filename)); // not used due to compiler issues (on iOS)
+    ifstream f(filename.c_str());
+    return f.good();
 }
 
 } // namespace TW::WalletConsole
