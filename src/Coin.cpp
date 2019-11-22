@@ -142,8 +142,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeZelcash:
     case TWCoinTypeZcash:
-        return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, p2pkh},
-                                                 {Zcash::TAddress::staticPrefix, p2sh}});
+        return Zcash::TAddress::isValid(string);
 
     case TWCoinTypeZilliqa:
         return Zilliqa::Address::isValid(string);

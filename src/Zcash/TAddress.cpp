@@ -6,7 +6,4 @@
 
 #include "TAddress.h"
 
-#include "../Base58.h"
-
 using namespace TW::Zcash;
-
