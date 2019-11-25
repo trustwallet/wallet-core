@@ -21,13 +21,6 @@ TEST(RippleAddress, FromPublicKey) {
     ASSERT_EQ(string("rnBFvgZphmN39GWzUJeUitaP22Fr9be75H"), address.string());
 }
 
-TEST(RippleAddress, FromPublicKey1) {
-    const auto publicKey = PublicKey(parse_hex("047a724ee5787e58912819b2f3ab06f9543e25061339f09ca390997edcad22a7c9"), TWPublicKeyTypeSECP256k1);
-    const auto address = Address(publicKey);
-    auto str = hex(address.bytes);
-    ASSERT_EQ(string("rnBFvgZphmN39GWzUJeUitaP22Fr9be75H"), address.string());
-}
-
 TEST(RippleAddress, FromString) {
     string classic = "rnBFvgZphmN39GWzUJeUitaP22Fr9be75H";
     const auto address = Address(classic);
