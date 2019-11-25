@@ -84,8 +84,9 @@ void CommandExecutor::help() const {
     _out << "> coin bitcoin <Enter> newkey <Enter> addrpri # <Enter> filew btcaddr.txt #" << endl;
     _out << "> newkey <Enter> pubpri # <Enter> addrpub #" << endl;
     _out << "> coin algo <Enter> addr LCSUSBOLNVT6BND6DWWGM4DLVUYJN3PGBT4T7LTCMDMKS7TR7FZAOHOVPE" << endl;
-    _out << "> hex Hello <Enter> base64enc # <Enter> base64dec # <Enter> buffer" << endl;
+    _out << "> coin btc <Enter> dumpdp <Enter> pridb <Enter> pridp m/84'/0'/0'/0/1 <Enter> pubpri # <Enter> addrpub # <Enter> addr #" << endl;
     _out << "> coin nano <Enter> dumpdp <Enter> setmnemo word1 word2 ... word12 <Enter> addrdef <Enter> addrdp m/44'/165'/0' <Enter> addrdp m/44'/165'/1'" << endl;
+    _out << "> hex Hello <Enter> base64enc # <Enter> base64dec # <Enter> buffer" << endl;
 
     _out << endl;
 }
