@@ -15,19 +15,19 @@ using namespace std;
 class Util {
 public:
     static bool hex(const string& p, string& res);
-    static bool base64enc(const string& p, string& res);
-    static bool base64dec(const string& p, string& res);
+    static bool base64Enc(const string& p, string& res);
+    static bool base64Dec(const string& p, string& res);
     /// Write to file
-    static bool filew(const string& filename, const string& data, string& res);
+    static bool fileW(const string& fileName, const string& data, string& res);
     /// Read from file
-    static bool filer(const string& filename, string& res);
+    static bool fileR(const string& fileName, string& res);
 
     // Parse string into words
     static vector<string> tokenize(const string& line);
     // trim from start (in place)
     static void trimLeft(std::string& s);
     static void toLower(std::string& s);
-    static bool fileExists(const std::string& filename);
+    static bool fileExists(const std::string& fileName);
 };
 
 } // namespace TW::WalletConsole

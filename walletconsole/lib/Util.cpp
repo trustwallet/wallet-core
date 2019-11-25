@@ -26,7 +26,7 @@ bool Util::hex(const string& p, string& res) {
     return true;
 }
 
-bool Util::base64enc(const string& p, string& res) {
+bool Util::base64Enc(const string& p, string& res) {
     try {
         Data data = parse_hex(p);
         try {
@@ -43,7 +43,7 @@ bool Util::base64enc(const string& p, string& res) {
     }
 }
 
-bool Util::base64dec(const string& p, string& res) {
+bool Util::base64Dec(const string& p, string& res) {
     try {
         auto dec = Base64::decode(p);
         res = TW::hex(dec);
@@ -55,47 +55,47 @@ bool Util::base64dec(const string& p, string& res) {
     }
 }
 
-bool Util::filew(const string& filename, const string& data, string& res) {
-    if (fileExists(filename)) {
-        cout << "Warning: File '" << filename << "' already exists, not overwriting to be safe." << endl;
+bool Util::fileW(const string& fileName, const string& data, string& res) {
+    if (fileExists(fileName)) {
+        cout << "Warning: File '" << fileName << "' already exists, not overwriting to be safe." << endl;
         return false;
     }
     try {
-        ofstream outfile(filename,  std::ios::out | std::ios::binary);
+        ofstream outfile(fileName,  std::ios::out | std::ios::binary);
         Data bindata = parse_hex(data);
         outfile.write((const char*)bindata.data(), bindata.size());
         outfile.close();
-        cout << "Written to file '" << filename << "', " << bindata.size() << " bytes." << endl;
+        cout << "Written to file '" << fileName << "', " << bindata.size() << " bytes." << endl;
     } catch (exception& ex) {
-        cout << "Error writing to file '" << filename << "': " << ex.what() << endl;
+        cout << "Error writing to file '" << fileName << "': " << ex.what() << endl;
     }
     return false;
 }
 
-bool Util::filer(const string& filename, string& res) {
-    if (!fileExists(filename)) {
-        cout << "Error: File not found '" << filename << "'" << endl;
+bool Util::fileR(const string& fileName, string& res) {
+    if (!fileExists(fileName)) {
+        cout << "Error: File not found '" << fileName << "'" << endl;
         return false;
     }
     try {
-        ifstream infile(filename,  std::ios::in | std::ios::binary);
+        ifstream infile(fileName,  std::ios::in | std::ios::binary);
         // get length of file:
         infile.seekg (0, infile.end);
         int length = infile.tellg();
         infile.seekg (0, infile.beg);
         char* buffer = new char[length];
         if (!infile.read(buffer, length)) {
-            cout << "Could not read file '" << filename << "'" << endl;
+            cout << "Could not read file '" << fileName << "'" << endl;
             return false;
         }
         int red = infile.gcount();
         infile.close();
         res = string(TW::hex(data((const byte*)buffer, red)));
         delete[] buffer;
-        cout << "Read " << red << " bytes from file '" << filename << "'." << endl;
+        cout << "Read " << red << " bytes from file '" << fileName << "'." << endl;
         return true;
     } catch (exception& ex) {
-        cout << "Error reading from file '" << filename << "': " << ex.what() << endl;
+        cout << "Error reading from file '" << fileName << "': " << ex.what() << endl;
         return false;
     }
 }
@@ -132,9 +132,9 @@ void Util::toLower(std::string& s) {
         [](unsigned char c){ return std::tolower(c); });
 }
 
-bool Util::fileExists(const std::string& filename) {
-    //return filesystem::exists(filesystem::path(filename)); // not used due to compiler issues (on iOS)
-    ifstream f(filename.c_str());
+bool Util::fileExists(const std::string& fileName) {
+    //return filesystem::exists(filesystem::path(fileName)); // not used due to compiler issues (on iOS)
+    ifstream f(fileName.c_str());
     return f.good();
 }
 

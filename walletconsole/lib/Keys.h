@@ -25,23 +25,23 @@ private:
     
 public:
     Keys(ostream& out, const Coins& coins);
-    bool newkey(string& res);
+    bool newKey(string& res);
     /// Public key from private key, ED25519
-    bool pubpri(const string& coinid, const string& p, string& res);
-    bool pripub(const string& p, string& res);
+    bool pubPri(const string& coinid, const string& p, string& res);
+    bool priPub(const string& p, string& res);
     string getMnemo() const { return _currentMnemonic; }
     /// Set given menmonic; list of separate words
-    void setmnemo(const vector<string>& param);
+    void setMnemo(const vector<string>& param);
     /// Generate and store new mnemonic
-    bool newmnemo(const string& param1, string& res);
+    bool newMnemo(const string& param1, string& res);
     /// Dump seed of current mnemonic
-    bool dumpseed(string& res);
+    bool dumpSeed(string& res);
     /// Dump the current mnemonic
-    bool dumpmnemo(string& res);
+    bool dumpMnemo(string& res);
     /// Dump default derivation path of coin
-    bool dumpdp(const string& coinid, string& res);
+    bool dumpDP(const string& coinid, string& res);
     /// Derive a private key from the menmonic with derivation path
-    bool pridp(const string& coinid, const string& dp, string& res);
+    bool priDP(const string& coinid, const string& dp, string& res);
 };
 
 } // namespace TW::WalletConsole

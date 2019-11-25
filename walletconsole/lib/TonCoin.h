@@ -26,7 +26,7 @@ using namespace TW::TON;
 
 class TonCoin {
 public:
-    static bool tonmsg(const string& privkey, string& res) {
+    static bool tonMsg(const string& privkey, string& res) {
         PrivateKey privv = PrivateKey(parse_hex(privkey));
         Data extMsg = Signer::buildInitMessage(privv);
         res = hex(extMsg);

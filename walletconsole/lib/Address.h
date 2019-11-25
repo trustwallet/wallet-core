@@ -26,13 +26,13 @@ private:
 
 public:
     Address(ostream& out, const Coins& coins, const Keys& keys) : _out(out), _coins(coins), _keys(keys) {}
-    bool addrpub(const string& coinid, const string& pubkey, string& res);
-    bool addrpri(const string& coinid, const string& prikey, string& res);
+    bool addrPub(const string& coinid, const string& pubKey, string& res);
+    bool addrPri(const string& coinid, const string& priKey, string& res);
     bool addr(const string& coinid, const string& addrStr, string& res);
     /// Derive a default address, using default coin and current mnemonic
-    bool addrdef(const string& coinid, string& res);
+    bool addrDef(const string& coinid, string& res);
     /// Derive a new address with the given derivation path
-    bool addrdp(const string& coinid, const string& derivPath, string& res);
+    bool addrDP(const string& coinid, const string& derivPath, string& res);
 };
 
 } // namespace TW::WalletConsole

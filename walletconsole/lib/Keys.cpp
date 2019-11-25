@@ -30,7 +30,7 @@ Keys::Keys(ostream& out, const Coins& coins) : _out(out), _coins(coins) {
     _currentMnemonic = newwall.mnemonic;
 }
 
-bool Keys::newkey(string& res) {
+bool Keys::newKey(string& res) {
     int n = 32;
     Data k = Data(n);
     for (int i = 0; i < n; ++i) {
@@ -40,7 +40,7 @@ bool Keys::newkey(string& res) {
     return true;
 }
 
-bool Keys::pubpri(const string& coinid, const string& p, string& res) {
+bool Keys::pubPri(const string& coinid, const string& p, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     Data privDat;
@@ -56,12 +56,12 @@ bool Keys::pubpri(const string& coinid, const string& p, string& res) {
     return true;
 }
 
-bool Keys::pripub(const string& p, string& res) {
+bool Keys::priPub(const string& p, string& res) {
     _out << "Not yet implemented! :)" << endl;
     return false;
 }
 
-void Keys::setmnemo(const vector<string>& param) {
+void Keys::setMnemo(const vector<string>& param) {
     if (param.size() < 1 + 12) {
         _out << "Error: at least 12 words are needed for the mnemonic!" << endl;
         return;
@@ -84,7 +84,7 @@ void Keys::setmnemo(const vector<string>& param) {
     _out << "Mnemonic set (" << param.size() - 1 << " words)." << endl;
 }
 
-bool Keys::newmnemo(const string& param1, string& res) {
+bool Keys::newMnemo(const string& param1, string& res) {
     int strength = stoi(param1);
     if (strength < 128 || strength > 256 || (strength % 32 != 0)) {
         _out << "Error: strength must be between 128 and 256, and multiple of 32" << endl;
@@ -102,9 +102,9 @@ bool Keys::newmnemo(const string& param1, string& res) {
     return false;
 }
 
-bool Keys::dumpseed(string& res) {
+bool Keys::dumpSeed(string& res) {
     if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setmnemo." << endl;
+        _out << "Error: no mnemonic set.  Use setMnemo." << endl;
         return false;
     }
     HDWallet wallet(_currentMnemonic, "");
@@ -113,30 +113,30 @@ bool Keys::dumpseed(string& res) {
     return true;
 }
 
-bool Keys::dumpmnemo(string& res) {
+bool Keys::dumpMnemo(string& res) {
     if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setmnemo." << endl;
+        _out << "Error: no mnemonic set.  Use setMnemo." << endl;
         return false;
     }
     res = _currentMnemonic;
     return true;
 }
 
-bool Keys::dumpdp(const string& coinid, string& res) {
+bool Keys::dumpDP(const string& coinid, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     res = coin.derivPath;
     return true;
 }
 
-bool Keys::pridp(const string& coinid, const string& dp, string& res) {
+bool Keys::priDP(const string& coinid, const string& dp, string& res) {
     // coin
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
 
     // mnemo
     if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setmnemo." << endl;
+        _out << "Error: no mnemonic set.  Use setMnemo." << endl;
         return false;
     }
 
@@ -150,9 +150,9 @@ bool Keys::pridp(const string& coinid, const string& dp, string& res) {
     _out << "Using derivation path \"" << dp2 << "\" for coin " << coin.name << endl;
 
     HDWallet wallet(_currentMnemonic, "");
-    PrivateKey prikey = wallet.getKey(dp3);
+    PrivateKey priKey = wallet.getKey(dp3);
 
-    res = hex(prikey.bytes);
+    res = hex(priKey.bytes);
     return true;
 }
 

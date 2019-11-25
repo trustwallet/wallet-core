@@ -21,7 +21,7 @@ namespace TW::WalletConsole {
 
 using namespace std;
 
-bool Address::addrpub(const string& coinid, const string& pubkey_in, string& res) {
+bool Address::addrPub(const string& coinid, const string& pubkey_in, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     Data pubDat;
@@ -32,12 +32,12 @@ bool Address::addrpub(const string& coinid, const string& pubkey_in, string& res
         return false; 
     }
     TWCoinType ctype = (TWCoinType)coin.c;
-    PublicKey pubkey = PublicKey(pubDat, (TWPublicKeyType)coin.pubKeyType);
-    res = TW::deriveAddress(ctype, pubkey);
+    PublicKey pubKey = PublicKey(pubDat, (TWPublicKeyType)coin.pubKeyType);
+    res = TW::deriveAddress(ctype, pubKey);
     return true;
 }
 
-bool Address::addrpri(const string& coinid, const string& prikey_in, string& res) {
+bool Address::addrPri(const string& coinid, const string& prikey_in, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     Data priDat;
@@ -48,8 +48,8 @@ bool Address::addrpri(const string& coinid, const string& prikey_in, string& res
         return false; 
     }
     TWCoinType ctype = (TWCoinType)coin.c;
-    PrivateKey prikey = PrivateKey(priDat);
-    res = TW::deriveAddress(ctype, prikey);
+    PrivateKey priKey = PrivateKey(priDat);
+    res = TW::deriveAddress(ctype, priKey);
     return true;
 }
 
@@ -65,7 +65,7 @@ bool Address::addr(const string& coinid, const string& addrStr, string& res) {
     return false;
 }
 
-bool Address::addrdef(const string& coinid, string& res) {
+bool Address::addrDef(const string& coinid, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     TWCoinType ctype = (TWCoinType)coin.c;
@@ -82,7 +82,7 @@ bool Address::addrdef(const string& coinid, string& res) {
     return true;
 }
 
-bool Address::addrdp(const string& coinid, const string& derivPath, string& res) {
+bool Address::addrDP(const string& coinid, const string& derivPath, string& res) {
     DerivationPath dp(derivPath);
     // get the private key
     string mnemo = _keys.getMnemo();
@@ -91,14 +91,14 @@ bool Address::addrdp(const string& coinid, const string& derivPath, string& res)
         return false;
     }
     HDWallet wallet(mnemo, "");
-    PrivateKey prikey = wallet.getKey(dp);
+    PrivateKey priKey = wallet.getKey(dp);
 
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     TWCoinType ctype = (TWCoinType)coin.c;
 
     // derive address
-    res = TW::deriveAddress(ctype, prikey);
+    res = TW::deriveAddress(ctype, priKey);
     return true;
 }
 
