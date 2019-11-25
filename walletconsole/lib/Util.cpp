@@ -22,7 +22,6 @@ using namespace TW;
 
 bool Util::hex(const string& p, string& res) {
     res = TW::hex(data(p));
-    //cout << "Hex result:  '" << res << "'" << endl;
     return true;
 }
 
@@ -31,7 +30,6 @@ bool Util::base64Enc(const string& p, string& res) {
         Data data = parse_hex(p);
         try {
             res = Base64::encode(data);
-            //cout << "Base64 encode result:  '" << res << "'" << endl;
             return true;
         } catch (exception& ex) {
             cout << "Error while Base64 encode" << endl;
@@ -47,7 +45,6 @@ bool Util::base64Dec(const string& p, string& res) {
     try {
         auto dec = Base64::decode(p);
         res = TW::hex(dec);
-        //cout << "Base64 decode result:  '" << res << "'" << endl;
         return true;
     } catch (exception& ex) {
         cout << "Error while Base64 decode" << endl;

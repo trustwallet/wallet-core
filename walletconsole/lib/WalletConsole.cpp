@@ -40,10 +40,8 @@ void WalletConsole::loop() {
         cout << "> ";
         string line;
         getline(cin, line);
-        //cout << "Read line: '" << line << "'" << endl;
         Util::trimLeft(line);
         if (line.length() == 0) { continue; }
-        //cout << "Read cmd: '" << cmd << "'" << endl;
         if (isExit(line)) {
             break;
         }

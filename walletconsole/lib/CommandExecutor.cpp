@@ -149,7 +149,6 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
 void CommandExecutor::executeLine(const string& line) {
     vector<string> params;
     auto cmd = parseLine(line, params);
-    //cerr << "Read cmd: '" << cmd << "'" << endl;
     execute(cmd, params);
 }
 
