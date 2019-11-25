@@ -102,7 +102,7 @@ bool Keys::newmnemo(const string& param1, string& res) {
     return false;
 }
 
-bool Keys::printseed(string& res) {
+bool Keys::dumpseed(string& res) {
     if (_currentMnemonic.length() == 0) {
         _out << "Error: no mnemonic set.  Use setmnemo." << endl;
         return false;
@@ -113,12 +113,46 @@ bool Keys::printseed(string& res) {
     return true;
 }
 
-bool Keys::printmnemo(string& res) {
+bool Keys::dumpmnemo(string& res) {
     if (_currentMnemonic.length() == 0) {
         _out << "Error: no mnemonic set.  Use setmnemo." << endl;
         return false;
     }
     res = _currentMnemonic;
+    return true;
+}
+
+bool Keys::dumpdp(const string& coinid, string& res) {
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+    res = coin.derivPath;
+    return true;
+}
+
+bool Keys::pridp(const string& coinid, const string& dp, string& res) {
+    // coin
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+
+    // mnemo
+    if (_currentMnemonic.length() == 0) {
+        _out << "Error: no mnemonic set.  Use setmnemo." << endl;
+        return false;
+    }
+
+    // derivation path
+    string dp2 = dp;
+    if (dp2.length() == 0) {
+        // missing dp, use default
+        dp2 = coin.derivPath;
+    }
+    DerivationPath dp3(dp2);
+    _out << "Using derivation path \"" << dp2 << "\" for coin " << coin.name << endl;
+
+    HDWallet wallet(_currentMnemonic, "");
+    PrivateKey prikey = wallet.getKey(dp3);
+
+    res = hex(prikey.bytes);
     return true;
 }
 

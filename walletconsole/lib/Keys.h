@@ -34,10 +34,14 @@ public:
     void setmnemo(const vector<string>& param);
     /// Generate and store new mnemonic
     bool newmnemo(const string& param1, string& res);
-    /// Print seed of current mnemonic
-    bool printseed(string& res);
-    /// Print out the current mnemonic
-    bool printmnemo(string& res);
+    /// Dump seed of current mnemonic
+    bool dumpseed(string& res);
+    /// Dump the current mnemonic
+    bool dumpmnemo(string& res);
+    /// Dump default derivation path of coin
+    bool dumpdp(const string& coinid, string& res);
+    /// Derive a private key from the menmonic with derivation path
+    bool pridp(const string& coinid, const string& dp, string& res);
 };
 
 } // namespace TW::WalletConsole

@@ -82,13 +82,6 @@ bool Address::addrdef(const string& coinid, string& res) {
     return true;
 }
 
-bool Address::printderiv(const string& coinid, string& res) {
-    Coin coin;
-    if (!_coins.findCoin(coinid, coin)) { return false; }
-    res = coin.derivPath;
-    return true;
-}
-
 bool Address::addrdp(const string& coinid, const string& derivPath, string& res) {
     DerivationPath dp(derivPath);
     // get the private key

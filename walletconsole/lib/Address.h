@@ -31,8 +31,6 @@ public:
     bool addr(const string& coinid, const string& addrStr, string& res);
     /// Derive a default address, using default coin and current mnemonic
     bool addrdef(const string& coinid, string& res);
-    /// Print default derivation path of coin
-    bool printderiv(const string& coinid, string& res);
     /// Derive a new address with the given derivation path
     bool addrdp(const string& coinid, const string& derivPath, string& res);
 };
