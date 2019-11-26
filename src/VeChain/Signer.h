@@ -27,6 +27,10 @@ class Signer {
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
+    static Data buildUnsignedTx(const Proto::SigningInput& input) noexcept;
+
+    static Data buildSignedTx(const Proto::SigningInput& input, const Data& signature) noexcept;
+
     /// Signs the given transaction.
     static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
 };

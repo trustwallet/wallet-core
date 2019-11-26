@@ -22,3 +22,22 @@ TW_VeChain_Proto_SigningOutput TWVeChainSignerSign(TW_VeChain_Proto_SigningInput
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
+
+TWData *_Nonnull TWVeChainSignerMessage(TW_VeChain_Proto_SigningInput data) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    auto unsignedTxBytes = Signer::buildUnsignedTx(input);
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(unsignedTxBytes.data()), unsignedTxBytes.size());
+}
+
+
+TWData *_Nonnull TWVeChainSignerTransaction(TW_VeChain_Proto_SigningInput data, TWData *_Nonnull signature) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    Data sig(TWDataBytes(signature), TWDataBytes(signature) + TWDataSize(signature));
+
+    auto signedTxBytes = Signer::buildSignedTx(input, sig);
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(signedTxBytes.data()), signedTxBytes.size());
+}
