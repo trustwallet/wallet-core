@@ -15,28 +15,23 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
-#include <stdlib.h>
-#include <time.h>
 
 namespace TW::WalletConsole {
 
 using namespace std;
 
 Keys::Keys(ostream& out, const Coins& coins) : _out(out), _coins(coins) {
-    // init pseudo-random
-    ::srand(::time(NULL));
     // init a random mnemonic
     HDWallet newwall(128, "");
     _currentMnemonic = newwall.mnemonic;
 }
 
 bool Keys::newKey(string& res) {
-    int n = 32;
-    Data k = Data(n);
-    for (int i = 0; i < n; ++i) {
-        k[i] = ::rand() % 256;
-    }
-    res = hex(k);
+    // Create a new private key by creating a new HDWallet and deriving from it
+    HDWallet newWallet(256, "");
+    DerivationPath dummyDerivation("m/84'/0'/0'/0/0");
+    PrivateKey key = newWallet.getKey(dummyDerivation);
+    res = hex(key.bytes);
     return true;
 }
 
