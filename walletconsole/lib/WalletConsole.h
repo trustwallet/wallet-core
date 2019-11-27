@@ -25,10 +25,12 @@ using namespace std;
 
 class WalletConsole {
 protected:
+    istream& _inst;
+    ostream& _outst;
     CommandExecutor _executor;
 
 public:
-    WalletConsole() : _executor(cout) { init(); }
+    WalletConsole(istream& ins, ostream& outs) : _inst(ins), _outst(outs), _executor(outs) { init(); }
     void init();
     void loop();
     static bool isExit(const string& cmd);

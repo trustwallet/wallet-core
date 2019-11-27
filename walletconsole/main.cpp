@@ -5,8 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "WalletConsole.h"
+#include <iostream>
 
 int main() {
-    TW::WalletConsole::WalletConsole console;
+    TW::WalletConsole::WalletConsole console(std::cin, std::cout);
     console.loop();
 }

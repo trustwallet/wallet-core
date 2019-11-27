@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <iostream>
 
 namespace TW::WalletConsole {
 
@@ -18,9 +19,9 @@ public:
     static bool base64Encode(const string& p, string& res);
     static bool base64Decode(const string& p, string& res);
     /// Write to file
-    static bool fileW(const string& fileName, const string& data, string& res);
+    static bool fileW(const string& fileName, const string& data, string& res, ostream& out);
     /// Read from file
-    static bool fileR(const string& fileName, string& res);
+    static bool fileR(const string& fileName, string& res, ostream& out);
 
     // Parse string into words
     static vector<string> tokenize(const string& line);

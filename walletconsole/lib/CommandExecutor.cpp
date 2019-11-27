@@ -138,8 +138,8 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "base64encode") { if (!checkMinParams(params, 1)) { return false; } return Util::base64Encode(params[1], res); }
     if (cmd == "base64decode") { if (!checkMinParams(params, 1)) { return false; } return Util::base64Decode(params[1], res); }
     
-    if (cmd == "filew") { if (!checkMinParams(params, 2)) { return false; } return Util::fileW(params[1], params[2], res); }
-    if (cmd == "filer") { if (!checkMinParams(params, 1)) { return false; } return Util::fileR(params[1], res); }
+    if (cmd == "filew") { if (!checkMinParams(params, 2)) { return false; } return Util::fileW(params[1], params[2], res, _out); }
+    if (cmd == "filer") { if (!checkMinParams(params, 1)) { return false; } return Util::fileR(params[1], res, _out); }
 
     // fallback
     _out << "Unknown command:  " << cmd << endl << "Type 'help' for list of commands." << endl;

@@ -27,19 +27,19 @@ using namespace TW;
 
 
 void WalletConsole::init() {
-    cout << endl;
-    cout << "Wallet-core Console                          (c) TrustWallet" << endl;
-    cout << "Type 'help' for list of commands." << endl;
-    cout << endl;
+    _outst << endl;
+    _outst << "Wallet-core Console                          (c) TrustWallet" << endl;
+    _outst << "Type 'help' for list of commands." << endl;
+    _outst << endl;
 
     _executor.init();
 }
 
 void WalletConsole::loop() {
     while (true) {
-        cout << "> ";
+        _outst << "> ";
         string line;
-        getline(cin, line);
+        getline(_inst, line);
         Util::trimLeft(line);
         if (line.length() == 0) { continue; }
         if (isExit(line)) {
@@ -48,7 +48,7 @@ void WalletConsole::loop() {
 
         _executor.executeLine(line);
     }
-    cout << "Bye!" << endl << endl;
+    _outst << "Bye!" << endl << endl;
 }
 
 bool WalletConsole::isExit(const string& line) {

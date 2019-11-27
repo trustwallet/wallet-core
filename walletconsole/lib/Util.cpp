@@ -52,9 +52,9 @@ bool Util::base64Decode(const string& p, string& res) {
     }
 }
 
-bool Util::fileW(const string& fileName, const string& data, string& res) {
+bool Util::fileW(const string& fileName, const string& data, string& res, ostream& out) {
     if (fileExists(fileName)) {
-        cout << "Warning: File '" << fileName << "' already exists, not overwriting to be safe." << endl;
+        out << "Warning: File '" << fileName << "' already exists, not overwriting to be safe." << endl;
         return false;
     }
     try {
@@ -62,16 +62,16 @@ bool Util::fileW(const string& fileName, const string& data, string& res) {
         Data bindata = parse_hex(data);
         outfile.write((const char*)bindata.data(), bindata.size());
         outfile.close();
-        cout << "Written to file '" << fileName << "', " << bindata.size() << " bytes." << endl;
+        out << "Written to file '" << fileName << "', " << bindata.size() << " bytes." << endl;
     } catch (exception& ex) {
-        cout << "Error writing to file '" << fileName << "': " << ex.what() << endl;
+        out << "Error writing to file '" << fileName << "': " << ex.what() << endl;
     }
     return false;
 }
 
-bool Util::fileR(const string& fileName, string& res) {
+bool Util::fileR(const string& fileName, string& res, ostream& out) {
     if (!fileExists(fileName)) {
-        cout << "Error: File not found '" << fileName << "'" << endl;
+        out << "Error: File not found '" << fileName << "'" << endl;
         return false;
     }
     try {
@@ -82,17 +82,17 @@ bool Util::fileR(const string& fileName, string& res) {
         infile.seekg (0, infile.beg);
         char* buffer = new char[length];
         if (!infile.read(buffer, length)) {
-            cout << "Could not read file '" << fileName << "'" << endl;
+            out << "Could not read file '" << fileName << "'" << endl;
             return false;
         }
         int red = infile.gcount();
         infile.close();
         res = string(TW::hex(data((const byte*)buffer, red)));
         delete[] buffer;
-        cout << "Read " << red << " bytes from file '" << fileName << "'." << endl;
+        out << "Read " << red << " bytes from file '" << fileName << "'." << endl;
         return true;
     } catch (exception& ex) {
-        cout << "Error reading from file '" << fileName << "': " << ex.what() << endl;
+        out << "Error reading from file '" << fileName << "': " << ex.what() << endl;
         return false;
     }
 }
