@@ -178,6 +178,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .kusama:
                     let expectedResult = "DE2jNrgosggXWJXfYDmRgy1q8XKkbtzSxj2uWAy5fbBfZwT"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .polkadot:
+                    let expectedResult = "1b97X8xTpFKMDzJpxiVhdYMNvekBDSfvGFf4DutxFkUjqfR"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }

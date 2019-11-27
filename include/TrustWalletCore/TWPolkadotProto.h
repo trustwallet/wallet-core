@@ -4,6 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Address.h"
+#pragma once
 
-using namespace TW::Kusama;
+#include "TWData.h"
+
+typedef TWData *_Nonnull TW_Polkadot_Proto_ExtrinsicsTransfer;
+typedef TWData *_Nonnull TW_Polkadot_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Polkadot_Proto_SigningOutput;
