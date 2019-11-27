@@ -25,7 +25,7 @@ bool Util::hex(const string& p, string& res) {
     return true;
 }
 
-bool Util::base64Enc(const string& p, string& res) {
+bool Util::base64Encode(const string& p, string& res) {
     try {
         Data data = parse_hex(p);
         try {
@@ -41,7 +41,7 @@ bool Util::base64Enc(const string& p, string& res) {
     }
 }
 
-bool Util::base64Dec(const string& p, string& res) {
+bool Util::base64Decode(const string& p, string& res) {
     try {
         auto dec = Base64::decode(p);
         res = TW::hex(dec);

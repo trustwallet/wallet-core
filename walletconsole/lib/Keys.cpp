@@ -61,7 +61,7 @@ bool Keys::priPub(const string& p, string& res) {
     return false;
 }
 
-void Keys::setMnemo(const vector<string>& param) {
+void Keys::setMnemonic(const vector<string>& param) {
     if (param.size() < 1 + 12) {
         _out << "Error: at least 12 words are needed for the mnemonic!" << endl;
         return;
@@ -84,7 +84,7 @@ void Keys::setMnemo(const vector<string>& param) {
     _out << "Mnemonic set (" << param.size() - 1 << " words)." << endl;
 }
 
-bool Keys::newMnemo(const string& param1, string& res) {
+bool Keys::newMnemonic(const string& param1, string& res) {
     int strength = stoi(param1);
     if (strength < 128 || strength > 256 || (strength % 32 != 0)) {
         _out << "Error: strength must be between 128 and 256, and multiple of 32" << endl;
@@ -92,7 +92,7 @@ bool Keys::newMnemo(const string& param1, string& res) {
     }
     HDWallet newwall(strength, "");
     if (newwall.mnemonic.length() == 0) {
-        _out << "Error: no menmonic generated." << endl;
+        _out << "Error: no mnemonic generated." << endl;
         return false;
     }
     // store
@@ -104,7 +104,7 @@ bool Keys::newMnemo(const string& param1, string& res) {
 
 bool Keys::dumpSeed(string& res) {
     if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemo." << endl;
+        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
         return false;
     }
     HDWallet wallet(_currentMnemonic, "");
@@ -113,9 +113,9 @@ bool Keys::dumpSeed(string& res) {
     return true;
 }
 
-bool Keys::dumpMnemo(string& res) {
+bool Keys::dumpMnemonic(string& res) {
     if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemo." << endl;
+        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
         return false;
     }
     res = _currentMnemonic;
@@ -136,7 +136,7 @@ bool Keys::priDP(const string& coinid, const string& dp, string& res) {
 
     // mnemo
     if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemo." << endl;
+        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
         return false;
     }
 

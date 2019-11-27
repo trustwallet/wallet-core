@@ -15,8 +15,8 @@ using namespace std;
 class Util {
 public:
     static bool hex(const string& p, string& res);
-    static bool base64Enc(const string& p, string& res);
-    static bool base64Dec(const string& p, string& res);
+    static bool base64Encode(const string& p, string& res);
+    static bool base64Decode(const string& p, string& res);
     /// Write to file
     static bool fileW(const string& fileName, const string& data, string& res);
     /// Read from file

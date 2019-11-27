@@ -82,9 +82,9 @@ TEST(WalletConsole, addrbtc1) {
     cmd.executeLine("addr #");
 }
 
-TEST(WalletConsole, setmnemo) {
+TEST(WalletConsole, setMnemonic) {
     auto pos1 = outputss.str().length();
-    cmd.executeLine("setMnemo edge defense waste choose enrich upon flee junk siren film clown finish luggage leader kid quick brick print evidence swap drill paddle truly occur");
+    cmd.executeLine("setMnemonic edge defense waste choose enrich upon flee junk siren film clown finish luggage leader kid quick brick print evidence swap drill paddle truly occur");
     string res1 = outputss.str().substr(pos1);
     //cerr << res1 << endl;
     EXPECT_TRUE(res1.find("Mnemonic set (24 words)") >= 0);
@@ -94,15 +94,15 @@ TEST(WalletConsole, setmnemo) {
     EXPECT_TRUE(res2.length() > 135);
     EXPECT_TRUE(res2.find("7e74b1a8195ae1e8d06f29c9a306f678e5a8cf908075bc52eb3b716f9e50ce8860065c2c18b8a960bb363855d3a340074cba5db505d4f78dd1d94c4e19f20b7a") > 0);
     auto pos3 = outputss.str().length();
-    cmd.executeLine("dumpMnemo");
+    cmd.executeLine("dumpMnemonic");
     string res3 = outputss.str().substr(pos3);
     EXPECT_TRUE(res3.length() > 140);
     EXPECT_TRUE(res3.find("edge defense waste choose enrich upon flee junk siren film clown finish luggage leader kid quick brick print evidence swap drill paddle truly occur") > 0);
 }
 
-TEST(WalletConsole, newmnemo) {
+TEST(WalletConsole, newMnemonic) {
     auto pos1 = outputss.str().length();
-    cmd.executeLine("newMnemo");
+    cmd.executeLine("newMnemonic");
     string res1 = outputss.str().substr(pos1);
     EXPECT_TRUE(res1.find("Mnemonic set (24 words)") >= 0);
     auto pos2 = outputss.str().length();
@@ -111,7 +111,7 @@ TEST(WalletConsole, newmnemo) {
     EXPECT_TRUE(res2.length() > 135);
     EXPECT_TRUE(res2.find("Result") >= 0);
     auto pos3 = outputss.str().length();
-    cmd.executeLine("dumpMnemo");
+    cmd.executeLine("dumpMnemonic");
     string res3 = outputss.str().substr(pos3);
     EXPECT_TRUE(res3.length() > 140);
 }
@@ -173,25 +173,25 @@ TEST(WalletConsole, derive) {
     }
 }
 
-TEST(WalletConsole, addrdef) {
+TEST(WalletConsole, addrDefault) {
     {
         cmd.executeLine("coin btc");
         auto pos1 = outputss.str().length();
-        cmd.executeLine("addrDef");
+        cmd.executeLine("addrDefault");
         string res1 = outputss.str().substr(pos1);
         EXPECT_TRUE(res1.find("bc1q5mv7jf4uzyf0524sxzrpucdf6tnrd0maq9k8zv") > 0);
     }
     {
         cmd.executeLine("coin eth");
         auto pos1 = outputss.str().length();
-        cmd.executeLine("addrDef");
+        cmd.executeLine("addrDefault");
         string res1 = outputss.str().substr(pos1);
         EXPECT_TRUE(res1.find("0x35A3cAF748eD8d08B26f944A9Cad1f320DBbDFbd") > 0);
     }
     {
         cmd.executeLine("coin nano");
         auto pos1 = outputss.str().length();
-        cmd.executeLine("addrDef");
+        cmd.executeLine("addrDefault");
         string res1 = outputss.str().substr(pos1);
         EXPECT_TRUE(res1.find("nano_3yyipbgtnd7183k61nkh5mxnt9wpsfhto95mksdqj6s7p45mwj9osai7asad") > 0);
     }
@@ -204,12 +204,12 @@ TEST(WalletConsole, hex1) {
     EXPECT_TRUE(res.find("48656c6c6f") > 0);
 }
 
-TEST(WalletConsole, hexBase64EncDec) {
+TEST(WalletConsole, hexBase64EncodeDecode) {
     cmd.executeLine("hex Hello");
-    cmd.executeLine("base64Enc #");
+    cmd.executeLine("base64Encode #");
     cmd.executeLine("buffer");
     auto pos0 = outputss.str().length();
-    cmd.executeLine("base64Dec #");
+    cmd.executeLine("base64Decode #");
     string res = outputss.str().substr(pos0);
     EXPECT_TRUE(res.find("48656c6c6f") > 0);
 }

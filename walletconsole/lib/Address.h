@@ -30,7 +30,7 @@ public:
     bool addrPri(const string& coinid, const string& priKey, string& res);
     bool addr(const string& coinid, const string& addrStr, string& res);
     /// Derive a default address, using default coin and current mnemonic
-    bool addrDef(const string& coinid, string& res);
+    bool addrDefault(const string& coinid, string& res);
     /// Derive a new address with the given derivation path
     bool addrDP(const string& coinid, const string& derivPath, string& res);
 };

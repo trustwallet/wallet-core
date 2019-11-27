@@ -30,17 +30,17 @@ public:
     bool pubPri(const string& coinid, const string& p, string& res);
     bool priPub(const string& p, string& res);
     string getMnemo() const { return _currentMnemonic; }
-    /// Set given menmonic; list of separate words
-    void setMnemo(const vector<string>& param);
+    /// Set given mnemonic; list of separate words
+    void setMnemonic(const vector<string>& param);
     /// Generate and store new mnemonic
-    bool newMnemo(const string& param1, string& res);
+    bool newMnemonic(const string& param1, string& res);
     /// Dump seed of current mnemonic
     bool dumpSeed(string& res);
     /// Dump the current mnemonic
-    bool dumpMnemo(string& res);
+    bool dumpMnemonic(string& res);
     /// Dump default derivation path of coin
     bool dumpDP(const string& coinid, string& res);
-    /// Derive a private key from the menmonic with derivation path
+    /// Derive a private key from the mnemonic with derivation path
     bool priDP(const string& coinid, const string& dp, string& res);
 };
 

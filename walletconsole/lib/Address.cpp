@@ -65,7 +65,7 @@ bool Address::addr(const string& coinid, const string& addrStr, string& res) {
     return false;
 }
 
-bool Address::addrDef(const string& coinid, string& res) {
+bool Address::addrDefault(const string& coinid, string& res) {
     Coin coin;
     if (!_coins.findCoin(coinid, coin)) { return false; }
     TWCoinType ctype = (TWCoinType)coin.c;

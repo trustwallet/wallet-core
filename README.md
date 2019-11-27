@@ -32,7 +32,7 @@ Commands:
   . . .
 > coin btc
 Set active coin to: bitcoin
-> addrDef
+> addrDefault
 Result:  bc1q2kecrqfvzj7l6phet956whxkvathsvsgn7twav
 ```
 
