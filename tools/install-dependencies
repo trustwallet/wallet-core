@@ -66,6 +66,8 @@ fi
 tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz
 
 # Build Protobuf
+ls -l "$PREFIX/lib/libprotobuf*"
+rm "$PREFIX/lib/libprotobuf*"
 cd protobuf-$PROTOBUF_VERSION
 ./configure --prefix="$PREFIX"
 make -j4
