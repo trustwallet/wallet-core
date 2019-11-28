@@ -107,7 +107,7 @@ TEST(Signer, WanchainTransactionSign) {
 }
 
 TEST(Signer, WavesTransactionSign) {
-    
+
     auto transaction = R"({"timestamp": 1526641218066, "transferMessage": {"amount": 100000000,"asset": "WAVES","fee": 100000000,"fee_asset": "WAVES","to": "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds","attachment": "ZmFsYWZlbA=="} })";
     auto input = Proto::SigningInput();
     input.set_private_key("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a");
@@ -162,7 +162,7 @@ TEST(Signer, VeChhainTransactionSign) {
     auto signer = Signer(input);
     auto output = signer.sign();
 
-    ASSERT_TRUE(output.success());;
+    ASSERT_TRUE(output.success());
     ASSERT_EQ("f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601",
               output.output());
 }
@@ -179,12 +179,27 @@ TEST(Signer, HarmonyTransactionSign) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.success());
-    ;
+
     ASSERT_EQ("f8690a808252080180946a87346f3ba9958d08d09484a2b7fdbbe42b0df6884c53ecdc18a600008026a0"
               "74acbc63a58e7861e54ca24babf1cb800c5b694da25c3ae2b154304505366708a0616ab8262ee6f6fb30"
               "ffcab3e9e8261479c7469ce97010a70b3d3f962842c61a",
               output.output());
 }
+
+TEST(Signer, StellarTransactionSign) {
+    auto transaction = R"({"chainId": "AQ==","transactionMessage": {"nonce": "Cg==","gasPrice": "","gasLimit": "Ugg=","toAddress": "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc","amount": "TFPs3BimAAA=","payload": "","fromShardId": "AQ==","toShardId": "AA=="}})";
+    auto input = Proto::SigningInput();
+    input.set_private_key("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeStellar);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());
+
+}
+
 
 TEST(Signer, NetworkNotSupported) {
     auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";

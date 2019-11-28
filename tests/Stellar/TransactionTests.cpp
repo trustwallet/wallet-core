@@ -19,6 +19,8 @@
 
 #include <gtest/gtest.h>
 
+#include <iostream>
+
 using namespace std;
 using namespace TW;
 using namespace TW::Stellar;

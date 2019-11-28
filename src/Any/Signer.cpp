@@ -19,9 +19,12 @@
 #include "VeChain/Signer.h"
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
+#include "Stellar/Signer.h"
 
 #include <google/protobuf/util/json_util.h>
 #include <string>
+
+#include <iostream>
 
 #include <TrustWalletCore/TWCoinType.h>
 
@@ -159,6 +162,17 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             auto signerOutput = Harmony::Signer::sign(message);
             auto encoded = signerOutput.encoded();
             output.set_output(hex(encoded.begin(), encoded.end()));
+        }
+        break;
+    }
+    case TWCoinTypeStellar: {
+        Stellar::Proto::SigningInput message;
+        parse(transaction, &message, output);
+        if (output.success()) {
+            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+//            auto signerOutput = Stellar::Signer::sign(message);
+//            auto encoded = signerOutput.encoded();
+//            output.set_output(hex(encoded.begin(), encoded.end()));
         }
         break;
     }
