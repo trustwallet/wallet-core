@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <gtest/gtest.h>
 #include "Base64.h"
+#include "HexCoding.h"
 #include "Tezos/BinaryCoding.h"
 
 using namespace TW;
@@ -213,4 +214,22 @@ TEST(Signer, InvalidJsonFormat) {
 
     ASSERT_FALSE(output.success());
     ASSERT_EQ(SignerErrorCodeInvalidJson, output.error().code());
+}
+
+TEST(Signer, NanoTransactionSign) {
+    auto transaction = R"({"link_block":")" +
+        TW::Base64::encode(parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507")) +
+        R"(","representative":"nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4","balance":"96242336390000000000000000000"})";
+    auto input = Proto::SigningInput();
+    input.set_private_key("173c40e97fe2afcd24187e74f6b603cb949a5365e72fbdd065a6b165e2189e34");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeNano);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());
+    ASSERT_EQ(
+        "d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09",
+        output.output());
 }

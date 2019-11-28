@@ -12,6 +12,7 @@
 #include "Harmony/Signer.h"
 #include "HexCoding.h"
 #include "IoTeX/Signer.h"
+#include "Nano/Signer.h"
 #include "Nebulas/Signer.h"
 #include "PrivateKey.h"
 #include "Tezos/Signer.h"
@@ -159,6 +160,18 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
             auto signerOutput = Harmony::Signer::sign(message);
             auto encoded = signerOutput.encoded();
             output.set_output(hex(encoded.begin(), encoded.end()));
+        }
+        break;
+    }
+    case TWCoinTypeNano: {
+        Nano::Proto::SigningInput message;
+        parse(transaction, &message, output);
+        if (output.success()) {
+            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+            auto signer = Nano::Signer(message);
+            //auto blockHash = signer.blockHash;
+            auto signature = signer.sign();
+            output.set_output(hex(signature.begin(), signature.end()));
         }
         break;
     }
