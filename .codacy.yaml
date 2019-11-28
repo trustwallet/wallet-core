@@ -2,3 +2,4 @@ exclude_paths:
   - 'codegen/**'
   - 'tools/**'
   - 'trezor-crypto/**'
+  - 'walletconsole/lib/Util.cpp'
