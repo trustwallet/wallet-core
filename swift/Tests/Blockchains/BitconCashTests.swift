@@ -13,7 +13,7 @@ class BitcoinCashTests: XCTestCase {
         let wallet = HDWallet.test
 
         let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .bitcoinCash, version: .xprv)
-        let xpub = wallet.getExtendedPubKey(purpose: .bip44, coin: .bitcoinCash, version: .xpub)
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .bitcoinCash, version: .xpub)
 
         XCTAssertEqual(xprv, "xprv9yEvwSfPanK5gLYVnYvNyF2CEWJx1RsktQtKDeT6jnCnqASBiPCvFYHFSApXv39bZbF6hRaha1kWQBVhN1xjo7NHuhAn5uUfzy79TBuGiHh")
         XCTAssertEqual(xpub, "xpub6CEHLxCHR9sNtpcxtaTPLNxvnY9SQtbcFdov22riJ7jmhxmLFvXAoLbjHSzwXwNNuxC1jUP6tsHzFV9rhW9YKELfmR9pJaKFaM8C3zMPgjw")
