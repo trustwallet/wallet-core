@@ -187,7 +187,8 @@ TEST(Signer, HarmonyTransactionSign) {
 }
 
 TEST(Signer, StellarTransactionSign) {
-    auto transaction = R"({"chainId": "AQ==","transactionMessage": {"nonce": "Cg==","gasPrice": "","gasLimit": "Ugg=","toAddress": "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc","amount": "TFPs3BimAAA=","payload": "","fromShardId": "AQ==","toShardId": "AA=="}})";
+    auto transaction = R"({"amount": 10000000,"fee": 1000, sequence: 2, account: "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI", destination: "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"})";
+    // auto transaction = R"({"chainId": "AQ==","transactionMessage": {"nonce": "Cg==","gasPrice": "","gasLimit": "Ugg=","toAddress": "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc","amount": "TFPs3BimAAA=","payload": "","fromShardId": "AQ==","toShardId": "AA=="}})";
     auto input = Proto::SigningInput();
     input.set_private_key("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722");
     input.set_transaction(transaction);
@@ -197,7 +198,6 @@ TEST(Signer, StellarTransactionSign) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.success());
-
 }
 
 
@@ -210,7 +210,6 @@ TEST(Signer, NetworkNotSupported) {
 
     auto signer = Signer(input);
     auto output = signer.sign();
-
     ASSERT_FALSE(output.success());
     ASSERT_EQ(SignerErrorCodeNotSupported, output.error().code());
     ASSERT_EQ("Network not supported", output.error().description());
