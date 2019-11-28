@@ -13,11 +13,30 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
 
-### Supported Blockchains
+## Supported Blockchains
 
 We support Bitcoin, Ethereum, Binance Chain and 50+ blockchains, you can see the full list [here](docs/coins.md).
 
-# Usage
+## WalletConsole Utility
+
+Our project comes with an interactive command-line utility called _WalletConsole_, for accessing key and address management functionality of the library.  See below for starting with it:
+
+```
+$ ./build/walletconsole/walletconsole 
+Wallet-core Console                          (c) TrustWallet
+Type 'help' for list of commands.
+> help
+Commands:
+  . . .
+  newKey                  Create new pseudo-random 32-byte key (secret!)
+  . . .
+> coin btc
+Set active coin to: bitcoin
+> addrDefault
+Result:  bc1q2kecrqfvzj7l6phet956whxkvathsvsgn7twav
+```
+
+# Using from your project
 
 If you want to use wallet core in your project follow these instructions.
 
