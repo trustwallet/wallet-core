@@ -170,9 +170,10 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
         parse(transaction, &message, output);
         if (output.success()) {
             message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-//            auto signerOutput = Stellar::Signer::sign(message);
-//            auto encoded = signerOutput.encoded();
-//            output.set_output(hex(encoded.begin(), encoded.end()));
+            auto signer = Stellar::Signer(message);
+            auto signerOutput = signer.sign();
+            auto encoded = signerOutput;
+            output.set_output(hex(encoded.begin(), encoded.end()));
         }
         break;
     }

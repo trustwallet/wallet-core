@@ -69,6 +69,7 @@ TEST(StellarTransaction, signWithMemoText) {
 }
 
 TEST(StellarTransaction, signWithMemoHash) {
+
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto input = Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
