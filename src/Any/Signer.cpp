@@ -169,7 +169,7 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         if (output.success()) {
             message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
             auto signer = Nano::Signer(message);
-            //auto blockHash = signer.blockHash;
+            // only signature is included (signer.blockHash not)
             auto signature = signer.sign();
             output.set_output(hex(signature.begin(), signature.end()));
         }
