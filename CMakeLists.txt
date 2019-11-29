@@ -38,7 +38,7 @@ find_host_package(Boost REQUIRED)
 include(ExternalProject)
 
 # Dependencies
-#include(cmake/Protobuf.cmake)  was build in build/local, can be used with pkgconfig
+include(cmake/Protobuf.cmake)
 
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
