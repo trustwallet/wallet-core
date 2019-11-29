@@ -18,7 +18,7 @@ class CodeGenerator
   end
 
   # Renders an enum template
-  def render_enum_template(file:, header:, template:, output_subfolder:, extension:)
+  def render_swift_enum_template(file:, header:, template:, output_subfolder:, extension:)
     # split Enum to Enum.swift and Enum+Extension.swift (easier to support cocoapods subspec)
     output_enum_subfolder = "#{output_subfolder + '/Enums'}"
     FileUtils.mkdir_p File.join(output_folder, output_enum_subfolder)
@@ -51,8 +51,8 @@ class CodeGenerator
       # Make current entity available to templates
       @entity = entity
 
-      if entity.type.is_enum
-        render_enum_template(file: file, header: header, template: template, output_subfolder: output_subfolder, extension: extension)
+      if entity.type.is_enum && extension == 'swift'
+        render_swift_enum_template(file: file, header: header, template: template, output_subfolder: output_subfolder, extension: extension)
       else
         code = +''
         code << render(header) unless header.nil?
