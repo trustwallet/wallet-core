@@ -11,7 +11,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/build/gtest/staging/googletest-release-1.8.
                  EXCLUDE_FROM_ALL)
 
 # Protobuf
-find_library(Protobuf REQUIRED PATH ${PREFIX}/lib/pkgconfig NO_DEFAULT_PATH)
+find_library(Protobuf REQUIRED PATH ${CMAKE_SOURCE_DIR}/build/local/lib/pkgconfig NO_DEFAULT_PATH)
 include_directories(${Protobuf_INCLUDE_DIRS})
 
 # Test executable
