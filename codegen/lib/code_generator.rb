@@ -17,6 +17,33 @@ class CodeGenerator
     @output_folder = output_folder
   end
 
+  # Renders an enum template
+  def render_swift_enum_template(file:, header:, template:, output_subfolder:, extension:)
+    # split Enum to Enum.swift and Enum+Extension.swift (easier to support cocoapods subspec)
+    output_enum_subfolder = "#{output_subfolder + '/Enums'}"
+    FileUtils.mkdir_p File.join(output_folder, output_enum_subfolder)
+    has_extension = entity.properties.length > 0 || entity.methods.length > 0
+    header = render(header)
+    header << "\n"
+
+    string = render(template)
+    unless string.nil? || string.empty?
+      code = +''
+      code << header
+      code << string
+      path = File.expand_path(File.join(output_folder, output_enum_subfolder, "#{file}.#{extension}"))
+      File.write(path, code)
+    end
+
+    if has_extension
+      code = +''
+      code << header
+      code << render('swift/enum_extension.erb')
+      path = File.expand_path(File.join(output_folder, output_subfolder, "#{file + '+Extension'}.#{extension}"))
+      File.write(path, code)
+    end
+  end
+
   # Renders a template
   def render_template(header:, template:, output_subfolder:, extension:)
     FileUtils.mkdir_p File.join(output_folder, output_subfolder)
@@ -24,15 +51,19 @@ class CodeGenerator
       # Make current entity available to templates
       @entity = entity
 
-      code = +''
-      code << render(header) unless header.nil?
-      string = render(template)
-      unless string.nil? || string.empty?
-        code << "\n" unless header.nil?
-        code << string
-
-        path = File.expand_path(File.join(output_folder, output_subfolder, "#{file}.#{extension}"))
-        File.write(path, code)
+      if entity.type.is_enum && extension == 'swift'
+        render_swift_enum_template(file: file, header: header, template: template, output_subfolder: output_subfolder, extension: extension)
+      else
+        code = +''
+        code << render(header) unless header.nil?
+        string = render(template)
+        unless string.nil? || string.empty?
+          code << "\n" unless header.nil?
+          code << string
+  
+          path = File.expand_path(File.join(output_folder, output_subfolder, "#{file}.#{extension}"))
+          File.write(path, code)
+        end
       end
     end
   end
@@ -63,22 +94,6 @@ class CodeGenerator
     index_ts = render('js/index.ts.erb')
     index_ts_path = File.expand_path(File.join(output_folder, 'js/lib/', 'index.ts'))
     File.write(index_ts_path, index_ts)
-  end
-
-  def render_napi_h
-    render_template(header: 'js/header.erb', template: 'js_napi_h.erb', output_subfolder: 'js/cpp/generated', extension: 'h')
-
-    napi_source = render('napi/Sources.cc.erb')
-    napi_source_path = File.expand_path(File.join(output_folder, 'js/cpp/', 'Sources.cc'))
-    File.write(napi_source_path, napi_source)
-  end
-
-  def render_napi_cpp
-    render_template(header: 'js/header.erb', template: 'js_napi_cc.erb', output_subfolder: 'js/cpp/generated', extension: 'cc')
-
-    binding_gyp = render('napi/binding.gyp.erb')
-    binding_gyp_path = File.expand_path(File.join(output_folder, 'js/', 'binding.gyp'))
-    File.write(binding_gyp_path, binding_gyp)
   end
 
   def render(file, locals = {})

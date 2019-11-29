@@ -1,0 +1,15 @@
+extension <%= entity.name %> {
+<%# Properties -%>
+<%- entity.properties.each do |property| -%>
+
+    public var <%= SwiftHelper.format_name(property.name) %>: <%= SwiftHelper.type(property.return_type) %> {
+<%=   render('swift/method_forward.erb', { method: property, arguments: ["TW#{entity.name}(rawValue: rawValue)"] }) -%>
+    }
+<%- end -%>
+<%# Methods -%>
+<% entity.methods.each do |method| -%>
+
+<%   arguments = ["TW#{entity.name}(rawValue: rawValue)"] + SwiftHelper.arguments(method.parameters.drop(1)) -%>
+<%=  render('swift/method.erb', { method: method, arguments: arguments }) %>
+<% end -%>
+}
