@@ -147,7 +147,6 @@ targets:
       - protobuf/google/protobuf/message_lite.cc
       - protobuf/google/protobuf/repeated_field.cc
       - protobuf/google/protobuf/wire_format_lite.cc
-      - protobuf/google/protobuf/io/coded_stream_inl.h
       - protobuf/google/protobuf/io/strtod.cc
       - protobuf/google/protobuf/io/zero_copy_stream.cc
       - protobuf/google/protobuf/io/zero_copy_stream_impl_lite.cc
