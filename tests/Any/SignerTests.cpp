@@ -187,8 +187,7 @@ TEST(Signer, HarmonyTransactionSign) {
 }
 
 TEST(Signer, StellarTransactionSign) {
-    auto transaction = R"({"amount": 10000000,"fee": 1000, sequence: 2, account: "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI", destination: "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52"})";
-    // auto transaction = R"({"chainId": "AQ==","transactionMessage": {"nonce": "Cg==","gasPrice": "","gasLimit": "Ugg=","toAddress": "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc","amount": "TFPs3BimAAA=","payload": "","fromShardId": "AQ==","toShardId": "AA=="}})";
+    auto transaction = R"({"amount": 10000000,"fee": 1000, "sequence": 2, "account": "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI", "destination": "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52", "memo_id": 1234567890, "passphrase": "Public Global Stellar Network ; September 2015", "operation_type": "1"})";
     auto input = Proto::SigningInput();
     input.set_private_key("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722");
     input.set_transaction(transaction);
@@ -198,6 +197,8 @@ TEST(Signer, StellarTransactionSign) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.success());
+    ASSERT_EQ(output.output(), "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB");
+    std::cout << output.output();
 }
 
 
