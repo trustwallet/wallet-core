@@ -19,6 +19,7 @@ lib/protobuf
 *.orig
 .idea/
 .vscode/
+.project
 
 # Generated files
 jni/cpp/generated
