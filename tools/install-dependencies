@@ -66,8 +66,6 @@ fi
 tar xzf protobuf-java-$PROTOBUF_VERSION.tar.gz
 
 # Build Protobuf
-# Compiler flags needed so it links OK with our own code
-export CXXFLAGS="-std=c++17 -stdlib=libc++"
 cd protobuf-$PROTOBUF_VERSION
 ./configure --prefix="$PREFIX"
 make -j4
