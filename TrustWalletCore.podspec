@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
     submodules: true
   }
 
-  protobuf_dir = 'build/protobuf/staging/protobuf-3.7.0'
+  protobuf_dir = 'build/protobuf/staging/protobuf-3.9.0'
   include_dir = 'build/local/include'
   s.source_files =
     'src/**/*.{c,cc,cpp,h}',
@@ -47,7 +47,6 @@ Pod::Spec.new do |s|
     "#{protobuf_dir}/src/google/protobuf/generated_message_table_driven.cc",
     "#{protobuf_dir}/src/google/protobuf/generated_message_util.cc",
     "#{protobuf_dir}/src/google/protobuf/implicit_weak_message.cc",
-    "#{protobuf_dir}/src/google/protobuf/io/coded_stream.cc",
     "#{protobuf_dir}/src/google/protobuf/io/gzip_stream.cc",
     "#{protobuf_dir}/src/google/protobuf/io/printer.cc",
     "#{protobuf_dir}/src/google/protobuf/io/strtod.cc",
@@ -69,8 +68,6 @@ Pod::Spec.new do |s|
     "#{protobuf_dir}/src/google/protobuf/stubs/callback.cc",
     "#{protobuf_dir}/src/google/protobuf/stubs/common.cc",
     "#{protobuf_dir}/src/google/protobuf/stubs/int128.cc",
-    "#{protobuf_dir}/src/google/protobuf/stubs/mathlimits.cc",
-    "#{protobuf_dir}/src/google/protobuf/stubs/mathlimits.h",
     "#{protobuf_dir}/src/google/protobuf/stubs/status.cc",
     "#{protobuf_dir}/src/google/protobuf/stubs/statusor.cc",
     "#{protobuf_dir}/src/google/protobuf/stubs/stringpiece.cc",

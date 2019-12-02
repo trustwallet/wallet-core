@@ -117,121 +117,82 @@ targets:
     type: library.static
     platform: iOS
     sources:
-      - protobuf/google/protobuf/stubs/bytestream.cc
-      - protobuf/google/protobuf/stubs/bytestream.h
-      - protobuf/google/protobuf/stubs/common.cc
-      - protobuf/google/protobuf/stubs/hash.h
-      - protobuf/google/protobuf/stubs/int128.cc
-      - protobuf/google/protobuf/stubs/int128.h
-      - protobuf/google/protobuf/stubs/map_util.h
-      - protobuf/google/protobuf/stubs/mathutil.h
-      - protobuf/google/protobuf/stubs/status.cc
-      - protobuf/google/protobuf/stubs/status.h
-      - protobuf/google/protobuf/stubs/status_macros.h
-      - protobuf/google/protobuf/stubs/statusor.cc
-      - protobuf/google/protobuf/stubs/statusor.h
-      - protobuf/google/protobuf/stubs/stringpiece.cc
-      - protobuf/google/protobuf/stubs/stringpiece.h
-      - protobuf/google/protobuf/stubs/stringprintf.cc
-      - protobuf/google/protobuf/stubs/stringprintf.h
-      - protobuf/google/protobuf/stubs/structurally_valid.cc
-      - protobuf/google/protobuf/stubs/strutil.cc
-      - protobuf/google/protobuf/stubs/time.cc
-      - protobuf/google/protobuf/stubs/time.h
-      - protobuf/google/protobuf/arena.cc
-      - protobuf/google/protobuf/extension_set.cc
-      - protobuf/google/protobuf/generated_message_util.cc
-      - protobuf/google/protobuf/generated_message_table_driven_lite.h
-      - protobuf/google/protobuf/generated_message_table_driven_lite.cc
-      - protobuf/google/protobuf/implicit_weak_message.cc
-      - protobuf/google/protobuf/message_lite.cc
-      - protobuf/google/protobuf/repeated_field.cc
-      - protobuf/google/protobuf/wire_format_lite.cc
-      - protobuf/google/protobuf/io/coded_stream.cc
-      - protobuf/google/protobuf/io/coded_stream_inl.h
-      - protobuf/google/protobuf/io/strtod.cc
-      - protobuf/google/protobuf/io/zero_copy_stream.cc
-      - protobuf/google/protobuf/io/zero_copy_stream_impl_lite.cc
-      - protobuf/google/protobuf/any.pb.cc
-      - protobuf/google/protobuf/api.pb.cc
-      - protobuf/google/protobuf/stubs/mathlimits.cc
-      - protobuf/google/protobuf/stubs/mathlimits.h
       - protobuf/google/protobuf/any.cc
+      - protobuf/google/protobuf/any.pb.cc
+      - protobuf/google/protobuf/any_lite.cc
+      - protobuf/google/protobuf/api.pb.cc
+      - protobuf/google/protobuf/arena.cc
       - protobuf/google/protobuf/descriptor.cc
-      - protobuf/google/protobuf/descriptor_database.cc
       - protobuf/google/protobuf/descriptor.pb.cc
+      - protobuf/google/protobuf/descriptor_database.cc
       - protobuf/google/protobuf/duration.pb.cc
       - protobuf/google/protobuf/dynamic_message.cc
       - protobuf/google/protobuf/empty.pb.cc
+      - protobuf/google/protobuf/extension_set.cc
       - protobuf/google/protobuf/extension_set_heavy.cc
       - protobuf/google/protobuf/field_mask.pb.cc
+      - protobuf/google/protobuf/generated_enum_util.cc
       - protobuf/google/protobuf/generated_message_reflection.cc
-      - protobuf/google/protobuf/generated_message_table_driven_lite.h
       - protobuf/google/protobuf/generated_message_table_driven.cc
+      - protobuf/google/protobuf/generated_message_table_driven_lite.cc
+      - protobuf/google/protobuf/generated_message_util.cc
+      - protobuf/google/protobuf/implicit_weak_message.cc
+      - protobuf/google/protobuf/io/coded_stream.cc
+      - protobuf/google/protobuf/io/gzip_stream.cc
+      - protobuf/google/protobuf/io/io_win32.cc
+      - protobuf/google/protobuf/io/printer.cc
+      - protobuf/google/protobuf/io/strtod.cc
+      - protobuf/google/protobuf/io/tokenizer.cc
+      - protobuf/google/protobuf/io/zero_copy_stream.cc
+      - protobuf/google/protobuf/io/zero_copy_stream_impl.cc
+      - protobuf/google/protobuf/io/zero_copy_stream_impl_lite.cc
       - protobuf/google/protobuf/map_field.cc
       - protobuf/google/protobuf/message.cc
-      - protobuf/google/protobuf/reflection_internal.h
+      - protobuf/google/protobuf/message_lite.cc
+      - protobuf/google/protobuf/parse_context.cc
       - protobuf/google/protobuf/reflection_ops.cc
+      - protobuf/google/protobuf/repeated_field.cc
       - protobuf/google/protobuf/service.cc
       - protobuf/google/protobuf/source_context.pb.cc
       - protobuf/google/protobuf/struct.pb.cc
+      - protobuf/google/protobuf/stubs/bytestream.cc
+      - protobuf/google/protobuf/stubs/common.cc
+      - protobuf/google/protobuf/stubs/int128.cc
+      - protobuf/google/protobuf/stubs/status.cc
+      - protobuf/google/protobuf/stubs/statusor.cc
+      - protobuf/google/protobuf/stubs/stringpiece.cc
+      - protobuf/google/protobuf/stubs/stringprintf.cc
+      - protobuf/google/protobuf/stubs/structurally_valid.cc
+      - protobuf/google/protobuf/stubs/strutil.cc
       - protobuf/google/protobuf/stubs/substitute.cc
-      - protobuf/google/protobuf/stubs/substitute.h
+      - protobuf/google/protobuf/stubs/time.cc
       - protobuf/google/protobuf/text_format.cc
       - protobuf/google/protobuf/timestamp.pb.cc
       - protobuf/google/protobuf/type.pb.cc
       - protobuf/google/protobuf/unknown_field_set.cc
-      - protobuf/google/protobuf/wire_format.cc
-      - protobuf/google/protobuf/wrappers.pb.cc
-      - protobuf/google/protobuf/io/gzip_stream.cc
-      - protobuf/google/protobuf/io/printer.cc
-      - protobuf/google/protobuf/io/strtod.cc
-      - protobuf/google/protobuf/io/tokenizer.cc
-      - protobuf/google/protobuf/io/zero_copy_stream_impl.cc
-      - protobuf/google/protobuf/compiler/importer.cc
-      - protobuf/google/protobuf/compiler/parser.cc
       - protobuf/google/protobuf/util/delimited_message_util.cc
       - protobuf/google/protobuf/util/field_comparator.cc
       - protobuf/google/protobuf/util/field_mask_util.cc
-      - protobuf/google/protobuf/util/internal/constants.h
       - protobuf/google/protobuf/util/internal/datapiece.cc
-      - protobuf/google/protobuf/util/internal/datapiece.h
       - protobuf/google/protobuf/util/internal/default_value_objectwriter.cc
-      - protobuf/google/protobuf/util/internal/default_value_objectwriter.h
       - protobuf/google/protobuf/util/internal/error_listener.cc
-      - protobuf/google/protobuf/util/internal/error_listener.h
-      - protobuf/google/protobuf/util/internal/expecting_objectwriter.h
       - protobuf/google/protobuf/util/internal/field_mask_utility.cc
-      - protobuf/google/protobuf/util/internal/field_mask_utility.h
       - protobuf/google/protobuf/util/internal/json_escaping.cc
-      - protobuf/google/protobuf/util/internal/json_escaping.h
       - protobuf/google/protobuf/util/internal/json_objectwriter.cc
-      - protobuf/google/protobuf/util/internal/json_objectwriter.h
       - protobuf/google/protobuf/util/internal/json_stream_parser.cc
-      - protobuf/google/protobuf/util/internal/json_stream_parser.h
-      - protobuf/google/protobuf/util/internal/location_tracker.h
-      - protobuf/google/protobuf/util/internal/mock_error_listener.h
-      - protobuf/google/protobuf/util/internal/object_location_tracker.h
-      - protobuf/google/protobuf/util/internal/object_source.h
       - protobuf/google/protobuf/util/internal/object_writer.cc
-      - protobuf/google/protobuf/util/internal/object_writer.h
-      - protobuf/google/protobuf/util/internal/protostream_objectsource.cc
-      - protobuf/google/protobuf/util/internal/protostream_objectsource.h
-      - protobuf/google/protobuf/util/internal/protostream_objectwriter.cc
-      - protobuf/google/protobuf/util/internal/protostream_objectwriter.h
       - protobuf/google/protobuf/util/internal/proto_writer.cc
-      - protobuf/google/protobuf/util/internal/proto_writer.h
-      - protobuf/google/protobuf/util/internal/structured_objectwriter.h
+      - protobuf/google/protobuf/util/internal/protostream_objectsource.cc
+      - protobuf/google/protobuf/util/internal/protostream_objectwriter.cc
       - protobuf/google/protobuf/util/internal/type_info.cc
-      - protobuf/google/protobuf/util/internal/type_info.h
-      - protobuf/google/protobuf/util/internal/type_info_test_helper.cc
-      - protobuf/google/protobuf/util/internal/type_info_test_helper.h
       - protobuf/google/protobuf/util/internal/utility.cc
-      - protobuf/google/protobuf/util/internal/utility.h
       - protobuf/google/protobuf/util/json_util.cc
       - protobuf/google/protobuf/util/message_differencer.cc
       - protobuf/google/protobuf/util/time_util.cc
       - protobuf/google/protobuf/util/type_resolver_util.cc
+      - protobuf/google/protobuf/wire_format.cc
+      - protobuf/google/protobuf/wire_format_lite.cc
+      - protobuf/google/protobuf/wrappers.pb.cc
     settings:
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
       OTHER_CFLAGS: -DHAVE_PTHREAD=1
