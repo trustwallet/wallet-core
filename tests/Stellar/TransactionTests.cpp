@@ -19,8 +19,6 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
-
 using namespace std;
 using namespace TW;
 using namespace TW::Stellar;
@@ -69,7 +67,6 @@ TEST(StellarTransaction, signWithMemoText) {
 }
 
 TEST(StellarTransaction, signWithMemoHash) {
-
     auto privateKey = PrivateKey(parse_hex("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722"));
     auto input = Proto::SigningInput();
     input.set_passphrase(TWStellarPassphrase_Stellar);
@@ -152,5 +149,6 @@ TEST(StellarTransaction, signAcreateAccount) {
     const auto signer = Signer(input);
 
     const auto signature = signer.sign();
-    ASSERT_EQ(signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAAAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAmJaAAAAAAAAAAAEZ31yiAAAAQNgqNDqbe0X60gyH+1xf2Tv2RndFiJmyfbrvVjsTfjZAVRrS2zE9hHlqPQKpZkGKEFka7+1ElOS+/m/1JDnauQg=");
+    ASSERT_EQ(signature,
+              "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAAAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAmJaAAAAAAAAAAAEZ31yiAAAAQNgqNDqbe0X60gyH+1xf2Tv2RndFiJmyfbrvVjsTfjZAVRrS2zE9hHlqPQKpZkGKEFka7+1ElOS+/m/1JDnauQg=");
 }
