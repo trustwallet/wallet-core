@@ -16,7 +16,6 @@
 using namespace TW;
 using namespace TW::Any;
 
-
 TEST(Signer, CosmosTransactionSign) {
     auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
     auto input = Proto::SigningInput();
@@ -29,7 +28,7 @@ TEST(Signer, CosmosTransactionSign) {
 
     ASSERT_TRUE(output.success());
     ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"5000\",\"denom\":\"uatom\"}],\"gas\":\"200000\"},\"memo\":\"Testing\",\"msg\":[{\"type\":\"cosmos-sdk/MsgSend\",\"value\":{\"amount\":[{\"amount\":\"995000\",\"denom\":\"uatom\"}],\"from_address\":\"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575\",\"to_address\":\"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"A6EsukEXB53GhohQVeDpxtkeH8KQIayd/Co/ApYRYkTm\"},\"signature\":\"ULEpUqNzoAnYEx2x22F3ANAiPXquAU9+mqLWoAA/ZOUGTMsdb6vryzsW6AKX2Kqj1pGNdrTcQ58Z09JPyjpgEA==\"}],\"type\":\"cosmos-sdk/MsgSend\"}}",
-              output.output());
+            output.output());
 }
 
 TEST(Signer, BinanceTransactionSign) {
@@ -44,7 +43,7 @@ TEST(Signer, BinanceTransactionSign) {
 
     ASSERT_TRUE(output.success());
     ASSERT_EQ("ca01f0625dee0a4a2a2c87fa0a210a1412e654edef9e508b833736a987d069da5a89aedb12090a03424e4210cb8d5212210a1433bbf307b98146f13d20693cf946c2d77a4caf2812090a03424e4210cb8d52126d0a26eb5ae9872102e58176f271a9796b4288908be85094a2ac978e25535fd59a37b58626e3a84d9e1240015b4beb3d6ef366a7a92fd283f66b8f0d8cdb6b152a9189146b27f84f507f047e248517cf691a36ebc2b7f3b7f64e27585ce1c40f1928d119c31af428efcf3e1882671a0754657374696e672002",
-              output.output());
+            output.output());
 }
 
 TEST(Signer, EthereumTransactionSign) {
@@ -164,14 +163,14 @@ TEST(Signer, VeChhainTransactionSign) {
     auto signer = Signer(input);
     auto output = signer.sign();
 
-    ASSERT_TRUE(output.success());
+    ASSERT_TRUE(output.success());;
     ASSERT_EQ("f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601",
               output.output());
 }
 
 TEST(Signer, HarmonyTransactionSign) {
     auto transaction =
-            R"({"chainId": "AQ==","transactionMessage": {"nonce": "Cg==","gasPrice": "","gasLimit": "Ugg=","toAddress": "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc","amount": "TFPs3BimAAA=","payload": "","fromShardId": "AQ==","toShardId": "AA=="}})";
+        R"({"chainId": "AQ==","transactionMessage": {"nonce": "Cg==","gasPrice": "","gasLimit": "Ugg=","toAddress": "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc","amount": "TFPs3BimAAA=","payload": "","fromShardId": "AQ==","toShardId": "AA=="}})";
     auto input = Proto::SigningInput();
     input.set_private_key("b578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e");
     input.set_transaction(transaction);
@@ -181,28 +180,12 @@ TEST(Signer, HarmonyTransactionSign) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.success());
-
+    ;
     ASSERT_EQ("f8690a808252080180946a87346f3ba9958d08d09484a2b7fdbbe42b0df6884c53ecdc18a600008026a0"
               "74acbc63a58e7861e54ca24babf1cb800c5b694da25c3ae2b154304505366708a0616ab8262ee6f6fb30"
               "ffcab3e9e8261479c7469ce97010a70b3d3f962842c61a",
               output.output());
 }
-
-TEST(Signer, StellarTransactionSign) {
-    auto transaction = R"({"amount": 10000000,"fee": 1000, "sequence": 2, "account": "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI", "destination": "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52", "memoId": {"id":1234567890}, "passphrase": "Public Global Stellar Network ; September 2015", "operation_type": "1"})";
-    auto input = Proto::SigningInput();
-
-    input.set_private_key("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722");
-    input.set_transaction(transaction);
-    input.set_coin_type(TWCoinTypeStellar);
-
-    auto signer = Signer(input);
-    auto output = signer.sign();
-
-    ASSERT_TRUE(output.success());
-    ASSERT_EQ(output.output(), "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB");
-}
-
 
 TEST(Signer, NetworkNotSupported) {
     auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
@@ -213,6 +196,7 @@ TEST(Signer, NetworkNotSupported) {
 
     auto signer = Signer(input);
     auto output = signer.sign();
+
     ASSERT_FALSE(output.success());
     ASSERT_EQ(SignerErrorCodeNotSupported, output.error().code());
     ASSERT_EQ("Network not supported", output.error().description());
@@ -230,9 +214,6 @@ TEST(Signer, InvalidJsonFormat) {
 
     ASSERT_FALSE(output.success());
     ASSERT_EQ(SignerErrorCodeInvalidJson, output.error().code());
-
-}
-
 }
 
 TEST(Signer, NanoTransactionSign) {
@@ -251,4 +232,19 @@ TEST(Signer, NanoTransactionSign) {
     ASSERT_EQ(
         "d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09",
         output.output());
+}
+
+TEST(Signer, StellarTransactionSign) {
+    auto transaction = R"({"amount": 10000000,"fee": 1000, "sequence": 2, "account": "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI", "destination": "GDCYBNRRPIHLHG7X7TKPUPAZ7WVUXCN3VO7WCCK64RIFV5XM5V5K4A52", "memoId": {"id":1234567890}, "passphrase": "Public Global Stellar Network ; September 2015", "operation_type": "1"})";
+    auto input = Proto::SigningInput();
+
+    input.set_private_key("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeStellar);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());
+    ASSERT_EQ(output.output(), "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB");
 }
