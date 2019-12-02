@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
     submodules: true
   }
 
-  protobuf_dir = 'build/protobuf/staging/protobuf-3.11.0'
+  protobuf_dir = 'build/protobuf/staging/protobuf-3.9.0'
   include_dir = 'build/local/include'
   s.source_files =
     'src/**/*.{c,cc,cpp,h}',
