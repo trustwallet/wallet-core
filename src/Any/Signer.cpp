@@ -186,7 +186,7 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
                 output.set_output(signerOutput);
         }
         break;
-        }
+    }
     default:
         auto error = new Proto::SigningOutput_Error();
         error->set_code(SignerErrorCodeNotSupported);
