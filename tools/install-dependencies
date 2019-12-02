@@ -56,7 +56,7 @@ fi
 unzip -d "$PREFIX" -o include.zip
 
 # Download Protobuf sources
-export PROTOBUF_VERSION=3.7.0
+export PROTOBUF_VERSION=3.9.0
 PROTOBUF_DIR="$ROOT/build/protobuf/staging"
 mkdir -p "$PROTOBUF_DIR"
 cd "$PROTOBUF_DIR"
@@ -74,11 +74,11 @@ make install
 
 if [ -x "$(command -v swift)" ]; then
     # Download Swift Protobuf sources
-    export SWIFT_PROTOBUF_VERSION=1.5.0
+    export SWIFT_PROTOBUF_VERSION=1.7.0
     SWIFT_PROTOBUF_DIR="$ROOT/build/swift-protobuf/staging"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
-    if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
+    if [ ! -f $SWIFT_PROTOBUF_VERSION.tar.gz ]; then
         curl -fSsOL https://github.com/apple/swift-protobuf/archive/$SWIFT_PROTOBUF_VERSION.tar.gz
     fi
     tar xzf $SWIFT_PROTOBUF_VERSION.tar.gz
