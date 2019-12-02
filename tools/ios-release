@@ -50,27 +50,39 @@ Pod::Spec.new do |s|
   s.source = {
     http: "https://s3.amazonaws.com/wallet-core/TrustWalletCore-iOS-#{version}.zip"
   }
-  s.preserve_paths = 'build/ios/*.a'
-  s.vendored_libraries =
-    'build/ios/libprotobuf.a',
-    'build/ios/libTrezorCrypto.a',
-    'build/ios/libTrustWalletCore.a'
-  s.source_files =
-    'include/**/*.h',
-    'swift/Sources/**/*.{swift,h,m,cpp}'
-  s.public_header_files =
-    'include/**/*.h',
-    'swift/Sources/*.h'
-  s.libraries = 'c++'
-  s.xcconfig = {
-    'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ${PODS_ROOT}/TrustWalletCore/include',
-    'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
-  }
-  s.pod_target_xcconfig = {
-    'ARCHS[sdk=iphonesimulator*]' => '$(ARCHS_STANDARD_64_BIT)'
-  }
-  s.dependency 'SwiftProtobuf'
-end
+  s.default_subspec = 'Core'
+
+  s.subspec 'Types' do |ss|
+    ss.source_files = 
+      'swift/Sources/Generated/Enums/*.swift',
+      'swift/Sources/Generated/Protobuf/*.swift'
+    ss.dependency 'SwiftProtobuf'
+  end
+
+  s.subspec 'Core' do |ss|
+    ss.preserve_paths = 'build/ios/*.a'
+    ss.vendored_libraries =
+      'build/ios/libprotobuf.a',
+      'build/ios/libTrezorCrypto.a',
+      'build/ios/libTrustWalletCore.a'
+    s.source_files =
+      'include/**/*.h',
+      'swift/Sources/*.{swift,h,m,cpp}',
+      'swift/Sources/Extensions/*.swift',
+      'swift/Sources/Generated/*.{swift,h}'
+    ss.public_header_files =
+      'include/**/*.h',
+      'swift/Sources/*.h'
+    ss.libraries = 'c++'
+    ss.xcconfig = {
+        'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ${PODS_ROOT}/TrustWalletCore/include',
+        'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
+    }
+    ss.pod_target_xcconfig = {
+        'ARCHS[sdk=iphonesimulator*]' => '$(ARCHS_STANDARD_64_BIT)'
+    }
+    ss.dependency 'TrustWalletCore/Types'
+  end
 PODSPEC
 file = File.new('build/TrustWalletCore.podspec', 'w')
 file.write(podspec)

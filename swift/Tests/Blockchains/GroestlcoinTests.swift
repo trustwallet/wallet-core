@@ -37,20 +37,20 @@ class GroestlcoinTests: XCTestCase {
 
         // .bip44
         let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .groestlcoin, version: .xprv)
-        let xpub = wallet.getExtendedPubKey(purpose: .bip44, coin: .groestlcoin, version: .xpub)
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .groestlcoin, version: .xpub)
 
         XCTAssertEqual(xprv, "xprv9zHDfLCJPTf5UrS16CrJ56WzSSoAYhJriX8Lfsco3TtPhG2DkwkVXjaDxZKU5USfmq5xjp1CZhpSrpHAPFwZWN75egb19TxWmMMmkd3csxP")
         XCTAssertEqual(xpub, "xpub6DGa4qjCDqDNhLWUCEPJSETizUdexA2i5k3wUG2QboRNa4MNJV4k5XthorGcogStY5K5iJ6NHtsznNK599ir8PmA3d1jqEoZHsixDTddNA9")
 
         // .bip49
         let yprv = wallet.getExtendedPrivateKey(purpose: .bip49, coin: .groestlcoin, version: .yprv)
-        let ypub = wallet.getExtendedPubKey(purpose: .bip49, coin: .groestlcoin, version: .ypub)
+        let ypub = wallet.getExtendedPublicKey(purpose: .bip49, coin: .groestlcoin, version: .ypub)
         XCTAssertEqual(yprv, "yprvAJkRD9AD6QrU1hvSdcJT1Cdc1DwEMsBHFt4Gqd5NsK8Vhdn3ArEHYGaJhWotcn24VWx9rC6dDutHNea9zws8owL1qWEt3pVD2GGk4DSXyvm")
         XCTAssertEqual(ypub, "ypub6Xjmceh6vnQmEBzujdqTNLaLZFmimKu8d6yse1UzRefUaS7BiPYY64tnYpQQydp1gnb2cGkccBd1RtHRDtGXagqmRLxTStV88GWaeYh8ndG")
 
         // .bip84
         let zprv = wallet.getExtendedPrivateKey(purpose: .bip84, coin: .groestlcoin, version: .zprv)
-        let zpub = wallet.getExtendedPubKey(purpose: .bip84, coin: .groestlcoin, version: .zpub)
+        let zpub = wallet.getExtendedPublicKey(purpose: .bip84, coin: .groestlcoin, version: .zpub)
         XCTAssertEqual(zprv, "zprvAcXuP1BeFt59rhLMnqTEL9j2TUz5mzXkj8NPcfvLKGzHm5mofJAeJMvFzzbNizahKxVEvptBpSxdhBcGbxdbaFP58caWLWAjZWMT7Jb6pFW")
         XCTAssertEqual(zpub, "zpub6qXFnWiY6FdT5BQptrzEhHfm1WpaBTFc6MHzR4KwscXGdt6xCqUtrAEjrHdeEsjaYEwVMgjtTvENQ83yo2fmkYYGjTpJoH7vFWKQJp1bg1X")
     }

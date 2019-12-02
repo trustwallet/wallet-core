@@ -34,20 +34,20 @@ class QtumTests: XCTestCase {
 
         // .bip44
         let xprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .qtum, version: .xprv)
-        let xpub = wallet.getExtendedPubKey(purpose: .bip44, coin: .qtum, version: .xpub)
+        let xpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .qtum, version: .xpub)
 
         XCTAssertEqual(xprv, "xprv9yBPu3rkmyffD3A4TngwcpffYASEEfYnShyhuUsL3h9GiYdUjJh9S2s3vcYMoKi8L2cDqQcsFU5TkC1zgusTENCjatpnxp72X4uYkrej2tj")
         XCTAssertEqual(xpub, "xpub6CAkJZPecMDxRXEXZpDwyxcQ6CGie8GdovuJhsGwc2gFbLxdGr1PyqBXmsL7aYds1wfY2rB3YMVZiEE3CB3Lkj6KGoq1rEJ1wuaGkMDBf1m")
 
         // .bip49
         let yprv = wallet.getExtendedPrivateKey(purpose: .bip49, coin: .qtum, version: .yprv)
-        let ypub = wallet.getExtendedPubKey(purpose: .bip49, coin: .qtum, version: .ypub)
+        let ypub = wallet.getExtendedPublicKey(purpose: .bip49, coin: .qtum, version: .ypub)
         XCTAssertEqual(yprv, "yprvAJdTrS1VXxDTRFGxPLJmjSECVCwqePCeCH7i6pLP3SiDg6G5omNiwEt88ENDy9nWMPmErGT5c1nGBsZRUjaTunFqw1w6xhWsAsLG6x8fR7d")
         XCTAssertEqual(ypub, "ypub6XcpFwYPNKmkdjMRVMqn6aAw3EnL3qvVZW3JuCjzbnFCYtbEMJgyV3CbyY8jVCtSBfSB5H12uLcFYUSEtsBYNaf46Zv2smueAZKGmDgT8k8")
 
         // .bip84
         let zprv = wallet.getExtendedPrivateKey(purpose: .bip84, coin: .qtum, version: .zprv)
-        let zpub = wallet.getExtendedPubKey(purpose: .bip84, coin: .qtum, version: .zpub)
+        let zpub = wallet.getExtendedPublicKey(purpose: .bip84, coin: .qtum, version: .zpub)
         XCTAssertEqual(zprv, "zprvAdJxRo2izCdp1NZQShHqyXXwNrkAbYqi9YwAkG6kCJ2V5JZY7s2TdmbF2YxTzQKVx3SWQiHpVpsKyZ59Y8Th7edf2hJBWuyTvnCadLMLxAz")
         XCTAssertEqual(zpub, "zpub6rJJqJZcpaC7DrdsYiprLfUfvtaf11ZZWmrmYeWMkdZTx6tgfQLiBZuisraogskwBRLMGWfXoCyWRrXSypwPdNV2UWJXm5bDVQvBXvrzz9d")
     }

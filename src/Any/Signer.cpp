@@ -12,6 +12,7 @@
 #include "Harmony/Signer.h"
 #include "HexCoding.h"
 #include "IoTeX/Signer.h"
+#include "Nano/Signer.h"
 #include "Nebulas/Signer.h"
 #include "PrivateKey.h"
 #include "Tezos/Signer.h"
@@ -27,12 +28,12 @@
 using namespace TW;
 using namespace google::protobuf;
 
-Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
+TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
     const auto coinType = (TWCoinType)input.coin_type();
     const auto transaction = input.transaction();
     const auto privateKey = PrivateKey(parse_hex(input.private_key()));
 
-    auto output = Any::Proto::SigningOutput();
+    auto output = TW::Any::Proto::SigningOutput();
 
     switch (coinType) {
         case TWCoinTypeCosmos: {
@@ -177,13 +178,32 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             error->set_code(SignerErrorCodeNotSupported);
             error->set_description("Network not supported");
             output.set_allocated_error(error);
+        break;
+    }
+    case TWCoinTypeNano: {
+        Nano::Proto::SigningInput message;
+        parse(transaction, &message, output);
+        if (output.success()) {
+            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+            auto signer = Nano::Signer(message);
+            // only signature is included (signer.blockHash not)
+            auto signature = signer.sign();
+            output.set_output(hex(signature.begin(), signature.end()));
+        }
+        break;
+    }
+    default:
+        auto error = new Proto::SigningOutput_Error();
+        error->set_code(SignerErrorCodeNotSupported);
+        error->set_description("Network not supported");
+        output.set_allocated_error(error);
     }
 
     return output;
 }
 
-void Any::Signer::parse(const std::string &transaction, Message *message,
-                        Any::Proto::SigningOutput &output) const noexcept {
+void TW::Any::Signer::parse(const std::string &transaction, Message *message,
+                        TW::Any::Proto::SigningOutput &output) const noexcept {
     util::JsonParseOptions options;
     options.case_insensitive_enum_parsing = true;
     options.ignore_unknown_fields = false;
@@ -195,14 +215,17 @@ void Any::Signer::parse(const std::string &transaction, Message *message,
         return;
     }
 
-    auto error = new Any::Proto::SigningOutput_Error();
+    auto error = new TW::Any::Proto::SigningOutput_Error();
     error->set_code(SignerErrorCodeInvalidJson);
     error->set_description(result.error_message());
     output.set_allocated_error(error);
 }
 
+
 void Any::Signer::toJson(const google::protobuf::Message &message, std::string *json_string) const
 noexcept {
+void TW::Any::Signer::toJson(const google::protobuf::Message &message, std::string *json_string) const
+    noexcept {
     util::JsonPrintOptions options;
     options.preserve_proto_field_names = true;
 

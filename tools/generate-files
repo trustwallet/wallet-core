@@ -20,6 +20,8 @@ rm -rf swift/Sources/Generated
 rm -rf jni/java
 rm -rf jni/cpp/generated
 
+mkdir -p swift/Sources/Generated/Protobuf swift/Sources/Generated/Enums
+
 # Generate coins info from coins.json
 codegen/bin/coins
 
@@ -28,7 +30,7 @@ codegen/bin/codegen
 
 # Generate Java, C++ and Swift Protobuf files
 if [ -x "$(command -v protoc-gen-swift)" ]; then
-    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources/Generated --swift_opt=Visibility=Public src/proto/*.proto
+    "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java --swift_out=swift/Sources/Generated/Protobuf --swift_opt=Visibility=Public src/proto/*.proto
 else
     "$PROTOC" -I=$PREFIX/include -I=src/proto --cpp_out=src/proto --java_out=jni/java src/proto/*.proto
 fi
@@ -43,7 +45,7 @@ cmake -H. -Bbuild
 make -Cbuild
 popd
 "$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-c-typedef --c-typedef_out include/TrustWalletCore src/proto/*.proto
-"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated src/proto/*.proto
+"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated/Protobuf src/proto/*.proto
 
 # Generate Xcode project
 if [ -x "$(command -v xcodegen)" ]; then
