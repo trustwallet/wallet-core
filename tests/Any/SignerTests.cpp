@@ -10,11 +10,11 @@
 #include <stdexcept>
 #include <gtest/gtest.h>
 #include "Base64.h"
-#include "HexCoding.h"
 #include "Tezos/BinaryCoding.h"
 
 using namespace TW;
 using namespace TW::Any;
+
 
 TEST(Signer, CosmosTransactionSign) {
     auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
@@ -43,7 +43,7 @@ TEST(Signer, BinanceTransactionSign) {
 
     ASSERT_TRUE(output.success());
     ASSERT_EQ("ca01f0625dee0a4a2a2c87fa0a210a1412e654edef9e508b833736a987d069da5a89aedb12090a03424e4210cb8d5212210a1433bbf307b98146f13d20693cf946c2d77a4caf2812090a03424e4210cb8d52126d0a26eb5ae9872102e58176f271a9796b4288908be85094a2ac978e25535fd59a37b58626e3a84d9e1240015b4beb3d6ef366a7a92fd283f66b8f0d8cdb6b152a9189146b27f84f507f047e248517cf691a36ebc2b7f3b7f64e27585ce1c40f1928d119c31af428efcf3e1882671a0754657374696e672002",
-            output.output());
+              output.output());
 }
 
 TEST(Signer, EthereumTransactionSign) {
@@ -58,7 +58,7 @@ TEST(Signer, EthereumTransactionSign) {
 
     ASSERT_TRUE(output.success());;
     ASSERT_EQ("f86a8084d693a400825208947d8bf18c7ce84b3e175b339c4ca93aed1dd166f1870348bca5a160008025a0fe5802b49e04c6b1705088310e133605ed8b549811a18968ad409ea02ad79f21a05bf845646fb1e1b9365f63a7fd5eb5e984094e3ed35c3bed7361aebbcbf41f10",
-            output.output());
+              output.output());
 }
 
 TEST(Signer, TezosTransactionSign) {
@@ -89,7 +89,7 @@ TEST(Signer, IoTeXTransactionSign) {
 
     ASSERT_TRUE(output.success());;
     ASSERT_EQ("0a4c0801107b18f8062203393939523e0a033435361229696f313837777a703038766e686a6a706b79646e723937716c68386b683064706b6b797466616d386a1a0c68656c6c6f20776f726c64211241044e18306ae9ef4ec9d07bf6e705442d4d1a75e6cdf750330ca2d880f2cc54607c9c33deb9eae9c06e06e04fe9ce3d43962cc67d5aa34fbeb71270d4bad3d648d91a41555cc8af4181bf85c044c3201462eeeb95374f78aa48c67b87510ee63d5e502372e53082f03e9a11c1e351de539cedf85d8dff87de9d003cb9f92243541541a000",
-            output.output());
+              output.output());
 }
 
 TEST(Signer, WanchainTransactionSign) {
@@ -104,7 +104,7 @@ TEST(Signer, WanchainTransactionSign) {
 
     ASSERT_TRUE(output.success());;
     ASSERT_EQ("f88201398b32303030303030303030308532313030309435353535353535353535353535353535353535359331303030303030303030303030303030303030808185a0f7bca5c00884bcba5c068f507a33559df775e09785fc55956c9bbe4276259a4ca06679fc4f853b7f224ac8096d15005a3d1070c81a0a13aee8e60a72654273fe5e",
-            output.output());
+              output.output());
 }
 
 TEST(Signer, WavesTransactionSign) {
@@ -163,7 +163,7 @@ TEST(Signer, VeChhainTransactionSign) {
     auto signer = Signer(input);
     auto output = signer.sign();
 
-    ASSERT_TRUE(output.success());;
+    ASSERT_TRUE(output.success());
     ASSERT_EQ("f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601",
               output.output());
 }
@@ -180,40 +180,11 @@ TEST(Signer, HarmonyTransactionSign) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.success());
-    ;
+
     ASSERT_EQ("f8690a808252080180946a87346f3ba9958d08d09484a2b7fdbbe42b0df6884c53ecdc18a600008026a0"
               "74acbc63a58e7861e54ca24babf1cb800c5b694da25c3ae2b154304505366708a0616ab8262ee6f6fb30"
               "ffcab3e9e8261479c7469ce97010a70b3d3f962842c61a",
               output.output());
-}
-
-TEST(Signer, NetworkNotSupported) {
-    auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
-    auto input = Proto::SigningInput();
-    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
-    input.set_transaction(transaction);
-    input.set_coin_type(TWCoinTypeBitcoinCash);
-
-    auto signer = Signer(input);
-    auto output = signer.sign();
-
-    ASSERT_FALSE(output.success());
-    ASSERT_EQ(SignerErrorCodeNotSupported, output.error().code());
-    ASSERT_EQ("Network not supported", output.error().description());
-}
-
-TEST(Signer, InvalidJsonFormat) {
-    auto transaction = R"({"accountNumber":"8733""chainId":"cosmoshub-2"})";
-    auto input = Proto::SigningInput();
-    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
-    input.set_transaction(transaction);
-    input.set_coin_type(TWCoinTypeCosmos);
-
-    auto signer = Signer(input);
-    auto output = signer.sign();
-
-    ASSERT_FALSE(output.success());
-    ASSERT_EQ(SignerErrorCodeInvalidJson, output.error().code());
 }
 
 TEST(Signer, StellarTransactionSign) {
@@ -231,20 +202,31 @@ TEST(Signer, StellarTransactionSign) {
     ASSERT_EQ(output.output(), "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB");
 }
 
-TEST(Signer, NanoTransactionSign) {
-    auto transaction = R"({"link_block":")" +
-                       TW::Base64::encode(parse_hex("491fca2c69a84607d374aaf1f6acd3ce70744c5be0721b5ed394653e85233507")) +
-                       R"(","representative":"nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4","balance":"96242336390000000000000000000"})";
+
+TEST(Signer, NetworkNotSupported) {
+    auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
     auto input = Proto::SigningInput();
-    input.set_private_key("173c40e97fe2afcd24187e74f6b603cb949a5365e72fbdd065a6b165e2189e34");
+    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
     input.set_transaction(transaction);
-    input.set_coin_type(TWCoinTypeNano);
+    input.set_coin_type(TWCoinTypeBitcoinCash);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+    ASSERT_FALSE(output.success());
+    ASSERT_EQ(SignerErrorCodeNotSupported, output.error().code());
+    ASSERT_EQ("Network not supported", output.error().description());
+}
+
+TEST(Signer, InvalidJsonFormat) {
+    auto transaction = R"({"accountNumber":"8733""chainId":"cosmoshub-2"})";
+    auto input = Proto::SigningInput();
+    input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeCosmos);
 
     auto signer = Signer(input);
     auto output = signer.sign();
 
-    ASSERT_TRUE(output.success());
-    ASSERT_EQ(
-            "d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09",
-            output.output());
+    ASSERT_FALSE(output.success());
+    ASSERT_EQ(SignerErrorCodeInvalidJson, output.error().code());
 }

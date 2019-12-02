@@ -12,7 +12,6 @@
 #include "Harmony/Signer.h"
 #include "HexCoding.h"
 #include "IoTeX/Signer.h"
-#include "Nano/Signer.h"
 #include "Nebulas/Signer.h"
 #include "PrivateKey.h"
 #include "Tezos/Signer.h"
@@ -21,10 +20,8 @@
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
 #include "Stellar/Signer.h"
-
 #include <google/protobuf/util/json_util.h>
 #include <string>
-
 #include <TrustWalletCore/TWCoinType.h>
 
 using namespace TW;
@@ -38,148 +35,148 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
     auto output = Any::Proto::SigningOutput();
 
     switch (coinType) {
-    case TWCoinTypeCosmos: {
-        Cosmos::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Cosmos::Signer(std::move(message)).build();
-            output.set_output(signerOutput.json());
+        case TWCoinTypeCosmos: {
+            Cosmos::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Cosmos::Signer(std::move(message)).build();
+                output.set_output(signerOutput.json());
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeBinance: {
-        Binance::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Binance::Signer(std::move(message)).build();
-            output.set_output(hex(signerOutput.begin(), signerOutput.end()));
+        case TWCoinTypeBinance: {
+            Binance::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Binance::Signer(std::move(message)).build();
+                output.set_output(hex(signerOutput.begin(), signerOutput.end()));
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeThunderToken:
-    case TWCoinTypePOANetwork:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeEthereum: {
-        Ethereum::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Ethereum::Signer(load(message.chain_id())).sign(message);
-            auto encoded = signerOutput.encoded();
-            output.set_output(hex(encoded.begin(), encoded.end()));
+        case TWCoinTypeTomoChain:
+        case TWCoinTypeCallisto:
+        case TWCoinTypeThunderToken:
+        case TWCoinTypePOANetwork:
+        case TWCoinTypeEthereumClassic:
+        case TWCoinTypeEthereum: {
+            Ethereum::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Ethereum::Signer(load(message.chain_id())).sign(message);
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeTezos: {
-        Tezos::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto operations = message.operation_list().operations();
-            auto operation_list = Tezos::OperationList(message.operation_list().branch());
-            operation_list.operation_list.assign(operations.begin(), operations.end());
-            auto signerOutput = Tezos::Signer().signOperationList(privateKey, operation_list);
-            output.set_output(hex(signerOutput.begin(), signerOutput.end()));
+        case TWCoinTypeTezos: {
+            Tezos::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto operations = message.operation_list().operations();
+                auto operation_list = Tezos::OperationList(message.operation_list().branch());
+                operation_list.operation_list.assign(operations.begin(), operations.end());
+                auto signerOutput = Tezos::Signer().signOperationList(privateKey, operation_list);
+                output.set_output(hex(signerOutput.begin(), signerOutput.end()));
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeIoTeX: {
-        IoTeX::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_privatekey(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = IoTeX::Signer(std::move(message)).build();
-            auto encoded = signerOutput.encoded();
-            output.set_output(hex(encoded.begin(), encoded.end()));
+        case TWCoinTypeIoTeX: {
+            IoTeX::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_privatekey(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = IoTeX::Signer(std::move(message)).build();
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeWanchain: {
-        Ethereum::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Wanchain::Signer(load(message.chain_id())).sign(message);
-            auto encoded = signerOutput.encoded();
-            output.set_output(hex(encoded.begin(), encoded.end()));
+        case TWCoinTypeWanchain: {
+            Ethereum::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Wanchain::Signer(load(message.chain_id())).sign(message);
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeWaves: {
-        Waves::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
-            auto wavesTransaction = Waves::Transaction(std::move(message), publicKey.bytes);
-            auto signature = Waves::Signer::sign(privateKey, wavesTransaction);
-            auto jsonOutput = wavesTransaction.buildJson(signature).dump();
-            output.set_output(jsonOutput);
+        case TWCoinTypeWaves: {
+            Waves::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeCURVE25519);
+                auto wavesTransaction = Waves::Transaction(std::move(message), publicKey.bytes);
+                auto signature = Waves::Signer::sign(privateKey, wavesTransaction);
+                auto jsonOutput = wavesTransaction.buildJson(signature).dump();
+                output.set_output(jsonOutput);
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeNebulas: {
-        Nebulas::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Nebulas::Signer(load(message.chain_id())).sign(message);
-            auto signature = signerOutput.signature();
-            output.set_output(hex(signature.begin(), signature.end()));
+        case TWCoinTypeNebulas: {
+            Nebulas::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Nebulas::Signer(load(message.chain_id())).sign(message);
+                auto signature = signerOutput.signature();
+                output.set_output(hex(signature.begin(), signature.end()));
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeTron: {
-        Tron::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Tron::Signer::sign(message);
-            output.set_output(signerOutput.json());
+        case TWCoinTypeTron: {
+            Tron::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Tron::Signer::sign(message);
+                output.set_output(signerOutput.json());
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeVeChain: {
-        VeChain::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = VeChain::Signer::sign(message);
-            auto encoded = signerOutput.encoded();
-            output.set_output(hex(encoded.begin(), encoded.end()));
+        case TWCoinTypeVeChain: {
+            VeChain::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = VeChain::Signer::sign(message);
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeHarmony: {
-        Harmony::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Harmony::Signer::sign(message);
-            auto encoded = signerOutput.encoded();
-            output.set_output(hex(encoded.begin(), encoded.end()));
+        case TWCoinTypeHarmony: {
+            Harmony::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Harmony::Signer::sign(message);
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
+            }
+            break;
         }
-        break;
-    }
-    case TWCoinTypeStellar: {
-        Stellar::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signer = Stellar::Signer(message);
-            auto signerOutput = signer.sign();
-            output.set_output(signerOutput);
+        case TWCoinTypeStellar: {
+            Stellar::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signer = Stellar::Signer(message);
+                auto signerOutput = signer.sign();
+                output.set_output(signerOutput);
+            }
+            break;
         }
-        break;
-    }
-    default:
-        auto error = new Proto::SigningOutput_Error();
-        error->set_code(SignerErrorCodeNotSupported);
-        error->set_description("Network not supported");
-        output.set_allocated_error(error);
+        default:
+            auto error = new Proto::SigningOutput_Error();
+            error->set_code(SignerErrorCodeNotSupported);
+            error->set_description("Network not supported");
+            output.set_allocated_error(error);
     }
 
     return output;
@@ -205,7 +202,7 @@ void Any::Signer::parse(const std::string &transaction, Message *message,
 }
 
 void Any::Signer::toJson(const google::protobuf::Message &message, std::string *json_string) const
-    noexcept {
+noexcept {
     util::JsonPrintOptions options;
     options.preserve_proto_field_names = true;
 
