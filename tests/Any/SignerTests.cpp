@@ -108,7 +108,6 @@ TEST(Signer, WanchainTransactionSign) {
 }
 
 TEST(Signer, WavesTransactionSign) {
-
     auto transaction = R"({"timestamp": 1526641218066, "transferMessage": {"amount": 100000000,"asset": "WAVES","fee": 100000000,"fee_asset": "WAVES","to": "3P2uzAzX9XTu1t32GkWw68YFFLwtapWvDds","attachment": "ZmFsYWZlbA=="} })";
     auto input = Proto::SigningInput();
     input.set_private_key("9864a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a");
@@ -161,7 +160,7 @@ TEST(Signer, VeChhainTransactionSign) {
     input.set_coin_type(TWCoinTypeVeChain);
 
     auto signer = Signer(input);
-    auto output = signer.sign();
+    auto output = signer.sign();;
 
     ASSERT_TRUE(output.success());
     ASSERT_EQ("f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601",
@@ -178,6 +177,7 @@ TEST(Signer, HarmonyTransactionSign) {
 
     auto signer = Signer(input);
     auto output = signer.sign();
+    ;
 
     ASSERT_TRUE(output.success());
 
@@ -212,6 +212,7 @@ TEST(Signer, NetworkNotSupported) {
 
     auto signer = Signer(input);
     auto output = signer.sign();
+
     ASSERT_FALSE(output.success());
     ASSERT_EQ(SignerErrorCodeNotSupported, output.error().code());
     ASSERT_EQ("Network not supported", output.error().description());
