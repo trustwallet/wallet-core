@@ -20,12 +20,8 @@
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
 #include "Stellar/Signer.h"
-
 #include <google/protobuf/util/json_util.h>
 #include <string>
-
-#include <iostream>
-
 #include <TrustWalletCore/TWCoinType.h>
 
 using namespace TW;
@@ -172,8 +168,7 @@ Any::Proto::SigningOutput Any::Signer::sign() const noexcept {
             message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
             auto signer = Stellar::Signer(message);
             auto signerOutput = signer.sign();
-            auto encoded = signerOutput;
-            output.set_output(hex(encoded.begin(), encoded.end()));
+            output.set_output(signerOutput);
         }
         break;
     }
