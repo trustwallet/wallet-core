@@ -103,18 +103,17 @@ Pod::Spec.new do |s|
     "#{protobuf_source_dir}/src/google/protobuf/util/type_resolver_util.cc",
     "#{protobuf_source_dir}/src/google/protobuf/wire_format.cc",
     "#{protobuf_source_dir}/src/google/protobuf/wire_format_lite.cc",
-    "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc",
-  s.exclude_files =
-    'trezor-crypto/src/rand.c',
+    "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc"
+  s.exclude_files = 'trezor-crypto/src/rand.c'
   s.public_header_files =
     'include/**/*.h',
-    'swift/Sources/*.h',
+    'swift/Sources/*.h'
 
   s.preserve_paths =
     'trezor-crypto/src/*.{table}',
     "#{protobuf_source_dir}/src/**/*.h",
     "#{include_dir}/nlohmann/**/*.hpp",
-    'src/proto/*.proto',
+    'src/proto/*.proto'
   s.xcconfig = {
     'HEADER_SEARCH_PATHS' => '$(inherited) ' \
       '${PODS_ROOT}/TrustWalletCore/src ' \
@@ -129,7 +128,7 @@ Pod::Spec.new do |s|
     'GCC_WARN_64_TO_32_BIT_CONVERSION' => 'NO',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'OTHER_CFLAGS' => '-DHAVE_PTHREAD=1',
-    'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate',
+    'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
   }
   s.pod_target_xcconfig = {
     'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
