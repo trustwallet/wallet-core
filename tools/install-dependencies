@@ -4,6 +4,7 @@ set -e
 
 ROOT="$PWD"
 PREFIX="${PREFIX:-$ROOT/build/local}"
+echo "PREFIX: $PREFIX"
 
 # Setup up folders
 export PATH="$PREFIX/bin":$PATH
@@ -89,5 +90,11 @@ if [ -x "$(command -v swift)" ]; then
     cp -f "$SWIFT_PROTOBUF_DIR/swift-protobuf-$SWIFT_PROTOBUF_VERSION/.build/release/protoc-gen-swift" "$PREFIX/bin" | true
     $PREFIX/bin/protoc-gen-swift --version
 fi
+
+# Protobuf plugins
+cd "$ROOT/protobuf-plugin"
+cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
+make -Cbuild
+make -Cbuild install
 
 cd "$ROOT"

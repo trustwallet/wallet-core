@@ -22,3 +22,5 @@ target_link_libraries(protoc-gen-c-typedef protobuf -lprotoc -pthread)
 
 add_executable(protoc-gen-swift-typealias swift_typealias.cc ${PROTO_SRCS} ${PROTO_HDRS})
 target_link_libraries(protoc-gen-swift-typealias protobuf -lprotoc -pthread)
+
+install(TARGETS protoc-gen-c-typedef protoc-gen-swift-typealias DESTINATION bin)
