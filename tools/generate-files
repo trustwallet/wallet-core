@@ -10,18 +10,30 @@
 
 set -e
 
-ROOT="$PWD"
-PREFIX="${PREFIX:-$ROOT/build/local}"
-if [ ! -d $PREFIX ]
+# This script works in both Docker and normal build environments.
+# Protobuf and co. tools are taken from: $PREFIX if provided, or from $PWD/build/local if exists, or from /usr/bin
+if [ -z $PREFIX ]
 then
-    echo $PREFIX does not exist, fallback to /usr/local
-    PREFIX=/usr/local
+    # PREFIX not set
+    ROOT="$PWD"
+    PREFIX="$ROOT/build/local"
+    if  [ ! -d $PREFIX ] || \
+        [ ! -d $PREFIX/include ] || \
+        [ ! -f $PREFIX/bin/protoc ] || \
+        [ ! -f $PREFIX/bin/protoc-gen-c-typedef ]
+    then
+        echo $PREFIX does not exist or not complete, fallback to /usr/local
+        PREFIX=/usr/local
+    fi
 fi
 echo "PREFIX: $PREFIX"
 PATH="$PREFIX/bin":$PATH
+# library paths, for protobuf plugins
 LD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
+DYLD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
 # protoc executable (protobuf compiler)
 PROTOC="$PREFIX/bin/protoc"
+which $PROTOC
 $PROTOC --version
 
 # Clean
