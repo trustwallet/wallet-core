@@ -83,6 +83,7 @@ Pod::Spec.new do |s|
     }
     ss.dependency 'TrustWalletCore/Types'
   end
+end
 PODSPEC
 file = File.new('build/TrustWalletCore.podspec', 'w')
 file.write(podspec)
