@@ -20,6 +20,7 @@
 #include "VeChain/Signer.h"
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
+#include "Stellar/Signer.h"
 
 #include <google/protobuf/util/json_util.h>
 #include <string>
@@ -172,6 +173,17 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
             // only signature is included (signer.blockHash not)
             auto signature = signer.sign();
             output.set_output(hex(signature.begin(), signature.end()));
+        }
+        break;
+    }
+    case TWCoinTypeStellar: {
+        Stellar::Proto::SigningInput message;
+        parse(transaction, &message, output);
+        if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signer = Stellar::Signer(message);
+                auto signerOutput = signer.sign();
+                output.set_output(signerOutput);
         }
         break;
     }
