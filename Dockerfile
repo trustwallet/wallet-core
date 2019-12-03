@@ -5,7 +5,7 @@ ARG CMAKE_VERSION=3.13.4
 ARG PROTOBUF_VERSION=3.9.0
 
 # Install the basics
-RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev nano
+RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev
 
 # Make latest NodeJS available
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
