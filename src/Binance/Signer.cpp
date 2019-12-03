@@ -18,17 +18,22 @@ using namespace TW;
 using namespace TW::Binance;
 
 // Message prefixes
+// see https://docs.binance.org/api-reference/transactions.html#amino-types
 static const auto sendOrderPrefix = std::vector<uint8_t>{0x2A, 0x2C, 0x87, 0xFA};
 static const auto tradeOrderPrefix = std::vector<uint8_t>{0xCE, 0x6D, 0xC0, 0x43};
 static const auto cancelTradeOrderPrefix = std::vector<uint8_t>{0x16, 0x6E, 0x68, 0x1B};
-static const auto tokenFreezeOrderPrefix = std::vector<uint8_t>{0xE7, 0x74, 0xB3, 0x2D};
-static const auto tokenUnfreezeOrderPrefix = std::vector<uint8_t>{0x65, 0x15, 0xFF, 0x0D};
 static const auto HTLTOrderPrefix = std::vector<uint8_t>{0xB3, 0x3F, 0x9A, 0x24};
 static const auto depositHTLTOrderPrefix = std::vector<uint8_t>{0x63, 0x98, 0x64, 0x96};
 static const auto claimHTLTOrderPrefix = std::vector<uint8_t>{0xC1, 0x66, 0x53, 0x00};
 static const auto refundHTLTOrderPrefix = std::vector<uint8_t>{0x34, 0x54, 0xA2, 0x7C};
 static const auto pubKeyPrefix = std::vector<uint8_t>{0xEB, 0x5A, 0xE9, 0x87};
 static const auto transactionPrefix = std::vector<uint8_t>{0xF0, 0x62, 0x5D, 0xEE};
+static const auto tokenIssueOrderPrefix = std::vector<uint8_t>{0x17, 0xEF, 0xAB, 0x80};
+static const auto tokenMintOrderPrefix = std::vector<uint8_t>{0x46, 0x7E, 0x08, 0x29};
+static const auto tokenBurnOrderPrefix = std::vector<uint8_t>{0x7E, 0xD2, 0xD2, 0xA0};
+static const auto tokenFreezeOrderPrefix = std::vector<uint8_t>{0xE7, 0x74, 0xB3, 0x2D};
+static const auto tokenUnfreezeOrderPrefix = std::vector<uint8_t>{0x65, 0x15, 0xFF, 0x0D};
+
 
 std::vector<uint8_t> Signer::build() const {
     auto signature = encodeSignature(sign());
@@ -71,6 +76,15 @@ std::vector<uint8_t> Signer::encodeOrder() const {
     } else if (input.has_send_order()) {
         data = input.send_order().SerializeAsString();
         prefix = sendOrderPrefix;
+    } else if (input.has_issue_order()) {
+        data = input.issue_order().SerializeAsString();
+        prefix = tokenIssueOrderPrefix;
+    } else if (input.has_mint_order()) {
+        data = input.mint_order().SerializeAsString();
+        prefix = tokenMintOrderPrefix;
+    } else if (input.has_burn_order()) {
+        data = input.burn_order().SerializeAsString();
+        prefix = tokenBurnOrderPrefix;
     } else if (input.has_freeze_order()) {
         data = input.freeze_order().SerializeAsString();
         prefix = tokenFreezeOrderPrefix;

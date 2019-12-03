@@ -332,4 +332,138 @@ TEST(BinanceSigner, BuildRefundHTLT) {
               "91c55b83c71b7b1e180f2001");
 }
 
+TEST(BinanceSigner, BuildIssueOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const auto fromAddr = Binance::Address(fromPublicKey).string();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& issueOrder = *signingInput.mutable_issue_order();
+    issueOrder.set_from(fromAddr);
+    issueOrder.set_name("NewBinanceToken");
+    issueOrder.set_symbol("NNB-338_BNB");
+    issueOrder.set_total_supply(1000000000);
+    issueOrder.set_mintable(true);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "cc01f0625dee0a56"
+        "17efab80"
+        "0a2a626e6231707272756a78386b6b756b72637270706b6c676761646875766567666e783870687765793730120f"
+        "4e657742696e616e6365546f6b656e"
+        "1a0b"
+        "4e4e422d3333385f424e42"
+        "208094ebdc032801126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001"
+    );
+}
+
+TEST(BinanceSigner, BuildMintOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const auto fromAddr = Binance::Address(fromPublicKey).string();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& mintOrder = *signingInput.mutable_mint_order();
+    mintOrder.set_from(fromAddr);
+    mintOrder.set_symbol("NNB-338_BNB");
+    mintOrder.set_amount(1000000);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "b701f0625dee0a41"
+        "467e0829"
+        "0a2a626e6231707272756a78386b6b756b72637270706b6c676761646875766567666e783870687765793730120b"
+        "4e4e422d3333385f424e42"
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001"
+    );
+}
+
+TEST(BinanceSigner, BuildBurnOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const auto fromAddr = Binance::Address(fromPublicKey).string();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& burnOrder = *signingInput.mutable_burn_order();
+    burnOrder.set_from(fromAddr);
+    burnOrder.set_symbol("NNB-338_BNB");
+    burnOrder.set_amount(1000000);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "b701f0625dee0a41"
+        "7ed2d2a0"
+        "0a2a626e6231707272756a78386b6b756b72637270706b6c676761646875766567666e783870687765793730120b"
+        "4e4e422d3333385f424e42"
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001"
+    );
+}
+
+TEST(BinanceSigner, BuildFreezeOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const auto fromAddr = Binance::Address(fromPublicKey).string();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& freezeOrder = *signingInput.mutable_freeze_order();
+    freezeOrder.set_from(fromAddr);
+    freezeOrder.set_symbol("NNB-338_BNB");
+    freezeOrder.set_amount(1000000);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "b701f0625dee0a41"
+        "e774b32d"
+        "0a2a626e6231707272756a78386b6b756b72637270706b6c676761646875766567666e783870687765793730120b"
+        "4e4e422d3333385f424e42"
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc712402eb289cd13ac635af364fa2a087ddbe13e1a68b6c07ce1b98f6d7e9709a826ea761f8d9eaad7bec580a014542ad3452fb615d70b1ece192cfc8d016f87ca81fc180f2001"
+    );
+}
+
+TEST(BinanceSigner, BuildUnfreezeOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const auto fromAddr = Binance::Address(fromPublicKey).string();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& unfreezeOrder = *signingInput.mutable_unfreeze_order();
+    unfreezeOrder.set_from(fromAddr);
+    unfreezeOrder.set_symbol("NNB-338_BNB");
+    unfreezeOrder.set_amount(1000000);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "b701f0625dee0a41"
+        "6515ff0d"
+        "0a2a626e6231707272756a78386b6b756b72637270706b6c676761646875766567666e783870687765793730120b"
+        "4e4e422d3333385f424e42"
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc712402eb289cd13ac635af364fa2a087ddbe13e1a68b6c07ce1b98f6d7e9709a826ea761f8d9eaad7bec580a014542ad3452fb615d70b1ece192cfc8d016f87ca81fc180f2001"
+    );
+}
+
 } // namespace TW::Binance
