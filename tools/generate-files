@@ -10,10 +10,31 @@
 
 set -e
 
-ROOT="$PWD"
-PREFIX="${PREFIX:-$ROOT/build/local}"
-PATH="$PREFIX/bin":$PATH
+# This script works in both Docker and normal build environments.
+# Protobuf and co. tools are taken from: $PREFIX if provided, or from $PWD/build/local if exists, or from /usr/bin
+if [ -z $PREFIX ]
+then
+    # PREFIX not set
+    ROOT="$PWD"
+    PREFIX="$ROOT/build/local"
+    if  [ ! -d $PREFIX ] || \
+        [ ! -d $PREFIX/include ] || \
+        [ ! -f $PREFIX/bin/protoc ] || \
+        [ ! -f $PREFIX/bin/protoc-gen-c-typedef ]
+    then
+        echo $PREFIX does not exist or not complete, fallback to /usr/local
+        PREFIX=/usr/local
+    fi
+fi
+echo "PREFIX: $PREFIX"
+export PATH="$PREFIX/bin":$PATH
+# library paths, for protobuf plugins
+export LD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
+# protoc executable (protobuf compiler)
 PROTOC="$PREFIX/bin/protoc"
+which $PROTOC
+$PROTOC --version
 
 # Clean
 rm -rf swift/Sources/Generated
@@ -40,12 +61,8 @@ fi
 "$PROTOC" -I=$PREFIX/include -I=src/Zilliqa/Protobuf --cpp_out=src/Zilliqa/Protobuf src/Zilliqa/Protobuf/*.proto
 
 # Generate Proto interface file
-pushd protobuf-plugin
-cmake -H. -Bbuild
-make -Cbuild
-popd
-"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-c-typedef --c-typedef_out include/TrustWalletCore src/proto/*.proto
-"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=protobuf-plugin/build/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated/Protobuf src/proto/*.proto
+"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=$PREFIX/bin/protoc-gen-c-typedef --c-typedef_out include/TrustWalletCore src/proto/*.proto
+"$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=$PREFIX/bin/protoc-gen-swift-typealias --swift-typealias_out swift/Sources/Generated/Protobuf src/proto/*.proto
 
 # Generate Xcode project
 if [ -x "$(command -v xcodegen)" ]; then
