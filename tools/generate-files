@@ -27,10 +27,10 @@ then
     fi
 fi
 echo "PREFIX: $PREFIX"
-PATH="$PREFIX/bin":$PATH
+export PATH="$PREFIX/bin":$PATH
 # library paths, for protobuf plugins
-LD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
-DYLD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH="$PREFIX/lib":$LD_LIBRARY_PATH
 # protoc executable (protobuf compiler)
 PROTOC="$PREFIX/bin/protoc"
 which $PROTOC
