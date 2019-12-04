@@ -1,12 +1,11 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 ARG CLANG_VERSION=7.0.1
 ARG CMAKE_VERSION=3.13.4
 ARG PROTOBUF_VERSION=3.9.0
 
 # Install the basics
-RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev
-
+RUN apt-get update && apt-get install -y curl build-essential xz-utils libreadline-dev
 
 # Install all required packages
 RUN apt-get install -y \
@@ -62,10 +61,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 RUN git clone https://github.com/TrustWallet/wallet-core.git
-# Prepare dependencies, with cleanuo
+# Prepare dependencies
 RUN cd /wallet-core \
     && export PREFIX=/usr/local \
-    && tools/install-dependencies \
-    && rm -Rf /wallet-core/build/protobuf
+    && tools/install-dependencies
 
 CMD ["/bin/bash"]
