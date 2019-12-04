@@ -15,9 +15,9 @@
 
 TEST(TWPolkadotCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePolkadot));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
     // TODO: update block explorer url
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePolkadot, txId));
+    // auto txId = TWStringCreateWithUTF8Bytes("123");
+    // auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePolkadot, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePolkadot));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePolkadot));
 

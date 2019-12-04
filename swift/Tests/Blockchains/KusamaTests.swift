@@ -18,7 +18,7 @@ class KusamaTests: XCTestCase {
         // Bitcoin p2sh
         XCTAssertFalse(kusama.validate(address: "3317oFJC9FvxU2fwrKVsvgnMGCDzTZ5nyf"))
 
-        XCTAssertTrue(kusama.validate(address:  "ELmaX1aPkyEF7TSmYbbyCjmSgrBpGHv9EtpwR2tk1kmpwvG"))
+        XCTAssertTrue(kusama.validate(address: "ELmaX1aPkyEF7TSmYbbyCjmSgrBpGHv9EtpwR2tk1kmpwvG"))
     }
 
     func testAddress() {
