@@ -282,7 +282,7 @@ TWData *_Nonnull TWEthereumAbiFunctionGetParamAddress(struct TWEthereumAbiFuncti
     if (!function.getParam(idx, param, isOutput)) {
         return TWDataCreateWithBytes(valData.data(), valData.size());
     }
-    valData = (std::dynamic_pointer_cast<ParamAddress>(param))->getVal();
+    valData = (std::dynamic_pointer_cast<ParamAddress>(param))->getData();
     return TWDataCreateWithBytes(valData.data(), valData.size());
 }
 
