@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 ARG CLANG_VERSION=7.0.1
 ARG CMAKE_VERSION=3.13.4
-ARG PROTOBUF_VERSION=3.7.0
+ARG PROTOBUF_VERSION=3.9.0
 
 # Install the basics
 RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev

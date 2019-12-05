@@ -8,128 +8,119 @@
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/extension_set.h>
-#include <google/protobuf/wire_format_lite_inl.h>
+#include <google/protobuf/wire_format_lite.h>
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/generated_message_reflection.h>
 #include <google/protobuf/reflection_ops.h>
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
-
-extern PROTOBUF_INTERNAL_EXPORT_ZilliqaMessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_ByteArray_ZilliqaMessage_2eproto;
-extern PROTOBUF_INTERNAL_EXPORT_ZilliqaMessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto;
-extern PROTOBUF_INTERNAL_EXPORT_ZilliqaMessage_2eproto ::google::protobuf::internal::SCCInfo<1> scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto;
-extern PROTOBUF_INTERNAL_EXPORT_ZilliqaMessage_2eproto ::google::protobuf::internal::SCCInfo<2> scc_info_ProtoTransaction_ZilliqaMessage_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ZilliqaMessage_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ByteArray_ZilliqaMessage_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ZilliqaMessage_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<2> scc_info_ProtoTransaction_ZilliqaMessage_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ZilliqaMessage_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto;
+extern PROTOBUF_INTERNAL_EXPORT_ZilliqaMessage_2eproto ::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto;
 namespace ZilliqaMessage {
 class ByteArrayDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<ByteArray> _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<ByteArray> _instance;
 } _ByteArray_default_instance_;
 class ProtoTransactionCoreInfoDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<ProtoTransactionCoreInfo> _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<ProtoTransactionCoreInfo> _instance;
 } _ProtoTransactionCoreInfo_default_instance_;
 class ProtoTransactionDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<ProtoTransaction> _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<ProtoTransaction> _instance;
 } _ProtoTransaction_default_instance_;
 class ProtoTransactionReceiptDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<ProtoTransactionReceipt> _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<ProtoTransactionReceipt> _instance;
 } _ProtoTransactionReceipt_default_instance_;
 class ProtoTransactionWithReceiptDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<ProtoTransactionWithReceipt> _instance;
+  ::PROTOBUF_NAMESPACE_ID::internal::ExplicitlyConstructed<ProtoTransactionWithReceipt> _instance;
 } _ProtoTransactionWithReceipt_default_instance_;
 }  // namespace ZilliqaMessage
-static void InitDefaultsByteArray_ZilliqaMessage_2eproto() {
+static void InitDefaultsscc_info_ByteArray_ZilliqaMessage_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::ZilliqaMessage::_ByteArray_default_instance_;
     new (ptr) ::ZilliqaMessage::ByteArray();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::ZilliqaMessage::ByteArray::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_ByteArray_ZilliqaMessage_2eproto =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsByteArray_ZilliqaMessage_2eproto}, {}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ByteArray_ZilliqaMessage_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsscc_info_ByteArray_ZilliqaMessage_2eproto}, {}};
 
-static void InitDefaultsProtoTransactionCoreInfo_ZilliqaMessage_2eproto() {
-  GOOGLE_PROTOBUF_VERIFY_VERSION;
-
-  {
-    void* ptr = &::ZilliqaMessage::_ProtoTransactionCoreInfo_default_instance_;
-    new (ptr) ::ZilliqaMessage::ProtoTransactionCoreInfo();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
-  }
-  ::ZilliqaMessage::ProtoTransactionCoreInfo::InitAsDefaultInstance();
-}
-
-::google::protobuf::internal::SCCInfo<1> scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsProtoTransactionCoreInfo_ZilliqaMessage_2eproto}, {
-      &scc_info_ByteArray_ZilliqaMessage_2eproto.base,}};
-
-static void InitDefaultsProtoTransaction_ZilliqaMessage_2eproto() {
+static void InitDefaultsscc_info_ProtoTransaction_ZilliqaMessage_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::ZilliqaMessage::_ProtoTransaction_default_instance_;
     new (ptr) ::ZilliqaMessage::ProtoTransaction();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::ZilliqaMessage::ProtoTransaction::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<2> scc_info_ProtoTransaction_ZilliqaMessage_2eproto =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 2, InitDefaultsProtoTransaction_ZilliqaMessage_2eproto}, {
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<2> scc_info_ProtoTransaction_ZilliqaMessage_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 2, InitDefaultsscc_info_ProtoTransaction_ZilliqaMessage_2eproto}, {
       &scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto.base,
       &scc_info_ByteArray_ZilliqaMessage_2eproto.base,}};
 
-static void InitDefaultsProtoTransactionReceipt_ZilliqaMessage_2eproto() {
+static void InitDefaultsscc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::ZilliqaMessage::_ProtoTransactionCoreInfo_default_instance_;
+    new (ptr) ::ZilliqaMessage::ProtoTransactionCoreInfo();
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::ZilliqaMessage::ProtoTransactionCoreInfo::InitAsDefaultInstance();
+}
+
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<1> scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 1, InitDefaultsscc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto}, {
+      &scc_info_ByteArray_ZilliqaMessage_2eproto.base,}};
+
+static void InitDefaultsscc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::ZilliqaMessage::_ProtoTransactionReceipt_default_instance_;
     new (ptr) ::ZilliqaMessage::ProtoTransactionReceipt();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::ZilliqaMessage::ProtoTransactionReceipt::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsProtoTransactionReceipt_ZilliqaMessage_2eproto}, {}};
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<0> scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsscc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto}, {}};
 
-static void InitDefaultsProtoTransactionWithReceipt_ZilliqaMessage_2eproto() {
+static void InitDefaultsscc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
     void* ptr = &::ZilliqaMessage::_ProtoTransactionWithReceipt_default_instance_;
     new (ptr) ::ZilliqaMessage::ProtoTransactionWithReceipt();
-    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+    ::PROTOBUF_NAMESPACE_ID::internal::OnShutdownDestroyMessage(ptr);
   }
   ::ZilliqaMessage::ProtoTransactionWithReceipt::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<2> scc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 2, InitDefaultsProtoTransactionWithReceipt_ZilliqaMessage_2eproto}, {
+::PROTOBUF_NAMESPACE_ID::internal::SCCInfo<2> scc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto =
+    {{ATOMIC_VAR_INIT(::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase::kUninitialized), 2, InitDefaultsscc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto}, {
       &scc_info_ProtoTransaction_ZilliqaMessage_2eproto.base,
       &scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto.base,}};
 
-void InitDefaults_ZilliqaMessage_2eproto() {
-  ::google::protobuf::internal::InitSCC(&scc_info_ByteArray_ZilliqaMessage_2eproto.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_ProtoTransaction_ZilliqaMessage_2eproto.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto.base);
-  ::google::protobuf::internal::InitSCC(&scc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto.base);
-}
+static ::PROTOBUF_NAMESPACE_ID::Metadata file_level_metadata_ZilliqaMessage_2eproto[5];
+static constexpr ::PROTOBUF_NAMESPACE_ID::EnumDescriptor const** file_level_enum_descriptors_ZilliqaMessage_2eproto = nullptr;
+static constexpr ::PROTOBUF_NAMESPACE_ID::ServiceDescriptor const** file_level_service_descriptors_ZilliqaMessage_2eproto = nullptr;
 
-::google::protobuf::Metadata file_level_metadata_ZilliqaMessage_2eproto[5];
-constexpr ::google::protobuf::EnumDescriptor const** file_level_enum_descriptors_ZilliqaMessage_2eproto = nullptr;
-constexpr ::google::protobuf::ServiceDescriptor const** file_level_service_descriptors_ZilliqaMessage_2eproto = nullptr;
-
-const ::google::protobuf::uint32 TableStruct_ZilliqaMessage_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+const ::PROTOBUF_NAMESPACE_ID::uint32 TableStruct_ZilliqaMessage_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   PROTOBUF_FIELD_OFFSET(::ZilliqaMessage::ByteArray, _has_bits_),
   PROTOBUF_FIELD_OFFSET(::ZilliqaMessage::ByteArray, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -190,7 +181,7 @@ const ::google::protobuf::uint32 TableStruct_ZilliqaMessage_2eproto::offsets[] P
   0,
   1,
 };
-static const ::google::protobuf::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
+static const ::PROTOBUF_NAMESPACE_ID::internal::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 6, sizeof(::ZilliqaMessage::ByteArray)},
   { 7, 21, sizeof(::ZilliqaMessage::ProtoTransactionCoreInfo)},
   { 30, 38, sizeof(::ZilliqaMessage::ProtoTransaction)},
@@ -198,21 +189,15 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] PROTOBUF_SE
   { 50, 57, sizeof(::ZilliqaMessage::ProtoTransactionWithReceipt)},
 };
 
-static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::ZilliqaMessage::_ByteArray_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::ZilliqaMessage::_ProtoTransactionCoreInfo_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::ZilliqaMessage::_ProtoTransaction_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::ZilliqaMessage::_ProtoTransactionReceipt_default_instance_),
-  reinterpret_cast<const ::google::protobuf::Message*>(&::ZilliqaMessage::_ProtoTransactionWithReceipt_default_instance_),
+static ::PROTOBUF_NAMESPACE_ID::Message const * const file_default_instances[] = {
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ZilliqaMessage::_ByteArray_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ZilliqaMessage::_ProtoTransactionCoreInfo_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ZilliqaMessage::_ProtoTransaction_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ZilliqaMessage::_ProtoTransactionReceipt_default_instance_),
+  reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Message*>(&::ZilliqaMessage::_ProtoTransactionWithReceipt_default_instance_),
 };
 
-::google::protobuf::internal::AssignDescriptorsTable assign_descriptors_table_ZilliqaMessage_2eproto = {
-  {}, AddDescriptors_ZilliqaMessage_2eproto, "ZilliqaMessage.proto", schemas,
-  file_default_instances, TableStruct_ZilliqaMessage_2eproto::offsets,
-  file_level_metadata_ZilliqaMessage_2eproto, 5, file_level_enum_descriptors_ZilliqaMessage_2eproto, file_level_service_descriptors_ZilliqaMessage_2eproto,
-};
-
-const char descriptor_table_protodef_ZilliqaMessage_2eproto[] =
+const char descriptor_table_protodef_ZilliqaMessage_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\024ZilliqaMessage.proto\022\016ZilliqaMessage\"\031"
   "\n\tByteArray\022\014\n\004data\030\001 \002(\014\"\201\002\n\030ProtoTrans"
   "actionCoreInfo\022\017\n\007version\030\001 \001(\r\022\r\n\005nonce"
@@ -231,59 +216,60 @@ const char descriptor_table_protodef_ZilliqaMessage_2eproto[] =
   "Transaction\0228\n\007receipt\030\002 \001(\0132\'.ZilliqaMe"
   "ssage.ProtoTransactionReceipt"
   ;
-::google::protobuf::internal::DescriptorTable descriptor_table_ZilliqaMessage_2eproto = {
-  false, InitDefaults_ZilliqaMessage_2eproto, 
-  descriptor_table_protodef_ZilliqaMessage_2eproto,
-  "ZilliqaMessage.proto", &assign_descriptors_table_ZilliqaMessage_2eproto, 669,
+static const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable*const descriptor_table_ZilliqaMessage_2eproto_deps[1] = {
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::SCCInfoBase*const descriptor_table_ZilliqaMessage_2eproto_sccs[5] = {
+  &scc_info_ByteArray_ZilliqaMessage_2eproto.base,
+  &scc_info_ProtoTransaction_ZilliqaMessage_2eproto.base,
+  &scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto.base,
+  &scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto.base,
+  &scc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto.base,
+};
+static ::PROTOBUF_NAMESPACE_ID::internal::once_flag descriptor_table_ZilliqaMessage_2eproto_once;
+static bool descriptor_table_ZilliqaMessage_2eproto_initialized = false;
+const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ZilliqaMessage_2eproto = {
+  &descriptor_table_ZilliqaMessage_2eproto_initialized, descriptor_table_protodef_ZilliqaMessage_2eproto, "ZilliqaMessage.proto", 669,
+  &descriptor_table_ZilliqaMessage_2eproto_once, descriptor_table_ZilliqaMessage_2eproto_sccs, descriptor_table_ZilliqaMessage_2eproto_deps, 5, 0,
+  schemas, file_default_instances, TableStruct_ZilliqaMessage_2eproto::offsets,
+  file_level_metadata_ZilliqaMessage_2eproto, 5, file_level_enum_descriptors_ZilliqaMessage_2eproto, file_level_service_descriptors_ZilliqaMessage_2eproto,
 };
 
-void AddDescriptors_ZilliqaMessage_2eproto() {
-  static constexpr ::google::protobuf::internal::InitFunc deps[1] =
-  {
-  };
- ::google::protobuf::internal::AddDescriptors(&descriptor_table_ZilliqaMessage_2eproto, deps, 0);
-}
-
 // Force running AddDescriptors() at dynamic initialization time.
-static bool dynamic_init_dummy_ZilliqaMessage_2eproto = []() { AddDescriptors_ZilliqaMessage_2eproto(); return true; }();
+static bool dynamic_init_dummy_ZilliqaMessage_2eproto = (  ::PROTOBUF_NAMESPACE_ID::internal::AddDescriptors(&descriptor_table_ZilliqaMessage_2eproto), true);
 namespace ZilliqaMessage {
 
 // ===================================================================
 
 void ByteArray::InitAsDefaultInstance() {
 }
-class ByteArray::HasBitSetters {
+class ByteArray::_Internal {
  public:
-  static void set_has_data(ByteArray* msg) {
-    msg->_has_bits_[0] |= 0x00000001u;
+  using HasBits = decltype(std::declval<ByteArray>()._has_bits_);
+  static void set_has_data(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
   }
 };
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int ByteArray::kDataFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-
 ByteArray::ByteArray()
-  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:ZilliqaMessage.ByteArray)
 }
 ByteArray::ByteArray(const ByteArray& from)
-  : ::google::protobuf::Message(),
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from.has_data()) {
-    data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
+    data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
   }
   // @@protoc_insertion_point(copy_constructor:ZilliqaMessage.ByteArray)
 }
 
 void ByteArray::SharedCtor() {
-  ::google::protobuf::internal::InitSCC(
-      &scc_info_ByteArray_ZilliqaMessage_2eproto.base);
-  data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_ByteArray_ZilliqaMessage_2eproto.base);
+  data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 ByteArray::~ByteArray() {
@@ -292,21 +278,21 @@ ByteArray::~ByteArray() {
 }
 
 void ByteArray::SharedDtor() {
-  data_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  data_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 void ByteArray::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
 const ByteArray& ByteArray::default_instance() {
-  ::google::protobuf::internal::InitSCC(&::scc_info_ByteArray_ZilliqaMessage_2eproto.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_ByteArray_ZilliqaMessage_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void ByteArray::Clear() {
 // @@protoc_insertion_point(message_clear_start:ZilliqaMessage.ByteArray)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -319,71 +305,56 @@ void ByteArray::Clear() {
 }
 
 #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-const char* ByteArray::_InternalParse(const char* begin, const char* end, void* object,
-                  ::google::protobuf::internal::ParseContext* ctx) {
-  auto msg = static_cast<ByteArray*>(object);
-  ::google::protobuf::int32 size; (void)size;
-  int depth; (void)depth;
-  ::google::protobuf::uint32 tag;
-  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
-  auto ptr = begin;
-  while (ptr < end) {
-    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
-    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+const char* ByteArray::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // required bytes data = 1;
-      case 1: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        object = msg->mutable_data();
-        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
-          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
-          goto string_till_end;
-        }
-        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
-        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
-        ptr += size;
-        break;
-      }
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(mutable_data(), ptr, ctx);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
         if ((tag & 7) == 4 || tag == 0) {
-          ctx->EndGroup(tag);
-          return ptr;
+          ctx->SetLastTag(tag);
+          goto success;
         }
-        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
-          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
-        ptr = res.first;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
-        if (res.second) return ptr;
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
     }  // switch
   }  // while
+success:
+  _has_bits_.Or(has_bits);
   return ptr;
-string_till_end:
-  static_cast<::std::string*>(object)->clear();
-  static_cast<::std::string*>(object)->reserve(size);
-  goto len_delim_till_end;
-len_delim_till_end:
-  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
-                               {parser_till_end, object}, size);
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 #else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool ByteArray::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
+  ::PROTOBUF_NAMESPACE_ID::uint32 tag;
   // @@protoc_insertion_point(parse_start:ZilliqaMessage.ByteArray)
   for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::PROTOBUF_NAMESPACE_ID::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+    switch (::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // required bytes data = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (10 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_data()));
         } else {
           goto handle_unusual;
@@ -396,7 +367,7 @@ bool ByteArray::MergePartialFromCodedStream(
         if (tag == 0) {
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
+        DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SkipField(
               input, tag, _internal_metadata_.mutable_unknown_fields()));
         break;
       }
@@ -413,41 +384,41 @@ failure:
 #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void ByteArray::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ZilliqaMessage.ByteArray)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // required bytes data = 1;
   if (cached_has_bits & 0x00000001u) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesMaybeAliased(
       1, this->data(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:ZilliqaMessage.ByteArray)
 }
 
-::google::protobuf::uint8* ByteArray::InternalSerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
+::PROTOBUF_NAMESPACE_ID::uint8* ByteArray::InternalSerializeWithCachedSizesToArray(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:ZilliqaMessage.ByteArray)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // required bytes data = 1;
   if (cached_has_bits & 0x00000001u) {
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesToArray(
         1, this->data(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:ZilliqaMessage.ByteArray)
@@ -460,33 +431,33 @@ size_t ByteArray::ByteSizeLong() const {
 
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
   // required bytes data = 1;
   if (has_data()) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::BytesSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
         this->data());
   }
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void ByteArray::MergeFrom(const ::google::protobuf::Message& from) {
+void ByteArray::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ZilliqaMessage.ByteArray)
   GOOGLE_DCHECK_NE(&from, this);
   const ByteArray* source =
-      ::google::protobuf::DynamicCastToGenerated<ByteArray>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<ByteArray>(
           &from);
   if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:ZilliqaMessage.ByteArray)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ZilliqaMessage.ByteArray)
     MergeFrom(*source);
@@ -497,16 +468,16 @@ void ByteArray::MergeFrom(const ByteArray& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ZilliqaMessage.ByteArray)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   if (from.has_data()) {
     _has_bits_[0] |= 0x00000001u;
-    data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
+    data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
   }
 }
 
-void ByteArray::CopyFrom(const ::google::protobuf::Message& from) {
+void ByteArray::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:ZilliqaMessage.ByteArray)
   if (&from == this) return;
   Clear();
@@ -525,21 +496,16 @@ bool ByteArray::IsInitialized() const {
   return true;
 }
 
-void ByteArray::Swap(ByteArray* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void ByteArray::InternalSwap(ByteArray* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  data_.Swap(&other->data_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  data_.Swap(&other->data_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
 }
 
-::google::protobuf::Metadata ByteArray::GetMetadata() const {
-  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_ZilliqaMessage_2eproto);
-  return ::file_level_metadata_ZilliqaMessage_2eproto[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata ByteArray::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -553,85 +519,74 @@ void ProtoTransactionCoreInfo::InitAsDefaultInstance() {
   ::ZilliqaMessage::_ProtoTransactionCoreInfo_default_instance_._instance.get_mutable()->gasprice_ = const_cast< ::ZilliqaMessage::ByteArray*>(
       ::ZilliqaMessage::ByteArray::internal_default_instance());
 }
-class ProtoTransactionCoreInfo::HasBitSetters {
+class ProtoTransactionCoreInfo::_Internal {
  public:
-  static void set_has_version(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000100u;
+  using HasBits = decltype(std::declval<ProtoTransactionCoreInfo>()._has_bits_);
+  static void set_has_version(HasBits* has_bits) {
+    (*has_bits)[0] |= 256u;
   }
-  static void set_has_nonce(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000040u;
+  static void set_has_nonce(HasBits* has_bits) {
+    (*has_bits)[0] |= 64u;
   }
-  static void set_has_toaddr(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000001u;
+  static void set_has_toaddr(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
   }
   static const ::ZilliqaMessage::ByteArray& senderpubkey(const ProtoTransactionCoreInfo* msg);
-  static void set_has_senderpubkey(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000008u;
+  static void set_has_senderpubkey(HasBits* has_bits) {
+    (*has_bits)[0] |= 8u;
   }
   static const ::ZilliqaMessage::ByteArray& amount(const ProtoTransactionCoreInfo* msg);
-  static void set_has_amount(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000010u;
+  static void set_has_amount(HasBits* has_bits) {
+    (*has_bits)[0] |= 16u;
   }
   static const ::ZilliqaMessage::ByteArray& gasprice(const ProtoTransactionCoreInfo* msg);
-  static void set_has_gasprice(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000020u;
+  static void set_has_gasprice(HasBits* has_bits) {
+    (*has_bits)[0] |= 32u;
   }
-  static void set_has_gaslimit(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000080u;
+  static void set_has_gaslimit(HasBits* has_bits) {
+    (*has_bits)[0] |= 128u;
   }
-  static void set_has_code(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000002u;
+  static void set_has_code(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
   }
-  static void set_has_data(ProtoTransactionCoreInfo* msg) {
-    msg->_has_bits_[0] |= 0x00000004u;
+  static void set_has_data(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
   }
 };
 
 const ::ZilliqaMessage::ByteArray&
-ProtoTransactionCoreInfo::HasBitSetters::senderpubkey(const ProtoTransactionCoreInfo* msg) {
+ProtoTransactionCoreInfo::_Internal::senderpubkey(const ProtoTransactionCoreInfo* msg) {
   return *msg->senderpubkey_;
 }
 const ::ZilliqaMessage::ByteArray&
-ProtoTransactionCoreInfo::HasBitSetters::amount(const ProtoTransactionCoreInfo* msg) {
+ProtoTransactionCoreInfo::_Internal::amount(const ProtoTransactionCoreInfo* msg) {
   return *msg->amount_;
 }
 const ::ZilliqaMessage::ByteArray&
-ProtoTransactionCoreInfo::HasBitSetters::gasprice(const ProtoTransactionCoreInfo* msg) {
+ProtoTransactionCoreInfo::_Internal::gasprice(const ProtoTransactionCoreInfo* msg) {
   return *msg->gasprice_;
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int ProtoTransactionCoreInfo::kVersionFieldNumber;
-const int ProtoTransactionCoreInfo::kNonceFieldNumber;
-const int ProtoTransactionCoreInfo::kToaddrFieldNumber;
-const int ProtoTransactionCoreInfo::kSenderpubkeyFieldNumber;
-const int ProtoTransactionCoreInfo::kAmountFieldNumber;
-const int ProtoTransactionCoreInfo::kGaspriceFieldNumber;
-const int ProtoTransactionCoreInfo::kGaslimitFieldNumber;
-const int ProtoTransactionCoreInfo::kCodeFieldNumber;
-const int ProtoTransactionCoreInfo::kDataFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-
 ProtoTransactionCoreInfo::ProtoTransactionCoreInfo()
-  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:ZilliqaMessage.ProtoTransactionCoreInfo)
 }
 ProtoTransactionCoreInfo::ProtoTransactionCoreInfo(const ProtoTransactionCoreInfo& from)
-  : ::google::protobuf::Message(),
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  toaddr_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  toaddr_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from.has_toaddr()) {
-    toaddr_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.toaddr_);
+    toaddr_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.toaddr_);
   }
-  code_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  code_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from.has_code()) {
-    code_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.code_);
+    code_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.code_);
   }
-  data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from.has_data()) {
-    data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
+    data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
   }
   if (from.has_senderpubkey()) {
     senderpubkey_ = new ::ZilliqaMessage::ByteArray(*from.senderpubkey_);
@@ -655,11 +610,10 @@ ProtoTransactionCoreInfo::ProtoTransactionCoreInfo(const ProtoTransactionCoreInf
 }
 
 void ProtoTransactionCoreInfo::SharedCtor() {
-  ::google::protobuf::internal::InitSCC(
-      &scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto.base);
-  toaddr_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  code_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  data_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto.base);
+  toaddr_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  code_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  data_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&senderpubkey_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&version_) -
       reinterpret_cast<char*>(&senderpubkey_)) + sizeof(version_));
@@ -671,9 +625,9 @@ ProtoTransactionCoreInfo::~ProtoTransactionCoreInfo() {
 }
 
 void ProtoTransactionCoreInfo::SharedDtor() {
-  toaddr_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  code_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  data_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  toaddr_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  code_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
+  data_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete senderpubkey_;
   if (this != internal_default_instance()) delete amount_;
   if (this != internal_default_instance()) delete gasprice_;
@@ -683,14 +637,14 @@ void ProtoTransactionCoreInfo::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
 const ProtoTransactionCoreInfo& ProtoTransactionCoreInfo::default_instance() {
-  ::google::protobuf::internal::InitSCC(&::scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_ProtoTransactionCoreInfo_ZilliqaMessage_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void ProtoTransactionCoreInfo::Clear() {
 // @@protoc_insertion_point(message_clear_start:ZilliqaMessage.ProtoTransactionCoreInfo)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -729,163 +683,117 @@ void ProtoTransactionCoreInfo::Clear() {
 }
 
 #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-const char* ProtoTransactionCoreInfo::_InternalParse(const char* begin, const char* end, void* object,
-                  ::google::protobuf::internal::ParseContext* ctx) {
-  auto msg = static_cast<ProtoTransactionCoreInfo*>(object);
-  ::google::protobuf::int32 size; (void)size;
-  int depth; (void)depth;
-  ::google::protobuf::uint32 tag;
-  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
-  auto ptr = begin;
-  while (ptr < end) {
-    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
-    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+const char* ProtoTransactionCoreInfo::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // optional uint32 version = 1;
-      case 1: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 8) goto handle_unusual;
-        msg->set_version(::google::protobuf::internal::ReadVarint(&ptr));
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        break;
-      }
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 8)) {
+          _Internal::set_has_version(&has_bits);
+          version_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional uint64 nonce = 2;
-      case 2: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 16) goto handle_unusual;
-        msg->set_nonce(::google::protobuf::internal::ReadVarint(&ptr));
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        break;
-      }
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          _Internal::set_has_nonce(&has_bits);
+          nonce_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional bytes toaddr = 3;
-      case 3: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 26) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        object = msg->mutable_toaddr();
-        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
-          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
-          goto string_till_end;
-        }
-        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
-        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
-        ptr += size;
-        break;
-      }
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(mutable_toaddr(), ptr, ctx);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional .ZilliqaMessage.ByteArray senderpubkey = 4;
-      case 4: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 34) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        parser_till_end = ::ZilliqaMessage::ByteArray::_InternalParse;
-        object = msg->mutable_senderpubkey();
-        if (size > end - ptr) goto len_delim_till_end;
-        ptr += size;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
-            {parser_till_end, object}, ptr - size, ptr));
-        break;
-      }
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 34)) {
+          ptr = ctx->ParseMessage(mutable_senderpubkey(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional .ZilliqaMessage.ByteArray amount = 5;
-      case 5: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 42) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        parser_till_end = ::ZilliqaMessage::ByteArray::_InternalParse;
-        object = msg->mutable_amount();
-        if (size > end - ptr) goto len_delim_till_end;
-        ptr += size;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
-            {parser_till_end, object}, ptr - size, ptr));
-        break;
-      }
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 42)) {
+          ptr = ctx->ParseMessage(mutable_amount(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional .ZilliqaMessage.ByteArray gasprice = 6;
-      case 6: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 50) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        parser_till_end = ::ZilliqaMessage::ByteArray::_InternalParse;
-        object = msg->mutable_gasprice();
-        if (size > end - ptr) goto len_delim_till_end;
-        ptr += size;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
-            {parser_till_end, object}, ptr - size, ptr));
-        break;
-      }
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 50)) {
+          ptr = ctx->ParseMessage(mutable_gasprice(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional uint64 gaslimit = 7;
-      case 7: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 56) goto handle_unusual;
-        msg->set_gaslimit(::google::protobuf::internal::ReadVarint(&ptr));
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        break;
-      }
+      case 7:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 56)) {
+          _Internal::set_has_gaslimit(&has_bits);
+          gaslimit_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional bytes code = 8;
-      case 8: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 66) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        object = msg->mutable_code();
-        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
-          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
-          goto string_till_end;
-        }
-        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
-        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
-        ptr += size;
-        break;
-      }
+      case 8:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 66)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(mutable_code(), ptr, ctx);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional bytes data = 9;
-      case 9: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 74) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        object = msg->mutable_data();
-        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
-          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
-          goto string_till_end;
-        }
-        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
-        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
-        ptr += size;
-        break;
-      }
+      case 9:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 74)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(mutable_data(), ptr, ctx);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
         if ((tag & 7) == 4 || tag == 0) {
-          ctx->EndGroup(tag);
-          return ptr;
+          ctx->SetLastTag(tag);
+          goto success;
         }
-        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
-          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
-        ptr = res.first;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
-        if (res.second) return ptr;
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
     }  // switch
   }  // while
+success:
+  _has_bits_.Or(has_bits);
   return ptr;
-string_till_end:
-  static_cast<::std::string*>(object)->clear();
-  static_cast<::std::string*>(object)->reserve(size);
-  goto len_delim_till_end;
-len_delim_till_end:
-  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
-                               {parser_till_end, object}, size);
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 #else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
+  ::PROTOBUF_NAMESPACE_ID::uint32 tag;
   // @@protoc_insertion_point(parse_start:ZilliqaMessage.ProtoTransactionCoreInfo)
   for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::PROTOBUF_NAMESPACE_ID::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+    switch (::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // optional uint32 version = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (8 & 0xFF)) {
-          HasBitSetters::set_has_version(this);
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (8 & 0xFF)) {
+          _Internal::set_has_version(&_has_bits_);
+          DO_((::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadPrimitive<
+                   ::PROTOBUF_NAMESPACE_ID::uint32, ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_UINT32>(
                  input, &version_)));
         } else {
           goto handle_unusual;
@@ -895,10 +803,10 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
 
       // optional uint64 nonce = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (16 & 0xFF)) {
-          HasBitSetters::set_has_nonce(this);
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (16 & 0xFF)) {
+          _Internal::set_has_nonce(&_has_bits_);
+          DO_((::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadPrimitive<
+                   ::PROTOBUF_NAMESPACE_ID::uint64, ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_UINT64>(
                  input, &nonce_)));
         } else {
           goto handle_unusual;
@@ -908,8 +816,8 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
 
       // optional bytes toaddr = 3;
       case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (26 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (26 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_toaddr()));
         } else {
           goto handle_unusual;
@@ -919,8 +827,8 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
 
       // optional .ZilliqaMessage.ByteArray senderpubkey = 4;
       case 4: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (34 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (34 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadMessage(
                input, mutable_senderpubkey()));
         } else {
           goto handle_unusual;
@@ -930,8 +838,8 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
 
       // optional .ZilliqaMessage.ByteArray amount = 5;
       case 5: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (42 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (42 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadMessage(
                input, mutable_amount()));
         } else {
           goto handle_unusual;
@@ -941,8 +849,8 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
 
       // optional .ZilliqaMessage.ByteArray gasprice = 6;
       case 6: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (50 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (50 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadMessage(
                input, mutable_gasprice()));
         } else {
           goto handle_unusual;
@@ -952,10 +860,10 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
 
       // optional uint64 gaslimit = 7;
       case 7: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (56 & 0xFF)) {
-          HasBitSetters::set_has_gaslimit(this);
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (56 & 0xFF)) {
+          _Internal::set_has_gaslimit(&_has_bits_);
+          DO_((::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadPrimitive<
+                   ::PROTOBUF_NAMESPACE_ID::uint64, ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_UINT64>(
                  input, &gaslimit_)));
         } else {
           goto handle_unusual;
@@ -965,8 +873,8 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
 
       // optional bytes code = 8;
       case 8: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (66 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (66 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_code()));
         } else {
           goto handle_unusual;
@@ -976,8 +884,8 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
 
       // optional bytes data = 9;
       case 9: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (74 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (74 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_data()));
         } else {
           goto handle_unusual;
@@ -990,7 +898,7 @@ bool ProtoTransactionCoreInfo::MergePartialFromCodedStream(
         if (tag == 0) {
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
+        DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SkipField(
               input, tag, _internal_metadata_.mutable_unknown_fields()));
         break;
       }
@@ -1007,136 +915,136 @@ failure:
 #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void ProtoTransactionCoreInfo::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ZilliqaMessage.ProtoTransactionCoreInfo)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // optional uint32 version = 1;
   if (cached_has_bits & 0x00000100u) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(1, this->version(), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32(1, this->version(), output);
   }
 
   // optional uint64 nonce = 2;
   if (cached_has_bits & 0x00000040u) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->nonce(), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64(2, this->nonce(), output);
   }
 
   // optional bytes toaddr = 3;
   if (cached_has_bits & 0x00000001u) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesMaybeAliased(
       3, this->toaddr(), output);
   }
 
   // optional .ZilliqaMessage.ByteArray senderpubkey = 4;
   if (cached_has_bits & 0x00000008u) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, HasBitSetters::senderpubkey(this), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, _Internal::senderpubkey(this), output);
   }
 
   // optional .ZilliqaMessage.ByteArray amount = 5;
   if (cached_has_bits & 0x00000010u) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, HasBitSetters::amount(this), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteMessageMaybeToArray(
+      5, _Internal::amount(this), output);
   }
 
   // optional .ZilliqaMessage.ByteArray gasprice = 6;
   if (cached_has_bits & 0x00000020u) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      6, HasBitSetters::gasprice(this), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteMessageMaybeToArray(
+      6, _Internal::gasprice(this), output);
   }
 
   // optional uint64 gaslimit = 7;
   if (cached_has_bits & 0x00000080u) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(7, this->gaslimit(), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64(7, this->gaslimit(), output);
   }
 
   // optional bytes code = 8;
   if (cached_has_bits & 0x00000002u) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesMaybeAliased(
       8, this->code(), output);
   }
 
   // optional bytes data = 9;
   if (cached_has_bits & 0x00000004u) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesMaybeAliased(
       9, this->data(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:ZilliqaMessage.ProtoTransactionCoreInfo)
 }
 
-::google::protobuf::uint8* ProtoTransactionCoreInfo::InternalSerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
+::PROTOBUF_NAMESPACE_ID::uint8* ProtoTransactionCoreInfo::InternalSerializeWithCachedSizesToArray(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:ZilliqaMessage.ProtoTransactionCoreInfo)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // optional uint32 version = 1;
   if (cached_has_bits & 0x00000100u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(1, this->version(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt32ToArray(1, this->version(), target);
   }
 
   // optional uint64 nonce = 2;
   if (cached_has_bits & 0x00000040u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->nonce(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(2, this->nonce(), target);
   }
 
   // optional bytes toaddr = 3;
   if (cached_has_bits & 0x00000001u) {
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesToArray(
         3, this->toaddr(), target);
   }
 
   // optional .ZilliqaMessage.ByteArray senderpubkey = 4;
   if (cached_has_bits & 0x00000008u) {
-    target = ::google::protobuf::internal::WireFormatLite::
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        4, HasBitSetters::senderpubkey(this), target);
+        4, _Internal::senderpubkey(this), target);
   }
 
   // optional .ZilliqaMessage.ByteArray amount = 5;
   if (cached_has_bits & 0x00000010u) {
-    target = ::google::protobuf::internal::WireFormatLite::
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        5, HasBitSetters::amount(this), target);
+        5, _Internal::amount(this), target);
   }
 
   // optional .ZilliqaMessage.ByteArray gasprice = 6;
   if (cached_has_bits & 0x00000020u) {
-    target = ::google::protobuf::internal::WireFormatLite::
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        6, HasBitSetters::gasprice(this), target);
+        6, _Internal::gasprice(this), target);
   }
 
   // optional uint64 gaslimit = 7;
   if (cached_has_bits & 0x00000080u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(7, this->gaslimit(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(7, this->gaslimit(), target);
   }
 
   // optional bytes code = 8;
   if (cached_has_bits & 0x00000002u) {
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesToArray(
         8, this->code(), target);
   }
 
   // optional bytes data = 9;
   if (cached_has_bits & 0x00000004u) {
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesToArray(
         9, this->data(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:ZilliqaMessage.ProtoTransactionCoreInfo)
@@ -1149,10 +1057,10 @@ size_t ProtoTransactionCoreInfo::ByteSizeLong() const {
 
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -1161,56 +1069,56 @@ size_t ProtoTransactionCoreInfo::ByteSizeLong() const {
     // optional bytes toaddr = 3;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::BytesSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
           this->toaddr());
     }
 
     // optional bytes code = 8;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::BytesSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
           this->code());
     }
 
     // optional bytes data = 9;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::BytesSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
           this->data());
     }
 
     // optional .ZilliqaMessage.ByteArray senderpubkey = 4;
     if (cached_has_bits & 0x00000008u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *senderpubkey_);
     }
 
     // optional .ZilliqaMessage.ByteArray amount = 5;
     if (cached_has_bits & 0x00000010u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *amount_);
     }
 
     // optional .ZilliqaMessage.ByteArray gasprice = 6;
     if (cached_has_bits & 0x00000020u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *gasprice_);
     }
 
     // optional uint64 nonce = 2;
     if (cached_has_bits & 0x00000040u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
           this->nonce());
     }
 
     // optional uint64 gaslimit = 7;
     if (cached_has_bits & 0x00000080u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
           this->gaslimit());
     }
 
@@ -1218,24 +1126,24 @@ size_t ProtoTransactionCoreInfo::ByteSizeLong() const {
   // optional uint32 version = 1;
   if (cached_has_bits & 0x00000100u) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt32Size(
         this->version());
   }
 
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void ProtoTransactionCoreInfo::MergeFrom(const ::google::protobuf::Message& from) {
+void ProtoTransactionCoreInfo::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ZilliqaMessage.ProtoTransactionCoreInfo)
   GOOGLE_DCHECK_NE(&from, this);
   const ProtoTransactionCoreInfo* source =
-      ::google::protobuf::DynamicCastToGenerated<ProtoTransactionCoreInfo>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<ProtoTransactionCoreInfo>(
           &from);
   if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:ZilliqaMessage.ProtoTransactionCoreInfo)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ZilliqaMessage.ProtoTransactionCoreInfo)
     MergeFrom(*source);
@@ -1246,22 +1154,22 @@ void ProtoTransactionCoreInfo::MergeFrom(const ProtoTransactionCoreInfo& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ZilliqaMessage.ProtoTransactionCoreInfo)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x000000ffu) {
     if (cached_has_bits & 0x00000001u) {
       _has_bits_[0] |= 0x00000001u;
-      toaddr_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.toaddr_);
+      toaddr_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.toaddr_);
     }
     if (cached_has_bits & 0x00000002u) {
       _has_bits_[0] |= 0x00000002u;
-      code_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.code_);
+      code_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.code_);
     }
     if (cached_has_bits & 0x00000004u) {
       _has_bits_[0] |= 0x00000004u;
-      data_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.data_);
+      data_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.data_);
     }
     if (cached_has_bits & 0x00000008u) {
       mutable_senderpubkey()->::ZilliqaMessage::ByteArray::MergeFrom(from.senderpubkey());
@@ -1285,7 +1193,7 @@ void ProtoTransactionCoreInfo::MergeFrom(const ProtoTransactionCoreInfo& from) {
   }
 }
 
-void ProtoTransactionCoreInfo::CopyFrom(const ::google::protobuf::Message& from) {
+void ProtoTransactionCoreInfo::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:ZilliqaMessage.ProtoTransactionCoreInfo)
   if (&from == this) return;
   Clear();
@@ -1312,19 +1220,15 @@ bool ProtoTransactionCoreInfo::IsInitialized() const {
   return true;
 }
 
-void ProtoTransactionCoreInfo::Swap(ProtoTransactionCoreInfo* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void ProtoTransactionCoreInfo::InternalSwap(ProtoTransactionCoreInfo* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  toaddr_.Swap(&other->toaddr_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  toaddr_.Swap(&other->toaddr_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
-  code_.Swap(&other->code_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  code_.Swap(&other->code_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
-  data_.Swap(&other->data_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  data_.Swap(&other->data_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(senderpubkey_, other->senderpubkey_);
   swap(amount_, other->amount_);
@@ -1334,9 +1238,8 @@ void ProtoTransactionCoreInfo::InternalSwap(ProtoTransactionCoreInfo* other) {
   swap(version_, other->version_);
 }
 
-::google::protobuf::Metadata ProtoTransactionCoreInfo::GetMetadata() const {
-  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_ZilliqaMessage_2eproto);
-  return ::file_level_metadata_ZilliqaMessage_2eproto[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata ProtoTransactionCoreInfo::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -1348,48 +1251,43 @@ void ProtoTransaction::InitAsDefaultInstance() {
   ::ZilliqaMessage::_ProtoTransaction_default_instance_._instance.get_mutable()->signature_ = const_cast< ::ZilliqaMessage::ByteArray*>(
       ::ZilliqaMessage::ByteArray::internal_default_instance());
 }
-class ProtoTransaction::HasBitSetters {
+class ProtoTransaction::_Internal {
  public:
-  static void set_has_tranid(ProtoTransaction* msg) {
-    msg->_has_bits_[0] |= 0x00000001u;
+  using HasBits = decltype(std::declval<ProtoTransaction>()._has_bits_);
+  static void set_has_tranid(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
   }
   static const ::ZilliqaMessage::ProtoTransactionCoreInfo& info(const ProtoTransaction* msg);
-  static void set_has_info(ProtoTransaction* msg) {
-    msg->_has_bits_[0] |= 0x00000002u;
+  static void set_has_info(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
   }
   static const ::ZilliqaMessage::ByteArray& signature(const ProtoTransaction* msg);
-  static void set_has_signature(ProtoTransaction* msg) {
-    msg->_has_bits_[0] |= 0x00000004u;
+  static void set_has_signature(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
   }
 };
 
 const ::ZilliqaMessage::ProtoTransactionCoreInfo&
-ProtoTransaction::HasBitSetters::info(const ProtoTransaction* msg) {
+ProtoTransaction::_Internal::info(const ProtoTransaction* msg) {
   return *msg->info_;
 }
 const ::ZilliqaMessage::ByteArray&
-ProtoTransaction::HasBitSetters::signature(const ProtoTransaction* msg) {
+ProtoTransaction::_Internal::signature(const ProtoTransaction* msg) {
   return *msg->signature_;
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int ProtoTransaction::kTranidFieldNumber;
-const int ProtoTransaction::kInfoFieldNumber;
-const int ProtoTransaction::kSignatureFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-
 ProtoTransaction::ProtoTransaction()
-  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:ZilliqaMessage.ProtoTransaction)
 }
 ProtoTransaction::ProtoTransaction(const ProtoTransaction& from)
-  : ::google::protobuf::Message(),
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  tranid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  tranid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from.has_tranid()) {
-    tranid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.tranid_);
+    tranid_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.tranid_);
   }
   if (from.has_info()) {
     info_ = new ::ZilliqaMessage::ProtoTransactionCoreInfo(*from.info_);
@@ -1405,9 +1303,8 @@ ProtoTransaction::ProtoTransaction(const ProtoTransaction& from)
 }
 
 void ProtoTransaction::SharedCtor() {
-  ::google::protobuf::internal::InitSCC(
-      &scc_info_ProtoTransaction_ZilliqaMessage_2eproto.base);
-  tranid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_ProtoTransaction_ZilliqaMessage_2eproto.base);
+  tranid_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   ::memset(&info_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&signature_) -
       reinterpret_cast<char*>(&info_)) + sizeof(signature_));
@@ -1419,7 +1316,7 @@ ProtoTransaction::~ProtoTransaction() {
 }
 
 void ProtoTransaction::SharedDtor() {
-  tranid_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  tranid_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (this != internal_default_instance()) delete info_;
   if (this != internal_default_instance()) delete signature_;
 }
@@ -1428,14 +1325,14 @@ void ProtoTransaction::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
 const ProtoTransaction& ProtoTransaction::default_instance() {
-  ::google::protobuf::internal::InitSCC(&::scc_info_ProtoTransaction_ZilliqaMessage_2eproto.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_ProtoTransaction_ZilliqaMessage_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void ProtoTransaction::Clear() {
 // @@protoc_insertion_point(message_clear_start:ZilliqaMessage.ProtoTransaction)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -1458,97 +1355,70 @@ void ProtoTransaction::Clear() {
 }
 
 #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-const char* ProtoTransaction::_InternalParse(const char* begin, const char* end, void* object,
-                  ::google::protobuf::internal::ParseContext* ctx) {
-  auto msg = static_cast<ProtoTransaction*>(object);
-  ::google::protobuf::int32 size; (void)size;
-  int depth; (void)depth;
-  ::google::protobuf::uint32 tag;
-  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
-  auto ptr = begin;
-  while (ptr < end) {
-    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
-    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+const char* ProtoTransaction::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // optional bytes tranid = 1;
-      case 1: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        object = msg->mutable_tranid();
-        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
-          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
-          goto string_till_end;
-        }
-        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
-        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
-        ptr += size;
-        break;
-      }
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(mutable_tranid(), ptr, ctx);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional .ZilliqaMessage.ProtoTransactionCoreInfo info = 2;
-      case 2: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 18) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        parser_till_end = ::ZilliqaMessage::ProtoTransactionCoreInfo::_InternalParse;
-        object = msg->mutable_info();
-        if (size > end - ptr) goto len_delim_till_end;
-        ptr += size;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
-            {parser_till_end, object}, ptr - size, ptr));
-        break;
-      }
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          ptr = ctx->ParseMessage(mutable_info(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional .ZilliqaMessage.ByteArray signature = 3;
-      case 3: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 26) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        parser_till_end = ::ZilliqaMessage::ByteArray::_InternalParse;
-        object = msg->mutable_signature();
-        if (size > end - ptr) goto len_delim_till_end;
-        ptr += size;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
-            {parser_till_end, object}, ptr - size, ptr));
-        break;
-      }
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 26)) {
+          ptr = ctx->ParseMessage(mutable_signature(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
         if ((tag & 7) == 4 || tag == 0) {
-          ctx->EndGroup(tag);
-          return ptr;
+          ctx->SetLastTag(tag);
+          goto success;
         }
-        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
-          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
-        ptr = res.first;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
-        if (res.second) return ptr;
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
     }  // switch
   }  // while
+success:
+  _has_bits_.Or(has_bits);
   return ptr;
-string_till_end:
-  static_cast<::std::string*>(object)->clear();
-  static_cast<::std::string*>(object)->reserve(size);
-  goto len_delim_till_end;
-len_delim_till_end:
-  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
-                               {parser_till_end, object}, size);
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 #else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool ProtoTransaction::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
+  ::PROTOBUF_NAMESPACE_ID::uint32 tag;
   // @@protoc_insertion_point(parse_start:ZilliqaMessage.ProtoTransaction)
   for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::PROTOBUF_NAMESPACE_ID::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+    switch (::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // optional bytes tranid = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (10 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_tranid()));
         } else {
           goto handle_unusual;
@@ -1558,8 +1428,8 @@ bool ProtoTransaction::MergePartialFromCodedStream(
 
       // optional .ZilliqaMessage.ProtoTransactionCoreInfo info = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (18 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (18 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadMessage(
                input, mutable_info()));
         } else {
           goto handle_unusual;
@@ -1569,8 +1439,8 @@ bool ProtoTransaction::MergePartialFromCodedStream(
 
       // optional .ZilliqaMessage.ByteArray signature = 3;
       case 3: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (26 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (26 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadMessage(
                input, mutable_signature()));
         } else {
           goto handle_unusual;
@@ -1583,7 +1453,7 @@ bool ProtoTransaction::MergePartialFromCodedStream(
         if (tag == 0) {
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
+        DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SkipField(
               input, tag, _internal_metadata_.mutable_unknown_fields()));
         break;
       }
@@ -1600,67 +1470,67 @@ failure:
 #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void ProtoTransaction::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ZilliqaMessage.ProtoTransaction)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // optional bytes tranid = 1;
   if (cached_has_bits & 0x00000001u) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesMaybeAliased(
       1, this->tranid(), output);
   }
 
   // optional .ZilliqaMessage.ProtoTransactionCoreInfo info = 2;
   if (cached_has_bits & 0x00000002u) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, HasBitSetters::info(this), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, _Internal::info(this), output);
   }
 
   // optional .ZilliqaMessage.ByteArray signature = 3;
   if (cached_has_bits & 0x00000004u) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, HasBitSetters::signature(this), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteMessageMaybeToArray(
+      3, _Internal::signature(this), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:ZilliqaMessage.ProtoTransaction)
 }
 
-::google::protobuf::uint8* ProtoTransaction::InternalSerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
+::PROTOBUF_NAMESPACE_ID::uint8* ProtoTransaction::InternalSerializeWithCachedSizesToArray(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:ZilliqaMessage.ProtoTransaction)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // optional bytes tranid = 1;
   if (cached_has_bits & 0x00000001u) {
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesToArray(
         1, this->tranid(), target);
   }
 
   // optional .ZilliqaMessage.ProtoTransactionCoreInfo info = 2;
   if (cached_has_bits & 0x00000002u) {
-    target = ::google::protobuf::internal::WireFormatLite::
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        2, HasBitSetters::info(this), target);
+        2, _Internal::info(this), target);
   }
 
   // optional .ZilliqaMessage.ByteArray signature = 3;
   if (cached_has_bits & 0x00000004u) {
-    target = ::google::protobuf::internal::WireFormatLite::
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        3, HasBitSetters::signature(this), target);
+        3, _Internal::signature(this), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:ZilliqaMessage.ProtoTransaction)
@@ -1673,10 +1543,10 @@ size_t ProtoTransaction::ByteSizeLong() const {
 
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -1685,39 +1555,39 @@ size_t ProtoTransaction::ByteSizeLong() const {
     // optional bytes tranid = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::BytesSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
           this->tranid());
     }
 
     // optional .ZilliqaMessage.ProtoTransactionCoreInfo info = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *info_);
     }
 
     // optional .ZilliqaMessage.ByteArray signature = 3;
     if (cached_has_bits & 0x00000004u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *signature_);
     }
 
   }
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void ProtoTransaction::MergeFrom(const ::google::protobuf::Message& from) {
+void ProtoTransaction::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ZilliqaMessage.ProtoTransaction)
   GOOGLE_DCHECK_NE(&from, this);
   const ProtoTransaction* source =
-      ::google::protobuf::DynamicCastToGenerated<ProtoTransaction>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<ProtoTransaction>(
           &from);
   if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:ZilliqaMessage.ProtoTransaction)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ZilliqaMessage.ProtoTransaction)
     MergeFrom(*source);
@@ -1728,14 +1598,14 @@ void ProtoTransaction::MergeFrom(const ProtoTransaction& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ZilliqaMessage.ProtoTransaction)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x00000007u) {
     if (cached_has_bits & 0x00000001u) {
       _has_bits_[0] |= 0x00000001u;
-      tranid_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.tranid_);
+      tranid_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.tranid_);
     }
     if (cached_has_bits & 0x00000002u) {
       mutable_info()->::ZilliqaMessage::ProtoTransactionCoreInfo::MergeFrom(from.info());
@@ -1746,7 +1616,7 @@ void ProtoTransaction::MergeFrom(const ProtoTransaction& from) {
   }
 }
 
-void ProtoTransaction::CopyFrom(const ::google::protobuf::Message& from) {
+void ProtoTransaction::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:ZilliqaMessage.ProtoTransaction)
   if (&from == this) return;
   Clear();
@@ -1770,23 +1640,18 @@ bool ProtoTransaction::IsInitialized() const {
   return true;
 }
 
-void ProtoTransaction::Swap(ProtoTransaction* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void ProtoTransaction::InternalSwap(ProtoTransaction* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  tranid_.Swap(&other->tranid_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  tranid_.Swap(&other->tranid_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(info_, other->info_);
   swap(signature_, other->signature_);
 }
 
-::google::protobuf::Metadata ProtoTransaction::GetMetadata() const {
-  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_ZilliqaMessage_2eproto);
-  return ::file_level_metadata_ZilliqaMessage_2eproto[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata ProtoTransaction::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -1794,43 +1659,38 @@ void ProtoTransaction::InternalSwap(ProtoTransaction* other) {
 
 void ProtoTransactionReceipt::InitAsDefaultInstance() {
 }
-class ProtoTransactionReceipt::HasBitSetters {
+class ProtoTransactionReceipt::_Internal {
  public:
-  static void set_has_receipt(ProtoTransactionReceipt* msg) {
-    msg->_has_bits_[0] |= 0x00000001u;
+  using HasBits = decltype(std::declval<ProtoTransactionReceipt>()._has_bits_);
+  static void set_has_receipt(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
   }
-  static void set_has_cumgas(ProtoTransactionReceipt* msg) {
-    msg->_has_bits_[0] |= 0x00000002u;
+  static void set_has_cumgas(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
   }
 };
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int ProtoTransactionReceipt::kReceiptFieldNumber;
-const int ProtoTransactionReceipt::kCumgasFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-
 ProtoTransactionReceipt::ProtoTransactionReceipt()
-  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:ZilliqaMessage.ProtoTransactionReceipt)
 }
 ProtoTransactionReceipt::ProtoTransactionReceipt(const ProtoTransactionReceipt& from)
-  : ::google::protobuf::Message(),
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  receipt_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  receipt_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   if (from.has_receipt()) {
-    receipt_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.receipt_);
+    receipt_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.receipt_);
   }
   cumgas_ = from.cumgas_;
   // @@protoc_insertion_point(copy_constructor:ZilliqaMessage.ProtoTransactionReceipt)
 }
 
 void ProtoTransactionReceipt::SharedCtor() {
-  ::google::protobuf::internal::InitSCC(
-      &scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto.base);
-  receipt_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto.base);
+  receipt_.UnsafeSetDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
   cumgas_ = PROTOBUF_ULONGLONG(0);
 }
 
@@ -1840,21 +1700,21 @@ ProtoTransactionReceipt::~ProtoTransactionReceipt() {
 }
 
 void ProtoTransactionReceipt::SharedDtor() {
-  receipt_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  receipt_.DestroyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
 
 void ProtoTransactionReceipt::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
 const ProtoTransactionReceipt& ProtoTransactionReceipt::default_instance() {
-  ::google::protobuf::internal::InitSCC(&::scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_ProtoTransactionReceipt_ZilliqaMessage_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void ProtoTransactionReceipt::Clear() {
 // @@protoc_insertion_point(message_clear_start:ZilliqaMessage.ProtoTransactionReceipt)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -1868,78 +1728,64 @@ void ProtoTransactionReceipt::Clear() {
 }
 
 #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-const char* ProtoTransactionReceipt::_InternalParse(const char* begin, const char* end, void* object,
-                  ::google::protobuf::internal::ParseContext* ctx) {
-  auto msg = static_cast<ProtoTransactionReceipt*>(object);
-  ::google::protobuf::int32 size; (void)size;
-  int depth; (void)depth;
-  ::google::protobuf::uint32 tag;
-  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
-  auto ptr = begin;
-  while (ptr < end) {
-    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
-    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+const char* ProtoTransactionReceipt::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // optional bytes receipt = 1;
-      case 1: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        object = msg->mutable_receipt();
-        if (size > end - ptr + ::google::protobuf::internal::ParseContext::kSlopBytes) {
-          parser_till_end = ::google::protobuf::internal::GreedyStringParser;
-          goto string_till_end;
-        }
-        GOOGLE_PROTOBUF_PARSER_ASSERT(::google::protobuf::internal::StringCheck(ptr, size, ctx));
-        ::google::protobuf::internal::InlineGreedyStringParser(object, ptr, size, ctx);
-        ptr += size;
-        break;
-      }
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          ptr = ::PROTOBUF_NAMESPACE_ID::internal::InlineGreedyStringParser(mutable_receipt(), ptr, ctx);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional uint64 cumgas = 2;
-      case 2: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 16) goto handle_unusual;
-        msg->set_cumgas(::google::protobuf::internal::ReadVarint(&ptr));
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        break;
-      }
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 16)) {
+          _Internal::set_has_cumgas(&has_bits);
+          cumgas_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint(&ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
         if ((tag & 7) == 4 || tag == 0) {
-          ctx->EndGroup(tag);
-          return ptr;
+          ctx->SetLastTag(tag);
+          goto success;
         }
-        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
-          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
-        ptr = res.first;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
-        if (res.second) return ptr;
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
     }  // switch
   }  // while
+success:
+  _has_bits_.Or(has_bits);
   return ptr;
-string_till_end:
-  static_cast<::std::string*>(object)->clear();
-  static_cast<::std::string*>(object)->reserve(size);
-  goto len_delim_till_end;
-len_delim_till_end:
-  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
-                               {parser_till_end, object}, size);
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 #else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool ProtoTransactionReceipt::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
+  ::PROTOBUF_NAMESPACE_ID::uint32 tag;
   // @@protoc_insertion_point(parse_start:ZilliqaMessage.ProtoTransactionReceipt)
   for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::PROTOBUF_NAMESPACE_ID::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+    switch (::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // optional bytes receipt = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (10 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_receipt()));
         } else {
           goto handle_unusual;
@@ -1949,10 +1795,10 @@ bool ProtoTransactionReceipt::MergePartialFromCodedStream(
 
       // optional uint64 cumgas = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (16 & 0xFF)) {
-          HasBitSetters::set_has_cumgas(this);
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (16 & 0xFF)) {
+          _Internal::set_has_cumgas(&_has_bits_);
+          DO_((::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadPrimitive<
+                   ::PROTOBUF_NAMESPACE_ID::uint64, ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::TYPE_UINT64>(
                  input, &cumgas_)));
         } else {
           goto handle_unusual;
@@ -1965,7 +1811,7 @@ bool ProtoTransactionReceipt::MergePartialFromCodedStream(
         if (tag == 0) {
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
+        DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SkipField(
               input, tag, _internal_metadata_.mutable_unknown_fields()));
         break;
       }
@@ -1982,51 +1828,51 @@ failure:
 #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void ProtoTransactionReceipt::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ZilliqaMessage.ProtoTransactionReceipt)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // optional bytes receipt = 1;
   if (cached_has_bits & 0x00000001u) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesMaybeAliased(
       1, this->receipt(), output);
   }
 
   // optional uint64 cumgas = 2;
   if (cached_has_bits & 0x00000002u) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->cumgas(), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64(2, this->cumgas(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:ZilliqaMessage.ProtoTransactionReceipt)
 }
 
-::google::protobuf::uint8* ProtoTransactionReceipt::InternalSerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
+::PROTOBUF_NAMESPACE_ID::uint8* ProtoTransactionReceipt::InternalSerializeWithCachedSizesToArray(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:ZilliqaMessage.ProtoTransactionReceipt)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // optional bytes receipt = 1;
   if (cached_has_bits & 0x00000001u) {
     target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteBytesToArray(
         1, this->receipt(), target);
   }
 
   // optional uint64 cumgas = 2;
   if (cached_has_bits & 0x00000002u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->cumgas(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteUInt64ToArray(2, this->cumgas(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:ZilliqaMessage.ProtoTransactionReceipt)
@@ -2039,10 +1885,10 @@ size_t ProtoTransactionReceipt::ByteSizeLong() const {
 
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -2051,32 +1897,32 @@ size_t ProtoTransactionReceipt::ByteSizeLong() const {
     // optional bytes receipt = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::BytesSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
           this->receipt());
     }
 
     // optional uint64 cumgas = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::UInt64Size(
           this->cumgas());
     }
 
   }
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void ProtoTransactionReceipt::MergeFrom(const ::google::protobuf::Message& from) {
+void ProtoTransactionReceipt::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ZilliqaMessage.ProtoTransactionReceipt)
   GOOGLE_DCHECK_NE(&from, this);
   const ProtoTransactionReceipt* source =
-      ::google::protobuf::DynamicCastToGenerated<ProtoTransactionReceipt>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<ProtoTransactionReceipt>(
           &from);
   if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:ZilliqaMessage.ProtoTransactionReceipt)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ZilliqaMessage.ProtoTransactionReceipt)
     MergeFrom(*source);
@@ -2087,14 +1933,14 @@ void ProtoTransactionReceipt::MergeFrom(const ProtoTransactionReceipt& from) {
 // @@protoc_insertion_point(class_specific_merge_from_start:ZilliqaMessage.ProtoTransactionReceipt)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
       _has_bits_[0] |= 0x00000001u;
-      receipt_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.receipt_);
+      receipt_.AssignWithDefault(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), from.receipt_);
     }
     if (cached_has_bits & 0x00000002u) {
       cumgas_ = from.cumgas_;
@@ -2103,7 +1949,7 @@ void ProtoTransactionReceipt::MergeFrom(const ProtoTransactionReceipt& from) {
   }
 }
 
-void ProtoTransactionReceipt::CopyFrom(const ::google::protobuf::Message& from) {
+void ProtoTransactionReceipt::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:ZilliqaMessage.ProtoTransactionReceipt)
   if (&from == this) return;
   Clear();
@@ -2121,22 +1967,17 @@ bool ProtoTransactionReceipt::IsInitialized() const {
   return true;
 }
 
-void ProtoTransactionReceipt::Swap(ProtoTransactionReceipt* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void ProtoTransactionReceipt::InternalSwap(ProtoTransactionReceipt* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
   swap(_has_bits_[0], other->_has_bits_[0]);
-  receipt_.Swap(&other->receipt_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+  receipt_.Swap(&other->receipt_, &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(cumgas_, other->cumgas_);
 }
 
-::google::protobuf::Metadata ProtoTransactionReceipt::GetMetadata() const {
-  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_ZilliqaMessage_2eproto);
-  return ::file_level_metadata_ZilliqaMessage_2eproto[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata ProtoTransactionReceipt::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
@@ -2148,38 +1989,34 @@ void ProtoTransactionWithReceipt::InitAsDefaultInstance() {
   ::ZilliqaMessage::_ProtoTransactionWithReceipt_default_instance_._instance.get_mutable()->receipt_ = const_cast< ::ZilliqaMessage::ProtoTransactionReceipt*>(
       ::ZilliqaMessage::ProtoTransactionReceipt::internal_default_instance());
 }
-class ProtoTransactionWithReceipt::HasBitSetters {
+class ProtoTransactionWithReceipt::_Internal {
  public:
+  using HasBits = decltype(std::declval<ProtoTransactionWithReceipt>()._has_bits_);
   static const ::ZilliqaMessage::ProtoTransaction& transaction(const ProtoTransactionWithReceipt* msg);
-  static void set_has_transaction(ProtoTransactionWithReceipt* msg) {
-    msg->_has_bits_[0] |= 0x00000001u;
+  static void set_has_transaction(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
   }
   static const ::ZilliqaMessage::ProtoTransactionReceipt& receipt(const ProtoTransactionWithReceipt* msg);
-  static void set_has_receipt(ProtoTransactionWithReceipt* msg) {
-    msg->_has_bits_[0] |= 0x00000002u;
+  static void set_has_receipt(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
   }
 };
 
 const ::ZilliqaMessage::ProtoTransaction&
-ProtoTransactionWithReceipt::HasBitSetters::transaction(const ProtoTransactionWithReceipt* msg) {
+ProtoTransactionWithReceipt::_Internal::transaction(const ProtoTransactionWithReceipt* msg) {
   return *msg->transaction_;
 }
 const ::ZilliqaMessage::ProtoTransactionReceipt&
-ProtoTransactionWithReceipt::HasBitSetters::receipt(const ProtoTransactionWithReceipt* msg) {
+ProtoTransactionWithReceipt::_Internal::receipt(const ProtoTransactionWithReceipt* msg) {
   return *msg->receipt_;
 }
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int ProtoTransactionWithReceipt::kTransactionFieldNumber;
-const int ProtoTransactionWithReceipt::kReceiptFieldNumber;
-#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
-
 ProtoTransactionWithReceipt::ProtoTransactionWithReceipt()
-  : ::google::protobuf::Message(), _internal_metadata_(nullptr) {
+  : ::PROTOBUF_NAMESPACE_ID::Message(), _internal_metadata_(nullptr) {
   SharedCtor();
   // @@protoc_insertion_point(constructor:ZilliqaMessage.ProtoTransactionWithReceipt)
 }
 ProtoTransactionWithReceipt::ProtoTransactionWithReceipt(const ProtoTransactionWithReceipt& from)
-  : ::google::protobuf::Message(),
+  : ::PROTOBUF_NAMESPACE_ID::Message(),
       _internal_metadata_(nullptr),
       _has_bits_(from._has_bits_) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
@@ -2197,8 +2034,7 @@ ProtoTransactionWithReceipt::ProtoTransactionWithReceipt(const ProtoTransactionW
 }
 
 void ProtoTransactionWithReceipt::SharedCtor() {
-  ::google::protobuf::internal::InitSCC(
-      &scc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&scc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto.base);
   ::memset(&transaction_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&receipt_) -
       reinterpret_cast<char*>(&transaction_)) + sizeof(receipt_));
@@ -2218,14 +2054,14 @@ void ProtoTransactionWithReceipt::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
 const ProtoTransactionWithReceipt& ProtoTransactionWithReceipt::default_instance() {
-  ::google::protobuf::internal::InitSCC(&::scc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto.base);
+  ::PROTOBUF_NAMESPACE_ID::internal::InitSCC(&::scc_info_ProtoTransactionWithReceipt_ZilliqaMessage_2eproto.base);
   return *internal_default_instance();
 }
 
 
 void ProtoTransactionWithReceipt::Clear() {
 // @@protoc_insertion_point(message_clear_start:ZilliqaMessage.ProtoTransactionWithReceipt)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -2245,78 +2081,63 @@ void ProtoTransactionWithReceipt::Clear() {
 }
 
 #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
-const char* ProtoTransactionWithReceipt::_InternalParse(const char* begin, const char* end, void* object,
-                  ::google::protobuf::internal::ParseContext* ctx) {
-  auto msg = static_cast<ProtoTransactionWithReceipt*>(object);
-  ::google::protobuf::int32 size; (void)size;
-  int depth; (void)depth;
-  ::google::protobuf::uint32 tag;
-  ::google::protobuf::internal::ParseFunc parser_till_end; (void)parser_till_end;
-  auto ptr = begin;
-  while (ptr < end) {
-    ptr = ::google::protobuf::io::Parse32(ptr, &tag);
-    GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
+const char* ProtoTransactionWithReceipt::_InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    ::PROTOBUF_NAMESPACE_ID::uint32 tag;
+    ptr = ::PROTOBUF_NAMESPACE_ID::internal::ReadTag(ptr, &tag);
+    CHK_(ptr);
     switch (tag >> 3) {
       // optional .ZilliqaMessage.ProtoTransaction transaction = 1;
-      case 1: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 10) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        parser_till_end = ::ZilliqaMessage::ProtoTransaction::_InternalParse;
-        object = msg->mutable_transaction();
-        if (size > end - ptr) goto len_delim_till_end;
-        ptr += size;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
-            {parser_till_end, object}, ptr - size, ptr));
-        break;
-      }
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 10)) {
+          ptr = ctx->ParseMessage(mutable_transaction(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       // optional .ZilliqaMessage.ProtoTransactionReceipt receipt = 2;
-      case 2: {
-        if (static_cast<::google::protobuf::uint8>(tag) != 18) goto handle_unusual;
-        ptr = ::google::protobuf::io::ReadSize(ptr, &size);
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr);
-        parser_till_end = ::ZilliqaMessage::ProtoTransactionReceipt::_InternalParse;
-        object = msg->mutable_receipt();
-        if (size > end - ptr) goto len_delim_till_end;
-        ptr += size;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ctx->ParseExactRange(
-            {parser_till_end, object}, ptr - size, ptr));
-        break;
-      }
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<::PROTOBUF_NAMESPACE_ID::uint8>(tag) == 18)) {
+          ptr = ctx->ParseMessage(mutable_receipt(), ptr);
+          CHK_(ptr);
+        } else goto handle_unusual;
+        continue;
       default: {
       handle_unusual:
         if ((tag & 7) == 4 || tag == 0) {
-          ctx->EndGroup(tag);
-          return ptr;
+          ctx->SetLastTag(tag);
+          goto success;
         }
-        auto res = UnknownFieldParse(tag, {_InternalParse, msg},
-          ptr, end, msg->_internal_metadata_.mutable_unknown_fields(), ctx);
-        ptr = res.first;
-        GOOGLE_PROTOBUF_PARSER_ASSERT(ptr != nullptr);
-        if (res.second) return ptr;
+        ptr = UnknownFieldParse(tag, &_internal_metadata_, ptr, ctx);
+        CHK_(ptr != nullptr);
+        continue;
       }
     }  // switch
   }  // while
+success:
+  _has_bits_.Or(has_bits);
   return ptr;
-len_delim_till_end:
-  return ctx->StoreAndTailCall(ptr, end, {_InternalParse, msg},
-                               {parser_till_end, object}, size);
+failure:
+  ptr = nullptr;
+  goto success;
+#undef CHK_
 }
 #else  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 bool ProtoTransactionWithReceipt::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!PROTOBUF_PREDICT_TRUE(EXPRESSION)) goto failure
-  ::google::protobuf::uint32 tag;
+  ::PROTOBUF_NAMESPACE_ID::uint32 tag;
   // @@protoc_insertion_point(parse_start:ZilliqaMessage.ProtoTransactionWithReceipt)
   for (;;) {
-    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    ::std::pair<::PROTOBUF_NAMESPACE_ID::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
     if (!p.second) goto handle_unusual;
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+    switch (::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::GetTagFieldNumber(tag)) {
       // optional .ZilliqaMessage.ProtoTransaction transaction = 1;
       case 1: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (10 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (10 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadMessage(
                input, mutable_transaction()));
         } else {
           goto handle_unusual;
@@ -2326,8 +2147,8 @@ bool ProtoTransactionWithReceipt::MergePartialFromCodedStream(
 
       // optional .ZilliqaMessage.ProtoTransactionReceipt receipt = 2;
       case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) == (18 & 0xFF)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+        if (static_cast< ::PROTOBUF_NAMESPACE_ID::uint8>(tag) == (18 & 0xFF)) {
+          DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::ReadMessage(
                input, mutable_receipt()));
         } else {
           goto handle_unusual;
@@ -2340,7 +2161,7 @@ bool ProtoTransactionWithReceipt::MergePartialFromCodedStream(
         if (tag == 0) {
           goto success;
         }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
+        DO_(::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SkipField(
               input, tag, _internal_metadata_.mutable_unknown_fields()));
         break;
       }
@@ -2357,54 +2178,54 @@ failure:
 #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
 
 void ProtoTransactionWithReceipt::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
+    ::PROTOBUF_NAMESPACE_ID::io::CodedOutputStream* output) const {
   // @@protoc_insertion_point(serialize_start:ZilliqaMessage.ProtoTransactionWithReceipt)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // optional .ZilliqaMessage.ProtoTransaction transaction = 1;
   if (cached_has_bits & 0x00000001u) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, HasBitSetters::transaction(this), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, _Internal::transaction(this), output);
   }
 
   // optional .ZilliqaMessage.ProtoTransactionReceipt receipt = 2;
   if (cached_has_bits & 0x00000002u) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, HasBitSetters::receipt(this), output);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::WriteMessageMaybeToArray(
+      2, _Internal::receipt(this), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
   }
   // @@protoc_insertion_point(serialize_end:ZilliqaMessage.ProtoTransactionWithReceipt)
 }
 
-::google::protobuf::uint8* ProtoTransactionWithReceipt::InternalSerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
+::PROTOBUF_NAMESPACE_ID::uint8* ProtoTransactionWithReceipt::InternalSerializeWithCachedSizesToArray(
+    ::PROTOBUF_NAMESPACE_ID::uint8* target) const {
   // @@protoc_insertion_point(serialize_to_array_start:ZilliqaMessage.ProtoTransactionWithReceipt)
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
   // optional .ZilliqaMessage.ProtoTransaction transaction = 1;
   if (cached_has_bits & 0x00000001u) {
-    target = ::google::protobuf::internal::WireFormatLite::
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        1, HasBitSetters::transaction(this), target);
+        1, _Internal::transaction(this), target);
   }
 
   // optional .ZilliqaMessage.ProtoTransactionReceipt receipt = 2;
   if (cached_has_bits & 0x00000002u) {
-    target = ::google::protobuf::internal::WireFormatLite::
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        2, HasBitSetters::receipt(this), target);
+        2, _Internal::receipt(this), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
   }
   // @@protoc_insertion_point(serialize_to_array_end:ZilliqaMessage.ProtoTransactionWithReceipt)
@@ -2417,10 +2238,10 @@ size_t ProtoTransactionWithReceipt::ByteSizeLong() const {
 
   if (_internal_metadata_.have_unknown_fields()) {
     total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
@@ -2429,32 +2250,32 @@ size_t ProtoTransactionWithReceipt::ByteSizeLong() const {
     // optional .ZilliqaMessage.ProtoTransaction transaction = 1;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *transaction_);
     }
 
     // optional .ZilliqaMessage.ProtoTransactionReceipt receipt = 2;
     if (cached_has_bits & 0x00000002u) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSize(
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
           *receipt_);
     }
 
   }
-  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  int cached_size = ::PROTOBUF_NAMESPACE_ID::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void ProtoTransactionWithReceipt::MergeFrom(const ::google::protobuf::Message& from) {
+void ProtoTransactionWithReceipt::MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_merge_from_start:ZilliqaMessage.ProtoTransactionWithReceipt)
   GOOGLE_DCHECK_NE(&from, this);
   const ProtoTransactionWithReceipt* source =
-      ::google::protobuf::DynamicCastToGenerated<ProtoTransactionWithReceipt>(
+      ::PROTOBUF_NAMESPACE_ID::DynamicCastToGenerated<ProtoTransactionWithReceipt>(
           &from);
   if (source == nullptr) {
   // @@protoc_insertion_point(generalized_merge_from_cast_fail:ZilliqaMessage.ProtoTransactionWithReceipt)
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+    ::PROTOBUF_NAMESPACE_ID::internal::ReflectionOps::Merge(from, this);
   } else {
   // @@protoc_insertion_point(generalized_merge_from_cast_success:ZilliqaMessage.ProtoTransactionWithReceipt)
     MergeFrom(*source);
@@ -2465,7 +2286,7 @@ void ProtoTransactionWithReceipt::MergeFrom(const ProtoTransactionWithReceipt& f
 // @@protoc_insertion_point(class_specific_merge_from_start:ZilliqaMessage.ProtoTransactionWithReceipt)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::google::protobuf::uint32 cached_has_bits = 0;
+  ::PROTOBUF_NAMESPACE_ID::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
@@ -2479,7 +2300,7 @@ void ProtoTransactionWithReceipt::MergeFrom(const ProtoTransactionWithReceipt& f
   }
 }
 
-void ProtoTransactionWithReceipt::CopyFrom(const ::google::protobuf::Message& from) {
+void ProtoTransactionWithReceipt::CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) {
 // @@protoc_insertion_point(generalized_copy_from_start:ZilliqaMessage.ProtoTransactionWithReceipt)
   if (&from == this) return;
   Clear();
@@ -2500,10 +2321,6 @@ bool ProtoTransactionWithReceipt::IsInitialized() const {
   return true;
 }
 
-void ProtoTransactionWithReceipt::Swap(ProtoTransactionWithReceipt* other) {
-  if (other == this) return;
-  InternalSwap(other);
-}
 void ProtoTransactionWithReceipt::InternalSwap(ProtoTransactionWithReceipt* other) {
   using std::swap;
   _internal_metadata_.Swap(&other->_internal_metadata_);
@@ -2512,16 +2329,14 @@ void ProtoTransactionWithReceipt::InternalSwap(ProtoTransactionWithReceipt* othe
   swap(receipt_, other->receipt_);
 }
 
-::google::protobuf::Metadata ProtoTransactionWithReceipt::GetMetadata() const {
-  ::google::protobuf::internal::AssignDescriptors(&::assign_descriptors_table_ZilliqaMessage_2eproto);
-  return ::file_level_metadata_ZilliqaMessage_2eproto[kIndexInFileMessages];
+::PROTOBUF_NAMESPACE_ID::Metadata ProtoTransactionWithReceipt::GetMetadata() const {
+  return GetMetadataStatic();
 }
 
 
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace ZilliqaMessage
-namespace google {
-namespace protobuf {
+PROTOBUF_NAMESPACE_OPEN
 template<> PROTOBUF_NOINLINE ::ZilliqaMessage::ByteArray* Arena::CreateMaybeMessage< ::ZilliqaMessage::ByteArray >(Arena* arena) {
   return Arena::CreateInternal< ::ZilliqaMessage::ByteArray >(arena);
 }
@@ -2537,8 +2352,7 @@ template<> PROTOBUF_NOINLINE ::ZilliqaMessage::ProtoTransactionReceipt* Arena::C
 template<> PROTOBUF_NOINLINE ::ZilliqaMessage::ProtoTransactionWithReceipt* Arena::CreateMaybeMessage< ::ZilliqaMessage::ProtoTransactionWithReceipt >(Arena* arena) {
   return Arena::CreateInternal< ::ZilliqaMessage::ProtoTransactionWithReceipt >(arena);
 }
-}  // namespace protobuf
-}  // namespace google
+PROTOBUF_NAMESPACE_CLOSE
 
 // @@protoc_insertion_point(global_scope)
 #include <google/protobuf/port_undef.inc>

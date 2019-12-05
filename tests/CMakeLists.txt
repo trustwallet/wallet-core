@@ -10,9 +10,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/build/gtest/staging/googletest-release-1.8.
                  ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
                  EXCLUDE_FROM_ALL)
 
-# Protobuf
-find_library(Protobuf REQUIRED PATH ${CMAKE_SOURCE_DIR}/build/local/lib/pkgconfig NO_DEFAULT_PATH)
-include_directories(${Protobuf_INCLUDE_DIRS})
+# Note: Protobuf is defined in included CMake
+##find_library(Protobuf REQUIRED PATH ${CMAKE_SOURCE_DIR}/build/local/lib/pkgconfig NO_DEFAULT_PATH)
+##include_directories(${Protobuf_INCLUDE_DIRS})
 
 # Test executable
 file(GLOB_RECURSE test_sources *.cpp **/*.cpp)
