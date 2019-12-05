@@ -16,6 +16,20 @@
 using namespace TW;
 using namespace TW::Any;
 
+TEST(Signer, BitcoinTransactionSign) {
+
+    auto transaction = R"({"hash_type": 1,"amount": 335790000,"byte_fee": 1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx", "change_address": "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"})";
+    auto input = Proto::SigningInput();
+    input.set_private_key("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeBitcoin);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());
+}
+
 TEST(Signer, CosmosTransactionSign) {
     auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"},"memo":"Testing","sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}})";
     auto input = Proto::SigningInput();

@@ -9,6 +9,7 @@
 #include "Cosmos/Signer.h"
 #include "Data.h"
 #include "Ethereum/Signer.h"
+#include "Bitcoin/TransactionSigner.h"
 #include "Harmony/Signer.h"
 #include "HexCoding.h"
 #include "IoTeX/Signer.h"
@@ -187,6 +188,18 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         }
         break;
     }
+    case TWCoinTypeBitcoin: {
+        Bitcoin::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                 cout << "1";
+//                message.set_private_key(privateKey.bytes.size(), privateKey.bytes.data());
+//                auto signer = Stellar::Signer(message);
+//                auto signerOutput = signer.sign();
+//                output.set_output(signerOutput);
+            }
+            break;
+        }
     default:
         auto error = new Proto::SigningOutput_Error();
         error->set_code(SignerErrorCodeNotSupported);
