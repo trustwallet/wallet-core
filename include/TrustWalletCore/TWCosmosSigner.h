@@ -20,4 +20,11 @@ struct TWCosmosSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Cosmos_Proto_SigningOutput TWCosmosSignerSign(TW_Cosmos_Proto_SigningInput input);
 
+/// Builds a message to be signed
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWCosmosSignerMessage(TW_Cosmos_Proto_SigningInput data);
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWCosmosSignerTransaction(TW_Cosmos_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature);
+
 TW_EXTERN_C_END

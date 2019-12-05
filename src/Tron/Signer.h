@@ -9,6 +9,9 @@
 #include "../Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Tron.pb.h"
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 namespace TW::Tron {
 
@@ -19,6 +22,8 @@ class Signer {
 
     /// Signs the given transaction.
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    static Data buildAndSerializeTx(const Proto::SigningInput& input) noexcept;
+    static json encodeTransactionToJson(const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace TW::Tron

@@ -27,8 +27,7 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
     return std::make_tuple(r, s, newV);
 }
 
-std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept {
+std::tuple<uint256_t, uint256_t, uint256_t> Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }
@@ -82,7 +81,21 @@ void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const 
     transaction.v = std::get<2>(tuple);
 }
 
-Data Signer::hash(const Transaction &transaction) const noexcept {
+Data Signer::serialize(const Transaction& transaction) const noexcept {
+    auto encoded = Data();
+    append(encoded, RLP::encode(transaction.nonce));
+    append(encoded, RLP::encode(transaction.gasPrice));
+    append(encoded, RLP::encode(transaction.gasLimit));
+    append(encoded, RLP::encode(transaction.to));
+    append(encoded, RLP::encode(transaction.amount));
+    append(encoded, RLP::encode(transaction.payload));
+    append(encoded, RLP::encode(chainID));
+    append(encoded, RLP::encode(0));
+    append(encoded, RLP::encode(0));
+    return RLP::encodeList(encoded);
+}
+
+Data Signer::hash(const Transaction& transaction) const noexcept {
     auto encoded = Data();
     append(encoded, RLP::encode(transaction.nonce));
     append(encoded, RLP::encode(transaction.gasPrice));

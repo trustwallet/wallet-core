@@ -206,12 +206,23 @@ void setBlockReference(const Proto::Transaction& transaction, protocol::Transact
     internal.mutable_raw_data()->set_ref_block_bytes(heightData.data() + heightData.size() - 2, 2);
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    auto internal = protocol::Transaction();
-    auto output = Proto::SigningOutput();
+void setBlockReferenceToJson(const Proto::Transaction& transaction, json& rawData) {
+    const auto blockHash = getBlockHash(to_internal(transaction.block_header()));
+    assert(blockHash.size() > 15);
+    rawData["ref_block_hash"] = hex(std::string(reinterpret_cast<const char*>(blockHash.data() + 8), 8));
+
+    const auto blockHeight = transaction.block_header().number();
+    auto heightData = Data();
+    encode64LE(blockHeight, heightData);
+    std::reverse(heightData.begin(), heightData.end());
+    rawData["ref_block_bytes"] = hex(std::string(reinterpret_cast<const char*>(heightData.data() + heightData.size() - 2), 2));
+}
+
+protocol::Transaction buildTransaction(const Proto::SigningInput& input) noexcept {
+    auto tx = protocol::Transaction();
 
     if (input.transaction().has_transfer()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TransferContract);
 
         auto transfer = to_internal(input.transaction().transfer());
@@ -219,7 +230,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(transfer);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_transfer_asset()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TransferAssetContract);
 
         auto transfer = to_internal(input.transaction().transfer_asset());
@@ -227,7 +238,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(transfer);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_freeze_balance()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_FreezeBalanceContract);
 
         auto freeze_balance = to_internal(input.transaction().freeze_balance());
@@ -235,7 +246,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(freeze_balance);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_unfreeze_balance()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeBalanceContract);
 
         auto unfreeze_balance = to_internal(input.transaction().unfreeze_balance());
@@ -243,7 +254,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(unfreeze_balance);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_unfreeze_asset()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_UnfreezeAssetContract);
 
         auto unfreeze_asset = to_internal(input.transaction().unfreeze_asset());
@@ -251,7 +262,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(unfreeze_asset);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_vote_asset()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_VoteAssetContract);
 
         auto vote_asset = to_internal(input.transaction().vote_asset());
@@ -259,7 +270,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(vote_asset);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_vote_witness()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_VoteWitnessContract);
 
         auto vote_witness = to_internal(input.transaction().vote_witness());
@@ -267,7 +278,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(vote_witness);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_withdraw_balance()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_WithdrawBalanceContract);
 
         auto withdraw = to_internal(input.transaction().withdraw_balance());
@@ -275,7 +286,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(withdraw);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_trigger_smart_contract()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
 
         auto trigger_smart_contract = to_internal(input.transaction().trigger_smart_contract());
@@ -283,7 +294,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(trigger_smart_contract);
         *contract->mutable_parameter() = any;
     } else if (input.transaction().has_transfer_trc20_contract()) {
-        auto contract = internal.mutable_raw_data()->add_contract();
+        auto contract = tx.mutable_raw_data()->add_contract();
         contract->set_type(protocol::Transaction_Contract_ContractType_TriggerSmartContract);
 
         auto trigger_smart_contract = to_internal(input.transaction().transfer_trc20_contract());
@@ -291,6 +302,30 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         any.PackFrom(trigger_smart_contract);
         *contract->mutable_parameter() = any;
     }
+
+    tx.mutable_raw_data()->set_timestamp(input.transaction().timestamp());
+    tx.mutable_raw_data()->set_expiration(input.transaction().expiration());
+    tx.mutable_raw_data()->set_fee_limit(input.transaction().fee_limit());
+    setBlockReference(input.transaction(), tx);
+
+    return tx;
+}
+
+Data serialize(const protocol::Transaction& tx) noexcept {
+    const auto serialized = tx.raw_data().SerializeAsString();
+    return Data(serialized.begin(), serialized.end());
+}
+
+Data Signer::buildAndSerializeTx(const Proto::SigningInput& input) noexcept {
+    auto output = Proto::SigningOutput();
+    auto tx = buildTransaction(input);
+
+    return serialize(tx);
+}
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto output = Proto::SigningOutput();
+    auto tx = buildTransaction(input);
 
     // Get default timestamp and expiration
     const uint64_t now = duration_cast< milliseconds >(
@@ -303,25 +338,78 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
             ? timestamp + 10 * 60 * 60 * 1000 // 10 hours
             : input.transaction().expiration();
 
-    internal.mutable_raw_data()->set_timestamp(timestamp);
-    internal.mutable_raw_data()->set_expiration(expiration);
-    internal.mutable_raw_data()->set_fee_limit(input.transaction().fee_limit());
-    setBlockReference(input.transaction(), internal);
+    tx.mutable_raw_data()->set_timestamp(timestamp);
+    tx.mutable_raw_data()->set_expiration(expiration);
 
-    output.set_ref_block_bytes(internal.raw_data().ref_block_bytes());
-    output.set_ref_block_hash(internal.raw_data().ref_block_hash());
+    output.set_ref_block_bytes(tx.raw_data().ref_block_bytes());
+    output.set_ref_block_hash(tx.raw_data().ref_block_hash());
 
-    const auto serialized = internal.raw_data().SerializeAsString();
-    const auto hash = Hash::sha256(Data(serialized.begin(), serialized.end()));
+    const auto hash = Hash::sha256(serialize(tx));
 
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     const auto signature = key.sign(hash, TWCurveSECP256k1);
 
-    const auto json = transactionJSON(internal, hash, signature).dump();
+    const auto json = transactionJSON(tx, hash, signature).dump();
 
     output.set_id(hash.data(), hash.size());
     output.set_signature(signature.data(), signature.size());
     output.set_json(json.data(), json.size());
 
     return output;
+}
+
+json Signer::encodeTransactionToJson(const Proto::SigningInput& input) noexcept {
+    json rawData;
+    json contractJson;
+
+    auto tx = protocol::Transaction();
+    if (input.transaction().has_transfer()) {
+        auto contract = tx.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_TransferContract);
+        auto transfer = to_internal(input.transaction().transfer());
+        google::protobuf::Any any;
+        any.PackFrom(transfer);
+        *contract->mutable_parameter() = any;
+
+        json paramsValueJson;
+        paramsValueJson["amount"] = transfer.amount();
+        paramsValueJson["owner_address"] = hex(transfer.owner_address());
+        paramsValueJson["to_address"] = hex(transfer.to_address());
+
+        json contractParamsJson;
+        contractParamsJson["type_url"] = *any.mutable_type_url();
+        contractParamsJson["value"] = paramsValueJson;
+
+        contractJson["type"] = "TransferContract";
+        contractJson["parameter"] = contractParamsJson;
+
+    } else if (input.transaction().has_transfer_asset()) {
+        auto contract = tx.mutable_raw_data()->add_contract();
+        contract->set_type(protocol::Transaction_Contract_ContractType_TransferAssetContract);
+
+        auto transfer = to_internal(input.transaction().transfer_asset());
+        google::protobuf::Any any;
+        any.PackFrom(transfer);
+        *contract->mutable_parameter() = any;
+
+        json paramsValueJson;
+        paramsValueJson["amount"] = transfer.amount();
+        paramsValueJson["asset_name"] = hex(transfer.asset_name());
+        paramsValueJson["owner_address"] = hex(transfer.owner_address());
+        paramsValueJson["to_address"] = hex(transfer.to_address());
+
+        json contractParamsJson;
+        contractParamsJson["type_url"] = *any.mutable_type_url();
+        contractParamsJson["value"] = paramsValueJson;
+
+        contractJson["type"] = "TransferAssetContract";
+        contractJson["parameter"] = contractParamsJson;
+    }
+    rawData["contract"] = json::array({contractJson});
+    rawData["expiration"] = input.transaction().expiration();
+    rawData["timestamp"] = input.transaction().timestamp();
+    rawData["fee_limit"] = input.transaction().fee_limit();
+    setBlockReferenceToJson(input.transaction(), rawData);
+
+    return rawData;
 }

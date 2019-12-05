@@ -20,4 +20,12 @@ struct TWVeChainSigner;
 TW_EXPORT_STATIC_METHOD
 TW_VeChain_Proto_SigningOutput TWVeChainSignerSign(TW_VeChain_Proto_SigningInput input);
 
+/// Builds a message to be signed
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWVeChainSignerMessage(TW_VeChain_Proto_SigningInput input);
+
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWVeChainSignerTransaction(TW_VeChain_Proto_SigningInput data, TWData *_Nonnull signature);
+
 TW_EXTERN_C_END

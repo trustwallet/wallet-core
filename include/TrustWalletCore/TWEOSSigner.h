@@ -20,4 +20,10 @@ struct TWEOSSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Proto_Result TWEOSSignerSign(TW_EOS_Proto_SigningInput input);
 
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWEOSSignerMessage(TW_EOS_Proto_SigningInput data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWEOSSignerTransaction(TW_EOS_Proto_SigningInput data, TWData *_Nonnull signature);
+
 TW_EXTERN_C_END

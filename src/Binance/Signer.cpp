@@ -9,6 +9,7 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
+#include "../PublicKey.h"
 
 #include <google/protobuf/io/coded_stream.h>
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -98,7 +99,10 @@ std::vector<uint8_t> Signer::encodeOrder() const {
 std::vector<uint8_t> Signer::encodeSignature(const std::vector<uint8_t>& signature) const {
     auto key = PrivateKey(input.private_key());
     auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    return encodeSignature(publicKey, signature);
+}
 
+std::vector<uint8_t> Signer::encodeSignature(const PublicKey& publicKey, const std::vector<uint8_t>& signature) const {
     auto encodedPublicKey = pubKeyPrefix;
     encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.bytes.size()));
     encodedPublicKey.insert(encodedPublicKey.end(), publicKey.bytes.begin(), publicKey.bytes.end());

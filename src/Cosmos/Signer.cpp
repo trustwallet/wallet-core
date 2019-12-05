@@ -9,6 +9,7 @@
 
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "../PublicKey.h"
 #include "../Data.h"
 
 #include <google/protobuf/io/zero_copy_stream_impl_lite.h>
@@ -113,4 +114,43 @@ Proto::SigningOutput Signer::build() const {
     output.set_signature(signature.data(), signature.size());
 
     return output;
+}
+
+Data Signer::encodeTransaction(const Data& signature) const {
+    auto transaction = Cosmos::Proto::Transaction();
+    *transaction.mutable_fee() = input.fee();
+    transaction.set_memo(input.memo());
+
+    if (input.has_send_coins_message()) {
+        *transaction.mutable_send_coins_message() = input.send_coins_message();
+    } else if (input.has_stake_message()) {
+        *transaction.mutable_stake_message() = input.stake_message();
+    } else if (input.has_unstake_message()) {
+        *transaction.mutable_unstake_message() = input.unstake_message();
+    } else if (input.has_withdraw_stake_reward_message()) {
+        *transaction.mutable_withdraw_stake_reward_message() = input.withdraw_stake_reward_message();
+    }
+
+    auto sig = Cosmos::Proto::Signature();
+    sig.set_signature(signature.data(), signature.size());
+
+    *transaction.mutable_signature() = sig;
+
+    auto output =  transactionJSON(transaction, input.type_prefix()).dump();
+
+    return std::vector<uint8_t>(output.begin(), output.end());
+}
+
+Data Signer::encodeSignature(const PublicKey& publicKey, const Data& signature) const {
+    auto encodedPublicKey = AMINO_PREFIX_PUBLIC_KEY;
+    encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.bytes.size()));
+    encodedPublicKey.insert(encodedPublicKey.end(), publicKey.bytes.begin(), publicKey.bytes.end());
+
+    auto sig = Cosmos::Proto::Signature();
+    sig.set_public_key(encodedPublicKey.data(), encodedPublicKey.size());
+    sig.set_signature(signature.data(), signature.size());
+
+    auto sigStr = sig.SerializeAsString();
+
+    return std::vector<uint8_t>(sigStr.begin(), sigStr.end());
 }

@@ -8,6 +8,7 @@
 
 #include "../proto/Cosmos.pb.h"
 #include "../Data.h"
+#include "../PublicKey.h"
 #include <nlohmann/json.hpp>
 #include <stdint.h>
 #include <vector>
@@ -32,8 +33,11 @@ public:
     /// \returns the signed transaction.
     Proto::SigningOutput build() const;
 
-private:
+    Data encodeTransaction(const Data& signature) const;
+    Data encodeSignature(const PublicKey& publicKey, const Data& signature) const;
     std::string signaturePreimage() const;
+
+private:
     nlohmann::json buildTransactionJSON(const Data& signature) const;
     std::string buildTransaction() const;
 };

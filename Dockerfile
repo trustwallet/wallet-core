@@ -62,8 +62,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Clone repo
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
-RUN git clone https://github.com/TrustWallet/wallet-core.git \
+RUN git clone https://github.com/ackratos/wallet-core.git \
     && cd wallet-core \
+    && git checkout tss \
     && export PREFIX=/usr/local \
     && tools/install-dependencies
 
