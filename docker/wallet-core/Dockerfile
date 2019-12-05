@@ -1,14 +1,11 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 ARG CLANG_VERSION=7.0.1
 ARG CMAKE_VERSION=3.13.4
 ARG PROTOBUF_VERSION=3.9.0
 
 # Install the basics
-RUN apt-get update && apt-get install -y curl python-software-properties build-essential xz-utils libreadline-dev
-
-# Make latest NodeJS available
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get update && apt-get install -y curl build-essential xz-utils libreadline-dev
 
 # Install all required packages
 RUN apt-get install -y \
@@ -19,7 +16,6 @@ RUN apt-get install -y \
     libssl-dev \
     libtool \
     ninja-build \
-    nodejs \
     pkg-config \
     unzip
 
@@ -43,15 +39,17 @@ RUN curl -fSsL https://dl.bintray.com/boostorg/release/1.66.0/source/boost_1_66_
     && mv boost_1_66_0/boost /usr/include \
     && rm -rf boost*
 
-# Install CMake
+# Install CMake, binaries from GitHub
 ENV CMAKE_VERSION=$CMAKE_VERSION
 RUN cd /usr/local/src \
-    && curl -fSsOL https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION.tar.gz \
-    && tar xvf cmake-$CMAKE_VERSION.tar.gz \
-    && cd cmake-$CMAKE_VERSION \
-    && ./bootstrap --system-curl \
-    && make \
-    && make install \
+    && curl -fSsOL https://github.com/Kitware/CMake/releases/download/v$CMAKE_VERSION/cmake-$CMAKE_VERSION-Linux-x86_64.tar.gz \
+    && ls -l cmake-$CMAKE_VERSION-Linux-x86_64.tar.gz \
+    && tar xf cmake-$CMAKE_VERSION-Linux-x86_64.tar.gz \
+    && cd cmake-$CMAKE_VERSION-Linux-x86_64 \
+    && cp -r bin /usr/ \
+    && cp -r share /usr/ \
+    && cp -r doc /usr/share/ \
+    && cp -r man /usr/share/ \
     && cd .. \
     && rm -rf cmake*
 RUN cmake --version
@@ -62,8 +60,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Clone repo
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
-RUN git clone https://github.com/TrustWallet/wallet-core.git \
-    && cd wallet-core \
+RUN git clone https://github.com/TrustWallet/wallet-core.git
+# Prepare dependencies
+RUN cd /wallet-core \
     && export PREFIX=/usr/local \
     && tools/install-dependencies
 

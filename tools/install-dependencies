@@ -71,6 +71,8 @@ cd protobuf-$PROTOBUF_VERSION
 ./configure --prefix="$PREFIX"
 make -j4
 make install
+# after install, cleanup to save space (docker)
+make clean
 "$PREFIX/bin/protoc" --version
 
 if [ -x "$(command -v swift)" ]; then
