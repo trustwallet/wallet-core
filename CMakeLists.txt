@@ -60,7 +60,6 @@ else()
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
-
 endif()
 target_compile_options(TrustWalletCore PRIVATE "-Wall")
 

@@ -20,8 +20,4 @@ struct TWAionSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Aion_Proto_SigningOutput TWAionSignerSign(TW_Aion_Proto_SigningInput input);
 
-/// Builds a message to be signed
-TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWIOSTSignerMessage(TW_IOST_Proto_SigningInput input, TWData *_Nonnull pubkey, uint8_t algorithm);
-
 TW_EXTERN_C_END

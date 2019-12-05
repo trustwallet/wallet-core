@@ -51,7 +51,7 @@ TWData *_Nonnull TWRippleSignerMessage(TW_Ripple_Proto_SigningInput data, TWData
             /* sequence */input.sequence(),
             /* last_ledger_sequence */input.last_ledger_sequence(),
             /* account */Address(input.account()),
-            /* destination */Address(input.destination()),
+            /* destination */input.destination(),
             /* destination_tag*/input.destination_tag()
     );
 
@@ -78,7 +78,7 @@ TWData *_Nonnull TWRippleSignerTransaction(TW_Ripple_Proto_SigningInput data, TW
             /* sequence */input.sequence(),
             /* last_ledger_sequence */input.last_ledger_sequence(),
             /* account */Address(input.account()),
-            /* destination */Address(input.destination()),
+            /* destination */input.destination(),
             /* destination_tag*/input.destination_tag()
     );
 
