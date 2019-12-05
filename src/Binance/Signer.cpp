@@ -18,28 +18,33 @@ using namespace TW;
 using namespace TW::Binance;
 
 // Message prefixes
-static const auto sendOrderPrefix = std::vector<uint8_t>{0x2A, 0x2C, 0x87, 0xFA};
-static const auto tradeOrderPrefix = std::vector<uint8_t>{0xCE, 0x6D, 0xC0, 0x43};
-static const auto cancelTradeOrderPrefix = std::vector<uint8_t>{0x16, 0x6E, 0x68, 0x1B};
-static const auto tokenFreezeOrderPrefix = std::vector<uint8_t>{0xE7, 0x74, 0xB3, 0x2D};
-static const auto tokenUnfreezeOrderPrefix = std::vector<uint8_t>{0x65, 0x15, 0xFF, 0x0D};
-static const auto HTLTOrderPrefix = std::vector<uint8_t>{0xB3, 0x3F, 0x9A, 0x24};
-static const auto depositHTLTOrderPrefix = std::vector<uint8_t>{0x63, 0x98, 0x64, 0x96};
-static const auto claimHTLTOrderPrefix = std::vector<uint8_t>{0xC1, 0x66, 0x53, 0x00};
-static const auto refundHTLTOrderPrefix = std::vector<uint8_t>{0x34, 0x54, 0xA2, 0x7C};
-static const auto pubKeyPrefix = std::vector<uint8_t>{0xEB, 0x5A, 0xE9, 0x87};
-static const auto transactionPrefix = std::vector<uint8_t>{0xF0, 0x62, 0x5D, 0xEE};
+// see https://docs.binance.org/api-reference/transactions.html#amino-types
+static const auto sendOrderPrefix = Data{0x2A, 0x2C, 0x87, 0xFA};
+static const auto tradeOrderPrefix = Data{0xCE, 0x6D, 0xC0, 0x43};
+static const auto cancelTradeOrderPrefix = Data{0x16, 0x6E, 0x68, 0x1B};
+static const auto HTLTOrderPrefix = Data{0xB3, 0x3F, 0x9A, 0x24};
+static const auto depositHTLTOrderPrefix = Data{0x63, 0x98, 0x64, 0x96};
+static const auto claimHTLTOrderPrefix = Data{0xC1, 0x66, 0x53, 0x00};
+static const auto refundHTLTOrderPrefix = Data{0x34, 0x54, 0xA2, 0x7C};
+static const auto pubKeyPrefix = Data{0xEB, 0x5A, 0xE9, 0x87};
+static const auto transactionPrefix = Data{0xF0, 0x62, 0x5D, 0xEE};
+static const auto tokenIssueOrderPrefix = Data{0x17, 0xEF, 0xAB, 0x80};
+static const auto tokenMintOrderPrefix = Data{0x46, 0x7E, 0x08, 0x29};
+static const auto tokenBurnOrderPrefix = Data{0x7E, 0xD2, 0xD2, 0xA0};
+static const auto tokenFreezeOrderPrefix = Data{0xE7, 0x74, 0xB3, 0x2D};
+static const auto tokenUnfreezeOrderPrefix = Data{0x65, 0x15, 0xFF, 0x0D};
 
-std::vector<uint8_t> Signer::build() const {
+
+Data Signer::build() const {
     auto signature = encodeSignature(sign());
     return encodeTransaction(signature);
 }
 
-std::vector<uint8_t> Signer::sign() const {
+Data Signer::sign() const {
     auto key = PrivateKey(input.private_key());
     auto hash = Hash::sha256(signaturePreimage());
     auto signature = key.sign(hash, TWCurveSECP256k1);
-    return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
+    return Data(signature.begin(), signature.end() - 1);
 }
 
 std::string Signer::signaturePreimage() const {
@@ -47,7 +52,7 @@ std::string Signer::signaturePreimage() const {
     return json.dump();
 }
 
-std::vector<uint8_t> Signer::encodeTransaction(const std::vector<uint8_t>& signature) const {
+Data Signer::encodeTransaction(const Data& signature) const {
     auto msg = encodeOrder();
     auto transaction = Binance::Proto::Transaction();
     transaction.add_msgs(msg.data(), msg.size());
@@ -59,9 +64,9 @@ std::vector<uint8_t> Signer::encodeTransaction(const std::vector<uint8_t>& signa
     return aminoWrap(data, transactionPrefix, true);
 }
 
-std::vector<uint8_t> Signer::encodeOrder() const {
+Data Signer::encodeOrder() const {
     std::string data;
-    std::vector<uint8_t> prefix;
+    Data prefix;
     if (input.has_trade_order()) {
         data = input.trade_order().SerializeAsString();
         prefix = tradeOrderPrefix;
@@ -71,6 +76,15 @@ std::vector<uint8_t> Signer::encodeOrder() const {
     } else if (input.has_send_order()) {
         data = input.send_order().SerializeAsString();
         prefix = sendOrderPrefix;
+    } else if (input.has_issue_order()) {
+        data = input.issue_order().SerializeAsString();
+        prefix = tokenIssueOrderPrefix;
+    } else if (input.has_mint_order()) {
+        data = input.mint_order().SerializeAsString();
+        prefix = tokenMintOrderPrefix;
+    } else if (input.has_burn_order()) {
+        data = input.burn_order().SerializeAsString();
+        prefix = tokenBurnOrderPrefix;
     } else if (input.has_freeze_order()) {
         data = input.freeze_order().SerializeAsString();
         prefix = tokenFreezeOrderPrefix;
@@ -95,7 +109,7 @@ std::vector<uint8_t> Signer::encodeOrder() const {
     return aminoWrap(data, prefix, false);
 }
 
-std::vector<uint8_t> Signer::encodeSignature(const std::vector<uint8_t>& signature) const {
+Data Signer::encodeSignature(const Data& signature) const {
     auto key = PrivateKey(input.private_key());
     auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
 
@@ -112,8 +126,8 @@ std::vector<uint8_t> Signer::encodeSignature(const std::vector<uint8_t>& signatu
     return aminoWrap(object.SerializeAsString(), {}, false);
 }
 
-std::vector<uint8_t> Signer::aminoWrap(const std::string& raw,
-                                       const std::vector<uint8_t>& typePrefix,
+Data Signer::aminoWrap(const std::string& raw,
+                                       const Data& typePrefix,
                                        bool prefixWithSize) const {
     const auto contentsSize = raw.size() + typePrefix.size();
     auto size = contentsSize;
@@ -133,5 +147,5 @@ std::vector<uint8_t> Signer::aminoWrap(const std::string& raw,
         cos.WriteRaw(raw.data(), static_cast<int>(raw.size()));
     }
 
-    return std::vector<uint8_t>(msg.begin(), msg.end());
+    return Data(msg.begin(), msg.end());
 }
