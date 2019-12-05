@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrezorCrypto/ecdsa.h>
 #include "Signer.h"
 
 #include "Address.h"
@@ -107,6 +108,78 @@ Data Signer::sign() const {
 Data Signer::sign(Proto::SigningInput& input) const {
     Signer signer = Signer(input);
     return signer.sign();
+}
+
+Data Signer::buildUnsignedTx() const {
+    uint32_t txSize = CalculatorTransactionSize(1, 1, static_cast<uint32_t>(tx.remark().size()));
+    uint256_t fee = (uint256_t)CalculatorTransactionFee(txSize);
+    uint256_t txAmount = load(input.amount());
+    uint256_t balance = load(input.balance());
+    uint256_t fromAmount = txAmount + fee;
+    if (fromAmount > balance) {
+        throw std::invalid_argument("User account balance not sufficient");
+    }
+
+    Proto::TransactionCoinFrom& coinFrom = (Proto::TransactionCoinFrom&)tx.input();
+    Data amount;
+    amount = store(fromAmount);
+    std::reverse(amount.begin(), amount.end());
+    std::string amountStr;
+    amountStr.insert(amountStr.begin(), amount.begin(), amount.end());
+    amountStr.append(static_cast<unsigned long>(amount.capacity() - amount.size()), '\0');
+    coinFrom.set_id_amount(amountStr);
+
+    Proto::TransactionCoinTo& coinTo = (Proto::TransactionCoinTo&)tx.output();
+    Data amountTo;
+    amountTo = store(txAmount);
+    std::reverse(amountTo.begin(), amountTo.end());
+    std::string amountToStr;
+    amountToStr.insert(amountToStr.begin(), amountTo.begin(), amountTo.end());
+    amountToStr.append(static_cast<unsigned long>(amountTo.capacity() - amountTo.size()), '\0');
+    coinTo.set_id_amount(amountToStr);
+
+    auto dataRet = Data();
+    // Transaction Type
+    encode16LE(static_cast<uint16_t>(tx.type()), dataRet);
+    // Timestamp
+    encode32LE(tx.timestamp(), dataRet);
+    // Remark
+    std::string remark = tx.remark();
+    serializerRemark(remark, dataRet);
+    // txData
+    encodeVarInt(0, dataRet);
+
+    //coinFrom and coinTo size
+    encodeVarInt(TRANSACTION_INPUT_SIZE + TRANSACTION_OUTPUT_SIZE, dataRet);
+
+    // CoinData Input
+    serializerInput(tx.input(), dataRet);
+
+    // CoinData Output
+    serializerOutput(tx.output(), dataRet);
+
+    return dataRet;
+}
+
+Data Signer::buildSignedTx(Data pubkey, Data sigBytes) const {
+    auto unsignedTxBytes = buildUnsignedTx();
+
+    Data transactionSignature = Data();
+    encodeVarInt(pubkey.size(), transactionSignature);
+    std::copy(pubkey.begin(), pubkey.end(), std::back_inserter(transactionSignature));
+
+    std::array<uint8_t, 72> tempSigBytes;
+    size_t size = ecdsa_sig_to_der(sigBytes.data(), tempSigBytes.data());
+    auto signature = Data{};
+    std::copy(tempSigBytes.begin(), tempSigBytes.begin() + size, std::back_inserter(signature));
+
+    encodeVarInt(signature.size(), transactionSignature);
+    std::copy(signature.begin(), signature.end(), std::back_inserter(transactionSignature));
+
+    Data signedTxBytes = unsignedTxBytes;
+    encodeVarInt(transactionSignature.size(), signedTxBytes);
+    std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(signedTxBytes));
+    return signedTxBytes;
 }
 
 uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {

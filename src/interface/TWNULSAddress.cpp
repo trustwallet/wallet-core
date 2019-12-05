@@ -40,6 +40,12 @@ struct TWNULSAddress* _Nonnull TWNULSAddressCreateWithPublicKey(
     return new TWNULSAddress{Address(publicKey->impl)};
 }
 
+/// Creates an address from a public key.
+struct TWNULSAddress* _Nonnull TWNULSAddressCreateWithPublicKeyAndChain(
+        struct TWPublicKey* _Nonnull publicKey, bool isMainnet) {
+    return new TWNULSAddress{Address(publicKey->impl, isMainnet)};
+}
+
 /// Delete an address instance.
 void TWNULSAddressDelete(struct TWNULSAddress* _Nonnull address) {
     delete address;

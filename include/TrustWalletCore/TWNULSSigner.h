@@ -20,4 +20,11 @@ struct TWNULSSigner;
 TW_EXPORT_STATIC_METHOD
 TW_NULS_Proto_SigningOutput TWNULSSignerSign(TW_NULS_Proto_SigningInput input);
 
+/// Builds a message to be signed
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWNULSSignerMessage(TW_NULS_Proto_SigningInput input);
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWNULSSignerTransaction(TW_NULS_Proto_SigningInput input, TWData *_Nonnull pubkey, TWData *_Nonnull sig);
+
 TW_EXTERN_C_END

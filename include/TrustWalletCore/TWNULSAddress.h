@@ -32,6 +32,9 @@ struct TWNULSAddress *_Nullable TWNULSAddressCreateWithString(TWString *_Nonnull
 TW_EXPORT_STATIC_METHOD
 struct TWNULSAddress *_Nonnull TWNULSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
 
+TW_EXPORT_STATIC_METHOD
+struct TWNULSAddress *_Nonnull TWNULSAddressCreateWithPublicKeyAndChain(struct TWPublicKey *_Nonnull publicKey, bool isMainnet);
+
 /// Delete an address instance.
 TW_EXPORT_METHOD
 void TWNULSAddressDelete(struct TWNULSAddress *_Nonnull address);
