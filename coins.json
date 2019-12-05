@@ -1004,7 +1004,7 @@
         "derivationPath": "m/44'/434'/0'",
         "curve": "ed25519",
         "publicKeyType": "ed25519",
-        "explorer": "https://polkascan.io/pre/kusama-cc2/transaction/",
+        "explorer": "https://kusama.subscan.io/extrinsic/",
         "info": {
             "url": "https://kusama.network",
             "client": "https://github.com/paritytech/polkadot",
