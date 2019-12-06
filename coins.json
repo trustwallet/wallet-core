@@ -924,7 +924,7 @@
             "url": "https://harmony.one",
             "client": "https://github.com/harmony-one/go-sdk",
             "clientPublic": "",
-            "clientDocs": "https://app.gitbook.com/@harmony-one/s/sdk-wiki"
+            "clientDocs": "https://docs.harmony.one/home/harmony-networks/harmony-network-overview/mainnet"
         }
     },
     {
@@ -993,6 +993,40 @@
             "client": "https://github.com/ton-blockchain/ton",
             "clientPublic": "",
             "clientDocs": "https://test.ton.org/"
+        }
+    },
+    {
+        "id": "kusama",
+        "name": "Kusama",
+        "symbol": "KSM",
+        "decimals": 12,
+        "blockchain": "Polkadot",
+        "derivationPath": "m/44'/434'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "https://kusama.subscan.io/extrinsic/",
+        "info": {
+            "url": "https://kusama.network",
+            "client": "https://github.com/paritytech/polkadot",
+            "clientPublic": "wss://kusama-rpc.polkadot.io/",
+            "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
+        }
+    },
+    {
+        "id": "polkadot",
+        "name": "Polkadot",
+        "symbol": "DOT",
+        "decimals": 15,
+        "blockchain": "Polkadot",
+        "derivationPath": "m/44'/354'/0'",
+        "curve": "ed25519",
+        "publicKeyType": "ed25519",
+        "explorer": "",
+        "info": {
+            "url": "https://polkadot.network/",
+            "client": "https://github.com/paritytech/polkadot",
+            "clientPublic": "",
+            "clientDocs": "https://polkadot.js.org/api/substrate/rpc.html"
         }
     }
 ]

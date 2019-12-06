@@ -66,6 +66,12 @@ HDWallet::~HDWallet() {
     std::fill(passphrase.begin(), passphrase.end(), 0);
 }
 
+PrivateKey HDWallet::getMasterKey(TWCurve curve) const {
+    auto node = getMasterNode(*this, curve);
+    auto data = Data(node.private_key, node.private_key + PrivateKey::size);
+    return PrivateKey(data);
+}
+
 PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
     const auto curve = TWCoinTypeCurve(derivationPath.coin());
     auto node = getNode(*this, curve, derivationPath);

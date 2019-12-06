@@ -99,6 +99,10 @@ public extension CoinType {
             return AlgorandAddress(string: string)
         case .ton:
             return TONAddress(string: string)
+        case .kusama:
+            return KusamaAddress(string: string)
+        case .polkadot:
+            return PolkadotAddress(string: string)
         }
     }
 }

@@ -62,7 +62,6 @@ TEST(HDWallet, InvalidWordCount) {
 }
 
 TEST(HDWallet, SeedWithExtraSpaces) {
-    auto words = STRING("ripple scissors  kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal\n");
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), passphrase.get()));
     assertSeedEq(wallet, "7ae6f661157bda6492f6162701e570097fc726b6235011ea5ad09bf04986731ed4d92bc43cbdee047b60ea0dd1b1fa4274377c9bf5bd14ab1982c272d8076f29");
 }
@@ -70,6 +69,18 @@ TEST(HDWallet, SeedWithExtraSpaces) {
 TEST(HDWallet, SeedNoPassword) {
     auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
     assertSeedEq(wallet, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d");
+}
+
+TEST(HDWallet, MasterPrivateKey) {
+    auto wallet = WRAP(TWHDWallet, TWHDWalletCreateWithMnemonic(words.get(), STRING("").get()));
+    auto key1 = WRAP(TWPrivateKey, TWHDWalletGetMasterKey(wallet.get(), TWCurveSECP256k1));
+    auto hexKey1 = WRAPD(TWPrivateKeyData(key1.get()));
+
+    auto key2 = WRAP(TWPrivateKey,TWHDWalletGetMasterKey(wallet.get(), TWCurveED25519));
+    auto hexKey2 = WRAPD(TWPrivateKeyData(key2.get()));
+
+    assertHexEqual(hexKey1, "d1b2b553b053f278d510a8494ead811252b1d5ec0da4434d0997a75de92bcea9");
+    assertHexEqual(hexKey2, "d258c2521f7802b8e83c32f2cc97bd06b69747847390c5e247a3d19faa74202e");
 }
 
 TEST(HDWallet, Derive) {
