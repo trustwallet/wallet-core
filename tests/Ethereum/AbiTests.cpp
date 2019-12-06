@@ -386,7 +386,7 @@ TEST(EthereumAbi, ParamAddress) {
     Data val1(parse_hex(val1Str));
     {
         auto param = ParamAddress(val1);
-        EXPECT_EQ(val1, param.getVal());
+        EXPECT_EQ(val1, param.getData());
 
         EXPECT_EQ("address", param.getType());
         EXPECT_FALSE(param.isDynamic());
@@ -396,10 +396,24 @@ TEST(EthereumAbi, ParamAddress) {
         auto param = ParamAddress(val1);
         Data encoded;
         param.encode(encoded);
-        EXPECT_EQ("f784682c82526e245f50975190ef0fff4e4fc077000000000000000000000000", hex(encoded));
+        EXPECT_EQ("000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077", hex(encoded));
         size_t offset = 0;
         EXPECT_TRUE(param.decode(encoded, offset));
-        EXPECT_EQ(val1, param.getVal());
+        EXPECT_EQ(val1, param.getData());
+    }
+    {
+        auto param = ParamAddress(parse_hex("0000000000000000000000000000000000000012"));
+        EXPECT_EQ("0000000000000000000000000000000000000012", hex(param.getData()));
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000000000000000000000000000000000000000000012", hex(encoded));
+    }
+    {
+        auto param = ParamAddress(parse_hex("4300000000000000000000000000000000000000"));
+        EXPECT_EQ("4300000000000000000000000000000000000000", hex(param.getData()));
+        Data encoded;
+        param.encode(encoded);
+        EXPECT_EQ("0000000000000000000000004300000000000000000000000000000000000000", hex(encoded));
     }
 }
 
@@ -506,15 +520,15 @@ TEST(EthereumAbi, ParamArrayAddress) {
         param.encode(encoded);
         EXPECT_EQ(
             "0000000000000000000000000000000000000000000000000000000000000002"
-            "f784682c82526e245f50975190ef0fff4e4fc077000000000000000000000000"
-            "2e00cd222cb42b616d86d037cc494e8ab7f5c9a3000000000000000000000000",
+            "000000000000000000000000f784682c82526e245f50975190ef0fff4e4fc077"
+            "0000000000000000000000002e00cd222cb42b616d86d037cc494e8ab7f5c9a3",
             hex(encoded));
         size_t offset = 0;
         EXPECT_TRUE(param.decode(encoded, offset));
         EXPECT_EQ(2, param.getVal().size());
         EXPECT_EQ(
             "2e00cd222cb42b616d86d037cc494e8ab7f5c9a3", 
-            hex((std::dynamic_pointer_cast<ParamAddress>(param.getVal()[1]))->getVal()));
+            hex((std::dynamic_pointer_cast<ParamAddress>(param.getVal()[1]))->getData()));
     }
 }
 
