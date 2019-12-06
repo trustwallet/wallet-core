@@ -23,6 +23,8 @@
 #include "Waves/Signer.h"
 #include "Stellar/Signer.h"
 
+#include "Bitcoin/Transaction.h"
+
 #include <google/protobuf/util/json_util.h>
 #include <string>
 
@@ -192,9 +194,22 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         Bitcoin::Proto::SigningInput message;
             parse(transaction, &message, output);
             if (output.success()) {
-                 cout << "1";
-//                message.set_private_key(privateKey.bytes.size(), privateKey.bytes.data());
-//                auto signer = Stellar::Signer(message);
+                message.add_private_key( input.private_key());
+           //      auto result = TW::Bitcoin::TransactionSigner<Transaction>(std::move(input)).sign();
+//                auto signer = TW::Bitcoin::TransactionSigner(std::move(input));
+//                auto signer = TW::Bitcoin::TransactionSigner(std::move(input));
+//                auto transactionBuilder = Bitcoin::TransactionBuilder();
+//                auto transactionPlan = transactionBuilder.plan((Bitcoin::Proto::SigningInput &&) std::move(input));
+                auto rawSigningInput = Bitcoin::Proto::SigningInput();
+                rawSigningInput.set_amount(message.amount());
+                rawSigningInput.set_byte_fee(message.byte_fee());
+                rawSigningInput.set_change_address(message.change_address());
+                rawSigningInput.set_hash_type(message.hash_type());
+                rawSigningInput.set_to_address(message.to_address());
+
+                auto signer = Bitcoin::TransactionSigner<Bitcoin::Transaction>(std::move(rawSigningInput));
+                auto signerOutput = signer.sign();
+                cout << "1";
 //                auto signerOutput = signer.sign();
 //                output.set_output(signerOutput);
             }
