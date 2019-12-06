@@ -13,11 +13,16 @@
 #include "HexCoding.h"
 #include "Tezos/BinaryCoding.h"
 
+#include "Bitcoin/OutPoint.h"
+#include "Bitcoin/Script.h"
+#include "Bitcoin/Transaction.h"
+#include "Bitcoin/TransactionBuilder.h"
+#include "Bitcoin/TransactionSigner.h"
+
 using namespace TW;
 using namespace TW::Any;
 
 TEST(Signer, BitcoinTransactionSign) {
-
     auto transaction = R"({"hash_type": 1,"amount": 335790000,"byte_fee": 1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx", "change_address": "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"})";
     auto input = Proto::SigningInput();
     input.set_private_key("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9");
