@@ -33,6 +33,8 @@ TEST(Signer, BitcoinTransactionSign) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.success());
+    ASSERT_EQ(output.output(), "010000000001000100000000000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac00000000");
+    std::cout << "1";
 }
 
 TEST(Signer, CosmosTransactionSign) {

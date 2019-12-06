@@ -197,9 +197,10 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
                 message.add_private_key( input.private_key());
                 auto signer = Bitcoin::TransactionSigner<Bitcoin::Transaction>(std::move(message));
                 auto signerOutput = signer.sign();
-                cout << "1";
-//                auto signerOutput = signer.sign();
-//                output.set_output(signerOutput);
+                auto signedTx = signerOutput.payload();
+                Data serialized;
+                signedTx.encode(true, serialized);
+                output.set_output(hex(serialized));
             }
             break;
         }
