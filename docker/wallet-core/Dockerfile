@@ -61,9 +61,18 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 RUN git clone https://github.com/TrustWallet/wallet-core.git
+
 # Prepare dependencies
 RUN cd /wallet-core \
     && export PREFIX=/usr/local \
     && tools/install-dependencies
+
+# Build library: generate, cmake, and make
+# rbenv trick is needed as Ruby is installed to non-standard location
+RUN cd /wallet-core \
+    && eval "$(/root/.rbenv/bin/rbenv init -)" \
+    && ./tools/generate-files \
+    && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
+    && make -Cbuild
 
 CMD ["/bin/bash"]
