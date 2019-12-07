@@ -4,32 +4,34 @@ ARG CLANG_VERSION=7.0.1
 ARG CMAKE_VERSION=3.13.4
 ARG PROTOBUF_VERSION=3.9.0
 
-# Install the basics
-RUN apt-get update && apt-get install -y curl build-essential xz-utils libreadline-dev
+# Install some basics
+RUN apt-get update \
+    && apt-get install -y \
+        curl \
+        git \
+        nano \
+        unzip \
+        xz-utils \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install all required packages
-RUN apt-get install -y \
-    autoconf \
-    git \
-    libcurl4-openssl-dev \
-    libicu-dev \
-    libssl-dev \
-    libtool \
-    ninja-build \
-    pkg-config \
-    unzip
-
-# Install ruby 2.6
-RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv \
-    && cd ~/.rbenv && src/configure && make -C src \
-    && mkdir -p ~/.rbenv/plugins && git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build \
-    && echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc && echo 'eval "$(rbenv init -)"' >> ~/.bashrc && . ~/.bashrc \
-    && rbenv install 2.6.3 && rbenv global 2.6.3 \
-    && ruby -v
+# Install required packages for dev
+RUN apt-get update \
+    && apt-get install -y \
+        autoconf \
+        build-essential \
+        libcurl4-openssl-dev \
+        libicu-dev \
+        libreadline-dev \
+        libssl-dev \
+        libtool \
+        ninja-build \
+        pkg-config \
+        ruby-full \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install clang
 ENV CLANG_VERSION=$CLANG_VERSION
-RUN curl -fSsL http://releases.llvm.org/$CLANG_VERSION/clang+llvm-$CLANG_VERSION-x86_64-linux-gnu-ubuntu-16.04.tar.xz -o clang.tar.xz \
+RUN curl -fSsL http://releases.llvm.org/$CLANG_VERSION/clang+llvm-$CLANG_VERSION-x86_64-linux-gnu-ubuntu-18.04.tar.xz -o clang.tar.xz \
     && tar -xJf clang.tar.xz --directory /usr --strip-components=1 \
     && rm -rf clang.tar.xz
 
@@ -54,16 +56,30 @@ RUN cd /usr/local/src \
     && rm -rf cmake*
 RUN cmake --version
 
-# Clean Up
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # Clone repo
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 RUN git clone https://github.com/TrustWallet/wallet-core.git
+
 # Prepare dependencies
 RUN cd /wallet-core \
     && export PREFIX=/usr/local \
     && tools/install-dependencies
+
+# Clean Up
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Version checks
+RUN ruby --version \
+    && clang --version \
+    && cmake --version \
+    && protoc --version
+
+# Build library: generate, cmake, and make
+# rbenv trick is needed as Ruby is installed to non-standard location
+RUN cd /wallet-core \
+    && ./tools/generate-files \
+    && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
+    && make -Cbuild
 
 CMD ["/bin/bash"]
