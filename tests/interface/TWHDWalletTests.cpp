@@ -102,6 +102,7 @@ TEST(HDWallet, DeriveBitcoinNonextended) {
     auto publicKeyData = WRAPD(TWPublicKeyData(publicKey));
 
     assertHexEqual(publicKeyData, "047ea5dff03f677502c4a1d73c5ac897200e56b155e876774c8fba0cc22f80b9414ec07cda7b1c9a84c2e04ea2746c21afacc5e91b47427c453c3f1a4a3e983ce5");
+    // Note: address derivation does not work with nonextended public key
 }
 
 TEST(HDWallet, DeriveBitcoinExtended) {
