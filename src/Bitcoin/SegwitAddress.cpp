@@ -51,7 +51,7 @@ bool SegwitAddress::isValid(const std::string& string, const std::string& hrp) {
 SegwitAddress::SegwitAddress(const PublicKey& publicKey, int witver, std::string hrp)
     : hrp(std::move(hrp)), witnessVersion(witver), witnessProgram() {
     if (publicKey.type != TWPublicKeyTypeSECP256k1) {
-        throw std::invalid_argument("SegwitAddressneeds a compressed SECP256k1 public key.");
+        throw std::invalid_argument("SegwitAddress needs a compressed SECP256k1 public key.");
     }
     witnessProgram.resize(20);
     ecdsa_get_pubkeyhash(publicKey.compressed().bytes.data(), HASHER_SHA2_RIPEMD,

@@ -49,6 +49,13 @@ struct TWPrivateKey *_Nonnull TWHDWalletGetKeyForCoin(struct TWHDWallet *wallet,
     return new TWPrivateKey{ wallet->impl.getKey(derivationPath) };
 }
 
+TWString *_Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet *wallet, TWCoinType coin) {
+    auto derivationPath = TW::derivationPath(coin);
+    PrivateKey privateKey = wallet->impl.getKey(derivationPath);
+    std::string address = deriveAddress(coin, privateKey);
+    return TWStringCreateWithUTF8Bytes(address.c_str());
+}
+
 struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, TWString *_Nonnull derivationPath) {
     auto& s = *reinterpret_cast<const std::string*>(derivationPath);
     return new TWPrivateKey{ wallet->impl.getKey( TW::DerivationPath(s)) };
