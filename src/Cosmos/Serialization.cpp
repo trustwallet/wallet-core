@@ -16,13 +16,13 @@ using namespace TW::Cosmos::Proto;
 using json = nlohmann::json;
 using string = std::string;
 
-const string AMINO_PREFIX_SEND_COIN_MESSAGE = "cosmos-sdk/MsgSend";
-const string AMINO_PREFIX_STAKE_MESSAGE = "cosmos-sdk/MsgDelegate";
-const string AMINO_PREFIX_UNSTAKE_MESSAGE = "cosmos-sdk/MsgUndelegate";
-const string AMINO_PREFIX_RESTAKE_MESSAGE = "cosmos-sdk/MsgBeginRedelegate";
-const string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE = "cosmos-sdk/MsgWithdrawDelegationReward";
-const string AMINO_PREFIX_WITHDRAW_STAKE_ALL_MESSAGE = "cosmos-sdk/MsgWithdrawDelegationRewardsAll";
-const string AMINO_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
+const string TYPE_PREFIX_MSG_SEND = "cosmos-sdk/MsgSend";
+const string TYPE_PREFIX_MSG_DELEGATE = "cosmos-sdk/MsgDelegate";
+const string TYPE_PREFIX_MSG_UNDELEGATE = "cosmos-sdk/MsgUndelegate";
+const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
+const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
+const string TYPE_PREFIX_MSG_WITHDRAW_REWARDS_ALL = "cosmos-sdk/MsgWithdrawDelegationRewardsAll";
+const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
 static json broadcastJSON(json& jsonObj) {
     json jsonMsgWrapper;
@@ -189,7 +189,7 @@ static json messageJSON(const Transaction& transaction) {
 static json signatureJSON(const Signature& signature) {
     json jsonSignature;
 
-    jsonSignature["pub_key"]["type"] = AMINO_PREFIX_PUBLIC_KEY;
+    jsonSignature["pub_key"]["type"] = TYPE_PREFIX_PUBLIC_KEY;
     jsonSignature["pub_key"]["value"] = Base64::encode(Data(signature.public_key().begin(), signature.public_key().end()));
     jsonSignature["signature"] = Base64::encode(Data(signature.signature().begin(), signature.signature().end()));
 

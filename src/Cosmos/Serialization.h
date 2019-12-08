@@ -11,13 +11,13 @@
 
 using string = std::string;
 
-extern const string AMINO_PREFIX_SEND_COIN_MESSAGE;
-extern const string AMINO_PREFIX_STAKE_MESSAGE;
-extern const string AMINO_PREFIX_UNSTAKE_MESSAGE;
-extern const string AMINO_PREFIX_RESTAKE_MESSAGE;
-extern const string AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE;
-extern const string AMINO_PREFIX_WITHDRAW_STAKE_ALL_MESSAGE;
-extern const string AMINO_PREFIX_PUBLIC_KEY;
+extern const string TYPE_PREFIX_MSG_SEND;
+extern const string TYPE_PREFIX_MSG_DELEGATE;
+extern const string TYPE_PREFIX_MSG_UNDELEGATE;
+extern const string TYPE_PREFIX_MSG_REDELEGATE;
+extern const string TYPE_PREFIX_MSG_WITHDRAW_REWARD;
+extern const string TYPE_PREFIX_MSG_WITHDRAW_REWARDS_ALL;
+extern const string TYPE_PREFIX_PUBLIC_KEY;
 
 namespace TW::Cosmos {
 
