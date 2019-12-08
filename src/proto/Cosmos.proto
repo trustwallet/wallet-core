@@ -51,6 +51,12 @@ message WithdrawStakeRewardMessage {
     string type_prefix = 3;
 }
 
+message WithdrawStakeRewardsAllMessage {
+    string delegator_address = 1;
+    // cosmos-sdk/MsgWithdrawDelegationRewardsAll
+    string type_prefix = 2;
+}
+
 // Signature
 message Signature {
     bytes public_key = 1;
@@ -69,6 +75,7 @@ message Transaction {
         StakeMessage unstake_message = 6;
         ReStakeMessage restake_message = 7;
         WithdrawStakeRewardMessage withdraw_stake_reward_message = 8;
+        WithdrawStakeRewardsAllMessage withdraw_stake_rewards_all_message = 9;
     }
 }
 
@@ -88,9 +95,10 @@ message SigningInput {
         StakeMessage unstake_message = 9;
         ReStakeMessage restake_message = 10;
         WithdrawStakeRewardMessage withdraw_stake_reward_message = 11;
+        WithdrawStakeRewardsAllMessage withdraw_stake_rewards_all_message = 12;
     }
     // default is cosmos-sdk/MsgSend
-    string type_prefix = 12;
+    string type_prefix = 20;
 }
 
 // Transaction signing output.

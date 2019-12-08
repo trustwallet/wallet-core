@@ -54,6 +54,12 @@ Signer::Signer(Proto::SigningInput&& input) {
             message.set_type_prefix(AMINO_PREFIX_RESTAKE_MESSAGE);
         }
         *input.mutable_restake_message() = message;
+    } else if (input.has_withdraw_stake_rewards_all_message()) {
+        auto message = input.withdraw_stake_rewards_all_message();
+        if (message.type_prefix().empty()) {
+            message.set_type_prefix(AMINO_PREFIX_WITHDRAW_STAKE_ALL_MESSAGE);
+        }
+        *input.mutable_withdraw_stake_rewards_all_message() = message;
     }
 
     this->input = input;
@@ -91,6 +97,8 @@ json Signer::buildTransactionJSON(const Data& signature) const {
         *transaction.mutable_restake_message() = input.restake_message();
     } else if (input.has_withdraw_stake_reward_message()) {
         *transaction.mutable_withdraw_stake_reward_message() = input.withdraw_stake_reward_message();
+    } else if (input.has_withdraw_stake_rewards_all_message()) {
+        *transaction.mutable_withdraw_stake_rewards_all_message() = input.withdraw_stake_rewards_all_message();
     }
     
     *transaction.mutable_signature() = sig;
