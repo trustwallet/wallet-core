@@ -21,39 +21,45 @@ using json = nlohmann::json;
 
 Signer::Signer(Proto::SigningInput&& input) {
     if (input.type_prefix().empty()) {
-        input.set_type_prefix(AMINO_PREFIX_SEND_COIN_MESSAGE);
+        input.set_type_prefix(TYPE_PREFIX_MSG_SEND);
     }
 
     if (input.has_send_coins_message()) {
         auto message = input.send_coins_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_SEND_COIN_MESSAGE);
+            message.set_type_prefix(TYPE_PREFIX_MSG_SEND);
         }
         *input.mutable_send_coins_message() = message;
     } else if (input.has_stake_message()) {
         auto message = input.stake_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_STAKE_MESSAGE);
+            message.set_type_prefix(TYPE_PREFIX_MSG_DELEGATE);
         }
         *input.mutable_stake_message() = message;
     } else if(input.has_unstake_message()) {
         auto message = input.unstake_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_UNSTAKE_MESSAGE);
+            message.set_type_prefix(TYPE_PREFIX_MSG_UNDELEGATE);
         }
         *input.mutable_unstake_message() = message;
     } else if(input.has_withdraw_stake_reward_message()) {
         auto message = input.withdraw_stake_reward_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_WITHDRAW_STAKE_MESSAGE);
+            message.set_type_prefix(TYPE_PREFIX_MSG_WITHDRAW_REWARD);
         }
         *input.mutable_withdraw_stake_reward_message() = message;
     } else if(input.has_restake_message()) {
         auto message = input.restake_message();
         if (message.type_prefix().empty()) {
-            message.set_type_prefix(AMINO_PREFIX_RESTAKE_MESSAGE);
+            message.set_type_prefix(TYPE_PREFIX_MSG_REDELEGATE);
         }
         *input.mutable_restake_message() = message;
+    } else if (input.has_withdraw_stake_rewards_all_message()) {
+        auto message = input.withdraw_stake_rewards_all_message();
+        if (message.type_prefix().empty()) {
+            message.set_type_prefix(TYPE_PREFIX_MSG_WITHDRAW_REWARDS_ALL);
+        }
+        *input.mutable_withdraw_stake_rewards_all_message() = message;
     }
 
     this->input = input;
@@ -91,6 +97,8 @@ json Signer::buildTransactionJSON(const Data& signature) const {
         *transaction.mutable_restake_message() = input.restake_message();
     } else if (input.has_withdraw_stake_reward_message()) {
         *transaction.mutable_withdraw_stake_reward_message() = input.withdraw_stake_reward_message();
+    } else if (input.has_withdraw_stake_rewards_all_message()) {
+        *transaction.mutable_withdraw_stake_rewards_all_message() = input.withdraw_stake_rewards_all_message();
     }
     
     *transaction.mutable_signature() = sig;
