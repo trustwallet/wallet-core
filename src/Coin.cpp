@@ -279,7 +279,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
         return Nano::Address(publicKey).string();
 
     case TWCoinTypeNULS:
-        return NULS::Address(publicKey).string();
+        return NULS::Address(publicKey, true).string();
         
     case TWCoinTypeNEAR:
         return NEAR::Address(publicKey).string();

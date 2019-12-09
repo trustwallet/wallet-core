@@ -26,9 +26,6 @@ class Address : public Base58Address<24> {
     /// Initializes an address from a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an address from a public key.
-    explicit Address(const PublicKey& publicKey);
-
     explicit Address(const TW::PublicKey& publicKey, bool isMainnet);
 
     /// Initializes an address with a collection of bytes.

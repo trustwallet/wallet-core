@@ -12,6 +12,8 @@
 
 TW_EXTERN_C_BEGIN
 
+struct TWPublicKey;
+
 /// Represents a NULS address.
 TW_EXPORT_CLASS
 struct TWNULSAddress;

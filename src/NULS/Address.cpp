@@ -49,17 +49,6 @@ bool Address::isValid(const std::string& addrStr) {
     return decoded[23] == checkSum;
 }
 
-Address::Address(const TW::PublicKey& publicKey) {
-    prefix = mainnetPrefix;
-    // Main-Net chainID
-    bytes[0] = 0x01;
-    bytes[1] = 0x00;
-    // Address Type
-    bytes[2] = addressType;
-    ecdsa_get_pubkeyhash(publicKey.bytes.data(), HASHER_SHA2_RIPEMD, bytes.begin() + 3);
-    bytes[23] = checksum(bytes);
-}
-
 Address::Address(const TW::PublicKey& publicKey, bool isMainnet) {
     if (isMainnet) {
         prefix = mainnetPrefix;
@@ -76,12 +65,18 @@ Address::Address(const TW::PublicKey& publicKey, bool isMainnet) {
     bytes[23] = checksum(bytes);
 }
 
-Address::Address(const std::string& string) {
-    prefix = mainnetPrefix;
-    if (!isValid(string)) {
+Address::Address(const std::string& addrStr) {
+    if(addrStr.find(mainnetPrefix) == 0) {
+        prefix = mainnetPrefix;
+    } else if (addrStr.find(testnetPrefix) == 0) {
+        prefix = testnetPrefix;
+    } else {
+        throw std::invalid_argument("wrong address prefix");
+    }
+    if (!isValid(addrStr)) {
         throw std::invalid_argument("Invalid address string");
     }
-    std::string address = string.substr(prefix.length(), string.length() - prefix.length()); 
+    std::string address = addrStr.substr(prefix.length(), addrStr.length() - prefix.length());
     const auto decoded = Base58::bitcoin.decode(address);
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
