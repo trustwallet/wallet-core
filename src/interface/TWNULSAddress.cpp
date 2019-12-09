@@ -37,7 +37,13 @@ struct TWNULSAddress* _Nullable TWNULSAddressCreateWithString(TWString* _Nonnull
 /// Creates an address from a public key.
 struct TWNULSAddress* _Nonnull TWNULSAddressCreateWithPublicKey(
     struct TWPublicKey* _Nonnull publicKey) {
-    return new TWNULSAddress{Address(publicKey->impl)};
+    return new TWNULSAddress{Address(publicKey->impl, true)};
+}
+
+/// Creates an address from a public key.
+struct TWNULSAddress* _Nonnull TWNULSAddressCreateWithPublicKeyAndChain(
+        struct TWPublicKey* _Nonnull publicKey, bool isMainnet) {
+    return new TWNULSAddress{Address(publicKey->impl, isMainnet)};
 }
 
 /// Delete an address instance.

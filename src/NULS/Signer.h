@@ -42,6 +42,10 @@ class Signer {
 
     Data sign(Proto::SigningInput& input) const;
 
+    Data buildUnsignedTx() const;
+
+    Data buildSignedTx(Data pubkey, Data sigBytes) const;
+
 private:
     uint64_t CalculatorTransactionFee(uint64_t size) const;
     int32_t CalculatorMaxInput(uint32_t remarkSize) const;

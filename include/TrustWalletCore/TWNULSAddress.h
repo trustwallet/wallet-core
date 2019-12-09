@@ -12,6 +12,8 @@
 
 TW_EXTERN_C_BEGIN
 
+struct TWPublicKey;
+
 /// Represents a NULS address.
 TW_EXPORT_CLASS
 struct TWNULSAddress;
@@ -31,6 +33,9 @@ struct TWNULSAddress *_Nullable TWNULSAddressCreateWithString(TWString *_Nonnull
 /// Creates an address from a public key.
 TW_EXPORT_STATIC_METHOD
 struct TWNULSAddress *_Nonnull TWNULSAddressCreateWithPublicKey(struct TWPublicKey *_Nonnull publicKey);
+
+TW_EXPORT_STATIC_METHOD
+struct TWNULSAddress *_Nonnull TWNULSAddressCreateWithPublicKeyAndChain(struct TWPublicKey *_Nonnull publicKey, bool isMainnet);
 
 /// Delete an address instance.
 TW_EXPORT_METHOD

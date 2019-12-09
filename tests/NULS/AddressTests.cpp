@@ -40,7 +40,7 @@ TEST(NULSAddress, FromPrivateKey) {
     const auto privateKey =
         PrivateKey(parse_hex("a1269039e4ffdf43687852d7247a295f0b5bc55e6dda031cffaa3295ca0a9d7a"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    const auto address = Address(publicKey);
+    const auto address = Address(publicKey, true);
 
     ASSERT_EQ(address.string(), "NULSd6HghWa4CN5qdxqMwYVikQxRZyj57Jn4L");
 }
@@ -48,7 +48,7 @@ TEST(NULSAddress, FromPrivateKey) {
 TEST(NULSAddress, FromCompressedPublicKey) {
     const auto publicKey =
         PublicKey(parse_hex("0244d50ff36c3136b4bf81f0c74b066695bc2af43e28d7f0ca1d48fcfd084bea66"), TWPublicKeyTypeSECP256k1);
-    const auto address = Address(publicKey);
+    const auto address = Address(publicKey, true);
 
     ASSERT_EQ(address.string(), "NULSd6HgUiMKPNi221bPfqvvho8QpuYBvn1x3");
 }
@@ -56,7 +56,7 @@ TEST(NULSAddress, FromCompressedPublicKey) {
 TEST(NULSAddress, FromPrivateKey33) {
     const auto privateKey = PrivateKey(parse_hex("d77580833f0b3c35b7114c23d6b66790d726c308baf237ec8c369152f2c08d27"));
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    const auto address = Address(publicKey);
+    const auto address = Address(publicKey, true);
 
     ASSERT_EQ(address.string(), "NULSd6HgXx8YkwEjePLWUmdRSZzPQzK6BXnsB");
 }
