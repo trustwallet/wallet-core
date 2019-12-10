@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Serialization.h"
 #include "Signer.h"
+#include "Serialization.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
@@ -33,7 +33,6 @@ static const auto tokenMintOrderPrefix = Data{0x46, 0x7E, 0x08, 0x29};
 static const auto tokenBurnOrderPrefix = Data{0x7E, 0xD2, 0xD2, 0xA0};
 static const auto tokenFreezeOrderPrefix = Data{0xE7, 0x74, 0xB3, 0x2D};
 static const auto tokenUnfreezeOrderPrefix = Data{0x65, 0x15, 0xFF, 0x0D};
-
 
 Data Signer::build() const {
     auto signature = encodeSignature(sign());
@@ -126,9 +125,7 @@ Data Signer::encodeSignature(const Data& signature) const {
     return aminoWrap(object.SerializeAsString(), {}, false);
 }
 
-Data Signer::aminoWrap(const std::string& raw,
-                                       const Data& typePrefix,
-                                       bool prefixWithSize) const {
+Data Signer::aminoWrap(const std::string& raw, const Data& typePrefix, bool prefixWithSize) const {
     const auto contentsSize = raw.size() + typePrefix.size();
     auto size = contentsSize;
     if (prefixWithSize) {

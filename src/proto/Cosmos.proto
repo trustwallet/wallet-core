@@ -3,79 +3,64 @@ syntax = "proto3";
 package TW.Cosmos.Proto;
 option java_package = "wallet.core.jni.proto";
 
-// Amount
 message Amount {
     string denom = 1;
     int64 amount = 2;
 }
 
-// Fee
 message Fee {
     repeated Amount amounts = 1;
     uint64 gas = 2;
 }
 
-// Message for sending coins.
-message SendCoinsMessage {
-    string from_address = 1;
-    string to_address = 2;
-    repeated Amount amounts = 3;
-    // default is cosmos-sdk/MsgSend
-    string type_prefix = 4;
-}
+message Message {
+    // cosmos-sdk/MsgSend
+    message Send {
+        string from_address = 1;
+        string to_address = 2;
+        repeated Amount amounts = 3;
+    }
 
-// Message for staking.
-message StakeMessage {
-    string delegator_address = 1;
-    string validator_address = 2;
-    Amount amount = 3;
-    // cosmos-sdk/MsgDelegate to stake and cosmos-sdk/MsgUndelegate to unstake
-    string type_prefix = 4;
-}
+    // cosmos-sdk/MsgDelegate to stake
+    message Delegate {
+        string delegator_address = 1;
+        string validator_address = 2;
+        Amount amount = 3;
+    }
 
-// Message for restaking.
-message ReStakeMessage {
-    string delegator_address = 1;
-    string validator_src_address = 2;
-    string validator_dst_address = 3;
-    Amount amount = 4;
+    // cosmos-sdk/MsgUndelegate to unstake
+    message Undelegate {
+        string delegator_address = 1;
+        string validator_address = 2;
+        Amount amount = 3;
+    }
+
     // cosmos-sdk/MsgBeginRedelegate
-    string type_prefix = 5;
-}
+    message BeginRedelegate {
+        string delegator_address = 1;
+        string validator_src_address = 2;
+        string validator_dst_address = 3;
+        Amount amount = 4;
+    }
 
-// Message for staking.
-message WithdrawStakeRewardMessage {
-    string delegator_address = 1;
-    string validator_address = 2;
-    // default is cosmos-sdk/MsgWithdrawDelegationReward
-    string type_prefix = 3;
-}
+    // cosmos-sdk/MsgWithdrawDelegationReward
+    message WithdrawDelegationReward {
+        string delegator_address = 1;
+        string validator_address = 2;
+    }
 
-message WithdrawStakeRewardsAllMessage {
-    string delegator_address = 1;
-    // cosmos-sdk/MsgWithdrawDelegationRewardsAll
-    string type_prefix = 2;
-}
-
-// Signature
-message Signature {
-    bytes public_key = 1;
-    bytes signature = 2;
-}
-
-// Transaction
-message Transaction {
-    Fee fee = 1;
-    string memo = 2;
-    Signature signature = 3;
+    message RawJSON {
+        string type = 1;
+        string value = 2;
+    }
 
     oneof message_oneof {
-        SendCoinsMessage send_coins_message = 4;
-        StakeMessage stake_message = 5;
-        StakeMessage unstake_message = 6;
-        ReStakeMessage restake_message = 7;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 8;
-        WithdrawStakeRewardsAllMessage withdraw_stake_rewards_all_message = 9;
+        Send send_coins_message = 1;
+        Delegate stake_message = 2;
+        Undelegate unstake_message = 3;
+        BeginRedelegate restake_message = 4;
+        WithdrawDelegationReward withdraw_stake_reward_message = 5;
+        RawJSON raw_json_message = 6;
     }
 }
 
@@ -89,16 +74,8 @@ message SigningInput {
 
     bytes private_key = 6;
 
-    oneof message_oneof {
-        SendCoinsMessage send_coins_message = 7;
-        StakeMessage stake_message = 8;
-        StakeMessage unstake_message = 9;
-        ReStakeMessage restake_message = 10;
-        WithdrawStakeRewardMessage withdraw_stake_reward_message = 11;
-        WithdrawStakeRewardsAllMessage withdraw_stake_rewards_all_message = 12;
-    }
-    // default is cosmos-sdk/MsgSend
-    string type_prefix = 20;
+    repeated Message messages = 7;
+    string type_prefix = 8;
 }
 
 // Transaction signing output.

@@ -10,12 +10,6 @@
 
 typedef TWData *_Nonnull TW_Cosmos_Proto_Amount;
 typedef TWData *_Nonnull TW_Cosmos_Proto_Fee;
-typedef TWData *_Nonnull TW_Cosmos_Proto_SendCoinsMessage;
-typedef TWData *_Nonnull TW_Cosmos_Proto_StakeMessage;
-typedef TWData *_Nonnull TW_Cosmos_Proto_ReStakeMessage;
-typedef TWData *_Nonnull TW_Cosmos_Proto_WithdrawStakeRewardMessage;
-typedef TWData *_Nonnull TW_Cosmos_Proto_WithdrawStakeRewardsAllMessage;
-typedef TWData *_Nonnull TW_Cosmos_Proto_Signature;
-typedef TWData *_Nonnull TW_Cosmos_Proto_Transaction;
+typedef TWData *_Nonnull TW_Cosmos_Proto_Message;
 typedef TWData *_Nonnull TW_Cosmos_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Cosmos_Proto_SigningOutput;
