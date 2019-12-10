@@ -167,8 +167,9 @@ json Cosmos::signaturePreimage(const Proto::SigningInput& input) {
 json Cosmos::transactionJSON(const Proto::SigningInput& input, const Data& signature) {
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto typePrefix = input.type_prefix().empty() ? TYPE_PREFIX_MSG_SEND : input.type_prefix();
     json tx = {
-        {"type", TYPE_PREFIX_MSG_SEND},
+        {"type", typePrefix},
         {"fee", feeJSON(input.fee())},
         {"memo", input.memo()},
         {"msg", messagesJSON(input)},

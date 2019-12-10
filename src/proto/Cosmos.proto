@@ -75,6 +75,7 @@ message SigningInput {
     bytes private_key = 6;
 
     repeated Message messages = 7;
+    string type_prefix = 8;
 }
 
 // Transaction signing output.

@@ -14,16 +14,20 @@ class TerraTests: XCTestCase {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = CosmosAddress(hrp: .terra, publicKey: publicKey)!.description
 
-        let txAmount = CosmosAmount.with {
-            $0.amount = 100000
-            $0.denom = "uluna"
-        }
-
-        let sendCoinsMessage = CosmosSendCoinsMessage.with {
-            $0.fromAddress = fromAddress
-            $0.toAddress = "terra1szvgdsasnffunwakp9w040unxdresk7a34cfka"
-            $0.amounts = [txAmount]
-            $0.typePrefix = "pay/MsgSend"
+        let message = CosmosMessage.with {
+            $0.rawJsonMessage = CosmosMessage.RawJSON.with {
+                $0.type = "pay/MsgSend"
+                $0.value = """
+                {
+                    "amount": [{
+                        "amount": "100000",
+                        "denom": "uluna"
+                    }],
+                    "from_address": "\(fromAddress)",
+                    "to_address": "terra1szvgdsasnffunwakp9w040unxdresk7a34cfka"
+                }
+                """
+            }
         }
 
         let feeAmount = CosmosAmount.with {
@@ -39,9 +43,7 @@ class TerraTests: XCTestCase {
         let signingInput = CosmosSigningInput.with {
             $0.accountNumber = 1516
             $0.chainID = "columbus-2"
-            $0.memo = ""
-            $0.sequence = 0
-            $0.sendCoinsMessage = sendCoinsMessage
+            $0.messages = [message]
             $0.fee = fee
             $0.privateKey = privateKey.data
             $0.typePrefix = "pay/MsgSend"
