@@ -111,7 +111,7 @@ Pod::Spec.new do |s|
 
   s.preserve_paths =
     'trezor-crypto/src/*.{table}',
-    "#{protobuf_source_dir}/src/**/*.h",
+    "#{protobuf_source_dir}/src/**/*.{h,inc}",
     "#{include_dir}/nlohmann/**/*.hpp",
     'src/proto/*.proto'
   s.xcconfig = {
