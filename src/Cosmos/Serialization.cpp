@@ -41,10 +41,7 @@ static json amountJSON(const Proto::Amount& amount) {
 static json amountsJSON(const ::google::protobuf::RepeatedPtrField<Proto::Amount>& amounts) {
     json j = json::array();
     for (auto& amount : amounts) {
-        j.push_back( json {
-            {"denom", amount.denom()},
-            {"amount", std::to_string(amount.amount())},
-        });
+        j.push_back(amountJSON(amount));
     }
     return j;
 }
