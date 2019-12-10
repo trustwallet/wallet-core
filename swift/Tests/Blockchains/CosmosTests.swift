@@ -194,7 +194,7 @@ class CosmosSignerTests: XCTestCase {
         let validators = [
             "cosmosvaloper1ey69r37gfxvxg62sh4r0ktpuc46pzjrm873ae8",
             "cosmosvaloper1sjllsnramtg3ewxqwwrwjxfgc4n4ef9u2lcnj0",
-            "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6",
+            "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6"
         ]
 
         let withdrawals = validators.map { validator in
