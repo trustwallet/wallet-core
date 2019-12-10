@@ -212,7 +212,7 @@ class CosmosSignerTests: XCTestCase {
             $0.amounts = [CosmosAmount.with {
                 $0.denom = "uatom"
                 $0.amount = 1
-            },]
+            }]
             $0.gas = 220000
         }
 
