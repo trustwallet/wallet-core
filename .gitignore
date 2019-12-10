@@ -25,6 +25,7 @@ lib/protobuf
 jni/cpp/generated
 jni/java
 swift/Sources/Generated
+swift/wallet-core/
 src/Generated
 include/TrustWalletCore/TWHRP.h
 

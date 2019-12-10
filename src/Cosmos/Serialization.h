@@ -7,21 +7,22 @@
 #pragma once
 
 #include "../proto/Cosmos.pb.h"
+#include "Data.h"
 #include <nlohmann/json.hpp>
 
 using string = std::string;
+using json = nlohmann::json;
 
 extern const string TYPE_PREFIX_MSG_SEND;
 extern const string TYPE_PREFIX_MSG_DELEGATE;
 extern const string TYPE_PREFIX_MSG_UNDELEGATE;
 extern const string TYPE_PREFIX_MSG_REDELEGATE;
 extern const string TYPE_PREFIX_MSG_WITHDRAW_REWARD;
-extern const string TYPE_PREFIX_MSG_WITHDRAW_REWARDS_ALL;
 extern const string TYPE_PREFIX_PUBLIC_KEY;
 
 namespace TW::Cosmos {
 
-nlohmann::json signaturePreimageJSON(const Proto::SigningInput& input);
-nlohmann::json transactionJSON(const Proto::Transaction& transaction, const string& type_prefix);
+json signaturePreimage(const Proto::SigningInput& input);
+json transactionJSON(const Proto::SigningInput& input, const Data& signature);
 
 } // namespace

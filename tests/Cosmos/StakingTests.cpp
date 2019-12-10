@@ -5,14 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Coin.h"
-#include "HDWallet.h"
 #include "HexCoding.h"
 #include "Base64.h"
 #include "proto/Cosmos.pb.h"
 #include "Cosmos/Address.h"
 #include "Cosmos/Signer.h"
 
-#include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -25,7 +23,8 @@ TEST(CosmosStaking, Staking) {
     input.set_memo("");
     input.set_sequence(7);
 
-    auto& message = *input.mutable_stake_message();
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_stake_message();
     message.set_delegator_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
     message.set_validator_address("cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp");
     auto& amountOfTx = *message.mutable_amount();
@@ -61,7 +60,8 @@ TEST(CosmosStaking, Unstaking) {
     input.set_memo("");
     input.set_sequence(7);
 
-    auto& message = *input.mutable_unstake_message();
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_unstake_message();
     message.set_delegator_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
     message.set_validator_address("cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp");
     auto& amountOfTx = *message.mutable_amount();
@@ -97,7 +97,8 @@ TEST(CosmosStaking, Restaking) {
     input.set_memo("");
     input.set_sequence(7);
 
-    auto& message = *input.mutable_restake_message();
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_restake_message();
     message.set_delegator_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
     message.set_validator_dst_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
     message.set_validator_src_address("cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp");
@@ -136,7 +137,8 @@ TEST(CosmosStaking, Withdraw) {
     input.set_memo("");
     input.set_sequence(7);
 
-    auto& message = *input.mutable_withdraw_stake_reward_message();
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_withdraw_stake_reward_message();
     message.set_delegator_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
     message.set_validator_address("cosmosvaloper1zkupr83hrzkn3up5elktzcq3tuft8nxsmwdqgp");
 
@@ -162,16 +164,17 @@ TEST(CosmosStaking, Withdraw) {
     ASSERT_EQ(hex(output.signature()), "546f0d67356f6af94cfb5ab22b974e499c33123f2c2c292f4f0e64878e0e728f4643105fd771550beb3f2371f08880aaa38fa8f2334c103a779f1d82d2db98d6");
 }
 
-TEST(CosmosStaking, WithdrawAll) {
+TEST(CosmosStaking, WithdrawAllRaw) {
     auto input = Proto::SigningInput();
     input.set_account_number(1037);
     input.set_chain_id("gaia-13003");
     input.set_memo("");
     input.set_sequence(7);
 
-    auto& message = *input.mutable_withdraw_stake_rewards_all_message();
-    message.set_delegator_address("cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02");
-
+    auto msg = input.add_messages();
+    auto& message = *msg->mutable_raw_json_message();
+    message.set_type("cosmos-sdk/MsgWithdrawDelegationRewardsAll");
+    message.set_value("{\"delegator_address\":\"cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02\"}");
     auto &fee = *input.mutable_fee();
     fee.set_gas(101721);
     auto amountOfFee = fee.add_amounts();
