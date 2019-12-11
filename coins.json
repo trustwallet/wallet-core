@@ -33,7 +33,8 @@
             "url": "https://etherscan.io",
             "txPath": "/tx/",
             "accountPath": "/address/",
-            "sampleTx": "0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f"
+            "sampleTx": "0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f",
+            "sampleAccount": "0x5bb497e8d9fe26e92dd1be01e32076c8e024d167"
         }, 
         "info": {
             "url": "https://ethereum.org", 
@@ -62,7 +63,8 @@
             "url": "https://blockchair.com",
             "txPath": "/bitcoin/transaction/",
             "accountPath": "/bitcoin/address/",
-            "sampleTx": "0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2"
+            "sampleTx": "0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2",
+            "sampleAccount": "17A16QmavnUfCW11DAApiJxp7ARnxN5pGX"
         }, 
         "info": {
             "url": "https://bitcoin.org", 
@@ -595,7 +597,8 @@
             "url": "https://explorer.binance.org", 
             "accountPath": "/", 
             "txPath": "/tx/",
-            "sampleTx": "A93625C9F9ABEA1A8E31585B30BBB16C34FAE0D172EB5B6B2F834AF077BF06BB"
+            "sampleTx": "A93625C9F9ABEA1A8E31585B30BBB16C34FAE0D172EB5B6B2F834AF077BF06BB",
+            "sampleAccount": "bnb1u7jm0cll5h3224y0tapwn6gf6pr49ytewx4gsz"
         }, 
         "info": {
             "url": "https://binance.org", 
