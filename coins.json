@@ -91,8 +91,8 @@
         "xprv": "xprv", 
         "explorer": {
             "url": "https://blockchair.com", 
-            "accountPath": "/", 
-            "txPath": "/bitcoin-cash/transaction/"
+            "txPath": "/bitcoin-cash/transaction/",
+            "accountPath": "/bitcoin-cash/address/"
         }, 
         "info": {
             "url": "https://bitcoincash.org", 
@@ -702,8 +702,8 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://mainnet.aion.network", 
-            "accountPath": "/", 
-            "txPath": "/#/transaction/"
+            "txPath": "/#/transaction/",
+            "accountPath": "/#/account/"
         }, 
         "info": {
             "url": "https://aion.network", 
@@ -836,8 +836,8 @@
         "publicKeyType": "secp256k1", 
         "explorer": {
             "url": "https://explorer.bravocoin.com", 
-            "accountPath": "/", 
-            "txPath": "/txid/"
+            "txPath": "/txid/",
+            "accountPath": "/?"
         }, 
         "info": {
             "url": "https://bravocoin.com", 
@@ -1022,8 +1022,8 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://explorer.aepps.com", 
-            "accountPath": "/", 
-            "txPath": "/#/tx/"
+            "txPath": "/transactions/",
+            "accountPath": "/account/transactions/" 
         }, 
         "info": {
             "url": "https://aeternity.com", 
@@ -1180,8 +1180,10 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://algoexplorer.io", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/", 
+            "sampleTx": "CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A",
+            "sampleAccount": "J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM"
         }, 
         "info": {
             "url": "https://www.algorand.com/", 
