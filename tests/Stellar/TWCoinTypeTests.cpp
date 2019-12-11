@@ -17,6 +17,8 @@ TEST(TWStellarCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeStellar, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
 
@@ -26,6 +28,7 @@ TEST(TWStellarCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeStellar));
     assertStringsEqual(symbol, "XLM");
     assertStringsEqual(txUrl, "https://stellarscan.io/transaction/t123");
+    assertStringsEqual(accUrl, "https://stellarscan.io/account/a12");
     assertStringsEqual(id, "stellar");
     assertStringsEqual(name, "Stellar");
 }

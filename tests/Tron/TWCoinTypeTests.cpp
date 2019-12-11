@@ -17,6 +17,8 @@ TEST(TWTronCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTron));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTron, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTron, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTron));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTron));
 
@@ -26,6 +28,7 @@ TEST(TWTronCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTron));
     assertStringsEqual(symbol, "TRX");
     assertStringsEqual(txUrl, "https://tronscan.org/#/transaction/t123");
+    assertStringsEqual(accUrl, "https://tronscan.org/#/address/a12");
     assertStringsEqual(id, "tron");
     assertStringsEqual(name, "Tron");
 }

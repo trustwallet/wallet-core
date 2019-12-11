@@ -17,6 +17,8 @@ TEST(TWZcoinCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcoin));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcoin, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZcoin, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcoin));
 
@@ -26,6 +28,7 @@ TEST(TWZcoinCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeZcoin));
     assertStringsEqual(symbol, "XZC");
     assertStringsEqual(txUrl, "https://explorer.zcoin.io/tx/t123");
+    assertStringsEqual(accUrl, "https://explorer.zcoin.io/address/a12");
     assertStringsEqual(id, "zcoin");
     assertStringsEqual(name, "Zcoin");
 }

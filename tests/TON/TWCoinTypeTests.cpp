@@ -17,6 +17,8 @@ TEST(TWTONCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTON));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTON, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTON, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTON));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTON));
 
@@ -26,6 +28,7 @@ TEST(TWTONCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTON));
     assertStringsEqual(symbol, "GRAM");
     assertStringsEqual(txUrl, "https://test.ton.org/testnet/transaction?hash=t123");
+    assertStringsEqual(accUrl, "https://test.ton.org/testnet/account?account=a12");
     assertStringsEqual(id, "ton");
     assertStringsEqual(name, "TON");
 }

@@ -10,8 +10,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://explorer.nebulas.io", 
-            "accountPath": "/", 
-            "txPath": "/#/tx/"
+            "txPath": "/#/tx/",
+            "accountPath": "/#/address/"
         }, 
         "info": {
             "url": "https://nebulas.io", 
@@ -362,8 +362,8 @@
         "publicKeyType": "nist256p1", 
         "explorer": {
             "url": "https://explorer.ont.io", 
-            "accountPath": "/", 
-            "txPath": "/transaction/"
+            "txPath": "/transaction/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://ont.io", 
@@ -390,8 +390,8 @@
         "xprv": "zprv", 
         "explorer": {
             "url": "https://explorer.viacoin.org", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://viacoin.org", 
@@ -410,9 +410,9 @@
         "curve": "secp256k1", 
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
-            "url": "https://poaexplorer.com", 
-            "accountPath": "/", 
-            "txPath": "/txid/search/"
+            "url": "https://blockscout.com", 
+            "txPath": "/poa/core/tx/",
+            "accountPath": "/poa/core/address/"
         }, 
         "info": {
             "url": "https://poa.network", 
@@ -432,8 +432,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://scan.thundercore.com", 
-            "accountPath": "/", 
-            "txPath": "/transactions/"
+            "txPath": "/transactions/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://thundercore.com", 
@@ -453,8 +453,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://scan.tomochain.com", 
-            "accountPath": "/", 
-            "txPath": "/txs/"
+            "txPath": "/txs/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://tomochain.com", 
@@ -474,8 +474,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://tronscan.org", 
-            "accountPath": "/", 
-            "txPath": "/#/transaction/"
+            "txPath": "/#/transaction/",
+            "accountPath": "/#/address/"
         }, 
         "info": {
             "url": "https://tron.network", 
@@ -495,8 +495,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://insight.vecha.in", 
-            "accountPath": "/", 
-            "txPath": "/#/txs/"
+            "txPath": "/#/main/txs/",
+            "accountPath": "/#/main/accounts/"
         }, 
         "info": {
             "url": "https://vechain.org", 
@@ -517,8 +517,9 @@
         "explorer": {
             "url": "https://www.wanscan.org", 
             "txPath": "/tx/",
-            "accountPath": "/", 
-            "sampleTx": "0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856"
+            "accountPath": "/address/", 
+            "sampleTx": "0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856",
+            "sampleAccount": "0x69b492d57BB777E97AA7044d0575228434E2e8b1"
         }, 
         "info": {
             "url": "https://wanchain.org", 
@@ -544,8 +545,8 @@
         "xprv": "xprv", 
         "explorer": {
             "url": "https://explorer.zcoin.io", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://zcoin.io", 
@@ -571,9 +572,9 @@
         "xpub": "xpub", 
         "xprv": "xprv", 
         "explorer": {
-            "url": "https://chain.so", 
-            "accountPath": "/", 
-            "txPath": "/tx/ZEC/"
+            "url": "https://sochain.com", 
+            "txPath": "/tx/ZEC/",
+            "accountPath": "/address/ZEC/"
         }, 
         "info": {
             "url": "https://z.cash", 
@@ -618,8 +619,10 @@
         "publicKeyType": "secp256k1", 
         "explorer": {
             "url": "https://bithomp.com", 
-            "accountPath": "/", 
-            "txPath": "/explorer/"
+            "txPath": "/explorer/",
+            "accountPath": "/explorer/",
+            "sampleTx": "E26AB8F3372D2FC02DEC1FD5674ADAB762D684BFFDBBDF5D674E9D7CF4A47054",
+            "sampleAccount": "rfkH7EuS1XcSkB9pocy1R6T8F4CsNYixYU"
         }, 
         "info": {
             "url": "https://ripple.com/xrp", 
@@ -639,8 +642,8 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://tezos.id", 
-            "accountPath": "/", 
-            "txPath": "/"
+            "txPath": "/",
+            "accountPath": "/"
         }, 
         "info": {
             "url": "https://tezos.com", 
@@ -660,8 +663,8 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://nimiq.watch", 
-            "accountPath": "/", 
-            "txPath": "/#"
+            "txPath": "/#",
+            "accountPath": "/#"
         }, 
         "info": {
             "url": "https://nimiq.com", 
@@ -681,8 +684,8 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://stellarscan.io", 
-            "accountPath": "/", 
-            "txPath": "/transaction/"
+            "txPath": "/transaction/",
+            "accountPath": "/account/"
         }, 
         "info": {
             "url": "https://stellar.org", 
@@ -744,9 +747,9 @@
         "curve": "ed25519", 
         "publicKeyType": "ed25519", 
         "explorer": {
-            "url": "https://kinexplorer.com", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "url": "https://www.kin.org", 
+            "txPath": "/blockchainInfoPage/?&dataType=public&header=Transaction&id=",
+            "accountPath": "/blockchainAccount/?&dataType=public&header=accountID&id="
         }, 
         "info": {
             "url": "https://www.kin.org", 
@@ -766,8 +769,8 @@
         "publicKeyType": "secp256k1", 
         "explorer": {
             "url": "https://nulscan.io", 
-            "accountPath": "/", 
-            "txPath": "/"
+            "txPath": "/transaction/info?hash=",
+            "accountPath": "/address/info?address="
         }, 
         "info": {
             "url": "https://nuls.io", 
@@ -787,8 +790,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://explorer.thetatoken.org", 
-            "accountPath": "/", 
-            "txPath": "/txs/"
+            "txPath": "/txs/",
+            "accountPath": "/account/"
         }, 
         "info": {
             "url": "https://www.thetatoken.org", 
@@ -815,8 +818,8 @@
         "xprv": "xprv", 
         "explorer": {
             "url": "https://qtum.info", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://qtum.org", 
@@ -881,8 +884,9 @@
         "explorer": {
             "url": "https://nanocrawler.cc", 
             "txPath": "/explorer/block/",
-            "accountPath": "/", 
-            "sampleTx": "C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F"
+            "accountPath": "/explorer/account/", 
+            "sampleTx": "C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F",
+            "sampleAccount": "nano_1wpj616kwhe1y38y1mspd8aub8i334cwybqco511iyuxm55zx8d67ptf1tsf"
         }, 
         "info": {
             "url": "https://nano.org", 
@@ -925,8 +929,8 @@
         "hrp": "zil", 
         "explorer": {
             "url": "https://viewblock.io", 
-            "accountPath": "/", 
-            "txPath": "/zilliqa/tx/"
+            "txPath": "/zilliqa/tx/",
+            "accountPath": "/zilliqa/address/"
         }, 
         "info": {
             "url": "https://zilliqa.com", 
@@ -953,8 +957,8 @@
         "xprv": "xprv", 
         "explorer": {
             "url": "https://explorer.zel.cash", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://zel.cash", 
@@ -980,8 +984,8 @@
         "xprv": "xprv", 
         "explorer": {
             "url": "https://ravencoin.network", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://ravencoin.org", 
@@ -1001,8 +1005,8 @@
         "publicKeyType": "curve25519", 
         "explorer": {
             "url": "https://wavesexplorer.com", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://wavesplatform.com", 
@@ -1044,8 +1048,8 @@
         "hrp": "terra", 
         "explorer": {
             "url": "https://terra.stake.id", 
-            "accountPath": "/", 
-            "txPath": "/?#/tx/"
+            "txPath": "/#/tx/",
+            "accountPath": "/#/address/"
         }, 
         "info": {
             "url": "https://terra.money", 
@@ -1138,8 +1142,8 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://explorer.solana.com", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/transactions/",
+            "accountPath": "/accounts/"
         }, 
         "info": {
             "url": "https://solana.com", 
@@ -1159,8 +1163,8 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://explorer.nearprotocol.com", 
-            "accountPath": "/", 
-            "txPath": ""
+            "txPath": "/transactions/",
+            "accountPath": "/accounts/"
         }, 
         "info": {
             "url": "https://nearprotocol.com", 
@@ -1203,8 +1207,8 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://test.ton.org", 
-            "accountPath": "/", 
-            "txPath": "/testnet/transaction?hash="
+            "txPath": "/testnet/transaction?hash=",
+            "accountPath": "/testnet/account?account="
         }, 
         "info": {
             "url": "https://test.ton.org", 
@@ -1245,7 +1249,11 @@
         "derivationPath": "m/44'/354'/0'", 
         "curve": "ed25519", 
         "publicKeyType": "ed25519", 
-        "explorer": "", 
+        "explorer": {
+            "url": "https://??", 
+            "txPath": "/??",
+            "accountPath": "/??"
+        },
         "info": {
             "url": "https://polkadot.network/", 
             "client": "https://github.com/paritytech/polkadot", 

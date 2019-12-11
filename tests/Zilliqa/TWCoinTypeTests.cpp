@@ -17,6 +17,8 @@ TEST(TWZilliqaCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZilliqa));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZilliqa, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZilliqa, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZilliqa));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZilliqa));
 
@@ -26,6 +28,7 @@ TEST(TWZilliqaCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeZilliqa));
     assertStringsEqual(symbol, "ZIL");
     assertStringsEqual(txUrl, "https://viewblock.io/zilliqa/tx/t123");
+    assertStringsEqual(accUrl, "https://viewblock.io/zilliqa/address/a12");
     assertStringsEqual(id, "zilliqa");
     assertStringsEqual(name, "Zilliqa");
 }

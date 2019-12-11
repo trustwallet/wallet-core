@@ -17,6 +17,8 @@ TEST(TWZelcashCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZelcash));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZelcash, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZelcash, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZelcash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZelcash));
 
@@ -26,6 +28,7 @@ TEST(TWZelcashCoinType, TWCoinType) {
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZelcash));
     assertStringsEqual(symbol, "ZEL");
     assertStringsEqual(txUrl, "https://explorer.zel.cash/tx/t123");
+    assertStringsEqual(accUrl, "https://explorer.zel.cash/address/a12");
     assertStringsEqual(id, "zelcash");
     assertStringsEqual(name, "Zelcash");
 }

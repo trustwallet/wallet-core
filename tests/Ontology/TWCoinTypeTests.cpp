@@ -17,6 +17,8 @@ TEST(TWOntologyCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeOntology));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeOntology, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeOntology, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeOntology));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeOntology));
 
@@ -26,6 +28,7 @@ TEST(TWOntologyCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeOntology));
     assertStringsEqual(symbol, "ONT");
     assertStringsEqual(txUrl, "https://explorer.ont.io/transaction/t123");
+    assertStringsEqual(accUrl, "https://explorer.ont.io/address/a12");
     assertStringsEqual(id, "ontology");
     assertStringsEqual(name, "Ontology");
 }
