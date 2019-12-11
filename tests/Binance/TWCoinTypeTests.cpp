@@ -15,7 +15,7 @@
 
 TEST(TWBinanceCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBinance));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
+    auto txId = TWStringCreateWithUTF8Bytes("A93625C9F9ABEA1A8E31585B30BBB16C34FAE0D172EB5B6B2F834AF077BF06BB");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBinance, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBinance));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBinance));
@@ -25,7 +25,7 @@ TEST(TWBinanceCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeBinance));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBinance));
     assertStringsEqual(symbol, "BNB");
-    assertStringsEqual(txUrl, "https://explorer.binance.org/tx/t123");
+    assertStringsEqual(txUrl, "https://explorer.binance.org/tx/A93625C9F9ABEA1A8E31585B30BBB16C34FAE0D172EB5B6B2F834AF077BF06BB");
     assertStringsEqual(id, "binance");
     assertStringsEqual(name, "BNB");
 }

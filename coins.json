@@ -30,9 +30,10 @@
         "curve": "secp256k1", 
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
-            "url": "https://etherscan.io", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "url": "https://etherscan.io",
+            "txPath": "/tx/",
+            "accountPath": "/address/",
+            "sampleTx": "0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f"
         }, 
         "info": {
             "url": "https://ethereum.org", 
@@ -58,9 +59,10 @@
         "xpub": "zpub", 
         "xprv": "zprv", 
         "explorer": {
-            "url": "https://blockchair.com", 
-            "accountPath": "/bitcoin/address/", 
-            "txPath": "/bitcoin/transaction/"
+            "url": "https://blockchair.com",
+            "txPath": "/bitcoin/transaction/",
+            "accountPath": "/bitcoin/address/",
+            "sampleTx": "0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2"
         }, 
         "info": {
             "url": "https://bitcoin.org", 
@@ -512,8 +514,9 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://www.wanscan.org", 
+            "txPath": "/tx/",
             "accountPath": "/", 
-            "txPath": "/tx/"
+            "sampleTx": "0x180ea96a3218b82b9b35d796823266d8a425c182507adfe5eeffc96e6a14d856"
         }, 
         "info": {
             "url": "https://wanchain.org", 
@@ -591,7 +594,8 @@
         "explorer": {
             "url": "https://explorer.binance.org", 
             "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "sampleTx": "A93625C9F9ABEA1A8E31585B30BBB16C34FAE0D172EB5B6B2F834AF077BF06BB"
         }, 
         "info": {
             "url": "https://binance.org", 
@@ -873,8 +877,9 @@
         "rpcNodeInfo": "https://github.com/nanocurrency/nano-node", 
         "explorer": {
             "url": "https://nanocrawler.cc", 
+            "txPath": "/explorer/block/",
             "accountPath": "/", 
-            "txPath": "/explorer/block/"
+            "sampleTx": "C264DB7BF40738F0CEFF19B606746CB925B713E4B8699A055699E0DC8ABBC70F"
         }, 
         "info": {
             "url": "https://nano.org", 
@@ -1215,7 +1220,8 @@
         "explorer": {
             "url": "https://kusama.subscan.io", 
             "accountPath": "/", 
-            "txPath": "/extrinsic/"
+            "txPath": "/extrinsic/",
+            "sampleTx": "0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd"
         }, 
         "info": {
             "url": "https://kusama.network", 

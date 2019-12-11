@@ -15,7 +15,7 @@
 
 TEST(TWEthereumCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereum));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
+    auto txId = TWStringCreateWithUTF8Bytes("0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereum, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereum));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereum));
@@ -25,7 +25,7 @@ TEST(TWEthereumCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeEthereum));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeEthereum));
     assertStringsEqual(symbol, "ETH");
-    assertStringsEqual(txUrl, "https://etherscan.io/tx/t123");
+    assertStringsEqual(txUrl, "https://etherscan.io/tx/0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f");
     assertStringsEqual(id, "ethereum");
     assertStringsEqual(name, "Ethereum");
 }
