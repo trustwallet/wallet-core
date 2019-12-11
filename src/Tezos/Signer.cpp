@@ -34,3 +34,11 @@ Data Signer::signData(const PrivateKey& privateKey, Data data) {
     append(signedData, signature);
     return signedData;
 }
+
+Data Signer::buildUnsignedTx(const OperationList& operationList, Data pubkey) {
+    return Data();
+}
+
+Data Signer::buildSignedTx(const OperationList& operationList, Data pubkey, Data signature) {
+    return Data();
+}
