@@ -15,7 +15,7 @@
 
 TEST(TWTONCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTON));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTON, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTON));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTON));
@@ -25,7 +25,7 @@ TEST(TWTONCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTON));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTON));
     assertStringsEqual(symbol, "GRAM");
-    assertStringsEqual(txUrl, "https://test.ton.org/testnet/transaction?hash=123");
+    assertStringsEqual(txUrl, "https://test.ton.org/testnet/transaction?hash=t123");
     assertStringsEqual(id, "ton");
     assertStringsEqual(name, "TON");
 }

@@ -15,7 +15,7 @@
 
 TEST(TWMonacoinCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeMonacoin));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeMonacoin, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeMonacoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeMonacoin));
@@ -25,7 +25,7 @@ TEST(TWMonacoinCoinType, TWCoinType) {
     ASSERT_EQ(0x37, TWCoinTypeP2shPrefix(TWCoinTypeMonacoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeMonacoin));
     assertStringsEqual(symbol, "MONA");
-    assertStringsEqual(txUrl, "https://blockbook.electrum-mona.org/tx/123");
+    assertStringsEqual(txUrl, "https://blockbook.electrum-mona.org/tx/t123");
     assertStringsEqual(id, "monacoin");
     assertStringsEqual(name, "Monacoin");
 }

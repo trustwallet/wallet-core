@@ -15,7 +15,7 @@
 
 TEST(TWTezosCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTezos));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTezos, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTezos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTezos));
@@ -25,7 +25,7 @@ TEST(TWTezosCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTezos));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTezos));
     assertStringsEqual(symbol, "XTZ");
-    assertStringsEqual(txUrl, "https://tezos.id/123");
+    assertStringsEqual(txUrl, "https://tezos.id/t123");
     assertStringsEqual(id, "tezos");
     assertStringsEqual(name, "Tezos");
 }

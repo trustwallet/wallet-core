@@ -15,7 +15,7 @@
 
 TEST(TWAlgorandCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAlgorand));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAlgorand, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
@@ -25,7 +25,7 @@ TEST(TWAlgorandCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAlgorand));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAlgorand));
     assertStringsEqual(symbol, "ALGO");
-    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/123");
+    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/t123");
     assertStringsEqual(id, "algorand");
     assertStringsEqual(name, "Algorand");
 }

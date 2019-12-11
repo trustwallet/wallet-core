@@ -15,7 +15,7 @@
 
 TEST(TWXRPCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXRP));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXRP, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXRP));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
@@ -25,7 +25,7 @@ TEST(TWXRPCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeXRP));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeXRP));
     assertStringsEqual(symbol, "XRP");
-    assertStringsEqual(txUrl, "https://bithomp.com/explorer/123");
+    assertStringsEqual(txUrl, "https://bithomp.com/explorer/t123");
     assertStringsEqual(id, "ripple");
     assertStringsEqual(name, "XRP");
 }

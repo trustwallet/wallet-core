@@ -15,7 +15,7 @@
 
 TEST(TWBravoCoinCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBravoCoin));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBravoCoin, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBravoCoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBravoCoin));
@@ -25,7 +25,7 @@ TEST(TWBravoCoinCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeBravoCoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBravoCoin));
     assertStringsEqual(symbol, "BRAVO");
-    assertStringsEqual(txUrl, "https://explorer.bravocoin.com/txid/123");
+    assertStringsEqual(txUrl, "https://explorer.bravocoin.com/txid/t123");
     assertStringsEqual(id, "bravocoin");
     assertStringsEqual(name, "BravoCoin");
 }

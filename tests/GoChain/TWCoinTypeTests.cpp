@@ -15,7 +15,7 @@
 
 TEST(TWGoChainCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGoChain));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGoChain, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGoChain));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGoChain));
@@ -25,7 +25,7 @@ TEST(TWGoChainCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeGoChain));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeGoChain));
     assertStringsEqual(symbol, "GO");
-    assertStringsEqual(txUrl, "https://explorer.gochain.io/tx/123");
+    assertStringsEqual(txUrl, "https://explorer.gochain.io/tx/t123");
     assertStringsEqual(id, "gochain");
     assertStringsEqual(name, "GoChain");
 }

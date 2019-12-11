@@ -15,7 +15,7 @@
 
 TEST(TWIoTeXCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeIoTeX));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeIoTeX, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeIoTeX));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeIoTeX));
@@ -25,7 +25,7 @@ TEST(TWIoTeXCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeIoTeX));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeIoTeX));
     assertStringsEqual(symbol, "IOTX");
-    assertStringsEqual(txUrl, "https://iotexscan.io/action/123");
+    assertStringsEqual(txUrl, "https://iotexscan.io/action/t123");
     assertStringsEqual(id, "iotex");
     assertStringsEqual(name, "IoTeX");
 }

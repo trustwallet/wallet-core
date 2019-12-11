@@ -15,7 +15,7 @@
 
 TEST(TWZcashCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcash));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, txId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcash));
@@ -25,7 +25,7 @@ TEST(TWZcashCoinType, TWCoinType) {
     ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZcash));
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZcash));
     assertStringsEqual(symbol, "ZEC");
-    assertStringsEqual(txUrl, "https://chain.so/tx/ZEC/123");
+    assertStringsEqual(txUrl, "https://chain.so/tx/ZEC/t123");
     assertStringsEqual(id, "zcash");
     assertStringsEqual(name, "Zcash");
 }
