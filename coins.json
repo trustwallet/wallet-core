@@ -59,7 +59,7 @@
         "xprv": "zprv", 
         "explorer": {
             "url": "https://blockchair.com", 
-            "accountPath": "/", 
+            "accountPath": "/bitcoin/address/", 
             "txPath": "/bitcoin/transaction/"
         }, 
         "info": {
