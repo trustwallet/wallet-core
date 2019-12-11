@@ -183,6 +183,19 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType coi
     return TWStringCreateWithUTF8Bytes(url.c_str());
 }
 
+TWString *_Nullable TWCoinTypeConfigurationGetAccountURL(enum TWCoinType coin, TWString *_Nonnull accountID) {
+    std::string url;
+    std::string accId = TWStringUTF8Bytes(accountID);
+    switch (coin) {
+<%  coins.each do |coin| -%>
+    case TWCoinType<%= format_name(coin['name']) %>:
+        url = "<%= explorer_account_url(coin) %>" + accId;
+        break;
+<% end -%>
+    }
+    return TWStringCreateWithUTF8Bytes(url.c_str());
+}
+
 TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
     std::string string;
     switch (coin) {
