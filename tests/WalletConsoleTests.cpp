@@ -278,3 +278,17 @@ TEST(WalletConsole, fileWriteRead) {
     string res3 = outputss.str().substr(pos3);
     EXPECT_TRUE(res3.find("not") != string::npos);
 }
+
+// used to fail due to incorrect public key type, see https://github.com/trustwallet/wallet-core/issues/767
+TEST(WalletConsole, harmonyAddressDerivation) {
+    cmd.executeLine("coin harmony");
+    cmd.executeLine("newKey");
+    cmd.executeLine("pubPri #");
+    auto pos0 = outputss.str().length();
+    cmd.executeLine("addrPub #");
+    string res1 = outputss.str().substr(pos0);
+    // should contain harmony address, no error
+    EXPECT_TRUE(res1.find(" one") != string::npos);
+    EXPECT_TRUE(res1.find("Result") != string::npos);
+    EXPECT_TRUE(res1.find("rror") == string::npos);
+}

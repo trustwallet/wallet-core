@@ -77,7 +77,7 @@ void Coins::scanCoinRange(int from, int to) {
         string name = TWStringUTF8Bytes(WRAPS(TWCoinTypeConfigurationGetName(c)).get());
         Util::toLower(name);
         int curve = (int)TWCoinTypeCurve(c);
-        int pubKeyType = pubKeyTypeFromCurve(curve);
+        int pubKeyType = (int)TW::publicKeyType(c);
         string derivPath = TW::derivationPath(c).string();
         Coin coin = Coin{c, id, name, symbol, curve, pubKeyType, derivPath};
         _coinsByNum[c] = coin;
@@ -85,19 +85,6 @@ void Coins::scanCoinRange(int from, int to) {
         _coinsByName[name] = coin;
         _coinsBySymbol[symbol] = coin;
     }
-}
-
-int Coins::pubKeyTypeFromCurve(int cc) {
-    TWCurve c = (TWCurve)cc;
-    TWPublicKeyType t;
-    switch (c) {
-        case TWCurveSECP256k1: t = TWPublicKeyTypeSECP256k1; break;
-        case TWCurveED25519: t = TWPublicKeyTypeED25519; break;
-        case TWCurveED25519Blake2bNano: t = TWPublicKeyTypeED25519Blake2b; break;
-        case TWCurveCurve25519: t = TWPublicKeyTypeCURVE25519; break;
-        case TWCurveNIST256p1: t = TWPublicKeyTypeNIST256p1; break;
-    }
-    return (int)t;
 }
 
 } // namespace TW::WalletConsole
