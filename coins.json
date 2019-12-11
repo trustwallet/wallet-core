@@ -112,8 +112,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://explorer2.callisto.network", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/addr/"
         }, 
         "info": {
             "url": "https://callisto.network", 
@@ -139,8 +139,8 @@
         "xprv": "xprv", 
         "explorer": {
             "url": "https://blockchair.com", 
-            "accountPath": "/", 
-            "txPath": "/dash/transaction/"
+            "txPath": "/dash/transaction/",
+            "accountPath": "/dash/address/"
         }, 
         "info": {
             "url": "https://dash.org", 
@@ -167,8 +167,8 @@
         "xprv": "dprv", 
         "explorer": {
             "url": "https://dcrdata.decred.org", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://decred.org", 
@@ -195,8 +195,8 @@
         "xprv": "zprv", 
         "explorer": {
             "url": "https://digiexplorer.info", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://www.digibyte.io", 
@@ -222,8 +222,8 @@
         "xprv": "dgpv", 
         "explorer": {
             "url": "https://blockchair.com", 
-            "accountPath": "/", 
-            "txPath": "/dogecoin/transaction/"
+            "txPath": "/dogecoin/transaction/",
+            "accountPath": "/dogecoin/address/"
         }, 
         "info": {
             "url": "https://dogecoin.com", 
@@ -243,8 +243,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://gastracker.io", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/addr/"
         }, 
         "info": {
             "url": "https://ethereumclassic.org", 
@@ -264,8 +264,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://explorer.gochain.io", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/addr/"
         }, 
         "info": {
             "url": "https://gochain.io", 
@@ -292,8 +292,8 @@
         "xprv": "zprv", 
         "explorer": {
             "url": "https://blockchair.com", 
-            "accountPath": "/", 
-            "txPath": "/groestlcoin/transaction/"
+            "txPath": "/groestlcoin/transaction/",
+            "accountPath": "/groestlcoin/address/"
         }, 
         "info": {
             "url": "https://www.groestlcoin.org", 
@@ -313,8 +313,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://tracker.icon.foundation", 
-            "accountPath": "/", 
-            "txPath": "/transaction/"
+            "txPath": "/transaction/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://icon.foundation", 
@@ -341,8 +341,8 @@
         "xprv": "zprv", 
         "explorer": {
             "url": "https://blockchair.com", 
-            "accountPath": "/", 
-            "txPath": "/litecoin/transaction/"
+            "txPath": "/litecoin/transaction/",
+            "accountPath": "/litecoin/address/"
         }, 
         "info": {
             "url": "https://litecoin.org", 
@@ -724,8 +724,8 @@
         "hrp": "cosmos", 
         "explorer": {
             "url": "https://www.mintscan.io", 
-            "accountPath": "/", 
-            "txPath": "/txs/"
+            "txPath": "/txs/",
+            "accountPath": "/account/"
         }, 
         "info": {
             "url": "https://cosmos.network", 
@@ -857,8 +857,8 @@
         "publicKeyType": "secp256k1", 
         "explorer": {
             "url": "https://bloks.io", 
-            "accountPath": "/", 
-            "txPath": "/transaction/"
+            "txPath": "/transaction/",
+            "accountPath": "/account/"
         }, 
         "info": {
             "url": "http://eos.io", 
@@ -903,8 +903,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://iotexscan.io", 
-            "accountPath": "/", 
-            "txPath": "/action/"
+            "txPath": "/action/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://iotex.io", 
@@ -1072,8 +1072,8 @@
         "xprv": "xprv", 
         "explorer": {
             "url": "https://blockbook.electrum-mona.org", 
-            "accountPath": "/", 
-            "txPath": "/tx/"
+            "txPath": "/tx/",
+            "accountPath": "/address/"
         }, 
         "info": {
             "url": "https://monacoin.org", 
@@ -1095,8 +1095,8 @@
         "rpcNodeInfo": "https://fio.foundation", 
         "explorer": {
             "url": "https://fio.foundation", 
-            "accountPath": "/", 
-            "txPath": ""
+            "txPath": "/?",
+            "accountPath": "/?"
         }, 
         "info": {
             "url": "https://fio.foundation", 
@@ -1117,8 +1117,8 @@
         "publicKeyType": "secp256k1Extended", 
         "explorer": {
             "url": "https://explorer.harmony.one", 
-            "accountPath": "/", 
-            "txPath": "/#/tx/"
+            "txPath": "/#/tx/",
+            "accountPath": "/#/address/"
         }, 
         "info": {
             "url": "https://harmony.one", 
@@ -1224,9 +1224,10 @@
         "publicKeyType": "ed25519", 
         "explorer": {
             "url": "https://kusama.subscan.io", 
-            "accountPath": "/", 
             "txPath": "/extrinsic/",
-            "sampleTx": "0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd"
+            "accountPath": "/account/",
+            "sampleTx": "0xcbe0c2e2851c1245bedaae4d52f06eaa6b4784b786bea2f0bff11af7715973dd",
+            "sampleAccount": "DbCNECPna3k6MXFWWNZa5jGsuWycqEE6zcUxZYkxhVofrFk"
         }, 
         "info": {
             "url": "https://kusama.network", 

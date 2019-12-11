@@ -17,6 +17,8 @@ TEST(TWCosmosCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCosmos));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCosmos, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCosmos, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCosmos));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCosmos));
 
@@ -26,6 +28,7 @@ TEST(TWCosmosCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeCosmos));
     assertStringsEqual(symbol, "ATOM");
     assertStringsEqual(txUrl, "https://www.mintscan.io/txs/t123");
+    assertStringsEqual(accUrl, "https://www.mintscan.io/account/a12");
     assertStringsEqual(id, "cosmos");
     assertStringsEqual(name, "Cosmos");
 }

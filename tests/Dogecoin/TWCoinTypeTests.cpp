@@ -17,6 +17,8 @@ TEST(TWDogecoinCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDogecoin));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDogecoin, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeDogecoin, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDogecoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDogecoin));
 
@@ -26,6 +28,7 @@ TEST(TWDogecoinCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeDogecoin));
     assertStringsEqual(symbol, "DOGE");
     assertStringsEqual(txUrl, "https://blockchair.com/dogecoin/transaction/t123");
+    assertStringsEqual(accUrl, "https://blockchair.com/dogecoin/address/a12");
     assertStringsEqual(id, "doge");
     assertStringsEqual(name, "Dogecoin");
 }

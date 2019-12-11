@@ -17,6 +17,8 @@ TEST(TWICONCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeICON));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeICON, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeICON, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeICON));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeICON));
 
@@ -26,6 +28,7 @@ TEST(TWICONCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeICON));
     assertStringsEqual(symbol, "ICX");
     assertStringsEqual(txUrl, "https://tracker.icon.foundation/transaction/t123");
+    assertStringsEqual(accUrl, "https://tracker.icon.foundation/address/a12");
     assertStringsEqual(id, "icon");
     assertStringsEqual(name, "ICON");
 }

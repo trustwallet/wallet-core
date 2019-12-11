@@ -17,6 +17,8 @@ TEST(TWGroestlcoinCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeGroestlcoin));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeGroestlcoin, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeGroestlcoin, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeGroestlcoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeGroestlcoin));
 
@@ -26,6 +28,7 @@ TEST(TWGroestlcoinCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeGroestlcoin));
     assertStringsEqual(symbol, "GRS");
     assertStringsEqual(txUrl, "https://blockchair.com/groestlcoin/transaction/t123");
+    assertStringsEqual(accUrl, "https://blockchair.com/groestlcoin/address/a12");
     assertStringsEqual(id, "groestlcoin");
     assertStringsEqual(name, "Groestlcoin");
 }
