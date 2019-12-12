@@ -28,6 +28,9 @@ struct TransactionPlan {
     /// Selected unspent transaction outputs.
     std::vector<Bitcoin::Proto::UnspentTransaction> utxos;
 
+    /// Zcash branch id
+    std::vector<uint8_t> branchId;
+
     TransactionPlan() = default;
 
     TransactionPlan(const Proto::TransactionPlan& plan)

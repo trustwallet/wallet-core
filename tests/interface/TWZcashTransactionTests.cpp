@@ -8,10 +8,13 @@
 #include "TWTestUtilities.h"
 
 #include "Bitcoin/OutPoint.h"
-#include "Bitcoin/TransactionBuilder.h"
+#include "Bitcoin/Script.h"
+#include "Zcash/TransactionBuilder.h"
 #include "Bitcoin/TransactionSigner.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
+#include "Data.h"
+#include "Coin.h"
 #include "Zcash/Transaction.h"
 
 #include <TrustWalletCore/TWBitcoinScript.h>
@@ -20,13 +23,13 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace Zcash;
 
 TEST(ZcashTransaction, Encode) {
     // Test vector 3 https://github.com/zcash/zips/blob/master/zip-0243.rst
     auto transaction = Zcash::Transaction();
     transaction.lockTime = 0x0004b029;
     transaction.expiryHeight = 0x0004b048;
+    transaction.branchId = Zcash::SaplingBranchID;
 
     auto outpoint0 = Bitcoin::OutPoint(parse_hex("a8c685478265f4c14dada651969c45a65e1aeb8cd6791f2f5bb6a1d9952104d9"), 1);
     transaction.inputs.emplace_back(outpoint0, Bitcoin::Script(parse_hex("483045022100a61e5d557568c2ddc1d9b03a7173c6ce7c996c4daecab007ac8f34bee01e6b9702204d38fdc0bcf2728a69fde78462a10fb45a9baa27873e6a5fc45fb5c76764202a01210365ffea3efa3908918a8b8627724af852fc9b86d7375b103ab0543cf418bcaa7f")), 0xfffffffe);
@@ -37,7 +40,7 @@ TEST(ZcashTransaction, Encode) {
     auto script1 = Bitcoin::Script(parse_hex("76a9145453e4698f02a38abdaa521cd1ff2dee6fac187188ac"));
     transaction.outputs.emplace_back(0x0098958b, script1);
 
-    auto unsignedData = std::vector<uint8_t>();
+    auto unsignedData = Data{};
     transaction.encode(unsignedData);
 
     ASSERT_EQ(hex(unsignedData.begin(), unsignedData.end()),
@@ -79,7 +82,7 @@ TEST(ZcashTransaction, Encode) {
     ASSERT_EQ(hex(sighash.begin(), sighash.end()), "f3148f80dfab5e573d5edfe7a850f5fd39234f80b5429d3a57edcc11e34c585b");
 }
 
-TEST(ZcashTransaction, Signing) {
+TEST(ZcashTransaction, SaplingSigning) {
     // tx on mainnet
     // https://explorer.zcha.in/transactions/ec9033381c1cc53ada837ef9981c03ead1c7c41700ff3a954389cfaddc949256
     const int64_t amount = 488000;
@@ -103,13 +106,14 @@ TEST(ZcashTransaction, Signing) {
     auto utxoKey0 = DATA("a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559");
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
-    auto plan = Bitcoin::TransactionBuilder::plan(input);
+    auto plan = Zcash::TransactionBuilder::plan(input);
     plan.amount = amount;
     plan.fee = fee;
     plan.change = 0;
+    plan.branchId = Data(Zcash::SaplingBranchID.begin(), Zcash::SaplingBranchID.end());
 
     // Sign
-    auto result = TW::Bitcoin::TransactionSigner<Transaction>(std::move(input), plan).sign();
+    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input), plan).sign();
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
@@ -131,4 +135,49 @@ TEST(ZcashTransaction, Signing) {
         "00"
         "00"
     );
+}
+
+TEST(ZcashTransaction, BlossomSigning) {
+    // tx on mainnet
+    // https://explorer.zcha.in/transactions/387939ff8eb07dd264376eeef2e126394ab139802b1d80e92b21c1a2ae54fe92
+    const int64_t amount = 17615;
+    const int64_t fee = 10000;
+    const std::string toAddress = "t1biXYN8wJahR76SqZTe1LBzTLf3JAsmT93";
+
+    auto input = Bitcoin::Proto::SigningInput();
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(amount);
+    input.set_byte_fee(1);
+    input.set_to_address(toAddress);
+    input.set_coin_type(TWCoinTypeZcash);
+
+    auto txHash0 = parse_hex("2381825cd9069a200944996257e25b9403ba3e296bbc1dd98b01019cc7028cde");
+    std::reverse(txHash0.begin(), txHash0.end());
+
+    auto utxo0 = input.add_utxo();
+    utxo0->mutable_out_point()->set_hash(txHash0.data(), txHash0.size());
+    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+    utxo0->set_amount(27615);
+
+    // real key 1p "m/44'/133'/0'/0/14"
+    auto utxoKey0 = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    auto utxoAddr0 = TW::deriveAddress(TWCoinTypeZcash, utxoKey0);
+    auto script0 = Bitcoin::Script::buildForAddress(utxoAddr0, TWCoinTypeZcash);
+    utxo0->set_script(script0.bytes.data(), script0.bytes.size());
+    input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
+
+    auto plan = Zcash::TransactionBuilder::plan(input);
+    plan.amount = amount;
+    plan.fee = fee;
+    plan.change = 0;
+
+    // Sign
+    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input), plan).sign();
+    ASSERT_TRUE(result) << result.error();
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(serialized);
+    ASSERT_EQ(hex(serialized), "0400008085202f8901de8c02c79c01018bd91dbc6b293eba03945be25762994409209a06d95c828123000000006b483045022100e6e5071811c08d0c2e81cb8682ee36a8c6b645f5c08747acd3e828de2a4d8a9602200b13b36a838c7e8af81f2d6e7e694ede28833a480cfbaaa68a47187655298a7f0121024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382ffffffff01cf440000000000001976a914c3bacb129d85288a3deb5890ca9b711f7f71392688ac00000000000000000000000000000000000000");
 }

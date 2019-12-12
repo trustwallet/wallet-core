@@ -61,7 +61,7 @@ TEST(MonacoinTransaction, SignTransaction) {
     plan.fee = fee;
     plan.change = utxo_amount - amount - fee;
 
-    auto signer = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input), plan);
+    auto signer = Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuilder>(std::move(input), plan);
     auto result = signer.sign();
     auto signedTx = result.payload();
 
