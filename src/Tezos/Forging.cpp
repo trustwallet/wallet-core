@@ -49,18 +49,21 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
 
 // Forge the given public key into a hex encoded string.
 Data forgePublicKey(PublicKey publicKey) {
+    std::string tag;
     std::array<uint8_t, 4> prefix;
     if (publicKey.type == TWPublicKeyTypeED25519) {
         prefix = {13, 15, 37, 217};
+        tag = "00";
     } else if (publicKey.type == TWPublicKeyTypeSECP256k1) {
         prefix = {3, 254, 226, 86};
+        tag = "01";
     }
     auto data = Data(prefix.begin(), prefix.end());
     auto bytes = Data(publicKey.bytes.begin(), publicKey.bytes.end());
     append(data, bytes);
 
     auto pk = Base58::bitcoin.encodeCheck(data);
-    auto decoded = "00" + base58ToHex(pk, 4, prefix.data());
+    auto decoded = tag + base58ToHex(pk, 4, prefix.data());
     return parse_hex(decoded);
 }
 
