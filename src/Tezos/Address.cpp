@@ -42,7 +42,14 @@ bool Address::isValid(const std::string& string) {
 Address::Address(const PublicKey& publicKey) {
     auto encoded = Data(publicKey.bytes.begin(), publicKey.bytes.end());
     auto hash = Hash::blake2b(encoded, 20);
-    auto addressData = Data({6, 161, 159});
+    Data addressData;
+    if (publicKey.type == TWPublicKeyTypeSECP256k1) {
+        addressData = Data({6, 161, 161});
+    } else if (publicKey.type == TWPublicKeyTypeED25519){
+        addressData = Data({6, 161, 159});
+    } else {
+        throw std::invalid_argument("unsupported public key type");
+    }
     append(addressData, hash);
     if (addressData.size() != Address::size)
         throw std::invalid_argument("Invalid address key data");

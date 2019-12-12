@@ -36,27 +36,24 @@ TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput data)
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TWData *_Nonnull TWTezosSignerMessage(TW_Tezos_Proto_SigningInput data, TWData *_Nonnull pubkey) {
+TWData *_Nonnull TWTezosSignerMessage(TW_Tezos_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-
-    Data publicKey(TWDataBytes(pubkey), TWDataBytes(pubkey) + TWDataSize(pubkey));
 
     auto operationList = TW::Tezos::OperationList(input.operation_list().branch());
     for (TW::Tezos::Proto::Operation operation : input.operation_list().operations()) {
         operationList.addOperation(operation);
     }
 
-    auto serialized = Signer().buildUnsignedTx(operationList, publicKey);
+    auto serialized = Signer().buildUnsignedTx(operationList);
 
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TWData *_Nonnull TWTezosSignerTransaction(TW_Tezos_Proto_SigningInput data, TWData *_Nonnull pubkey, TWData *_Nonnull sig) {
+TWData *_Nonnull TWTezosSignerTransaction(TW_Tezos_Proto_SigningInput data, TWData *_Nonnull sig) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
-    Data publicKey(TWDataBytes(pubkey), TWDataBytes(pubkey) + TWDataSize(pubkey));
     Data signature(TWDataBytes(sig), TWDataBytes(sig) + TWDataSize(sig));
 
     auto operationList = TW::Tezos::OperationList(input.operation_list().branch());
@@ -64,7 +61,7 @@ TWData *_Nonnull TWTezosSignerTransaction(TW_Tezos_Proto_SigningInput data, TWDa
         operationList.addOperation(operation);
     }
 
-    auto serialized = Signer().buildSignedTx(operationList, publicKey, signature);
+    auto serialized = Signer().buildSignedTx(operationList, signature);
 
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
