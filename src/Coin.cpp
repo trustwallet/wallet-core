@@ -23,12 +23,14 @@
 #include "Harmony/Address.h"
 #include "Icon/Address.h"
 #include "IoTeX/Address.h"
+#include "Kusama/Address.h"
 #include "NEAR/Address.h"
+#include "NULS/Address.h"
 #include "Nano/Address.h"
 #include "Nebulas/Address.h"
 #include "Nimiq/Address.h"
-#include "NULS/Address.h"
 #include "Ontology/Address.h"
+#include "Polkadot/Address.h"
 #include "Ripple/Address.h"
 #include "Ripple/XAddress.h"
 #include "Solana/Address.h"
@@ -40,8 +42,6 @@
 #include "Waves/Address.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
-#include "Kusama/Address.h"
-#include "Polkadot/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 
@@ -50,7 +50,7 @@
 
 using namespace TW;
 
-bool TW::validateAddress(TWCoinType coin, const std::string &string) {
+bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
     auto hrp = stringForHRP(TW::hrp(coin));
@@ -129,8 +129,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Nimiq::Address::isValid(string);
 
     case TWCoinTypeXRP:
-        return Ripple::Address::isValid(string) ||
-               Ripple::XAddress::isValid(string);
+        return Ripple::Address::isValid(string) || Ripple::XAddress::isValid(string);
 
     case TWCoinTypeStellar:
     case TWCoinTypeKin:
@@ -178,18 +177,18 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeKusama:
         return Kusama::Address::isValid(string);
-    
+
     case TWCoinTypePolkadot:
         return Polkadot::Address::isValid(string);
     }
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PrivateKey &privateKey) {
+std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
     auto keyType = TW::publicKeyType(coin);
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType));
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto hrp = stringForHRP(TW::hrp(coin));
 
@@ -288,7 +287,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeNULS:
         return NULS::Address(publicKey).string();
-        
+
     case TWCoinTypeNEAR:
         return NEAR::Address(publicKey).string();
 

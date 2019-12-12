@@ -19,7 +19,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace Bitcoin;
+using namespace TW::Bitcoin;
 
 TEST(DigiByteTransaction, SignTransaction) {
     /*
@@ -60,7 +60,7 @@ TEST(DigiByteTransaction, SignTransaction) {
     plan.change = utxo_amount - amount - fee;
 
     // Sign
-    auto signer = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input), plan);
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input), plan);
     auto result = signer.sign();
     auto signedTx = result.payload();
 
@@ -118,7 +118,7 @@ TEST(DigiByteTransaction, SignP2WPKH) {
     utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
 
-    auto result = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input)).sign();
+    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 

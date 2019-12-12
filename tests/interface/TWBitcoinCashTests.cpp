@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
+using namespace TW::Bitcoin;
 
 TEST(BitcoinCash, Address) {
     EXPECT_TRUE(TWBitcoinCashAddressIsValidString(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get()));
@@ -96,7 +97,7 @@ TEST(BitcoinCash, SignTransaction) {
     // Transaction on Bitcoin Cash Mainnet
     // https://blockchair.com/bitcoin-cash/transaction/96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4
 
-    auto input = Bitcoin::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_hash_type(TWBitcoinSigHashTypeFork | TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
@@ -116,7 +117,7 @@ TEST(BitcoinCash, SignTransaction) {
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
     // Sign
-    auto signer = TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction>(std::move(input));
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
     auto result = signer.sign();
     auto signedTx = result.payload();
 

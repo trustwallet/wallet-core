@@ -8,6 +8,7 @@
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"
+#include  "../HexCoding.h"
 
 #include <cassert>
 
@@ -22,8 +23,10 @@ const auto joinsplitsHashPersonalization = Data({'Z','c','a','s','h','J','S','p'
 const auto shieldedSpendHashPersonalization = Data({'Z','c','a','s','h','S','S','p','e','n','d','s','H','a','s','h'});
 const auto shieldedOutputsHashPersonalization = Data({'Z','c','a','s','h','S','O','u','t','p','u','t','H','a','s','h'});
 
-/// See also https://github.com/zcash/zcash/blob/36243f41f1d8df98bdc834825ba539263f1da121/src/consensus/upgrades.cpp#L28
-constexpr std::array<byte, 4> saplingBranchID = {0xbb, 0x09, 0xb8, 0x76};
+/// See https://github.com/zcash/zips/blob/master/zip-0205.rst#sapling-deployment BRANCH_ID section
+const std::array<byte, 4> Zcash::SaplingBranchID = {0xbb, 0x09, 0xb8, 0x76};
+/// See https://github.com/zcash/zips/blob/master/zip-0206.rst#blossom-deployment BRANCH_ID section
+const std::array<byte, 4> Zcash::BlossomBranchID = {0x60, 0x0e, 0xb4, 0x2b};
 
 Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                               uint64_t amount) const {
@@ -95,7 +98,7 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, e
     // The input being signed (replacing the scriptSig with scriptCode + amount)
     // The prevout may already be contained in hashPrevout, and the nSequence
     // may already be contain in hashSequence.
-    reinterpret_cast<const TW::Bitcoin::OutPoint&>(inputs[index].previousOutput).encode(data);
+    reinterpret_cast<const Bitcoin::OutPoint&>(inputs[index].previousOutput).encode(data);
     scriptCode.encode(data);
 
     encode64LE(amount, data);
@@ -182,10 +185,9 @@ Data Transaction::getSignatureHash(const Bitcoin::Script& scriptCode, size_t ind
     personalization.reserve(16);
     std::copy(sigHashPersonalization.begin(), sigHashPersonalization.begin() + 12,
               std::back_inserter(personalization));
-    std::copy(saplingBranchID.begin(), saplingBranchID.end(), std::back_inserter(personalization));
-
+    std::copy(branchId.begin(), branchId.end(), std::back_inserter(personalization));
     auto preimage = getPreImage(scriptCode, index, hashType, amount);
-    auto hash = TW::Hash::blake2b(preimage, 32, personalization);
+    auto hash = Hash::blake2b(preimage, 32, personalization);
     return hash;
 }
 
