@@ -38,7 +38,8 @@ struct TransactionPlan {
         , availableAmount(plan.available_amount())
         , fee(plan.fee())
         , change(plan.change())
-        , utxos(plan.utxos().begin(), plan.utxos().end()) {}
+        , utxos(plan.utxos().begin(), plan.utxos().end())
+        , branchId(plan.branch_id().begin(), plan.branch_id().end()) {}
 
     Proto::TransactionPlan proto() const {
         auto plan = Proto::TransactionPlan();
@@ -47,6 +48,7 @@ struct TransactionPlan {
         plan.set_fee(fee);
         plan.set_change(change);
         *plan.mutable_utxos() = {utxos.begin(), utxos.end()};
+        plan.set_branch_id(branchId.data(), branchId.size());
         return plan;
     }
 };

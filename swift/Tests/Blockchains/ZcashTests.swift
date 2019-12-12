@@ -39,4 +39,40 @@ class ZcashTests: XCTestCase {
 
         XCTAssertEqual(address.description, "t1TKCtCETHPrAdA6eY1fdhhnTkTmb371oPt")
     }
+
+    func testSign() throws {
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.amount = 494000
+                $0.outPoint = BitcoinOutPoint.with {
+                    $0.hash = Data(hexString: "53685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a")!
+                    $0.index = 0
+                    $0.sequence = UINT32_MAX
+                }
+                $0.script = Data(hexString: "76a914f84c7f4dd3c3dc311676444fdead6e6d290d50e388ac")!
+            }
+        ]
+        let input = BitcoinSigningInput.with {
+            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.amount = 488000
+            $0.byteFee = 1
+            $0.toAddress = "t1QahNjDdibyE4EdYkawUSKBBcVTSqv64CS"
+            $0.coinType = CoinType.zcash.rawValue
+            $0.privateKey = [Data(hexString: "a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559")!]
+        }
+        let plan = BitcoinTransactionPlan.with {
+            $0.amount = 488000
+            $0.fee = 6000
+            $0.change = 0
+            $0.branchID = Data(hexString: "0xbb09b876")!
+            $0.utxos = utxos
+        }
+
+        let signer = ZcashTransactionSigner(input: input, plan: plan)
+        let result = signer.sign()
+        let output = try BitcoinSigningOutput(unpackingAny: result.objects[0])
+
+        XCTAssertTrue(result.success)
+        XCTAssertEqual(output.encoded.hexString, "0400008085202f890153685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a000000006b483045022100ca0be9f37a4975432a52bb65b25e483f6f93d577955290bb7fb0060a93bfc92002203e0627dff004d3c72a957dc9f8e4e0e696e69d125e4d8e275d119001924d3b48012103b243171fae5516d1dc15f9178cfcc5fdc67b0a883055c117b01ba8af29b953f6ffffffff0140720700000000001976a91449964a736f3713d64283fd0018626ba50091c7e988ac00000000000000000000000000000000000000")
+    }
 }
