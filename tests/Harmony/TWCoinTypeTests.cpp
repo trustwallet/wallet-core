@@ -15,8 +15,10 @@
 
 TEST(TWHarmonyCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeHarmony));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeHarmony, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeHarmony, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeHarmony));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeHarmony));
 
@@ -25,7 +27,8 @@ TEST(TWHarmonyCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeHarmony));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeHarmony));
     assertStringsEqual(symbol, "ONE");
-    assertStringsEqual(txUrl, "https://explorer.harmony.one/#/tx/123");
+    assertStringsEqual(txUrl, "https://explorer.harmony.one/#/tx/t123");
+    assertStringsEqual(accUrl, "https://explorer.harmony.one/#/address/a12");
     assertStringsEqual(id, "harmony");
     assertStringsEqual(name, "Harmony");
 }

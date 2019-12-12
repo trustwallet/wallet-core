@@ -15,8 +15,10 @@
 
 TEST(TWAlgorandCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAlgorand));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAlgorand, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAlgorand, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAlgorand));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAlgorand));
 
@@ -25,7 +27,8 @@ TEST(TWAlgorandCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAlgorand));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAlgorand));
     assertStringsEqual(symbol, "ALGO");
-    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/123");
+    assertStringsEqual(txUrl, "https://algoexplorer.io/tx/CR7POXFTYDLC7TV3IXHA7AZKWABUJC52BACLHJQNXAKZJGRPQY3A");
+    assertStringsEqual(accUrl, "https://algoexplorer.io/address/J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM");
     assertStringsEqual(id, "algorand");
     assertStringsEqual(name, "Algorand");
 }

@@ -15,8 +15,10 @@
 
 TEST(TWNimiqCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeNimiq));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeNimiq, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeNimiq, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeNimiq));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeNimiq));
 
@@ -25,7 +27,8 @@ TEST(TWNimiqCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeNimiq));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeNimiq));
     assertStringsEqual(symbol, "NIM");
-    assertStringsEqual(txUrl, "https://nimiq.watch/#123");
+    assertStringsEqual(txUrl, "https://nimiq.watch/#t123");
+    assertStringsEqual(accUrl, "https://nimiq.watch/#a12");
     assertStringsEqual(id, "nimiq");
     assertStringsEqual(name, "Nimiq");
 }

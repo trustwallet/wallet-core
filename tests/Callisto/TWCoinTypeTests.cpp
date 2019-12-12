@@ -15,8 +15,10 @@
 
 TEST(TWCallistoCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeCallisto));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeCallisto, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeCallisto, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCallisto));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCallisto));
 
@@ -25,7 +27,8 @@ TEST(TWCallistoCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeCallisto));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeCallisto));
     assertStringsEqual(symbol, "CLO");
-    assertStringsEqual(txUrl, "https://explorer2.callisto.network/tx/123");
+    assertStringsEqual(txUrl, "https://explorer2.callisto.network/tx/t123");
+    assertStringsEqual(accUrl, "https://explorer2.callisto.network/addr/a12");
     assertStringsEqual(id, "callisto");
     assertStringsEqual(name, "Callisto");
 }

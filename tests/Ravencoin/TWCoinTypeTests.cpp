@@ -15,8 +15,10 @@
 
 TEST(TWRavencoinCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeRavencoin));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeRavencoin, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeRavencoin, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRavencoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRavencoin));
 
@@ -25,7 +27,8 @@ TEST(TWRavencoinCoinType, TWCoinType) {
     ASSERT_EQ(0x7a, TWCoinTypeP2shPrefix(TWCoinTypeRavencoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeRavencoin));
     assertStringsEqual(symbol, "RVN");
-    assertStringsEqual(txUrl, "https://ravencoin.network/tx/123");
+    assertStringsEqual(txUrl, "https://ravencoin.network/tx/t123");
+    assertStringsEqual(accUrl, "https://ravencoin.network/address/a12");
     assertStringsEqual(id, "ravencoin");
     assertStringsEqual(name, "Ravencoin");
 }

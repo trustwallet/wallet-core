@@ -15,8 +15,10 @@
 
 TEST(TWThetaCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTheta));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTheta, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTheta, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTheta));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTheta));
 
@@ -25,7 +27,8 @@ TEST(TWThetaCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTheta));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTheta));
     assertStringsEqual(symbol, "THETA");
-    assertStringsEqual(txUrl, "https://explorer.thetatoken.org/txs/123");
+    assertStringsEqual(txUrl, "https://explorer.thetatoken.org/txs/t123");
+    assertStringsEqual(accUrl, "https://explorer.thetatoken.org/account/a12");
     assertStringsEqual(id, "theta");
     assertStringsEqual(name, "Theta");
 }

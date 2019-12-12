@@ -15,8 +15,10 @@
 
 TEST(TWXRPCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXRP));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("E26AB8F3372D2FC02DEC1FD5674ADAB762D684BFFDBBDF5D674E9D7CF4A47054");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXRP, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("rfkH7EuS1XcSkB9pocy1R6T8F4CsNYixYU");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeXRP, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXRP));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
 
@@ -25,7 +27,8 @@ TEST(TWXRPCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeXRP));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeXRP));
     assertStringsEqual(symbol, "XRP");
-    assertStringsEqual(txUrl, "https://bithomp.com/explorer/123");
+    assertStringsEqual(txUrl, "https://bithomp.com/explorer/E26AB8F3372D2FC02DEC1FD5674ADAB762D684BFFDBBDF5D674E9D7CF4A47054");
+    assertStringsEqual(accUrl, "https://bithomp.com/explorer/rfkH7EuS1XcSkB9pocy1R6T8F4CsNYixYU");
     assertStringsEqual(id, "ripple");
     assertStringsEqual(name, "XRP");
 }

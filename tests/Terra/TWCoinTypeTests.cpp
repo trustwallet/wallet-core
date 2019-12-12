@@ -15,8 +15,10 @@
 
 TEST(TWTerraCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeTerra));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeTerra, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeTerra, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeTerra));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeTerra));
 
@@ -25,7 +27,8 @@ TEST(TWTerraCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTerra));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTerra));
     assertStringsEqual(symbol, "LUNA");
-    assertStringsEqual(txUrl, "https://terra.stake.id/?#/tx/123");
+    assertStringsEqual(txUrl, "https://terra.stake.id/#/tx/t123");
+    assertStringsEqual(accUrl, "https://terra.stake.id/#/address/a12");
     assertStringsEqual(id, "terra");
     assertStringsEqual(name, "Terra");
 }

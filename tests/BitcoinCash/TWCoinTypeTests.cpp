@@ -15,8 +15,10 @@
 
 TEST(TWBitcoinCashCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeBitcoinCash));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeBitcoinCash, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeBitcoinCash, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeBitcoinCash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeBitcoinCash));
 
@@ -25,7 +27,8 @@ TEST(TWBitcoinCashCoinType, TWCoinType) {
     ASSERT_EQ(0x5, TWCoinTypeP2shPrefix(TWCoinTypeBitcoinCash));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeBitcoinCash));
     assertStringsEqual(symbol, "BCH");
-    assertStringsEqual(txUrl, "https://blockchair.com/bitcoin-cash/transaction/123");
+    assertStringsEqual(txUrl, "https://blockchair.com/bitcoin-cash/transaction/t123");
+    assertStringsEqual(accUrl, "https://blockchair.com/bitcoin-cash/address/a12");
     assertStringsEqual(id, "bitcoincash");
     assertStringsEqual(name, "Bitcoin Cash");
 }
