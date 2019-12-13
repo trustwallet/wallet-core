@@ -49,13 +49,21 @@ Data forgePublicKeyHash(const std::string& publicKeyHash) {
 
 // Forge the given public key into a hex encoded string.
 Data forgePublicKey(PublicKey publicKey) {
-    std::array<uint8_t, 4> prefix = {13, 15, 37, 217};
+    std::string tag;
+    std::array<uint8_t, 4> prefix;
+    if (publicKey.type == TWPublicKeyTypeED25519) {
+        prefix = {13, 15, 37, 217};
+        tag = "00";
+    } else if (publicKey.type == TWPublicKeyTypeSECP256k1) {
+        prefix = {3, 254, 226, 86};
+        tag = "01";
+    }
     auto data = Data(prefix.begin(), prefix.end());
     auto bytes = Data(publicKey.bytes.begin(), publicKey.bytes.end());
     append(data, bytes);
 
     auto pk = Base58::bitcoin.encodeCheck(data);
-    auto decoded = "00" + base58ToHex(pk, 4, prefix.data());
+    auto decoded = tag + base58ToHex(pk, 4, prefix.data());
     return parse_hex(decoded);
 }
 
@@ -81,7 +89,15 @@ Data forgeOperation(const Operation& operation) {
     auto forgedStorageLimit = forgeZarith(operation.storage_limit());
 
     if (operation.kind() == Operation_OperationKind_REVEAL) {
-        auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), TWPublicKeyTypeED25519);
+        enum TWPublicKeyType type;
+        if (operation.reveal_operation_data().public_key().size() == 32) {
+            type = TWPublicKeyTypeED25519;
+        } else if (operation.reveal_operation_data().public_key().size() == 33) {
+            type = TWPublicKeyTypeSECP256k1;
+        } else {
+            throw std::invalid_argument("unsupported public key type");
+        }
+        auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), type);
         auto forgedPublicKey = forgePublicKey(publicKey);
         
         forged.push_back(Operation_OperationKind_REVEAL);

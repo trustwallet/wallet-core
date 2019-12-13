@@ -18,6 +18,7 @@ class OperationList {
     void addOperation(const Operation& transaction);
     /// Returns a data representation of the operations.
     Data forge(const PrivateKey& privateKey) const;
+    Data forge() const;
     Data forgeBranch() const;
 };
 

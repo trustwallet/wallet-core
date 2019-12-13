@@ -20,4 +20,12 @@ struct TWTezosSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Tezos_Proto_SigningOutput TWTezosSignerSign(TW_Tezos_Proto_SigningInput input);
 
+/// Builds a message to be signed
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWTezosSignerMessage(TW_Tezos_Proto_SigningInput input);
+
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWTezosSignerTransaction(TW_Tezos_Proto_SigningInput input, TWData *_Nonnull signature);
+
 TW_EXTERN_C_END
