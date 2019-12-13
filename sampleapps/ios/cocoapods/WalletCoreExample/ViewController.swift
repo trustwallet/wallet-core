@@ -50,14 +50,14 @@ class ViewController: NSViewController {
             "\",\"gasLimit\":\"" + gasLimitB64 +
             "\",\"toAddress\":\"" + dummyReceiverAddress +
             "\",\"amount\":\"" + amountB64 + "\"}"
-        print("transaction: ", transaction);
+        print("transaction: ", transaction)
         let anySignerInput = AnySigningInput.with {
             $0.coinType = coin.rawValue
             $0.transaction = transaction
             $0.privateKey = secretPrivateKeyHex
         }
         let anySignerOutput = AnySigner.sign(input: anySignerInput)
-        if (!anySignerOutput.success) {
+        if !anySignerOutput.success {
             print("Error:", anySignerOutput.error)
         } else {
             print("Signed transaction data:", anySignerOutput.output)
