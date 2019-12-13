@@ -36,3 +36,14 @@ coverage/
 # Sourcetrail
 *.srctrldb
 *.srctrlbm
+
+# Samples -- iOS
+Pods/
+# Samples -- C++
+# build
+sampleapps/cpp/CMakeFiles
+sampleapps/cpp/CMakeCache.txt
+sampleapps/cpp/Makefile
+sampleapps/cpp/*.cmake
+# built binary
+sampleapps/cpp/sample
