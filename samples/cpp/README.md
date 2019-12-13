@@ -29,11 +29,11 @@ You need to [build](https://developer.trustwallet.com/wallet-core/building) the 
 
 ## Building and Running
 
-Go to the **sampleapps/cpp** folder within wallet core repo:
+Go to the **samples/cpp** folder within wallet core repo:
 
 ```shell
 git clone https://github.com/trustwallet/wallet-core.git
-cd wallet-core/sampleapps/cpp
+cd wallet-core/samples/cpp
 ```
 
 Configure and build -- path to the top-level Wallet Core library folder is needed:

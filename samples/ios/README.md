@@ -27,11 +27,11 @@ and [Build Instructions](https://developer.trustwallet.com/wallet-core/building)
 
 ## Building and Running
 
-Go to the **sampleapps/ios/cocoapods** folder within wallet core repo:
+Go to the **samples/ios/cocoapods** folder within wallet core repo:
 
 ```shell
 git clone https://github.com/trustwallet/wallet-core.git
-cd wallet-core/sampleapps/ios/cocoapods
+cd wallet-core/samples/ios/cocoapods
 ```
 
 Install dependencies with CocoaPods:

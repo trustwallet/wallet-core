@@ -41,9 +41,9 @@ coverage/
 Pods/
 # Samples -- C++
 # build
-sampleapps/cpp/CMakeFiles
-sampleapps/cpp/CMakeCache.txt
-sampleapps/cpp/Makefile
-sampleapps/cpp/*.cmake
+samples/cpp/CMakeFiles
+samples/cpp/CMakeCache.txt
+samples/cpp/Makefile
+samples/cpp/*.cmake
 # built binary
-sampleapps/cpp/sample
+samples/cpp/sample
