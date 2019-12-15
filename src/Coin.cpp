@@ -180,6 +180,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypePolkadot:
         return Polkadot::Address::isValid(string);
+
+    case TWCoinTypeCardano:
+        return true; // TODO
     }
 }
 
@@ -314,6 +317,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypePolkadot:
         return Polkadot::Address(publicKey).string();
+
+    case TWCoinTypeCardano:
+        return "adaddr";
     }
 }
 

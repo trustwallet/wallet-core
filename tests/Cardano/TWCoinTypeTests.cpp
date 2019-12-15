@@ -22,7 +22,7 @@ TEST(TWCardanoCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeCardano));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeCardano));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCardano), 8);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeCardano), 6);
     ASSERT_EQ(TWBlockchainCardano, TWCoinTypeBlockchain(TWCoinTypeCardano));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeCardano));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeCardano));

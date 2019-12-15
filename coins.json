@@ -1265,7 +1265,7 @@
         "id": "cardano", 
         "name": "Cardano", 
         "symbol": "ADA", 
-        "decimals": 8, 
+        "decimals": 6, 
         "blockchain": "Cardano", 
         "derivationPath": "m/44'/1815'/0'", 
         "curve": "ed25519", 
