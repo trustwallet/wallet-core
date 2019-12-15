@@ -43,19 +43,16 @@ class ZcashTests: XCTestCase {
     func testSign() throws {
         let utxos = [
             BitcoinUnspentTransaction.with {
+                $0.outPoint.hash = Data(hexString: "53685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a")!
+                $0.outPoint.index = 0
+                $0.outPoint.sequence = UINT32_MAX
                 $0.amount = 494000
-                $0.outPoint = BitcoinOutPoint.with {
-                    $0.hash = Data(hexString: "53685b8809efc50dd7d5cb0906b307a1b8aa5157baa5fc1bd6fe2d0344dd193a")!
-                    $0.index = 0
-                    $0.sequence = UINT32_MAX
-                }
                 $0.script = Data(hexString: "76a914f84c7f4dd3c3dc311676444fdead6e6d290d50e388ac")!
             }
         ]
         let input = BitcoinSigningInput.with {
             $0.hashType = BitcoinSigHashType.all.rawValue
             $0.amount = 488000
-            $0.byteFee = 1
             $0.toAddress = "t1QahNjDdibyE4EdYkawUSKBBcVTSqv64CS"
             $0.coinType = CoinType.zcash.rawValue
             $0.privateKey = [Data(hexString: "a9684f5bebd0e1208aae2e02bc9e9163bd1965ad23d8538644e1df8b99b99559")!]

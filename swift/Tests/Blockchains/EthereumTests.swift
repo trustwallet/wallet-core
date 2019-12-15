@@ -9,7 +9,7 @@ import TrustWalletCore
 
 class EthereumTests: XCTestCase {
     func testSigner() {
-        let input = TW_Ethereum_Proto_SigningInput.with {
+        let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: "09")!
             $0.gasPrice = Data(hexString: "04a817c800")!

@@ -34,17 +34,17 @@ class TezosTests: XCTestCase {
 
         let branch = "BL8euoCWqNCny9AR3AKjnpi38haYMxjei1ZqNHuXMn19JSQnoWp"
 
-        var operationList = TW_Tezos_Proto_OperationList()
+        var operationList = TezosOperationList()
         operationList.branch = branch;
 
-        var revealOperationData = TW_Tezos_Proto_RevealOperationData();
+        var revealOperationData = TezosRevealOperationData();
         revealOperationData.publicKey = publicKey.data
 
-        var transactionOperationData = TW_Tezos_Proto_TransactionOperationData()
+        var transactionOperationData = TezosTransactionOperationData()
         transactionOperationData.amount = 1
         transactionOperationData.destination = "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"
 
-        var revealOperation = TW_Tezos_Proto_Operation()
+        var revealOperation = TezosOperation()
         revealOperation.source = "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"
         revealOperation.fee = 1272
         revealOperation.counter = 30738
@@ -53,7 +53,7 @@ class TezosTests: XCTestCase {
         revealOperation.kind = .reveal
         revealOperation.revealOperationData = revealOperationData
 
-        var transactionOperation = TW_Tezos_Proto_Operation()
+        var transactionOperation = TezosOperation()
         transactionOperation.source = "tz1XVJ8bZUXs7r5NV8dHvuiBhzECvLRLR3jW"
         transactionOperation.fee = 1272
         transactionOperation.counter = 30739
@@ -69,7 +69,7 @@ class TezosTests: XCTestCase {
             81, 207, 184, 68, 12, 40, 189, 111
         ]
 
-        var signingInput = TW_Tezos_Proto_SigningInput()
+        var signingInput = TezosSigningInput()
         signingInput.operationList = operationList
         signingInput.privateKey = Data(privateKeyBytes)
 
