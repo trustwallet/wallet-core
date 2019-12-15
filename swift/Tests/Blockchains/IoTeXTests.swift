@@ -17,7 +17,7 @@ class IoTeXTests: XCTestCase {
             $0.nonce = 1
             $0.gasLimit = 1
             $0.gasPrice = "1"
-            $0.transfer = TW_IoTeX_Proto_Transfer.with {
+            $0.transfer = IoTeXTransfer.with {
                 $0.amount = "1"
                 $0.recipient = IoTeXAddress(string: "io1e2nqsyt7fkpzs5x7zf2uk0jj72teu5n6aku3tr")!.description
             }

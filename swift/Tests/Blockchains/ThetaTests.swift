@@ -9,7 +9,7 @@ import TrustWalletCore
 
 class ThetaTests: XCTestCase {
     func testSigner() {
-        let input = TW_Theta_Proto_SigningInput.with {
+        let input = ThetaSigningInput.with {
             $0.chainID = "privatenet"
             $0.toAddress = "0x9F1233798E905E173560071255140b4A8aBd3Ec6"
             $0.thetaAmount = Data(hexString: "0a")!
