@@ -7,10 +7,11 @@
 #include "Address.h"
 #include "Cbor.h"
 #include "../Data.h"
+//#include "../PublicKey.h"
 #include "../Base58.h"
 #include "../Crc.h"
 #include "../HexCoding.h"
-//#include "../Hash.h"
+#include "../Hash.h"
 
 #include <array>
 #include <iostream>
@@ -24,24 +25,24 @@ bool Address::isValid(const std::string& string) {
     try {
         Data base58decoded = Base58::bitcoin.decode(string);
         //std::cerr << base58decoded.size() << " " << (int)base58decoded[0] << " " << (int)base58decoded[0]/32 << std::endl;
-
         //cerr << Cbor::Decode(base58decoded).dumpToString() << endl;
         auto elems = Cbor::Decode(base58decoded).getArrayElements();
         if (elems.size() < 2) { return false; }
-        auto array0 = elems[0];
-        auto tag = array0.getTagValue();
+        auto tag = elems[0].getTagValue();
         if (tag != 24) {
             // wrong tag value
             return false;
         }
-        Data addressAsArray = array0.getTagElement().getStringData();
+        Data payload = elems[0].getTagElement().getStringData();
         // debug
         uint64_t crcPresent = (uint32_t)elems[1].getValue();
-        uint32_t crcComputed = TW::Crc::crc32(addressAsArray);
+        uint32_t crcComputed = TW::Crc::crc32(payload);
         if (crcPresent != crcComputed) {
             // CRC mismatch
             return false;
         }
+        // check that payload is Cbor-encoded, array, with 3 elements
+        auto payloadElems = Cbor::Decode(payload).getArrayElements();
         return true;
     } catch (exception& ex) {
         return false;
@@ -79,8 +80,20 @@ Address::Address(const std::string& string) {
             }
         }
     } catch (exception& ex) {
-        throw std::invalid_argument("Invalid address string EXcEP");
+        throw std::invalid_argument("Invalid address string");
     }
+}
+
+Address::Address(const Data& xPublicKey) {
+    // input is xpub, 64-byte
+    if (xPublicKey.size() != 64) {
+        throw invalid_argument("xbub wrong length");
+    }
+    type = 0; // public key
+    root = keyHash(xPublicKey);
+    // address attributes: empty map for V2, for V1 encrypted derivation path
+    Cbor::Encode emptyMap = Cbor::Encode().addMap(vector<pair<Cbor::Encode, Cbor::Encode>>{});
+    attrs = emptyMap.getData();
 }
 
 string Address::string() const {
@@ -104,4 +117,22 @@ string Address::string() const {
     });
     auto cbor2Data = cbor2.getData();
     return Base58::bitcoin.encode(cbor2Data);
+}
+
+Data Address::keyHash(const TW::Data& xpub) {
+    if (xpub.size() != 64) { throw invalid_argument("invalid xbub length"); }
+    // hash of follwoing Cbor-array: [0, [0, xbub], {} ]
+    // 3rd entry map is empty map for V2, contains derivation path for V1
+    Data cborData = Cbor::Encode().addArray(vector<Cbor::Encode>{
+        Cbor::Encode().addPInt(0),
+        Cbor::Encode().addArray(vector<Cbor::Encode>{
+            Cbor::Encode().addPInt(0),
+            Cbor::Encode().addString(xpub)
+        }),
+        Cbor::Encode().addMap(vector<pair<Cbor::Encode, Cbor::Encode>>{}),
+    }).getData();
+    // SHA3 hash, then blake
+    Data firstHash = Hash::sha3_256(cborData.data(), cborData.data() + cborData.size());
+    Data blake = Hash::blake2b(firstHash.data(), firstHash.data() + firstHash.size(), 28);
+    return blake;
 }

@@ -16,17 +16,6 @@ namespace TW::Cardano {
 /// Cardano address.  Type is 0.
 class Address {
   public:
-    /*
-    /// Base32 encoded address string length.
-    static const size_t encodedSize = 58;
-
-    /// Sha512/256 checksum size.
-    static const size_t checksumSize = 4;
-    /// Address data consisting of public key.
-
-    std::array<byte, PublicKey::ed25519Size> bytes;
-    */
-
     /// root key
     Data root;
 
@@ -39,21 +28,21 @@ class Address {
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    static std::string build();
-
     /// Initializes a Cardano address with a string representation.
     explicit Address(const std::string& string);
 
-    /*
-    /// Initializes a Cardano address with a public key.
-    explicit Address(const PublicKey& publicKey);
-    */
+    /// Initializes a V2, public key type Cardano address from an extended public key.
+    ///explicit Address(const PublicKey& publicKey);
+    explicit Address(const TW::Data& xPublicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
+
+    /// compute hash of public key, for address root
+    static TW::Data keyHash(const TW::Data& xpub);
 };
 
-/*
+/* TODO
 inline bool operator==(const Address& lhs, const Address& rhs) {
     return lhs.bytes == rhs.bytes;
 }

@@ -45,21 +45,31 @@ TEST(CardanoAddress, FromString) {
 }
 
 /*
-TEST(CardanoAddress, DeriveDummy) {
-    auto mnemo = "crowd captain hungry tray powder motor coast oppose month shed parent mystery torch resemble index";
-    auto wallet = HDWallet(mnemo, "");
-    cerr << hex(wallet.getMasterKey(TWCurve::TWCurveED25519).bytes) << endl;
+TEST(CardanoAddress, MnemonicToKeys) {
+    auto mnemonic = "cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh";
+
+    auto wallet = HDWallet(mnemonic, "");
+    auto seed = wallet.seed;
+    cerr << "seed " << (int)wallet.seedSize << " " << hex(seed) << endl;
+}
+*/
+
+TEST(CardanoAddress, KeyHash) {
+    auto xpub = parse_hex("e6f04522f875c1563682ca876ddb04c2e2e3ae718e3ff9f11c03dd9f9dccf69869272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000");
+    auto hash = Address::keyHash(xpub);
+    ASSERT_EQ("a1eda96a9952a56c983d9f49117f935af325e8a6c9d38496e945faa8", hex(hash));
 }
 
+TEST(CardanoAddress, FromXPublicKey) {
+    auto publicKey = parse_hex("e6f04522f875c1563682ca876ddb04c2e2e3ae718e3ff9f11c03dd9f9dccf69869272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000");
+    auto address = Address(publicKey);
+    ASSERT_EQ(address.string(), "Ae2tdPwUPEZCxt4UV1Uj2AMMRvg5pYPypqZowVptz3GYpK4pkcvn3EjkuNH");
+}
+
+/*
 TEST(CardanoAddress, FromPrivateKey) {
     auto privateKey = PrivateKey(parse_hex("526d96fffdbfe787b2f00586298538f9a019e97f6587964dc61aae9ad1d7fa23"));
     auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
     ASSERT_EQ(address.string(), "JBCQYJ2FREG667NAN7BFKH4RFIKPT7CYDQJNW3SNN5Z7F7ILFLKQ346TSU");
-}
-
-TEST(AlgorandAddress, FromPublicKey) {
-    auto publicKey = PublicKey(parse_hex("c2b423afa8b0095e5ae105668b91b2132db4dadbf38acfc64908d3476a00191f"), TWPublicKeyTypeED25519);
-    auto address = Address(publicKey);
-    ASSERT_EQ(address.string(), "YK2CHL5IWAEV4WXBAVTIXENSCMW3JWW36OFM7RSJBDJUO2QADEP5QYVO5I");
 }
 */
