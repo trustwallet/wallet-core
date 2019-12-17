@@ -20,6 +20,22 @@
 
 using namespace TW;
 
+bool PrivateKey::isValid(const Data& data) {
+    // Check length
+    if (data.size() != size) {
+        return false;
+    }
+
+    // Check for zero address
+    for (size_t i = 0; i < size; ++i) {
+        if (data[i] != 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool PrivateKey::isValid(const Data& data, TWCurve curve)
 {
     // check size
@@ -53,6 +69,13 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve)
     }
 
     return true;
+}
+
+PrivateKey::PrivateKey(const Data& data) {
+    if (!isValid(data)) {
+        throw std::invalid_argument("Invalid private key data");
+    }
+    bytes = data;
 }
 
 PrivateKey::~PrivateKey() {
@@ -174,7 +197,7 @@ Data PrivateKey::signAsDER(const Data& digest, TWCurve curve) const {
         return {};
     }
 
-    std::array<uint8_t, 72> resultBytes;
+    Data resultBytes(72);
     size_t size = ecdsa_sig_to_der(sig.data(), resultBytes.data());
 
     auto result = Data{};
