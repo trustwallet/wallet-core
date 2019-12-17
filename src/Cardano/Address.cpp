@@ -105,14 +105,14 @@ string Address::string() const {
         Cbor::Encode(attrs),
         Cbor::Encode().addPInt(type),
     });
-    auto cborbase = cbor1.getData();
+    auto payloadData = cbor1.getData();
     
     // crc checksum 
-    auto crc = TW::Crc::crc32(cborbase);
+    auto crc = TW::Crc::crc32(payloadData);
     // second pack: tag, base, crc
     Cbor::Encode cbor2;
     cbor2.addArray(vector<Cbor::Encode>{
-        Cbor::Encode().addTag(24, Cbor::Encode().addString(cborbase)),
+        Cbor::Encode().addTag(24, Cbor::Encode().addString(payloadData)),
         Cbor::Encode().addPInt(crc),
     });
     auto cbor2Data = cbor2.getData();

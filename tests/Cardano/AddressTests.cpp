@@ -20,12 +20,13 @@ using namespace TW::Cardano;
 using namespace std;
 
 TEST(CardanoAddress, Validation) {
-    // valid V1 address
-    ASSERT_TRUE(Address::isValid("DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ"));
     // valid V2 address
     ASSERT_TRUE(Address::isValid("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx"));
-    // valid V2 address
     ASSERT_TRUE(Address::isValid("Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W"));
+
+    // valid V1 address
+    ASSERT_TRUE(Address::isValid("DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ"));
+    ASSERT_TRUE(Address::isValid("DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di"));
 
     // invalid checksum
     ASSERT_FALSE(Address::isValid("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm"));
@@ -73,6 +74,12 @@ TEST(CardanoAddress, MnemonicToAddress) {
             Address addr1 = Address(pubKey1);
             ASSERT_EQ("Ae2tdPwUPEZ7dnds6ZyhQdmgkrDFFPSDh8jG9RAhswcXt1bRauNw5jczjpV", addr1.string());
         }
+        {
+            PrivateKey privKey1 = wallet.getKey(DerivationPath("m/44'/1815'/0'/0/2"));
+            PublicKey pubKey1 = privKey1.getPublicKey(TWPublicKeyTypeED25519Extended);
+            Address addr1 = Address(pubKey1);
+            ASSERT_EQ("Ae2tdPwUPEZ8LAVy21zj4BF97iWxKCmPv12W6a18zLX3V7rZDFFVgqUBkKw", addr1.string());
+        }
     }
     {
         // Tested agains AdaLite
@@ -80,6 +87,21 @@ TEST(CardanoAddress, MnemonicToAddress) {
         auto wallet = HDWallet(mnemonicPlay1, "");
         string addr = wallet.deriveAddress(TWCoinType::TWCoinTypeCardano);
         ASSERT_EQ("Ae2tdPwUPEZJYT9g1JgQWtLveUHavyRxQGi6hVzoQjct7yyCLGgk3pCyx7h", addr);
+    }
+    {
+        // Tested agains AdaLite
+        auto mnemonicPlay2 = "return custom two home gain guilt kangaroo supply market current curtain tomorrow heavy blue robot";
+        auto wallet = HDWallet(mnemonicPlay2, "");
+        string addr = wallet.deriveAddress(TWCoinType::TWCoinTypeCardano);
+        ASSERT_EQ("Ae2tdPwUPEZLtJx7LA2XZ3zzwonH9x9ieX3dMzaTBD3TfXuKczjMSjTecr1", addr);
+    }
+    {
+        // AdaLite Demo phrase, 12-word.  AdaLite uses V1 for it, in V2 it produces different addresses.
+        // In AdaLite V1 addr0 is DdzFFzCqrht7HGoJ87gznLktJGywK1LbAJT2sbd4txmgS7FcYLMQFhawb18ojS9Hx55mrbsHPr7PTraKh14TSQbGBPJHbDZ9QVh6Z6Di
+        auto mnemonicALDemo = "civil void tool perfect avocado sweet immense fluid arrow aerobic boil flash";
+        auto wallet = HDWallet(mnemonicALDemo, "");
+        string addr = wallet.deriveAddress(TWCoinType::TWCoinTypeCardano);
+        ASSERT_EQ("Ae2tdPwUPEZJbLcD8iLgN7hVGvq66WdR4zocntRekSP97Ds3MvCfmEDjJYu", addr);
     }
 }
 
@@ -142,4 +164,3 @@ TEST(CardanoAddress, FromPrivateKey) {
         ASSERT_EQ(address.string(), "Ae2tdPwUPEZJYT9g1JgQWtLveUHavyRxQGi6hVzoQjct7yyCLGgk3pCyx7h");
     }
 }
-
