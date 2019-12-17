@@ -21,7 +21,7 @@ class PrivateKey {
     /// The private key bytes.
     Data bytes;
     /// Optional extended part of the key (additional 32 bytes)
-    Data extendedBytes;
+    Data extensionBytes;
     /// Optional chain code (additional 32 bytes)
     Data chainCodeBytes;
 

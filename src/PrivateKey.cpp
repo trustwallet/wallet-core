@@ -84,13 +84,13 @@ PrivateKey::PrivateKey(const Data& data, const Data& ext, const Data& chainCode)
         throw std::invalid_argument("Invalid private key or extended key data");
     }
     bytes = data;
-    extendedBytes = ext;
+    extensionBytes = ext;
     chainCodeBytes = chainCode;
 }
 
 PrivateKey::~PrivateKey() {
     std::fill(bytes.begin(), bytes.end(), 0);
-    std::fill(extendedBytes.begin(), extendedBytes.end(), 0);
+    std::fill(extensionBytes.begin(), extensionBytes.end(), 0);
     std::fill(chainCodeBytes.begin(), chainCodeBytes.end(), 0);
 }
 
@@ -122,8 +122,12 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         ed25519_publickey_blake2b(bytes.data(), result.data());
         break;
     case TWPublicKeyTypeED25519Extended:
+        // must be extended key
+        if (bytes.size() + extensionBytes.size() + chainCodeBytes.size() != (3 * size)) {
+            throw std::invalid_argument("Invalid extended key");
+        }
         result.resize(PublicKey::ed25519ExtendedSize);
-        ed25519_publickey_ext(bytes.data(), extendedBytes.data(), result.data());
+        ed25519_publickey_ext(bytes.data(), extensionBytes.data(), result.data());
         // append chainCode to the end of the public key
         std::copy(chainCodeBytes.begin(), chainCodeBytes.end(), result.begin() + 32);
         break;

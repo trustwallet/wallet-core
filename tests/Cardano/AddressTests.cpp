@@ -13,7 +13,6 @@
 #include "HDWallet.h"
 
 #include <gtest/gtest.h>
-#include <vector>
 
 using namespace TW;
 using namespace TW::Cardano;
@@ -163,4 +162,22 @@ TEST(CardanoAddress, FromPrivateKey) {
         auto address = Address(publicKey);
         ASSERT_EQ(address.string(), "Ae2tdPwUPEZJYT9g1JgQWtLveUHavyRxQGi6hVzoQjct7yyCLGgk3pCyx7h");
     }
+}
+
+TEST(CardanoAddress, PrivateKeyExtended) {
+    // check extended key lengths, private key 3x32 bytes, public key 64 bytes
+    auto privateKeyExt = PrivateKey(
+        parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
+        parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
+        parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4")
+    );
+    auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Extended);
+    ASSERT_EQ(64, publicKeyExt.bytes.size());
+
+    // Non-extended: both are 32 bytes.
+    auto privateKeyNonext = PrivateKey(
+        parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744")
+    );
+    auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
+    ASSERT_EQ(32, publicKeyNonext.bytes.size());
 }
