@@ -7,7 +7,7 @@
 #pragma once
 
 #include "Data.h"
-//#include "../PublicKey.h"
+#include "../PublicKey.h"
 
 #include <string>
 
@@ -32,8 +32,7 @@ class Address {
     explicit Address(const std::string& string);
 
     /// Initializes a V2, public key type Cardano address from an extended public key.
-    ///explicit Address(const PublicKey& publicKey);
-    explicit Address(const TW::Data& xPublicKey);
+    explicit Address(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
@@ -42,11 +41,9 @@ class Address {
     static TW::Data keyHash(const TW::Data& xpub);
 };
 
-/* TODO
 inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.bytes == rhs.bytes;
+    return lhs.root == rhs.root && lhs.attrs == rhs.attrs && lhs.type == rhs.type;
 }
-*/
 
 } // namespace TW::Cardano
 

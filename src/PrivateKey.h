@@ -20,6 +20,10 @@ class PrivateKey {
 
     /// The private key bytes.
     Data bytes;
+    /// Optional extended part of the key (additional 32 bytes)
+    Data extendedBytes;
+    /// Optional chain code (additional 32 bytes)
+    Data chainCodeBytes;
 
     /// Determines if a collection of bytes makes a valid private key.
     static bool isValid(const Data& data);
@@ -32,6 +36,9 @@ class PrivateKey {
 
     /// Initializes a private key from a string of bytes (convenience method).
     explicit PrivateKey(const std::string& data) : PrivateKey(TW::data(data)) {}
+
+    /// Initializes an extended private key with key, extended key, and chain code.
+    explicit PrivateKey(const Data& data, const Data& ext, const Data& chainCode);
 
     PrivateKey(const PrivateKey& other) = default;
     PrivateKey& operator=(const PrivateKey& other) = default;

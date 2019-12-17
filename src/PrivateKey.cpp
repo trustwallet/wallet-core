@@ -55,6 +55,7 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve)
         break;
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
+    case TWCurveED25519Cardano:
     case TWCurveCurve25519:
         break;
     }
@@ -78,8 +79,19 @@ PrivateKey::PrivateKey(const Data& data) {
     bytes = data;
 }
 
+PrivateKey::PrivateKey(const Data& data, const Data& ext, const Data& chainCode) {
+    if (!isValid(data) || !isValid(data) || !isValid(chainCode)) {
+        throw std::invalid_argument("Invalid private key or extended key data");
+    }
+    bytes = data;
+    extendedBytes = ext;
+    chainCodeBytes = chainCode;
+}
+
 PrivateKey::~PrivateKey() {
     std::fill(bytes.begin(), bytes.end(), 0);
+    std::fill(extendedBytes.begin(), extendedBytes.end(), 0);
+    std::fill(chainCodeBytes.begin(), chainCodeBytes.end(), 0);
 }
 
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
@@ -109,6 +121,12 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         result.resize(PublicKey::ed25519Size);
         ed25519_publickey_blake2b(bytes.data(), result.data());
         break;
+    case TWPublicKeyTypeED25519Extended:
+        result.resize(PublicKey::ed25519ExtendedSize);
+        ed25519_publickey_ext(bytes.data(), extendedBytes.data(), result.data());
+        // append chainCode to the end of the public key
+        std::copy(chainCodeBytes.begin(), chainCodeBytes.end(), result.begin() + 32);
+        break;
     case TWPublicKeyTypeCURVE25519:
         result.resize(PublicKey::ed25519Size);
         PublicKey ed25519PublicKey = getPublicKey(TWPublicKeyTypeED25519);
@@ -137,6 +155,9 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Blake2b);
         ed25519_sign_blake2b(digest.data(), digest.size(), bytes.data(),
                              publicKey.bytes.data(), result.data());
+    } break;
+    case TWCurveED25519Cardano: {
+        // TODO
     } break;
     case TWCurveCurve25519: {
         result.resize(64);
@@ -171,6 +192,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(
     } break;
     case TWCurveED25519: // not supported
     case TWCurveED25519Blake2bNano: // not supported
+    case TWCurveED25519Cardano: // not supported
     case TWCurveCurve25519:         // not supported
         break;
     case TWCurveNIST256p1: {
@@ -216,6 +238,7 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
     case TWCurveNIST256p1:
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
+    case TWCurveED25519Cardano:
     case TWCurveCurve25519: {
         // not support
     } break;

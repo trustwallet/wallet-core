@@ -1267,9 +1267,9 @@
         "symbol": "ADA", 
         "decimals": 6, 
         "blockchain": "Cardano", 
-        "derivationPath": "m/44'/1815'/0'", 
-        "curve": "ed25519", 
-        "publicKeyType": "ed25519", 
+        "derivationPath": "m/44'/1815'/0'/0/0", 
+        "curve": "ed25519Cardano", 
+        "publicKeyType": "ed25519Extended", 
         "explorer": {
             "url": "https://cardanoexplorer.com", 
             "txPath": "/tx/",
