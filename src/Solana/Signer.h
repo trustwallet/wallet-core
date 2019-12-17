@@ -17,10 +17,10 @@ namespace TW::Solana {
 class Signer {
   public:
     /// Signs the given transaction.
-    static void sign(const std::vector<PrivateKey> &privateKeys, Transaction &transaction);
-    static void signUpdateBlockhash(const std::vector<PrivateKey> &privateKeys,
-                                    Transaction &transaction, Solana::Hash &recentBlockhash);
-    static Data signRawMessage(const std::vector<PrivateKey> &privateKeys, const Data messageData);
+    static void sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction);
+    static void signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
+                                    Transaction& transaction, Solana::Hash& recentBlockhash);
+    static Data signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData);
 };
 
 } // namespace TW::Solana

@@ -11,12 +11,12 @@
 using namespace TW;
 using namespace TW::Solana;
 
-bool Address::isValid(const std::string &string) {
+bool Address::isValid(const std::string& string) {
     const auto data = Base58::bitcoin.decode(string);
     return Address::isValid(data);
 }
 
-Address::Address(const std::string &string) {
+Address::Address(const std::string& string) {
     const auto data = Base58::bitcoin.decode(string);
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address string");
@@ -24,7 +24,7 @@ Address::Address(const std::string &string) {
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const PublicKey &publicKey) {
+Address::Address(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeED25519) {
         throw std::invalid_argument("Invalid public key type");
     }
@@ -41,9 +41,14 @@ Data Address::vector() const {
     return vec;
 }
 
-Address hashTwoAddresses(Address &address0, Address &address1) {
-    Data extended = address0.vector();
-    Data additional = address1.vector();
+Address addressFromValidatorSeed(Address& fromAddress, Address& validatorAddress,
+                                 Address& programId) {
+    Data extended = fromAddress.vector();
+    std::string seed = validatorAddress.string();
+    Data vecSeed(seed.begin(), seed.end());
+    vecSeed.resize(32);
+    Data additional = programId.vector();
+    extended.insert(extended.end(), vecSeed.begin(), vecSeed.end());
     extended.insert(extended.end(), additional.begin(), additional.end());
     Data hash = TW::Hash::sha256(extended);
     return Address(PublicKey(hash, TWPublicKeyTypeED25519));

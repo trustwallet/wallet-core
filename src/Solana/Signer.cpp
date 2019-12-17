@@ -12,7 +12,7 @@
 using namespace TW;
 using namespace TW::Solana;
 
-void Signer::sign(const std::vector<PrivateKey> &privateKeys, Transaction &transaction) {
+void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction) {
     for (auto privateKey : privateKeys) {
         auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
         auto index = transaction.getAccountIndex(address);
@@ -22,15 +22,15 @@ void Signer::sign(const std::vector<PrivateKey> &privateKeys, Transaction &trans
     }
 }
 
-void Signer::signUpdateBlockhash(const std::vector<PrivateKey> &privateKeys,
-                                 Transaction &transaction, Solana::Hash &recentBlockhash) {
+void Signer::signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
+                                 Transaction& transaction, Solana::Hash& recentBlockhash) {
     transaction.message.recentBlockhash = recentBlockhash;
     Signer::sign(privateKeys, transaction);
 }
 
 // This method does not confirm that PrivateKey order matches that encoded in the messageData
 // That order must be correct for the Transaction to succeed on Solana
-Data Signer::signRawMessage(const std::vector<PrivateKey> &privateKeys, const Data messageData) {
+Data Signer::signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData) {
     std::vector<Signature> signatures;
     for (auto privateKey : privateKeys) {
         auto signature = Signature(privateKey.sign(messageData, TWCurveED25519));

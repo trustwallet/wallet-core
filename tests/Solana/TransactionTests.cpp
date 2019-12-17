@@ -51,29 +51,30 @@ TEST(SolanaTransaction, TransferSerializeTransaction) {
 
 TEST(SolanaTransaction, StakeSerializeTransaction) {
     auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
-    auto stakeAccount = Address("Bqa7hbY1McviVybz8pyBZEDcJRuy6ZYen3XjAh6VLcsk");
-    auto voteAccount = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    auto programId = Address(STAKE_ADDRESS);
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto message = Message(signer, stakeAccount, voteAccount, 42, recentBlockhash);
+    auto stakeAddress = addressFromValidatorSeed(signer, voteAddress, programId);
+    auto message = Message(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
     Signature signature(
-        "2QLJoEpoV27YYTCDTg8bmWCeP3BELtBqwdyu34bGm6nexXJUdVUUSzePxpeUjFzdbpyvsTKajgyCNW8CXXct7f6L");
+        "4oUMPVJ6NHGX1DFaxnDKSyZkxuN4osjqZE4mzA4iiNHd9kub3RtVKi3SUvRPsB5x2kB6EuRmBcWR4nbiKeoKF9os");
     transaction.signatures.clear();
     transaction.signatures.push_back(signature);
 
     auto expectedHex =
-        "0146236d3c6553ad8120c3ac0e97a1bb75ec2ceebe388982bf01a14e8b0d9c3453415120a0db0fa1a1125d88e9"
-        "c12219d6660560338261e957dcadd9ac4afda40d010005080eba44e56f060007284dc037275a15094c1d6c0697"
-        "ddb28b2be661dfb0f4bab8a106312279be880f9aef61c849c4ec109af4766f3fdcbe7db3ff48c06e9f90c306a7"
+        "01be20567f2db0b09802bf70bbaf397d819c29496c6472a70e2db5c92dff1b666f5f5a4787b07d951bf46435c8"
+        "4248a974bb417c789041fbc512d0a06869fb1d0e010006080eba44e56f060007284dc037275a15094c1d6c0697"
+        "ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7"
         "d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a00000000378ba8d9f9881e9be69cf1d70ee0a9"
         "3ed0378b83203f42fa29f9df5c887f1c0d06a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b21"
         "0000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000"
         "000000000000000000000000000000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78"
         "722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000030602"
-        "000134000000002a00000000000000d80600000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78"
-        "722b68a49dc000000000070201026c000000000eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be6"
-        "61dfb0f4bab80eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab800000000000000"
-        "00000000000000000000000000000000000000000000000000000000000000000007050103040500040200000"
-        "0";
+        "00015c030000002000000000000000346a707754717431715a6f52377536753633397a32416e675946474e336e"
+        "616b2a00000000000000d00700000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49d"
+        "c000000000070201026c000000000eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4ba"
+        "b80eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab8000000000000000000000000"
+        "00000000000000000000000000000000000000000000000000000000070501030405000402000000";
     ASSERT_EQ(hex(transaction.serialize()), expectedHex);
 }

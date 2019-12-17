@@ -33,14 +33,14 @@ Data shortVecLength(std::vector<T> vec) {
 }
 
 // System instruction types
-enum SystemInstruction { CreateAccount, Assign, Transfer };
+enum SystemInstruction { CreateAccount, Assign, Transfer, CreateAccountWithSeed };
 
 // Stake instruction types
 enum StakeInstruction {
     Initialize = 0,
     DelegateStake = 2,
-    Withdraw = 4,
-    Deactivate = 5,
+    Withdraw = 5,
+    Deactivate = 6,
 };
 
 // An instruction to execute a program
@@ -69,13 +69,19 @@ struct CompiledInstruction {
     }
 
     // This constructor creates a System CreateAccount instruction
-    CompiledInstruction(uint8_t programIdIndex, uint64_t value, uint64_t space, Address programId)
+    CompiledInstruction(uint8_t programIdIndex, uint64_t value, uint64_t space, Address programId,
+                        Address voteAddress, uint64_t seedLength)
         : programIdIndex(programIdIndex) {
         std::vector<uint8_t> accounts = {0, 1};
         this->accounts = accounts;
-        SystemInstruction type = CreateAccount;
+        SystemInstruction type = CreateAccountWithSeed;
         auto data = Data();
+        std::string seed = voteAddress.string();
+        Data vecSeed(seed.begin(), seed.end());
+        vecSeed.resize(seedLength);
         encode32LE(static_cast<uint32_t>(type), data);
+        encode64LE(static_cast<uint64_t>(seedLength), data);
+        append(data, vecSeed);
         encode64LE(static_cast<uint64_t>(value), data);
         encode64LE(static_cast<uint64_t>(space), data);
         append(data, programId.vector());
@@ -129,7 +135,7 @@ class Hash {
     /// Hash data
     std::array<uint8_t, size> bytes;
 
-    Hash(const std::string &string) {
+    Hash(const std::string& string) {
         const auto data = Base58::bitcoin.decode(string);
         std::copy(data.begin(), data.end(), this->bytes.begin());
     }
@@ -141,14 +147,14 @@ class Signature {
     /// Signature data
     std::array<uint8_t, size> bytes;
 
-    Signature(const std::string &string) {
+    Signature(const std::string& string) {
         const auto data = Base58::bitcoin.decode(string);
         std::copy(data.begin(), data.end(), this->bytes.begin());
     }
-    Signature(const std::array<uint8_t, 64> &bytes) { this->bytes = bytes; }
-    Signature(const Data &bytes) { std::copy(bytes.begin(), bytes.end(), this->bytes.begin()); }
+    Signature(const std::array<uint8_t, 64>& bytes) { this->bytes = bytes; }
+    Signature(const Data& bytes) { std::copy(bytes.begin(), bytes.end(), this->bytes.begin()); }
 
-    bool operator==(const Signature &v) const;
+    bool operator==(const Signature& v) const;
 };
 
 struct MessageHeader {
@@ -199,26 +205,27 @@ class Message {
         this->instructions = instructions;
     }
 
-    // This constructor creates a create_stake_account and delegate_stake message
-    Message(Address signer, Address stakeAccount, Address voteAccount, uint64_t value,
+    // This constructor creates a create_account_with_seed_and_delegate_stake message
+    Message(Address signer, Address stakeAddress, Address voteAddress, uint64_t value,
             Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 0, 5};
+        MessageHeader header = {1, 0, 6};
         this->header = header;
 
         auto sysvarRentId = Address("SysvarRent111111111111111111111111111111111");
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         auto stakeConfigId = Address("StakeConfig11111111111111111111111111111111");
         auto systemProgramId = Address("11111111111111111111111111111111");
-        auto stakeProgramId = Address("Stake11111111111111111111111111111111111111");
-        std::vector<Address> accountKeys = {signer,          stakeAccount,  sysvarRentId,
-                                            voteAccount,     sysvarClockId, stakeConfigId,
+        auto stakeProgramId = Address(STAKE_ADDRESS);
+        std::vector<Address> accountKeys = {signer,          stakeAddress,  sysvarRentId,
+                                            voteAddress,     sysvarClockId, stakeConfigId,
                                             systemProgramId, stakeProgramId};
         this->accountKeys = accountKeys;
 
         std::vector<CompiledInstruction> instructions;
-        // create_account instruction
-        auto createAccountInstruction = CompiledInstruction(6, value, 1752, stakeProgramId);
+        // create_account_with_seed instruction
+        auto createAccountInstruction =
+            CompiledInstruction(6, value, 2000, stakeProgramId, voteAddress, 32);
         instructions.push_back(createAccountInstruction);
         // initialize instruction
         auto initializeInstruction = CompiledInstruction(7, Initialize, signer);
@@ -231,14 +238,14 @@ class Message {
     }
 
     // This constructor creates a deactivate_stake message
-    Message(Address signer, Address stakeAccount, StakeInstruction type, Hash recentBlockhash)
+    Message(Address signer, Address stakeAddress, StakeInstruction type, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 0, 2};
+        MessageHeader header = {1, 1, 2};
         this->header = header;
 
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         auto programId = Address("Stake11111111111111111111111111111111111111");
-        std::vector<Address> accountKeys = {signer, stakeAccount, sysvarClockId, programId};
+        std::vector<Address> accountKeys = {signer, stakeAddress, sysvarClockId, programId};
         this->accountKeys = accountKeys;
         std::vector<CompiledInstruction> instructions;
         auto instruction = CompiledInstruction(3, Deactivate);
@@ -247,7 +254,7 @@ class Message {
     }
 
     // This constructor creates a withdraw message, with the signer as the default recipient
-    Message(Address signer, Address stakeAccount, uint64_t value, StakeInstruction type,
+    Message(Address signer, Address stakeAddress, uint64_t value, StakeInstruction type,
             Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
         MessageHeader header = {1, 0, 3};
@@ -256,7 +263,7 @@ class Message {
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
         auto sysvarStakeHistoryId = Address("SysvarStakeHistory1111111111111111111111111");
         auto programId = Address("Stake11111111111111111111111111111111111111");
-        std::vector<Address> accountKeys = {signer, stakeAccount, sysvarClockId,
+        std::vector<Address> accountKeys = {signer, stakeAddress, sysvarClockId,
                                             sysvarStakeHistoryId, programId};
         this->accountKeys = accountKeys;
         std::vector<CompiledInstruction> instructions;

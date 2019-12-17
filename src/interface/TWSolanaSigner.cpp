@@ -38,12 +38,13 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         auto key = PrivateKey(protoMessage.private_key());
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeAccount = hashTwoAddresses(userAddress, validatorAddress);
-        stakePubkey = stakeAccount.string();
+        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+        stakePubkey = stakeAddress.string();
         message = Message(
             /* signer */ userAddress,
-            /* stakeAccount */ stakeAccount,
-            /* voteAccount */ validatorAddress,
+            /* stakeAddress */ stakeAddress,
+            /* voteAddress */ validatorAddress,
             /* value */ protoMessage.value(),
             /* recent_blockhash */ blockhash);
         signerKeys.push_back(key);
@@ -52,10 +53,11 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         auto key = PrivateKey(protoMessage.private_key());
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeAccount = hashTwoAddresses(userAddress, validatorAddress);
+        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
         message = Message(
             /* signer */ userAddress,
-            /* stakeAccount */ stakeAccount,
+            /* stakeAddress */ stakeAddress,
             /* type */ Deactivate,
             /* recent_blockhash */ blockhash);
         signerKeys.push_back(key);
@@ -64,10 +66,11 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
         auto key = PrivateKey(protoMessage.private_key());
         auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
         auto validatorAddress = Address(protoMessage.validator_pubkey());
-        auto stakeAccount = hashTwoAddresses(userAddress, validatorAddress);
+        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
         message = Message(
             /* signer */ userAddress,
-            /* stakeAccount */ stakeAccount,
+            /* stakeAddress */ stakeAddress,
             /* value */ protoMessage.value(),
             /* type */ Withdraw,
             /* recent_blockhash */ blockhash);
@@ -83,6 +86,6 @@ TW_Solana_Proto_SigningOutput TWSolanaSignerSign(TW_Solana_Proto_SigningInput da
     protoOutput.set_encoded(encoded.data(), encoded.size());
 
     auto serialized = protoOutput.SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()),
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
                                  serialized.size());
 }
