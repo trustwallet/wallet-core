@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../Bech32.h"
 #include "../Bitcoin/SegwitAddress.h"
 
 #include <TrezorCrypto/ecdsa.h>

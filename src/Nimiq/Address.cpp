@@ -6,10 +6,10 @@
 
 #include "Address.h"
 
+#include "../Base32.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrezorCrypto/base32.h>
 #include <TrezorCrypto/blake2b.h>
 
 #include <algorithm>
@@ -37,9 +37,10 @@ bool Address::isValid(const std::string& stringPadded) {
         return false;
 
     // Check if valid Base32
-    auto hash = std::array<uint8_t, Address::size>();
-    if (base32_decode(string.data() + 4, 32, hash.data(), hash.size(), BASE32_ALPHABET_NIMIQ) == nullptr)
+    Data hash;
+    if (!Base32::decode(string.data() + 4, hash, BASE32_ALPHABET_NIMIQ)) {
         return false;
+    }
 
     // Calculate checksum
     int check = 0;
@@ -74,8 +75,14 @@ Address::Address(const std::string& stringPadded) {
 
     // Decode address
     auto base32 = string.substr(4, 32);
-    base32_decode(base32.data(), base32.length(), bytes.data(), bytes.size(),
-                  BASE32_ALPHABET_NIMIQ);
+    Data data;
+    if (!Base32::decode(base32, data, BASE32_ALPHABET_NIMIQ)) {
+        throw std::invalid_argument("Invalid address data");
+    }
+    if (data.size() != size) {
+        throw std::invalid_argument("Invalid address data");
+    }
+    std::copy(data.begin(), data.end(), bytes.data());
 }
 
 Address::Address(const std::vector<uint8_t>& data) {
@@ -98,9 +105,9 @@ std::string Address::string() const {
     int check = 0;
 
     // Calculate Base32 sum
-    auto base32 = std::array<uint8_t, 33>();
-    base32_encode(bytes.begin(), Address::size, reinterpret_cast<char*>(base32.data()), 33,
-                  BASE32_ALPHABET_NIMIQ);
+    Data bytesAsData;
+    bytesAsData.assign(bytes.begin(), bytes.end());
+    auto base32 = Base32::encode(bytesAsData, BASE32_ALPHABET_NIMIQ);
 
     for (auto i = 0; i < 32; i += 4) {
         // Add spaces to output

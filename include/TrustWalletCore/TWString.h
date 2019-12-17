@@ -16,12 +16,13 @@ typedef const void TWData;
 ///
 /// The implementantion of these methods should be language-specific to minimize translation overhead. For instance it
 /// should be a `jstring` for Java and an `NSString` for Swift.
+/// Create allocates memory, the delete call should be called at the end to release memory. 
 typedef const void TWString;
 
-/// Creates a string from a null-terminated UTF8 byte array.
+/// Creates a string from a null-terminated UTF8 byte array. It must be deleted at the end.
 TWString *_Nonnull TWStringCreateWithUTF8Bytes(const char *_Nonnull bytes);
 
-/// Creates a hexadecimal string from a block of data.
+/// Creates a hexadecimal string from a block of data. It must be deleted at the end.
 TWString *_Nonnull TWStringCreateWithHexData(TWData *_Nonnull data);
 
 /// Returns the string size in bytes.
@@ -33,7 +34,7 @@ char TWStringGet(TWString *_Nonnull string, size_t index);
 /// Returns the raw pointer to the string's UTF8 bytes.
 const char *_Nonnull TWStringUTF8Bytes(TWString *_Nonnull string);
 
-/// Deletes a string created with a `TWStringCreate*` method.
+/// Deletes a string created with a `TWStringCreate*` method.  After delete it must not be used (can segfault)!
 void TWStringDelete(TWString *_Nonnull string);
 
 TW_EXTERN_C_END

@@ -35,7 +35,7 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.1.1'
     androidTestImplementation 'android.arch.core:core-testing:1.1.1'
 
-    implementation 'io.grpc:grpc-protobuf:1.9.0'
+    implementation 'io.grpc:grpc-protobuf:1.24.2'
 }
 repositories {
     mavenCentral()

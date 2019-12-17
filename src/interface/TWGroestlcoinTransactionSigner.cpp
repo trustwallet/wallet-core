@@ -22,7 +22,7 @@ using namespace TW::Bitcoin;
 struct TWGroestlcoinTransactionSigner *_Nonnull TWGroestlcoinTransactionSignerCreate(TW_Bitcoin_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    return new TWGroestlcoinTransactionSigner{ TransactionSigner<TW::Groestlcoin::Transaction>(std::move(input)) };
+    return new TWGroestlcoinTransactionSigner{ TransactionSigner<TW::Groestlcoin::Transaction, TransactionBuilder>(std::move(input)) };
 }
 
 struct TWGroestlcoinTransactionSigner *_Nonnull TWGroestlcoinTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
@@ -30,7 +30,7 @@ struct TWGroestlcoinTransactionSigner *_Nonnull TWGroestlcoinTransactionSignerCr
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     Proto::TransactionPlan plan;
     plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
-    return new TWGroestlcoinTransactionSigner{ TransactionSigner<TW::Groestlcoin::Transaction>(std::move(input), std::move(plan)) };
+    return new TWGroestlcoinTransactionSigner{ TransactionSigner<TW::Groestlcoin::Transaction, TransactionBuilder>(std::move(input), std::move(plan)) };
 }
 
 void TWGroestlcoinTransactionSignerDelete(struct TWGroestlcoinTransactionSigner *_Nonnull signer) {

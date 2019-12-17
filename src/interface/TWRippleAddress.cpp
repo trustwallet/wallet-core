@@ -48,7 +48,3 @@ TWString *_Nonnull TWRippleAddressDescription(struct TWRippleAddress *_Nonnull a
     const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
-
-TWData *_Nonnull TWRippleAddressKeyHash(struct TWRippleAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), Address::size);
-}

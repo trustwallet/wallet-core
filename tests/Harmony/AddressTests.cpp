@@ -14,11 +14,13 @@ using namespace TW;
 using namespace TW::Harmony;
 
 TEST(HarmonyAddress, FromString) {
-    const auto sender = Address("one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe");
-    const auto receiver = Address("one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p");
+    Address sender;
+    ASSERT_TRUE(Address::decode("one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe", sender));
+    Address receiver;
+    ASSERT_TRUE(Address::decode("one1tp7xdd9ewwnmyvws96au0e7e7mz6f8hjqr3g3p", receiver));
 
-    ASSERT_EQ(sender.hexDump(), "ed1ebe4fd1f73f86388f231997859ca42c07da5d");
-    ASSERT_EQ(receiver.hexDump(), "587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2");
+    ASSERT_EQ("ed1ebe4fd1f73f86388f231997859ca42c07da5d", hex(sender.getKeyHash()));
+    ASSERT_EQ("587c66b4b973a7b231d02ebbc7e7d9f6c5a49ef2", hex(receiver.getKeyHash()));
 }
 
 TEST(HarmonyAddress, FromData) {
@@ -29,8 +31,8 @@ TEST(HarmonyAddress, FromData) {
 }
 
 TEST(HarmonyAddress, InvalidHarmonyAddress) {
-    ASSERT_FALSE(Address::isValid("one1a50tun737ulcvwy0yvve0pe").first);
-    ASSERT_FALSE(Address::isValid("oe1tp7xdd9ewwnmyvws96au0ee7e7mz6f8hjqr3g3p").first);
+    ASSERT_FALSE(Address::isValid("one1a50tun737ulcvwy0yvve0pe"));
+    ASSERT_FALSE(Address::isValid("oe1tp7xdd9ewwnmyvws96au0ee7e7mz6f8hjqr3g3p"));
 }
 
 TEST(HarmonyAddress, FromPrivateKey) {

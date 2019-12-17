@@ -14,7 +14,7 @@ class DecredTests: XCTestCase {
 
         // .bip44
         let dprv = wallet.getExtendedPrivateKey(purpose: .bip44, coin: .decred, version: .dprv)
-        let dpub = wallet.getExtendedPubKey(purpose: .bip44, coin: .decred, version: .dpub)
+        let dpub = wallet.getExtendedPublicKey(purpose: .bip44, coin: .decred, version: .dpub)
 
         XCTAssertEqual(dprv, "dprv3oggQ2FQ1chcr18hbW7Aur5x8SxQdES3FGa4WqeTZnFY88SNMzLdB7LkZLroF4bGAqWS8sDm3w4DKyYV7sDKfC6JMSVHnVJdpDLgHioq1vq")
         XCTAssertEqual(dpub, "dpubZFUmm9oh5zmQkR2Tr2AXS4tCkTWg4B27SpCPFkapZrrAqgU1EwgEFgrmi6EnLGXhak86yDHhXPxFAnGU58W5S4e8NCKG1ASUVaxwRqqNdfP")

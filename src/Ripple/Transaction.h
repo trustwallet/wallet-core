@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Address.h"
+#include "XAddress.h"
 #include "../Data.h"
 #include "../proto/Ripple.pb.h"
 
@@ -33,22 +34,33 @@ class Transaction {
     int32_t sequence;
     int32_t last_ledger_sequence;
     Address account;
-    Address destination;
+    Data destination;
+    bool encode_tag;
     int64_t destination_tag;
     Data pub_key;
     Data signature;
 
     Transaction(int64_t amount, int64_t fee, int64_t flags, int32_t sequence,
-                int32_t last_ledger_sequence, Address account, Address destination,
+                int32_t last_ledger_sequence, Address account, const std::string& destination,
                 int64_t destination_tag)
         : amount(amount)
         , fee(fee)
         , flags(flags)
         , sequence(sequence)
         , last_ledger_sequence(last_ledger_sequence)
-        , account(account)
-        , destination(destination)
-        , destination_tag(destination_tag) {}
+        , account(account) {
+          try {
+            auto address = Address(destination);
+            encode_tag = destination_tag > 0;
+            this->destination_tag = destination_tag;
+            this->destination = Data(address.bytes.begin() + 1, address.bytes.end());
+          } catch(const std::exception& e) {
+            auto xAddress = XAddress(destination);
+            encode_tag = xAddress.flag != TagFlag::none;
+            this->destination_tag = xAddress.tag;
+            this->destination = Data(xAddress.bytes.begin(), xAddress.bytes.end());
+          }
+        }
 
   public:
     /// simplified serialization format tailored for Payment transaction type

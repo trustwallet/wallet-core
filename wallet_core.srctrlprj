@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<config>
+    <source_groups>
+        <source_group_e7ecccff-47f2-403c-95f0-7e7436277458>
+            <cpp_standard>c++17</cpp_standard>
+            <cross_compilation>
+                <target>
+                    <abi>unknown</abi>
+                    <arch>x86_64</arch>
+                    <sys>unknown</sys>
+                    <vendor>unknown</vendor>
+                </target>
+                <target_options_enabled>0</target_options_enabled>
+            </cross_compilation>
+            <header_search_paths>
+                <header_search_path>include</header_search_path>
+                <header_search_path>trezor-crypto/include</header_search_path>
+                <header_search_path>build/local/include</header_search_path>
+            </header_search_paths>
+            <name>C++ Source Group</name>
+            <pch_flags>
+                <use_compiler_flags>1</use_compiler_flags>
+            </pch_flags>
+            <source_extensions>
+                <source_extension>.cpp</source_extension>
+                <source_extension>.cxx</source_extension>
+                <source_extension>.cc</source_extension>
+            </source_extensions>
+            <source_paths>
+                <source_path>src</source_path>
+            </source_paths>
+            <status>enabled</status>
+            <type>C++ Source Group</type>
+        </source_group_e7ecccff-47f2-403c-95f0-7e7436277458>
+    </source_groups>
+    <version>8</version>
+</config>

@@ -57,7 +57,7 @@ class Base58Address {
 
     Base58Address() = default;
 
-    /// Initializes a  address with a string representation.
+    /// Initializes an address with a string representation.
     explicit Base58Address(const std::string& string) {
         const auto decoded = Base58::bitcoin.decodeCheck(string);
         if (decoded.size() != Base58Address::size) {
@@ -67,15 +67,15 @@ class Base58Address {
         std::copy(decoded.begin(), decoded.end(), bytes.begin());
     }
 
-    /// Initializes a  address with a collection of bytes.
+    /// Initializes an address with a collection of bytes.
     explicit Base58Address(const Data& data) {
         if (!isValid(data)) {
             throw std::invalid_argument("Invalid address key data");
         }
         std::copy(data.begin(), data.end(), bytes.begin());
-        }
+    }
 
-    /// Initializes a  address with a public key and a prefix.
+    /// Initializes an address with a public key and a prefix.
     Base58Address(const PublicKey& publicKey, const Data& prefix) {
         if (publicKey.type != TWPublicKeyTypeSECP256k1) {
             throw std::invalid_argument("Bitcoin::Address needs a compressed SECP256k1 public key.");

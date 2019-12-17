@@ -6,57 +6,34 @@
 
 #pragma once
 
-#include "../../Data.h"
-#include "../../uint256.h"
-#include "Numbers.h"
+#include "ParamBase.h"
+#include "ParamNumber.h"
+#include "Parameters.h"
 
-#include <numeric>
+namespace TW::Ethereum::ABI {
 
-namespace TW::Ethereum {
+/// Dynamic array of the same types, "<type>[]"
+class ParamArray: public ParamCollection
+{
+private:
+    ParamSet _params;
 
-template <typename T>
-bool is_dynamic(std::vector<T>) {
-    return true;
-}
+public:
+    ParamArray() = default;
+    ParamArray(const std::shared_ptr<ParamBase>& param1) : ParamCollection() { addParam(param1); }
+    ParamArray(const std::vector<std::shared_ptr<ParamBase>>& params) : ParamCollection() { setVal(params); }
+    void setVal(const std::vector<std::shared_ptr<ParamBase>>& params) { addParams(params); }
+    std::vector<std::shared_ptr<ParamBase>> const& getVal() const { return _params.getParams(); }
+    int addParam(const std::shared_ptr<ParamBase>& param);
+    void addParams(const std::vector<std::shared_ptr<ParamBase>>& params);
+    std::string getFirstType() const;
+    std::shared_ptr<ParamBase> getParam(int paramIndex) { return _params.getParamUnsafe(paramIndex); }
+    virtual std::string getType() const { return getFirstType() + "[]"; }
+    virtual size_t getSize() const { return _params.getSize(); }
+    virtual bool isDynamic() const { return true; }
+    virtual size_t getCount() const { return _params.getCount(); }
+    virtual void encode(Data& data) const;
+    virtual bool decode(const Data& encoded, size_t& offset_inout);
+};
 
-template <typename T>
-std::size_t size(const std::vector<T>& array) {
-    return 32 + std::accumulate(array.begin(), array.end(), 0u,
-                                [](size_t sum, auto x) { return sum + size(x); });
-}
-
-template <typename T>
-void encode(const std::vector<T>& array, Data& data) {
-    encode(uint256_t(array.size()), data);
-
-    std::size_t headSize = 0;
-    for (auto& x : array) {
-        if (is_dynamic(x)) {
-            headSize += 32;
-        } else {
-            headSize += size(x);
-        }
-    }
-
-    std::size_t dynamicOffset = 0;
-    for (auto& x : array) {
-        if (is_dynamic(x)) {
-            encode(uint256_t(headSize + dynamicOffset), data);
-            dynamicOffset += size(x);
-        } else {
-            encode(x, data);
-        }
-    }
-
-    for (auto& x : array) {
-        if (is_dynamic(x))
-            encode(x, data);
-    }
-}
-
-template <typename T>
-std::string type_string(const std::vector<T>& array) {
-    return type_string(array[0]) + "[]";
-}
-
-} // namespace TW::Ethereum
+} // namespace TW::Ethereum::ABI

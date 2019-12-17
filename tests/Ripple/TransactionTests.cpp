@@ -41,7 +41,7 @@ TEST(RippleTransaction, serializeAmount) {
 TEST(RippleTransaction, serialize) {
     /// From https://github.com/trezor/trezor-core/blob/master/tests/test_apps.ripple.serializer.py
     auto account = Address("r9TeThyi5xiuUUrFjtPKZiHcDxs7K9H6Rb");
-    auto destination = Address("r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C");
+    auto destination = "r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C";
     auto tx1 = Transaction(
        /* amount */25000000,
        /* fee */10,
@@ -62,7 +62,7 @@ TEST(RippleTransaction, serialize) {
        /* sequence */144,
        /* last_ledger_sequence */0,
        /* account */Address("rGWTUVmm1fB5QUjMYn8KfnyrFNgDiD9H9e"),
-       /* destination */Address("rw71Qs1UYQrSQ9hSgRohqNNQcyjCCfffkQ"),
+       /* destination */"rw71Qs1UYQrSQ9hSgRohqNNQcyjCCfffkQ",
        /* destination_tag*/0
     );
     auto serialized2 = tx2.serialize();
@@ -75,16 +75,29 @@ TEST(RippleTransaction, serialize) {
        /* sequence */1,
        /* last_ledger_sequence */0,
        /* account */Address("r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C"),
-       /* destination */Address("rBqSFEFg2B6GBMobtxnU1eLA1zbNC9NDGM"),
+       /* destination */"rBqSFEFg2B6GBMobtxnU1eLA1zbNC9NDGM",
        /* destination_tag*/4146942154
     );
     auto serialized3 = tx3.serialize();
     ASSERT_EQ(hex(serialized3), "120000220000000024000000012ef72d50ca6140000000017d784068400000000000000c8114e851bbbe79e328e43d68f43445368133df5fba5a831476dac5e814cd4aa74142c3ab45e69a900e637aa2");
+
+    auto tx4 = Transaction(
+       /* amount */25000000,
+       /* fee */12,
+       /* flags */0,
+       /* sequence */1,
+       /* last_ledger_sequence */0,
+       /* account */Address("r4BPgS7DHebQiU31xWELvZawwSG2fSPJ7C"),
+       /* destination */"XVhidoXkozM5DTZFdDnJ5nYC8FPrTuJiyGh1VxSGS6RNJJ5",
+       /* ignore destination_tag*/12345
+    );
+    auto serialized4 = tx4.serialize();
+    ASSERT_EQ(hex(serialized4), hex(serialized3));
 }
 
 TEST(RippleTransaction, preImage) {
     auto account = Address("r9LqNeG6qHxjeUocjvVki2XR35weJ9mZgQ");
-    auto destination = Address("rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh");
+    auto destination = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
     auto tx1 = Transaction(
         /* amount */1000,
         /* fee */10,

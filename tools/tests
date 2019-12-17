@@ -14,4 +14,3 @@ build/tests/tests tests
 
 tools/ios-test
 tools/android-test
-tools/js-test

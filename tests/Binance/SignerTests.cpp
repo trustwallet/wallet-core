@@ -8,11 +8,10 @@
 #include "HDWallet.h"
 #include "HexCoding.h"
 #include "proto/Binance.pb.h"
-#include "Cosmos/Address.h"
+#include "Binance/Address.h"
 #include "Binance/Signer.h"
 #include "proto/Binance.pb.h"
 
-#include <TrustWalletCore/TWHRP.h>
 #include <gtest/gtest.h>
 
 namespace TW::Binance {
@@ -29,9 +28,9 @@ TEST(BinanceSigner, Sign) {
     input.set_private_key(key.data(), key.size());
 
     auto& order = *input.mutable_trade_order();
-    auto result = Cosmos::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu");
-    ASSERT_TRUE(result.second);
-    auto keyhash = result.first.keyHash;
+    Binance::Address address;
+    ASSERT_TRUE(Binance::Address::decode("bnb1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu", address));
+    auto keyhash = address.getKeyHash();
     order.set_sender(keyhash.data(), keyhash.size());
     order.set_id("BA36F0FAD74D8F41045463E4774F328F4AF779E5-36");
     order.set_symbol("NNB-338_BNB");
@@ -57,8 +56,8 @@ TEST(BinanceSigner, Build) {
     input.set_private_key(key.data(), key.size());
 
     auto& order = *input.mutable_trade_order();
-    auto address = Cosmos::Address(HRP_BINANCE, parse_hex("b6561dcc104130059a7c08f48c64610c1f6f9064"));
-    auto keyhash = address.keyHash;
+    auto address = Binance::Address(parse_hex("b6561dcc104130059a7c08f48c64610c1f6f9064"));
+    auto keyhash = address.getKeyHash();
     order.set_sender(keyhash.data(), keyhash.size());
     order.set_id("B6561DCC104130059A7C08F48C64610C1F6F9064-11");
     order.set_symbol("BTC-5C4_BNB");
@@ -107,10 +106,10 @@ TEST(BinanceSigner, BuildSend) {
     auto& order = *signingInput.mutable_send_order();
 
     auto fromKeyhash = parse_hex("40c2979694bbc961023d1d27be6fc4d21a9febe6");
-    auto fromAddress = Cosmos::Address(HRP_BINANCE, fromKeyhash);
+    auto fromAddress = Binance::Address(fromKeyhash);
 
     auto toKeyhash = parse_hex("88b37d5e05f3699e2a1406468e5d87cb9dcceb95");
-    auto toAddress = Cosmos::Address(HRP_BINANCE, toKeyhash);
+    auto toAddress = Binance::Address(toKeyhash);
 
     auto input = order.add_inputs();
     input->set_address(fromKeyhash.data(), fromKeyhash.size());
@@ -170,12 +169,12 @@ TEST(BinanceSigner, BuildSend2) {
     token.set_amount(100000000000000);
 
     auto input =  Proto::SendOrder::Input();
-    auto fromKeyHash = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromKeyHash = Binance::Address(fromPublicKey).getKeyHash();
     input.set_address(fromKeyHash.data(), fromKeyHash.size());
     *input.add_coins() = token;
 
     auto output =  Proto::SendOrder::Output();
-    auto toKeyHash = Cosmos::Address(HRP_BINANCE, toPublicKey).keyHash;
+    auto toKeyHash = Binance::Address(toPublicKey).getKeyHash();
     output.set_address(toKeyHash.data(), toKeyHash.size());
     *output.add_coins() = token;
 
@@ -205,11 +204,11 @@ TEST(BinanceSigner, BuildSend2) {
 TEST(BinanceSigner, BuildHTLT) {
     const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
     const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
 
     const auto toPrivateKey = PrivateKey(parse_hex("851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a"));
     const auto toPublicKey = PublicKey(toPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto toAddr = Cosmos::Address(HRP_BINANCE, toPublicKey).keyHash;
+    auto toAddr = Binance::Address(toPublicKey).getKeyHash();
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("test-chain");
@@ -249,7 +248,7 @@ TEST(BinanceSigner, BuildHTLT) {
 TEST(BinanceSigner, BuildDepositHTLT) {
     const auto fromPrivateKey = PrivateKey(parse_hex("851fab89c14f4bbec0cc06f5e445ec065efc641068d78b308c67217d9bd5c88a"));
     const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("test-chain");
@@ -280,7 +279,7 @@ TEST(BinanceSigner, BuildDepositHTLT) {
 TEST(BinanceSigner, BuildClaimHTLT) {
     const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
     const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("test-chain");
@@ -310,7 +309,7 @@ TEST(BinanceSigner, BuildClaimHTLT) {
 TEST(BinanceSigner, BuildRefundHTLT) {
     const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
     const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
-    auto fromAddr = Cosmos::Address(HRP_BINANCE, fromPublicKey).keyHash;
+    auto fromAddr = Binance::Address(fromPublicKey).getKeyHash();
 
     auto signingInput = Proto::SigningInput();
     signingInput.set_chain_id("test-chain");
@@ -331,6 +330,215 @@ TEST(BinanceSigner, BuildRefundHTLT) {
               "b8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240c9f36142534d16ec8ce656f8eb73"
               "70b32206a2d15198b7165acf1e2a18952c9e4570b0f862e1ab7bb868c30781a42c9e3ec0ae08982e8d6c"
               "91c55b83c71b7b1e180f2001");
+}
+
+TEST(BinanceSigner, BuildIssueOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const Data fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& issueOrder = *signingInput.mutable_issue_order();
+    issueOrder.set_from(fromAddr.data(), fromAddr.size());
+    issueOrder.set_name("NewBinanceToken");
+    issueOrder.set_symbol("NNB-338_BNB");
+    issueOrder.set_total_supply(1000000000);
+    issueOrder.set_mintable(true);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "b601f0625dee0a40"
+        "17efab80"
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120f"
+        "4e657742696e616e6365546f6b656e"
+        "1a0b"
+        "4e4e422d3333385f424e42"
+        "208094ebdc032801126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001"
+    );
+
+    /*
+        Matching binance chain sdk code:
+		// decode
+		var parsedTx tx.StdTx
+		rawMsg1, err := hex.DecodeString("b601f0625dee0a4017efab800a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120f4e657742696e616e6365546f6b656e1a0b4e4e422d3333385f424e42208094ebdc032801126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001")
+		assert.NoError(t, err)
+		err = tx.Cdc.UnmarshalBinaryLengthPrefixed(rawMsg1, &parsedTx)
+		assert.NoError(t, err)
+		fmt.Printf("%v\n", parsedTx)
+    */
+}
+
+TEST(BinanceSigner, BuildMintOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const Data fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& mintOrder = *signingInput.mutable_mint_order();
+    mintOrder.set_from(fromAddr.data(), fromAddr.size());
+    mintOrder.set_symbol("NNB-338_BNB");
+    mintOrder.set_amount(1000000);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "a101f0625dee0a2b"
+        "467e0829"
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b"
+        "4e4e422d3333385f424e42"
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001"
+    );
+
+    /*
+        Matching binance chain sdk code:
+		// decode
+		var parsedTx tx.StdTx
+		rawMsg1, err := hex.DecodeString("a101f0625dee0a2b467e08290a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b4e4e422d3333385f424e4218c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001")
+		assert.NoError(t, err)
+		err = tx.Cdc.UnmarshalBinaryLengthPrefixed(rawMsg1, &parsedTx)
+		assert.NoError(t, err)
+		fmt.Printf("%v\n", parsedTx)
+    */
+}
+
+TEST(BinanceSigner, BuildBurnOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const Data fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& burnOrder = *signingInput.mutable_burn_order();
+    burnOrder.set_from(fromAddr.data(), fromAddr.size());
+    burnOrder.set_symbol("NNB-338_BNB");
+    burnOrder.set_amount(1000000);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "a101f0625dee0a2b"
+        "7ed2d2a0"
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b"
+        "4e4e422d3333385f424e42"
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001"
+    );
+
+    /*
+        Matching binance chain sdk code:
+
+        // encode
+		priv := "eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"
+		keyManager, err := NewPrivateKeyManager(priv)
+		assert.NoError(t, err)
+		fromAddr, err := ctypes.AccAddressFromBech32("bnb1prrujx8kkukrcrppklggadhuvegfnx8phwey70")
+		assert.NoError(t, err)
+
+		burnMsg := msg.NewTokenBurnMsg(fromAddr, "NNB-338_BNB", 1000000)
+		signMsg := tx.StdSignMsg{
+			ChainID:       "test-chain",
+			AccountNumber: 15,
+			Sequence:      1,
+			Memo:          "",
+			Msgs:          []msg.Msg{burnMsg},
+			Source:        0,
+		}
+		rawSignResult, err := keyManager.Sign(signMsg)
+		fmt.Printf("%x\n", rawSignResult)
+
+		// decode back
+		var parsedTx tx.StdTx
+		rawMsg1, err := hex.DecodeString("a101f0625dee0a2b7ed2d2a00a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b4e4e422d3333385f424e4218c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240b2612500b80f5ee8fab1574e9b1763fd898a7048910d02e00dea6337d3c848c95aa2213db595179db076dfdb10f6e2d9b2aa76c9cd3ee11396ac224991e3e0cd180f2001")
+		assert.NoError(t, err)
+		err = tx.Cdc.UnmarshalBinaryLengthPrefixed(rawMsg1, &parsedTx)
+		assert.NoError(t, err)
+		fmt.Printf("%v\n", parsedTx)
+    */
+}
+
+TEST(BinanceSigner, BuildFreezeOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const Data fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& freezeOrder = *signingInput.mutable_freeze_order();
+    freezeOrder.set_from(fromAddr.data(), fromAddr.size());
+    freezeOrder.set_symbol("NNB-338_BNB");
+    freezeOrder.set_amount(1000000);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "a101f0625dee0a2b"
+        "e774b32d"
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b"
+        "4e4e422d3333385f424e42"
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001"
+    );
+
+    /*
+        Matching binance chain sdk code:
+		// decode
+		var parsedTx tx.StdTx
+		rawMsg1, err := hex.DecodeString("a101f0625dee0a2be774b32d0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b4e4e422d3333385f424e4218c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001")
+		assert.NoError(t, err)
+		err = tx.Cdc.UnmarshalBinaryLengthPrefixed(rawMsg1, &parsedTx)
+		assert.NoError(t, err)
+		fmt.Printf("%v\n", parsedTx)
+    */
+}
+
+TEST(BinanceSigner, BuildUnfreezeOrder) {
+    const auto fromPrivateKey = PrivateKey(parse_hex("eeba3f6f2db26ced519a3d4c43afff101db957a21d54d25dc7fd235c404d7a5d"));
+    const auto fromPublicKey = PublicKey(fromPrivateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
+    const Data fromAddr = Binance::Address(fromPublicKey).getKeyHash();
+
+    auto signingInput = Proto::SigningInput();
+    signingInput.set_chain_id("test-chain");
+    signingInput.set_account_number(15);
+    signingInput.set_sequence(1);
+    signingInput.set_private_key(fromPrivateKey.bytes.data(), fromPrivateKey.bytes.size());
+
+    auto& unfreezeOrder = *signingInput.mutable_unfreeze_order();
+    unfreezeOrder.set_from(fromAddr.data(), fromAddr.size());
+    unfreezeOrder.set_symbol("NNB-338_BNB");
+    unfreezeOrder.set_amount(1000000);
+
+    const auto data = Binance::Signer(std::move(signingInput)).build();
+    ASSERT_EQ(hex(data.begin(), data.end()),
+        "a101f0625dee0a2b"
+        "6515ff0d"
+        "0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b"
+        "4e4e422d3333385f424e42"
+        "18c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001"
+    );
+
+    /*
+        Matching binance chain sdk code:
+		// decode
+		var parsedTx tx.StdTx
+		rawMsg1, err := hex.DecodeString("a101f0625dee0a2b6515ff0d0a1408c7c918f6b72c3c0c21b7d08eb6fc66509998e1120b4e4e422d3333385f424e4218c0843d126e0a26eb5ae9872103a9a55c040c8eb8120f3d1b32193250841c08af44ea561aac993dbe0f6b6a8fc71240e3022069d897bf5bf4846d354fcd2c0e85807053be643c8b8c8596306003f7340d43a162722673eb848258b0435b1f49993d0e75d4ae43d03453a3ae57fe6991180f2001")
+		assert.NoError(t, err)
+		err = tx.Cdc.UnmarshalBinaryLengthPrefixed(rawMsg1, &parsedTx)
+		assert.NoError(t, err)
+		fmt.Printf("%v\n", parsedTx)
+    */
 }
 
 } // namespace TW::Binance

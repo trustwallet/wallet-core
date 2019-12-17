@@ -26,23 +26,25 @@ bool TWHarmonyAddressEqual(struct TWHarmonyAddress *_Nonnull lhs,
 
 bool TWHarmonyAddressIsValidString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string *>(string);
-    return Address::isValid(*s).first;
+    return Address::isValid(*s);
 }
 
 struct TWHarmonyAddress *_Nullable TWHarmonyAddressCreateWithString(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string *>(string);
-    if (!Address::isValid(*s).first) {
+    Address address;
+    if (!Address::decode(*s, address)) {
         return nullptr;
     }
-    return new TWHarmonyAddress{Address(*s)};
+    return new TWHarmonyAddress{address};
 }
 
 struct TWHarmonyAddress *_Nullable TWHarmonyAddressCreateWithKeyHash(TWData *_Nonnull keyHash) {
     auto d = reinterpret_cast<const Data *>(keyHash);
-    if (!Address::isValid(*d)) {
+    auto address = Address(*d);
+    if (address.getKeyHash().size() == 0) {
         return nullptr;
     }
-    return new TWHarmonyAddress{Address(*d)};
+    return new TWHarmonyAddress{address};
 }
 
 struct TWHarmonyAddress *_Nonnull TWHarmonyAddressCreateWithPublicKey(
@@ -60,5 +62,5 @@ TWString *_Nonnull TWHarmonyAddressDescription(struct TWHarmonyAddress *_Nonnull
 }
 
 TWData *_Nonnull TWHarmonyAddressKeyHash(struct TWHarmonyAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), address->impl.bytes.size());
+    return TWDataCreateWithBytes(address->impl.getKeyHash().data(), address->impl.getKeyHash().size());
 }

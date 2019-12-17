@@ -4,6 +4,7 @@ set -e
 
 ROOT="$PWD"
 PREFIX="${PREFIX:-$ROOT/build/local}"
+echo "PREFIX: $PREFIX"
 
 # Setup up folders
 export PATH="$PREFIX/bin":$PATH
@@ -56,7 +57,7 @@ fi
 unzip -d "$PREFIX" -o include.zip
 
 # Download Protobuf sources
-export PROTOBUF_VERSION=3.7.0
+export PROTOBUF_VERSION=3.9.0
 PROTOBUF_DIR="$ROOT/build/protobuf/staging"
 mkdir -p "$PROTOBUF_DIR"
 cd "$PROTOBUF_DIR"
@@ -70,15 +71,17 @@ cd protobuf-$PROTOBUF_VERSION
 ./configure --prefix="$PREFIX"
 make -j4
 make install
+# after install, cleanup to save space (docker)
+make clean
 "$PREFIX/bin/protoc" --version
 
 if [ -x "$(command -v swift)" ]; then
     # Download Swift Protobuf sources
-    export SWIFT_PROTOBUF_VERSION=1.5.0
+    export SWIFT_PROTOBUF_VERSION=1.7.0
     SWIFT_PROTOBUF_DIR="$ROOT/build/swift-protobuf/staging"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
-    if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
+    if [ ! -f $SWIFT_PROTOBUF_VERSION.tar.gz ]; then
         curl -fSsOL https://github.com/apple/swift-protobuf/archive/$SWIFT_PROTOBUF_VERSION.tar.gz
     fi
     tar xzf $SWIFT_PROTOBUF_VERSION.tar.gz
@@ -89,5 +92,11 @@ if [ -x "$(command -v swift)" ]; then
     cp -f "$SWIFT_PROTOBUF_DIR/swift-protobuf-$SWIFT_PROTOBUF_VERSION/.build/release/protoc-gen-swift" "$PREFIX/bin" | true
     $PREFIX/bin/protoc-gen-swift --version
 fi
+
+# Protobuf plugins
+cd "$ROOT/protobuf-plugin"
+cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
+make -Cbuild
+make -Cbuild install
 
 cd "$ROOT"

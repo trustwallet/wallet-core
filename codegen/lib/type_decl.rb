@@ -34,6 +34,14 @@ class TypeDecl
       TypeDecl.new(name: :uint32)
     when 'uint64_t'
       TypeDecl.new(name: :uint64)
+    when 'int8_t'
+      TypeDecl.new(name: :int8)
+    when 'int16_t'
+      TypeDecl.new(name: :int16)
+    when 'int32_t'
+      TypeDecl.new(name: :int32)
+    when 'int64_t'
+      TypeDecl.new(name: :int64)
     else
       nil
     end

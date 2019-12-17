@@ -8,10 +8,12 @@
 
 #include "../Data.h"
 #include "../PublicKey.h"
+#include "../PrivateKey.h"
 
 #include <string>
 
 using namespace TW;
 
 PublicKey parsePublicKey(const std::string& publicKey);
+PrivateKey parsePrivateKey(const std::string& privateKey);
 std::string base58ToHex(const std::string& data, size_t prefixLength, uint8_t* prefix);

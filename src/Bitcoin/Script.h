@@ -70,6 +70,9 @@ class Script {
     /// Builds a pay-to-script-hash (P2SH) script from a script hash.
     static Script buildPayToScriptHash(const Data& scriptHash);
 
+    /// Builds a pay-to-witness-program script, P2WSH or P2WPKH.
+    static Script buildPayToWitnessProgram(const Data& program);
+
     /// Builds a pay-to-witness-public-key-hash (P2WPKH) script from a public
     /// key hash.
     static Script buildPayToWitnessPubkeyHash(const Data& hash);

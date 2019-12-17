@@ -13,11 +13,31 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
 
-### Supported Blockchains
+## Documentation
+
+For more complete documentation, see [developer.trustwallet.com](https://developer.trustwallet.com/wallet-core).
+
+## Supported Blockchains
 
 We support Bitcoin, Ethereum, Binance Chain and 50+ blockchains, you can see the full list [here](docs/coins.md).
 
-# Usage
+## Building
+
+For build instructions, see [developer.trustwallet.com/wallet-core/building](https://developer.trustwallet.com/wallet-core/building).
+
+## WalletConsole Utility
+
+Our project comes with an interactive command-line utility called _WalletConsole_, for accessing key and address management functionality of the library.  It can be started using:
+
+```
+$ ./build/walletconsole/walletconsole 
+Type 'help' for list of commands.
+> help
+```
+
+Further details: [developer.trustwallet.com/wallet-core/walletconsole](https://developer.trustwallet.com/wallet-core/walletconsole).
+
+# Using from your project
 
 If you want to use wallet core in your project follow these instructions.
 
@@ -27,7 +47,7 @@ Add this dependency to build.gradle:
 
 ```groovy
 dependencies {
-    implementation 'com.trustwallet.walletcore:walletcore:0.12.1'
+    implementation 'com.trustwallet:wallet-core:0.12.24'
 }
 ```
 
@@ -51,7 +71,7 @@ The best way to submit feedback and report bugs is to [open a GitHub issue](http
 If you want to contribute code please see [Contributing](https://developer.trustwallet.com/wallet-core/contributing).
 If you want to add support for a new blockchain also see [Adding Support for a New Blockchain](https://developer.trustwallet.com/wallet-core/newblockchain), make sure you have read the [requirements](https://developer.trustwallet.com/wallet-core/newblockchain#requirements) section.
 
-Thanks to all the people who contribute. 
+Thanks to all the people who contribute.
 <a href="https://github.com/trustwallet/wallet-core/graphs/contributors"><img src="https://opencollective.com/wallet-core/contributors.svg?width=890&button=false" /></a>
 
 # License

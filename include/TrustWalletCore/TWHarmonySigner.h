@@ -16,8 +16,7 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWHarmonySigner;
 
-/// Signs a transaction.
+/// Signs transactions.
 TW_EXPORT_STATIC_METHOD
 TW_Harmony_Proto_SigningOutput TWHarmonySignerSign(TW_Harmony_Proto_SigningInput input);
-
 TW_EXTERN_C_END

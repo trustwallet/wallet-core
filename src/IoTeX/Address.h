@@ -6,40 +6,40 @@
 
 #pragma once
 
-#include <string>
-
-#include "Data.h"
-#include "PublicKey.h"
+#include "../Bech32Address.h"
 
 namespace TW::IoTeX {
 
-class Address {
-  public:
-    /// 20-byte public key hash
-    Data keyHash;
+/// IoTeX address is a Bech32Address, with "io" prefix and Sha3 Keccak hash.
+class Address: public Bech32Address {
+public:
+    /// Number of bytes in an address.
+    static constexpr size_t size = 20;
 
-    /// Determines whether a string makes a valid  address
-    static bool isValid(const std::string& string);
+    static const std::string hrp; // HRP_IOTEX
 
-    /// Determines whether a byte slice makes a valid  key hash
-    static bool isValid(const Data& data) { return data.size() == 20; }
+    static bool isValid(const std::string addr) { return Bech32Address::isValid(addr, hrp); }
 
-    /// Initializes an address with a string representation
-    explicit Address(const std::string& string);
+    Address() : Bech32Address(hrp) {}
 
-    /// Initializes an address with a public key
-    explicit Address(const PublicKey& publicKey);
+    /// Initializes an address with a key hash.
+    Address(Data keyHash) : Bech32Address(hrp, keyHash) {
+        if (getKeyHash().size() != Address::size) {
+            throw std::invalid_argument("invalid address data");
+        }
+    }
 
-    /// Initializes an address with a key hash
-    explicit Address(const Data& keyHash);
+    /// Initializes an address with a public key.
+    Address(const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA3K, publicKey) {
+        if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
+            throw std::invalid_argument("address may only be an extended SECP256k1 public key");
+        }      
+    }
 
-    /// Returns a string representation of the address
-    std::string string() const;
+    static bool decode(const std::string& addr, Address& obj_out) {
+        return Bech32Address::decode(addr, obj_out, hrp);
+    }
 };
-
-inline bool operator==(const Address& lhs, const Address& rhs) {
-    return lhs.keyHash == rhs.keyHash;
-}
 
 } // namespace TW::IoTeX
 

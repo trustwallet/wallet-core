@@ -7,9 +7,9 @@
 #pragma once
 
 #include "../proto/Binance.pb.h"
+#include "Data.h"
 
 #include <cstdint>
-#include <vector>
 
 namespace TW::Binance {
 
@@ -25,20 +25,20 @@ class Signer {
     ///
     /// \returns the signed transaction data or an empty vector if there is an
     /// error.
-    std::vector<uint8_t> build() const;
+    TW::Data build() const;
 
     /// Signs the transaction.
     ///
     /// \returns the transaction signature or an empty vector if there is an
     /// error.
-    std::vector<uint8_t> sign() const;
+    TW::Data sign() const;
 
   private:
     std::string signaturePreimage() const;
-    std::vector<uint8_t> encodeTransaction(const std::vector<uint8_t>& signature) const;
-    std::vector<uint8_t> encodeOrder() const;
-    std::vector<uint8_t> encodeSignature(const std::vector<uint8_t>& signature) const;
-    std::vector<uint8_t> aminoWrap(const std::string& raw, const std::vector<uint8_t>& typePrefix,
+    TW::Data encodeTransaction(const TW::Data& signature) const;
+    TW::Data encodeOrder() const;
+    TW::Data encodeSignature(const TW::Data& signature) const;
+    TW::Data aminoWrap(const std::string& raw, const TW::Data& typePrefix,
                                    bool isPrefixLength) const;
 };
 

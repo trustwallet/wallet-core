@@ -6,51 +6,29 @@
 
 #pragma once
 
+#include "../Bech32Address.h"
 #include "../Data.h"
 #include "../PublicKey.h"
 
-#include <cstdint>
 #include <string>
 
 namespace TW::Cosmos {
 
-class Address {
-  public:
-    /// Human-readable part.
-    ///
-    /// \see https://github.com/satoshilabs/slips/blob/master/slip-0173.md
-    std::string hrp;
-
-    /// Public key hash.
-    Data keyHash;
-
-    /// Determines whether a string makes a valid Cosmos address.
-    static bool isValid(const std::string& string);
-
-    /// Determines whether a string makes a valid Cosmos address, and the
-    /// HRP matches.
-    static bool isValid(const std::string& string, const std::string& hrp);
+/// A Bech32 Cosmos address.  Hrp has to be specified (e.g. "cosmos", "terra"...), hash is HASHER_SHA2_RIPEMD.
+class Address: public Bech32Address {
+public:
+    Address() : Bech32Address("") {}
 
     /// Initializes an address with a key hash.
-    Address(std::string hrp, Data keyHash) : hrp(std::move(hrp)), keyHash(std::move(keyHash)) {}
+    Address(const std::string& hrp, Data keyHash) : Bech32Address(hrp, keyHash) {}
 
     /// Initializes an address with a public key.
-    Address(std::string hrp, const PublicKey& publicKey);
+    Address(const std::string& hrp, const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}
 
-    /// Decodes an address.
-    ///
-    /// \returns a pair with the address and a success flag.
-    static std::pair<Address, bool> decode(const std::string& addr);
-
-    /// Encodes the address.
-    ///
-    /// \returns encoded address string, or empty string on failure.
-    std::string string() const;
-
-    bool operator==(const Address& rhs) const { return hrp == rhs.hrp && keyHash == rhs.keyHash; }
-
-  private:
-    Address() = default;
+    /// Creates an address object from the given string, if valid.  Returns success.
+    static bool decode(const std::string& addr, Address& obj_out) {
+        return Bech32Address::decode(addr, obj_out, "");
+    }
 };
 
 } // namespace TW::Cosmos

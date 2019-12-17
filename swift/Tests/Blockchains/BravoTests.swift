@@ -9,18 +9,18 @@ class BravoSignerTests: XCTestCase {
     // ensure valid input is signed
     func testSigning() throws {
         let signingInput = BravoSigningInput.with {
-            $0.chainID = Data(repeating: 0, count: 32);
-            $0.sender = "alice";
-            $0.recipient = "bob";
-            $0.amount = 90.0;
-            $0.testnet = false;
-            $0.memo = "Eva";
-            $0.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c6b")!;
-            $0.referenceBlockTime = 1552464180;
+            $0.chainID = Data(repeating: 0, count: 32)
+            $0.sender = "alice"
+            $0.recipient = "bob"
+            $0.amount = 90.0
+            $0.testnet = false
+            $0.memo = "Eva"
+            $0.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c6b")!
+            $0.referenceBlockTime = 1552464180
             $0.privateKey = Hash.sha256(data: "A".data(using: .utf8)!)
         }
         
-        let result = BravoSigner.sign(input: signingInput);
+        let result = BravoSigner.sign(input: signingInput)
         XCTAssertTrue(result.success, "Error signing: \(result.error)")
         XCTAssertEqual(result.objects.count, 1)
 
@@ -40,35 +40,35 @@ class BravoSignerTests: XCTestCase {
     // ensure invalid inputs are not signed
     func testFailures() throws {
         let goodInput = BravoSigningInput.with {
-            $0.chainID = Data(repeating: 0, count: 32);
-            $0.sender = "alice";
-            $0.recipient = "bob";
-            $0.amount = 90.0;
-            $0.testnet = false;
-            $0.memo = "Eva";
-            $0.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c6b")!;
-            $0.referenceBlockTime = 1552464180;
+            $0.chainID = Data(repeating: 0, count: 32)
+            $0.sender = "alice"
+            $0.recipient = "bob"
+            $0.amount = 90.0
+            $0.testnet = false
+            $0.memo = "Eva"
+            $0.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c6b")!
+            $0.referenceBlockTime = 1552464180
             $0.privateKey = Hash.sha256(data: "A".data(using: .utf8)!)
         }
         
         var badInput = goodInput
         badInput.amount = -90.0
-        var result = BravoSigner.sign(input: badInput);
+        var result = BravoSigner.sign(input: badInput)
         XCTAssertFalse(result.success, "Expected error but signing suceeded!")
         
         badInput = goodInput
         badInput.sender = String(repeating: "A", count: 17)
-        result = BravoSigner.sign(input: badInput);
+        result = BravoSigner.sign(input: badInput)
         XCTAssertFalse(result.success, "Expected error but signing suceeded!")
         
         badInput = goodInput
         badInput.memo = String(repeating: "A", count: 2049)
-        result = BravoSigner.sign(input: badInput);
+        result = BravoSigner.sign(input: badInput)
         XCTAssertFalse(result.success, "Expected error but signing suceeded!")
         
         badInput = goodInput
-        badInput.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c")!;
-        result = BravoSigner.sign(input: badInput);
+        badInput.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c")!
+        result = BravoSigner.sign(input: badInput)
         XCTAssertFalse(result.success, "Expected error but signing suceeded!")
     }
 }

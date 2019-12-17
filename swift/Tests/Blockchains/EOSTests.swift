@@ -27,7 +27,7 @@ class EOSTests: XCTestCase {
             "PUB_K1_5hieQEFWh68h6bjaYAY25Ptd2bmqLCaFsunaneh9gZsmSgUBUe",
             "PUB_K1_65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjTF",
             ] {
-                XCTAssertFalse(CoinType.steem.validate(address: addr))
+                XCTAssertFalse(CoinType.eos.validate(address: addr))
         }
     }
     

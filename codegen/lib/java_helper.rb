@@ -58,6 +58,14 @@ module JavaHelper
       'int'
     when :uint64
       'long'
+    when :int8
+      'byte'
+    when :int16
+      'short'
+    when :int32
+      'int'
+    when :int64
+      'long'
     when :size
       'int'
     when :data

@@ -28,6 +28,10 @@ int TWCoinTypeConfigurationGetDecimals(enum TWCoinType type);
 TW_EXPORT_STATIC_METHOD
 TWString *_Nonnull TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType type, TWString *_Nonnull transactionID);
 
+/// Returns account url in blockchain explorer
+TW_EXPORT_STATIC_METHOD
+TWString *_Nonnull TWCoinTypeConfigurationGetAccountURL(enum TWCoinType type, TWString *_Nonnull accountID);
+
 /// Returns full name of coin in lower case
 TW_EXPORT_STATIC_METHOD
 TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType type);

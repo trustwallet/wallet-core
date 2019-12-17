@@ -6,10 +6,10 @@
 
 #include "Coin.h"
 
-#include "ARK/Address.h"
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Algorand/Address.h"
+#include "Binance/Address.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
@@ -21,20 +21,21 @@
 #include "FIO/Address.h"
 #include "Groestlcoin/Address.h"
 #include "Harmony/Address.h"
-#include "IOST/Account.h"
 #include "Icon/Address.h"
 #include "IoTeX/Address.h"
-#include "NEO/Address.h"
+#include "Kusama/Address.h"
 #include "NEAR/Address.h"
+#include "NULS/Address.h"
 #include "Nano/Address.h"
 #include "Nebulas/Address.h"
 #include "Nimiq/Address.h"
 #include "Ontology/Address.h"
+#include "Polkadot/Address.h"
 #include "Ripple/Address.h"
-#include "Semux/Address.h"
+#include "Ripple/XAddress.h"
 #include "Solana/Address.h"
-#include "Steem/Address.h"
 #include "Stellar/Address.h"
+#include "TON/Address.h"
 #include "Tezos/Address.h"
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
@@ -49,7 +50,7 @@
 
 using namespace TW;
 
-bool TW::validateAddress(TWCoinType coin, const std::string &string) {
+bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
     auto hrp = stringForHRP(TW::hrp(coin));
@@ -61,6 +62,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Aion::Address::isValid(string);
 
     case TWCoinTypeBinance:
+        return Binance::Address::isValid(string);
+
     case TWCoinTypeCosmos:
     case TWCoinTypeTerra:
         return Cosmos::Address::isValid(string, hrp);
@@ -112,10 +115,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeWanchain:
         return Wanchain::Address::isValid(string);
+
     case TWCoinTypeICON:
         return Icon::Address::isValid(string);
-    case TWCoinTypeIOST:
-        return IOST::Account::isValid(string);
+
     case TWCoinTypeIoTeX:
         return IoTeX::Address::isValid(string);
 
@@ -126,11 +129,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Nimiq::Address::isValid(string);
 
     case TWCoinTypeXRP:
-        return Ripple::Address::isValid(string);
-
-    case TWCoinTypeSteem:
-        return Bravo::Address::isValid(string,
-                                       {TW::Steem::MainnetPrefix, TW::Steem::TestnetPrefix});
+        return Ripple::Address::isValid(string) || Ripple::XAddress::isValid(string);
 
     case TWCoinTypeStellar:
     case TWCoinTypeKin:
@@ -144,11 +143,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeZelcash:
     case TWCoinTypeZcash:
-        return Zcash::TAddress::isValid(string, {{Zcash::TAddress::staticPrefix, p2pkh},
-                                                 {Zcash::TAddress::staticPrefix, p2sh}});
+        return Zcash::TAddress::isValid(string);
 
     case TWCoinTypeZilliqa:
-        return Zilliqa::isValidAddress(string);
+        return Zilliqa::Address::isValid(string);
 
     case TWCoinTypeNano:
         return Nano::Address::isValid(string);
@@ -156,14 +154,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
     case TWCoinTypeNEAR:
         return NEAR::Address::isValid(string);
 
-    case TWCoinTypeNEO:
-        return NEO::Address::isValid(string);
-
-    case TWCoinTypeSemux:
-        return Semux::Address::isValid(string);
-
-    case TWCoinTypeARK:
-        return ARK::Address::isValid(string);
+    case TWCoinTypeNULS:
+        return NULS::Address::isValid(string);
 
     case TWCoinTypeWaves:
         return Waves::Address::isValid(string);
@@ -172,22 +164,31 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Nebulas::Address::isValid(string);
 
     case TWCoinTypeHarmony:
-        return Harmony::Address::isValid(string).first;
+        return Harmony::Address::isValid(string);
 
     case TWCoinTypeSolana:
         return Solana::Address::isValid(string);
 
+    case TWCoinTypeTON:
+        return TON::Address::isValid(string);
+
     case TWCoinTypeAlgorand:
         return Algorand::Address::isValid(string);
+
+    case TWCoinTypeKusama:
+        return Kusama::Address::isValid(string);
+
+    case TWCoinTypePolkadot:
+        return Polkadot::Address::isValid(string);
     }
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PrivateKey &privateKey) {
+std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
     auto keyType = TW::publicKeyType(coin);
     return TW::deriveAddress(coin, privateKey.getPublicKey(keyType));
 }
 
-std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
+std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto hrp = stringForHRP(TW::hrp(coin));
 
@@ -196,7 +197,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
         return Aeternity::Address(publicKey).string();
 
     case TWCoinTypeBinance:
-        return Cosmos::Address(HRP_BINANCE, publicKey).string();
+        return Binance::Address(publicKey).string();
 
     case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
@@ -249,9 +250,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
     case TWCoinTypeICON:
         return Icon::Address(publicKey, TWIconAddressTypeAddress).string();
 
-    case TWCoinTypeIOST:
-        return IOST::Account::encodePubKey(publicKey);
-
     case TWCoinTypeIoTeX:
         return IoTeX::Address(publicKey).string();
 
@@ -266,9 +264,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeXRP:
         return Ripple::Address(publicKey).string();
-
-    case TWCoinTypeSteem:
-        return Bravo::Address(publicKey, TW::Steem::MainnetPrefix).string();
 
     case TWCoinTypeTezos:
         return Tezos::Address(publicKey).string();
@@ -290,17 +285,11 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
     case TWCoinTypeNano:
         return Nano::Address(publicKey).string();
 
-    case TWCoinTypeNEO:
-        return NEO::Address(publicKey).string();
+    case TWCoinTypeNULS:
+        return NULS::Address(publicKey).string();
 
     case TWCoinTypeNEAR:
         return NEAR::Address(publicKey).string();
-
-    case TWCoinTypeSemux:
-        return Semux::Address(publicKey).string();
-
-    case TWCoinTypeARK:
-        return ARK::Address(publicKey).string();
 
     case TWCoinTypeWaves:
         return Waves::Address(publicKey).string();
@@ -314,8 +303,17 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
     case TWCoinTypeSolana:
         return Solana::Address(publicKey).string();
 
+    case TWCoinTypeTON:
+        return TON::Address(publicKey).string();
+
     case TWCoinTypeAlgorand:
         return Algorand::Address(publicKey).string();
+
+    case TWCoinTypeKusama:
+        return Kusama::Address(publicKey).string();
+
+    case TWCoinTypePolkadot:
+        return Polkadot::Address(publicKey).string();
     }
 }
 

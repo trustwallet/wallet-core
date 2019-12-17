@@ -5,13 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-
 #include "../Base58.h"
-#include "../HexCoding.h"
-
 #include <TrezorCrypto/ecdsa.h>
-
-#include <cassert>
 
 using namespace TW::Ripple;
 
@@ -20,7 +15,6 @@ bool Address::isValid(const std::string& string) {
     if (decoded.size() != Address::size) {
         return false;
     }
-
     return true;
 }
 
@@ -30,13 +24,6 @@ Address::Address(const std::string& string) {
         throw std::invalid_argument("Invalid address string");
     }
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
-}
-
-Address::Address(const std::vector<uint8_t>& data) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address key data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
 }
 
 Address::Address(const PublicKey& publicKey) {

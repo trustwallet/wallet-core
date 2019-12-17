@@ -1,24 +1,31 @@
+# Misc
 .DS_Store
-*~
-*.orig
 
 # Build directories
 .build/
 build/
 xcode/
+cmake-build-debug/
+.cquery_cache/
+.cxx/
 
 # Dependencies
 node_modules
 lib/json
 lib/protobuf
 
+# Editor
+*~
+*.orig
 .idea/
 .vscode/
+.project
 
 # Generated files
 jni/cpp/generated
 jni/java
 swift/Sources/Generated
+swift/wallet-core/
 src/Generated
 include/TrustWalletCore/TWHRP.h
 
@@ -26,6 +33,17 @@ include/TrustWalletCore/TWHRP.h
 coverage.info
 coverage/
 
-cmake-build-debug/
-.cquery_cache/
-.cxx/
+# Sourcetrail
+*.srctrldb
+*.srctrlbm
+
+# Samples -- iOS
+Pods/
+# Samples -- C++
+# build
+samples/cpp/CMakeFiles
+samples/cpp/CMakeCache.txt
+samples/cpp/Makefile
+samples/cpp/*.cmake
+# built binary
+samples/cpp/sample

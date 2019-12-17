@@ -105,6 +105,9 @@ message TransactionPlan {
 
     // Selected unspent transaction outputs.
     repeated UnspentTransaction utxos = 5;
+
+    // Zcash branch id
+    bytes branch_id = 6;
 };
 
 // Transaction signing output.
