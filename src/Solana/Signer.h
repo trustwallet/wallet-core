@@ -10,6 +10,7 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include <proto/Solana.pb.h>
 
 namespace TW::Solana {
 
@@ -21,6 +22,8 @@ class Signer {
     static void signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
                                     Transaction& transaction, Solana::Hash& recentBlockhash);
     static Data signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData);
+
+    static Proto::SigningOutput signProtobuf(const Proto::SigningInput& input);
 };
 
 } // namespace TW::Solana

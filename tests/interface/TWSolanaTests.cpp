@@ -23,9 +23,9 @@ TEST(TWSolanaSigner, SignTransfer) {
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_transfer_transaction();
-    message.set_private_key(privateKey.data(), privateKey.size());
     message.set_recipient("EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd");
     message.set_value((uint64_t)42L);
+    input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();
@@ -48,9 +48,9 @@ TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_stake_transaction();
-    message.set_private_key(privateKey.data(), privateKey.size());
     message.set_validator_pubkey("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     message.set_value((uint64_t)42L);
+    input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();
@@ -81,8 +81,8 @@ TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_deactivate_stake_transaction();
-    message.set_private_key(privateKey.data(), privateKey.size());
     message.set_validator_pubkey("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();
@@ -102,13 +102,13 @@ TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
 }
 
 TEST(TWSolanaSigner, SignWithdrawStakeTransaction) {
-    auto stakePrivateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
     auto& message = *input.mutable_withdraw_transaction();
-    message.set_private_key(stakePrivateKey.data(), stakePrivateKey.size());
     message.set_validator_pubkey("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
     message.set_value((uint64_t)42L);
+    input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("11111111111111111111111111111111");
 
     auto inputData = input.SerializeAsString();

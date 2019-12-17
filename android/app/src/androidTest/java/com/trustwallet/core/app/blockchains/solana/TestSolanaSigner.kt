@@ -25,13 +25,13 @@ class TestSolanaSigner {
     @Test
     fun testTransferSign() {
         val transferMessage = Solana.Transfer.newBuilder().apply {
-            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
             recipient = "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
             value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             transferTransaction = transferMessage
             recentBlockhash = blockhash
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
         }.build()
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)
@@ -43,13 +43,13 @@ class TestSolanaSigner {
     @Test
     fun testDelegateStakeSign() {
         val delegateStakeMessage = Solana.Stake.newBuilder().apply {
-            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
             validatorPubkey = commonValidatorPubkey
             value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             stakeTransaction = delegateStakeMessage
             recentBlockhash = blockhash
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
         }.build()
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)
@@ -61,12 +61,12 @@ class TestSolanaSigner {
     @Test
     fun testDeactivateStakeSign() {
         val deactivateStakeMessage = Solana.DeactivateStake.newBuilder().apply {
-            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
             validatorPubkey = commonValidatorPubkey
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             deactivateStakeTransaction = deactivateStakeMessage
             recentBlockhash = blockhash
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
         }.build()
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)
@@ -78,13 +78,13 @@ class TestSolanaSigner {
     @Test
     fun testWithdrawStakeSign() {
         val withdrawStakeMessage = Solana.WithdrawStake.newBuilder().apply {
-            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
             validatorPubkey = commonValidatorPubkey
             value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             withdrawTransaction = withdrawStakeMessage
             recentBlockhash = blockhash
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
         }.build()
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)

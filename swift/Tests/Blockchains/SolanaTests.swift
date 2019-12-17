@@ -32,13 +32,13 @@ class SolanaTests: XCTestCase {
 
     func testTransferSigner() throws {
         let transferMessage = SolanaTransfer.with {
-            $0.privateKey = privateKeyData
             $0.recipient = "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
             $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.transferTransaction = transferMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = privateKeyData
         }
 
         let output = SolanaSigner.sign(input: input)
@@ -56,13 +56,13 @@ class SolanaTests: XCTestCase {
 
     func testDelegateStakeSigner() throws {
         let delegateStakeMessage = SolanaStake.with {
-            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
             $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.stakeTransaction = delegateStakeMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
         let output = SolanaSigner.sign(input: input)
@@ -88,12 +88,12 @@ class SolanaTests: XCTestCase {
 
     func testDeactivateStakeSigner() throws {
         let deactivateStakeMessage = SolanaDeactivateStake.with {
-            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
             $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
         }
         let input = SolanaSigningInput.with {
             $0.deactivateStakeTransaction = deactivateStakeMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
         let output = SolanaSigner.sign(input: input)
@@ -112,13 +112,13 @@ class SolanaTests: XCTestCase {
 
     func testWithdrawStakeSigner() throws {
         let withdrawMessage = SolanaWithdrawStake.with {
-            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
             $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.withdrawTransaction = withdrawMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
         let output = SolanaSigner.sign(input: input)
