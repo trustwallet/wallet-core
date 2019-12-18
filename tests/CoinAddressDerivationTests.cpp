@@ -12,6 +12,11 @@
 namespace TW {
 
 TEST(Coin, DeriveAddress) {
+    // const auto keyType = TW::publicKeyType(TWCoinTypeEthereum); // TWPublicKeyTypeSECP256k1
+    const auto keyType = TWPublicKeyTypeSECP256k1;
+    const auto publicKey = PublicKey(parse_hex("0x02b6a1f5144a2f57c899772044244c34e748bfe06572f87e887f235f9909bee7aa"), keyType);
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeEthereum, publicKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
+
     const auto privateKey = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
 
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeAion, privateKey), "0xa0010b0ea04ba4d76ca6e5e9900bacf19bc4402eaec7e36ea7ddd8eed48f60f3");

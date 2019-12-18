@@ -30,8 +30,8 @@ TEST(Address, CoinexFromKeyHash) {
     auto publicKey = PublicKey(publicKeyData);
     auto address = Address("coinex", publicKey);
     ASSERT_EQ(address.string(), "coinex1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0juwxvr");
-    auto address = Address("cettest", publicKey);
-    ASSERT_EQ(address.string(), "cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j");
+    auto address_2 = Address("cettest", publicKey);
+    ASSERT_EQ(address_2.string(), "cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j");
 }
 
 } // namespace TW::Cosmos
