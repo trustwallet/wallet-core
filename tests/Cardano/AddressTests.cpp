@@ -162,6 +162,18 @@ TEST(CardanoAddress, FromPrivateKey) {
         auto address = Address(publicKey);
         ASSERT_EQ(address.string(), "Ae2tdPwUPEZJYT9g1JgQWtLveUHavyRxQGi6hVzoQjct7yyCLGgk3pCyx7h");
     }
+    {
+        // from cardano-crypto.js test
+        auto privateKey = PrivateKey(
+            parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
+            parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
+            parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000")
+        );
+        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Extended);
+        ASSERT_EQ(hex(publicKey.bytes), "e6f04522f875c1563682ca876ddb04c2e2e3ae718e3ff9f11c03dd9f9dccf69869272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000");
+        auto address = Address(publicKey);
+        ASSERT_EQ(address.string(), "Ae2tdPwUPEZCxt4UV1Uj2AMMRvg5pYPypqZowVptz3GYpK4pkcvn3EjkuNH");
+    }
 }
 
 TEST(CardanoAddress, PrivateKeyExtended) {
@@ -180,4 +192,17 @@ TEST(CardanoAddress, PrivateKeyExtended) {
     );
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(32, publicKeyNonext.bytes.size());
+}
+
+TEST(CardanoAddress, SignMessage) {
+    // from cardano-crypto.js test
+    auto privateKey = PrivateKey(
+        parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
+        parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
+        parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000")
+    );
+    Data message = TW::data("Hello world");
+    Data signature = privateKey.sign(message, TWCurveED25519Extended);
+    EXPECT_EQ("1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e",
+        hex(signature));
 }
