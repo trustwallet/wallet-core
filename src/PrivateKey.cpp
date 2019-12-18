@@ -55,7 +55,7 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve)
         break;
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
-    case TWCurveED25519Cardano:
+    case TWCurveED25519Extended:
     case TWCurveCurve25519:
         break;
     }
@@ -169,7 +169,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         ed25519_sign_blake2b(digest.data(), digest.size(), bytes.data(),
                              publicKey.bytes.data(), result.data());
     } break;
-    case TWCurveED25519Cardano: {
+    case TWCurveED25519Extended: {
         // TODO
     } break;
     case TWCurveCurve25519: {
@@ -205,7 +205,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(
     } break;
     case TWCurveED25519: // not supported
     case TWCurveED25519Blake2bNano: // not supported
-    case TWCurveED25519Cardano: // not supported
+    case TWCurveED25519Extended: // not supported
     case TWCurveCurve25519:         // not supported
         break;
     case TWCurveNIST256p1: {
@@ -251,7 +251,7 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
     case TWCurveNIST256p1:
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
-    case TWCurveED25519Cardano:
+    case TWCurveED25519Extended:
     case TWCurveCurve25519: {
         // not support
     } break;

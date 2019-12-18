@@ -89,7 +89,7 @@ PrivateKey HDWallet::getMasterKeyExtension(TWCurve curve) const {
 PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
     const auto curve = TWCoinTypeCurve(derivationPath.coin());
     auto node = getNode(*this, curve, derivationPath);
-    if (curve == TWCurve::TWCurveED25519Cardano) {
+    if (curve == TWCurve::TWCurveED25519Extended) {
         // special handling for Cardano
         auto pkData = Data(node.private_key, node.private_key + PrivateKey::size);
         auto extData = Data(node.private_key_extension, node.private_key_extension + PrivateKey::size);
@@ -154,7 +154,7 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string &e
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeED25519);
     case TWCurveED25519Blake2bNano:
         return PublicKey(Data(node.public_key, node.public_key + 33), TWPublicKeyTypeED25519Blake2b);
-    case TWCurveED25519Cardano:
+    case TWCurveED25519Extended:
         {
             // concatenate public key and chain code (2x32 bytes)
             Data concat(node.public_key, node.public_key + 32);
@@ -239,7 +239,7 @@ bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher
 HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath) {
     auto node = getMasterNode(wallet, curve);
     for (auto& index : derivationPath.indices) {
-        if (curve == TWCurveED25519Cardano) {
+        if (curve == TWCurveED25519Extended) {
             // special handling for Cardano
             hdnode_private_ckd_cardano(&node, index.derivationIndex());
         } else {
@@ -251,7 +251,7 @@ HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& deri
 
 HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
     auto node = HDNode();
-    if (curve == TWCurveED25519Cardano) {
+    if (curve == TWCurveED25519Extended) {
         // special handling for Cardano, use entropy not seed
         hdnode_from_seed_cardano((const uint8_t*)"", 0, wallet.entropy.data(), wallet.entropy.size(), &node);
     } else {

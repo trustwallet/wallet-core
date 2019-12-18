@@ -52,8 +52,8 @@ TEST(CardanoAddress, MnemonicToAddress) {
         auto mnemonic = "cost dash dress stove morning robust group affair stomach vacant route volume yellow salute laugh";
         auto wallet = HDWallet(mnemonic, "");
 
-        PrivateKey masterPrivKey = wallet.getMasterKey(TWCurve::TWCurveED25519Cardano);
-        PrivateKey masterPrivKeyExt = wallet.getMasterKeyExtension(TWCurve::TWCurveED25519Cardano);
+        PrivateKey masterPrivKey = wallet.getMasterKey(TWCurve::TWCurveED25519Extended);
+        PrivateKey masterPrivKeyExt = wallet.getMasterKeyExtension(TWCurve::TWCurveED25519Extended);
         ASSERT_EQ("a018cd746e128a0be0782b228c275473205445c33b9000a33dd5668b430b5744", hex(masterPrivKey.bytes));
         ASSERT_EQ("26877cfe435fddda02409b839b7386f3738f10a30b95a225f4b720ee71d2505b", hex(masterPrivKeyExt.bytes));
 
