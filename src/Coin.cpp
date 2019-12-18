@@ -20,6 +20,7 @@
 #include "EOS/Address.h"
 #include "Ethereum/Address.h"
 #include "FIO/Address.h"
+#include "Filecoin/Address.h"
 #include "Groestlcoin/Address.h"
 #include "Harmony/Address.h"
 #include "Icon/Address.h"
@@ -185,6 +186,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeCardano:
         return Cardano::Address::isValid(string);
+
+    case TWCoinTypeFilecoin:
+        return Filecoin::Address::isValid(string);
     }
 }
 
@@ -323,6 +327,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeCardano:
         return Cardano::Address(publicKey).string();
+
+    case TWCoinTypeFilecoin:
+        return Filecoin::Address(publicKey).string();
     }
 }
 

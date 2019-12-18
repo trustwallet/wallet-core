@@ -1306,5 +1306,26 @@
             "clientPublic": "", 
             "clientDocs": "https://cardanodocs.com/introduction/"
         }
+    },
+    {
+        "id": "filecoin",
+        "name": "Filecoin",
+        "symbol": "FIL",
+        "decimals": 8,
+        "blockchain": "Filecoin",
+        "derivationPath": "m/44'/461'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": {
+            "url": "https://??",
+            "txPath": "/??",
+            "accountPath": "/??"
+        },
+        "info": {
+            "url": "https://filecoin.io/",
+            "client": "https://github.com/filecoin-project/lotus",
+            "clientPublic": "",
+            "clientDocs": "https://docs.lotu.sh"
+        }
     }
 ]

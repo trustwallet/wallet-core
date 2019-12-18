@@ -82,5 +82,6 @@ class CoinAddressDerivationTests {
         POLKADOT -> assertEquals("1b97X8xTpFKMDzJpxiVhdYMNvekBDSfvGFf4DutxFkUjqfR", address)
         KAVA -> assertEquals("kava1drpa0x9ptz0fql3frv562rcrhj2nstuz3pas87", address)
         CARDANO -> assertEquals("Ae2tdPwUPEZJ2TwjFBMCnjz6t43pr4QVnBjCGSW8BMsttrt2WagC1D7LUWa", address)
+        FILECOIN -> assertEquals("f1zzykebxldfcakj5wdb5n3n7priul522fnmjzori", address)
     }
 }
