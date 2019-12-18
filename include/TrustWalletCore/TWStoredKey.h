@@ -66,6 +66,10 @@ struct TWAccount *_Nullable TWStoredKeyAccount(struct TWStoredKey *_Nonnull key,
 TW_EXPORT_METHOD
 struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin, struct TWHDWallet *_Nullable wallet);
 
+/// Remove the account for a specific coin
+TW_EXPORT_METHOD
+void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin);
+
 /// Adds a new account.
 TW_EXPORT_METHOD
 void TWStoredKeyAddAccount(struct TWStoredKey *_Nonnull key, TWString *_Nonnull address, TWString *_Nonnull derivationPath, TWString *_Nonnull extetndedPublicKey);

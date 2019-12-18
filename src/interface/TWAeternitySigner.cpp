@@ -7,6 +7,7 @@
 #include "../Aeternity/Signer.h"
 #include "../Aeternity/Transaction.h"
 #include "../proto/Aeternity.pb.h"
+#include "../uint256.h"
 #include <TrustWalletCore/TWAeternitySigner.h>
 
 using namespace TW;
@@ -21,7 +22,7 @@ TW_Aeternity_Proto_SigningOutput TWAeternitySignerSign(TW_Aeternity_Proto_Signin
     std::string recipient_id = input.to_address();
     std::string payload = input.payload();
 
-    auto tx = Transaction(sender_id, recipient_id, input.amount(), input.fee(), payload, input.ttl(), input.nonce());
+    auto tx = Transaction(sender_id, recipient_id, load(input.amount()), load(input.fee()), payload, input.ttl(), input.nonce());
 
     auto output = Signer::sign(privateKey, tx);
 

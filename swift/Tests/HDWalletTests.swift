@@ -27,7 +27,6 @@ class HDWalletTests: XCTestCase {
     func testDerive() {
         let wallet = HDWallet.test
 
-
         let key0 = wallet.getKeyBIP44(coin: .ethereum, account: 0, change: 0, address: 0)
         let key1 = wallet.getKeyBIP44(coin: .ethereum, account: 0, change: 0, address: 1)
 
@@ -99,7 +98,7 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual("hx78c6f744c68d48793cd64716189c181c66907b24", address0)
         XCTAssertEqual("hx92373c16531761b31a7124c94718da43db8c9d89", address1)
     }
-    
+
     func testDeriveOntology() {
         let ontology = CoinType.ontology
         let wallet = HDWallet.test
@@ -296,11 +295,10 @@ class HDWalletTests: XCTestCase {
         let xpub2 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: bitcoin, account: 0, change: 0, address: 2))!
         let xpub9 = HDWallet.derive(from: xpub, at: DerivationPath(purpose: .bip44, coinType: bitcoin, account: 0, change: 0, address: 9))!
 
-
         let xpubAddr2 = BitcoinAddress(publicKey: xpub2, prefix: CoinType.bitcoin.p2pkhPrefix)!
         let xpubAddr9 = BitcoinAddress(publicKey: xpub9, prefix: CoinType.bitcoin.p2pkhPrefix)!
 
-        XCTAssertEqual(xpubAddr2.description,  "1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb")
+        XCTAssertEqual(xpubAddr2.description, "1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb")
         XCTAssertEqual(xpubAddr9.description, "1DUrqK4hj6vNNUTWXADpbqyjVWUYFD7xTZ")
     }
 

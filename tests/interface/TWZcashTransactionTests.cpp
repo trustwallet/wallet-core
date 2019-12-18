@@ -55,7 +55,7 @@ TEST(ZcashTransaction, Encode) {
     );
 
     auto scriptCode = Bitcoin::Script(parse_hex("76a914507173527b4c3318a2aecd793bf1cfed705950cf88ac"));
-    auto preImage = transaction.getPreImage(scriptCode, 0, 1, 0x02faf080);
+    auto preImage = transaction.getPreImage(scriptCode, 0, TWBitcoinSigHashTypeAll, 0x02faf080);
     ASSERT_EQ(hex(preImage.begin(), preImage.end()),
         /* header */              "04000080"
         /* versionGroupId */      "85202f89"
@@ -75,7 +75,7 @@ TEST(ZcashTransaction, Encode) {
         /* sequence */            "feffffff"
     );
 
-    auto sighash = transaction.getSignatureHash(scriptCode, 0, 1, 0x02faf080, BASE);
+    auto sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashTypeAll, 0x02faf080, BASE);
     ASSERT_EQ(hex(sighash.begin(), sighash.end()), "f3148f80dfab5e573d5edfe7a850f5fd39234f80b5429d3a57edcc11e34c585b");
 }
 
@@ -86,7 +86,7 @@ TEST(ZcashTransaction, Signing) {
     const int64_t fee = 6000;
 
     auto input = Bitcoin::Proto::SigningInput();
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
     input.set_to_address("t1QahNjDdibyE4EdYkawUSKBBcVTSqv64CS");

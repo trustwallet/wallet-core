@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package TW.Coinex.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Amount
+message Amount {
+    string denom = 1;
+    int64 amount = 2;
+}
+
+// Fee
+message Fee {
+    repeated Amount amounts = 1;
+    uint64 gas = 2;
+}
+
+// Message for sending coins.
+message SendCoinsMessage {
+    string from_address = 1;
+    string to_address = 2;
+    repeated Amount amounts = 3;
+    int64 unlock_time = 4;
+    // default is cosmos-sdk/MsgSend
+    string type_prefix = 5;
+}
+
+// Message for staking.
+message StakeMessage {
+    string delegator_address = 1;
+    string validator_address = 2;
+    Amount amount = 3;
+    // cosmos-sdk/MsgDelegate to stake and cosmos-sdk/MsgUndelegate to unstake
+    string type_prefix = 4;
+}
+
+// Message for redelegate.
+message RedelegateMessage {
+    string delegator_address = 1;
+    string validator_src_address = 2;
+    string validator_dst_address = 3;
+    Amount amount = 4;
+    string type_prefix = 5;
+}
+
+// Signature
+message Signature {
+    bytes public_key = 1;
+    bytes signature = 2;
+}
+
+// Message for staking.
+message WithdrawStakeRewardMessage {
+    string delegator_address = 1;
+    string validator_address = 2;
+    // default is cosmos-sdk/MsgWithdrawDelegationReward
+    string type_prefix = 3;
+}
+
+// Message for staking.
+message WithdrawStakeRewardAndRestakeMessage {
+    string delegator_address = 1;
+    string validator_address = 2;
+    Amount amount = 3;
+    string type_prefix_1 = 4; // withdraw
+    string type_prefix_2 = 5; // stake
+}
+
+// Message for alias
+message SetAliasMessage {
+    string owner = 1;
+    string alias = 2;
+    bool is_add = 3;
+    bool as_default = 4;  
+
+    string type_prefix = 5;
+}
+
+// Message for DEX create order
+message CreateOrderMessage {
+    string sender = 1;
+    int64 identify = 2;
+    string trading_pair = 3;
+    int64 order_type = 4;
+    int64 price_precision = 5;
+    string price = 6;
+    string quantity = 7;
+    int64 side = 8;
+    string time_in_force = 9;
+    string exist_blocks = 10;
+
+    string type_prefix = 11;
+}
+
+// Message for DEX cancel order
+message CancelOrderMessage {
+    string order_id = 1;
+    string sender = 2;
+
+    string type_prefix = 3;
+}
+
+// Transaction
+message Transaction {
+    Fee fee = 1;
+    string memo = 2;
+    Signature signature = 3;
+
+    oneof message_oneof {
+        SendCoinsMessage send_coins_message = 4;
+        StakeMessage stake_message = 5;
+        StakeMessage unstake_message = 6;
+        RedelegateMessage redelegate_message = 7;
+        WithdrawStakeRewardMessage withdraw_stake_reward_message = 8;
+        WithdrawStakeRewardAndRestakeMessage withdraw_stake_reward_and_restake_message = 9;
+        SetAliasMessage set_alias_message = 10;
+        CreateOrderMessage create_order_message = 11;
+        CancelOrderMessage cancel_order_message = 12;
+    }
+}
+
+// Input data necessary to create a signed order.
+message SigningInput {
+    uint64 account_number = 1;
+    string chain_id = 2;
+    Fee fee = 3;
+    string memo = 4;
+    uint64 sequence = 5;
+
+    bytes private_key = 6;
+
+    oneof message_oneof {
+        SendCoinsMessage send_coins_message = 7;
+        StakeMessage stake_message = 8;
+        StakeMessage unstake_message = 9;
+        RedelegateMessage redelegate_message = 10;
+        WithdrawStakeRewardMessage withdraw_stake_reward_message = 11;
+        WithdrawStakeRewardAndRestakeMessage withdraw_stake_reward_and_restake_message = 12;
+        SetAliasMessage set_alias_message = 13;
+        CreateOrderMessage create_order_message = 14;
+        CancelOrderMessage cancel_order_message = 15;
+    }
+    // default is cosmos-sdk/MsgSend
+    string type_prefix = 16;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signature
+    bytes signature = 1;
+    // Signed transaction in JSON.
+    string json = 2;
+}

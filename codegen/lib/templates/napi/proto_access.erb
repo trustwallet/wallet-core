@@ -1,6 +1,0 @@
-<% param = locals[:param] -%>
-<% index = locals[:index] -%>
-<% name = param.name -%>
-<% type = param.type -%>
-    Uint8Array <%= name %>ByteArray = info[<%= index %>].As<Uint8Array>();
-    TWData *<%= param.name %>Data = TWDataCreateWithUint8Array(<%= name %>ByteArray);

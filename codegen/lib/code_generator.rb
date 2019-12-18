@@ -5,8 +5,6 @@ require 'fileutils'
 require 'java_helper'
 require 'jni_helper'
 require 'swift_helper'
-require 'js_helper'
-require 'napi_helper'
 
 # Code generation
 class CodeGenerator
@@ -79,7 +77,7 @@ class CodeGenerator
     render_template(header: 'js/header.erb', template: 'js_napi_cc.erb', output_subfolder: 'js/cpp/generated', extension: 'cc')
 
     binding_gyp = render('napi/binding.gyp.erb')
-    binding_gyp_path = File.expand_path(File.join(output_folder, 'js/cpp/', 'binding.gyp'))
+    binding_gyp_path = File.expand_path(File.join(output_folder, 'js/', 'binding.gyp'))
     File.write(binding_gyp_path, binding_gyp)
   end
 

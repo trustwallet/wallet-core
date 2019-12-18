@@ -10,7 +10,7 @@
 #include "TWData.h"
 #include "TWString.h"
 
-#include "TWBitcoinAddress.h"
+#include <TrustWalletCore/TWBitcoinAddress.h>
 
 TW_EXTERN_C_BEGIN
 

@@ -123,6 +123,10 @@ struct TWAccount *_Nullable TWStoredKeyAccountForCoin(struct TWStoredKey *_Nonnu
     }
 }
 
+void TWStoredKeyRemoveAccountForCoin(struct TWStoredKey *_Nonnull key, enum TWCoinType coin) {
+    key->impl.removeAccount(coin);
+}
+
 void TWStoredKeyAddAccount(struct TWStoredKey *_Nonnull key, TWString *_Nonnull address, TWString *_Nonnull derivationPath, TWString *_Nonnull extetndedPublicKey) {
     auto& addressString = *reinterpret_cast<const std::string*>(address);
     auto& extetndedPublicKeyString = *reinterpret_cast<const std::string*>(extetndedPublicKey);

@@ -49,7 +49,7 @@ TEST(DecredSigner, Sign) {
 
     // Setup input
     Bitcoin::Proto::SigningInput input;
-    input.set_hash_type(TWSignatureHashTypeAll);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(100'000'000);
     input.set_byte_fee(1);
     input.set_to_address("DsoPDLh462ULTy1QMSvBGLqGKQENerrdZDH");

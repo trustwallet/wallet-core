@@ -1,9 +1,0 @@
-node_modules
-
-# Generated files
-proto/*
-cpp/generated/*
-cpp/Sources.cc
-binding.gyp
-js/generated/*
-dist/*

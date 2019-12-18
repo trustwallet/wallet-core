@@ -27,3 +27,21 @@ TEST(TWStoredKey, importInvalidKey) {
     ASSERT_EQ(ont, nullptr);
     ASSERT_NE(tezos, nullptr);
 }
+
+TEST(TWStoredKey, removeAccountForCoin) {
+    auto password = "password";
+    auto key = TWStoredKeyCreate("Test KeyStore", password);
+    auto wallet = TWStoredKeyWallet(key, password);
+    
+    ASSERT_NE(TWStoredKeyAccountForCoin(key, TWCoinTypeEthereum, wallet), nullptr);
+    ASSERT_NE(TWStoredKeyAccountForCoin(key, TWCoinTypeBitcoin, wallet), nullptr);
+    
+    ASSERT_EQ(TWStoredKeyAccountCount(key), 2);
+    
+    TWStoredKeyRemoveAccountForCoin(key, TWCoinTypeBitcoin);
+    
+    ASSERT_EQ(TWStoredKeyAccountCount(key), 1);
+    
+    ASSERT_NE(TWStoredKeyAccountForCoin(key, TWCoinTypeEthereum, nullptr), nullptr);
+    ASSERT_EQ(TWStoredKeyAccountForCoin(key, TWCoinTypeBitcoin, nullptr), nullptr);
+}
