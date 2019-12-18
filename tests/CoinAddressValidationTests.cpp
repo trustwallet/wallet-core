@@ -311,4 +311,11 @@ TEST(Coin, validateAddressAlgorand) {
     EXPECT_FALSE(validateAddress(TWCoinTypeAlgorand, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
 }
 
+TEST(Coin, ValidateAddresKavaa) {
+    // TODO add address
+    EXPECT_TRUE(validateAddress(TWCoinTypeKava, "kava..."));
+    EXPECT_TRUE(validateAddress(TWCoinTypeKava, "kavavaloper..."));
+    EXPECT_FALSE(validateAddress(TWCoinTypeKava, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+}
+
 } // namespace TW
