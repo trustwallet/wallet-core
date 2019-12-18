@@ -7,7 +7,6 @@
 import XCTest
 import TrustWalletCore
 
-// TODO create a tx and keys n stuff and add it in
 
 class KavaTests: XCTestCase {
 
@@ -16,39 +15,35 @@ class KavaTests: XCTestCase {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = CosmosAddress(hrp: .kava, publicKey: publicKey)!.description
 
-        let message = CosmosMessage.with {
-            $0.rawJsonMessage = CosmosMessage.RawJSON.with {
-                $0.type = "pay/MsgSend"
-                $0.value = """
-                {
-                    "amount": [{
-                        "amount": "100000",
-                        "denom": "ukava"
-                    }],
-                    "from_address": "\(fromAddress)",
-                    "to_address": "terra1szvgdsasnffunwakp9w040unxdresk7a34cfka"
-                }
-                """
-            }
+        let sendCoinsMessage = CosmosMessage.Send.with {
+            $0.fromAddress = fromAddress
+            $0.toAddress = "kava1zrst72upua78pylhku9csxd5zmhsyrk7xhrdlf"
+            $0.amounts = [CosmosAmount.with {
+                $0.amount = 1000000
+                $0.denom = "ukava"
+            }]
         }
 
-        let feeAmount = CosmosAmount.with {
-            $0.amount = 30000
-            $0.denom = "uluna"
+        let message = CosmosMessage.with {
+            $0.sendCoinsMessage = sendCoinsMessage
         }
 
         let fee = CosmosFee.with {
             $0.gas = 200000
-            $0.amounts = [feeAmount]
+            $0.amounts = [CosmosAmount.with {
+                $0.amount = 1000
+                $0.denom = "ukava"
+            }]
         }
 
         let signingInput = CosmosSigningInput.with {
-            $0.accountNumber = 1516
-            $0.chainID = "columbus-2"
+            $0.accountNumber = 12345
+            $0.chainID = "kava-2"
+            $0.sequence = 123
+            $0.memo = ""
             $0.messages = [message]
             $0.fee = fee
             $0.privateKey = privateKey.data
-            $0.typePrefix = "pay/MsgSend"
         }
 
         let output = CosmosSigner.sign(input: signingInput)
@@ -56,36 +51,43 @@ class KavaTests: XCTestCase {
         let expectedJSON: String =
         """
 {
-    "mode": "block",
-    "tx": {
-        "fee": {
-            "amount": [{
-                "amount": "30000",
-                "denom": "uluna"
-            }],
-            "gas": "200000"
-        },
-        "memo": "",
-        "msg": [{
-            "type": "pay/MsgSend",
-            "value": {
-                "amount": [{
-                    "amount": "100000",
-                    "denom": "uluna"
-                }],
-                "from_address": "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe",
-                "to_address": "terra1szvgdsasnffunwakp9w040unxdresk7a34cfka"
+  "mode": "block",
+  "tx": {
+    "fee": {
+      "amount": [
+        {
+          "amount": "1000",
+          "denom": "ukava"
+        }
+      ],
+      "gas": "200000"
+    },
+    "memo": "",
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgSend",
+        "value": {
+          "amount": [
+            {
+              "amount": "1000000",
+              "denom": "ukava"
             }
-        }],
-        "signatures": [{
-            "pub_key": {
-                "type": "tendermint/PubKeySecp256k1",
-                "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
-            },
-            "signature": "uJYs+ob1GP25WOx+WCBH0LVfPP4rsV2wEkLB/VTbgVpBZOiWGaf+QJC/J/R8bE6LpcVI3V7cCejX4BtyLnxDjA=="
-        }],
-        "type": "pay/MsgSend"
-    }
+          ],
+          "from_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
+          "to_address": "kava1zrst72upua78pylhku9csxd5zmhsyrk7xhrdlf"
+        }
+      }
+    ],
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+        },
+        "signature": "jy4Xn5PiWJLkNVuQddn00UENDyrf0VIvXVjT0dEm5H40Re3uFMWjOXxS6IGNdR3Flv1EC5kKv1W2BuvaKK6m0g=="
+      }
+    ]
+  }
 }
 """
 

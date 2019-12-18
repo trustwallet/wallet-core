@@ -23,7 +23,7 @@ TEST(TWKavaCoinType, TWCoinType) {
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeKava));
 
     ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeKava), 6);
-    ASSERT_EQ(TWBlockchainKava, TWCoinTypeBlockchain(TWCoinTypeKava));
+    ASSERT_EQ(TWBlockchainCosmos, TWCoinTypeBlockchain(TWCoinTypeKava));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeKava));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeKava));
     assertStringsEqual(symbol, "KAVA");

@@ -382,11 +382,10 @@ class HDWalletTests: XCTestCase {
     }
 
     func testDeriveKava() {
-        // TODO generate and copy in address for mnemoinc above, using new coin type
         let coin = CoinType.kava
         let key = HDWallet.test.getKeyForCoin(coin: coin)
         let address = CoinType.kava.deriveAddress(privateKey: key)
 
-        XCTAssertEqual(address, "kava...")
+        XCTAssertEqual(address, "kava1zrst72upua78pylhku9csxd5zmhsyrk7xhrdlf")
     }
 }

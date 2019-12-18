@@ -182,8 +182,7 @@ class CoinAddressDerivationTests: XCTestCase {
                     let expectedResult = "1b97X8xTpFKMDzJpxiVhdYMNvekBDSfvGFf4DutxFkUjqfR"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .kava:
-                // TODO modify client to generate from above mnemonic, add address
-                    let expectedResult = "kava..."
+                    let expectedResult = "kava1drpa0x9ptz0fql3frv562rcrhj2nstuz3pas87"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
