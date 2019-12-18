@@ -1330,5 +1330,28 @@
             "clientPublic": "http://seed1.ngd.network:10332",
             "clientDocs": "https://neo.org/eco"
         }
+    },
+    {
+        "id": "filecoin",
+        "name": "Filecoin",
+        "symbol": "FIL",
+        "decimals": 18,
+        "blockchain": "Filecoin",
+        "derivationPath": "m/44'/461'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": {
+            "url": "https://filscan.io",
+            "txPath": "/#/message/detail?cid=",
+            "accountPath": "/#/address/detail?address=",
+            "sampleTx": "bafy2bzacecbm3ofxjjzcl2rg32ninphza34mm3ijr55zjsamwfqmz4ib63mqe",
+            "sampleAccount": "t1nbb73vhk5dtmnsgeaetbo76daepqjtrfoccn74i"
+        },
+        "info": {
+            "url": "https://filecoin.io/",
+            "client": "https://github.com/filecoin-project/lotus",
+            "clientPublic": "",
+            "clientDocs": "https://docs.lotu.sh"
+        }
     }
 ]
