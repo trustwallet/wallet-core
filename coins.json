@@ -1268,7 +1268,7 @@
         "decimals": 6, 
         "blockchain": "Cardano", 
         "derivationPath": "m/44'/1815'/0'/0/0", 
-        "curve": "ed25519Cardano", 
+        "curve": "ed25519Extended", 
         "publicKeyType": "ed25519Extended", 
         "explorer": {
             "url": "https://cardanoexplorer.com", 
