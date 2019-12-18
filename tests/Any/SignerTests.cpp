@@ -248,3 +248,25 @@ TEST(Signer, StellarTransactionSign) {
     ASSERT_TRUE(output.success());
     ASSERT_EQ(output.output(), "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB");
 }
+
+TEST(Signer, SolanaTransactionSign) {
+    auto transaction = R"({"transferTransaction": {"recipient": "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd", "value": 42}, "recentBlockhash": "11111111111111111111111111111111"})";
+    auto input = Proto::SigningInput();
+
+    input.set_private_key("8778cc93c6596387e751d2dc693bbd93e434bd233bc5b68a826c56131821cb63");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeSolana);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    auto expectedHex =
+        "01fda1c8ad8872d94f7eab52f9c38dc77e1061f4897e3de2b8469eb0992269f6fa1f173e93dbb2da738ab4e895"
+        "9ffa50cd087cdfa889f3a1b8acdd62552f7c1d070100020366c2f508c9c555cacc9fb26d88e88dd54e210bb5a8"
+        "bce5687f60d7e75c4cd07fc68b3c894c782b05a9c27fc6c66eb14d4e7d31de9086ab7d2129bcb0493afa020000"
+        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "000000000000000000000000000000000001020200010c020000002a00000000000000";
+
+    ASSERT_TRUE(output.success());
+    ASSERT_EQ(output.output(), expectedHex);
+}
