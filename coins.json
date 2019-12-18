@@ -1130,5 +1130,23 @@
             "clientPublic": "",
             "clientDocs": "https://fio.foundation"
         }
+    },
+    {
+        "id": "seele",
+        "name": "Seele",
+        "symbol": "SEELE",
+        "decimals": 18,
+        "blockchain": "Seele",
+        "derivationPath": "m/44'/456'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": "https://www.seelescan.net/",
+        "info": {
+            "url": "https://www.seele.pro/",
+            "client": "https://www.seele.pro/",
+            "clientPublic": "",
+            "clientDocs": "https://www.seele.pro/"
+        }
     }
+
 ]

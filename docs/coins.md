@@ -41,6 +41,7 @@ This list is generated from [./coins.json](../coins.json)
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
 | 330     | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png" width="32" />        | <https://terra.money>         |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |
+| 456     | Seele            | SEELE  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/seele/info/logo.png" width="32" />        | <https://www.seele.pro/>      |
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
 | 688     | Coinex           | CET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/coinex/info/logo.png" width="32" />       | <https://coinex.org>          |
