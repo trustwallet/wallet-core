@@ -105,27 +105,37 @@ TEST(PrivateKey, ClearMemory) {
 
 TEST(PrivateKey, PrivateKeyExtended) {
     // Non-extended: both keys are 32 bytes.
-    auto privateKeyNonext = PrivateKey(
-        parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
-    );
+    auto privateKeyNonext = PrivateKey(parse_hex(
+        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"
+    ));
+    EXPECT_EQ("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5", hex(privateKeyNonext.bytes));
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
-    ASSERT_EQ(32, publicKeyNonext.bytes.size());
+    EXPECT_EQ(32, publicKeyNonext.bytes.size());
 
     // Extended keys: private key is 3x32 bytes, public key is 64 bytes
-    auto privateKeyExt = PrivateKey(
-        parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
-        parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
-        parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4")
-    );
+    auto privateKeyExt = PrivateKey(parse_hex(
+        "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
+    ));
+    EXPECT_EQ("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744", hex(privateKeyExt.bytes));
+    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExt.extensionBytes));
+    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExt.chainCodeBytes));
     auto publicKeyExt = privateKeyExt.getPublicKey(TWPublicKeyTypeED25519Extended);
-    ASSERT_EQ(64, publicKeyExt.bytes.size());
+    EXPECT_EQ(64, publicKeyExt.bytes.size());
+
+    // Try other constructor for extended key
+    auto privateKeyExtOne = PrivateKey(parse_hex(
+        "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
+    ));
+    EXPECT_EQ("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744", hex(privateKeyExtOne.bytes));
+    EXPECT_EQ("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff", hex(privateKeyExtOne.extensionBytes));
+    EXPECT_EQ("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4", hex(privateKeyExtOne.chainCodeBytes));
 }
 
 TEST(PrivateKey, PrivateKeyExtendedError) {
     // TWPublicKeyTypeED25519Extended pubkey with non-extended private: error
-    auto privateKeyNonext = PrivateKey(
-        parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5")
-    );
+    auto privateKeyNonext = PrivateKey(parse_hex(
+        "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"
+    ));
     try {
         auto publicKeyError = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519Extended);
     } catch (invalid_argument& ex) {

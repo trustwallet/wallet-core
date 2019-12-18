@@ -21,8 +21,8 @@
 using namespace TW;
 
 bool PrivateKey::isValid(const Data& data) {
-    // Check length
-    if (data.size() != size) {
+    // Check length.  Extended key needs 3*32 bytes.
+    if (data.size() != size && data.size() != extendedSize) {
         return false;
     }
 
@@ -76,7 +76,16 @@ PrivateKey::PrivateKey(const Data& data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid private key data");
     }
-    bytes = data;
+    if (data.size() == extendedSize) {
+        // special extended case
+        *this = PrivateKey(
+            TW::data(data.data(), 32),
+            TW::data(data.data() + 32, 32),
+            TW::data(data.data() + 64, 32));
+    } else {
+        // default case
+        bytes = data;
+    }
 }
 
 PrivateKey::PrivateKey(const Data& data, const Data& ext, const Data& chainCode) {
@@ -123,7 +132,7 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         break;
     case TWPublicKeyTypeED25519Extended:
         // must be extended key
-        if (bytes.size() + extensionBytes.size() + chainCodeBytes.size() != (3 * size)) {
+        if (bytes.size() + extensionBytes.size() + chainCodeBytes.size() != extendedSize) {
             throw std::invalid_argument("Invalid extended key");
         }
         result.resize(PublicKey::ed25519ExtendedSize);
