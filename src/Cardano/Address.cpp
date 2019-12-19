@@ -15,7 +15,6 @@
 
 #include <array>
 #include <iostream>
-#include <vector>
 
 using namespace TW;
 using namespace TW::Cardano;
@@ -33,7 +32,7 @@ bool Address::isValid(const std::string& string) {
             // wrong tag value
             return false;
         }
-        Data payload = elems[0].getTagElement().getStringData();
+        Data payload = elems[0].getTagElement().getBytes();
         // debug
         uint64_t crcPresent = (uint32_t)elems[1].getValue();
         uint32_t crcComputed = TW::Crc::crc32(payload);
@@ -61,7 +60,7 @@ Address::Address(const std::string& string) {
             auto array0 = elems[0];
             auto tag = array0.getTagValue();
             if (tag == 24) { // checked in isValid
-                Data addressAsArray = array0.getTagElement().getStringData();
+                Data addressAsArray = array0.getTagElement().getBytes();
                 // debug
                 uint64_t crcPresent = (uint32_t)elems[1].getValue();
                 uint32_t crcComputed = TW::Crc::crc32(addressAsArray);
@@ -73,8 +72,8 @@ Address::Address(const std::string& string) {
                         throw std::invalid_argument("Invalid address string, inner array too short");
                     }
                     // store values
-                    root = elems2[0].getStringData();
-                    attrs = elems2[1].getData();
+                    root = elems2[0].getBytes();
+                    attrs = elems2[1].encoded();
                     type = (TW::byte)(elems2[2].getValue());
                 }
             }
@@ -92,30 +91,28 @@ Address::Address(const PublicKey& publicKey) {
     type = 0; // public key
     root = keyHash(publicKey.bytes);
     // address attributes: empty map for V2, for V1 encrypted derivation path
-    Cbor::Encode emptyMap = Cbor::Encode().addMap(vector<pair<Cbor::Encode, Cbor::Encode>>{});
-    attrs = emptyMap.getData();
+    Cbor::Encode emptyMap = Cbor::Encode::map({});
+    attrs = emptyMap.encoded();
 }
 
 string Address::string() const {
     // put together string represenatation (CBOR encopde, Base58 encode)
     // inner data: pubkey, attrs, type
-    Cbor::Encode cbor1;
-    cbor1.addArray(vector<Cbor::Encode>{
-        Cbor::Encode().addString(root),
+    auto cbor1 = Cbor::Encode::array({
+        Cbor::Encode::bytes(root),
         Cbor::Encode(attrs),
-        Cbor::Encode().addPInt(type),
+        Cbor::Encode::uint(type),
     });
-    auto payloadData = cbor1.getData();
+    auto payloadData = cbor1.encoded();
     
     // crc checksum 
     auto crc = TW::Crc::crc32(payloadData);
     // second pack: tag, base, crc
-    Cbor::Encode cbor2;
-    cbor2.addArray(vector<Cbor::Encode>{
-        Cbor::Encode().addTag(24, Cbor::Encode().addString(payloadData)),
-        Cbor::Encode().addPInt(crc),
+    auto cbor2 = Cbor::Encode::array({
+        Cbor::Encode::tag(24, Cbor::Encode::bytes(payloadData)),
+        Cbor::Encode::uint(crc),
     });
-    auto cbor2Data = cbor2.getData();
+    auto cbor2Data = cbor2.encoded();
     return Base58::bitcoin.encode(cbor2Data);
 }
 
@@ -123,14 +120,14 @@ Data Address::keyHash(const TW::Data& xpub) {
     if (xpub.size() != 64) { throw invalid_argument("invalid xbub length"); }
     // hash of follwoing Cbor-array: [0, [0, xbub], {} ]
     // 3rd entry map is empty map for V2, contains derivation path for V1
-    Data cborData = Cbor::Encode().addArray(vector<Cbor::Encode>{
-        Cbor::Encode().addPInt(0),
-        Cbor::Encode().addArray(vector<Cbor::Encode>{
-            Cbor::Encode().addPInt(0),
-            Cbor::Encode().addString(xpub)
+    Data cborData = Cbor::Encode::array({
+        Cbor::Encode::uint(0),
+        Cbor::Encode::array({
+            Cbor::Encode::uint(0),
+            Cbor::Encode::bytes(xpub)
         }),
-        Cbor::Encode().addMap(vector<pair<Cbor::Encode, Cbor::Encode>>{}),
-    }).getData();
+        Cbor::Encode::map({}),
+    }).encoded();
     // SHA3 hash, then blake
     Data firstHash = Hash::sha3_256(cborData.data(), cborData.data() + cborData.size());
     Data blake = Hash::blake2b(firstHash.data(), firstHash.data() + firstHash.size(), 28);
