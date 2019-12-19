@@ -19,17 +19,19 @@ class TestSolanaSigner {
     }
 
     private val blockhash = "11111111111111111111111111111111"
+    private val commonValidatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
+    private val commonPrivateKey = "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"
 
     @Test
     fun testTransferSign() {
         val transferMessage = Solana.Transfer.newBuilder().apply {
-            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
             recipient = "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
             value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             transferTransaction = transferMessage
             recentBlockhash = blockhash
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
         }.build()
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)
@@ -41,54 +43,53 @@ class TestSolanaSigner {
     @Test
     fun testDelegateStakeSign() {
         val delegateStakeMessage = Solana.Stake.newBuilder().apply {
-            fromPrivateKey = ByteString.copyFrom(Base58.decodeNoCheck("GGT4G41n1K3E4MTjb7VwADSFNJA3Jx7wUxm54Fpcje6w"))
-            stakePrivateKey = ByteString.copyFrom(Base58.decodeNoCheck("2bwUDLUVYCfUhQHiAiwvHzM8oNT7pdk5J1XjhTLeumP5"))
-            votePubkey = "FkL2bzbUbp3J9MQEX3toMBA4q8ZcHcjeacdtn2Ti8Qec"
+            validatorPubkey = commonValidatorPubkey
             value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             stakeTransaction = delegateStakeMessage
             recentBlockhash = blockhash
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
         }.build()
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)
 
-        val expectedHexString = "0x02d6c09b562bcb41e815f2d9a30511a932461df5a0c72a0e602bca84ff51067d639cfaa63bc56ebd9272731f8821a9965745abcfe2a20af35058933c5887739a0aaf1260437b1910cd332ce4a51b0a5c0a125456142c0e96ab7b7b10b3455cf9ca9033a49223b66e2e389f0993689b2ec1a48c169fcf0b920510f30e1800fea60602000507af8f866c01b3b67a8a7edfda2424a4869210f361a98db7828587856f0eb8efb449a6029108b84a1bfc74bd11cce6e0cd672dabe9d3993a028f3febddb7183773db1d1b3c012b3b486eeee5627fa15c54ec8b33c80dd436d72d0fbdcd0453756906a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000000000000000000000000000000000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000020502000134000000002a00000000000000600000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0000000000604010203040c000000002a00000000000000"
+        val expectedHexString = "0x01be20567f2db0b09802bf70bbaf397d819c29496c6472a70e2db5c92dff1b666f5f5a4787b07d951bf46435c84248a974bb417c789041fbc512d0a06869fb1d0e010006080eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a00000000378ba8d9f9881e9be69cf1d70ee0a93ed0378b83203f42fa29f9df5c887f1c0d06a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000000000000000000000000000000000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000000000000000000000000000000000000000000000000000000000000000000003060200015c030000002000000000000000346a707754717431715a6f52377536753633397a32416e675946474e336e616b2a00000000000000d00700000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000070201026c000000000eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab80eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab800000000000000000000000000000000000000000000000000000000000000000000000000000000070501030405000402000000"
         assertEquals(output.encoded.toByteArray().toHex(), expectedHexString)
     }
 
     @Test
     fun testDeactivateStakeSign() {
         val deactivateStakeMessage = Solana.DeactivateStake.newBuilder().apply {
-            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q"))
-            votePubkey = "B7Cx2wYAry78VNR8uoewzFDq3FRKJh8exNMyzrpQSfLB"
+            validatorPubkey = commonValidatorPubkey
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             deactivateStakeTransaction = deactivateStakeMessage
             recentBlockhash = blockhash
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
         }.build()
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)
 
-        val expectedHexString = "0x019a5534012ae734086fdcef5e7838c88a025ee2dd96b945753bdd5d90d9b43663b47f674e20835759cb7c50a3238db1f1d961be53f7b4d8cb989b003d16163c0c01000304bb25296230c34d03f077f3eb35c4b4a2ca436bef2e4628b77a32bb743d6df8ea962bdd5edcbc6f93841f68ade86a279756734dbb921b6d1cf1aa5460dbe40f2806a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc00000000000000000000000000000000000000000000000000000000000000000000000000103030001020403000000"
+        val expectedHexString = "0x014a85ccf3aa7e684b3352ed825dc4517daf3a95565d6ce0fcab0a7747bac87749c99e428e9ae7f42d38bc265b45811a03b649e5d98fc5b0ecbff60c783bfc470e010102040eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc00000000000000000000000000000000000000000000000000000000000000000000000000103030102000406000000"
         assertEquals(output.encoded.toByteArray().toHex(), expectedHexString)
     }
 
     @Test
     fun testWithdrawStakeSign() {
         val withdrawStakeMessage = Solana.WithdrawStake.newBuilder().apply {
-            privateKey = ByteString.copyFrom(Base58.decodeNoCheck("5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q"))
-            recipient = "C3e7ryQjYJFSUetohBofTaWEBbNcq4yVX43hi7igVtcP"
+            validatorPubkey = commonValidatorPubkey
             value = 42
         }.build()
         val signingInput = Solana.SigningInput.newBuilder().apply {
             withdrawTransaction = withdrawStakeMessage
             recentBlockhash = blockhash
+            privateKey = ByteString.copyFrom(Base58.decodeNoCheck(commonPrivateKey))
         }.build()
 
         val output: Solana.SigningOutput = SolanaSigner.sign(signingInput)
 
-        val expectedHexString = "0x010ffa019ccce82c7cbed48f76897145e0ce726f9e73aaf49bd301c3ba0635e840f54838df6e3378a3d239c017783251c00f030f73f7dca1c8a64e6b3469eecc0101000405bb25296230c34d03f077f3eb35c4b4a2ca436bef2e4628b77a32bb743d6df8eaa41db0070ae3aee30c6ce259f81a49cd15603fe29b47ba80ac734ff3911462a006a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a7d517193584d0feed9bb3431d13206be544281b57b8566cc5375ff400000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000010404000102030c020000002a00000000000000"
+        val expectedHexString = "0x014e808302fa771ccccfa4e82280bfd4b4ec267dc5107ff5baa8b718f6dae13aa23b888c1b7f44e8c8ea5fb750955af4e5b8187ca10d16922bf5af01b5897bfb03010003050eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a7d517193584d0feed9bb3431d13206be544281b57b8566cc5375ff400000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000010404010002030c050000002a00000000000000"
         assertEquals(output.encoded.toByteArray().toHex(), expectedHexString)
     }
 }

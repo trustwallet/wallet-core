@@ -50,31 +50,31 @@ TEST(SolanaTransaction, TransferSerializeTransaction) {
 }
 
 TEST(SolanaTransaction, StakeSerializeTransaction) {
-    auto from = Address("CpKHKhhrfA3HWm1Tc7Nm8MWLvypXwrorHQGPpuygcmYP");
-    auto stakeAccount = Address("5xVakzurz4ZVYcZSMYaP2kDaLRx7JekXKRp1XY3TrYyY");
-    auto voteAccount = Address("FkL2bzbUbp3J9MQEX3toMBA4q8ZcHcjeacdtn2Ti8Qec");
+    auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    auto programId = Address(STAKE_ADDRESS);
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto message = Message(from, stakeAccount, voteAccount, 42, recentBlockhash);
+    auto stakeAddress = addressFromValidatorSeed(signer, voteAddress, programId);
+    auto message = Message(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
-    Signature signature0(
-        "5J2dVJcLLxfvFWxooaEE81Bpz4qpaGwqSezWfQnP5F2kYvbhQjdQ23mADjYap2svT767bcUjigwf9KgWUtSSjcr5");
-    Signature signature1(
-        "4W1pvybhUgnUTf6Kuchm9x52TCmBSjFf21GPYTQDuaUR6zeuoJZiBFNhWjWbi3WDUvFp8F7eEEcwBXhAZHw32Gbo");
+    Signature signature(
+        "4oUMPVJ6NHGX1DFaxnDKSyZkxuN4osjqZE4mzA4iiNHd9kub3RtVKi3SUvRPsB5x2kB6EuRmBcWR4nbiKeoKF9os");
     transaction.signatures.clear();
-    transaction.signatures.push_back(signature0);
-    transaction.signatures.push_back(signature1);
+    transaction.signatures.push_back(signature);
 
     auto expectedHex =
-        "02d6c09b562bcb41e815f2d9a30511a932461df5a0c72a0e602bca84ff51067d639cfaa63bc56ebd9272731f88"
-        "21a9965745abcfe2a20af35058933c5887739a0aaf1260437b1910cd332ce4a51b0a5c0a125456142c0e96ab7b"
-        "7b10b3455cf9ca9033a49223b66e2e389f0993689b2ec1a48c169fcf0b920510f30e1800fea60602000507af8f"
-        "866c01b3b67a8a7edfda2424a4869210f361a98db7828587856f0eb8efb449a6029108b84a1bfc74bd11cce6e0"
-        "cd672dabe9d3993a028f3febddb7183773db1d1b3c012b3b486eeee5627fa15c54ec8b33c80dd436d72d0fbdcd"
-        "0453756906a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d817a502050b68"
-        "0791e6ce6db88e1e5b7150f61fc6790a4eb4d10000000000000000000000000000000000000000000000000000"
-        "0000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000020502000134000000002a0000000000"
-        "0000600000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000060401"
-        "0203040c000000002a00000000000000";
+        "01be20567f2db0b09802bf70bbaf397d819c29496c6472a70e2db5c92dff1b666f5f5a4787b07d951bf46435c8"
+        "4248a974bb417c789041fbc512d0a06869fb1d0e010006080eba44e56f060007284dc037275a15094c1d6c0697"
+        "ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7"
+        "d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a00000000378ba8d9f9881e9be69cf1d70ee0a9"
+        "3ed0378b83203f42fa29f9df5c887f1c0d06a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b21"
+        "0000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000"
+        "000000000000000000000000000000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78"
+        "722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000030602"
+        "00015c030000002000000000000000346a707754717431715a6f52377536753633397a32416e675946474e336e"
+        "616b2a00000000000000d00700000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49d"
+        "c000000000070201026c000000000eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4ba"
+        "b80eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab8000000000000000000000000"
+        "00000000000000000000000000000000000000000000000000000000070501030405000402000000";
     ASSERT_EQ(hex(transaction.serialize()), expectedHex);
 }

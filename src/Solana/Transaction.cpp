@@ -62,6 +62,6 @@ uint8_t Transaction::getAccountIndex(Address publicKey) {
     return (uint8_t)std::distance(this->message.accountKeys.begin(), item);
 }
 
-bool Signature::operator==(const Signature &v) const {
+bool Signature::operator==(const Signature& v) const {
     return bytes == v.bytes;
 }

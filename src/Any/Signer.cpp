@@ -21,6 +21,7 @@
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
 #include "Stellar/Signer.h"
+#include "Solana/Signer.h"
 
 #include <google/protobuf/util/json_util.h>
 #include <string>
@@ -184,6 +185,17 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
                 auto signer = Stellar::Signer(message);
                 auto signerOutput = signer.sign();
                 output.set_output(signerOutput);
+        }
+        break;
+    }
+    case TWCoinTypeSolana: {
+        Solana::Proto::SigningInput message;
+        parse(transaction, &message, output);
+        if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Solana::Signer::signProtobuf(message);
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
         }
         break;
     }

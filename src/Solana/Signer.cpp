@@ -12,7 +12,7 @@
 using namespace TW;
 using namespace TW::Solana;
 
-void Signer::sign(const std::vector<PrivateKey> &privateKeys, Transaction &transaction) {
+void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& transaction) {
     for (auto privateKey : privateKeys) {
         auto address = Address(privateKey.getPublicKey(TWPublicKeyTypeED25519));
         auto index = transaction.getAccountIndex(address);
@@ -22,15 +22,80 @@ void Signer::sign(const std::vector<PrivateKey> &privateKeys, Transaction &trans
     }
 }
 
-void Signer::signUpdateBlockhash(const std::vector<PrivateKey> &privateKeys,
-                                 Transaction &transaction, Solana::Hash &recentBlockhash) {
+Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) {
+    auto blockhash = Solana::Hash(input.recent_blockhash());
+    auto key = PrivateKey(input.private_key());
+    Message message;
+    std::string stakePubkey;
+    std::vector<PrivateKey> signerKeys;
+
+    if (input.has_transfer_transaction()) {
+        auto protoMessage = input.transfer_transaction();
+        message = Message(
+            /* from */ Address(key.getPublicKey(TWPublicKeyTypeED25519)),
+            /* to */ Address(protoMessage.recipient()),
+            /* value */ protoMessage.value(),
+            /* recent_blockhash */ blockhash);
+        signerKeys.push_back(key);
+    } else if (input.has_stake_transaction()) {
+        auto protoMessage = input.stake_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto validatorAddress = Address(protoMessage.validator_pubkey());
+        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+        message = Message(
+            /* signer */ userAddress,
+            /* stakeAddress */ stakeAddress,
+            /* voteAddress */ validatorAddress,
+            /* value */ protoMessage.value(),
+            /* recent_blockhash */ blockhash);
+        signerKeys.push_back(key);
+    } else if (input.has_deactivate_stake_transaction()) {
+        auto protoMessage = input.deactivate_stake_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto validatorAddress = Address(protoMessage.validator_pubkey());
+        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+        message = Message(
+            /* signer */ userAddress,
+            /* stakeAddress */ stakeAddress,
+            /* type */ Deactivate,
+            /* recent_blockhash */ blockhash);
+        signerKeys.push_back(key);
+    } else if (input.has_withdraw_transaction()) {
+        auto protoMessage = input.withdraw_transaction();
+        auto userAddress = Address(key.getPublicKey(TWPublicKeyTypeED25519));
+        auto validatorAddress = Address(protoMessage.validator_pubkey());
+        auto stakeProgramId = Address(STAKE_ADDRESS);
+        auto stakeAddress = addressFromValidatorSeed(userAddress, validatorAddress, stakeProgramId);
+        message = Message(
+            /* signer */ userAddress,
+            /* stakeAddress */ stakeAddress,
+            /* value */ protoMessage.value(),
+            /* type */ Withdraw,
+            /* recent_blockhash */ blockhash);
+        signerKeys.push_back(key);
+    }
+    auto transaction = Transaction(message);
+
+    sign(signerKeys, transaction);
+
+    auto protoOutput = Proto::SigningOutput();
+    auto encoded = transaction.serialize();
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+
+    return protoOutput;
+}
+
+void Signer::signUpdateBlockhash(const std::vector<PrivateKey>& privateKeys,
+                                 Transaction& transaction, Solana::Hash& recentBlockhash) {
     transaction.message.recentBlockhash = recentBlockhash;
     Signer::sign(privateKeys, transaction);
 }
 
 // This method does not confirm that PrivateKey order matches that encoded in the messageData
 // That order must be correct for the Transaction to succeed on Solana
-Data Signer::signRawMessage(const std::vector<PrivateKey> &privateKeys, const Data messageData) {
+Data Signer::signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData) {
     std::vector<Signature> signatures;
     for (auto privateKey : privateKeys) {
         auto signature = Signature(privateKey.sign(messageData, TWCurveED25519));
