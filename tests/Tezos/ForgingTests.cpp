@@ -71,11 +71,11 @@ TEST(Forging, ForgeZarithOneHundredFifty) {
 }
 
 TEST(Forging, ForgeZarithLarge) {
-    auto expected = "82fc43";
+    auto expected = "bbd08001";
   
-    auto output = forgeZarith(1113602);
+    auto output = forgeZarith(2107451);
   
-    ASSERT_EQ(output, parse_hex(expected));
+    ASSERT_EQ(hex(output), expected);
 }
 
 TEST(Forging, forge_tz1) {
