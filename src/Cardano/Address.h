@@ -62,6 +62,9 @@ class Address {
 
     /// compute hash of public key, for address root
     static TW::Data keyHash(const TW::Data& xpub);
+
+    /// Get the CBOR address data (before Base58 encoding)
+    TW::Data getCborData() const;
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {

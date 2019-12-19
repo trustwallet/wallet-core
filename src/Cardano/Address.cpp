@@ -95,8 +95,8 @@ Address::Address(const PublicKey& publicKey) {
     attrs = emptyMap.encoded();
 }
 
-string Address::string() const {
-    // put together string represenatation (CBOR encopde, Base58 encode)
+Data Address::getCborData() const {
+    // put together string represenatation, CBOR representation
     // inner data: pubkey, attrs, type
     auto cbor1 = Cbor::Encode::array({
         Cbor::Encode::bytes(root),
@@ -112,8 +112,12 @@ string Address::string() const {
         Cbor::Encode::tag(24, Cbor::Encode::bytes(payloadData)),
         Cbor::Encode::uint(crc),
     });
-    auto cbor2Data = cbor2.encoded();
-    return Base58::bitcoin.encode(cbor2Data);
+    return cbor2.encoded();
+}
+
+string Address::string() const {
+    // Base58 encode the CBOR data
+    return Base58::bitcoin.encode(getCborData());
 }
 
 Data Address::keyHash(const TW::Data& xpub) {
