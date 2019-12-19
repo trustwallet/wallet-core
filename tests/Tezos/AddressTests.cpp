@@ -21,23 +21,23 @@ using namespace TW::Tezos;
 
 TEST(TezosAddress, forge_tz1) {
     auto input = Address("tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don");
-    auto expected = "00cfa4aae60f5d9389752d41e320da224d43287fe2";
+    auto expected = "0000cfa4aae60f5d9389752d41e320da224d43287fe2";
 
-    ASSERT_EQ(input.forge(), parse_hex(expected));
+    ASSERT_EQ(hex(input.forge()), expected);
 }
 
 TEST(TezosAddress, forge_tz2) {
     auto input = Address("tz2Rh3NYeLxrqTuvaZJmaMiVMqCajeXMWtYo");
-    auto expected = "01be99dd914e38388ec80432818b517759e3524f16";
+    auto expected = "0001be99dd914e38388ec80432818b517759e3524f16";
 
-    ASSERT_EQ(input.forge(), parse_hex(expected));
+    ASSERT_EQ(hex(input.forge()), expected);
 }
 
 TEST(TezosAddress, forge_tz3) {
     auto input = Address("tz3RDC3Jdn4j15J7bBHZd29EUee9gVB1CxD9");
-    auto expected = "02358cbffa97149631cfb999fa47f0035fb1ea8636";
+    auto expected = "0002358cbffa97149631cfb999fa47f0035fb1ea8636";
 
-    ASSERT_EQ(input.forge(), parse_hex(expected));
+    ASSERT_EQ(hex(input.forge()), expected);
 }
 
 TEST(TezosAddress, isInvalid) {

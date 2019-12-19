@@ -127,7 +127,7 @@ TEST(TezosTransaction, forgeTransaction) {
     transactionOperation.set_kind(TW::Tezos::Proto::Operation::TRANSACTION);
     transactionOperation.set_allocated_transaction_operation_data(transactionOperationData);
 
-    auto expected = "6c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
+    auto expected = "6c000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e81020100008fb5cea62d147c696afd9a93dbce962f4c8a9c9100";
     auto serialized = forgeOperation(transactionOperation);
 
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
@@ -148,7 +148,7 @@ TEST(TezosTransaction, forgeReveal) {
     revealOperation.set_kind(TW::Tezos::Proto::Operation::REVEAL);
     revealOperation.set_allocated_reveal_operation_data(revealOperationData);
    
-    auto expected = "6b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
+    auto expected = "6b000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200429a986c8072a40a1f3a3e2ab5a5819bb1b2fb69993c5004837815b9dc55923e";
     auto serialized = forgeOperation(revealOperation);
 
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
@@ -167,7 +167,7 @@ TEST(TezosTransaction, forgeDelegate) {
     delegateOperation.set_kind(TW::Tezos::Proto::Operation::DELEGATION);
     delegateOperation.set_allocated_delegation_operation_data(delegateOperationData);
 
-    auto expected = "6e0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102ff003e47f837f0467b4acde406ed5842f35e2414b1a8";
+    auto expected = "6e000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e8102ff003e47f837f0467b4acde406ed5842f35e2414b1a8";
     auto serialized = forgeOperation(delegateOperation);
 
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
@@ -186,7 +186,7 @@ TEST(TezosTransaction, forgeUndelegate) {
     delegateOperation.set_kind(TW::Tezos::Proto::Operation::DELEGATION);
     delegateOperation.set_allocated_delegation_operation_data(delegateOperationData);
 
-    auto expected = "6e0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200";
+    auto expected = "6e000081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200";
     auto serialized = forgeOperation(delegateOperation);
 
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);

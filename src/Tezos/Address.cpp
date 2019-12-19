@@ -64,6 +64,10 @@ std::string Address::deriveOriginatedAddress(const std::string& operationHash, i
 }
 
 Data Address::forge() const {
+    auto data = Data();
     std::string s = string();
-    return forgePublicKeyHash(s);
+
+    data.push_back(0x00);
+    append(data, forgePublicKeyHash(s));
+    return data;
 }

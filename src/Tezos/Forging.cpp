@@ -125,7 +125,6 @@ Data forgeOperation(const Operation& operation) {
         append(forged, forgedGasLimit);
         append(forged, forgedStorageLimit);
         append(forged, forgedAmount);
-        append(forged, forgeBool(false));
         append(forged, forgedDestination);
         append(forged, forgeBool(false));
         return forged;
