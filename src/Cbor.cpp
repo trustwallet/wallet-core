@@ -14,11 +14,6 @@ namespace TW::Cbor {
 using namespace std;
 
 
-Encode::Encode(const TW::Data& rawData)
-{
-    data = rawData;
-}
-
 TW::Data Encode::encoded() const {
     if (openIndefCount > 0) {
         throw invalid_argument("CBOR Unclosed indefinite lenght building");

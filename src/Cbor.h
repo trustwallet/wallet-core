@@ -53,7 +53,7 @@ public:
 
 private:
     Encode() {}
-    Encode(const TW::Data& rawData);
+    Encode(const TW::Data& rawData) : data(rawData) {}
     /// Append types + value, on variable number of bytes (1..8). Return object to support chain syntax.
     Encode appendValue(byte majorType, uint64_t value);
     inline Encode append(const TW::Data& data) { TW::append(this->data, data); return *this; }
