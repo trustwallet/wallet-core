@@ -98,7 +98,7 @@ Encode Encode::addIDArrayElem(const Encode& elem) {
 }
 
 Encode Encode::closeIndefArray() {
-    if (indefElemCount.size() <= 0) {
+    if (indefElemCount.size() == 0) {
         throw invalid_argument("CBOR Not inside undefined-length array");
     }
     // add closing break command
