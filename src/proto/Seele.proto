@@ -28,6 +28,16 @@ message SigningInput {
 
     // Private key.
     bytes private_key = 8;
+
+    //Transfer type (256-bit number)
+    bytes type = 9;
+
+    // Sender's address.
+    string from_address = 10;
+
+    // Transfer time (256-bit number)
+    bytes timestamp = 11;
+
 }
 
 // Transaction signing output.

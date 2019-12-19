@@ -18,7 +18,7 @@
 
 namespace TW::Seele {
 
-/// Implementation of Ethereum's RLP encoding.
+/// Implementation of Seele's RLP encoding.
 ///
 /// - SeeAlso: https://github.com/ethereum/wiki/wiki/RLP
 struct RLP {
@@ -99,4 +99,4 @@ struct RLP {
 
 };
 
-} // namespace TW::Ethereum
+} // namespace TW::Seele

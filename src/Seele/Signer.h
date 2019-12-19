@@ -21,7 +21,7 @@
 
 namespace TW::Seele {
 
-/// Helper class that performs Ethereum transaction signing.
+/// Helper class that performs Seele transaction signing.
 class Signer {
   public:
     uint256_t chainID;
@@ -53,7 +53,7 @@ class Signer {
     Data hash(const Transaction& transaction) const noexcept;
 };
 
-} // namespace TW::Ethereum
+} // namespace TW::Seele
 
 /// Wrapper for C interface.
 struct TWSeeleSigner {

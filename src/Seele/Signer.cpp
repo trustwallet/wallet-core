@@ -37,12 +37,15 @@ Proto::SigningOutput Signer::sign(const TW::Seele::Proto::SigningInput &input) c
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
 
     auto transaction = Transaction(
+            /* type: */ load(input.type()),
             /* nonce: */ load(input.nonce()),
             /* gasPrice: */ load(input.gas_price()),
             /* gasLimit: */ load(input.gas_limit()),
+            /* from: */ Address(input.from_address()),
             /* to: */ Address(input.to_address()),
             /* amount: */ load(input.amount()),
-            /* payload: */ Data(input.payload().begin(), input.payload().end())
+            /* payload: */ Data(input.payload().begin(), input.payload().end()),
+            /* timestamp: */ load(input.timestamp())
     );
 
     sign(key, transaction);
@@ -75,13 +78,16 @@ void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const 
 
 Data Signer::hash(const Transaction& transaction) const noexcept {
     auto encoded = Data();
+    append(encoded, RLP::encode(transaction.type));
     append(encoded, RLP::encode(transaction.nonce));
     append(encoded, RLP::encode(transaction.gasPrice));
     append(encoded, RLP::encode(transaction.gasLimit));
+    append(encoded, RLP::encode(transaction.from.bytes));
     append(encoded, RLP::encode(transaction.to.bytes));
     append(encoded, RLP::encode(transaction.amount));
     append(encoded, RLP::encode(transaction.payload));
-    append(encoded, RLP::encode(chainID));
+    append(encoded, RLP::encode(transaction.timestamp));
+    //append(encoded, RLP::encode(chainID));
     append(encoded, RLP::encode(0));
     append(encoded, RLP::encode(0));
     return Hash::keccak256(RLP::encodeList(encoded));
