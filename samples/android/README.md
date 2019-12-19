@@ -23,7 +23,7 @@ and [Build Instructions](https://developer.trustwallet.com/wallet-core/building)
 
 Open in Android Studio and run. Result will appear in logs output and on device screen
 
-<img src="/art/screenshot" width="49%">
+![Screenshot](https://gist.github.com/3ee8891d559e021683b58ffb37f72cf1)
 
 # What it Does
 
