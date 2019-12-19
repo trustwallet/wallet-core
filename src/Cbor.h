@@ -9,7 +9,6 @@
 #include "Data.h"
 
 #include <string>
-#include <vector>
 
 namespace TW::Cbor {
 
@@ -18,16 +17,14 @@ namespace TW::Cbor {
  * See  http://cbor.io  and   RFC 7049 https://tools.ietf.org/html/rfc7049
  */
 
-/// CBOR-encoded data, encoder
+/// CBOR Encoder, and container for data being encoded.
 /// See CborTests.cpp for usage.
 class Encode {
 public:
-    Encode() {}
-    /// Create from raw content, must be valid CBOR data, may throw
-    Encode(const TW::Data& rawData);
-    /// return encoded bytes
-    TW::Data encoded() const { return data; }
-    // builder/adder methods:
+    /// Return encoded bytes
+    TW::Data encoded() const;
+
+    // Static state-less encoder methods:
     /// encode an unsigned int
     static Encode uint(uint64_t value);
     /// encode a negative int (positive is given)
@@ -42,41 +39,44 @@ public:
     static Encode map(const std::vector<std::pair<Encode, Encode>>& elems);
     /// encode a tag and following element
     static Encode tag(uint64_t value, const Encode& elem);
+
+    /// Stateful building (for indefinite length)
     /// Start an indefinite-length array
     static Encode indefArray();
     /// Add an element to indefinite-length array
-    Encode addIDArrayElem(const Encode& elem);
+    Encode addIndefArrayElem(const Encode& elem);
     /// Close an indefinite-length array
     Encode closeIndefArray();
 
+    /// Create from raw content, must be valid CBOR data, may throw
+    static Encode fromRaw(const TW::Data& rawData);
+
 private:
-    void appendValue(byte majorType, uint64_t value);
+    Encode() {}
+    Encode(const TW::Data& rawData);
+    /// Append types + value, on variable number of bytes (1..8). Return object to support chain syntax.
+    Encode appendValue(byte majorType, uint64_t value);
+    inline Encode append(const TW::Data& data) { TW::append(this->data, data); return *this; }
     void appendIndefinite(byte majorType);
 
 private:
+    /// Encoded data is stored here, always well-formed, but my be partial.
     TW::Data data;
-    std::vector<int> indefElemCount = std::vector<int>();
+    /// number of currently open indefinite buildingds (0, 1, or more for nested)
+    int openIndefCount = 0;
 };
 
-/// CBOR-encoded data, decoder.  Read-only data or data slice.
+/// CBOR Decoder and container for data for decoding.  Contains reference to read-only CBOR data.
 /// See CborTests.cpp for usage.
 class Decode {
-private:
-    const TW::byte* base;
-    // Additional startIdxIdx index, to make skip ahead possible without touching the base data pointer
-    uint32_t startIdx;
-    uint32_t totlen;
-
-public: // constructors
+public:
+    /// Constructor, create from CBOR byte stream
     Decode(const Data& input) : Decode((const TW::byte*)input.data(), (uint32_t)input.size()) {}
+    /// Constructor, create from CBOR byte stream
     Decode(const TW::byte* ndata, uint32_t nlen);
 
-public: // accessors
-    uint32_t length() const { return totlen - startIdx; }
-    TW::Data encoded() const { return TW::data(base + startIdx, totlen - startIdx); }
-
 public: // decoding
-    /// check if contains a valid CBOR byte stream
+    /// Check if contains a valid CBOR byte stream.
     bool isValid() const;
     /// Get the value of a simple type
     uint64_t getValue() const;
@@ -94,6 +94,7 @@ public: // decoding
     Decode getTagElement() const;
     /// Dump to a JSON-like string (debugging)
     std::string dumpToString() const;
+    uint32_t length() const { return totlen - startIdx; }
 
     enum MajorType {
         MT_uint = 0,
@@ -108,9 +109,10 @@ public: // decoding
     
 private:
     Decode(const TW::byte* ndata, uint32_t nlen, uint32_t nStartIdx);
-    // Skip ahead: from other Decode data with offset
+    /// Skip ahead: form other Decode data with offset
     Decode skip(uint32_t offset) const;
-    TW::byte byte(uint32_t idx) const {
+    /// Get the Nth byte
+    inline TW::byte byte(uint32_t idx) const {
         if (startIdx + idx >= totlen) { throw std::invalid_argument("CBOR data too short"); }
         return base[startIdx + idx];
     }
@@ -120,12 +122,19 @@ private:
         uint64_t value;
         bool isIndefiniteValue;
     };
+    /// Parse out type sepcifiers
     TypeDesc getTypeDesc() const;
     uint32_t getTotalLen() const;
     uint32_t getCompoundLength(uint32_t countMultiplier) const;
     std::vector<Decode> getCompoundElements(uint32_t countMultiplier, TW::byte expectedType) const;
     bool isBreak() const;
     std::string dumpToStringInternal() const;
+
+private:
+    const TW::byte* base;
+    // Additional startIdxIdx index, to make skip ahead possible without touching the base data pointer
+    uint32_t startIdx;
+    uint32_t totlen;
 };
 
 } // namespace TW::Cbor
