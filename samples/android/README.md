@@ -23,8 +23,6 @@ and [Build Instructions](https://developer.trustwallet.com/wallet-core/building)
 
 Open in Android Studio and run. Result will appear in logs output and on device screen
 
-![Screenshot](![screenshot](https://user-images.githubusercontent.com/32914239/71167660-c45db580-225d-11ea-9c61-c0d9b3dcb336.png)
-
 # What it Does
 
 An overview of the operations done in the sample app is as follows.
