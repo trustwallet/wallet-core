@@ -8,6 +8,8 @@
 #include "AddressChecksum.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include "RLP.h"
+
 
 using namespace TW::Seele;
 
@@ -38,10 +40,18 @@ Address::Address(const PublicKey& publicKey) {
     if (publicKey.type != TWPublicKeyTypeSECP256k1Extended) {
         throw std::invalid_argument("Seele::Address needs an extended SECP256k1 public key.");
     }
-    const auto data = publicKey.hash({}, static_cast<Data(*)(const byte*, const byte*)>(Hash::keccak256), true);
-    std::copy(data.end() - Address::size, data.end(), bytes.begin());
+    auto bytes1 = publicKey.bytes;
+    std::vector<uint8_t> bytes2;
+    for(int i=1;i<bytes1.size();i++){
+        bytes2.push_back(bytes1[i]);
+    }
+
+    auto rlp =  RLP::encode(bytes2);
+    auto data = Hash::keccak256(rlp);
+
+    std::copy(data.end() - 20, data.end(), bytes.begin());
 }
 
 std::string Address::string() const {
-    return checksumed(*this, ChecksumType::eip55);
+    return checksumed(*this);
 }

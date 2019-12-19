@@ -46,3 +46,19 @@ std::string Seele::checksumed(const Address& address, enum ChecksumType type) {
 
     return string;
 }
+
+std::string Seele::checksumed(const Address& address) {
+    auto addressBytes = (address.bytes);
+
+    const auto b = 1;
+    addressBytes[19] &= 0xF0;
+    addressBytes[19] |= b;
+
+    std::string string = "0x";
+    for (auto i = 0; i < hex(addressBytes).size(); i += 1) {
+         string.push_back(hex(addressBytes)[i]);
+    }
+
+    return string;
+}
+

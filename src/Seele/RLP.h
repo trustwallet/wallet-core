@@ -8,6 +8,8 @@
 
 #include "Transaction.h"
 #include "../Data.h"
+#include "../Hash.h"
+
 #include "../uint256.h"
 
 #include <cstdint>
@@ -94,6 +96,7 @@ struct RLP {
     /// Returns the representation of an integer using the least number of bytes
     /// needed.
     static Data putint(uint64_t i) noexcept;
+
 };
 
 } // namespace TW::Ethereum
