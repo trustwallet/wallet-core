@@ -88,7 +88,7 @@ Encode Encode::indefArray() {
 }
 
 Encode Encode::addIDArrayElem(const Encode& elem) {
-    if (indefElemCount.size() <= 0) {
+    if (indefElemCount.size() == 0) {
         throw invalid_argument("CBOR Not inside undefined-length array");
     }
     append(data, elem.encoded());
