@@ -13,14 +13,74 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sodium/keypair.h>
 
-using namespace TW;
+namespace TW {
+
+/// Determines if a collection of bytes makes a valid public key of the
+/// given type.
+bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
+    const auto size = data.size();
+    if (size == 0) {
+        return false;
+    }
+    switch (type) {
+    case TWPublicKeyTypeED25519:
+        return size == ed25519Size || (size == ed25519Size + 1 && data[0] == 0x01);
+    case TWPublicKeyTypeCURVE25519:
+    case TWPublicKeyTypeED25519Blake2b:
+        return size == ed25519Size;
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeNIST256p1:
+        return size == secp256k1Size && (data[0] == 0x02 || data[0] == 0x03);
+    case TWPublicKeyTypeSECP256k1Extended:
+    case TWPublicKeyTypeNIST256p1Extended:
+        return size == secp256k1ExtendedSize && data[0] == 0x04;
+    default:
+        return false;
+    }
+}
+
+/// Initializes a public key with a collection of bytes.
+///
+/// @throws std::invalid_argument if the data is not a valid public key.
+PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type) : type(type) {
+    if (!isValid(data, type)) {
+        throw std::invalid_argument("Invalid public key data");
+    }
+    switch (type) {
+    case TWPublicKeyTypeSECP256k1:
+    case TWPublicKeyTypeNIST256p1:
+    case TWPublicKeyTypeSECP256k1Extended:
+    case TWPublicKeyTypeNIST256p1Extended:
+        bytes.reserve(data.size());
+        std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
+        break;
+
+    case TWPublicKeyTypeED25519:
+    case TWPublicKeyTypeCURVE25519:
+        bytes.reserve(ed25519Size);
+        if (data.size() == ed25519Size + 1) {
+            std::copy(std::begin(data) + 1, std::end(data), std::back_inserter(bytes));
+        } else {
+            std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
+        }
+        break;
+    case TWPublicKeyTypeED25519Blake2b:
+        bytes.reserve(ed25519Size);
+        if (data.size() == ed25519Size + 1) {
+            std::copy(std::begin(data) + 1, std::end(data), std::back_inserter(bytes));
+        } else {
+            std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
+        }
+        break;
+    }
+}
 
 PublicKey PublicKey::compressed() const {
     if (type != TWPublicKeyTypeSECP256k1Extended && type != TWPublicKeyTypeNIST256p1Extended) {
         return *this;
     }
 
-    std::array<uint8_t, secp256k1Size> newBytes;
+    Data newBytes(secp256k1Size);
     newBytes[0] = 0x02 | (bytes[64] & 0x01);
 
     switch (type) {
@@ -36,7 +96,7 @@ PublicKey PublicKey::compressed() const {
 }
 
 PublicKey PublicKey::extended() const {
-    std::array<uint8_t, secp256k1ExtendedSize> newBytes;
+    Data newBytes(secp256k1ExtendedSize);
     switch (type) {
     case TWPublicKeyTypeSECP256k1:
         ecdsa_uncompress_pubkey(&secp256k1, bytes.data(), newBytes.data());
@@ -109,3 +169,5 @@ Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte)
     append(result, hash);
     return result;
 }
+
+} // namespace TW

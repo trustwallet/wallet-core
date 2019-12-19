@@ -75,7 +75,7 @@ struct TWPublicKey *_Nullable TWPublicKeyRecover(TWData *_Nonnull signature, TWD
     if (v >= 27) {
         v -= 27;
     }
-    std::array<uint8_t, 65> result;
+    TW::Data result(65);
     if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureBytes, TWDataBytes(message), v) != 0) {
         return nullptr;
     }

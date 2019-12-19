@@ -11,9 +11,6 @@
 
 #include <TrustWalletCore/TWCurve.h>
 
-#include <array>
-#include <vector>
-
 namespace TW {
 
 class PrivateKey {
@@ -22,40 +19,19 @@ class PrivateKey {
     static const size_t size = 32;
 
     /// The private key bytes.
-    std::array<uint8_t, size> bytes;
+    Data bytes;
 
     /// Determines if a collection of bytes makes a valid private key.
-    template <typename T>
-    static bool isValid(const T& data) {
-        // Check length
-        if (data.size() != size) {
-            return false;
-        }
-
-        // Check for zero address
-        for (size_t i = 0; i < size; i += 1) {
-            if (data[i] != 0) {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    static bool isValid(const Data& data);
 
     /// Determines if a collection of bytes and curve make a valid private key.
     static bool isValid(const Data& data, TWCurve curve);
 
-    /// Initializes a private key with a collection of bytes.
-    template <typename T>
-    explicit PrivateKey(const T& data) {
-        if (!isValid(data)) {
-            throw std::invalid_argument("Invalid private key data");
-        }
-        std::copy(std::begin(data), std::end(data), std::begin(bytes));
-    }
+    /// Initializes a private key with an array of bytes.
+    explicit PrivateKey(const Data& data);
 
-    /// Initializes a private key with a static array of bytes.
-    PrivateKey(std::array<uint8_t, size>&& array) : bytes(array) {}
+    /// Initializes a private key from a string of bytes (convenience method).
+    explicit PrivateKey(const std::string& data) : PrivateKey(TW::data(data)) {}
 
     PrivateKey(const PrivateKey& other) = default;
     PrivateKey& operator=(const PrivateKey& other) = default;
