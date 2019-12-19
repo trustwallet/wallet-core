@@ -68,7 +68,7 @@ private:
     uint32_t totlen;
 
 public: // constructors
-    Decode(const Data& input) : Decode((const TW::byte*)input.data(), input.size()) {}
+    Decode(const Data& input) : Decode((const TW::byte*)input.data(), (uint32_t)input.size()) {}
     Decode(const TW::byte* ndata, uint32_t nlen);
 
 public: // accessors

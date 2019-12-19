@@ -128,7 +128,7 @@ void Encode::appendValue(byte majorType, uint64_t value) {
         minorType = 27;
     }
     // add bytes
-    TW::append(data, (majorType << 5) | (minorType & 0x1F));
+    TW::append(data, (byte)((majorType << 5) | (minorType & 0x1F)));
     Data valBytes = Data(byteCount - 1);
     for (int i = 0; i < valBytes.size(); ++i) {
         valBytes[valBytes.size() - 1 - i] = (byte)(value & 0xFF);
@@ -139,7 +139,7 @@ void Encode::appendValue(byte majorType, uint64_t value) {
 
 void Encode::appendIndefinite(byte majorType) {
     byte minorType = 31;
-    TW::append(data, (majorType << 5) | (minorType & 0x1F));
+    TW::append(data, (byte)((majorType << 5) | (minorType & 0x1F)));
 }
 
 
@@ -349,7 +349,7 @@ bool Decode::isValid() const {
         case MT_bytes:
         case MT_string:
             {
-                uint32_t len = typeDesc.byteCount + typeDesc.value;
+                uint32_t len = (uint32_t)(typeDesc.byteCount + typeDesc.value);
                 return (startIdx + len <= totlen);
             }
 
