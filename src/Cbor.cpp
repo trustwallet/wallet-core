@@ -16,40 +16,34 @@ using namespace std;
 
 Encode::Encode(const TW::Data& rawData)
 {
-    // check validity, may throw
-    Decode check(rawData);
-    if (!check.isValid()) { throw invalid_argument("Invalid CBOR data"); }
     data = rawData;
 }
 
+TW::Data Encode::encoded() const {
+    if (openIndefCount > 0) {
+        throw invalid_argument("CBOR Unclosed indefinite lenght building");
+    }
+    return data;
+}
+
 Encode Encode::uint(uint64_t value) {
-    Encode e;
-    e.appendValue(Decode::MT_uint, value);
-    return e;
+    return Encode().appendValue(Decode::MT_uint, value);
 }
 
 Encode Encode::negInt(uint64_t value) {
-    Encode e;
     if (value == 0) {
-        e.appendValue(Decode::MT_uint, 0);
-    } else {
-        e.appendValue(Decode::MT_negint, value - 1);
+        // special handling for -1, to avoid underflow
+        return Encode().appendValue(Decode::MT_uint, 0);
     }
-    return e;
+    return Encode().appendValue(Decode::MT_negint, value - 1);
 }
 
 Encode Encode::string(const std::string& str) {
-    Encode e;
-    e.appendValue(Decode::MT_string, str.size());
-    append(e.data, TW::data(str));
-    return e;
+    return Encode().appendValue(Decode::MT_string, str.size()).append(TW::data(str));
 }
 
 Encode Encode::bytes(const Data& str) {
-    Encode e;
-    e.appendValue(Decode::MT_bytes, str.size());
-    append(e.data, str);
-    return e;
+    return Encode().appendValue(Decode::MT_bytes, str.size()).append(str);
 }
 
 Encode Encode::array(const vector<Encode>& elems) {
@@ -57,7 +51,7 @@ Encode Encode::array(const vector<Encode>& elems) {
     auto n = elems.size();
     e.appendValue(Decode::MT_array, n);
     for (int i = 0; i < n; ++i) {
-        append(e.data, elems[i].encoded());
+        e.append(elems[i].encoded());
     }
     return e;
 }
@@ -67,8 +61,8 @@ Encode Encode::map(const vector<std::pair<Encode, Encode>>& elems) {
     auto n = elems.size();
     e.appendValue(Decode::MT_map, n);
     for (int i = 0; i < n; ++i) {
-        append(e.data, elems[i].first.encoded());
-        append(e.data, elems[i].second.encoded());
+        e.append(elems[i].first.encoded());
+        e.append(elems[i].second.encoded());
     }
     return e;
 }
@@ -76,39 +70,44 @@ Encode Encode::map(const vector<std::pair<Encode, Encode>>& elems) {
 Encode Encode::tag(uint64_t value, const Encode& elem) {
     Encode e;
     e.appendValue(Decode::MT_tag, value);
-    append(e.data, elem.encoded());
+    e.append(elem.encoded());
     return e;
 }
 
 Encode Encode::indefArray() {
     Encode e;
     e.appendIndefinite(Decode::MT_array);
-    e.indefElemCount.push_back(0);
+    ++e.openIndefCount;
     return e;
 }
 
-Encode Encode::addIDArrayElem(const Encode& elem) {
-    if (indefElemCount.size() == 0) {
-        throw invalid_argument("CBOR Not inside undefined-length array");
+Encode Encode::addIndefArrayElem(const Encode& elem) {
+    if (openIndefCount == 0) {
+        throw invalid_argument("CBOR Not inside indefinite-length array");
     }
-    append(data, elem.encoded());
-    // increase counter
-    indefElemCount[indefElemCount.size() - 1] = indefElemCount[indefElemCount.size() - 1] + 1;
+    append(elem.encoded());
     return *this;
 }
 
 Encode Encode::closeIndefArray() {
-    if (indefElemCount.size() == 0) {
-        throw invalid_argument("CBOR Not inside undefined-length array");
+    if (openIndefCount == 0) {
+        throw invalid_argument("CBOR Not inside indefinite-length array");
     }
     // add closing break command
-    append(data, 0xFF);
+    TW::append(data, 0xFF);
     // close counter
-    indefElemCount.erase(indefElemCount.begin() + (indefElemCount.size() - 1));
+    --openIndefCount;
     return *this;
 }
 
-void Encode::appendValue(byte majorType, uint64_t value) {
+Encode Encode::fromRaw(const TW::Data& rawData) {
+    // check validity, may throw
+    Decode check(rawData);
+    if (!check.isValid()) { throw invalid_argument("Invalid CBOR data"); }
+    return Encode(rawData);
+}
+
+Encode Encode::appendValue(byte majorType, uint64_t value) {
     byte byteCount = 0;
     byte minorType = 0;
     if (value < 24) {
@@ -134,7 +133,8 @@ void Encode::appendValue(byte majorType, uint64_t value) {
         valBytes[valBytes.size() - 1 - i] = (byte)(value & 0xFF);
         value = value >> 8;
     }
-    TW::append(data, valBytes);
+    append(valBytes);
+    return *this;
 }
 
 void Encode::appendIndefinite(byte majorType) {
@@ -164,7 +164,7 @@ Decode::TypeDesc Decode::getTypeDesc() const {
     TypeDesc typeDesc;
     typeDesc.isIndefiniteValue = false;
     typeDesc.majorType = (MajorType)(byte(0) >> 5);
-    TW::byte minorType = (TW::byte)((uint8_t)byte(0) & 0x1F);
+    auto minorType = (TW::byte)((uint8_t)byte(0) & 0x1F);
     if (minorType < 24) {
         // direct value
         typeDesc.byteCount = 1;
@@ -178,25 +178,26 @@ Decode::TypeDesc Decode::getTypeDesc() const {
     }
     if (minorType == 25) {
         typeDesc.byteCount = 1 + 2;
-        typeDesc.value = 0x100 * (uint16_t)byte(1) + (uint16_t)byte(2);
+        typeDesc.value = (uint16_t)(((uint16_t)byte(1) << 8) + (uint16_t)byte(2));
         return typeDesc;
     }
     if (minorType == 26) {
         typeDesc.byteCount = 1 + 4;
-        typeDesc.value = 0x1000000 * (uint32_t)byte(1) + 0x10000 * (uint32_t)byte(2) + 0x100 * (uint32_t)byte(3) + (uint32_t)byte(4);
+        typeDesc.value = (uint32_t)(((uint32_t)byte(1) << 24) + ((uint32_t)byte(2) << 16) + ((uint32_t)byte(3) << 8) + (uint32_t)byte(4));
         return typeDesc;
     }
     if (minorType == 27) {
         typeDesc.byteCount = 1 + 8;
         typeDesc.value =
-            0x100000000000000 * (uint64_t)byte(1) +
-            0x001000000000000 * (uint64_t)byte(2) +
-            0x000010000000000 * (uint64_t)byte(3) +
-            0x000000100000000 * (uint64_t)byte(4) +
-            0x000000001000000 * (uint64_t)byte(5) +
-            0x000000000010000 * (uint64_t)byte(6) +
-            0x000000000000100 * (uint64_t)byte(7) +
-                                (uint64_t)byte(8);
+            (uint64_t)(
+                ((uint64_t)byte(1) << 56) +
+                ((uint64_t)byte(2) << 48) +
+                ((uint64_t)byte(3) << 40) +
+                ((uint64_t)byte(4) << 32) +
+                ((uint64_t)byte(5) << 24) +
+                ((uint64_t)byte(6) << 16) +
+                ((uint64_t)byte(7) << 8) +
+                ((uint64_t)byte(8)));
         return typeDesc;
     }
     if (minorType >= 28 && minorType <= 30) {
@@ -253,7 +254,7 @@ Data Decode::getBytes() const {
     if (typeDesc.majorType != MT_bytes && typeDesc.majorType != MT_string) {
         throw std::invalid_argument("CBOR data type not bytes/string");
     }
-    uint32_t len = typeDesc.value;
+    auto len = (uint32_t)typeDesc.value;
     if (length() < (uint32_t)typeDesc.byteCount + (uint32_t)len) {
         throw std::invalid_argument("CBOR bytes/string data too short");
     }
@@ -339,43 +340,47 @@ Decode Decode::getTagElement() const {
 }
 
 bool Decode::isValid() const {
-    TypeDesc typeDesc = getTypeDesc();
-    switch (typeDesc.majorType) {
-        case MT_uint:
-        case MT_negint:
-        case MT_special: 
-            return (startIdx + typeDesc.byteCount <= totlen);
+    try {
+        TypeDesc typeDesc = getTypeDesc();
+        switch (typeDesc.majorType) {
+            case MT_uint:
+            case MT_negint:
+            case MT_special:
+                return (startIdx + typeDesc.byteCount <= totlen);
 
-        case MT_bytes:
-        case MT_string:
-            {
-                uint32_t len = (uint32_t)(typeDesc.byteCount + typeDesc.value);
-                return (startIdx + len <= totlen);
-            }
-
-        case MT_array:
-        case MT_map:
-            {
-                uint32_t countMultiplier = (typeDesc.majorType == MT_map) ? 2 : 1;
-                uint32_t len = getCompoundLength(countMultiplier);
-                if (len > totlen) return false;
-                auto count = typeDesc.isIndefiniteValue ? 0 : countMultiplier * typeDesc.value;
-                uint32_t idx = typeDesc.byteCount;
-                for (int i = 0; i < count || typeDesc.isIndefiniteValue; ++i)
+            case MT_bytes:
+            case MT_string:
                 {
-                    Decode nextElem = skip(idx);
-                    if (typeDesc.isIndefiniteValue && nextElem.isBreak()) { break; }
-                    if (!nextElem.isValid()) { return false; }
-                    idx += nextElem.getTotalLen();
+                    auto len = (uint32_t)(typeDesc.byteCount + typeDesc.value);
+                    return (startIdx + len <= totlen);
                 }
-                return true;
-            }
 
-        case MT_tag:
-            return skip(typeDesc.byteCount).isValid();
+            case MT_array:
+            case MT_map:
+                {
+                    uint32_t countMultiplier = (typeDesc.majorType == MT_map) ? 2 : 1;
+                    uint32_t len = getCompoundLength(countMultiplier);
+                    if (len > totlen) return false;
+                    auto count = typeDesc.isIndefiniteValue ? 0 : countMultiplier * typeDesc.value;
+                    uint32_t idx = typeDesc.byteCount;
+                    for (int i = 0; i < count || typeDesc.isIndefiniteValue; ++i)
+                    {
+                        Decode nextElem = skip(idx);
+                        if (typeDesc.isIndefiniteValue && nextElem.isBreak()) { break; }
+                        if (!nextElem.isValid()) { return false; }
+                        idx += nextElem.getTotalLen();
+                    }
+                    return true;
+                }
 
-        default:
-            throw std::invalid_argument("CBOR analyze type not supported");
+            case MT_tag:
+                return skip(typeDesc.byteCount).isValid();
+
+            default:
+                return false;
+        }
+    } catch (exception& ex) {
+        return false;
     }
 }
 

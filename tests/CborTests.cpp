@@ -105,7 +105,7 @@ TEST(Cbor, EncInvalid) {
     EXPECT_FALSE(Decode(invalid).isValid());
 
     try {
-        Encode e(invalid);
+        Encode::fromRaw(invalid);
     } catch (exception& ex) {
         return;
     }
@@ -113,12 +113,10 @@ TEST(Cbor, EncInvalid) {
 }
 
 TEST(Cbor, DecMinortypeInvlalid) {
-    try {
-        Decode(parse_hex("1c")).isValid();
-    } catch (exception& ex) {
-        return;
-    }
-    FAIL() << "Expected exception";
+    EXPECT_FALSE(Decode(parse_hex("1c")).isValid()); // 28 unused
+    EXPECT_FALSE(Decode(parse_hex("1d")).isValid()); // 29 unused
+    EXPECT_FALSE(Decode(parse_hex("1e")).isValid()); // 30 unused
+    EXPECT_TRUE(Decode(parse_hex("1b0000000000000000")).isValid());
 }
 
 TEST(Cbor, getValue) {
@@ -292,8 +290,8 @@ TEST(Cbor, MapNested) {
 
 TEST(Cbor, ArrayIndef) {
     Data cbor = Encode::indefArray()
-        .addIDArrayElem(Encode::uint(1))
-        .addIDArrayElem(Encode::uint(2))
+        .addIndefArrayElem(Encode::uint(1))
+        .addIndefArrayElem(Encode::uint(2))
         .closeIndefArray()
     .encoded();
     
@@ -310,7 +308,7 @@ TEST(Cbor, ArrayIndef) {
 
 TEST(Cbor, ArrayInfefErrorAddNostart) {
     try {
-        Data cbor = Encode::uint(0).addIDArrayElem(Encode::uint(1)).encoded();
+        Data cbor = Encode::uint(0).addIndefArrayElem(Encode::uint(1)).encoded();
     } catch (exception& ex) {
         return;
     }
@@ -326,3 +324,21 @@ TEST(Cbor, ArrayInfefErrorCloseNostart) {
     FAIL() << "Expected exception";
 }
 
+TEST(Cbor, ArrayInfefErrorResultNoclose) {
+    try {
+        Data cbor = Encode::indefArray()
+            .addIndefArrayElem(Encode::uint(1))
+            .addIndefArrayElem(Encode::uint(2))
+            // close is missing, break command not written
+        .encoded();
+    } catch (exception& ex) {
+        return;
+    }
+    FAIL() << "Expected exception";
+}
+
+TEST(Cbor, ArrayInfefErrorNoBreak) {
+    EXPECT_TRUE(Decode(parse_hex("9f0102ff")).isValid());
+    // without break it's invalid
+    EXPECT_FALSE(Decode(parse_hex("9f0102")).isValid());
+}
