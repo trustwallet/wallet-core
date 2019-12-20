@@ -14,11 +14,6 @@ namespace TW::Cbor {
 using namespace std;
 
 
-Encode::Encode(const TW::Data& rawData)
-{
-    data = rawData;
-}
-
 TW::Data Encode::encoded() const {
     if (openIndefCount > 0) {
         throw invalid_argument("CBOR Unclosed indefinite lenght building");
@@ -143,21 +138,24 @@ void Encode::appendIndefinite(byte majorType) {
 }
 
 
-Decode::Decode(const TW::byte* ndata, uint32_t nlen) {
-    base = ndata;
-    startIdx = 0;
-    totlen = nlen;
+Decode::Decode(const Data& input) {
+    // copy input data
+    origData = input;
+    dataPtr = origData.data();
+    dataLen = origData.size();
+    subStart = 0;
+    subLen = dataLen;
 }
 
-Decode::Decode(const TW::byte* ndata, uint32_t nlen, uint32_t nStartIdx) {
-    base = ndata;
-    startIdx = nStartIdx;
-    totlen = nlen;
+Decode::Decode(const TW::byte* nDataPtr, uint32_t nDataLen, uint32_t nSubStart, uint32_t nSubLen) {
+    dataPtr = nDataPtr;
+    dataLen = nDataLen;
+    subStart = nSubStart;
+    subLen = nSubLen;
 }
 
-Decode Decode::skip(uint32_t offset) const {
-    Decode skipped = Decode(base, totlen, startIdx + offset);
-    return skipped;
+Decode Decode::skipClone(uint32_t offset) const {
+    return Decode(dataPtr, dataLen, subStart + offset, subLen - offset);
 }
 
 Decode::TypeDesc Decode::getTypeDesc() const {
@@ -228,7 +226,7 @@ uint32_t Decode::getTotalLen() const {
             return getCompoundLength(2);
         case MT_tag:
             {
-                uint32_t dataLen = skip(typeDesc.byteCount).getTotalLen();
+                uint32_t dataLen = skipClone(typeDesc.byteCount).getTotalLen();
                 return typeDesc.byteCount + dataLen;
             }
         default:
@@ -258,7 +256,7 @@ Data Decode::getBytes() const {
     if (length() < (uint32_t)typeDesc.byteCount + (uint32_t)len) {
         throw std::invalid_argument("CBOR bytes/string data too short");
     }
-    return data(base + (startIdx + typeDesc.byteCount), typeDesc.value); 
+    return data(dataPtr + (subStart + typeDesc.byteCount), len); 
 }
 
 bool Decode::isBreak() const {
@@ -274,7 +272,7 @@ uint32_t Decode::getCompoundLength(uint32_t countMultiplier) const {
     // process elements
     len += typeDesc.byteCount;
     for (int i = 0; i < count || typeDesc.isIndefiniteValue; ++i) {
-        Decode nextElem = skip(len);
+        Decode nextElem = skipClone(len);
         if (typeDesc.isIndefiniteValue && nextElem.isBreak()) {
             // end of indefinite-length
             len += 1; // account for break
@@ -299,7 +297,7 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
     // process elements
     uint32_t idx = typeDesc.byteCount;
     for (int i = 0; i < count || typeDesc.isIndefiniteValue; ++i) {
-        Decode nextElem = skip(idx);
+        Decode nextElem = skipClone(idx);
         if (typeDesc.isIndefiniteValue && nextElem.isBreak()) {
             // end of indefinite-length
             break;
@@ -308,7 +306,7 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
         if (idx + elemLen > length()) {
             throw std::invalid_argument("CBOR array data too short");
         }
-        elems.push_back(Decode(base, startIdx + idx + elemLen, startIdx + idx));
+        elems.push_back(Decode(dataPtr, dataLen, subStart + idx, elemLen));
         idx += elemLen;
     }
     return elems;
@@ -336,7 +334,7 @@ Decode Decode::getTagElement() const {
     if (typeDesc.majorType != MT_tag) {
         throw std::invalid_argument("CBOR data type not tag");
     }
-    return skip(typeDesc.byteCount);
+    return skipClone(typeDesc.byteCount);
 }
 
 bool Decode::isValid() const {
@@ -346,13 +344,13 @@ bool Decode::isValid() const {
             case MT_uint:
             case MT_negint:
             case MT_special:
-                return (startIdx + typeDesc.byteCount <= totlen);
+                return (typeDesc.byteCount <= subLen);
 
             case MT_bytes:
             case MT_string:
                 {
                     auto len = (uint32_t)(typeDesc.byteCount + typeDesc.value);
-                    return (startIdx + len <= totlen);
+                    return (len <= subLen);
                 }
 
             case MT_array:
@@ -360,12 +358,12 @@ bool Decode::isValid() const {
                 {
                     uint32_t countMultiplier = (typeDesc.majorType == MT_map) ? 2 : 1;
                     uint32_t len = getCompoundLength(countMultiplier);
-                    if (len > totlen) return false;
+                    if (len > subLen) { return false; }
                     auto count = typeDesc.isIndefiniteValue ? 0 : countMultiplier * typeDesc.value;
                     uint32_t idx = typeDesc.byteCount;
                     for (int i = 0; i < count || typeDesc.isIndefiniteValue; ++i)
                     {
-                        Decode nextElem = skip(idx);
+                        Decode nextElem = skipClone(idx);
                         if (typeDesc.isIndefiniteValue && nextElem.isBreak()) { break; }
                         if (!nextElem.isValid()) { return false; }
                         idx += nextElem.getTotalLen();
@@ -374,7 +372,7 @@ bool Decode::isValid() const {
                 }
 
             case MT_tag:
-                return skip(typeDesc.byteCount).isValid();
+                return skipClone(typeDesc.byteCount).isValid();
 
             default:
                 return false;

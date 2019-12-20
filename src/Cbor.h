@@ -53,7 +53,7 @@ public:
 
 private:
     Encode() {}
-    Encode(const TW::Data& rawData);
+    Encode(const TW::Data& rawData) : data(rawData) {}
     /// Append types + value, on variable number of bytes (1..8). Return object to support chain syntax.
     Encode appendValue(byte majorType, uint64_t value);
     inline Encode append(const TW::Data& data) { TW::append(this->data, data); return *this; }
@@ -71,9 +71,7 @@ private:
 class Decode {
 public:
     /// Constructor, create from CBOR byte stream
-    Decode(const Data& input) : Decode((const TW::byte*)input.data(), (uint32_t)input.size()) {}
-    /// Constructor, create from CBOR byte stream
-    Decode(const TW::byte* ndata, uint32_t nlen);
+    Decode(const Data& input);
 
 public: // decoding
     /// Check if contains a valid CBOR byte stream.
@@ -94,7 +92,9 @@ public: // decoding
     Decode getTagElement() const;
     /// Dump to a JSON-like string (debugging)
     std::string dumpToString() const;
-    uint32_t length() const { return totlen - startIdx; }
+    uint32_t length() const { return subLen; }
+    /// Return encoded form (useful e.g for parsed out sub-parts)
+    Data encoded() const { return TW::data(dataPtr + subStart, subLen); }
 
     enum MajorType {
         MT_uint = 0,
@@ -108,19 +108,19 @@ public: // decoding
     };
     
 private:
-    Decode(const TW::byte* ndata, uint32_t nlen, uint32_t nStartIdx);
+    Decode(const TW::byte* nDataPtr, uint32_t nDataLen, uint32_t nSubIdx, uint32_t nSubLen);
     /// Skip ahead: form other Decode data with offset
-    Decode skip(uint32_t offset) const;
+    Decode skipClone(uint32_t offset) const;
     /// Get the Nth byte
     inline TW::byte byte(uint32_t idx) const {
-        if (startIdx + idx >= totlen) { throw std::invalid_argument("CBOR data too short"); }
-        return base[startIdx + idx];
+        if (subStart + idx >= dataLen) { throw std::invalid_argument("CBOR data too short"); }
+        return dataPtr[subStart + idx];
     }
     struct TypeDesc {
-        MajorType majorType; 
-        TW::byte byteCount;
-        uint64_t value;
-        bool isIndefiniteValue;
+        MajorType majorType = MT_uint;
+        TW::byte byteCount = 0;
+        uint64_t value = 0;
+        bool isIndefiniteValue = false;
     };
     /// Parse out type sepcifiers
     TypeDesc getTypeDesc() const;
@@ -131,10 +131,13 @@ private:
     std::string dumpToStringInternal() const;
 
 private:
-    const TW::byte* base;
-    // Additional startIdxIdx index, to make skip ahead possible without touching the base data pointer
-    uint32_t startIdx;
-    uint32_t totlen;
+    /// Encoded input data is copied here, to avoid using reference to memory out of scope
+    Data origData;
+    const TW::byte* dataPtr;
+    uint32_t dataLen;
+    // Additional substring start and len, to make skip ahead possible without touching the base data pointer
+    uint32_t subStart;
+    uint32_t subLen;
 };
 
 } // namespace TW::Cbor
