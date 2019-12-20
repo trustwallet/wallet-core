@@ -138,9 +138,8 @@ void Encode::appendIndefinite(byte majorType) {
 }
 
 
-Decode::Decode(const Data& input) {
+Decode::Decode(const Data& input) : origData(input) {
     // copy input data
-    origData = input;
     dataPtr = origData.data();
     dataLen = origData.size();
     subStart = 0;
