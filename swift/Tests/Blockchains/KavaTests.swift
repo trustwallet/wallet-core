@@ -50,50 +50,42 @@ class KavaSignerTests: XCTestCase {
         }
 
         let output = CosmosSigner.sign(input: signingInput)
- // TODO check key order
+
         let expectedJSON: String =
 """
 {
   "mode": "block",
   "tx": {
-    "msg": [
-      {
-        "type": "cosmos-sdk/MsgSend",
-        "value": {
-          "from_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
-          "to_address": "kava1hdp298kaz0eezpgl6scsykxljrje3667hmlv0h",
-          "amount": [
-            {
-              "denom": "ukava",
-              "amount": "1000000"
-            }
-          ]
-        }
-      }
-    ],
-    "fee": {
-      "amount": [
-        {
-          "denom": "ukava",
-          "amount": "100"
-        }
-      ],
-      "gas": "200000"
-    },
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
-        },
-        "signature": "vcZiNGhw2qmVClI8uQDJhwfFuEDYunZ9XW01FOuOjBcGCSdmK/IOwiD616+ARYtpLZsBX8p2Y+cqbHEascIjCg=="
-      }
-    ],
-    "memo": ""
+      "fee": {
+          "amount": [{
+              "amount": "100",
+              "denom": "ukava"
+          }],
+          "gas": "200000"
+      },
+      "memo": "",
+      "msg": [{
+          "type": "cosmos-sdk/MsgSend",
+          "value": {
+              "amount": [{
+                  "amount": "1000000",
+                  "denom": "ukava"
+              }],
+              "from_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
+              "to_address": "kava1hdp298kaz0eezpgl6scsykxljrje3667hmlv0h"
+          }
+      }],
+      "signatures": [{
+          "pub_key": {
+              "type": "tendermint/PubKeySecp256k1",
+              "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+          },
+          "signature": "vcZiNGhw2qmVClI8uQDJhwfFuEDYunZ9XW01FOuOjBcGCSdmK/IOwiD616+ARYtpLZsBX8p2Y+cqbHEascIjCg=="
+      }],
+      "type": "cosmos-sdk/MsgSend"
   }
 }
 """
-
         XCTAssertEqual(expectedJSON.flatten(), output.json)
     }
 
@@ -131,44 +123,39 @@ class KavaSignerTests: XCTestCase {
         }
 
         let output = CosmosSigner.sign(input: signingInput)
-// TODO check key order
+
         let expectedJSON = """
 {
-  "mode": "block",
-  "tx": {
-    "msg": [
-      {
-        "type": "cosmos-sdk/MsgDelegate",
-        "value": {
-          "delegator_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
-          "validator_address": "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk",
-          "amount": {
-            "denom": "ukava",
-            "amount": "1000000"
-          }
-        }
-      }
-    ],
-    "fee": {
-      "amount": [
-        {
-          "denom": "ukava",
-          "amount": "100"
-        }
-      ],
-      "gas": "200000"
-    },
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+    "mode": "block",
+    "tx": {
+        "fee": {
+            "amount": [{
+                "amount": "100",
+                "denom": "ukava"
+            }],
+            "gas": "200000"
         },
-        "signature": "SmgctT4b8yt4/L2qOkW+Jy2SxMflIl6gOFfhKX/o+Cpqa6xCF6rqy0p3WSz0c/vnfZTWVG7rX+612xCVcJjQCg=="
-      }
-    ],
-    "memo": ""
-  }
+        "memo": "",
+        "msg": [{
+            "type": "cosmos-sdk/MsgDelegate",
+            "value": {
+                "amount": {
+                    "amount": "1000000",
+                    "denom": "ukava"
+                },
+                "delegator_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
+                "validator_address": "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"
+            }
+        }],
+        "signatures": [{
+            "pub_key": {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+            },
+            "signature": "SmgctT4b8yt4/L2qOkW+Jy2SxMflIl6gOFfhKX/o+Cpqa6xCF6rqy0p3WSz0c/vnfZTWVG7rX+612xCVcJjQCg=="
+        }],
+        "type": "cosmos-sdk/MsgSend"
+    }
 }
 """
         XCTAssertEqual(expectedJSON.flatten(), output.json)
@@ -190,7 +177,7 @@ class KavaSignerTests: XCTestCase {
                 $0.amount = 100
                 $0.denom = "ukava"
             }]
-            $0.gas = 220000
+            $0.gas = 200000
         }
 
         let signingInput = CosmosSigningInput.with {
@@ -203,42 +190,37 @@ class KavaSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: input)
+        let output = CosmosSigner.sign(input: signingInput)
         let expectedJSON = """
 {
-  "mode": "block",
-  "tx": {
-    "msg": [
-      {
-        "type": "cosmos-sdk/MsgWithdrawDelegationReward",
-        "value": {
-          "delegator_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
-          "validator_address": "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"
-        }
-      }
-    ],
-    "fee": {
-      "amount": [
-        {
-          "denom": "ukava",
-          "amount": "100"
-        }
-      ],
-      "gas": "200000"
-    },
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+    "mode": "block",
+    "tx": {
+        "fee": {
+            "amount": [{
+                "amount": "100",
+                "denom": "ukava"
+            }],
+            "gas": "200000"
         },
-        "signature": "xF4I6dKOjuKR7ii3i+Q754/R9IFHULwrkNG1zO8w0VoZBQhNWITg3jZJwpgDnAyl6C7we7BuLhutHaSIhvutEg=="
-      }
-    ],
-    "memo": ""
-  }
+        "memo": "",
+        "msg": [{
+            "type": "cosmos-sdk/MsgWithdrawDelegationReward",
+            "value": {
+                "delegator_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
+                "validator_address": "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"
+            }
+        }],
+        "signatures": [{
+            "pub_key": {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+            },
+            "signature": "xF4I6dKOjuKR7ii3i+Q754/R9IFHULwrkNG1zO8w0VoZBQhNWITg3jZJwpgDnAyl6C7we7BuLhutHaSIhvutEg=="
+        }],
+        "type": "cosmos-sdk/MsgSend"
+    }
 }
-        """
+"""
         XCTAssertEqual(expectedJSON.flatten(), output.json)
     }
 
@@ -276,44 +258,39 @@ class KavaSignerTests: XCTestCase {
         }
 
         let output = CosmosSigner.sign(input: signingInput)
-// TODO check key order
+
         let expectedJSON = """
 {
-  "mode": "block",
-  "tx": {
-    "msg": [
-      {
-        "type": "cosmos-sdk/MsgUndelegate",
-        "value": {
-          "delegator_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
-          "validator_address": "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk",
-          "amount": {
-            "denom": "ukava",
-            "amount": "500000"
-          }
-        }
-      }
-    ],
-    "fee": {
-      "amount": [
-        {
-          "denom": "ukava",
-          "amount": "100"
-        }
-      ],
-      "gas": "200000"
-    },
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+    "mode": "block",
+    "tx": {
+        "fee": {
+            "amount": [{
+                "amount": "100",
+                "denom": "ukava"
+            }],
+            "gas": "200000"
         },
-        "signature": "p6n0wv1L4YrK6Etmpp6cLjmUO3CNE1p6/LkZF73tastw4x0sW4Jg8b9R5x45EQMVbmNP87wZ4X/6VHUXluHstQ=="
-      }
-    ],
-    "memo": ""
-  }
+        "memo": "",
+        "msg": [{
+            "type": "cosmos-sdk/MsgUndelegate",
+            "value": {
+                "amount": {
+                    "amount": "500000",
+                    "denom": "ukava"
+                },
+                "delegator_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
+                "validator_address": "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"
+            }
+        }],
+        "signatures": [{
+            "pub_key": {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+            },
+            "signature": "p6n0wv1L4YrK6Etmpp6cLjmUO3CNE1p6/LkZF73tastw4x0sW4Jg8b9R5x45EQMVbmNP87wZ4X/6VHUXluHstQ=="
+        }],
+        "type": "cosmos-sdk/MsgSend"
+    }
 }
 """
         XCTAssertEqual(expectedJSON.flatten(), output.json)
@@ -354,53 +331,41 @@ class KavaSignerTests: XCTestCase {
         }
 
         let output = CosmosSigner.sign(input: signingInput)
-// TODO check key order
         let expectedJSON = """
 {
-  "mode": "block",
-  "tx": {
-    "msg": [
-      {
-        "type": "cosmos-sdk/MsgBeginRedelegate",
-        "value": {
-          "delegator_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
-          "validator_src_address": "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk",
-          "validator_dst_address": "kavavaloper14fkp35j5nkvtztmxmsxh88jks6p3w8u7p76zs9",
-          "amount": {
-            "denom": "ukava",
-            "amount": "500000"
-          }
-        }
-      }
-    ],
-    "fee": {
-      "amount": [
-        {
-          "denom": "ukava",
-          "amount": "100"
-        }
-      ],
-      "gas": "200000"
-    },
-    "signatures": [
-      {
-        "pub_key": {
-          "type": "tendermint/PubKeySecp256k1",
-          "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+    "mode": "block",
+    "tx": {
+        "fee": {
+            "amount": [{
+                "amount": "100",
+                "denom": "ukava"
+            }],
+            "gas": "200000"
         },
-        "signature": "mDC0NuQJOJoYcbDE96D2kQy2RlodlGrhedKOX/2xAy0WrK2TzxDAYbV822xIhLtr2T67jpZfzDWNI0iRg2j/5Q=="
-      }
-    ],
-    "memo": ""
-  }
+        "memo": "",
+        "msg": [{
+            "type": "cosmos-sdk/MsgBeginRedelegate",
+            "value": {
+                "amount": {
+                    "amount": "500000",
+                    "denom": "ukava"
+                },
+                "delegator_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
+                "validator_dst_address": "kavavaloper14fkp35j5nkvtztmxmsxh88jks6p3w8u7p76zs9",
+                "validator_src_address": "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"
+            }
+        }],
+        "signatures": [{
+            "pub_key": {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+            },
+            "signature": "mDC0NuQJOJoYcbDE96D2kQy2RlodlGrhedKOX/2xAy0WrK2TzxDAYbV822xIhLtr2T67jpZfzDWNI0iRg2j/5Q=="
+        }],
+        "type": "cosmos-sdk/MsgSend"
+    }
 }
 """
         XCTAssertEqual(expectedJSON.flatten(), output.json)
-    }
-}
-
-extension String {
-    func flatten() -> String {
-        return components(separatedBy: .whitespacesAndNewlines).joined()
     }
 }
