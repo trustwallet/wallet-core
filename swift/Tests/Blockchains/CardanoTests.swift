@@ -18,7 +18,7 @@ class CardanoTests: XCTestCase {
         XCTAssertEqual(address.description, addressFromString.description)
     }
 
-    /* TODO
+    /*
     func testSign() {
     }
     */

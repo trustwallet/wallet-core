@@ -9,6 +9,7 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include "TWTestUtilities.h"
 #include "HexCoding.h"
+#include "PrivateKey.h"
 
 #include <gtest/gtest.h>
 
