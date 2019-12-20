@@ -16,7 +16,7 @@ using namespace std;
 
 TW::Data Encode::encoded() const {
     if (openIndefCount > 0) {
-        throw invalid_argument("CBOR Unclosed indefinite lenght building");
+        throw invalid_argument("CBOR Unclosed indefinite length building");
     }
     return data;
 }
@@ -138,9 +138,8 @@ void Encode::appendIndefinite(byte majorType) {
 }
 
 
-Decode::Decode(const Data& input) {
-    // copy input data
-    origData = input;
+Decode::Decode(const Data& input) : origData(input) {
+    // copy input data, we create clones to use data from there
     dataPtr = origData.data();
     dataLen = origData.size();
     subStart = 0;
