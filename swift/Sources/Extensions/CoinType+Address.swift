@@ -103,6 +103,8 @@ public extension CoinType {
             return KusamaAddress(string: string)
         case .polkadot:
             return PolkadotAddress(string: string)
+        case .cardano:
+            return CardanoAddress(string: string)
         }
     }
 }
