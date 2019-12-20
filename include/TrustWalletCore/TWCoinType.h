@@ -29,6 +29,7 @@ enum TWCoinType {
     TWCoinTypeBitcoinCash = 145,
     TWCoinTypeBravoCoin = 282,
     TWCoinTypeCallisto = 820,
+    TWCoinTypeCardano = 1815,
     TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
@@ -42,6 +43,7 @@ enum TWCoinType {
     TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
     TWCoinTypeIoTeX = 304,
+    TWCoinTypeKava = 459,
     TWCoinTypeKin = 2017,
     TWCoinTypeLitecoin = 2,
     TWCoinTypeMonacoin = 22,
@@ -76,7 +78,6 @@ enum TWCoinType {
     TWCoinTypeAlgorand = 283,
     TWCoinTypeKusama = 434,
     TWCoinTypePolkadot = 354,
-    TWCoinTypeCardano = 1815,
 };
 
 /// Returns the blockchain for a coin type.

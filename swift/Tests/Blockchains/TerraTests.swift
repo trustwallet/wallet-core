@@ -87,6 +87,6 @@ class TerraTests: XCTestCase {
 }
 """
 
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 }

@@ -1262,6 +1262,30 @@
         }
     },
     {
+        "id": "kava",
+        "name": "Kava",
+        "symbol": "KAVA",
+        "decimals": 6,
+        "blockchain": "Cosmos",
+        "derivationPath": "m/44'/459'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "hrp": "kava",
+        "explorer": {
+            "url": "https://kava.mintscan.io", 
+            "txPath": "/txs/",
+            "accountPath": "/account/",
+            "sampleTx": "2988DF83FCBFAA38179D583A96734CBD071541D6768221BB23111BC8136D5E6A",
+            "sampleAccount": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7"
+        }, 
+        "info": {
+            "url": "https://kava.io",
+            "client": "https://github.com/kava-labs/kava",
+            "clientPublic": "https://data.kava.io",
+            "clientDocs": "https://rpc.kava.io"
+        }
+    },
+    {
         "id": "cardano", 
         "name": "Cardano", 
         "symbol": "ADA", 
@@ -1282,6 +1306,5 @@
             "client": "https://github.com/input-output-hk/cardano-sl", 
             "clientPublic": "", 
             "clientDocs": "https://cardanodocs.com/introduction/"
-        }
     }
 ]
