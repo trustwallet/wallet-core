@@ -384,7 +384,7 @@ class HDWalletTests: XCTestCase {
     func testDeriveKava() {
         let coin = CoinType.kava
         let key = HDWallet.test.getKeyForCoin(coin: coin)
-        let address = CoinType.kava.deriveAddress(privateKey: key)
+        let address = coin.deriveAddress(privateKey: key)
 
         XCTAssertEqual(address, "kava1zrst72upua78pylhku9csxd5zmhsyrk7xhrdlf")
     }

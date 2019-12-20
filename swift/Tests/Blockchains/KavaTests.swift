@@ -7,11 +7,18 @@
 import XCTest
 import TrustWalletCore
 
-// TODO add address tests?
-
-class KavaSignerTests: XCTestCase {
+class KavaTests: XCTestCase {
 
     let privateKey = PrivateKey(data: Data(hexString: "1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6")!)!
+
+    func testAddress() {
+        let address = CoinType.kava.deriveAddress(privateKey: privateKey)
+
+        XCTAssertEqual(address, "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7")
+        XCTAssertTrue(CoinType.kava.validate(address: "kava1hdp298kaz0eezpgl6scsykxljrje3667hmlv0h"))
+        XCTAssertTrue(CoinType.kava.validate(address: "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"))
+        XCTAssertFalse(CoinType.kava.validate(address: "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02"))
+    }
 
     func testSigningTransaction() {
         // https://kava.mintscan.io/txs/2988DF83FCBFAA38179D583A96734CBD071541D6768221BB23111BC8136D5E6A
