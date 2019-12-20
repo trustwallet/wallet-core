@@ -43,4 +43,8 @@ void TWKusamaAddressDelete(struct TWKusamaAddress *_Nonnull address);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWKusamaAddressDescription(struct TWKusamaAddress *_Nonnull address);
 
+/// Returns the public key.
+TW_EXPORT_PROPERTY
+TWData *_Nonnull TWKusamaAddressPublicKey(struct TWKusamaAddress *_Nonnull address);
+
 TW_EXTERN_C_END
