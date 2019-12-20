@@ -100,7 +100,7 @@ Data Address::getCborData() const {
     // inner data: pubkey, attrs, type
     auto cbor1 = Cbor::Encode::array({
         Cbor::Encode::bytes(root),
-        Cbor::Encode(attrs),
+        Cbor::Encode::fromRaw(attrs),
         Cbor::Encode::uint(type),
     });
     auto payloadData = cbor1.encoded();
