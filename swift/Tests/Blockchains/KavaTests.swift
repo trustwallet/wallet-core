@@ -61,39 +61,39 @@ class KavaTests: XCTestCase {
         let expectedJSON: String =
 """
 {
-  "mode": "block",
-  "tx": {
-      "fee": {
-          "amount": [{
-              "amount": "100",
-              "denom": "ukava"
-          }],
-          "gas": "200000"
-      },
-      "memo": "",
-      "msg": [{
-          "type": "cosmos-sdk/MsgSend",
-          "value": {
-              "amount": [{
-                  "amount": "1000000",
-                  "denom": "ukava"
-              }],
-              "from_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
-              "to_address": "kava1hdp298kaz0eezpgl6scsykxljrje3667hmlv0h"
-          }
-      }],
-      "signatures": [{
-          "pub_key": {
-              "type": "tendermint/PubKeySecp256k1",
-              "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
-          },
-          "signature": "vcZiNGhw2qmVClI8uQDJhwfFuEDYunZ9XW01FOuOjBcGCSdmK/IOwiD616+ARYtpLZsBX8p2Y+cqbHEascIjCg=="
-      }],
-      "type": "cosmos-sdk/MsgSend"
-  }
+    "mode": "block",
+    "tx": {
+        "type": "cosmos-sdk/MsgSend",
+        "msg": [{
+            "type": "cosmos-sdk/MsgSend",
+            "value": {
+                "from_address": "kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7",
+                "to_address": "kava1hdp298kaz0eezpgl6scsykxljrje3667hmlv0h",
+                "amount": [{
+                    "denom": "ukava",
+                    "amount": "1000000"
+                }]
+            }
+        }],
+        "fee": {
+            "amount": [{
+                "denom": "ukava",
+                "amount": "100"
+            }],
+            "gas": "200000"
+        },
+        "signatures": [{
+            "pub_key": {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+            },
+            "signature": "vcZiNGhw2qmVClI8uQDJhwfFuEDYunZ9XW01FOuOjBcGCSdmK/IOwiD616+ARYtpLZsBX8p2Y+cqbHEascIjCg=="
+        }],
+        "memo": ""
+    }
 }
 """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
     func testStaking() {
@@ -165,7 +165,7 @@ class KavaTests: XCTestCase {
     }
 }
 """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
     func testWithdraw() {
@@ -228,7 +228,7 @@ class KavaTests: XCTestCase {
     }
 }
 """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
     func testUndelegate() {
@@ -300,7 +300,7 @@ class KavaTests: XCTestCase {
     }
 }
 """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
     func testRedlegate() {
@@ -373,6 +373,6 @@ class KavaTests: XCTestCase {
     }
 }
 """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 }
