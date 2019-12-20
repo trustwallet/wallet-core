@@ -9,7 +9,6 @@
 #include "HexCoding.h"
 
 #include <gtest/gtest.h>
-#include <vector>
 
 using namespace TW;
 using namespace TW::Cbor;
@@ -112,11 +111,73 @@ TEST(Cbor, EncInvalid) {
     FAIL() << "Expected exception";
 }
 
+TEST(Cbor, DecInt) {
+    EXPECT_EQ(0, Decode(parse_hex("00")).getValue());
+    EXPECT_EQ(1, Decode(parse_hex("01")).getValue());
+    EXPECT_EQ(10, Decode(parse_hex("0a")).getValue());
+    EXPECT_EQ(23, Decode(parse_hex("17")).getValue());
+    EXPECT_EQ(24, Decode(parse_hex("1818")).getValue());
+    EXPECT_EQ(25, Decode(parse_hex("1819")).getValue());
+    EXPECT_EQ(26, Decode(parse_hex("181a")).getValue());
+    EXPECT_EQ(27, Decode(parse_hex("181b")).getValue());
+    EXPECT_EQ(28, Decode(parse_hex("181c")).getValue());
+    EXPECT_EQ(29, Decode(parse_hex("181d")).getValue());
+    EXPECT_EQ(30, Decode(parse_hex("181e")).getValue());
+    EXPECT_EQ(31, Decode(parse_hex("181f")).getValue());
+    EXPECT_EQ(32, Decode(parse_hex("1820")).getValue());
+    EXPECT_EQ(0x3f, Decode(parse_hex("183f")).getValue());
+    EXPECT_EQ(0x40, Decode(parse_hex("1840")).getValue());
+    EXPECT_EQ(100, Decode(parse_hex("1864")).getValue());
+    EXPECT_EQ(0x7f, Decode(parse_hex("187f")).getValue());
+    EXPECT_EQ(0x80, Decode(parse_hex("1880")).getValue());
+    EXPECT_EQ(0xff, Decode(parse_hex("18ff")).getValue());
+    EXPECT_EQ(0x100, Decode(parse_hex("190100")).getValue());
+    EXPECT_EQ(1000, Decode(parse_hex("1903e8")).getValue());
+    EXPECT_EQ(0x8765, Decode(parse_hex("198765")).getValue());
+    EXPECT_EQ(0xffff, Decode(parse_hex("19ffff")).getValue());
+    EXPECT_EQ(0x00010000, Decode(parse_hex("1a00010000")).getValue());
+    EXPECT_EQ(1000000, Decode(parse_hex("1a000f4240")).getValue());
+    EXPECT_EQ(0x00800000, Decode(parse_hex("1a00800000")).getValue());
+    EXPECT_EQ(0x87654321, Decode(parse_hex("1a87654321")).getValue());
+    EXPECT_EQ(0xffffffff, Decode(parse_hex("1affffffff")).getValue());
+    EXPECT_EQ(0x0000000100000000, Decode(parse_hex("1b0000000100000000")).getValue());
+    EXPECT_EQ(1000000000000, Decode(parse_hex("1b000000e8d4a51000")).getValue());
+    EXPECT_EQ(0x876543210fedcba9, Decode(parse_hex("1b876543210fedcba9")).getValue());
+    EXPECT_EQ(0xffffffffffffffff, Decode(parse_hex("1bffffffffffffffff")).getValue());
+}
+
 TEST(Cbor, DecMinortypeInvlalid) {
     EXPECT_FALSE(Decode(parse_hex("1c")).isValid()); // 28 unused
     EXPECT_FALSE(Decode(parse_hex("1d")).isValid()); // 29 unused
     EXPECT_FALSE(Decode(parse_hex("1e")).isValid()); // 30 unused
     EXPECT_TRUE(Decode(parse_hex("1b0000000000000000")).isValid());
+}
+
+TEST(Cbor, DecArray3) {
+    Decode cbor = Decode(parse_hex("83010203"));
+    EXPECT_EQ(3, cbor.getArrayElements().size());
+}
+
+TEST(Cbor, DecArrayNested) {
+    Data d1 = parse_hex("8301820203820405");
+    Decode cbor = Decode(d1);
+    EXPECT_EQ(3, cbor.getArrayElements().size());
+
+    EXPECT_EQ(1, cbor.getArrayElements()[0].getValue());
+    EXPECT_EQ(2, cbor.getArrayElements()[1].getArrayElements().size());
+    EXPECT_EQ(2, cbor.getArrayElements()[1].getArrayElements()[0].getValue());
+    EXPECT_EQ(3, cbor.getArrayElements()[1].getArrayElements()[1].getValue());
+    EXPECT_EQ(2, cbor.getArrayElements()[2].getArrayElements().size());
+    EXPECT_EQ(4, cbor.getArrayElements()[2].getArrayElements()[0].getValue());
+    EXPECT_EQ(5, cbor.getArrayElements()[2].getArrayElements()[1].getValue());
+}
+
+TEST(Cbor, DecEncoded) {
+    // sometimes getting the encoded version is useful during decoding too
+    Decode cbor = Decode(parse_hex("8301820203820405"));
+    EXPECT_EQ(3, cbor.getArrayElements().size());
+    EXPECT_EQ("820203", hex(cbor.getArrayElements()[1].encoded()));
+    EXPECT_EQ("820405", hex(cbor.getArrayElements()[2].encoded()));
 }
 
 TEST(Cbor, getValue) {
