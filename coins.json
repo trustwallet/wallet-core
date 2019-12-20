@@ -1274,7 +1274,9 @@
         "explorer": {
             "url": "https://kava.mintscan.io", 
             "txPath": "/txs/",
-            "accountPath": "/account/"
+            "accountPath": "/account/",
+            "sampleTx": "a09afedba252f168ebd4710b9bfe0adb7649d8f9f80990a603a4c234f079f91a",
+            "sampleAccount": "kava1gv84aykwv7pusf24k2ppq9d69w0lnmj4zv7gta"
         }, 
         "info": {
             "url": "https://kava.io",
