@@ -73,7 +73,7 @@ TEST(PrivateKeyTests, ClearMemory) {
 
     TWPrivateKeyDelete(privateKey);
 
-    // Memory cleaned (filled with 0s).  The are may be written by something el, we check that it is not equal to original)
+    // Memory cleaned (filled with 0s).  They may be overwritten by something else; we check that it is not equal to original)
     ASSERT_NE(privKey, TW::hex(TW::data(ptr, 32)));
     for (auto i = 0; i < TWPrivateKeySize; ++i) {
         ASSERT_NE(ptr[i], privKeyData[i]);

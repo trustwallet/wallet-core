@@ -36,7 +36,7 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     case TWPublicKeyTypeSECP256k1Extended:
     case TWPublicKeyTypeNIST256p1Extended:
         return size == secp256k1ExtendedSize && data[0] == 0x04;
-        default:
+    default:
         return false;
     }
 }
