@@ -64,14 +64,19 @@ TEST(PrivateKeyTests, PublicKey) {
 }
 
 TEST(PrivateKeyTests, ClearMemory) {
-    uint8_t bytes[] = {0xaf, 0xee, 0xfc, 0xa7, 0x4d, 0x9a, 0x32, 0x5c, 0xf1, 0xd6, 0xb6, 0x91, 0x1d, 0x61, 0xa6, 0x5c, 0x32, 0xaf, 0xa8, 0xe0, 0x2b, 0xd5, 0xe7, 0x8e, 0x2e, 0x4a, 0xc2, 0x91, 0x0b, 0xab, 0x45, 0xf5};
-    auto data = WRAPD(TWDataCreateWithBytes(bytes, 32));
+    auto privKey = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+    auto privKeyData = TW::parse_hex(privKey);
+    auto data = WRAPD(TWDataCreateWithBytes(privKeyData.data(), privKeyData.size()));
     auto privateKey = TWPrivateKeyCreateWithData(data.get());
     auto ptr = privateKey->impl.bytes.data();
+    ASSERT_EQ(privKey, TW::hex(TW::data(ptr, 32)));
+
     TWPrivateKeyDelete(privateKey);
 
+    ASSERT_NE(privKey, TW::hex(TW::data(ptr, 32)));
     for (auto i = 0; i < TWPrivateKeySize; i += 1) {
-        ASSERT_EQ(ptr[i], 0);
+        // memory cleaned (filled with 0s, not equal to original)
+        ASSERT_NE(ptr[i], privKeyData[i]);
     }
 }
 

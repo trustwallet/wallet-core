@@ -81,7 +81,7 @@ Data forgeOperation(const Operation& operation) {
     auto forgedStorageLimit = forgeZarith(operation.storage_limit());
 
     if (operation.kind() == Operation_OperationKind_REVEAL) {
-        auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), TWPublicKeyTypeED25519);
+        auto publicKey = PublicKey(data(operation.reveal_operation_data().public_key()), TWPublicKeyTypeED25519);
         auto forgedPublicKey = forgePublicKey(publicKey);
         
         forged.push_back(Operation_OperationKind_REVEAL);

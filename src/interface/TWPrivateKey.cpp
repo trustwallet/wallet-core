@@ -17,7 +17,7 @@
 using namespace TW;
 
 struct TWPrivateKey *TWPrivateKeyCreate() {
-    std::array<uint8_t, PrivateKey::size> bytes = {0};
+    Data bytes(PrivateKey::size);
     random_buffer(bytes.data(), PrivateKey::size);
     if (!PrivateKey::isValid(bytes)) {
         // Under no circumstance return an invalid private key. We'd rather
@@ -36,7 +36,7 @@ struct TWPrivateKey *_Nullable TWPrivateKeyCreateWithData(TWData *_Nonnull data)
         return nullptr;
     }
 
-    std::array<uint8_t, PrivateKey::size> bytes;
+    Data bytes(PrivateKey::size);
     TWDataCopyBytes(data, 0, TWPrivateKeySize, bytes.data());
 
     if (!PrivateKey::isValid(bytes)) {
