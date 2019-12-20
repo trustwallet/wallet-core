@@ -54,6 +54,10 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPri
 
 /// Returns the public key associated with this private key.
 TW_EXPORT_METHOD
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Extended(struct TWPrivateKey *_Nonnull pk);
+
+/// Returns the public key associated with this private key.
+TW_EXPORT_METHOD
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk);
 
 /// Signs a digest using ECDSA and given curve.

@@ -139,7 +139,7 @@ TEST(CardanoAddress, FromPublicKey) {
 
 TEST(CardanoAddress, FromPrivateKey) {
     {
-        // menmonic Test, addr0
+        // mnemonic Test, addr0
         auto privateKey = PrivateKey(
             parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
             parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
@@ -151,7 +151,7 @@ TEST(CardanoAddress, FromPrivateKey) {
         ASSERT_EQ(address.string(), "Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W");
     }
     {
-        // menmonic Play1, addr0
+        // mnemonic Play1, addr0
         auto privateKey = PrivateKey(
             parse_hex("a089c9423100960440ccd5b7adbd202d1ab1993a7bb30fc88b287d94016df247"),
             parse_hex("da86a87f08fb15de1431a6c0ccd5ebf51c3bee81f7eaf714801bbbe4d903154a"),

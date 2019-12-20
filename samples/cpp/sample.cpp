@@ -69,7 +69,7 @@ int main() {
         cout << "Creating a new HD wallet ... ";
         TWHDWallet* walletNew = TWHDWalletCreate(128, TWStringCreateWithUTF8Bytes(""));
         cout << "done." << endl;
-        cout << "Secret menmonic for new wallet: '";
+        cout << "Secret mnemonic for new wallet: '";
         cout << TWStringUTF8Bytes(TWHDWalletMnemonic(walletNew)) << "'." << endl;
 
         // Alternative: Import wallet with existing recovery phrase (mnemonic)
@@ -77,7 +77,7 @@ int main() {
         auto secretMnemonic = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
         walletImp = TWHDWalletCreateWithMnemonic(TWStringCreateWithUTF8Bytes(secretMnemonic), TWStringCreateWithUTF8Bytes(""));
         cout << "done." << endl;
-        cout << "Secret menmonic for imported wallet: '";
+        cout << "Secret mnemonic for imported wallet: '";
         cout << TWStringUTF8Bytes(TWHDWalletMnemonic(walletImp)) << "'." << endl;
         cout << endl;
     }

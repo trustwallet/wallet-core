@@ -92,6 +92,10 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Blake2b(struct TWPri
     return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Blake2b) };
 }
 
+struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyEd25519Extended(struct TWPrivateKey *_Nonnull pk) {
+    return new TWPublicKey{ pk->impl.getPublicKey(TWPublicKeyTypeED25519Extended) };
+}
+
 struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivateKey *_Nonnull pk) {
     return new TWPublicKey{pk->impl.getPublicKey(TWPublicKeyTypeCURVE25519)};
 }

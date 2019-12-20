@@ -12,8 +12,6 @@
 using namespace TW;
 using namespace TW::Cardano;
 
-// TODO: Adjust implementations below
-
 bool TWCardanoAddressEqual(struct TWCardanoAddress *_Nonnull lhs, struct TWCardanoAddress *_Nonnull rhs) {
     return lhs->impl == rhs->impl;
 }

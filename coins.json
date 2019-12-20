@@ -1306,5 +1306,6 @@
             "client": "https://github.com/input-output-hk/cardano-sl", 
             "clientPublic": "", 
             "clientDocs": "https://cardanodocs.com/introduction/"
+        }
     }
 ]

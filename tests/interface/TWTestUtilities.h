@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#pragma once
+
 #include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWString.h>
 #include <gtest/gtest.h>

@@ -8,10 +8,7 @@
 
 #include "TWBase.h"
 #include "TWData.h"
-#include "TWHRP.h"
 #include "TWString.h"
-
-// TODO: Adjust definitions below
 
 TW_EXTERN_C_BEGIN
 
