@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWCardanoAddress.h>
-#include <TrustWalletCore/TWCardanoSigner.h>
+//#include <TrustWalletCore/TWCardanoSigner.h>
 #include "HexCoding.h"
 
 #include "TWTestUtilities.h"
