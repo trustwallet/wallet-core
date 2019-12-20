@@ -68,6 +68,7 @@ class CosmosSignerTests: XCTestCase {
 {
   "mode": "block",
   "tx": {
+    "type": "cosmos-sdk/MsgSend",
     "fee": {
       "amount": [
         {
@@ -101,13 +102,12 @@ class CosmosSignerTests: XCTestCase {
         },
         "signature": "/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="
       }
-    ],
-    "type": "cosmos-sdk/MsgSend"
+    ]
   }
 }
 """
 
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
     func testStaking() {
@@ -185,7 +185,7 @@ class CosmosSignerTests: XCTestCase {
 }
 
 """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
     func testWithdraw() {
@@ -276,12 +276,6 @@ class CosmosSignerTests: XCTestCase {
         }
 
         """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
-    }
-}
-
-extension String {
-    func flatten() -> String {
-        return components(separatedBy: .whitespacesAndNewlines).joined()
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 }
