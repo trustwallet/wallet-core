@@ -1272,10 +1272,10 @@
         "publicKeyType": "secp256k1",
         "hrp": "kava",
         "explorer": {
-            "url": "https://kava.bigdipper.live",
-            "txPath": "/transactions/",
+            "url": "https://kava.mintscan.io", 
+            "txPath": "/txs/",
             "accountPath": "/account/"
-        },
+        }, 
         "info": {
             "url": "https://kava.io",
             "client": "https://github.com/kava-labs/kava",

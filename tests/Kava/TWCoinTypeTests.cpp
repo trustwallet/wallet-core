@@ -27,8 +27,8 @@ TEST(TWKavaCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeKava));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeKava));
     assertStringsEqual(symbol, "KAVA");
-    assertStringsEqual(txUrl, "https://kava.bigdipper.live/transactions/2988DF83FCBFAA38179D583A96734CBD071541D6768221BB23111BC8136D5E6A");
-    assertStringsEqual(accUrl, "https://kava.bigdipper.live/account/kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7");
+    assertStringsEqual(txUrl, "https://kava.mintscan.io/txs/2988DF83FCBFAA38179D583A96734CBD071541D6768221BB23111BC8136D5E6A");
+    assertStringsEqual(accUrl, "https://kava.mintscan.io/account/kava1jf9aaj9myrzsnmpdr7twecnaftzmku2mdpy2a7");
     assertStringsEqual(id, "kava");
     assertStringsEqual(name, "Kava");
 }
