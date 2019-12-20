@@ -141,7 +141,7 @@ void Encode::appendIndefinite(byte majorType) {
 Decode::Decode(const Data& input) : origData(input) {
     // copy input data, we create clones to use data from there
     dataPtr = origData.data();
-    dataLen = origData.size();
+    dataLen = (uint32_t)origData.size();
     subStart = 0;
     subLen = dataLen;
 }
