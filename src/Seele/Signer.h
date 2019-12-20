@@ -19,41 +19,46 @@
 #include <tuple>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+#include <stdint.h>
+
 namespace TW::Seele {
 
 /// Helper class that performs Seele transaction signing.
 class Signer {
-  public:
-    uint256_t chainID;
+public:
+    Proto::SigningInput input;
 
-    /// Initializes a signer with a chain identifier.
-    explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
+    Proto::Transaction transaction;
 
-    /// Signs a Proto::SigningInput transaction
-    Proto::SigningOutput sign(const Proto::SigningInput& input) const noexcept;
+    /// Initializes a transaction signer.
+    Signer(Proto::SigningInput&& input);
 
-    /// Signs the given transaction.
-    void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
-
-  public:
-    /// Signs a hash with the given private key for the given chain identifier.
+    /// Signs the transaction.
     ///
-    /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t>
-    sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept;
+    /// \returns the transaction signature or an empty vector if there is an error.
+    Data sign() const;
 
-    /// R, S, and V values for the given chain identifier and signature.
+    /// Builds the signed transaction.
     ///
-    /// @returns the r, s, and v values of the transaction signature
-    static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t& chainID,
-                                                              const Data& signature) noexcept;
+    /// \returns the signed transaction.
+    Proto::SigningOutput build() const;
 
-  protected:
+
+
+private:
+    std::string signaturePreimage() const;
+    nlohmann::json buildTransactionJSON(const Data& signature) const;
+    std::string buildTransaction() const;
+
+protected:
     /// Computes the transaction hash.
-    Data hash(const Transaction& transaction) const noexcept;
+    Data hash(const Proto::SignTransaction& transaction) const noexcept;
 };
 
-} // namespace TW::Seele
+
+
+} // namespace
 
 /// Wrapper for C interface.
 struct TWSeeleSigner {

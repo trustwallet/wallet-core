@@ -9,4 +9,7 @@
 #include "TWData.h"
 
 typedef TWData *_Nonnull TW_Seele_Proto_SigningInput;
+typedef TWData *_Nonnull TW_Seele_Proto_SignTransaction;
+typedef TWData *_Nonnull TW_Seele_Proto_Transaction;
+typedef TWData *_Nonnull TW_Seele_Proto_Signature;
 typedef TWData *_Nonnull TW_Seele_Proto_SigningOutput;

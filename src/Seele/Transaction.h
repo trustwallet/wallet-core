@@ -15,7 +15,7 @@ class Transaction {
 
   public:
     uint256_t type;
-    uint256_t nonce;
+    uint256_t accountNonce;
     uint256_t gasPrice;
     uint256_t gasLimit;
     Address from;
@@ -24,15 +24,16 @@ class Transaction {
     std::vector<uint8_t> payload;
     uint256_t timestamp;
 
+
     // Signature values
     uint256_t v = uint256_t();
     uint256_t r = uint256_t();
     uint256_t s = uint256_t();
 
-    Transaction(uint256_t type,uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit,
+    Transaction(uint256_t type,uint256_t accountNonce, uint256_t gasPrice, uint256_t gasLimit,
     Address from,Address to, uint256_t amount, Data payload,uint256_t timestamp)
         : type(std::move(type))
-        , nonce(std::move(nonce))
+        , accountNonce(std::move(accountNonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))
         , from(std::move(from))

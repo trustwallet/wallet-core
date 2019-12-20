@@ -5,90 +5,82 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "Serialization.h"
+
+#include "../Hash.h"
+#include "../HexCoding.h"
+#include "../PrivateKey.h"
+#include "../Data.h"
+
+#include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
+#include <string>
 
 using namespace TW;
 using namespace TW::Seele;
 
-std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t& chainID,
-                                                           const Data& signature) noexcept {
-    boost::multiprecision::uint256_t r, s, v;
-    import_bits(r, signature.begin(), signature.begin() + 32);
-    import_bits(s, signature.begin() + 32, signature.begin() + 64);
-    import_bits(v, signature.begin() + 64, signature.begin() + 65);
-    v += 27;
+using json = nlohmann::json;
 
-    boost::multiprecision::uint256_t newV;
-    if (chainID != 0) {
-        import_bits(newV, signature.begin() + 64, signature.begin() + 65);
-        newV += 35 + chainID + chainID;
-    } else {
-        newV = v;
-    }
-    return std::make_tuple(r, s, newV);
+Signer::Signer(Proto::SigningInput&& input) {
+    this->input = input;
 }
 
-std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t& chainID, const PrivateKey& privateKey, const Data& hash) noexcept {
-    auto signature = privateKey.sign(hash, TWCurveSECP256k1);
-    return values(chainID, signature);
+std::vector<uint8_t> Signer::sign() const {
+    auto key = PrivateKey(input.private_key());
+    auto hash = this->hash(input.sign_transaction());
+    auto signature = key.sign(hash, TWCurveSECP256k1);
+
+    return std::vector<uint8_t>(signature.begin(), signature.end() - 1);
 }
 
-Proto::SigningOutput Signer::sign(const TW::Seele::Proto::SigningInput &input) const noexcept {
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-
-    auto transaction = Transaction(
-            /* type: */ load(input.type()),
-            /* nonce: */ load(input.nonce()),
-            /* gasPrice: */ load(input.gas_price()),
-            /* gasLimit: */ load(input.gas_limit()),
-            /* from: */ Address(input.from_address()),
-            /* to: */ Address(input.to_address()),
-            /* amount: */ load(input.amount()),
-            /* payload: */ Data(input.payload().begin(), input.payload().end()),
-            /* timestamp: */ load(input.timestamp())
-    );
-
-    sign(key, transaction);
-
-    auto protoOutput = Proto::SigningOutput();
-
-    auto encoded = RLP::encode(transaction);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-
-    auto v = store(transaction.v);
-    protoOutput.set_v(v.data(), v.size());
-
-    auto r = store(transaction.r);
-    protoOutput.set_r(r.data(), r.size());
-
-    auto s = store(transaction.s);
-    protoOutput.set_s(s.data(), s.size());
-
-    return protoOutput;
+std::string Signer::signaturePreimage() const {
+    return signaturePreimageJSON(input).dump();
 }
 
-void Signer::sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept {
-    auto hash = this->hash(transaction);
-    auto tuple = Signer::sign(chainID, privateKey, hash);
+json Signer::buildTransactionJSON(const Data& signature) const {
+    auto sig = Seele::Proto::Signature();
+    sig.set_sig(signature.data(), signature.size());
+    auto privateKey = PrivateKey(input.private_key());
 
-    transaction.r = std::get<0>(tuple);
-    transaction.s = std::get<1>(tuple);
-    transaction.v = std::get<2>(tuple);
+    auto transaction = Seele::Proto::Transaction();
+    auto hash = Hash::keccak256(signaturePreimage());
+
+    *transaction.mutable_data() = input.sign_transaction();
+    *transaction.mutable_signature() = sig;
+    transaction.set_hash("0x"+hex(hash));
+
+    return transactionJSON(transaction);
 }
 
-Data Signer::hash(const Transaction& transaction) const noexcept {
+std::string Signer::buildTransaction() const {
+    auto signature = sign();
+    return buildTransactionJSON(signature).dump();
+}
+
+Proto::SigningOutput Signer::build() const {
+    auto output = Proto::SigningOutput();
+
+    auto signature = sign();
+    auto txJson = buildTransactionJSON(signature);
+
+    output.set_json(txJson.dump());
+    output.set_signature(signature.data(), signature.size());
+
+    return output;
+}
+
+Data Signer::hash(const Proto::SignTransaction& transaction) const noexcept {
     auto encoded = Data();
-    append(encoded, RLP::encode(transaction.type));
-    append(encoded, RLP::encode(transaction.nonce));
-    append(encoded, RLP::encode(transaction.gasPrice));
-    append(encoded, RLP::encode(transaction.gasLimit));
-    append(encoded, RLP::encode(transaction.from.bytes));
-    append(encoded, RLP::encode(transaction.to.bytes));
-    append(encoded, RLP::encode(transaction.amount));
-    append(encoded, RLP::encode(transaction.payload));
-    append(encoded, RLP::encode(transaction.timestamp));
-    //append(encoded, RLP::encode(chainID));
-    append(encoded, RLP::encode(0));
-    append(encoded, RLP::encode(0));
+
+    append(encoded, RLP::encode(transaction.type()));
+    append(encoded, RLP::encode(parse_hex(transaction.from())));
+    append(encoded, RLP::encode(parse_hex(transaction.to())));
+    append(encoded, RLP::encode(transaction.amount()));
+    append(encoded, RLP::encode(transaction.account_nonce()));
+    append(encoded, RLP::encode(transaction.gas_price()));
+    append(encoded, RLP::encode(transaction.gas_limit()));
+    append(encoded, RLP::encode(transaction.timestamp()));
+    append(encoded, RLP::encode(parse_hex(transaction.payload())));
+
     return Hash::keccak256(RLP::encodeList(encoded));
 }

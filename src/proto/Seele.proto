@@ -5,47 +5,62 @@ option java_package = "wallet.core.jni.proto";
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
-    // Chain identifier (256-bit number)
-    bytes chain_id = 1;
 
-    // Nonce (256-bit number)
-    bytes nonce = 2;
-
-    // Gas price (256-bit number)
-    bytes gas_price = 3;
-
-    // Gas limit (256-bit number)
-    bytes gas_limit = 4;
-
-    // Recipient's address.
-    string to_address = 5;
-
-    // Amount to send in wei (256-bit number)
-    bytes amount = 6;
-
-    // Optional payload
-    bytes payload = 7;
+    //Sign Transaction
+    SignTransaction sign_transaction = 1;
 
     // Private key.
-    bytes private_key = 8;
+    bytes private_key = 2;
+
+}
+
+message SignTransaction {
 
     //Transfer type (256-bit number)
-    bytes type = 9;
+    uint64 type = 1;
 
     // Sender's address.
-    string from_address = 10;
+    string from = 2;
+
+    // Recipient's address.
+    string to = 3;
+
+    // Amount to send in wei (256-bit number)
+    uint64 amount = 4;
+
+    // Nonce (256-bit number)
+    uint64 account_nonce = 5;
+
+    // Gas price (256-bit number)
+    uint64 gas_price = 6;
+
+    // Gas limit (256-bit number)
+    uint64 gas_limit = 7;
 
     // Transfer time (256-bit number)
-    bytes timestamp = 11;
+    uint64 timestamp = 8;
 
+    // Optional payload
+    string payload = 9;
+
+}
+
+// Transaction
+message Transaction {
+
+    SignTransaction data = 1;
+    Signature signature = 2;
+    string hash = 3;
+
+}
+
+// Signature
+message Signature {
+    bytes sig = 1;
 }
 
 // Transaction signing output.
 message SigningOutput {
-    // Signed and encoded transaction bytes.
-    bytes encoded = 1;
-
-    bytes v = 2;
-    bytes r = 3;
-    bytes s = 4;
+    bytes signature = 1;
+    string json = 2;
 }
