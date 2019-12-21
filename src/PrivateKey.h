@@ -17,9 +17,15 @@ class PrivateKey {
   public:
     /// The number of bytes in a private key.
     static const size_t size = 32;
+    /// The number of bytes in an extended private key.
+    static const size_t extendedSize = 3 * 32;
 
     /// The private key bytes.
     Data bytes;
+    /// Optional extended part of the key (additional 32 bytes)
+    Data extensionBytes;
+    /// Optional chain code (additional 32 bytes)
+    Data chainCodeBytes;
 
     /// Determines if a collection of bytes makes a valid private key.
     static bool isValid(const Data& data);
@@ -27,11 +33,14 @@ class PrivateKey {
     /// Determines if a collection of bytes and curve make a valid private key.
     static bool isValid(const Data& data, TWCurve curve);
 
-    /// Initializes a private key with an array of bytes.
+    /// Initializes a private key with an array of bytes.  Size must be exact (normally 32, or 96 for extended)
     explicit PrivateKey(const Data& data);
 
     /// Initializes a private key from a string of bytes (convenience method).
     explicit PrivateKey(const std::string& data) : PrivateKey(TW::data(data)) {}
+
+    /// Initializes an extended private key with key, extended key, and chain code.
+    explicit PrivateKey(const Data& data, const Data& ext, const Data& chainCode);
 
     PrivateKey(const PrivateKey& other) = default;
     PrivateKey& operator=(const PrivateKey& other) = default;

@@ -1284,5 +1284,28 @@
             "clientPublic": "https://data.kava.io",
             "clientDocs": "https://rpc.kava.io"
         }
+    },
+    {
+        "id": "cardano", 
+        "name": "Cardano", 
+        "symbol": "ADA", 
+        "decimals": 6, 
+        "blockchain": "Cardano", 
+        "derivationPath": "m/44'/1815'/0'/0/0", 
+        "curve": "ed25519Extended", 
+        "publicKeyType": "ed25519Extended", 
+        "explorer": {
+            "url": "https://cardanoexplorer.com", 
+            "txPath": "/tx/",
+            "accountPath": "/address/",
+            "sampleTx": "b7a6c5cadab0f64bdc89c77ee4a351463aba5c33f2cef6bbd6542a74a90a3af3",
+            "sampleAccount": "DdzFFzCqrhstpwKc8WMvPwwBb5oabcTW9zc5ykA37wJR4tYQucvsR9dXb2kEGNXkFJz2PtrpzfRiZkx8R1iNo8NYqdsukVmv7EAybFwC"
+        },
+        "info": {
+            "url": "https://www.cardano.org", 
+            "client": "https://github.com/input-output-hk/cardano-sl", 
+            "clientPublic": "", 
+            "clientDocs": "https://cardanodocs.com/introduction/"
+        }
     }
 ]

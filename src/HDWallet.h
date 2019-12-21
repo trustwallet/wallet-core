@@ -38,6 +38,9 @@ class HDWallet {
     /// Mnemonic passphrase.
     std::string passphrase;
 
+    /// Entropy bytes (11 bits from each word)
+    TW::Data entropy;
+
   public:
     /// Determines if a mnemonic phrase is valid.
     static bool isValid(const std::string& mnemonic);
@@ -58,8 +61,13 @@ class HDWallet {
 
     virtual ~HDWallet();
 
+    void updateEntropy();
+
     /// Returns master key.
     PrivateKey getMasterKey(TWCurve curve) const;
+
+    /// Returns the master private key extension (32 byte).
+    PrivateKey getMasterKeyExtension(TWCurve curve) const;
 
     /// Returns the private key at the given derivation path.
     PrivateKey getKey(const DerivationPath& derivationPath) const;

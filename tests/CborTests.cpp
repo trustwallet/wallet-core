@@ -180,6 +180,21 @@ TEST(Cbor, DecEncoded) {
     EXPECT_EQ("820405", hex(cbor.getArrayElements()[2].encoded()));
 }
 
+TEST(Cbor, DecMemoryref) {
+    // make sure reference to data is valid even if parent object has been destroyed
+    Decode* cbor = new Decode(parse_hex("828301020383010203"));
+    auto elems = cbor->getArrayElements();
+    // delete parent
+    delete cbor;
+    // also do some new allocation
+    Decode* dummy = new Decode(parse_hex("5555555555555555"));
+    // work with the child references
+    EXPECT_EQ(2, elems.size());
+    EXPECT_EQ(3, elems[0].getArrayElements().size());
+    EXPECT_EQ(3, elems[1].getArrayElements().size());
+    delete dummy;
+}
+
 TEST(Cbor, getValue) {
    EXPECT_EQ(5, Decode(parse_hex("05")).getValue());
 }

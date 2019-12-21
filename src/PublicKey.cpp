@@ -28,6 +28,8 @@ bool PublicKey::isValid(const Data& data, enum TWPublicKeyType type) {
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
         return size == ed25519Size;
+    case TWPublicKeyTypeED25519Extended:
+        return size == ed25519ExtendedSize;
     case TWPublicKeyTypeSECP256k1:
     case TWPublicKeyTypeNIST256p1:
         return size == secp256k1Size && (data[0] == 0x02 || data[0] == 0x03);
@@ -72,6 +74,9 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type) : type(type) {
             std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
         }
         break;
+    case TWPublicKeyTypeED25519Extended:
+        bytes.reserve(ed25519ExtendedSize);
+        std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
     }
 }
 
@@ -111,6 +116,7 @@ PublicKey PublicKey::extended() const {
     case TWPublicKeyTypeED25519:
     case TWPublicKeyTypeCURVE25519:
     case TWPublicKeyTypeED25519Blake2b:
+    case TWPublicKeyTypeED25519Extended:
        return *this;
     }
 }
@@ -127,6 +133,9 @@ bool PublicKey::verify(const Data& signature, const Data& message) const {
         return ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeED25519Blake2b:
         return ed25519_sign_open_blake2b(message.data(), message.size(), bytes.data(), signature.data()) == 0;
+    case TWPublicKeyTypeED25519Extended:
+        throw std::logic_error("Not yet implemented");
+        //ed25519_sign_open(message.data(), message.size(), bytes.data(), signature.data()) == 0;
     case TWPublicKeyTypeCURVE25519:
         auto ed25519PublicKey = Data();
         ed25519PublicKey.resize(PublicKey::ed25519Size);
@@ -154,7 +163,9 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
         return false;
     case TWPublicKeyTypeED25519:
     case TWPublicKeyTypeED25519Blake2b:
+    case TWPublicKeyTypeED25519Extended:
     case TWPublicKeyTypeCURVE25519:
+    default:
         return false;
     }
 }

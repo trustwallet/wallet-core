@@ -26,12 +26,23 @@ Keys::Keys(ostream& out, const Coins& coins) : _out(out), _coins(coins) {
     _currentMnemonic = newwall.mnemonic;
 }
 
-bool Keys::newKey(string& res) {
+bool Keys::newKey(const string& coinid, string& res) {
     // Create a new private key by creating a new HDWallet and deriving from it
+    // Use coin-specific derivation path, so that PK can be coin-specific (e.g. longer for Cardano)
+    // coin
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+
     HDWallet newWallet(256, "");
-    DerivationPath dummyDerivation("m/84'/0'/0'/0/0");
-    PrivateKey key = newWallet.getKey(dummyDerivation);
+
+    DerivationPath derivationPath = DerivationPath(coin.derivPath);
+    PrivateKey key = newWallet.getKey(derivationPath);
+    // take the key, but may need to take extension as well
     res = hex(key.bytes);
+    if (key.extensionBytes.size() > 0) {
+        res += hex(key.extensionBytes);
+        res += hex(key.chainCodeBytes);
+    }
     return true;
 }
 
@@ -41,14 +52,15 @@ bool Keys::pubPri(const string& coinid, const string& p, string& res) {
     Data privDat;
     try {
         privDat = parse_hex(p);
+        auto priv = PrivateKey(privDat);
+        auto pub = priv.getPublicKey((TWPublicKeyType)coin.pubKeyType);
+        res = hex(pub.bytes);
+        _out << "Public key created, type " << (int)coin.pubKeyType << ", length " << pub.bytes.size() << endl;
+        return true;
     } catch (exception& ex) {
-        _out << "Error: could not parse private key data" << endl;
+        _out << "Error: " << ex.what() << endl;
         return false; 
     }
-    auto priv = PrivateKey(privDat);
-    auto pub = priv.getPublicKey((TWPublicKeyType)coin.pubKeyType);
-    res = hex(pub.bytes);
-    return true;
 }
 
 bool Keys::priPub(const string& p, string& res) {
