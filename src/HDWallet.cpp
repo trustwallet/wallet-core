@@ -253,7 +253,7 @@ HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
     auto node = HDNode();
     if (curve == TWCurveED25519Extended) {
         // special handling for Cardano, use entropy not seed
-        hdnode_from_seed_cardano((const uint8_t*)"", 0, wallet.entropy.data(), wallet.entropy.size(), &node);
+        hdnode_from_seed_cardano((const uint8_t*)"", 0, wallet.entropy.data(), (int)wallet.entropy.size(), &node);
     } else {
         hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, curveName(curve), &node);
     }
