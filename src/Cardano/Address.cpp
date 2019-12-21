@@ -7,14 +7,12 @@
 #include "Address.h"
 #include "Cbor.h"
 #include "../Data.h"
-//#include "../PublicKey.h"
 #include "../Base58.h"
 #include "../Crc.h"
 #include "../HexCoding.h"
 #include "../Hash.h"
 
 #include <array>
-#include <iostream>
 
 using namespace TW;
 using namespace TW::Cardano;
@@ -23,8 +21,6 @@ using namespace std;
 bool Address::isValid(const std::string& string) {
     try {
         Data base58decoded = Base58::bitcoin.decode(string);
-        //std::cerr << base58decoded.size() << " " << (int)base58decoded[0] << " " << (int)base58decoded[0]/32 << std::endl;
-        //cerr << Cbor::Decode(base58decoded).dumpToString() << endl;
         auto elems = Cbor::Decode(base58decoded).getArrayElements();
         if (elems.size() < 2) { return false; }
         auto tag = elems[0].getTagValue();
