@@ -1,0 +1,56 @@
+// Copyright © 2017-2019 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+
+#include "HexCoding.h"
+#include "Polkadot/ScaleCodec.h"
+#include "Kusama/Address.h"
+
+#include <gtest/gtest.h>
+
+using namespace TW;
+using namespace TW::Polkadot;
+
+
+TEST(PolkadotCodec, EncodeCompact) {
+    ASSERT_EQ(hex(encodeCompact(0)), "00");
+    ASSERT_EQ(hex(encodeCompact(18)), "48");
+    ASSERT_EQ(hex(encodeCompact(63)), "fc");
+    ASSERT_EQ(hex(encodeCompact(64)), "0101");
+
+    ASSERT_EQ(hex(encodeCompact(12345)), "e5c0");
+    ASSERT_EQ(hex(encodeCompact(16383)), "fdff");
+    ASSERT_EQ(hex(encodeCompact(16384)), "02000100");
+
+    ASSERT_EQ(hex(encodeCompact(1073741823)), "feffffff");
+    ASSERT_EQ(hex(encodeCompact(1073741824)), "0300000040");
+
+    ASSERT_EQ(hex(encodeCompact(4294967295)), "03ffffffff");
+    ASSERT_EQ(hex(encodeCompact(4294967296)), "070000000001");
+
+    ASSERT_EQ(hex(encodeCompact(1099511627776)), "0b000000000001");
+    ASSERT_EQ(hex(encodeCompact(281474976710656)), "0f00000000000001");
+
+    ASSERT_EQ(hex(encodeCompact(72057594037927935)), "0fffffffffffffff");
+    ASSERT_EQ(hex(encodeCompact(72057594037927936)), "130000000000000001");
+    
+    ASSERT_EQ(hex(encodeCompact(18446744073709551615u)), "13ffffffffffffffff");
+}
+
+TEST(PolkadotCodec, EncodeLengthPrefix) {
+    auto encoded = parse_hex("84ff88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0034a113577b56545c45e18969471eebe11ed434f3b2f06e2e3dc8dc137ba804caf60757787ebdeb298327e2f29d68c5520965405ef5582db0445c06e1c11a8a0e0000000400ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
+    encodeLengthPrefix(encoded);
+
+    ASSERT_EQ(hex(encoded), "2d0284ff88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0034a113577b56545c45e18969471eebe11ed434f3b2f06e2e3dc8dc137ba804caf60757787ebdeb298327e2f29d68c5520965405ef5582db0445c06e1c11a8a0e0000000400ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
+}
+
+TEST(PolkadotCodec, EncodeAddress) {
+    auto address = Kusama::Address("FoQJpPyadYccjavVdTWxpxU7rUEaYhfLCPwXgkfD6Zat9QP");
+    auto encoded = Data{};
+    encodeAddress(address, encoded);
+
+    ASSERT_EQ(hex(encoded), "ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48");
+}
