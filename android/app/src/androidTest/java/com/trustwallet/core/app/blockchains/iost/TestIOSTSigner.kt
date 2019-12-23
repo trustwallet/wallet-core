@@ -1,6 +1,5 @@
 package com.trustwallet.core.app.blockchains.iost
 
-import com.google.gson.Gson
 import com.google.protobuf.ByteString
 import junit.framework.Assert.assertEquals
 import org.junit.Test
