@@ -67,7 +67,7 @@ HDWallet::~HDWallet() {
 }
 
 void HDWallet::updateEntropy() {
-    // gerenrate entropy (from mnemonic)
+    // generate entropy (from mnemonic)
     Data entropyRaw(32 + 1);
     auto entropyBits = mnemonic_to_entropy(mnemonic.c_str(), entropyRaw.data());
     // copy to truncate
