@@ -99,25 +99,25 @@ class MainActivity : AppCompatActivity() {
         val changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"
         val script = BitcoinScript.buildForAddress(addressBtc, coinBtc).data()
 
-        val outPoint = Bitcoin.OutPoint.newBuilder()
-                .setHash(ByteString.copyFrom(utxoTxId))
-                .setIndex(2)
-                .build()
-        val utxo = Bitcoin.UnspentTransaction.newBuilder()
-                .setAmount(5151)
-                .setOutPoint(outPoint)
-                .setScript(ByteString.copyFrom(script))
-                .build()
-        val input = Bitcoin.SigningInput.newBuilder()
-                .setAmount(600)
-                .setHashType(BitcoinSigHashType.ALL.value().or(BitcoinSigHashType.FORK.value()))
-                .setToAddress(toAddress)
-                .setChangeAddress(changeAddress)
-                .setByteFee(1)
-                .setCoinType(coinBtc.value())
-                .addUtxo(utxo)
-                .addPrivateKey(ByteString.copyFrom(secretPrivateKeyBtc.data()))
-                .build()
+        val outPoint = Bitcoin.OutPoint.newBuilder().apply {
+            this.hash = ByteString.copyFrom(utxoTxId)
+            this.index = 2
+        }.build()
+        val utxo = Bitcoin.UnspentTransaction.newBuilder().apply {
+            this.amount = 5151
+            this.outPoint = outPoint
+            this.script = ByteString.copyFrom(script)
+        }.build()
+        val input = Bitcoin.SigningInput.newBuilder().apply {
+            this.amount = 600
+            this.hashType = BitcoinSigHashType.ALL.value().or(BitcoinSigHashType.FORK.value())
+            this.toAddress = toAddress
+            this.changeAddress = changeAddress
+            this.byteFee = 1
+            this.coinType = coinBtc.value()
+            this.addUtxo(utxo)
+            this.addPrivateKey(ByteString.copyFrom(secretPrivateKeyBtc.data()))
+        }.build()
 
         val signer = BitcoinTransactionSigner(input)
         val result = signer.sign()
