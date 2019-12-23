@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Address.h"
-#include "Cbor.h"
+#include "../Cbor.h"
 #include "../Data.h"
 #include "../Base58.h"
 #include "../Crc.h"
@@ -18,26 +18,41 @@ using namespace TW;
 using namespace TW::Cardano;
 using namespace std;
 
+bool Address::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs_out, byte& type_out) {
+    // Decode Bas58, decode payload + crc, decode root, attr
+    Data base58decoded = Base58::bitcoin.decode(addr);
+    auto elems = Cbor::Decode(base58decoded).getArrayElements();
+    if (elems.size() < 2) {
+        throw invalid_argument("Could not parse address payload from CBOR data");
+    }
+    auto tag = elems[0].getTagValue();
+    if (tag != 24) {
+        throw invalid_argument("wrong tag value");
+    }
+    Data payload = elems[0].getTagElement().getBytes();
+    uint64_t crcPresent = (uint32_t)elems[1].getValue();
+    uint32_t crcComputed = TW::Crc::crc32(payload);
+    if (crcPresent != crcComputed) {
+        throw invalid_argument("CRC mismatch");
+    }
+    // parse payload, 3 elements
+    auto payloadElems = Cbor::Decode(payload).getArrayElements();
+    if (payloadElems.size() < 3) {
+        throw invalid_argument("Could not parse address root and attrs from CBOR data");
+    }
+    root_out = payloadElems[0].getBytes();
+    attrs_out = payloadElems[1].encoded(); // map, but encoded as bytes
+    type_out = (TW::byte)payloadElems[2].getValue();
+    return true;
+}
+
 bool Address::isValid(const std::string& string) {
     try {
-        Data base58decoded = Base58::bitcoin.decode(string);
-        auto elems = Cbor::Decode(base58decoded).getArrayElements();
-        if (elems.size() < 2) { return false; }
-        auto tag = elems[0].getTagValue();
-        if (tag != 24) {
-            // wrong tag value
-            return false;
-        }
-        Data payload = elems[0].getTagElement().getBytes();
-        // debug
-        uint64_t crcPresent = (uint32_t)elems[1].getValue();
-        uint32_t crcComputed = TW::Crc::crc32(payload);
-        if (crcPresent != crcComputed) {
-            // CRC mismatch
-            return false;
-        }
-        // check that payload is Cbor-encoded, array, with 3 elements
-        auto payloadElems = Cbor::Decode(payload).getArrayElements();
+        Data root;
+        Data attrs;
+        byte type = 0;
+        if (!parseAndCheck(string, root, attrs, type)) { return false; }
+        // valid
         return true;
     } catch (exception& ex) {
         return false;
@@ -45,38 +60,10 @@ bool Address::isValid(const std::string& string) {
 }
 
 Address::Address(const std::string& string) {
-    try
-    {
-        if (!isValid(string)) {
-            throw std::invalid_argument("Invalid address string");
-        }
-        Data base58decoded = Base58::bitcoin.decode(string);
-        auto elems = Cbor::Decode(base58decoded).getArrayElements();
-        if (elems.size() >= 2) { // checked in isValid
-            auto array0 = elems[0];
-            auto tag = array0.getTagValue();
-            if (tag == 24) { // checked in isValid
-                Data addressAsArray = array0.getTagElement().getBytes();
-                // debug
-                uint64_t crcPresent = (uint32_t)elems[1].getValue();
-                uint32_t crcComputed = TW::Crc::crc32(addressAsArray);
-                if (crcPresent == crcComputed) { // checked in isValid
-                    // parse 2nd CBOR
-                    auto elems2 = Cbor::Decode(addressAsArray).getArrayElements();
-                    if (elems2.size() < 3) {
-                        // a 3-elem array is expected
-                        throw std::invalid_argument("Invalid address string, inner array too short");
-                    }
-                    // store values
-                    root = elems2[0].getBytes();
-                    attrs = elems2[1].encoded();
-                    type = (TW::byte)(elems2[2].getValue());
-                }
-            }
-        }
-    } catch (exception& ex) {
+    if (!parseAndCheck(string, root, attrs, type)) {
         throw std::invalid_argument("Invalid address string");
     }
+    // values stored
 }
 
 Address::Address(const PublicKey& publicKey) {

@@ -51,7 +51,7 @@ class Address {
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 
-    /// Initializes a Cardano address with a string representation.
+    /// Initializes a Cardano address with a string representation.  Throws if invalid.
     explicit Address(const std::string& string);
 
     /// Initializes a V2, public key type Cardano address from an extended public key.
@@ -65,6 +65,9 @@ class Address {
 
     /// Get the CBOR address data (before Base58 encoding)
     TW::Data getCborData() const;
+
+    /// Check validity and parse elements of a string address.  Throws on error. Used internally by isValid and ctor.
+    static bool parseAndCheck(const std::string& addr, TW::Data& root_out, TW::Data& attrs_out, TW::byte& type_out);
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {
