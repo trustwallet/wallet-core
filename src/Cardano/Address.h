@@ -48,6 +48,8 @@ class Address {
     /// Type; 0: public key.
     TW::byte type;
 
+    static const TW::byte PayloadTag = 24;
+    
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& string);
 

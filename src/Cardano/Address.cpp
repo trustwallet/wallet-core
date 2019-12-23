@@ -26,7 +26,7 @@ bool Address::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs
         throw invalid_argument("Could not parse address payload from CBOR data");
     }
     auto tag = elems[0].getTagValue();
-    if (tag != 24) {
+    if (tag != PayloadTag) {
         throw invalid_argument("wrong tag value");
     }
     Data payload = elems[0].getTagElement().getBytes();
@@ -92,7 +92,7 @@ Data Address::getCborData() const {
     auto crc = TW::Crc::crc32(payloadData);
     // second pack: tag, base, crc
     auto cbor2 = Cbor::Encode::array({
-        Cbor::Encode::tag(24, Cbor::Encode::bytes(payloadData)),
+        Cbor::Encode::tag(PayloadTag, Cbor::Encode::bytes(payloadData)),
         Cbor::Encode::uint(crc),
     });
     return cbor2.encoded();
