@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
-#include "Address.h"
 #include "Extrinsic.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
@@ -15,10 +14,14 @@ using namespace TW::Polkadot;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     auto extrinsic = Extrinsic(input);
-    auto hash = Hash::blake2b(extrinsic.getPreImage(), 64);
-    auto signature = privateKey.sign(hash, TWCurveED25519);
-    auto encoded = extrinsic.encodeSignature(signature);
+    auto payload = extrinsic.encodePayload();
+    if (payload.size() > 256) {
+        payload = Hash::blake2b(payload, 64);
+    }
+    auto signature = privateKey.sign(payload, TWCurveED25519);
+    auto encoded = extrinsic.encodeSignature(publicKey, signature);
 
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_encoded(encoded.data(), encoded.size());

@@ -9,6 +9,7 @@
 #include "../BinaryCoding.h"
 #include "../Data.h"
 #include "../SS58Address.h"
+#include "../PublicKey.h"
 #include <boost/multiprecision/cpp_int.hpp>
 
 /// Reference https://github.com/soramitsu/kagome/blob/master/core/scale/scale_encoder_stream.cpp
@@ -16,9 +17,9 @@ using CompactInteger = boost::multiprecision::cpp_int;
 
 namespace TW::Polkadot {
 
-constexpr static size_t kMinUint16 = (1ul << 6u);
-constexpr static size_t kMinUint32 = (1ul << 14u);
-constexpr static size_t kMinBigInteger = (1ul << 30u);
+static constexpr size_t kMinUint16 = (1ul << 6u);
+static constexpr size_t kMinUint32 = (1ul << 14u);
+static constexpr size_t kMinBigInteger = (1ul << 30u);
 
 inline size_t countBytes(CompactInteger value) {
     if (0 == value) {
@@ -80,9 +81,24 @@ inline void encodeLengthPrefix(Data& data) {
     data.insert(data.begin(), prefix.begin(), prefix.end());
 }
 
-inline void encodeAddress(SS58Address& address, Data& data) {
-    append(data, Data{0xff});
+inline Data encodeAddress(const SS58Address& address) {
+    auto data = Data{0xff};
     append(data, Data(address.bytes.begin() + 1, address.bytes.end()));
+    return data;
+}
+
+inline Data encodeAddress(const PublicKey& key) {
+    auto data = Data{0xff};
+    append(data, Data(key.bytes.begin(), key.bytes.end()));
+    return data;
+}
+
+inline Data encodeBool(bool value) {
+    return Data {uint8_t(value ? 0x01: 0x00)};
+}
+
+inline Data encodeVector(std::vector<Data> vec) {
+    return Data{};
 }
 
 } // namespace TW::Polkadot

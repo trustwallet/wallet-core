@@ -13,6 +13,10 @@
 
 namespace TW::Polkadot {
 
+enum ExtrinsicType {
+    BalanceTransfer = 0,
+};
+
 class Extrinsic {
   public:
     Data blockHash;
@@ -25,6 +29,8 @@ class Extrinsic {
     uint64_t period;
     SS58Address address;
     uint256_t value;
+
+    ExtrinsicType type;
     Extrinsic(const Proto::SigningInput& input)
         : blockHash(input.block_hash().begin(), input.block_hash().end())
         , genesisHash(input.genesis_hash().begin(), input.genesis_hash().end())
@@ -40,11 +46,15 @@ class Extrinsic {
             auto transfer = input.balance_call().transfer();
             address = SS58Address(transfer.to_address(), byte(input.network()));
             value = load(transfer.value());
+            type = ExtrinsicType::BalanceTransfer;
         }
     }
 
-    Data getPreImage() const;
-    Data encodeSignature(const Data& signature) const;
+    Data encodePayload() const;
+    Data encodeSignature(const PublicKey& signer, const Data& signature) const;
+  protected:
+    Data encodeEraNonceTip() const;
+    Data encodeCall() const;
 };
 
 } // namespace TW::Polkadot

@@ -26,7 +26,7 @@ TEST(PolkadotSigner, Sign) {
     input.set_block_hash(blockHash.data(), blockHash.size());
     input.set_genesis_hash(genesisHash.data(), genesisHash.size());
     input.set_nonce(0);
-    input.set_spec_version(1030);
+    input.set_spec_version(1031);
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
     input.set_network(Proto::Network::KUSAMA);
     input.set_extrinsic_version(4);
@@ -39,5 +39,5 @@ TEST(PolkadotSigner, Sign) {
 
     auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(output.encoded()), "0x2d0284ff88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0011549108231dc42c75599fbb3fd61a3155c79ddbd51d237bfb4403ab04e63ea667f6616989e2e2bdc7670225be8fd3824ca33792ee82d73bcff34181b43106060000000400ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
+    ASSERT_EQ(hex(output.encoded()), "2d0284ff88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0034a113577b56545c45e18969471eebe11ed434f3b2f06e2e3dc8dc137ba804caf60757787ebdeb298327e2f29d68c5520965405ef5582db0445c06e1c11a8a0e0000000400ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0");
 }
