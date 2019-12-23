@@ -11,6 +11,7 @@
 #include "../Hash.h"
 
 #include "../uint256.h"
+#include <boost/multiprecision/cpp_int.hpp>
 
 #include <cstdint>
 #include <string>
@@ -50,6 +51,20 @@ struct RLP {
     static Data encode(uint64_t number) noexcept { return encode(uint256_t(number)); }
 
     static Data encode(const uint256_t& number) noexcept;
+
+    static Data encodeLong(boost::multiprecision::uint128_t l) noexcept {
+            if ((l & 0x00000000FFFFFFFFL) == l) {
+                return RLP::encode(static_cast<uint256_t>(l));
+            }
+            Data result(9);
+            result[0] = 0x80 + 8;
+            for (int i = 8; i > 0; i--) {
+                result[i] = (byte)(l & 0xFF);
+                l >>= 8;
+            }
+            return result;
+        }
+
 
     /// Encodes a transaction.
     static Data encode(const Transaction& transaction) noexcept;

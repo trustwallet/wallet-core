@@ -41,7 +41,7 @@ message SignTransaction {
     uint64 timestamp = 8;
 
     // Optional payload
-    string payload = 9;
+    bytes payload = 9;
 
 }
 
