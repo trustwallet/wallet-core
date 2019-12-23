@@ -29,6 +29,7 @@ class HDWallet {
     static constexpr size_t maxMnemomincSize = 240;
     static constexpr size_t maxExtendedKeySize = 128;
 
+  public:
     /// Wallet seed.
     std::array<byte, seedSize> seed;
 
@@ -86,6 +87,16 @@ class HDWallet {
 
     /// Computes the private key from an exteded private key representation.
     static std::optional<PrivateKey> getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path);
+
+  public:
+    // Private key type (later could be moved out of HDWallet)
+    enum PrivateKeyType {
+      PrivateKeyTypeDefault32 = 0, // 32-byte private key
+      PrivateKeyTypeExtended96 = 1, // 3*32-byte extended private key
+    };
+    
+    // obtain privateKeyType used by the coin/curve
+    static PrivateKeyType getPrivateKeyType(TWCurve curve);
 };
 
 } // namespace TW

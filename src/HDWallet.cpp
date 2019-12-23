@@ -88,17 +88,22 @@ PrivateKey HDWallet::getMasterKeyExtension(TWCurve curve) const {
 
 PrivateKey HDWallet::getKey(const DerivationPath& derivationPath) const {
     const auto curve = TWCoinTypeCurve(derivationPath.coin());
+    const auto privateKeyType = getPrivateKeyType(curve);
     auto node = getNode(*this, curve, derivationPath);
-    if (curve == TWCurve::TWCurveED25519Extended) {
-        // special handling for Cardano
-        auto pkData = Data(node.private_key, node.private_key + PrivateKey::size);
-        auto extData = Data(node.private_key_extension, node.private_key_extension + PrivateKey::size);
-        auto chainCode = Data(node.chain_code, node.chain_code + PrivateKey::size);
-        return PrivateKey(pkData, extData, chainCode);
-    } else {
-        // default path
-        auto data = Data(node.private_key, node.private_key + PrivateKey::size);
-        return PrivateKey(data);
+    switch (privateKeyType) {
+        case PrivateKeyTypeExtended96:
+            {
+                auto pkData = Data(node.private_key, node.private_key + PrivateKey::size);
+                auto extData = Data(node.private_key_extension, node.private_key_extension + PrivateKey::size);
+                auto chainCode = Data(node.chain_code, node.chain_code + PrivateKey::size);
+                return PrivateKey(pkData, extData, chainCode);
+            }
+
+        case PrivateKeyTypeDefault32:
+        default:
+            // default path
+            auto data = Data(node.private_key, node.private_key + PrivateKey::size);
+            return PrivateKey(data);
     }
 }
 
@@ -183,6 +188,15 @@ std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string 
     return PrivateKey(Data(node.private_key, node.private_key + 32));
 }
 
+HDWallet::PrivateKeyType HDWallet::getPrivateKeyType(TWCurve curve) {
+    if (curve == TWCurve::TWCurveED25519Extended) {
+        // used by Cardano
+        return PrivateKeyTypeExtended96;
+    }
+    // default
+    return PrivateKeyTypeDefault32;
+}
+
 namespace {
 
 uint32_t fingerprint(HDNode *node, Hash::Hasher hasher) {
@@ -237,25 +251,35 @@ bool deserialize(const std::string& extended, TWCurve curve, Hash::Hasher hasher
 }
 
 HDNode getNode(const HDWallet& wallet, TWCurve curve, const DerivationPath& derivationPath) {
+    const auto privateKeyType = HDWallet::getPrivateKeyType(curve);
     auto node = getMasterNode(wallet, curve);
     for (auto& index : derivationPath.indices) {
-        if (curve == TWCurveED25519Extended) {
-            // special handling for Cardano
-            hdnode_private_ckd_cardano(&node, index.derivationIndex());
-        } else {
-            hdnode_private_ckd(&node, index.derivationIndex());
+        switch (privateKeyType) {
+            case HDWallet::PrivateKeyTypeExtended96:
+                // special handling for extended
+                hdnode_private_ckd_cardano(&node, index.derivationIndex());
+                break;
+            case HDWallet::PrivateKeyTypeDefault32:
+            default:
+                hdnode_private_ckd(&node, index.derivationIndex());
+                break;
         }
     }
     return node;
 }
 
 HDNode getMasterNode(const HDWallet& wallet, TWCurve curve) {
+    const auto privateKeyType = HDWallet::getPrivateKeyType(curve);
     auto node = HDNode();
-    if (curve == TWCurveED25519Extended) {
-        // special handling for Cardano, use entropy not seed
-        hdnode_from_seed_cardano((const uint8_t*)"", 0, wallet.entropy.data(), (int)wallet.entropy.size(), &node);
-    } else {
-        hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, curveName(curve), &node);
+    switch (privateKeyType) {
+        case HDWallet::PrivateKeyTypeExtended96:
+            // special handling for extended, use entropy (not seed)
+            hdnode_from_seed_cardano((const uint8_t*)"", 0, wallet.entropy.data(), (int)wallet.entropy.size(), &node);
+            break;
+        case HDWallet::PrivateKeyTypeDefault32:
+        default:
+            hdnode_from_seed(wallet.seed.data(), HDWallet::seedSize, curveName(curve), &node);
+            break;
     }
     return node;
 }
@@ -274,4 +298,5 @@ const char* curveName(TWCurve curve) {
         return "";
     }
 }
+
 } // namespace
