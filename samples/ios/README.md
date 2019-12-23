@@ -43,7 +43,8 @@ pod install
 * Open the following workspace with Xcode: `ios/cocoapods/WalletCoreExample.xcworkspace` 
 * Build and Run
 
-The relevant sample code is in the file `WalletCoreExample/ViewController.swift`.  Output appears in Output window (or stdout).
+The relevant sample code is in the file [`WalletCoreExample/ViewController.swift`](https://github.com/trustwallet/wallet-core/blob/master/samples/ios/cocoapods/WalletCoreExample/ViewController.swift).
+Output appears in Output window (or stdout).
 
 ```
 ├── Podfile

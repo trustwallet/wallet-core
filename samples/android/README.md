@@ -21,7 +21,9 @@ and [Build Instructions](https://developer.trustwallet.com/wallet-core/building)
 
 ## Building and Running
 
-Open in Android Studio and run. Result will appear in logs output and on device screen
+Open in Android Studio and run. Result will appear in logs output and on device screen.
+
+The relevant source code is in [`samples/android/app/src/main/java/com/trust/walletcore/example/MainActivity.kt`](https://github.com/trustwallet/wallet-core/blob/master/samples/android/app/src/main/java/com/trust/walletcore/example/MainActivity.kt).
 
 # What it Does
 
