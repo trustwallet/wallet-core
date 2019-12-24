@@ -29,5 +29,6 @@ class KusamaTests: XCTestCase {
 
         XCTAssertEqual(pubkey.data.hexString, "e0b3fcccfe0283cc0f8c105c68b5690aab8c5c1692a868e55eaca836c8779085")
         XCTAssertEqual(address.description, addressFromString.description)
+        XCTAssertEqual(address.publicKey.hexString, pubkey.data.hexString)
     }
 }

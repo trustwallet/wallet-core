@@ -48,7 +48,7 @@ message Staking {
     message WithdrawUnbonded {}
 
     message Nominate {
-        string nominator = 1;
+        repeated string nominators = 1;
     }
 
     message Chill {}

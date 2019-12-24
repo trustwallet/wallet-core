@@ -24,16 +24,32 @@ Data Extrinsic::encodeEraNonceTip() const {
     return data;
 }
 
-Data Extrinsic::encodeCall() const {
+Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
     Data data;
-    switch (type) {
-    case BalanceTransfer:
+    if (input.has_balance_call()) {
+        auto transfer = input.balance_call().transfer();
+        auto address = SS58Address(transfer.to_address(), byte(input.network()));
+        auto value = load(transfer.value());
         // call index
         append(data, {0x04, 0x00});
         // destination
         append(data, encodeAddress(address));
         // value
         append(data, encodeCompact(value));
+    } else if (input.has_staking_call()) {
+        auto staking = input.staking_call();
+        if (staking.has_nominate()) {
+            std::vector<SS58Address> addresses;
+            for (auto& n : staking.nominate().nominators()) {
+                addresses.push_back(SS58Address(n, byte(input.network())));
+            }
+            // call index
+            append(data, {0x06, 0x05});
+            // nominators
+            append(data, encodeAddresses(addresses));
+        } else if (staking.has_chill()) {
+            append(data, {0x06, 0x06});
+        }
     }
     return data;
 }
@@ -41,7 +57,7 @@ Data Extrinsic::encodeCall() const {
 Data Extrinsic::encodePayload() const {
     Data data;
     // call
-    append(data, encodeCall());
+    append(data, call);
     // era/nonce/tip
     append(data, encodeEraNonceTip());
     // specVersion
@@ -70,7 +86,7 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     // tip
     append(data, encodeCompact(tip));
     // call
-    append(data, encodeCall());
+    append(data, call);
     // append length
     encodeLengthPrefix(data);
     return data;

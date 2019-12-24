@@ -13,10 +13,6 @@
 
 namespace TW::Polkadot {
 
-enum ExtrinsicType {
-    BalanceTransfer = 0,
-};
-
 class Extrinsic {
   public:
     Data blockHash;
@@ -27,10 +23,8 @@ class Extrinsic {
     uint256_t tip;
     uint64_t phase;
     uint64_t period;
-    SS58Address address;
-    uint256_t value;
+    Data call;
 
-    ExtrinsicType type;
     Extrinsic(const Proto::SigningInput& input)
         : blockHash(input.block_hash().begin(), input.block_hash().end())
         , genesisHash(input.genesis_hash().begin(), input.genesis_hash().end())
@@ -42,19 +36,14 @@ class Extrinsic {
             phase = input.era().phase();
             period = input.era().period();
         }
-        if (input.has_balance_call()) {
-            auto transfer = input.balance_call().transfer();
-            address = SS58Address(transfer.to_address(), byte(input.network()));
-            value = load(transfer.value());
-            type = ExtrinsicType::BalanceTransfer;
-        }
+        call = encodeCall(input);
     }
 
+    static Data encodeCall(const Proto::SigningInput& input);
     Data encodePayload() const;
     Data encodeSignature(const PublicKey& signer, const Data& signature) const;
   protected:
     Data encodeEraNonceTip() const;
-    Data encodeCall() const;
 };
 
 } // namespace TW::Polkadot

@@ -46,5 +46,5 @@ TWString *_Nonnull TWKusamaAddressDescription(struct TWKusamaAddress *_Nonnull a
 }
 
 TWData *_Nonnull TWKusamaAddressPublicKey(struct TWKusamaAddress *_Nonnull address) {
-    return TWDataCreateWithBytes(address->impl.bytes.data(), address->impl.bytes.size());
+    return TWDataCreateWithBytes(address->impl.bytes.data() + 1, address->impl.bytes.size() - 1);
 }

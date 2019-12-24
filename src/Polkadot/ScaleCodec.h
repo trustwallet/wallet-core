@@ -39,7 +39,8 @@ inline Data encodeCompact(CompactInteger value) {
     auto data = Data{};
 
     if (value < kMinUint16) {
-        data.push_back(value.convert_to<uint8_t>() << 2u);
+        auto v = value.convert_to<uint8_t>() << 2u;
+        data.push_back(static_cast<uint8_t>(v));
         return data;
     } else if (value < kMinUint32) {
         auto v = (value.convert_to<uint16_t>() << 2u);
@@ -62,7 +63,7 @@ inline Data encodeCompact(CompactInteger value) {
         // too big
         return data;
     }
-    uint8_t header = (length - 4) * 4;
+    uint8_t header = (static_cast<uint8_t>(length) - 4) * 4;
     header += 0b11; // set 0b11 flag;
     data.push_back(header);
 
@@ -81,9 +82,15 @@ inline void encodeLengthPrefix(Data& data) {
     data.insert(data.begin(), prefix.begin(), prefix.end());
 }
 
-inline Data encodeAddress(const SS58Address& address) {
-    auto data = Data{0xff};
-    append(data, Data(address.bytes.begin() + 1, address.bytes.end()));
+inline Data encodeBool(bool value) {
+    return Data {uint8_t(value ? 0x01: 0x00)};
+}
+
+inline Data encodeVector(std::vector<Data> vec) {
+    auto data = encodeCompact(vec.size());
+    for (auto v: vec) {
+        append(data, v);
+    }
     return data;
 }
 
@@ -93,12 +100,19 @@ inline Data encodeAddress(const PublicKey& key) {
     return data;
 }
 
-inline Data encodeBool(bool value) {
-    return Data {uint8_t(value ? 0x01: 0x00)};
+inline Data encodeAddress(const SS58Address& address) {
+    auto data = Data{0xff};
+    // first byte is network
+    append(data, Data(address.bytes.begin() + 1, address.bytes.end()));
+    return data;
 }
 
-inline Data encodeVector(std::vector<Data> vec) {
-    return Data{};
+inline Data encodeAddresses(const std::vector<SS58Address> addresses) {
+    std::vector<Data> vec;
+    for (auto addr: addresses) {
+        vec.push_back(encodeAddress(addr));
+    }
+    return encodeVector(vec);
 }
 
 } // namespace TW::Polkadot

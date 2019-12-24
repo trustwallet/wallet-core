@@ -58,3 +58,12 @@ TEST(PolkadotCodec, EncodeAddress) {
 
     ASSERT_EQ(hex(encoded), "ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48");
 }
+
+TEST(PolkadotCodec, EncodeVectorAddresses) {
+    auto addresses = std::vector<SS58Address>{
+        Kusama::Address("FoQJpPyadYccjavVdTWxpxU7rUEaYhfLCPwXgkfD6Zat9QP"), 
+        Kusama::Address("CtwdfrhECFs3FpvCGoiE4hwRC4UsSiM8WL899HjRdQbfYZY")
+    };
+    auto encoded = encodeAddresses(addresses);
+    ASSERT_EQ(hex(encoded), "08ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48ff0e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc72");
+}
