@@ -82,10 +82,10 @@ class CoinAddressDerivationTests {
         TERRA -> assertEquals("terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug", address)
         MONACOIN -> assertEquals("M9xFZzZdZhCDxpx42cM8bQHnLwaeX1aNja", address)
         FIO -> assertEquals("FIO7MN1LuSfFgrbVHmrt9cVa2FYAs857Ppr9dzvEXoD1miKSxm3n3", address)
-        COINEX -> assertEquals("ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN", address)
-        BITCOINSV -> assertEquals("terra1rh402g98t7sly8trzqw5cyracntlep6qe3smug", address)
-        SIMPLELEDGER -> assertEquals("M9xFZzZdZhCDxpx42cM8bQHnLwaeX1aNja", address)
-        SEELE -> assertEquals("FIO7MN1LuSfFgrbVHmrt9cVa2FYAs857Ppr9dzvEXoD1miKSxm3n3", address)
+        COINEX -> assertEquals("coinex178w9m7yzkagpq090t593r6gqe5gkfkvjqjdxsw", address)
+        BITCOINSV -> assertEquals("1LiG2PZZ2Nb8s16fGe4iVod81XQwS5Djhm", address)
+        SIMPLELEDGER -> assertEquals("bitcoincash:qqtvzx6gcpj5xj9ncaa5zefdd3g9uzas0gn83ep58x", address)
+        SEELE -> assertEquals("0xe95d99fec90954eb8f6f899c188aef5caa20d501", address)
 
     }
 }
