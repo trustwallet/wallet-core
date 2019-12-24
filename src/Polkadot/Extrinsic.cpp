@@ -10,8 +10,8 @@
 using namespace TW;
 using namespace TW::Polkadot;
 
-static constexpr uint8_t signedBit = 128;
-static constexpr uint8_t sigType = 0x00;
+static constexpr uint8_t signedBit = 0x80;
+static constexpr uint8_t sigTypeEd25519 = 0x00;
 
 Data Extrinsic::encodeEraNonceTip() const {
     Data data;
@@ -48,6 +48,7 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
             // nominators
             append(data, encodeAddresses(addresses));
         } else if (staking.has_chill()) {
+            // call index
             append(data, {0x06, 0x06});
         }
     }
@@ -58,7 +59,7 @@ Data Extrinsic::encodePayload() const {
     Data data;
     // call
     append(data, call);
-    // era/nonce/tip
+    // era / nonce / tip
     append(data, encodeEraNonceTip());
     // specVersion
     encode32LE(specVersion, data);
@@ -76,15 +77,11 @@ Data Extrinsic::encodeSignature(const PublicKey& signer, const Data& signature) 
     // signer public key
     append(data, encodeAddress(signer));
     // signature type
-    append(data, sigType);
+    append(data, sigTypeEd25519);
     // signature
     append(data, signature);
-    // immortal era
-    append(data, encodeCompact(0));
-    // nonce
-    append(data, encodeCompact(nonce));
-    // tip
-    append(data, encodeCompact(tip));
+    // era / nonce / tip
+    append(data, encodeEraNonceTip());
     // call
     append(data, call);
     // append length

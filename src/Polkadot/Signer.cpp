@@ -12,12 +12,15 @@
 using namespace TW;
 using namespace TW::Polkadot;
 
+static constexpr size_t hashTreshold = 256;
+
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
     auto extrinsic = Extrinsic(input);
     auto payload = extrinsic.encodePayload();
-    if (payload.size() > 256) {
+    // check if need to hash
+    if (payload.size() > hashTreshold) {
         payload = Hash::blake2b(payload, 64);
     }
     auto signature = privateKey.sign(payload, TWCurveED25519);

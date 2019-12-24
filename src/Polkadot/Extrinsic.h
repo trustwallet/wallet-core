@@ -18,11 +18,15 @@ class Extrinsic {
     Data blockHash;
     Data genesisHash;
     uint64_t nonce;
+    // Runtime spec version
     uint32_t specVersion;
+    // Extrinsic version
     uint32_t version;
     uint256_t tip;
+    // MortalEra(phase, period)
     uint64_t phase;
     uint64_t period;
+    // encoded Call data
     Data call;
 
     Extrinsic(const Proto::SigningInput& input)
@@ -40,8 +44,11 @@ class Extrinsic {
     }
 
     static Data encodeCall(const Proto::SigningInput& input);
+    // Payload to sign.
     Data encodePayload() const;
+    // Encode final data with signer public key and signature.
     Data encodeSignature(const PublicKey& signer, const Data& signature) const;
+
   protected:
     Data encodeEraNonceTip() const;
 };
