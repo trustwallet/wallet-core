@@ -20,19 +20,20 @@ using namespace TW;
 using namespace TW::Any;
 
 TEST(Signer, BitcoinTransactionSign) {
-
-//    auto transaction = R"({ "hash_type": 1, "amount": 200000000, "byte_fee": 1, "to_address": "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx", "change_address": "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU", "scripts": { "key": "4733f37cf4db86fbc2efed2500b4f4e49f312023", "value": "\000\024y\t\031r\030lD\236\261\336\322+x\344\r\000\233\337\000\211" }, "utxo": { "out_point": { "hash": "db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477", "index": 1, "sequence": 4294967295 }, "script": "a9144733f37cf4db86fbc2efed2500b4f4e49f31202387", "amount": 1000000000 }})";
-//    auto transaction = R"({"hash_type":1,"amount":1000,"byte_fee":1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx","change_address":"1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU","scripts":{"key":"593128f9f90e38b706c18623151e37d2da05c229","value":"2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"},"utxo":{"out_point":{ "hash":"0001000000000000000000000000000000000000000000000000000000000000","sequence":4294967295},"script":"ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db","amount":1226}})";
-    auto transaction =  R"({"hash_type":1,"amount":200000000,"byte_fee":1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx","change_address":"1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU","scripts":{"key":"4733f37cf4db86fbc2efed2500b4f4e49f312023","value":")" +
-                        TW::Base64::encode(parse_hex("79091972186c449eb1ded22b78e40d009bdf0089")) +
+   auto transaction =  R"({"hash_type":1,"amount":200000000,"byte_fee":1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx","private_key":")" +
+                        TW::Base64::encode(parse_hex("eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf")) +
+                        R"(","change_address":"1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU","scripts":{"4733f37cf4db86fbc2efed2500b4f4e49f312023":")" +
+                        TW::Base64::encode(parse_hex("001479091972186c449eb1ded22b78e40d009bdf0089")) +
                         R"("},"utxo":{"out_point":{"hash":")" +
                         (TW::Base64::encode(parse_hex("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"))) +
-                        R"(","index":0,"sequence":4294967295},"script":")"+
+                        R"(","index":1,"sequence":)" +
+                        std::to_string(UINT32_MAX) +
+                        R"(},"script":")"+
                         TW::Base64::encode(parse_hex("a9144733f37cf4db86fbc2efed2500b4f4e49f31202387")) +
                         R"(","amount":1000000000}})";
 
     auto input = Proto::SigningInput();
-    input.set_private_key("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9");
+    input.set_private_key("eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf");
     input.set_transaction(transaction);
     input.set_coin_type(TWCoinTypeBitcoin);
 
@@ -40,8 +41,7 @@ TEST(Signer, BitcoinTransactionSign) {
     auto output = signer.sign();
 
     ASSERT_TRUE(output.success());
-//    ASSERT_EQ(output.output(), "010000000001000100000000000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac00000000");
-    std::cout << "1";
+    ASSERT_EQ(output.output(), "01000000000101db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477010000001716001479091972186c449eb1ded22b78e40d009bdf0089ffffffff0200c2eb0b000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac1e07af2f000000001976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac02473044022009195d870ecc40f54130008e392904e77d32b738c1add19d1d8ebba4edf812e602204f49de6dc60d9a3c3703e1e642942f8834f3a2cd81a6562a34b293942ce42f40012103ad1d8e89212f0b92c74d23bb710c00662ad1470198ac48c43f7d6f93a2a2687300000000");
 }
 
 TEST(Signer, CosmosTransactionSign) {
