@@ -25,6 +25,7 @@ Data Extrinsic::encodeEraNonceTip() const {
 }
 
 Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
+    // call index from MetadataV10
     Data data;
     if (input.has_balance_call()) {
         auto transfer = input.balance_call().transfer();
@@ -38,7 +39,34 @@ Data Extrinsic::encodeCall(const Proto::SigningInput& input) {
         append(data, encodeCompact(value));
     } else if (input.has_staking_call()) {
         auto staking = input.staking_call();
-        if (staking.has_nominate()) {
+        if (staking.has_bond()) {
+            auto address = SS58Address(staking.bond().validator(), byte(input.network()));
+            auto value = load(staking.bond().value());
+            auto reward = byte(staking.bond().reward_destination());
+            // call index
+            append(data, {0x06, 0x00});
+            // validator
+            append(data, encodeAddress(address));
+            // value
+            append(data, encodeCompact(value));
+            // reward destination
+            append(data, reward);
+        } else if (staking.has_bond_extra()) {
+            auto value = load(staking.unbond().value());
+            // call index
+            append(data, {0x06, 0x01});
+            // value
+            append(data, encodeCompact(value));
+        } else if (staking.has_unbond()) {
+            auto value = load(staking.unbond().value());
+            // call index
+            append(data, {0x06, 0x02});
+            // value
+            append(data, encodeCompact(value));
+        } else if (staking.has_withdraw_unbonded()) {
+            // call index
+            append(data, {0x06, 0x03});
+        } else if (staking.has_nominate()) {
             std::vector<SS58Address> addresses;
             for (auto& n : staking.nominate().nominators()) {
                 addresses.push_back(SS58Address(n, byte(input.network())));

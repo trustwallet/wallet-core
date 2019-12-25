@@ -22,6 +22,7 @@ class Extrinsic {
     uint32_t specVersion;
     // Extrinsic version
     uint32_t version;
+    // balances::TakeFees
     uint256_t tip;
     // MortalEra(phase, period)
     uint64_t phase;

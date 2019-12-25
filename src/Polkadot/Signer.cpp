@@ -21,7 +21,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto payload = extrinsic.encodePayload();
     // check if need to hash
     if (payload.size() > hashTreshold) {
-        payload = Hash::blake2b(payload, 64);
+        payload = Hash::blake2b(payload, 32);
     }
     auto signature = privateKey.sign(payload, TWCurveED25519);
     auto encoded = extrinsic.encodeSignature(publicKey, signature);

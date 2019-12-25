@@ -8,6 +8,12 @@ enum Network {
     KUSAMA = 2;
 }
 
+enum RewardDestination {
+    STAKED = 0;
+    STASH = 1;
+    CONTROLLER = 2;
+}
+
 message Era {
     uint64 period = 1;
     uint64 phase = 2;
@@ -24,13 +30,6 @@ message Balance {
 }
 
 message Staking {
-
-    enum RewardDestination {
-        Staked = 0;
-        Stash = 1;
-        Controller = 2;
-    }
-
     message Bond {
         string validator = 1;
         bytes value = 2;
