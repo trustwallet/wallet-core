@@ -20,9 +20,8 @@ using namespace TW;
 using namespace TW::Any;
 
 TEST(Signer, BitcoinTransactionSign) {
-   auto transaction =  R"({"hash_type":1,"amount":200000000,"byte_fee":1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx","private_key":")" +
-                        TW::Base64::encode(parse_hex("eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf")) +
-                        R"(","change_address":"1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU","scripts":{"4733f37cf4db86fbc2efed2500b4f4e49f312023":")" +
+    // SignP2SH_P2WPKH used line 238
+   auto transaction =  R"({"hash_type":1,"amount":200000000,"byte_fee":1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx","change_address":"1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU","scripts":{"4733f37cf4db86fbc2efed2500b4f4e49f312023":")" +
                         TW::Base64::encode(parse_hex("001479091972186c449eb1ded22b78e40d009bdf0089")) +
                         R"("},"utxo":{"out_point":{"hash":")" +
                         (TW::Base64::encode(parse_hex("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"))) +
