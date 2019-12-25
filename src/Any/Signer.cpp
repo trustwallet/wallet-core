@@ -191,10 +191,10 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         break;
     }
     case TWCoinTypeBitcoin: {
-        Bitcoin::Proto::SigningInput message;
+            Bitcoin::Proto::SigningInput message;
             parse(transaction, &message, output);
             if (output.success()) {
-                message.add_private_key( input.private_key());
+                message.add_private_key(input.private_key());
                 auto signer = Bitcoin::TransactionSigner<Bitcoin::Transaction>(std::move(message));
                 auto signerOutput = signer.sign();
                 auto signedTx = signerOutput.payload();
@@ -203,7 +203,7 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
                 output.set_output(hex(serialized));
             }
             break;
-        }
+    }
     default:
         auto error = new Proto::SigningOutput_Error();
         error->set_code(SignerErrorCodeNotSupported);
