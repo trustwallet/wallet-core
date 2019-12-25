@@ -15,8 +15,10 @@
 
 TEST(TWAeternityCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAeternity));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAeternity, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAeternity, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAeternity));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAeternity));
 
@@ -25,7 +27,8 @@ TEST(TWAeternityCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAeternity));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAeternity));
     assertStringsEqual(symbol, "AE");
-    assertStringsEqual(txUrl, "https://explorer.aepps.com/#/tx/123");
+    assertStringsEqual(txUrl, "https://explorer.aepps.com/transactions/t123");
+    assertStringsEqual(accUrl, "https://explorer.aepps.com/account/transactions/a12");
     assertStringsEqual(id, "aeternity");
     assertStringsEqual(name, "Aeternity");
 }

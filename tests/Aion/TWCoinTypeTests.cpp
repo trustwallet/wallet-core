@@ -15,8 +15,10 @@
 
 TEST(TWAionCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeAion));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeAion, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeAion, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeAion));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeAion));
 
@@ -25,7 +27,8 @@ TEST(TWAionCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeAion));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeAion));
     assertStringsEqual(symbol, "AION");
-    assertStringsEqual(txUrl, "https://mainnet.aion.network/#/transaction/123");
+    assertStringsEqual(txUrl, "https://mainnet.aion.network/#/transaction/t123");
+    assertStringsEqual(accUrl, "https://mainnet.aion.network/#/account/a12");
     assertStringsEqual(id, "aion");
     assertStringsEqual(name, "Aion");
 }

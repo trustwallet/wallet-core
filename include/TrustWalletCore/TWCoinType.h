@@ -42,6 +42,7 @@ enum TWCoinType {
     TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
     TWCoinTypeIoTeX = 304,
+    TWCoinTypeKava = 459,
     TWCoinTypeKin = 2017,
     TWCoinTypeLitecoin = 2,
     TWCoinTypeMonacoin = 22,
@@ -74,6 +75,8 @@ enum TWCoinType {
     TWCoinTypeTerra = 330,
     TWCoinTypeHarmony = 1023,
     TWCoinTypeAlgorand = 283,
+    TWCoinTypeKusama = 434,
+    TWCoinTypePolkadot = 354,
 };
 
 /// Returns the blockchain for a coin type.

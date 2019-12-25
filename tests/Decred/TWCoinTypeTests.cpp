@@ -15,8 +15,10 @@
 
 TEST(TWDecredCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeDecred));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeDecred, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeDecred, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeDecred));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeDecred));
 
@@ -25,7 +27,8 @@ TEST(TWDecredCoinType, TWCoinType) {
     ASSERT_EQ(0x1a, TWCoinTypeP2shPrefix(TWCoinTypeDecred));
     ASSERT_EQ(0x7, TWCoinTypeStaticPrefix(TWCoinTypeDecred));
     assertStringsEqual(symbol, "DCR");
-    assertStringsEqual(txUrl, "https://dcrdata.decred.org/tx/123");
+    assertStringsEqual(txUrl, "https://dcrdata.decred.org/tx/t123");
+    assertStringsEqual(accUrl, "https://dcrdata.decred.org/address/a12");
     assertStringsEqual(id, "decred");
     assertStringsEqual(name, "Decred");
 }

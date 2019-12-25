@@ -61,6 +61,29 @@ message SendOrder {
     repeated Output outputs = 2;
 }
 
+message TokenIssueOrder {
+    // 0x17EFAB80      // prefix
+    bytes from = 1;    // owner address
+    string name = 2;   // token name
+    string symbol = 3; // token symbol, in full name with "-" suffix
+    int64 total_supply = 4; // total supply
+    bool mintable = 5; // mintable
+}
+
+message TokenMintOrder {
+    // 0x467E0829      // prefix
+    bytes from = 1;    // owner address
+    string symbol = 2; // token symbol, in full name with "-" suffix
+    int64 amount = 3;  // amount to mint
+}
+
+message TokenBurnOrder {
+    // 0x7ED2D2A0      // prefix
+    bytes from = 1;    // owner address
+    string symbol = 2; // token symbol, in full name with "-" suffix
+    int64 amount = 3;  // amount to burn
+}
+
 message TokenFreezeOrder {
     // 0xE774B32D      // prefix
     bytes from = 1;    // owner address
@@ -128,6 +151,9 @@ message SigningInput {
         DepositHTLTOrder depositHTLT_order = 14;
         ClaimHTLOrder claimHTLT_order = 15;
         RefundHTLTOrder refundHTLT_order = 16;
+        TokenIssueOrder issue_order = 17;
+        TokenMintOrder mint_order = 18;
+        TokenBurnOrder burn_order = 19;
     }
 }
 

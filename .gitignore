@@ -25,6 +25,7 @@ lib/protobuf
 jni/cpp/generated
 jni/java
 swift/Sources/Generated
+swift/wallet-core/
 src/Generated
 include/TrustWalletCore/TWHRP.h
 
@@ -35,3 +36,14 @@ coverage/
 # Sourcetrail
 *.srctrldb
 *.srctrlbm
+
+# Samples -- iOS
+Pods/
+# Samples -- C++
+# build
+samples/cpp/CMakeFiles
+samples/cpp/CMakeCache.txt
+samples/cpp/Makefile
+samples/cpp/*.cmake
+# built binary
+samples/cpp/sample

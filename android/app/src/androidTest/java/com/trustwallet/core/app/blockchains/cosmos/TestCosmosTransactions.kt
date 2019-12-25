@@ -19,9 +19,9 @@ class TestCosmosTransactions {
 
     @Test
     fun testSigningTransaction() {
-        val privateKey =
+        val key =
             PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray())
-        val publicKey = privateKey.getPublicKeySecp256k1(true)
+        val publicKey = key.getPublicKeySecp256k1(true)
         val from = CosmosAddress(HRP.COSMOS, publicKey).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
@@ -29,10 +29,14 @@ class TestCosmosTransactions {
             denom = "muon"
         }.build()
 
-        val sendCoinsMsg = Cosmos.SendCoinsMessage.newBuilder().apply {
+        val sendCoinsMsg = Cosmos.Message.Send.newBuilder().apply {
             fromAddress = from
             toAddress = "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"
             addAllAmounts(listOf(txAmount))
+        }.build()
+
+        val message = Cosmos.Message.newBuilder().apply {
+            sendCoinsMessage = sendCoinsMsg
         }.build()
 
         val feeAmount = Cosmos.Amount.newBuilder().apply {
@@ -50,9 +54,9 @@ class TestCosmosTransactions {
             chainId = "gaia-13003"
             memo = ""
             sequence = 8
-            sendCoinsMessage = sendCoinsMsg
             fee = cosmosFee
-            this.privateKey = ByteString.copyFrom(privateKey.data())
+            privateKey = ByteString.copyFrom(key.data())
+            addAllMessages(listOf(message))
         }.build()
 
         val jsonPayload = CosmosSigner.sign(signingInput).json

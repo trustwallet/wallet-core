@@ -24,6 +24,7 @@
 #include "Stellar/Signer.h"
 
 #include "Bitcoin/Transaction.h"
+#include "Solana/Signer.h"
 
 #include <google/protobuf/util/json_util.h>
 #include <string>
@@ -180,13 +181,24 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
             break;
         }
         case TWCoinTypeStellar: {
-            Stellar::Proto::SigningInput message;
-            parse(transaction, &message, output);
-            if (output.success()) {
+        Stellar::Proto::SigningInput message;
+        parse(transaction, &message, output);
+        if (output.success()) {
                 message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                 auto signer = Stellar::Signer(message);
                 auto signerOutput = signer.sign();
                 output.set_output(signerOutput);
+            }
+            break;
+        }
+        case TWCoinTypeSolana: {
+            Solana::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Solana::Signer::signProtobuf(message);
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
             }
             break;
         }
@@ -204,14 +216,15 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
             }
             break;
         }
-        default:
+        default: {
             auto error = new Proto::SigningOutput_Error();
             error->set_code(SignerErrorCodeNotSupported);
             error->set_description("Network not supported");
             output.set_allocated_error(error);
+        }
+        break;
     }
 
-    return output;
 }
 
 void TW::Any::Signer::parse(const std::string &transaction, Message *message,

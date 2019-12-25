@@ -15,8 +15,10 @@
 
 TEST(TWViacoinCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeViacoin));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeViacoin, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeViacoin, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeViacoin));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeViacoin));
 
@@ -25,7 +27,8 @@ TEST(TWViacoinCoinType, TWCoinType) {
     ASSERT_EQ(0x21, TWCoinTypeP2shPrefix(TWCoinTypeViacoin));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeViacoin));
     assertStringsEqual(symbol, "VIA");
-    assertStringsEqual(txUrl, "https://explorer.viacoin.org/tx/123");
+    assertStringsEqual(txUrl, "https://explorer.viacoin.org/tx/t123");
+    assertStringsEqual(accUrl, "https://explorer.viacoin.org/address/a12");
     assertStringsEqual(id, "viacoin");
     assertStringsEqual(name, "Viacoin");
 }

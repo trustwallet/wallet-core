@@ -15,8 +15,10 @@
 
 TEST(TWEthereumClassicCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeEthereumClassic));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeEthereumClassic, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeEthereumClassic, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeEthereumClassic));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeEthereumClassic));
 
@@ -25,7 +27,8 @@ TEST(TWEthereumClassicCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeEthereumClassic));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeEthereumClassic));
     assertStringsEqual(symbol, "ETC");
-    assertStringsEqual(txUrl, "https://gastracker.io/tx/123");
+    assertStringsEqual(txUrl, "https://gastracker.io/tx/t123");
+    assertStringsEqual(accUrl, "https://gastracker.io/addr/a12");
     assertStringsEqual(id, "classic");
     assertStringsEqual(name, "Ethereum Classic");
 }

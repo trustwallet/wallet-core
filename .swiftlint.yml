@@ -19,7 +19,5 @@ function_body_length: 80
 file_length:
   warning: 400
   error: 800
-trailing_comma:
-  mandatory_comma: true
 reporter: "xcode"
 

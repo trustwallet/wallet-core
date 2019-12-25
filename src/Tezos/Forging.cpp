@@ -62,7 +62,7 @@ Data forgePublicKey(PublicKey publicKey) {
 // Forge the given zarith hash into a hex encoded string.
 Data forgeZarith(uint64_t input) {
     Data forged = Data();
-    while (input > 0x80) {
+    while (input >= 0x80) {
         forged.push_back(static_cast<byte>((input & 0xff) | 0x80));
         input >>= 7;
     }
@@ -81,7 +81,7 @@ Data forgeOperation(const Operation& operation) {
     auto forgedStorageLimit = forgeZarith(operation.storage_limit());
 
     if (operation.kind() == Operation_OperationKind_REVEAL) {
-        auto publicKey = PublicKey(operation.reveal_operation_data().public_key(), TWPublicKeyTypeED25519);
+        auto publicKey = PublicKey(data(operation.reveal_operation_data().public_key()), TWPublicKeyTypeED25519);
         auto forgedPublicKey = forgePublicKey(publicKey);
         
         forged.push_back(Operation_OperationKind_REVEAL);

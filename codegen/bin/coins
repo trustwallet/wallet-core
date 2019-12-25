@@ -20,6 +20,14 @@ def self.coin_img(coin)
   "<img src=\"https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/#{coin}/info/logo.png\" width=\"32\" />"
 end
 
+# Explorer urls
+def self.explorer_tx_url(c)
+  path = c['explorer']['url'].to_s + c['explorer']['txPath'].to_s
+end
+def self.explorer_account_url(c)
+  path = c['explorer']['url'].to_s + c['explorer']['accountPath'].to_s
+end
+
 json_string = File.read('coins.json')
 coins = JSON.parse(json_string).sort_by { |x| x['name'] }
 coins_md = coins.sort_by { |x| Integer(coin_type(x['derivationPath'])) }

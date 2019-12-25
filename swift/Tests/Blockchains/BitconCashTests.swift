@@ -51,4 +51,34 @@ class BitcoinCashTests: XCTestCase {
         let script2 = BitcoinScript.buildForAddress(address: address2.description, coin: .bitcoinCash)
         XCTAssertEqual(script2.data.hexString, "76a9146e33fcf381dcd297a7d52385a73406066ef362a088ac")
     }
+
+    func testSign() throws {
+        let utxoTxId = Data(hexString: "050d00e2e18ef13969606f1ceee290d3f49bd940684ce39898159352952b8ce2")!
+        let privateKey = PrivateKey(data: Data(hexString: "7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384")!)!
+        let address = CoinType.bitcoinCash.deriveAddress(privateKey: privateKey)
+        let utxo = BitcoinUnspentTransaction.with {
+            $0.outPoint.hash = Data(utxoTxId.reversed()) // reverse of UTXO tx id, Bitcoin internal expects network byte order
+            $0.outPoint.index = 2                        // outpoint index of this this UTXO
+            $0.outPoint.sequence = UINT32_MAX
+            $0.amount = 5151                             // value of this UTXO
+            $0.script = BitcoinScript.buildForAddress(address: address, coin: .bitcoinCash).data // Build lock script from address or public key hash
+        }
+
+        let input = BitcoinSigningInput.with {
+            $0.hashType = BitcoinSigHashType.all.rawValue | BitcoinSigHashType.fork.rawValue
+            $0.amount = 600
+            $0.byteFee = 1
+            $0.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx"
+            $0.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"
+            $0.utxo = [utxo]
+            $0.privateKey = [privateKey.data]
+        }
+
+        let result = BitcoinTransactionSigner(input: input).sign()
+        guard result.success else { return }
+        let output = try BitcoinSigningOutput(unpackingAny: result.objects[0])
+
+        XCTAssertEqual(output.transactionID, "96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4")
+        XCTAssertEqual(output.encoded.hexString, "0100000001e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05020000006b483045022100b70d158b43cbcded60e6977e93f9a84966bc0cec6f2dfd1463d1223a90563f0d02207548d081069de570a494d0967ba388ff02641d91cadb060587ead95a98d4e3534121038eab72ec78e639d02758e7860cdec018b49498c307791f785aa3019622f4ea5bffffffff0258020000000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ace5100000000000001976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac00000000")
+    }
 }

@@ -29,30 +29,33 @@ class BinanceChainTests: XCTestCase {
         let privateKey = PrivateKey(data: Data(hexString: "95949f757db1f57ca94a5dff23314accbe7abee89597bf6a3c7382c84d7eb832")!)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
 
-        var signingInput = TW_Binance_Proto_SigningInput()
-        signingInput.chainID = "Binance-Chain-Nile"
-        signingInput.accountNumber = 0
-        signingInput.sequence = 0
+        let token = BinanceSendOrder.Token.with {
+            $0.denom = "BNB" // BNB or BEP2 token symbol
+            $0.amount = 1
+        }
 
-        signingInput.privateKey = privateKey.data
+        let input = BinanceSendOrder.Input.with {
+            $0.address = CosmosAddress(hrp: .binance, publicKey: publicKey)!.keyHash
+            $0.coins = [token]
+        }
 
-        var token = TW_Binance_Proto_SendOrder.Token()
-        token.denom = "BNB"
-        token.amount = 1
+        let output = BinanceSendOrder.Output.with {
+            $0.address = CosmosAddress(string: "bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5")!.keyHash
+            $0.coins = [token]
+        }
 
-        var input = TW_Binance_Proto_SendOrder.Input()
-        input.address = CosmosAddress(hrp: .binance, publicKey: publicKey)!.keyHash
-        input.coins = [token]
-
-        var output = TW_Binance_Proto_SendOrder.Output()
-        output.address = CosmosAddress(string: "bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5")!.keyHash
-        output.coins = [token]
-
-        var sendOrder = TW_Binance_Proto_SendOrder()
-        sendOrder.inputs = [input]
-        sendOrder.outputs = [output]
-
-        signingInput.sendOrder = sendOrder
+        let signingInput = BinanceSigningInput.with {
+            $0.chainID = "Binance-Chain-Nile" // Chain id (network id),                 from /v1/node-info api
+            $0.accountNumber = 0              // On chain account / address number,     from /v1/account/<address> api
+            $0.sequence = 0                   // Sequence number, plus 1 for new order, from /v1/account/<address> api
+            $0.source = 0                     // BEP10 source id
+            $0.privateKey = privateKey.data
+            $0.memo = ""
+            $0.sendOrder = BinanceSendOrder.with {
+                $0.inputs = [input]
+                $0.outputs = [output]
+            }
+        }
 
         let data = BinanceSigner.sign(input: signingInput)
 

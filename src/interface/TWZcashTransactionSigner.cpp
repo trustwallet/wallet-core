@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../Bitcoin/TransactionBuilder.h"
+#include "../Zcash/TransactionBuilder.h"
 #include "../Bitcoin/TransactionSigner.h"
 #include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
@@ -19,7 +19,7 @@ using namespace TW::Zcash;
 struct TWZcashTransactionSigner *_Nonnull TWZcashTransactionSignerCreate(TW_Bitcoin_Proto_SigningInput data) {
     Bitcoin::Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    return new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction>(std::move(input)) };
+    return new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction, TransactionBuilder>(std::move(input)) };
 }
 
 struct TWZcashTransactionSigner *_Nonnull TWZcashTransactionSignerCreateWithPlan(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
@@ -27,7 +27,7 @@ struct TWZcashTransactionSigner *_Nonnull TWZcashTransactionSignerCreateWithPlan
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
     Bitcoin::Proto::TransactionPlan plan;
     plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
-    return new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction>(std::move(input), std::move(plan)) };
+    return new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction, TransactionBuilder>(std::move(input), std::move(plan)) };
 }
 
 void TWZcashTransactionSignerDelete(struct TWZcashTransactionSigner *_Nonnull signer) {

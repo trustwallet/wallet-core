@@ -39,7 +39,7 @@ class ZilliqaTests: XCTestCase {
 
         // 1 ZIL
         let input = ZilliqaSigningInput.with {
-            $0.version = TWZilliqaTxVersion
+            $0.version = 65537 // mainnet tx version
             $0.nonce = 2
             $0.toAddress = "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz"
             $0.amount = Data(hexString: "e8d4a51000")!

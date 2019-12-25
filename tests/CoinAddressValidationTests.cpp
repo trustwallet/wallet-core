@@ -311,4 +311,12 @@ TEST(Coin, validateAddressAlgorand) {
     EXPECT_FALSE(validateAddress(TWCoinTypeAlgorand, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
 }
 
+TEST(Coin, ValidateAddresKavaa) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeKava, "kava1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z09wt76x"));
+    // wrong prefix
+    EXPECT_FALSE(validateAddress(TWCoinTypeKava, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    // wrong checksum
+    EXPECT_FALSE(validateAddress(TWCoinTypeKava, "kava1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z09wt000"));
+}
+
 } // namespace TW

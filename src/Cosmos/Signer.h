@@ -8,9 +8,6 @@
 
 #include "../proto/Cosmos.pb.h"
 #include "../Data.h"
-#include <nlohmann/json.hpp>
-#include <stdint.h>
-#include <vector>
 
 namespace TW::Cosmos {
 
@@ -20,7 +17,7 @@ public:
     Proto::SigningInput input;
 
     /// Initializes a transaction signer.
-    Signer(Proto::SigningInput&& input);
+    Signer(Proto::SigningInput&& input) :input(input) {}
 
     /// Signs the transaction.
     ///
@@ -31,11 +28,6 @@ public:
     ///
     /// \returns the signed transaction.
     Proto::SigningOutput build() const;
-
-private:
-    std::string signaturePreimage() const;
-    nlohmann::json buildTransactionJSON(const Data& signature) const;
-    std::string buildTransaction() const;
 };
 
 } // namespace

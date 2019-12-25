@@ -15,8 +15,10 @@
 
 TEST(TWPOANetworkCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypePOANetwork));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypePOANetwork, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypePOANetwork, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypePOANetwork));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypePOANetwork));
 
@@ -25,7 +27,8 @@ TEST(TWPOANetworkCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypePOANetwork));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypePOANetwork));
     assertStringsEqual(symbol, "POA");
-    assertStringsEqual(txUrl, "https://poaexplorer.com/txid/search/123");
+    assertStringsEqual(txUrl, "https://blockscout.com/poa/core/tx/t123");
+    assertStringsEqual(accUrl, "https://blockscout.com/poa/core/address/a12");
     assertStringsEqual(id, "poa");
     assertStringsEqual(name, "POA Network");
 }

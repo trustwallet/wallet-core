@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package TW.Polkadot.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message ExtrinsicsTransfer {
+    string to_address = 1;
+    bytes value = 2;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    bytes block_hash = 1;
+    bytes genesis_hash = 2;
+    bytes method = 3;
+    uint32 nonce = 4;
+    uint32 spec_version = 5;
+    bytes tip = 6;
+    bytes era = 7;
+    bytes private_key = 8;
+
+    oneof message_oneof {
+        ExtrinsicsTransfer transfer = 10;
+    }
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+}

@@ -8,7 +8,6 @@
 
 #include "../Zilliqa/Signer.h"
 #include "../proto/Zilliqa.pb.h"
-#include "../uint256.h"
 
 using namespace TW;
 using namespace TW::Zilliqa;

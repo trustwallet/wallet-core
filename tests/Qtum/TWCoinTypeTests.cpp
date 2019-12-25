@@ -15,8 +15,10 @@
 
 TEST(TWQtumCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeQtum));
-    auto txId = TWStringCreateWithUTF8Bytes("123");
+    auto txId = TWStringCreateWithUTF8Bytes("t123");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeQtum, txId));
+    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeQtum, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeQtum));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeQtum));
 
@@ -25,7 +27,8 @@ TEST(TWQtumCoinType, TWCoinType) {
     ASSERT_EQ(0x32, TWCoinTypeP2shPrefix(TWCoinTypeQtum));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeQtum));
     assertStringsEqual(symbol, "QTUM");
-    assertStringsEqual(txUrl, "https://qtum.info/tx/123");
+    assertStringsEqual(txUrl, "https://qtum.info/tx/t123");
+    assertStringsEqual(accUrl, "https://qtum.info/address/a12");
     assertStringsEqual(id, "qtum");
     assertStringsEqual(name, "Qtum");
 }

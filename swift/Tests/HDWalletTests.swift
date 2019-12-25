@@ -24,6 +24,13 @@ class HDWalletTests: XCTestCase {
         XCTAssertEqual(wallet.seed.hexString, "354c22aedb9a37407adc61f657a6f00d10ed125efa360215f36c6919abd94d6dbc193a5f9c495e21ee74118661e327e84a5f5f11fa373ec33b80897d4697557d")
     }
 
+    func testMasterKey() {
+        let wallet = HDWallet(mnemonic: "tiny escape drive pupil flavor endless love walk gadget match filter luxury", passphrase: "")
+        XCTAssertEqual(wallet.seed.hexString, "d430216f5b506dfd281d6ff6e92150d205868923df00774bc301e5ffdc2f4d1ad38a602017ddea6fc7d6315345d8b9cadbd8213ed2ffce5dfc550fa918665eb8")
+        let masterKey = wallet.getMasterKey(curve: Curve.secp256k1)
+        XCTAssertEqual(masterKey.data.hexString, "e120fc1ef9d193a851926ebd937c3985dc2c4e642fb3d0832317884d5f18f3b3")
+    }
+
     func testDerive() {
         let wallet = HDWallet.test
 
@@ -372,5 +379,13 @@ class HDWalletTests: XCTestCase {
         let address = algo.deriveAddress(privateKey: key)
 
         XCTAssertEqual("VEFQ2IIW7CVKDLFEY53BMVJYKURC7KJTCW6U6R2CMQLQXZI52SCFSYASEY", address)
+    }
+
+    func testDeriveKava() {
+        let coin = CoinType.kava
+        let key = HDWallet.test.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual(address, "kava1zrst72upua78pylhku9csxd5zmhsyrk7xhrdlf")
     }
 }

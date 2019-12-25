@@ -34,10 +34,13 @@ This list is generated from [./coins.json](../coins.json)
 | 304     | IoTeX            | IOTX   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/iotex/info/logo.png" width="32" />        | <https://iotex.io>            |
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
 | 330     | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png" width="32" />        | <https://terra.money>         |
+| 354     | Polkadot         | DOT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polkadot/info/logo.png" width="32" />     | <https://polkadot.network/>   |
 | 396     | TON              | GRAM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ton/info/logo.png" width="32" />          | <https://test.ton.org>        |
 | 397     | NEAR             | NEAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/near/info/logo.png" width="32" />         | <https://nearprotocol.com>    |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |
+| 434     | Kusama           | KSM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kusama/info/logo.png" width="32" />       | <https://kusama.network>      |
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
+| 459     | Kava             | KAVA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kava/info/logo.png" width="32" />         | <https://kava.io>             |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
 | 501     | Solana           | SOL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" width="32" />       | <https://solana.com>          |
 | 714     | Binance          | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |
