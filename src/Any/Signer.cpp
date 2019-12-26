@@ -143,16 +143,16 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
             auto signerOutput = Tron::Signer::sign(message);
             output.set_output(signerOutput.json());
         }
-           break;
+        break;
     }
     case TWCoinTypeVeChain: {
         VeChain::Proto::SigningInput message;
         parse(transaction, &message, output);
         if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = VeChain::Signer::sign(message);
-            auto encoded = signerOutput.encoded();
-            output.set_output(hex(encoded.begin(), encoded.end()));
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = VeChain::Signer::sign(message);
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
         }
         break;
     }
@@ -194,10 +194,10 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         Solana::Proto::SigningInput message;
         parse(transaction, &message, output);
         if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signerOutput = Solana::Signer::signProtobuf(message);
-            auto encoded = signerOutput.encoded();
-            output.set_output(hex(encoded.begin(), encoded.end()));
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signerOutput = Solana::Signer::signProtobuf(message);
+                auto encoded = signerOutput.encoded();
+                output.set_output(hex(encoded.begin(), encoded.end()));
         }
         break;
     }
@@ -206,8 +206,8 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         parse(transaction, &message, output);
         if (output.success()) {
             message.add_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signer = Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>(
-                        std::move(message));
+            auto signer =
+                    Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>(std::move(message));
             auto signerOutput = signer.sign();
             auto signedTx = signerOutput.payload();
             Data serialized;
@@ -246,7 +246,7 @@ void TW::Any::Signer::parse(const std::string &transaction, Message *message,
 }
 
 void TW::Any::Signer::toJson(const google::protobuf::Message &message, std::string *json_string) const
-noexcept {
+    noexcept {
     util::JsonPrintOptions options;
     options.preserve_proto_field_names = true;
 
