@@ -9,7 +9,6 @@
 #include "Cosmos/Signer.h"
 #include "Data.h"
 #include "Ethereum/Signer.h"
-#include "Bitcoin/TransactionSigner.h"
 #include "Harmony/Signer.h"
 #include "HexCoding.h"
 #include "IoTeX/Signer.h"
@@ -22,8 +21,8 @@
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
 #include "Stellar/Signer.h"
-
 #include "Bitcoin/Transaction.h"
+#include "Bitcoin/TransactionSigner.h"
 #include "Solana/Signer.h"
 
 #include <google/protobuf/util/json_util.h>
@@ -181,9 +180,9 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
             break;
         }
         case TWCoinTypeStellar: {
-        Stellar::Proto::SigningInput message;
-        parse(transaction, &message, output);
-        if (output.success()) {
+            Stellar::Proto::SigningInput message;
+            parse(transaction, &message, output);
+            if (output.success()) {
                 message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
                 auto signer = Stellar::Signer(message);
                 auto signerOutput = signer.sign();
@@ -207,7 +206,8 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
             parse(transaction, &message, output);
             if (output.success()) {
                 message.add_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-                auto signer = Bitcoin::TransactionSigner<Bitcoin::Transaction>(std::move(message));
+                auto signer = Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>(
+                        std::move(message));
                 auto signerOutput = signer.sign();
                 auto signedTx = signerOutput.payload();
                 Data serialized;
@@ -216,15 +216,14 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
             }
             break;
         }
-        default: {
+        default:
             auto error = new Proto::SigningOutput_Error();
             error->set_code(SignerErrorCodeNotSupported);
             error->set_description("Network not supported");
             output.set_allocated_error(error);
-        }
-        break;
     }
 
+    return output;
 }
 
 void TW::Any::Signer::parse(const std::string &transaction, Message *message,
