@@ -11,29 +11,36 @@
 
   # Method returns data
   if should_return_data(method) -%>
-    <%= JNIHelper.type(method.return_type) %> result = TWDataJByteArray(<%= call %>, env);
-
+    <%= JNIHelper.type(method.return_type) %> result = NULL;
+    TWData *resultData = <%= call %>;
+<%  if method.return_type.is_nullable %>
+    if (resultData == NULL) {
+        goto cleanup;
+    }
+<%  end -%>
+    result = TWDataJByteArray(resultData, env);
+cleanup:
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
-<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%= render('jni/instance_release.erb', { entity: entity }) %>
 <%  end -%>
-
     return result;
 <%
   # Method returns a string
   elsif should_return_string(method) -%>
+    jstring result = NULL;
     const jstring resultString = <%= call %>;
 <%  if method.return_type.is_nullable %>
     if (resultString == NULL) {
-        return NULL;
+        goto cleanup;
     }
 <%  end -%>
-    jstring result = TWStringJString(resultString, env);
+    result = TWStringJString(resultString, env);
+cleanup:
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
-<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%= render('jni/instance_release.erb', { entity: entity }) %>
 <%  end -%>
-
     return result;
 <%
   # Method returns proto
@@ -46,7 +53,7 @@
     (*env)->DeleteLocalRef(env, resultClass);
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
-<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%= render('jni/instance_release.erb', { entity: entity }) %>
 <%  end -%>
 
     return result;
@@ -65,7 +72,7 @@
 
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
-<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%= render('jni/instance_release.erb', { entity: entity }) %>
 <%  end -%>
 
     jclass class = (*env)->FindClass(env, "wallet/core/jni/<%= method.return_type.name %>");
@@ -91,7 +98,7 @@
 
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
-<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%= render('jni/instance_release.erb', { entity: entity }) %>
 <%  end
 
   # Method returns a primitive
@@ -100,7 +107,7 @@
 
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
-<%=   render('jni/instance_release.erb', { entity: entity }) %>
+<%= render('jni/instance_release.erb', { entity: entity }) %>
 <%  end -%>
 
     return resultValue;

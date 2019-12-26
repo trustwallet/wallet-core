@@ -36,4 +36,16 @@ class TestKeyStore {
         assertEquals(keyStore.accountCount(), 1)
         assertEquals(keyStore.account(0).coin(), CoinType.ETHEREUM)
     }
+
+    @Test
+    fun testExportJSON() {
+        val password = "password"
+        val keyStore = StoredKey("Test Wallet", password)
+        val json = keyStore.exportJSON()
+        assertNotNull(json)
+
+        val newKeyStore = StoredKey.importJSON(json)
+        val privateKey = newKeyStore.decryptPrivateKey("")
+        assertNull(privateKey)
+    }
 }
