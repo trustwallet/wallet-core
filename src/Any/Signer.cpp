@@ -149,10 +149,10 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         VeChain::Proto::SigningInput message;
         parse(transaction, &message, output);
         if (output.success()) {
-                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-                auto signerOutput = VeChain::Signer::sign(message);
-                auto encoded = signerOutput.encoded();
-                output.set_output(hex(encoded.begin(), encoded.end()));
+            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+            auto signerOutput = VeChain::Signer::sign(message);
+            auto encoded = signerOutput.encoded();
+            output.set_output(hex(encoded.begin(), encoded.end()));
         }
         break;
     }
@@ -183,10 +183,10 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         Stellar::Proto::SigningInput message;
         parse(transaction, &message, output);
         if (output.success()) {
-            message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-            auto signer = Stellar::Signer(message);
-            auto signerOutput = signer.sign();
-            output.set_output(signerOutput);
+                message.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+                auto signer = Stellar::Signer(message);
+                auto signerOutput = signer.sign();
+                output.set_output(signerOutput);
         }
         break;
     }
