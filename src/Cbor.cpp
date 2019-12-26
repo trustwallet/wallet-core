@@ -8,6 +8,7 @@
 #include "HexCoding.h"
 
 #include <sstream>
+#include <cassert>
 
 namespace TW::Cbor {
 
@@ -138,23 +139,24 @@ void Encode::appendIndefinite(byte majorType) {
 }
 
 
-Decode::Decode(const Data& input) : origData(input) {
-    // copy input data, we create clones to use data from there
-    dataPtr = origData.data();
-    dataLen = (uint32_t)origData.size();
+Decode::Decode(const Data& input)
+: data(std::make_shared<OrigDataRef>(input)) {
+    // shared_ptr to original input data created
     subStart = 0;
-    subLen = dataLen;
+    subLen = (uint32_t)input.size();
 }
 
-Decode::Decode(const TW::byte* nDataPtr, uint32_t nDataLen, uint32_t nSubStart, uint32_t nSubLen) {
-    dataPtr = nDataPtr;
-    dataLen = nDataLen;
+Decode::Decode(const std::shared_ptr<OrigDataRef>& nData, uint32_t nSubStart, uint32_t nSubLen)
+: data(nData) {
+    // shared_ptr to original input data added
     subStart = nSubStart;
     subLen = nSubLen;
+    assert(subStart + subLen <= data->origData.size());
 }
 
 Decode Decode::skipClone(uint32_t offset) const {
-    return Decode(dataPtr, dataLen, subStart + offset, subLen - offset);
+    assert(subStart + offset <= data->origData.size());
+    return Decode(data, subStart + offset, subLen - offset);
 }
 
 Decode::TypeDesc Decode::getTypeDesc() const {
@@ -255,7 +257,8 @@ Data Decode::getBytes() const {
     if (length() < (uint32_t)typeDesc.byteCount + (uint32_t)len) {
         throw std::invalid_argument("CBOR bytes/string data too short");
     }
-    return data(dataPtr + (subStart + typeDesc.byteCount), len); 
+    assert(subStart + typeDesc.byteCount + len <= data->origData.size());
+    return TW::data(data->origData.data() + (subStart + typeDesc.byteCount), len); 
 }
 
 bool Decode::isBreak() const {
@@ -305,7 +308,7 @@ vector<Decode> Decode::getCompoundElements(uint32_t countMultiplier, TW::byte ex
         if (idx + elemLen > length()) {
             throw std::invalid_argument("CBOR array data too short");
         }
-        elems.push_back(Decode(dataPtr, dataLen, subStart + idx, elemLen));
+        elems.push_back(Decode(data, subStart + idx, elemLen));
         idx += elemLen;
     }
     return elems;
@@ -455,6 +458,12 @@ string Decode::dumpToString() const {
     stringstream s;
     s << dumpToStringInternal();
     return s.str();
+}
+
+Data Decode::encoded() const
+{
+    assert(subStart + subLen <= data->origData.size());
+    return TW::data(data->origData.data() + subStart, subLen);
 }
 
 } // namespace TW::Cbor

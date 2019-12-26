@@ -15,4 +15,8 @@ namespace TW::Crc {
 /// Initial value changed to 0x0000 to match Stellar
 uint16_t crc16(uint8_t* bytes, uint32_t length);
 
+uint32_t crc32(const TW::Data& data);
+
+uint32_t crc32C(const TW::Data& data);
+
 } // namespace TW::Crc

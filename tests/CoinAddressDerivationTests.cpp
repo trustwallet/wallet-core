@@ -12,7 +12,9 @@
 namespace TW {
 
 TEST(Coin, DeriveAddress) {
-    const auto privateKey = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    auto dummyKeyData = parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646");
+    const auto privateKey = PrivateKey(dummyKeyData);
+    const auto privateKeyExt = PrivateKey(dummyKeyData, dummyKeyData, dummyKeyData);
     
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeAion, privateKey), "0xa0010b0ea04ba4d76ca6e5e9900bacf19bc4402eaec7e36ea7ddd8eed48f60f3");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, privateKey), "bnb1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0mlq0d0");
@@ -65,6 +67,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeKusama, privateKey), "Hy8mqcexg5FMwMYnQvzrUvD723qMxDjMRU9HdNCnTsMAypY");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypePolkadot, privateKey), "16PpFrXrC6Ko3pYcyMAx6gPMp3mFFaxgyYMt4G5brkgNcSz8");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeKava, privateKey), "kava1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z09wt76x");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeCardano, privateKeyExt), "Ae2tdPwUPEZGdVYxuFC5AidB5HWZAfpfN3bLMasYmiBMorjdoxo3WDC95TR");
 }
 
 } // namespace TW

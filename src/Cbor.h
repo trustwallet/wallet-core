@@ -9,6 +9,7 @@
 #include "Data.h"
 
 #include <string>
+#include <memory>
 
 namespace TW::Cbor {
 
@@ -94,7 +95,7 @@ public: // decoding
     std::string dumpToString() const;
     uint32_t length() const { return subLen; }
     /// Return encoded form (useful e.g for parsed out sub-parts)
-    Data encoded() const { return TW::data(dataPtr + subStart, subLen); }
+    Data encoded() const;
 
     enum MajorType {
         MT_uint = 0,
@@ -108,13 +109,18 @@ public: // decoding
     };
     
 private:
-    Decode(const TW::byte* nDataPtr, uint32_t nDataLen, uint32_t nSubIdx, uint32_t nSubLen);
+    /// Struct used to keep reference to original data
+    struct OrigDataRef {
+        Data origData;
+        OrigDataRef(const Data& o) : origData(o) {}
+    };
+    Decode(const std::shared_ptr<OrigDataRef>& nData, uint32_t nSubIdx, uint32_t nSubLen);
     /// Skip ahead: form other Decode data with offset
     Decode skipClone(uint32_t offset) const;
     /// Get the Nth byte
     inline TW::byte byte(uint32_t idx) const {
-        if (subStart + idx >= dataLen) { throw std::invalid_argument("CBOR data too short"); }
-        return dataPtr[subStart + idx];
+        if (subStart + idx >= data->origData.size()) { throw std::invalid_argument("CBOR data too short"); }
+        return data->origData[subStart + idx];
     }
     struct TypeDesc {
         MajorType majorType = MT_uint;
@@ -131,10 +137,8 @@ private:
     std::string dumpToStringInternal() const;
 
 private:
-    /// Encoded input data is copied here, to avoid using reference to memory out of scope
-    Data origData;
-    const TW::byte* dataPtr;
-    uint32_t dataLen;
+    /// Reference to raw data, to the whole orginal, smart ptr
+    std::shared_ptr<OrigDataRef> data;
     // Additional substring start and len, to make skip ahead possible without touching the base data pointer
     uint32_t subStart;
     uint32_t subLen;

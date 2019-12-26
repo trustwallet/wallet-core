@@ -42,6 +42,7 @@ enum TWBlockchain {
     TWBlockchainAlgorand = 27,
     TWBlockchainTON = 28,
     TWBlockchainPolkadot = 29,
+    TWBlockchainCardano = 30,
 };
 
 TW_EXTERN_C_END
