@@ -131,3 +131,39 @@ TEST(CardanoSigner, SignNoChange) {
     );
     EXPECT_EQ("72124df90e7bde2b295c275cead7e7b5fbac80470d4baa2ac4d3ffe5d7de0deb", output.transaction_id());
 }
+
+TEST(CardanoSigner, SignInvalidAddr) {
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(1.0 * 1000000));
+    input.set_fee((uint64_t)(0.169884 * 1000000));
+    input.set_to_address("__INVALID_ADDRESS__");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    auto utxo = input.add_utxo();
+    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_index(6);
+    utxo->set_amount((uint64_t)(15.0 * 1000000));
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    
+    Proto::SigningOutput output = Signer::sign(input);
+
+    EXPECT_EQ("", hex(output.encoded()));
+    EXPECT_EQ("", output.transaction_id());
+}
+
+TEST(CardanoSigner, SignInsufficientBalance) {
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(1000.0 * 1000000));
+    input.set_fee((uint64_t)(0.169884 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    auto utxo = input.add_utxo();
+    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_index(6);
+    utxo->set_amount((uint64_t)(15.0 * 1000000));
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    
+    Proto::SigningOutput output = Signer::sign(input);
+
+    EXPECT_EQ("", hex(output.encoded()));
+    EXPECT_EQ("", output.transaction_id());
+}

@@ -18,14 +18,18 @@ using namespace TW::Cbor;
 using namespace std;
 
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
-    Data txId;
-    Data signedTxEncoded = prepareSignedTx(input, txId);
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     Proto::SigningOutput output;
-    //output.set_transaction // TODO
-    output.set_encoded(signedTxEncoded.data(), signedTxEncoded.size());
-    output.set_transaction_id(hex(txId));
-    output.set_fee(input.fee());
+    try {
+        Data txId;
+        Data signedTxEncoded = prepareSignedTx(input, txId);
+        //output.set_transaction // TODO
+        output.set_encoded(signedTxEncoded.data(), signedTxEncoded.size());
+        output.set_transaction_id(hex(txId));
+        output.set_fee(input.fee());
+    } catch (...) {
+        // just return empty output
+    }
     return output;
 }
 
@@ -49,9 +53,15 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input) {
     inputsArray.closeIndefArray();
 
     uint64_t amount = input.amount();
+    if (amount > sum_utxo) {
+        throw logic_error("Insufficent balance");
+    }
     uint64_t fee = input.fee();
-    // compute change -- TODO check if enough
-    uint64_t changeAmount = sum_utxo - amount - fee;
+    // compute change, check if enough
+    if (amount + fee > sum_utxo) {
+        throw logic_error("Insufficent balance");
+    }
+    uint64_t changeAmount = sum_utxo - (amount + fee);
 
     // outputs array
     Address addrTo = Address(input.to_address());
@@ -82,7 +92,7 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input) {
     return enc;
 }
 
-TW::Data Signer::prepareSignedTx( const Proto::SigningInput& input, TW::Data& txId_out) {
+Data Signer::prepareSignedTx( const Proto::SigningInput& input, Data& txId_out) {
     Data unsignedTxCbor = prepareUnsignedTx(input);
 
     txId_out = Hash::blake2b(unsignedTxCbor, 32);

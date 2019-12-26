@@ -18,7 +18,7 @@ namespace TW::Cardano {
 /// Cardano transaction signing.
 class Signer {
 public:
-    static Proto::SigningOutput sign(const Proto::SigningInput& input);
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
     static const uint64_t Network_Mainnet_Protocol_Magic = 764824073;
 

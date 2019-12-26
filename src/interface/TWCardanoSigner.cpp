@@ -15,14 +15,10 @@ using namespace TW::Cardano;
 TW_Cardano_Proto_SigningOutput TWCardanoSignerSign(TW_Cardano_Proto_SigningInput data) {
     Proto::SigningInput input;
     Proto::SigningOutput output;
-    try {
-        if (!input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)))) {
-            // TODO set error
-        } else {
-            output = Signer::sign(std::move(input));
-        }
-    } catch (...) {
-        // TODO set error
+    if (!input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)))) {
+        // failed to parse input, return empty output
+    } else {
+        output = Signer::sign(std::move(input));
     }
     auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
