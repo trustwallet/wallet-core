@@ -16,6 +16,30 @@
 using namespace TW;
 using namespace TW::Any;
 
+TEST(Signer, BitcoinTransactionSign) {
+    // SignP2SH_P2WPKH used line 238
+   auto transaction =  R"({"hash_type":1,"amount":200000000,"byte_fee":1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx","change_address":"1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU","scripts":{"4733f37cf4db86fbc2efed2500b4f4e49f312023":")" +
+                        TW::Base64::encode(parse_hex("001479091972186c449eb1ded22b78e40d009bdf0089")) +
+                        R"("},"utxo":{"out_point":{"hash":")" +
+                        (TW::Base64::encode(parse_hex("db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"))) +
+                        R"(","index":1,"sequence":)" +
+                        std::to_string(UINT32_MAX) +
+                        R"(},"script":")"+
+                        TW::Base64::encode(parse_hex("a9144733f37cf4db86fbc2efed2500b4f4e49f31202387")) +
+                        R"(","amount":1000000000}})";
+
+    auto input = Proto::SigningInput();
+    input.set_private_key("eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeBitcoin);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());
+    ASSERT_EQ(output.output(), "01000000000101db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477010000001716001479091972186c449eb1ded22b78e40d009bdf0089ffffffff0200c2eb0b000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac1e07af2f000000001976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac02473044022009195d870ecc40f54130008e392904e77d32b738c1add19d1d8ebba4edf812e602204f49de6dc60d9a3c3703e1e642942f8834f3a2cd81a6562a34b293942ce42f40012103ad1d8e89212f0b92c74d23bb710c00662ad1470198ac48c43f7d6f93a2a2687300000000");
+}
+
 TEST(Signer, CosmosTransactionSign) {
     auto transaction = R"({"accountNumber":"8733","chainId":"cosmoshub-2","fee":{"amounts":[{"denom":"uatom","amount":"5000"}],"gas":"200000"}, "memo":"Testing", "messages":[{"sendCoinsMessage":{"fromAddress":"cosmos1ufwv9ymhqaal6xz47n0jhzm2wf4empfqvjy575","toAddress":"cosmos135qla4294zxarqhhgxsx0sw56yssa3z0f78pm0","amounts":[{"denom":"uatom","amount":"995000"}]}}]})";
     auto input = Proto::SigningInput();
@@ -270,3 +294,4 @@ TEST(Signer, SolanaTransactionSign) {
     ASSERT_TRUE(output.success());
     ASSERT_EQ(output.output(), expectedHex);
 }
+

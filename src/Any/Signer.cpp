@@ -21,6 +21,8 @@
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
 #include "Stellar/Signer.h"
+#include "Bitcoin/Transaction.h"
+#include "Bitcoin/TransactionSigner.h"
 #include "Solana/Signer.h"
 
 #include <google/protobuf/util/json_util.h>
@@ -196,6 +198,21 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
                 auto signerOutput = Solana::Signer::signProtobuf(message);
                 auto encoded = signerOutput.encoded();
                 output.set_output(hex(encoded.begin(), encoded.end()));
+        }
+        break;
+    }
+    case TWCoinTypeBitcoin: {
+        Bitcoin::Proto::SigningInput message;
+        parse(transaction, &message, output);
+        if (output.success()) {
+            message.add_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+            auto signer =
+                    Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>(std::move(message));
+            auto signerOutput = signer.sign();
+            auto signedTx = signerOutput.payload();
+            Data serialized;
+            signedTx.encode(true, serialized);
+            output.set_output(hex(serialized));
         }
         break;
     }

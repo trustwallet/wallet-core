@@ -21,7 +21,7 @@ TEST(TWAnySigner, IsEnabled) {
     ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeBinance));
 
     ASSERT_FALSE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoinCash));
-    ASSERT_FALSE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoin));
+    ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoin));
 }
 
 bool performAnySign(TWCoinType coinType, const string& transaction, const string& privateKeyHex, TW::Any::Proto::SigningOutput& out) {
