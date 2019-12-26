@@ -25,7 +25,7 @@ private:
     
 public:
     Keys(ostream& out, const Coins& coins);
-    bool newKey(string& res);
+    bool newKey(const string& coinid, string& res);
     /// Public key from private key, ED25519
     bool pubPri(const string& coinid, const string& p, string& res);
     bool priPub(const string& p, string& res);

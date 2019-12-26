@@ -21,8 +21,8 @@
 using namespace TW;
 
 bool PrivateKey::isValid(const Data& data) {
-    // Check length
-    if (data.size() != size) {
+    // Check length.  Extended key needs 3*32 bytes.
+    if (data.size() != size && data.size() != extendedSize) {
         return false;
     }
 
@@ -55,6 +55,7 @@ bool PrivateKey::isValid(const Data& data, TWCurve curve)
         break;
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
+    case TWCurveED25519Extended:
     case TWCurveCurve25519:
         break;
     }
@@ -75,11 +76,31 @@ PrivateKey::PrivateKey(const Data& data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid private key data");
     }
+    if (data.size() == extendedSize) {
+        // special extended case
+        *this = PrivateKey(
+            TW::data(data.data(), 32),
+            TW::data(data.data() + 32, 32),
+            TW::data(data.data() + 64, 32));
+    } else {
+        // default case
+        bytes = data;
+    }
+}
+
+PrivateKey::PrivateKey(const Data& data, const Data& ext, const Data& chainCode) {
+    if (!isValid(data) || !isValid(data) || !isValid(chainCode)) {
+        throw std::invalid_argument("Invalid private key or extended key data");
+    }
     bytes = data;
+    extensionBytes = ext;
+    chainCodeBytes = chainCode;
 }
 
 PrivateKey::~PrivateKey() {
     std::fill(bytes.begin(), bytes.end(), 0);
+    std::fill(extensionBytes.begin(), extensionBytes.end(), 0);
+    std::fill(chainCodeBytes.begin(), chainCodeBytes.end(), 0);
 }
 
 PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
@@ -109,6 +130,16 @@ PublicKey PrivateKey::getPublicKey(TWPublicKeyType type) const {
         result.resize(PublicKey::ed25519Size);
         ed25519_publickey_blake2b(bytes.data(), result.data());
         break;
+    case TWPublicKeyTypeED25519Extended:
+        // must be extended key
+        if (bytes.size() + extensionBytes.size() + chainCodeBytes.size() != extendedSize) {
+            throw std::invalid_argument("Invalid extended key");
+        }
+        result.resize(PublicKey::ed25519ExtendedSize);
+        ed25519_publickey_ext(bytes.data(), extensionBytes.data(), result.data());
+        // append chainCode to the end of the public key
+        std::copy(chainCodeBytes.begin(), chainCodeBytes.end(), result.begin() + 32);
+        break;
     case TWPublicKeyTypeCURVE25519:
         result.resize(PublicKey::ed25519Size);
         PublicKey ed25519PublicKey = getPublicKey(TWPublicKeyTypeED25519);
@@ -137,6 +168,11 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve) const {
         const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Blake2b);
         ed25519_sign_blake2b(digest.data(), digest.size(), bytes.data(),
                              publicKey.bytes.data(), result.data());
+    } break;
+    case TWCurveED25519Extended: {
+        result.resize(64);
+        const auto publicKey = getPublicKey(TWPublicKeyTypeED25519Extended);
+        ed25519_sign_ext(digest.data(), digest.size(), bytes.data(), extensionBytes.data(), publicKey.bytes.data(), result.data());
     } break;
     case TWCurveCurve25519: {
         result.resize(64);
@@ -171,6 +207,7 @@ Data PrivateKey::sign(const Data& digest, TWCurve curve, int(*canonicalChecker)(
     } break;
     case TWCurveED25519: // not supported
     case TWCurveED25519Blake2bNano: // not supported
+    case TWCurveED25519Extended: // not supported
     case TWCurveCurve25519:         // not supported
         break;
     case TWCurveNIST256p1: {
@@ -216,6 +253,7 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
     case TWCurveNIST256p1:
     case TWCurveED25519:
     case TWCurveED25519Blake2bNano:
+    case TWCurveED25519Extended:
     case TWCurveCurve25519: {
         // not support
     } break;

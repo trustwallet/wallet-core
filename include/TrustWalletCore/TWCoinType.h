@@ -29,6 +29,7 @@ enum TWCoinType {
     TWCoinTypeBitcoinCash = 145,
     TWCoinTypeBravoCoin = 282,
     TWCoinTypeCallisto = 820,
+    TWCoinTypeCardano = 1815,
     TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
