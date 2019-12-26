@@ -21,7 +21,7 @@ using namespace std;
 
 const Data privateKey_b8c3 = parse_hex("b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f");
 
-TEST(CardanoAddress, SignMessage) {
+TEST(CardanoSigner, SignMessage) {
     // from cardano-crypto.js test
     auto privateKey = PrivateKey(
         parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
@@ -36,7 +36,7 @@ TEST(CardanoAddress, SignMessage) {
     );
 }
 
-TEST(CardanoAddress, SignTx_d498) {
+TEST(CardanoSigner, SignTx_d498) {
     // see this tx: https://cardanoexplorer.com/tx/d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f
     Proto::SigningInput input;
     input.set_amount((uint64_t)(1.0 * 1000000));
@@ -58,7 +58,7 @@ TEST(CardanoAddress, SignTx_d498) {
     EXPECT_EQ("d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f", output.transaction_id());
 }
 
-TEST(CardanoAddress, PrepareUnsignedTx_d498) {
+TEST(CardanoSigner, PrepareUnsignedTx_d498) {
     // see this tx: https://cardanoexplorer.com/tx/d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f
     Proto::SigningInput input;
     input.set_amount((uint64_t)(1.0 * 1000000));
@@ -88,7 +88,7 @@ TEST(CardanoAddress, PrepareUnsignedTx_d498) {
     EXPECT_EQ("Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx", fromAddr.string());
 }
 
-TEST(CardanoAddress, SignTx_8283) {
+TEST(CardanoSigner, SignTx_8283) {
     // see this tx: https://cardanoexplorer.com/tx/ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee
     Proto::SigningInput input;
     input.set_amount((uint64_t)(8.0 * 1000000));
@@ -110,7 +110,7 @@ TEST(CardanoAddress, SignTx_8283) {
     EXPECT_EQ("ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", output.transaction_id());
 }
 
-TEST(CardanoAddress, SignNoChange) {
+TEST(CardanoSigner, SignNoChange) {
     // if change is 0, do not include change output
     Proto::SigningInput input;
     input.set_amount((uint64_t)(14.830116 * 1000000));

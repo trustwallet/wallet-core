@@ -14,6 +14,7 @@
 
 using namespace TW;
 using namespace TW::Cardano;
+using namespace TW::Cbor;
 using namespace std;
 
 
@@ -31,16 +32,16 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) {
 Data Signer::prepareUnsignedTx(const Proto::SigningInput& input) {
     // inputs array
     uint64_t sum_utxo = 0;
-    auto inputsArray = Cbor::Encode::indefArray();
+    auto inputsArray = Encode::indefArray();
     for (int i = 0; i < input.utxo_size(); ++i) {
-        Data outPointData = Cbor::Encode::array({
-            Cbor::Encode::bytes(parse_hex(input.utxo(i).out_point().txid())),
-            Cbor::Encode::uint(input.utxo(i).out_point().index())
+        Data outPointData = Encode::array({
+            Encode::bytes(parse_hex(input.utxo(i).out_point().txid())),
+            Encode::uint(input.utxo(i).out_point().index())
         }).encoded();
         inputsArray.addIndefArrayElem(
-            Cbor::Encode::array({
-                Cbor::Encode::uint(0), // type
-                Cbor::Encode::tag(Address::PayloadTag, Cbor::Encode::bytes(outPointData))
+            Encode::array({
+                Encode::uint(0), // type
+                Encode::tag(Address::PayloadTag, Encode::bytes(outPointData))
             })
         );
         sum_utxo += input.utxo(i).amount();
@@ -55,28 +56,28 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input) {
     // outputs array
     Address addrTo = Address(input.to_address());
     Address addrChange = Address(input.change_address());
-    auto outputsArray = Cbor::Encode::indefArray();
+    auto outputsArray = Encode::indefArray();
     outputsArray.addIndefArrayElem(
-        Cbor::Encode::array({
-            Cbor::Encode::fromRaw(addrTo.getCborData()),
-            Cbor::Encode::uint(amount)
+        Encode::array({
+            Encode::fromRaw(addrTo.getCborData()),
+            Encode::uint(amount)
         })
     );
     if (changeAmount != 0) {
         outputsArray.addIndefArrayElem(
-            Cbor::Encode::array({
-                Cbor::Encode::fromRaw(addrChange.getCborData()),
-                Cbor::Encode::uint(changeAmount)
+            Encode::array({
+                Encode::fromRaw(addrChange.getCborData()),
+                Encode::uint(changeAmount)
             })
         );
     }
     outputsArray.closeIndefArray();
 
-    Data enc = Cbor::Encode::array({
+    Data enc = Encode::array({
         inputsArray,
         outputsArray,
         // attributes
-        Cbor::Encode::map({})
+        Encode::map({})
     }).encoded();
     return enc;
 }
@@ -87,32 +88,32 @@ TW::Data Signer::prepareSignedTx( const Proto::SigningInput& input, TW::Data& tx
     txId_out = Hash::blake2b(unsignedTxCbor, 32);
 
     // array with signatures
-    vector<Cbor::Encode> signatures;
+    vector<Encode> signatures;
     for (int i = 0; i < input.private_key_size(); ++i) {
         PrivateKey fromPri = PrivateKey(input.private_key(i));
         PublicKey fromPub = fromPri.getPublicKey(TWPublicKeyTypeED25519Extended);
         // sign; msg is txId with prefix
         Data txToSign = parse_hex("01"); // transaction prefix
-        TW::append(txToSign, Cbor::Encode::uint(Network_Mainnet_Protocol_Magic).encoded());
-        TW::append(txToSign, Cbor::Encode::bytes(txId_out).encoded());
+        TW::append(txToSign, Encode::uint(Network_Mainnet_Protocol_Magic).encoded());
+        TW::append(txToSign, Encode::bytes(txId_out).encoded());
         Data signature = fromPri.sign(txToSign, TWCurveED25519Extended);
-        Data signatureCbor = Cbor::Encode::array({
-            Cbor::Encode::bytes(fromPub.bytes),
-            Cbor::Encode::bytes(signature),
+        Data signatureCbor = Encode::array({
+            Encode::bytes(fromPub.bytes),
+            Encode::bytes(signature),
         }).encoded();
         signatures.push_back(
-            Cbor::Encode::array({
-                Cbor::Encode::uint(0), // type
-                Cbor::Encode::tag(Address::PayloadTag,
-                    Cbor::Encode::bytes(signatureCbor)
+            Encode::array({
+                Encode::uint(0), // type
+                Encode::tag(Address::PayloadTag,
+                    Encode::bytes(signatureCbor)
                 ),
             })
         );
     }
 
-    Data enc = Cbor::Encode::array({
-        Cbor::Encode::fromRaw(unsignedTxCbor),
-        Cbor::Encode::array(signatures),
+    Data enc = Encode::array({
+        Encode::fromRaw(unsignedTxCbor),
+        Encode::array(signatures),
     }).encoded();
     return enc;
 }

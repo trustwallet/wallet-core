@@ -23,8 +23,8 @@ public:
     static const uint64_t Network_Mainnet_Protocol_Magic = 764824073;
 
     /// Prepare unsigned data for a transaction
-    static TW::Data prepareUnsignedTx(const Proto::SigningInput& input);
-    static TW::Data prepareSignedTx( const Proto::SigningInput& input, TW::Data& txId_out);
+    static Data prepareUnsignedTx(const Proto::SigningInput& input);
+    static Data prepareSignedTx( const Proto::SigningInput& input, Data& txId_out);
 };
 
 } // namespace TW::Cardano
