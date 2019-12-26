@@ -5,18 +5,18 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Cardano/Address.h"
+#include "Cardano/Signer.h"
 
-#include "HexCoding.h"
-#include "PublicKey.h"
-#include "PrivateKey.h"
-#include "Base58.h"
 #include "HDWallet.h"
+#include "HexCoding.h"
+#include "PrivateKey.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Cardano;
 using namespace std;
+
 
 TEST(CardanoAddress, Validation) {
     // valid V2 address
@@ -192,17 +192,4 @@ TEST(CardanoAddress, PrivateKeyExtended) {
     );
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(32, publicKeyNonext.bytes.size());
-}
-
-TEST(CardanoAddress, SignMessage) {
-    // from cardano-crypto.js test
-    auto privateKey = PrivateKey(
-        parse_hex("d809b1b4b4c74734037f76aace501730a3fe2fca30b5102df99ad3f7c0103e48"),
-        parse_hex("d54cde47e9041b31f3e6873d700d83f7a937bea746dadfa2c5b0a6a92502356c"),
-        parse_hex("69272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000")
-    );
-    Data message = TW::data("Hello world");
-    Data signature = privateKey.sign(message, TWCurveED25519Extended);
-    EXPECT_EQ("1096ddcfb2ad21a4c0d861ef3fabe18841e8de88105b0d8e36430d7992c588634ead4100c32b2800b31b65e014d54a8238bdda63118d829bf0bcf1b631e86f0e",
-        hex(signature));
 }

@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package TW.Cardano.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// A Cardano transaction
+message Transaction {
+    // A list of 1 or more transaction inputs or sources for coins.
+    repeated TransactionInput inputs = 1;
+
+    // A list of 1 or more transaction outputs or destinations for coins
+    repeated TransactionOutput outputs = 2;
+}
+
+// Cardano transaction input.
+message TransactionInput {
+    // Reference to the previous transaction's output.
+    OutPoint previousOutput = 1;
+}
+
+// Cardano transaction out-point reference.
+message OutPoint {
+    // The hash of the referenced transaction.
+    bytes txid = 1;
+
+    // The index of the specific output in the transaction.
+    uint32 index = 2;
+}
+
+// Cardano transaction output.
+message TransactionOutput {
+    // To address
+    string to_address = 1;
+
+    // Transaction amount.
+    int64 value = 2;
+}
+
+message UnspentTransaction {
+    OutPoint out_point = 1;
+    int64 amount = 2;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Amount to send to recipient.
+    int64 amount = 1;
+
+    // Transaction fee (absolute for now)
+    int64 fee = 2;
+
+    // Recipient's address.
+    string to_address = 3;
+
+    // Change address.
+    string change_address = 4;
+
+    // Available private keys.  Private keys must match the addresses from the UTXO's.
+    repeated bytes private_key = 5;
+
+    // Available unspent transaction outputs.
+    repeated UnspentTransaction utxo = 6;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Resulting transaction.
+    Transaction transaction = 1;
+
+    // Signed and encoded transaction bytes.
+    bytes encoded = 2;
+
+    // Transaction id
+    string transaction_id = 3;
+
+    // Total transaction fees.
+    int64 fee = 4;
+}
