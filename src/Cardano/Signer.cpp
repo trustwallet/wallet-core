@@ -52,26 +52,29 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input) {
     // compute change -- TODO check if enough
     uint64_t changeAmount = sum_utxo - amount - fee;
 
+    // outputs array
     Address addrTo = Address(input.to_address());
     Address addrChange = Address(input.change_address());
+    auto outputsArray = Cbor::Encode::indefArray();
+    outputsArray.addIndefArrayElem(
+        Cbor::Encode::array({
+            Cbor::Encode::fromRaw(addrTo.getCborData()),
+            Cbor::Encode::uint(amount)
+        })
+    );
+    if (changeAmount != 0) {
+        outputsArray.addIndefArrayElem(
+            Cbor::Encode::array({
+                Cbor::Encode::fromRaw(addrChange.getCborData()),
+                Cbor::Encode::uint(changeAmount)
+            })
+        );
+    }
+    outputsArray.closeIndefArray();
+
     Data enc = Cbor::Encode::array({
-        // inputs array
         inputsArray,
-        // outputs array
-        Cbor::Encode::indefArray()
-            .addIndefArrayElem(
-                Cbor::Encode::array({
-                    Cbor::Encode::fromRaw(addrTo.getCborData()),
-                    Cbor::Encode::uint(amount)
-                })
-            )
-            .addIndefArrayElem(
-                Cbor::Encode::array({
-                    Cbor::Encode::fromRaw(addrChange.getCborData()),
-                    Cbor::Encode::uint(changeAmount)
-                })
-            )
-        .closeIndefArray(),
+        outputsArray,
         // attributes
         Cbor::Encode::map({})
     }).encoded();
