@@ -13,9 +13,6 @@
 #include "HexCoding.h"
 #include "Tezos/BinaryCoding.h"
 
-#include "Bitcoin/OutPoint.h"
-#include "Bitcoin/Script.h"
-
 using namespace TW;
 using namespace TW::Any;
 
@@ -275,7 +272,6 @@ TEST(Signer, StellarTransactionSign) {
     ASSERT_TRUE(output.success());
     ASSERT_EQ(output.output(), "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB");
 }
-
 
 TEST(Signer, SolanaTransactionSign) {
     auto transaction = R"({"transferTransaction": {"recipient": "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd", "value": 42}, "recentBlockhash": "11111111111111111111111111111111"})";
