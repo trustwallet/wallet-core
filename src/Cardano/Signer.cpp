@@ -99,7 +99,6 @@ Proto::SigningOutput Signer::buildTransaction(const Proto::SigningInput& input) 
 
 Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::SigningOutput& output) {
     // inputs from inputs.utxo
-    uint64_t sum_utxo = 0;
     auto inputsArray = Encode::indefArray();
     for (int i = 0; i < input.utxo_size(); ++i) {
         Data outPointData = Encode::array({
@@ -112,7 +111,6 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Si
                 Encode::tag(Address::PayloadTag, Encode::bytes(outPointData))
             })
         );
-        sum_utxo += input.utxo(i).amount();
     }
     inputsArray.closeIndefArray();
 
