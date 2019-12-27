@@ -44,7 +44,8 @@ TEST(CardanoSigner, SignTx_d498) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
@@ -70,7 +71,8 @@ TEST(CardanoSigner, PrepareUnsignedTx_d498) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
 
@@ -102,7 +104,8 @@ TEST(CardanoSigner, SignTx_8283) {
     input.set_to_address("Ae2tdPwUPEYxKHuuYNsYkpR64XNZz7Xm8vMep7mZ2rrP9HgqbbeX1uMxmGd");
     input.set_change_address("Ae2tdPwUPEYz548sTWdiTxBx13kxECHH4cmYtxQgPgEaQwmkymYFZzGkPrH");
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_txid("a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e6861");
+    Data txid = parse_hex("a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e6861");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(0);
     utxo->set_amount((uint64_t)(10.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
@@ -128,7 +131,8 @@ TEST(CardanoSigner, SignNoChange) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
@@ -150,7 +154,8 @@ TEST(CardanoSigner, SignNegativeInvalidAddr) {
     input.set_to_address("__INVALID_ADDRESS__");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
@@ -170,7 +175,8 @@ TEST(CardanoSigner, SignNegativeInsufficientBalance) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
@@ -190,7 +196,8 @@ TEST(CardanoSigner, ComputeFee) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
@@ -208,7 +215,8 @@ TEST(CardanoSigner, SignZeroFee) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
