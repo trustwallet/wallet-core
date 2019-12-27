@@ -49,8 +49,12 @@ struct Transaction {
     bool empty() const { return inputs.empty() && outputs.empty(); }
 
     /// Generates the signature pre-image.
-    std::vector<uint8_t> getPreImage(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
-                                     uint64_t amount) const;
+    std::vector<uint8_t> getPreImage(const Script &scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
+                                            uint64_t amount, TWBitcoinSignatureVersion version) const;
+    std::vector<uint8_t> getWitnessPreImage(const Script &scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
+                                            uint64_t amount) const;
+    std::vector<uint8_t>
+    getBasePreImage(const Script &scriptCode, size_t index, enum TWBitcoinSigHashType hashType) const;
     std::vector<uint8_t> getPrevoutHash() const;
     std::vector<uint8_t> getSequenceHash() const;
     std::vector<uint8_t> getOutputsHash() const;

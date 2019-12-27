@@ -77,3 +77,61 @@ TW_Proto_Result TWGroestlcoinTransactionSignerSign(struct TWGroestlcoinTransacti
     auto serialized = protoResult.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
+
+TWData *_Nonnull TWGroestlcoinTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput data) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    auto signer = new TWGroestlcoinTransactionSigner{ TransactionSigner<TW::Groestlcoin::Transaction>(std::move(input)) };
+    for (auto i = 0; i < signer->impl.plan.utxos.size(); i++) {
+        auto& utxo = signer->impl.plan.utxos[i];
+        auto script = Script(utxo.script().begin(), utxo.script().end());
+        auto sighash = signer->impl.transaction.getPreImage(script, i,
+                                                            static_cast<TWBitcoinSigHashType>(input.hash_type()), utxo.amount(), BASE);
+
+        signer->impl.plan.utxos[i].set_script(reinterpret_cast<const uint8_t *>(sighash.data()), sighash.size());
+    }
+    auto result = signer->impl.plan.proto();
+    auto serialized = result.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
+
+TWData *_Nonnull TWGroestlcoinTransactionSignerTransaction(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
+    Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    Proto::TransactionPlan plan;
+    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
+
+    auto signer = new TWGroestlcoinTransactionSigner{ TransactionSigner<TW::Groestlcoin::Transaction>(std::move(input), plan) };
+    for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
+        for (auto j = 0; j < plan.utxos().size(); j++) {
+            auto planOutput = OutPoint(plan.utxos()[j].out_point());
+            if (signer->impl.transaction.inputs[i].previousOutput == planOutput ){
+                signer->impl.transaction.inputs[i].script = Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().end());
+            }
+        }
+    }
+
+    const auto& tx = signer->impl.transaction;
+    auto protoOutput = Proto::SigningOutput();
+    *protoOutput.mutable_transaction() = tx.proto();
+
+    TW::Data encoded;
+    auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
+    tx.encode(hasWitness, encoded);
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+
+    TW::Data txHashData = encoded;
+    if (hasWitness) {
+        txHashData.clear();
+        tx.encode(false, txHashData);
+    }
+    auto txHash = TW::Hash::sha256(txHashData);
+    std::reverse(txHash.begin(), txHash.end());
+    protoOutput.set_transaction_id(TW::hex(txHash));
+
+    auto serialized = protoOutput.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}

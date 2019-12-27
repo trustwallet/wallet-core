@@ -7,6 +7,7 @@
 #include <TrustWalletCore/TWWanchainSigner.h>
 
 #include "../Wanchain/Signer.h"
+#include "../Ethereum/Signer.h"
 #include "../proto/Ethereum.pb.h"
 #include "../uint256.h"
 
@@ -23,3 +24,53 @@ TW_Ethereum_Proto_SigningOutput TWWanchainSignerSign(TW_Ethereum_Proto_SigningIn
     auto serialized = protoOutput.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
+
+TWData *_Nonnull TWWanchainSignerMessage(TW_Ethereum_Proto_SigningInput data) {
+    Ethereum::Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    auto chainId = load(input.chain_id());
+    auto signer = Signer(chainId);
+
+    auto transaction = Ethereum::Transaction(
+            /* nonce: */ load(input.nonce()),
+            /* gasPrice: */ load(input.gas_price()),
+            /* gasLimit: */ load(input.gas_limit()),
+            /* to: */ Ethereum::Address(input.to_address()),
+            /* amount: */ load(input.amount()),
+            /* payload: */ Data(input.payload().begin(), input.payload().end())
+    );
+    transaction.v = chainId;
+    transaction.r = 0;
+    transaction.s = 0;
+
+    auto serialized = signer.encode(transaction);
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
+TWData *_Nonnull TWWanchainSigneTransaction(TW_Ethereum_Proto_SigningInput data, TWData *_Nonnull signature) {
+    Ethereum::Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    Data sig(TWDataBytes(signature), TWDataBytes(signature) + TWDataSize(signature));
+
+    auto chainId = load(input.chain_id());
+    auto signer = Signer(chainId);
+    auto transaction = Ethereum::Transaction(
+            /* nonce: */ load(input.nonce()),
+            /* gasPrice: */ load(input.gas_price()),
+            /* gasLimit: */ load(input.gas_limit()),
+            /* to: */ Ethereum::Address(input.to_address()),
+            /* amount: */ load(input.amount()),
+            /* payload: */ Data(input.payload().begin(), input.payload().end())
+    );
+
+    auto tuple = Ethereum::Signer::values(chainId, sig);
+    transaction.r = std::get<0>(tuple);
+    transaction.s = std::get<1>(tuple);
+    transaction.v = std::get<2>(tuple);
+
+    auto encoded = signer.encode(transaction);
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
+}
+

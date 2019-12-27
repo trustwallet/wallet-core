@@ -20,4 +20,10 @@ struct TWNebulasSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Nebulas_Proto_SigningOutput TWNebulasSignerSign(TW_Nebulas_Proto_SigningInput input);
 
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWNebulasSignerMessage(TW_Nebulas_Proto_SigningInput data);
+
+/// Builds a transaction to be broadcasted
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWNebulasSignerTransaction(TW_Nebulas_Proto_SigningInput data,  TWData *_Nonnull signature);
 TW_EXTERN_C_END

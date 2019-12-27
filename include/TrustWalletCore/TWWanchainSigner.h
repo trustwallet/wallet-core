@@ -20,4 +20,10 @@ struct TWWanchainSigner;
 TW_EXPORT_STATIC_METHOD
 TW_Ethereum_Proto_SigningOutput TWWanchainSignerSign(TW_Ethereum_Proto_SigningInput input);
 
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWWanchainSignerMessage(TW_Ethereum_Proto_SigningInput data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWWanchainSigneTransaction(TW_Ethereum_Proto_SigningInput data, TWData *_Nonnull signature);
+
 TW_EXTERN_C_END

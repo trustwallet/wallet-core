@@ -85,6 +85,16 @@ TWData *_Nonnull TWHashBlake2b(TWData *_Nonnull data, size_t outlen) {
     return result;
 }
 
+TWData *_Nonnull TWHashBlake2bPersonal(TWData *_Nonnull data, TWData * _Nonnull personal, size_t outlen) {
+    auto resultBytes = TW::Data(outlen);
+    auto dataBytes = TWDataBytes(data);
+    auto personalBytes = TWDataBytes(personal);
+    auto personalSize = TWDataSize(personal);
+    blake2b_Personal(dataBytes, static_cast<uint32_t>(TWDataSize(data)), personalBytes, personalSize, resultBytes.data(), outlen);
+    auto result = TWDataCreateWithBytes(resultBytes.data(), outlen);
+    return result;
+}
+
 TWData *_Nonnull TWHashSHA256RIPEMD(TWData *_Nonnull data) {
     std::array<uint8_t, TWHashSHA256Length> round1;
     auto dataBytes = TWDataBytes(data);
