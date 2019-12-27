@@ -183,7 +183,25 @@ TEST(CardanoSigner, SignNegativeInsufficientBalance) {
     EXPECT_TRUE(output.error().find("nsufficent balance") != string::npos);
 }
 
-TEST(CardanoSigner, SignNegativeZeroFee) {
+TEST(CardanoSigner, ComputeFee) {
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(1.0 * 1000000));
+    input.set_fee(0);
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    auto utxo = input.add_utxo();
+    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_index(6);
+    utxo->set_amount((uint64_t)(15.0 * 1000000));
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+
+    uint64_t fee = Signer::computeFee(input);
+
+    EXPECT_EQ(167994, fee);
+}
+
+TEST(CardanoSigner, SignZeroFee) {
+    // fee is estimated
     Proto::SigningInput input;
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_fee(0);
@@ -197,8 +215,11 @@ TEST(CardanoSigner, SignNegativeZeroFee) {
     
     Proto::SigningOutput output = Signer::sign(input);
 
-    EXPECT_EQ("", hex(output.encoded()));
-    EXPECT_EQ("", output.transaction_id());
-    EXPECT_NE("", output.error());
-    EXPECT_TRUE(output.error().find("ero fee") != string::npos);
+    EXPECT_EQ(
+        "82839f8200d818582482582059991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac1406ff9f8282d818582183581c4cf4eba3500c1127ab6ce9e011167bc817d6bc5634f2a1e5f6752c3ea0001a6d87265f1a000f42408282d818582183581ceba562709cf7b5e88fe9d9bdcec4f01382aded9b03d31f16da0efdb0a0001acb24046d1a00d30f46ffa0818200d8185885825840835610e371e632d829eb63bf44ec39d0487c19d4d98b8dce9dd88d88414ce5bb1ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f58403646fec783197bdf3d83858d8303f9d72e09a5df882202716c7737e55148c1c2106c550890c0ab001f7a27cb75fabe827f81132486bec41e17861aba1a069508",
+        hex(output.encoded())
+    );
+    EXPECT_EQ("4374315285f5af17c5fd37d78bcaa94534968e925c06e293e10d2348d9420fac", output.transaction_id());
+    EXPECT_EQ(167994, output.fee());
+    EXPECT_EQ("", output.error());
 }

@@ -18,9 +18,15 @@ namespace TW::Cardano {
 /// Cardano transaction signing.
 class Signer {
 public:
+    /// Build and sign a Cardano transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
+    /// Compute the default fee for a transaction
+    static uint64_t computeFee(const Proto::SigningInput& input) noexcept;
+
     static const uint64_t Network_Mainnet_Protocol_Magic = 764824073;
+    static const uint32_t FeeLinearCoeffA = 155381;
+    static constexpr double FeeLinearCoeffB = 43.946;
 
     // Helper methods
     /// Prepare transaction inputs and outputs, computes fee.  Uses input; sets output.transaction, output.fee.

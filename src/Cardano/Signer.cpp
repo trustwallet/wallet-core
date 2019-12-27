@@ -12,6 +12,9 @@
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 
+#include <cmath>
+#include <cassert>
+
 using namespace TW;
 using namespace TW::Cardano;
 using namespace TW::Cbor;
@@ -21,9 +24,20 @@ using namespace std;
 Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     Proto::SigningOutput output;
     try {
-        output = buildTransaction(input);
-        Data unisgnedEncodedCborData = prepareUnsignedTx(input, output);
-        prepareSignedTx(input, unisgnedEncodedCborData, output);
+        // handle unset fee case
+        Proto::SigningInput input2(input); // mutable local copy
+        if (input2.fee() == 0) {
+            auto fee = computeFee(input2);
+            input2.set_fee(fee);
+        }
+        assert(input2.fee() != 0);
+
+        // build transaction in a few steps: decide inputs, outputs, amount and fee, fill transaction fields:
+        output = buildTransaction(input2);
+        // prepare first part of tx data
+        Data unisgnedEncodedCborData = prepareUnsignedTx(input2, output);
+        // compute txId, sign, complete with second half of the tx data
+        prepareSignedTx(input2, unisgnedEncodedCborData, output);
     } catch (exception& ex) {
         // return empty output with error
         output.set_error(ex.what());
@@ -31,11 +45,23 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     return output;
 }
 
-Proto::SigningOutput Signer::buildTransaction(const Proto::SigningInput& input) {
-    if (input.fee() == 0) {
-        throw logic_error("Zero fee");
+uint64_t Signer::computeFee(const Proto::SigningInput& input) noexcept {
+    // build a tx with fee=1, to get size, estimate fee from size
+    try {
+        Proto::SigningInput input2(input);
+        input2.set_fee(1);
+        Proto::SigningOutput output2 = sign(input2);
+        auto txSize = output2.encoded().length();
+        // compute fee by linear equation
+        uint64_t fee = (uint64_t)std::ceil((double)FeeLinearCoeffA + FeeLinearCoeffB * (double)txSize);
+        return fee;
+    } catch (...) {
+        // return 0 on error
+        return 0;
     }
+}
 
+Proto::SigningOutput Signer::buildTransaction(const Proto::SigningInput& input) {
     Proto::SigningOutput output;
     // inputs
     uint64_t sum_utxo = 0;
