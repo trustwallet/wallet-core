@@ -44,7 +44,7 @@ inline Data encodeCompact(CompactInteger value) {
         return data;
     } else if (value < kMinUint32) {
         auto v = (value.convert_to<uint16_t>() << 2u);
-        v += 0b01; // set 0b01 flag
+        v += 0x01; // set 0b01 flag
         auto minor_byte = static_cast<uint8_t>(v & 0xffu);
         data.push_back(minor_byte);
         v >>= 8u;
@@ -53,7 +53,7 @@ inline Data encodeCompact(CompactInteger value) {
         return data;
     } else if (value < kMinBigInteger) {
         uint32_t v = (value.convert_to<uint32_t>() << 2u);
-        v += 0b10; // set 0b10 flag
+        v += 0x02; // set 0b10 flag
         encode32LE(v, data);
         return data;
     }
@@ -64,7 +64,7 @@ inline Data encodeCompact(CompactInteger value) {
         return data;
     }
     uint8_t header = (static_cast<uint8_t>(length) - 4) * 4;
-    header += 0b11; // set 0b11 flag;
+    header += 0x03; // set 0b11 flag;
     data.push_back(header);
 
     auto v = CompactInteger{value};
