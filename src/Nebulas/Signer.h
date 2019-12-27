@@ -33,7 +33,8 @@ class Signer {
 
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
-
+    /// Computes the transaction hash.
+    Data getPreImage(Proto::SigningInput& input) const noexcept;
   protected:
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;

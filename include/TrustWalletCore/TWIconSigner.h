@@ -8,6 +8,7 @@
 
 #include "TWBase.h"
 #include "TWData.h"
+#include "TWString.h"
 #include "TWIconProto.h"
 
 TW_EXTERN_C_BEGIN
@@ -19,5 +20,11 @@ struct TWIconSigner;
 /// Signs a transaction.
 TW_EXPORT_STATIC_METHOD
 TW_Icon_Proto_SigningOutput TWIconSignerSign(TW_Icon_Proto_SigningInput input);
+
+TW_EXPORT_PROPERTY
+TWString *_Nonnull  TWIconSignerMessage(TW_Icon_Proto_SigningInput data);
+
+TW_EXPORT_PROPERTY
+TWData *_Nonnull TWIconSignerTransaction(TW_Icon_Proto_SigningInput data, TWData *_Nonnull signature);
 
 TW_EXTERN_C_END

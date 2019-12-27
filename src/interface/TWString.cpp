@@ -8,7 +8,7 @@
 #include <TrustWalletCore/TWString.h>
 #include <string>
 
-TWString *_Nonnull TWStringCreateWithUTF8Bytes(const char *_Nonnull bytes) {
+TWString *_Nonnull  TWStringCreateWithUTF8Bytes(const char *_Nonnull bytes) {
     auto s = new std::string(bytes);
     return s;
 }

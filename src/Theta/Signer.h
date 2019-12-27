@@ -26,8 +26,6 @@ class Signer {
 
     /// Signs the given transaction
     Data sign(const PrivateKey& privateKey, const Transaction& transaction) noexcept;
-
-  private:
     Data encode(const Transaction& transaction) noexcept;
 };
 

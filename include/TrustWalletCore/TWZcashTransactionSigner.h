@@ -38,4 +38,10 @@ TW_Bitcoin_Proto_TransactionPlan TWZcashTransactionSignerPlan(struct TWZcashTran
 TW_EXPORT_METHOD
 TW_Proto_Result TWZcashTransactionSignerSign(struct TWZcashTransactionSigner *_Nonnull signer);
 
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWZcashTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWZcashTransactionSignerTransaction(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan plan);
+
 TW_EXTERN_C_END

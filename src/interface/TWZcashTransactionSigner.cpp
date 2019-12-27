@@ -64,3 +64,51 @@ TW_Proto_Result TWZcashTransactionSignerSign(struct TWZcashTransactionSigner *_N
     auto serialized = protoResult.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
+
+TWData *_Nonnull TWZcashTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput data) {
+    Bitcoin::Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    auto signer = new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction>(std::move(input)) };
+    for (auto i = 0; i < signer->impl.plan.utxos.size(); i++) {
+        auto& utxo = signer->impl.plan.utxos[i];
+        auto script = Bitcoin::Script(utxo.script().begin(), utxo.script().end());
+        auto preImage = signer->impl.transaction.getPreImage(script, i,
+                                                            static_cast<TWBitcoinSigHashType>(input.hash_type()), utxo.amount());
+
+        signer->impl.plan.utxos[i].set_script(reinterpret_cast<const uint8_t *>(preImage.data()), preImage.size());
+    }
+
+    auto result = signer->impl.plan.proto();
+    auto serialized = result.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}
+
+TWData *_Nonnull TWZcashTransactionSignerTransaction(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData) {
+    Bitcoin::Proto::SigningInput input;
+    input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+    Bitcoin::Proto::TransactionPlan plan;
+    plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)));
+
+    auto signer = new TWZcashTransactionSigner{ Bitcoin::TransactionSigner<Transaction>(std::move(input), plan) };
+
+    for (auto i = 0; i < signer->impl.transaction.inputs.size(); i++) {
+        for (auto j = 0; j < plan.utxos().size(); j++) {
+            auto planOutput = Bitcoin::OutPoint(plan.utxos()[j].out_point());
+            if (signer->impl.transaction.inputs[i].previousOutput == planOutput ){
+                signer->impl.transaction.inputs[i].script = Bitcoin::Script(plan.utxos()[j].script().begin(), plan.utxos()[j].script().end());
+            }
+        }
+    }
+
+    const auto& tx = signer->impl.transaction;
+    auto protoOutput = Bitcoin::Proto::SigningOutput();
+    *protoOutput.mutable_transaction() = tx.proto();
+
+    TW::Data encoded;
+    tx.encode(encoded);
+    protoOutput.set_encoded(encoded.data(), encoded.size());
+
+    auto serialized = protoOutput.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
+}

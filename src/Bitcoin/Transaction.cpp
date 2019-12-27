@@ -15,8 +15,18 @@
 
 using namespace TW::Bitcoin;
 
-std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t index,
-                                              enum TWBitcoinSigHashType hashType, uint64_t amount) const {
+std::vector<uint8_t> Transaction::getPreImage(const Script &scriptCode, size_t index,
+        enum TWBitcoinSigHashType hashType, uint64_t amount, TWBitcoinSignatureVersion ver) const {
+    switch (ver) {
+        case BASE:
+            return getBasePreImage(scriptCode, index, hashType);
+        case WITNESS_V0:
+            return getWitnessPreImage(scriptCode, index, hashType, amount);
+    }
+}
+
+std::vector<uint8_t> Transaction::getWitnessPreImage(const Script &scriptCode, size_t index,
+                                                     enum TWBitcoinSigHashType hashType, uint64_t amount) const {
     assert(index < inputs.size());
 
     auto data = std::vector<uint8_t>{};
@@ -143,9 +153,46 @@ std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, siz
 std::vector<uint8_t> Transaction::getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
                                                             enum TWBitcoinSigHashType hashType,
                                                             uint64_t amount) const {
-    auto preimage = getPreImage(scriptCode, index, hashType, amount);
+    auto preimage = getWitnessPreImage(scriptCode, index, hashType, amount);
     auto hash = TW::Hash::hash(hasher, preimage);
     return hash;
+}
+
+std::vector<uint8_t>
+Transaction::getBasePreImage(const Script &scriptCode, size_t index, enum TWBitcoinSigHashType hashType) const {
+    assert(index < inputs.size());
+
+    auto data = std::vector<uint8_t>{};
+
+    encode32LE(version, data);
+
+    auto serializedInputCount =
+            (hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
+    encodeVarInt(serializedInputCount, data);
+    for (auto subindex = 0; subindex < serializedInputCount; subindex += 1) {
+        serializeInput(subindex, scriptCode, index, hashType, data);
+    }
+
+    auto hashNone = (hashType & 0x1f) == TWBitcoinSigHashTypeNone;
+    auto hashSingle = (hashType & 0x1f) == TWBitcoinSigHashTypeSingle;
+    auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index + 1 : outputs.size());
+    encodeVarInt(serializedOutputCount, data);
+    for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
+        if (hashSingle && subindex != index) {
+            auto output = TransactionOutput(-1, {});
+            output.encode(data);
+        } else {
+            outputs[subindex].encode(data);
+        }
+    }
+
+    // Locktime
+    encode32LE(lockTime, data);
+
+    // Sighash type
+    encode32LE(hashType, data);
+
+    return data;
 }
 
 /// Generates the signature hash for for scripts other than witness scripts.
