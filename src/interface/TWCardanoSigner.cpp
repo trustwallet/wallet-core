@@ -16,10 +16,21 @@ TW_Cardano_Proto_SigningOutput TWCardanoSignerSign(TW_Cardano_Proto_SigningInput
     Proto::SigningInput input;
     Proto::SigningOutput output;
     if (!input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)))) {
-        // failed to parse input, return empty output
+        // failed to parse input, return empty output with error
+        output.set_error("Error: could not parse input");
     } else {
         output = Signer::sign(std::move(input));
     }
     auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
+}
+
+uint64_t TWCardanoSignerComputeFee(TW_Cardano_Proto_SigningInput data) {
+    Proto::SigningInput input;
+    if (!input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)))) {
+        // failed to parse input, return 0
+        return 0;
+    }
+    uint64_t fee = Signer::computeFee(std::move(input));
+    return fee;
 }

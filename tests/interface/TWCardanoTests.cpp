@@ -61,3 +61,34 @@ TEST(TWCardano, Sign) {
     );
     EXPECT_EQ("d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f", output.transaction_id());
 }
+
+TEST(TWCardano, ComputeFee) {
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(1.0 * 1000000));
+    input.set_fee((uint64_t)(0.169884 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    auto utxo = input.add_utxo();
+    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_index(6);
+    utxo->set_amount((uint64_t)(15.0 * 1000000));
+    Data privateKey = parse_hex("b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f");
+    input.add_private_key(privateKey.data(), privateKey.size());
+    
+    auto inputString = input.SerializeAsString();
+    auto inputData = TWDataCreateWithBytes((const byte *)inputString.data(), inputString.size());
+    uint64_t fee = TWCardanoSignerComputeFee(inputData);
+    EXPECT_EQ(167994, fee);
+}
+
+TEST(TWCardano, SignNegativeInvalidInput) {
+    std::string inputString = "_INVALID_STRING_blabla_";
+    auto inputData = TWDataCreateWithBytes((const byte *)inputString.data(), inputString.size());
+    auto outputData = TWCardanoSignerSign(inputData);
+    auto output = Proto::SigningOutput();
+    ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+
+    EXPECT_EQ("", hex(output.encoded()));
+    EXPECT_EQ("", output.transaction_id());
+    EXPECT_TRUE(output.error().length() > 0);
+}

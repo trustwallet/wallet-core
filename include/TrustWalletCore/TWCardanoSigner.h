@@ -14,8 +14,12 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWCardanoSigner;
 
-/// Signs a transaction.
+/// Build and sign a Cardano transaction
 TW_EXPORT_STATIC_METHOD
 TW_Cardano_Proto_SigningOutput TWCardanoSignerSign(TW_Cardano_Proto_SigningInput input);
+
+/// Compute the default fee for a transaction.
+TW_EXPORT_STATIC_METHOD
+uint64_t TWCardanoSignerComputeFee(TW_Cardano_Proto_SigningInput input);
 
 TW_EXTERN_C_END
