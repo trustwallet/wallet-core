@@ -62,24 +62,6 @@ message SigningInput {
     repeated UnspentTransaction utxo = 6;
 }
 
-// Describes a preliminary transaction plan.
-message TransactionPlan {
-    // Amount to be received at the other end.
-    int64 amount = 1;
-
-    // Maximum available amount.
-    int64 available_amount = 2;
-
-    // Estimated transaction fee.
-    int64 fee = 3;
-
-    // Change.
-    int64 change = 4;
-
-    // Selected unspent transaction outputs.
-    repeated UnspentTransaction utxos = 5;
-};
-
 // Transaction signing output.
 message SigningOutput {
     // Resulting transaction.

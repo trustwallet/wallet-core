@@ -43,8 +43,7 @@ TEST(TWCardano, Sign) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
+    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
     Data privateKey = parse_hex("b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f");
@@ -70,8 +69,7 @@ TEST(TWCardano, ComputeFee) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();
-    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
+    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
     Data privateKey = parse_hex("b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f");
