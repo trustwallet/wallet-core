@@ -20,7 +20,7 @@ TEST(TWAnySigner, IsEnabled) {
     ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeEthereum));
     ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeBinance));
 
-    ASSERT_FALSE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoinCash));
+    ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoinCash));
     ASSERT_TRUE(TWAnySignerIsSignEnabled(TWCoinTypeBitcoin));
 }
 
