@@ -35,7 +35,6 @@ TWString *_Nonnull TWIconSignerMessage(TW_Icon_Proto_SigningInput data) {
     return TWStringCreateWithUTF8Bytes(preImage.c_str());
 }
 
-TW_EXPORT_PROPERTY
 TWData *_Nonnull TWIconSignerTransaction(TW_Icon_Proto_SigningInput data, TWData *_Nonnull signature) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
