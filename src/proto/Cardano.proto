@@ -75,4 +75,7 @@ message SigningOutput {
 
     // Total transaction fees.
     int64 fee = 4;
+
+    // Error message in case of error
+    string error = 5;
 }

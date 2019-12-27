@@ -24,8 +24,9 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         output = buildTransaction(input);
         Data unisgnedEncodedCborData = prepareUnsignedTx(input, output);
         prepareSignedTx(input, unisgnedEncodedCborData, output);
-    } catch (...) {
-        // just return empty output
+    } catch (exception& ex) {
+        // return empty output with error
+        output.set_error(ex.what());
     }
     return output;
 }

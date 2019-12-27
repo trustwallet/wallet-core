@@ -59,6 +59,7 @@ TEST(CardanoSigner, SignTx_d498) {
     EXPECT_EQ(1, output.transaction().inputs_size());
     EXPECT_EQ(2, output.transaction().outputs_size());
     EXPECT_EQ(169884, output.fee());
+    EXPECT_EQ("", output.error());
 }
 
 TEST(CardanoSigner, PrepareUnsignedTx_d498) {
@@ -116,6 +117,7 @@ TEST(CardanoSigner, SignTx_8283) {
     EXPECT_EQ(1, output.transaction().inputs_size());
     EXPECT_EQ(2, output.transaction().outputs_size());
     EXPECT_EQ(169884, output.fee());
+    EXPECT_EQ("", output.error());
 }
 
 TEST(CardanoSigner, SignNoChange) {
@@ -138,9 +140,10 @@ TEST(CardanoSigner, SignNoChange) {
         hex(output.encoded())
     );
     EXPECT_EQ("72124df90e7bde2b295c275cead7e7b5fbac80470d4baa2ac4d3ffe5d7de0deb", output.transaction_id());
+    EXPECT_EQ("", output.error());
 }
 
-TEST(CardanoSigner, SignInvalidAddr) {
+TEST(CardanoSigner, SignNegativeInvalidAddr) {
     Proto::SigningInput input;
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_fee((uint64_t)(0.169884 * 1000000));
@@ -156,9 +159,11 @@ TEST(CardanoSigner, SignInvalidAddr) {
 
     EXPECT_EQ("", hex(output.encoded()));
     EXPECT_EQ("", output.transaction_id());
+    EXPECT_NE("", output.error());
+    EXPECT_TRUE(output.error().find("nvalid address") != string::npos);
 }
 
-TEST(CardanoSigner, SignInsufficientBalance) {
+TEST(CardanoSigner, SignNegativeInsufficientBalance) {
     Proto::SigningInput input;
     input.set_amount((uint64_t)(1000.0 * 1000000));
     input.set_fee((uint64_t)(0.169884 * 1000000));
@@ -174,9 +179,11 @@ TEST(CardanoSigner, SignInsufficientBalance) {
 
     EXPECT_EQ("", hex(output.encoded()));
     EXPECT_EQ("", output.transaction_id());
+    EXPECT_NE("", output.error());
+    EXPECT_TRUE(output.error().find("nsufficent balance") != string::npos);
 }
 
-TEST(CardanoSigner, SignZeroFee) {
+TEST(CardanoSigner, SignNegativeZeroFee) {
     Proto::SigningInput input;
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_fee(0);
@@ -192,4 +199,6 @@ TEST(CardanoSigner, SignZeroFee) {
 
     EXPECT_EQ("", hex(output.encoded()));
     EXPECT_EQ("", output.transaction_id());
+    EXPECT_NE("", output.error());
+    EXPECT_TRUE(output.error().find("ero fee") != string::npos);
 }

@@ -193,3 +193,21 @@ TEST(CardanoAddress, PrivateKeyExtended) {
     auto publicKeyNonext = privateKeyNonext.getPublicKey(TWPublicKeyTypeED25519);
     ASSERT_EQ(32, publicKeyNonext.bytes.size());
 }
+
+TEST(CardanoAddress, FromStringNegativeInvalidString) {
+    try {
+        auto address = Address("__INVALID_ADDRESS__");
+    } catch (...) {
+        return;
+    }
+    FAIL() << "Expected exception!";
+}
+
+TEST(CardanoAddress, FromStringNegativeBadChecksum) {
+    try {
+        auto address = Address("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm");
+    } catch (...) {
+        return;
+    }
+    FAIL() << "Expected exception!";
+}
