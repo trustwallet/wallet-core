@@ -102,8 +102,8 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Si
     auto inputsArray = Encode::indefArray();
     for (int i = 0; i < input.utxo_size(); ++i) {
         Data outPointData = Encode::array({
-            Encode::bytes(parse_hex(input.utxo(i).out_point().txid())),
-            Encode::uint(input.utxo(i).out_point().index())
+            Encode::bytes(TW::data(input.utxo(i).out_point().txid())),
+            Encode::uint(input.utxo(i).out_point().index()),
         }).encoded();
         inputsArray.addIndefArrayElem(
             Encode::array({
