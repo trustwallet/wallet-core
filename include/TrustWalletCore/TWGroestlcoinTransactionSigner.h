@@ -38,10 +38,10 @@ TW_Bitcoin_Proto_TransactionPlan TWGroestlcoinTransactionSignerPlan(struct TWGro
 TW_EXPORT_METHOD
 TW_Proto_Result TWGroestlcoinTransactionSignerSign(struct TWGroestlcoinTransactionSigner *_Nonnull signer);
 
-TW_EXPORT_METHOD
+TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWGroestlcoinTransactionSignerMessage(TW_Bitcoin_Proto_SigningInput data);
 
-TW_EXPORT_METHOD
+TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWGroestlcoinTransactionSignerTransaction(TW_Bitcoin_Proto_SigningInput data, TW_Bitcoin_Proto_TransactionPlan planData);
 
 TW_EXTERN_C_END
