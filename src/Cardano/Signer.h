@@ -22,9 +22,13 @@ public:
 
     static const uint64_t Network_Mainnet_Protocol_Magic = 764824073;
 
-    /// Prepare unsigned data for a transaction
-    static Data prepareUnsignedTx(const Proto::SigningInput& input);
-    static Data prepareSignedTx( const Proto::SigningInput& input, Data& txId_out);
+    // Helper methods
+    /// Prepare transaction inputs and outputs, computes fee.  Uses input; sets output.transaction, output.fee.
+    static Proto::SigningOutput buildTransaction(const Proto::SigningInput& input);
+    /// Prepare unsigned Tx data (Cbor).  Uses input and output.transaction; returns unisgnedEncodedCborData.
+    static Data prepareUnsignedTx(const Proto::SigningInput& input, const Proto::SigningOutput& output);
+    /// Prepare signed Tx data (Cbor).  Uses input, unisgnedEncodedCborData; sets output.encoded and output.transaction_id.
+    static void prepareSignedTx(const Proto::SigningInput& input, const Data& unisgnedEncodedCborData, Proto::SigningOutput& output);
 };
 
 } // namespace TW::Cardano

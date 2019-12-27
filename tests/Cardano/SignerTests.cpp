@@ -56,6 +56,9 @@ TEST(CardanoSigner, SignTx_d498) {
         hex(output.encoded())
     );
     EXPECT_EQ("d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f", output.transaction_id());
+    EXPECT_EQ(1, output.transaction().inputs_size());
+    EXPECT_EQ(2, output.transaction().outputs_size());
+    EXPECT_EQ(169884, output.fee());
 }
 
 TEST(CardanoSigner, PrepareUnsignedTx_d498) {
@@ -69,13 +72,15 @@ TEST(CardanoSigner, PrepareUnsignedTx_d498) {
     utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
-    Data unsignedTx = Signer::prepareUnsignedTx(input);
+
+    Proto::SigningOutput output = Signer::buildTransaction(input);
+    Data unisgnedEncodedCborData = Signer::prepareUnsignedTx(input, output);
     EXPECT_EQ(
         "839f8200d818582482582059991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac1406ff9f8282d818582183581c4cf4eba3500c1127ab6ce9e011167bc817d6bc5634f2a1e5f6752c3ea0001a6d87265f1a000f42408282d818582183581ceba562709cf7b5e88fe9d9bdcec4f01382aded9b03d31f16da0efdb0a0001acb24046d1a00d307e4ffa0",
-        hex(unsignedTx)
+        hex(unisgnedEncodedCborData)
     );
 
-    Data txId = Hash::blake2b(unsignedTx, 32);
+    Data txId = Hash::blake2b(unisgnedEncodedCborData, 32);
     EXPECT_EQ("d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f", hex(txId));
 
     PrivateKey fromPriKey = PrivateKey(privateKey_b8c3);
@@ -108,6 +113,9 @@ TEST(CardanoSigner, SignTx_8283) {
         hex(output.encoded())
     );
     EXPECT_EQ("ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", output.transaction_id());
+    EXPECT_EQ(1, output.transaction().inputs_size());
+    EXPECT_EQ(2, output.transaction().outputs_size());
+    EXPECT_EQ(169884, output.fee());
 }
 
 TEST(CardanoSigner, SignNoChange) {
@@ -154,6 +162,24 @@ TEST(CardanoSigner, SignInsufficientBalance) {
     Proto::SigningInput input;
     input.set_amount((uint64_t)(1000.0 * 1000000));
     input.set_fee((uint64_t)(0.169884 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    auto utxo = input.add_utxo();
+    utxo->mutable_out_point()->set_txid("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_index(6);
+    utxo->set_amount((uint64_t)(15.0 * 1000000));
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    
+    Proto::SigningOutput output = Signer::sign(input);
+
+    EXPECT_EQ("", hex(output.encoded()));
+    EXPECT_EQ("", output.transaction_id());
+}
+
+TEST(CardanoSigner, SignZeroFee) {
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(1.0 * 1000000));
+    input.set_fee(0);
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     auto utxo = input.add_utxo();

@@ -46,7 +46,7 @@ message SigningInput {
     // Amount to send to recipient.
     int64 amount = 1;
 
-    // Transaction fee (absolute for now)
+    // Transaction fee (total).  If left empty, default value is computed.  See also Signer::computeFee().
     int64 fee = 2;
 
     // Recipient's address.
