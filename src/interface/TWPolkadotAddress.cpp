@@ -44,3 +44,7 @@ TWString *_Nonnull TWPolkadotAddressDescription(struct TWPolkadotAddress *_Nonnu
     const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
+
+TWData *_Nonnull TWPolkadotAddressPublicKey(struct TWPolkadotAddress *_Nonnull address) {
+    return TWDataCreateWithBytes(address->impl.bytes.data() + 1, address->impl.bytes.size() - 1);
+}

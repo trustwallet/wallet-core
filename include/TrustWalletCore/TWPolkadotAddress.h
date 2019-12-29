@@ -45,4 +45,8 @@ void TWPolkadotAddressDelete(struct TWPolkadotAddress *_Nonnull address);
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWPolkadotAddressDescription(struct TWPolkadotAddress *_Nonnull address);
 
+/// Returns the public key bytes.
+TW_EXPORT_PROPERTY
+TWData *_Nonnull TWPolkadotAddressPublicKey(struct TWPolkadotAddress *_Nonnull address);
+
 TW_EXTERN_C_END

@@ -29,5 +29,6 @@ class PolkadotTests: XCTestCase {
 
         XCTAssertEqual(pubkey.data.hexString, "53d82211c4aadb8c67e1930caef2058a93bc29d7af86bf587fba4aa3b1515037")
         XCTAssertEqual(address.description, addressFromString.description)
+        XCTAssertEqual(address.publicKey, pubkey.data)
     }
 }

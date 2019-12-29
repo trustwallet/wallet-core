@@ -3,24 +3,80 @@ syntax = "proto3";
 package TW.Polkadot.Proto;
 option java_package = "wallet.core.jni.proto";
 
-message ExtrinsicsTransfer {
-    string to_address = 1;
-    bytes value = 2;
+enum Network {
+    POLKADOT = 0;
+    KUSAMA = 2;
+}
+
+enum RewardDestination {
+    STAKED = 0;
+    STASH = 1;
+    CONTROLLER = 2;
+}
+
+message Era {
+    uint64 period = 1; // calculated from block number
+    uint64 phase = 2;
+}
+
+message Balance {
+    message Transfer {
+        string to_address = 1;
+        bytes value = 2; // big integer
+    }
+    oneof message_oneof {
+        Transfer transfer = 1;
+    }
+}
+
+message Staking {
+    message Bond {
+        string validator = 1;
+        bytes value = 2;
+        RewardDestination reward_destination = 3;
+    }
+
+    message BondExtra {
+        bytes value = 1;
+    }
+
+    message Unbond {
+        bytes value = 1;
+    }
+
+    message WithdrawUnbonded {}
+
+    message Nominate {
+        repeated string nominators = 1;
+    }
+
+    message Chill {}
+
+    oneof message_oneof {
+        Bond bond = 1;
+        BondExtra bond_extra = 2;
+        Unbond unbond = 3;
+        WithdrawUnbonded withdraw_unbonded = 4;
+        Nominate nominate = 5;
+        Chill chill = 6;
+    }
 }
 
 // Input data necessary to create a signed transaction.
 message SigningInput {
     bytes block_hash = 1;
     bytes genesis_hash = 2;
-    bytes method = 3;
-    uint32 nonce = 4;
-    uint32 spec_version = 5;
-    bytes tip = 6;
-    bytes era = 7;
-    bytes private_key = 8;
+    uint64 nonce = 3;
+    uint32 spec_version = 4;
+    bytes tip = 5;  // big integer
+    Era era = 6;    // empty means Immortal
+    bytes private_key = 7;
+    Network network = 8;
+    uint32 extrinsic_version = 9;
 
     oneof message_oneof {
-        ExtrinsicsTransfer transfer = 10;
+        Balance balance_call = 10;
+        Staking staking_call = 11;
     }
 }
 

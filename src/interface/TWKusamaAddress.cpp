@@ -44,3 +44,7 @@ TWString *_Nonnull TWKusamaAddressDescription(struct TWKusamaAddress *_Nonnull a
     const auto string = address->impl.string();
     return TWStringCreateWithUTF8Bytes(string.c_str());
 }
+
+TWData *_Nonnull TWKusamaAddressPublicKey(struct TWKusamaAddress *_Nonnull address) {
+    return TWDataCreateWithBytes(address->impl.bytes.data() + 1, address->impl.bytes.size() - 1);
+}
