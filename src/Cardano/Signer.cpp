@@ -21,89 +21,121 @@ using namespace TW::Cbor;
 using namespace std;
 
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
-    Proto::SigningOutput output;
+Proto::TransactionPlan Signer::planTransaction(const Proto::SigningInput& input) noexcept {
     try {
-        // handle unset fee case
-        Proto::SigningInput input2(input); // mutable local copy
-        if (input2.fee() == 0) {
-            auto fee = computeFee(input2);
-            input2.set_fee(fee);
-        }
-        assert(input2.fee() != 0);
+        Proto::TransactionPlan plan = planTransactionNoFee(input);
+        return plan;
+    } catch (exception& ex) {
+        // return empty plan
+        Proto::TransactionPlan plan;
+        plan.set_error(ex.what());
+        return plan;
+    }
+}
 
-        // build transaction in a few steps: decide inputs, outputs, amount and fee, fill transaction fields:
-        output = buildTransaction(input2);
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input, const Proto::TransactionPlan& plan) noexcept {
+    try {
+        // check plan
+        checkPlan(plan);
+        assert(plan.fee() != 0);
+
         // prepare first part of tx data
-        Data unisgnedEncodedCborData = prepareUnsignedTx(input2, output);
+        Data unisgnedEncodedCborData = prepareUnsignedTx(input, plan);
         // compute txId, sign, complete with second half of the tx data
-        prepareSignedTx(input2, unisgnedEncodedCborData, output);
+        Proto::SigningOutput output = prepareSignedTx(input, plan, unisgnedEncodedCborData);
+        return output;
     } catch (exception& ex) {
         // return empty output with error
+        Proto::SigningOutput output;
         output.set_error(ex.what());
-    }
-    return output;
-}
-
-uint64_t Signer::computeFee(const Proto::SigningInput& input) noexcept {
-    // build a tx with fee=1, to get size, estimate fee from size
-    try {
-        Proto::SigningInput input2(input);
-        input2.set_fee(1);
-        Proto::SigningOutput output2 = sign(input2);
-        auto txSize = output2.encoded().length();
-        // compute fee by linear equation
-        uint64_t fee = (uint64_t)std::ceil((double)FeeLinearCoeffA + FeeLinearCoeffB * (double)txSize);
-        return fee;
-    } catch (...) {
-        // return 0 on error
-        return 0;
+        return output;
     }
 }
 
-Proto::SigningOutput Signer::buildTransaction(const Proto::SigningInput& input) {
-    Proto::SigningOutput output;
-    // inputs
+Proto::TransactionPlan Signer::planTransactionNoFee(const Proto::SigningInput& input) {
+    // To compute fee:
+    // - build plan with minimal fee
+    // - prepare tx, take size
+    // - estimate fee (based on size)
+    // - build plan with fee
+
+    // build plan with minimal fee
+    Proto::TransactionPlan planPre = planTransactionWithFee(input, MinimalFee);
+    // prepare first part of tx data
+    Data unisgnedEncodedCborDataPre = prepareUnsignedTx(input, planPre);
+    // compute txId, sign, complete with second half of the tx data
+    auto outputPre = prepareSignedTx(input, planPre, unisgnedEncodedCborDataPre);
+    // compute fee from estimated tx size and linear equation
+    auto txSize = outputPre.encoded().length();
+    uint64_t fee = (uint64_t)std::ceil((double)FeeLinearCoeffA + FeeLinearCoeffB * (double)txSize);
+    assert(fee != 0);
+
+    // build final plan with computed fee
+    Proto::TransactionPlan plan = planTransactionWithFee(input, fee);
+    return plan;
+}
+
+void Signer::checkPlan(const Proto::TransactionPlan& plan) {
+    if (plan.fee() == 0) {
+        throw logic_error("Zero fee is invalid");
+    }
     uint64_t sum_utxo = 0;
-    for (int i = 0; i < input.utxo_size(); ++i) {
-        auto txInput = output.mutable_transaction()->add_inputs();
-        txInput->mutable_previousoutput()->set_txid(input.utxo(i).out_point().txid());
-        txInput->mutable_previousoutput()->set_index(input.utxo(i).out_point().index());
-        sum_utxo += input.utxo(i).amount();
+    for (int i = 0; i < plan.utxo_size(); ++i) { sum_utxo += plan.utxo(i).amount(); }
+    if (plan.amount() + plan.fee() + plan.change() != sum_utxo) {
+        // amount mismatch
+        throw logic_error("Amount mismatch");
     }
-
-    // compute amount, fee
-    uint64_t amount = input.amount();
-    if (amount > sum_utxo) {
-        throw logic_error("Insufficent balance");
-    }
-    uint64_t fee = input.fee();
-    // compute change, check if enough
-    if (amount + fee > sum_utxo) {
-        throw logic_error("Insufficent balance");
-    }
-    uint64_t changeAmount = sum_utxo - (amount + fee);
-    output.set_fee(fee);
-
-    // outputs array
-    auto txOutput = output.mutable_transaction()->add_outputs();
-    txOutput->set_to_address(input.to_address());
-    txOutput->set_value(amount);
-    if (changeAmount != 0) {
-        auto txChangeOutput = output.mutable_transaction()->add_outputs();
-        txChangeOutput->set_to_address(input.change_address());
-        txChangeOutput->set_value(changeAmount);
-    }
-    return output;
+    assert(plan.fee() != 0);
+    assert(plan.utxo_size() > 0);
 }
 
-Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::SigningOutput& output) {
-    // inputs from inputs.utxo
-    auto inputsArray = Encode::indefArray();
+Proto::TransactionPlan Signer::planTransactionWithFee(const Proto::SigningInput& input, uint64_t fee) {
+    Proto::TransactionPlan plan;
+
+    // compute amounts
+    uint64_t sumAllUtxo = 0;
     for (int i = 0; i < input.utxo_size(); ++i) {
+        sumAllUtxo += input.utxo(i).amount();
+    }
+    plan.set_available_amount(sumAllUtxo);
+    uint64_t amount = input.amount();
+    // compute change, check if enough
+    if ((amount + fee) > sumAllUtxo) {
+        throw logic_error("Insufficent balance");
+    }
+    plan.set_amount(amount);
+    plan.set_fee(fee);
+
+    // select UTXOs
+    // TODO do it in non-default order
+    uint64_t sumSelected = 0;
+    for (int i = 0; i < input.utxo_size(); ++i) {
+        auto utxo = plan.add_utxo();
+        utxo->mutable_out_point()->set_txid(input.utxo(i).out_point().txid());
+        utxo->mutable_out_point()->set_index(input.utxo(i).out_point().index());
+        utxo->set_amount(input.utxo(i).amount());
+        sumSelected += input.utxo(i).amount();
+        if (sumSelected >= (amount + fee)) {
+            // enough
+            break;
+        }
+    }
+    assert(sumSelected >= (amount + fee));
+    uint64_t changeAmount = sumSelected - (amount + fee);
+    plan.set_change(changeAmount);
+    assert(plan.amount() + plan.fee() + plan.change() == plan.available_amount());
+
+    return plan;
+}
+
+Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan) {
+    assert(plan.fee() != 0);
+    // inputs from plan.utxo
+    auto inputsArray = Encode::indefArray();
+    for (int i = 0; i < plan.utxo_size(); ++i) {
         Data outPointData = Encode::array({
-            Encode::bytes(TW::data(input.utxo(i).out_point().txid())),
-            Encode::uint(input.utxo(i).out_point().index()),
+            Encode::bytes(TW::data(plan.utxo(i).out_point().txid())),
+            Encode::uint(plan.utxo(i).out_point().index()),
         }).encoded();
         inputsArray.addIndefArrayElem(
             Encode::array({
@@ -114,15 +146,21 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Si
     }
     inputsArray.closeIndefArray();
 
-    // outputs array from output.transaction.outputs
-    const Proto::Transaction& transaction = output.transaction();
+    // outputs array
     auto outputsArray = Encode::indefArray();
-    for (int i = 0; i < transaction.outputs_size(); ++i) {
-        Address addr = Address(transaction.outputs(i).to_address());
+    Address toAddr = Address(input.to_address());
+    outputsArray.addIndefArrayElem(
+        Encode::array({
+            Encode::fromRaw(toAddr.getCborData()),
+            Encode::uint(plan.amount()),
+        })
+    );
+    if (plan.change() != 0) {
+        Address changeAddr = Address(input.change_address());
         outputsArray.addIndefArrayElem(
             Encode::array({
-                Encode::fromRaw(addr.getCborData()),
-                Encode::uint(transaction.outputs(i).value())
+                Encode::fromRaw(changeAddr.getCborData()),
+                Encode::uint(plan.change()),
             })
         );
     }
@@ -137,7 +175,7 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Si
     return enc;
 }
 
-void Signer::prepareSignedTx(const Proto::SigningInput& input, const Data& unisgnedEncodedCborData, Proto::SigningOutput& output) {
+Proto::SigningOutput Signer::prepareSignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan, const Data& unisgnedEncodedCborData) {
     Data txId = Hash::blake2b(unisgnedEncodedCborData, 32);
 
     // array with signatures
@@ -168,6 +206,10 @@ void Signer::prepareSignedTx(const Proto::SigningInput& input, const Data& unisg
         Encode::fromRaw(unisgnedEncodedCborData),
         Encode::array(signatures),
     }).encoded();
+
+    Proto::SigningOutput output;
     output.set_encoded(encoded.data(), encoded.size());
     output.set_transaction_id(hex(txId));
+    output.set_fee(plan.fee());
+    return output;
 }

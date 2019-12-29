@@ -46,36 +46,51 @@ message SigningInput {
     // Amount to send to recipient.
     int64 amount = 1;
 
-    // Transaction fee (total).  If left 0, default value is computed.  See also Signer::computeFee().
-    int64 fee = 2;
-
     // Recipient's address.
-    string to_address = 3;
+    string to_address = 2;
 
     // Change address.
-    string change_address = 4;
+    string change_address = 3;
 
     // Available private keys.  Private keys must match the addresses from the UTXO's.
-    repeated bytes private_key = 5;
+    repeated bytes private_key = 4;
 
     // Available unspent transaction outputs.
-    repeated UnspentTransaction utxo = 6;
+    repeated UnspentTransaction utxo = 5;
 }
+
+// Describes a preliminary transaction plan.
+message TransactionPlan {
+    // Amount to be received at the other end.
+    int64 amount = 1;
+
+    // Maximum available amount.
+    int64 available_amount = 2;
+
+    // Estimated transaction fee.
+    int64 fee = 3;
+
+    // Change.
+    int64 change = 4;
+
+    // Selected unspent transaction outputs.
+    repeated UnspentTransaction utxo = 5;
+
+    // Error message in case of error
+    string error = 6;
+};
 
 // Transaction signing output.
 message SigningOutput {
-    // Resulting transaction.
-    Transaction transaction = 1;
-
     // Signed and encoded transaction bytes.
-    bytes encoded = 2;
+    bytes encoded = 1;
 
     // Transaction id
-    string transaction_id = 3;
+    string transaction_id = 2;
 
     // Total transaction fees.
-    int64 fee = 4;
+    int64 fee = 3;
 
     // Error message in case of error
-    string error = 5;
+    string error = 4;
 }

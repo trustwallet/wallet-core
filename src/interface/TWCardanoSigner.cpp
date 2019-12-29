@@ -12,25 +12,30 @@
 using namespace TW;
 using namespace TW::Cardano;
 
-TW_Cardano_Proto_SigningOutput TWCardanoSignerSign(TW_Cardano_Proto_SigningInput data) {
+TW_Cardano_Proto_TransactionPlan TWCardanoSignerPlanTransaction(TW_Cardano_Proto_SigningInput inputData) {
     Proto::SigningInput input;
-    Proto::SigningOutput output;
-    if (!input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)))) {
+    Proto::TransactionPlan plan;
+    if (!input.ParseFromArray(TWDataBytes(inputData), static_cast<int>(TWDataSize(inputData)))) {
         // failed to parse input, return empty output with error
-        output.set_error("Error: could not parse input");
+        plan.set_error("Error: could not parse input");
     } else {
-        output = Signer::sign(std::move(input));
+        plan = Signer::planTransaction(std::move(input));
     }
-    auto serialized = output.SerializeAsString();
+    auto serialized = plan.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
 }
 
-uint64_t TWCardanoSignerComputeFee(TW_Cardano_Proto_SigningInput data) {
+TW_Cardano_Proto_SigningOutput TWCardanoSignerSign(TW_Cardano_Proto_SigningInput inputData, TW_Cardano_Proto_TransactionPlan planData) {
     Proto::SigningInput input;
-    if (!input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)))) {
-        // failed to parse input, return 0
-        return 0;
+    Proto::TransactionPlan plan;
+    Proto::SigningOutput output;
+    if (!input.ParseFromArray(TWDataBytes(inputData), static_cast<int>(TWDataSize(inputData))) ||
+        !plan.ParseFromArray(TWDataBytes(planData), static_cast<int>(TWDataSize(planData)))) {
+        // failed to parse input/plan, return empty output with error
+        output.set_error("Error: could not parse input/plan");
+    } else {
+        output = Signer::sign(std::move(input), std::move(plan));
     }
-    uint64_t fee = Signer::computeFee(std::move(input));
-    return fee;
+    auto serialized = output.SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
 }

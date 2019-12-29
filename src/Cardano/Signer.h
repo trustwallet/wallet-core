@@ -18,23 +18,28 @@ namespace TW::Cardano {
 /// Cardano transaction signing.
 class Signer {
 public:
-    /// Build and sign a Cardano transaction.
-    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    /// Plan a transaction: compute fee, decide input UTXOs
+    static Proto::TransactionPlan planTransaction(const Proto::SigningInput& input) noexcept;
 
-    /// Compute the default fee for a transaction.
-    static uint64_t computeFee(const Proto::SigningInput& input) noexcept;
+    /// Build and sign a Cardano transaction, using plan from planTransaction().
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, const Proto::TransactionPlan& plan) noexcept;
 
     static const uint64_t Network_Mainnet_Protocol_Magic = 764824073;
+    static const uint64_t MinimalFee = 1;
     static const uint32_t FeeLinearCoeffA = 155381;
     static constexpr double FeeLinearCoeffB = 43.946;
 
     // Helper methods
-    /// Prepare transaction inputs and outputs, computes fee.  Uses input; sets output.transaction, output.fee.
-    static Proto::SigningOutput buildTransaction(const Proto::SigningInput& input);
-    /// Prepare unsigned Tx data (Cbor).  Uses input and output.transaction; returns unisgnedEncodedCborData.
-    static Data prepareUnsignedTx(const Proto::SigningInput& input, const Proto::SigningOutput& output);
-    /// Prepare signed Tx data (Cbor).  Uses input, unisgnedEncodedCborData; sets output.encoded and output.transaction_id.
-    static void prepareSignedTx(const Proto::SigningInput& input, const Data& unisgnedEncodedCborData, Proto::SigningOutput& output);
+    /// Plan a transaction: compute fee, decide input UTXOs.  Throws on error.
+    static Proto::TransactionPlan planTransactionNoFee(const Proto::SigningInput& input);
+    /// Plan a transaction: given amount and fee, decide input UTXOs.  Throws on error.
+    static Proto::TransactionPlan planTransactionWithFee(const Proto::SigningInput& input, uint64_t fee);
+    /// Check validity of a tx plan.  Throws on error.
+    static void checkPlan(const Proto::TransactionPlan& plan);
+    /// Prepare unsigned Tx data (Cbor).  Returns unisgnedEncodedCborData.
+    static Data prepareUnsignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan);
+    /// Prepare signed Tx data (Cbor).
+    static Proto::SigningOutput prepareSignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan, const Data& unisgnedEncodedCborData);
 };
 
 } // namespace TW::Cardano
