@@ -170,14 +170,14 @@ TEST(CardanoSigner, Plan3Input) {
     EXPECT_EQ(51500000, plan.available_amount());
     EXPECT_EQ(25000000, plan.amount());
     EXPECT_EQ(183902, plan.fee());
-    EXPECT_EQ(5516098, plan.change());
+    EXPECT_TRUE(plan.change() >= 5416098 && plan.change() <= 6016098);
     EXPECT_EQ("", plan.error());
     // 3 utxos selected
     ASSERT_EQ(3, plan.utxo_size());
     // check amounts, sum(utxo)
     uint64_t sumUtxo = 0;
     for(int i = 0; i < 3; ++i) { sumUtxo += plan.utxo(i).amount(); }
-    EXPECT_EQ(30700000, sumUtxo);
+    EXPECT_TRUE(sumUtxo >= 30600000 && sumUtxo <= 31200000);
     EXPECT_EQ(sumUtxo, plan.amount() + plan.fee() + plan.change());
 }
 
