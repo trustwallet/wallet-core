@@ -5,7 +5,6 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Extrinsic.h"
-#include "ScaleCodec.h"
 
 using namespace TW;
 using namespace TW::Polkadot;
@@ -16,7 +15,7 @@ static constexpr uint8_t sigTypeEd25519 = 0x00;
 Data Extrinsic::encodeEraNonceTip() const {
     Data data;
     // immortal era
-    append(data, encodeCompact(0));
+    append(data, era);
     // nonce
     append(data, encodeCompact(nonce));
     // tip

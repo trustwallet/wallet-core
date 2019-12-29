@@ -15,7 +15,7 @@ enum RewardDestination {
 }
 
 message Era {
-    uint64 period = 1;
+    uint64 period = 1; // calculated from block number
     uint64 phase = 2;
 }
 

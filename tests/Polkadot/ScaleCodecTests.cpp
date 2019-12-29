@@ -67,3 +67,10 @@ TEST(PolkadotCodec, EncodeVectorAddresses) {
     auto encoded = encodeAddresses(addresses);
     ASSERT_EQ(hex(encoded), "08ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48ff0e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc72");
 }
+
+TEST(PolkadotCodec, EncodeEra) {
+    auto era1 = encodeEra(429119, 8);
+    auto era2 = encodeEra(428861, 4);
+    ASSERT_EQ(hex(era1), "7200");
+    ASSERT_EQ(hex(era2), "1100");
+}

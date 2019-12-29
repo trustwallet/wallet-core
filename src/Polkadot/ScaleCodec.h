@@ -8,9 +8,13 @@
 
 #include "../BinaryCoding.h"
 #include "../Data.h"
-#include "../SS58Address.h"
 #include "../PublicKey.h"
+#include "../SS58Address.h"
 #include <boost/multiprecision/cpp_int.hpp>
+#include <cmath>
+#include <algorithm>
+#include <bitset>
+
 
 /// Reference https://github.com/soramitsu/kagome/blob/master/core/scale/scale_encoder_stream.cpp
 using CompactInteger = boost::multiprecision::cpp_int;
@@ -83,12 +87,12 @@ inline void encodeLengthPrefix(Data& data) {
 }
 
 inline Data encodeBool(bool value) {
-    return Data {uint8_t(value ? 0x01: 0x00)};
+    return Data{uint8_t(value ? 0x01 : 0x00)};
 }
 
 inline Data encodeVector(std::vector<Data>& vec) {
     auto data = encodeCompact(vec.size());
-    for (auto v: vec) {
+    for (auto v : vec) {
         append(data, v);
     }
     return data;
@@ -109,10 +113,36 @@ inline Data encodeAddress(const SS58Address& address) {
 
 inline Data encodeAddresses(const std::vector<SS58Address>& addresses) {
     std::vector<Data> vec;
-    for (auto addr: addresses) {
+    for (auto addr : addresses) {
         vec.push_back(encodeAddress(addr));
     }
     return encodeVector(vec);
+}
+
+inline Data encodeEra(const uint64_t block, const uint64_t period) {
+    // MortalEra(phase, period)
+    // See decodeMortalObject at https://github.com/polkadot-js/api/blob/master/packages/types/src/primitive/Extrinsic/ExtrinsicEra.ts#L74
+    // See toU8a at https://github.com/polkadot-js/api/blob/master/packages/types/src/primitive/Extrinsic/ExtrinsicEra.ts#L141
+    uint64_t calPeriod = pow(2, ceil(log2(double(period))));
+    calPeriod = std::min(std::max(calPeriod, 4ull), 1ull << 16);
+    auto phase = block % calPeriod;
+    auto quantizeFactor = std::max(calPeriod >> 12, 1ull);
+    auto quantizedPhase = phase / quantizeFactor * quantizeFactor;
+
+    auto bitset = std::bitset<64>(calPeriod);
+    int trailingZeros = 0;
+    for (int i = 0; i < 64 - 1; i++) {
+        // std::cout<<" bitset[i] = "<<bitset[i]<<" i = "<<i<<std::endl;
+        if (bitset[i] == 0) {
+            trailingZeros += 1;
+        } else {
+            break;
+        }
+    }
+    // std::cout<<"\nbitset: "<<bitset<<std::endl;
+    // std::cout<<"trailingZeros: "<<trailingZeros<<std::endl;
+    auto encoded = std::min(15, std::max(1, trailingZeros - 1)) + (((quantizedPhase / quantizeFactor) << 4));
+    return Data{byte(encoded & 0xff), byte(encoded >> 8)};
 }
 
 } // namespace TW::Polkadot

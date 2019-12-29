@@ -10,6 +10,7 @@
 #include "../Data.h"
 #include "../proto/Polkadot.pb.h"
 #include "../uint256.h"
+#include  "ScaleCodec.h"
 
 namespace TW::Polkadot {
 
@@ -24,9 +25,8 @@ class Extrinsic {
     uint32_t version;
     // balances::TakeFees
     uint256_t tip;
-    // MortalEra(phase, period)
-    uint64_t phase;
-    uint64_t period;
+    // encoded Era data
+    Data era;
     // encoded Call data
     Data call;
 
@@ -38,8 +38,9 @@ class Extrinsic {
         , version(input.extrinsic_version())
         , tip(load(input.tip())) {
         if (input.has_era()) {
-            phase = input.era().phase();
-            period = input.era().period();
+            era = encodeEra(input.era().phase(), input.era().period());
+        } else {
+            era = encodeCompact(0);
         }
         call = encodeCall(input);
     }
