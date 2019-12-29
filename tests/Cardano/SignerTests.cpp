@@ -252,6 +252,22 @@ TEST(CardanoSigner, PlanNegativeInsufficientBalance) {
     EXPECT_TRUE(plan.error().find("nsufficent balance") != string::npos);
 }
 
+TEST(CardanoSigner, PlanNegativeNoPrivKey) {
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(1.0 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    auto utxo0 = input.add_utxo();
+    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
+    utxo0->mutable_out_point()->set_index(6);
+    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    
+    Proto::TransactionPlan plan = Signer::planTransaction(input);
+    EXPECT_NE("", plan.error());
+    EXPECT_TRUE(plan.error().find("enough private keys") != string::npos);
+}
+
 TEST(CardanoSigner, SignNegativeEmptyPlan) {
     Proto::SigningInput input;
     input.set_amount((uint64_t)(1.0 * 1000000));
@@ -286,6 +302,7 @@ TEST(CardanoSigner, SignNegativeAmountMismatch) {
     EXPECT_EQ("", plan.error());
     EXPECT_EQ(167994, plan.fee());
     plan.set_fee(2000000);
+
     Proto::SigningOutput output = Signer::sign(input, plan);
     EXPECT_NE("", output.error());
     EXPECT_TRUE(output.error().find("mount mismatch") != string::npos);

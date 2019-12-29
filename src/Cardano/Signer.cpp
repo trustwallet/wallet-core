@@ -178,6 +178,10 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Tr
 Proto::SigningOutput Signer::prepareSignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan, const Data& unisgnedEncodedCborData) {
     Data txId = Hash::blake2b(unisgnedEncodedCborData, 32);
 
+    // private key per input UTXO is needed
+    if (input.private_key_size() < plan.utxo_size()) {
+        throw logic_error("Not enough private keys");
+    }
     // array with signatures
     vector<Encode> signatures;
     for (int i = 0; i < input.private_key_size(); ++i) {
