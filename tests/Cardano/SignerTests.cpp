@@ -55,7 +55,10 @@ TEST(CardanoSigner, PlanAndSign) {
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
     EXPECT_EQ("", plan.error());
+    EXPECT_EQ(15000000, plan.available_amount());
+    EXPECT_EQ(1000000, plan.amount());
     EXPECT_EQ(167994, plan.fee());
+    EXPECT_EQ(13832006, plan.change());
     Proto::SigningOutput output = Signer::sign(input, plan);
 
     EXPECT_EQ(
@@ -63,6 +66,40 @@ TEST(CardanoSigner, PlanAndSign) {
         hex(output.encoded())
     );
     EXPECT_EQ("4374315285f5af17c5fd37d78bcaa94534968e925c06e293e10d2348d9420fac", output.transaction_id());
+    EXPECT_EQ("", output.error());
+}
+
+TEST(CardanoSigner, PlanAndSign_524a) {
+    // real-world transaction with default fee
+    // see this tx: https://cardanoexplorer.com/tx/524adf0cb4273108ddc1ff24508bb195ba3e03280577438a8a651b8c9a8e0c7f
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(1.000000 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ47c19RqdjJKkydcKNkGCzpNTNnMkWxr1nJQm3iF3a2vf9BZQ");
+    input.set_change_address("Ae2tdPwUPEZJzHcf5jZRQ4jz2kVT2aM8rATQXqo5gbMfWQpjK6SvTzLTAxn");
+    setUtxo(input.add_utxo(), "ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", 0, (uint64_t)(8.0 * 1000000));
+    setUtxo(input.add_utxo(), "ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", 1, (uint64_t)(1.830116 * 1000000));
+    setUtxo(input.add_utxo(), "a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e6861", 1, (uint64_t)(3.660232 * 1000000));
+    setUtxo(input.add_utxo(), "d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f", 0, (uint64_t)(1.0 * 1000000));
+    // Ae2tdPwUPEYxKHuuYNsYkpR64XNZz7Xm8vMep7mZ2rrP9HgqbbeX1uMxmGd
+    Data prikey_7_f89a = parse_hex("f89a0283d06d64b5deb5216b3be1c4029796294b42dfd81faf2ac0118ff9c154d157299b76b8fd328f96c60ca51f0641e23e4085cf3f21529ae7353b2bb96c89acc6e00ab3b78d299ccaf4ee25e0ef0fd2cedbaef731ad46fd25c9cd31abe205");
+    input.add_private_key(prikey_7_f89a.data(), prikey_7_f89a.size());
+
+    Proto::TransactionPlan plan = Signer::planTransaction(input);
+    EXPECT_EQ("", plan.error());
+    EXPECT_EQ(14490348, plan.available_amount());
+    EXPECT_EQ(1000000, plan.amount());
+    EXPECT_EQ(167994, plan.fee());
+    EXPECT_EQ(6832006, plan.change());
+    ASSERT_EQ(1, plan.utxo_size());
+    EXPECT_EQ("ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", hex(plan.utxo(0).out_point().txid()));
+    EXPECT_EQ(0, plan.utxo(0).out_point().index());
+    Proto::SigningOutput output = Signer::sign(input, plan);
+
+    EXPECT_EQ(
+        "82839f8200d8185824825820ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee00ff9f8282d818582183581c493cb686130c371b99f9708ffd36f25f7dc314d183cefcd36acd8757a0001a0bd8a93f1a000f42408282d818582183581cde4dbddf5ecf59c3b6945c4f7f59b693be9b8d0afa7984f44814392ca0001a83f8a5c71a00683f86ffa0818200d8185885825840d53677f5a6d08ed0e0ccf4fd4e43d0720da594b573d2f3020728bf2688c3958facc6e00ab3b78d299ccaf4ee25e0ef0fd2cedbaef731ad46fd25c9cd31abe20558408e7e9bb65a26333fdcb831d5d00eabbcfe4849fa7bfae816fe8f217cfcd04e4162da7096735b554e76ccd688442462d8e4bb2701f11cc896b14f8b575093fb04",
+        hex(output.encoded())
+    );
+    EXPECT_EQ("524adf0cb4273108ddc1ff24508bb195ba3e03280577438a8a651b8c9a8e0c7f", output.transaction_id());
     EXPECT_EQ("", output.error());
 }
 
@@ -78,6 +115,7 @@ TEST(CardanoSigner, PlanTransaction) {
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
 
+    EXPECT_EQ(15000000, plan.available_amount());
     EXPECT_EQ(1000000, plan.amount());
     EXPECT_EQ(167994, plan.fee());
     EXPECT_EQ(13832006, plan.change());
@@ -101,6 +139,7 @@ TEST(CardanoSigner, PlanTransactionUseMax) {
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
 
+    EXPECT_EQ(15000000, plan.available_amount());
     EXPECT_EQ(14834159, plan.amount());
     EXPECT_EQ(165841, plan.fee());
     EXPECT_EQ(0, plan.change());
@@ -123,13 +162,15 @@ TEST(CardanoSigner, Plan3Input) {
     setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000004", 4, (uint64_t)(10.4 * 1000000));
     setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000004", 5, (uint64_t)(10.5 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
 
-    EXPECT_EQ(25000000, plan.amount());
-    EXPECT_EQ(171685, plan.fee());
-    EXPECT_EQ(5528315, plan.change());
     EXPECT_EQ(51500000, plan.available_amount());
+    EXPECT_EQ(25000000, plan.amount());
+    EXPECT_EQ(183902, plan.fee());
+    EXPECT_EQ(5516098, plan.change());
     EXPECT_EQ("", plan.error());
     // 3 utxos selected
     ASSERT_EQ(3, plan.utxo_size());
@@ -197,36 +238,6 @@ TEST(CardanoSigner, PrepareUnsignedTx_d498) {
     );
     Address fromAddr = Address(fromPubKey);
     EXPECT_EQ("Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx", fromAddr.string());
-}
-
-TEST(CardanoSigner, SignTx_8283) {
-    // real transaction, with non-default fee
-    // see this tx: https://cardanoexplorer.com/tx/ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee
-    Proto::SigningInput input;
-    input.set_amount((uint64_t)(8.0 * 1000000));
-    input.set_to_address("Ae2tdPwUPEYxKHuuYNsYkpR64XNZz7Xm8vMep7mZ2rrP9HgqbbeX1uMxmGd");
-    input.set_change_address("Ae2tdPwUPEYz548sTWdiTxBx13kxECHH4cmYtxQgPgEaQwmkymYFZzGkPrH");
-    setUtxo(input.add_utxo(), "a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e6861", 0, (uint64_t)(10.0 * 1000000));
-    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
-
-    Proto::TransactionPlan plan = Signer::planTransaction(input);
-    EXPECT_EQ("", plan.error());
-    // set non-default fee, 8000000 + 169884 + 1830116 = 10000000
-    EXPECT_EQ(167994, plan.fee());
-    EXPECT_EQ(1832006, plan.change());
-    EXPECT_EQ(10000000, plan.utxo(0).amount());
-    plan.set_fee((uint64_t)(0.169884 * 1000000));
-    plan.set_change(1830116);
-
-    Proto::SigningOutput output = Signer::sign(input, plan);
-
-    EXPECT_EQ(
-        "82839f8200d8185824825820a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e686100ff9f8282d818582183581c0f1fdc075b3e562ff4c8dc6979b136aeedd087a7d3bf554f774b58eba0001abb7c9a121a007a12008282d818582183581c20b55a0bd5cbc39b58cdd8977e863aca7d387a5a0fc37a473eb72042a0001aa6fa2f8a1a001bece4ffa0818200d8185885825840835610e371e632d829eb63bf44ec39d0487c19d4d98b8dce9dd88d88414ce5bb1ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f584045b3fe46b52c839566e697cbe72e248cd0f01e10c7c5696c8f202fe9776602b63c5878f0e27869d1d9ff69c9773211406970742f7cc316690b9d9133794e4f0e",
-        hex(output.encoded())
-    );
-    EXPECT_EQ("ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", output.transaction_id());
-    EXPECT_EQ(169884, output.fee());
-    EXPECT_EQ("", output.error());
 }
 
 TEST(CardanoSigner, SignNoChange) {
