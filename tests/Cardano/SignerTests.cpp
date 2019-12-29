@@ -21,6 +21,14 @@ using namespace std;
 
 const Data privateKey_b8c3 = parse_hex("b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f");
 
+// Helper to fill an utxo
+void setUtxo(Proto::UnspentTransaction* utxo, const string& txid, int32_t index, uint64_t amount) {
+    Data txidData = parse_hex(txid);
+    utxo->mutable_out_point()->set_txid(txidData.data(), txidData.size());
+    utxo->mutable_out_point()->set_index(index);
+    utxo->set_amount(amount);
+}
+
 TEST(CardanoSigner, SignMessage) {
     // from cardano-crypto.js test
     auto privateKey = PrivateKey(
@@ -42,11 +50,7 @@ TEST(CardanoSigner, PlanAndSign) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(6);
-    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -68,11 +72,8 @@ TEST(CardanoSigner, PlanTransaction) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo = input.add_utxo();
-    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
-    utxo->mutable_out_point()->set_index(6);
-    utxo->set_amount((uint64_t)(15.0 * 1000000));
+    string txid = "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14";
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -81,7 +82,7 @@ TEST(CardanoSigner, PlanTransaction) {
     EXPECT_EQ(167994, plan.fee());
     EXPECT_EQ(13832006, plan.change());
     ASSERT_EQ(1, plan.utxo_size());
-    EXPECT_EQ(hex(txid), hex(plan.utxo(0).out_point().txid()));
+    EXPECT_EQ(txid, hex(plan.utxo(0).out_point().txid()));
     EXPECT_EQ(6, plan.utxo(0).out_point().index());
     EXPECT_EQ(15000000, plan.utxo(0).amount());
     EXPECT_EQ("", plan.error());
@@ -94,11 +95,7 @@ TEST(CardanoSigner, SignTx_d498) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(6);
-    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
 
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -127,11 +124,7 @@ TEST(CardanoSigner, PrepareUnsignedTx_d498) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo = input.add_utxo();
-    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
-    utxo->mutable_out_point()->set_index(6);
-    utxo->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
 
     Proto::TransactionPlan plan = Signer::planTransactionWithFee(input, 169884);
     EXPECT_EQ("", plan.error());
@@ -161,11 +154,7 @@ TEST(CardanoSigner, SignTx_8283) {
     input.set_amount((uint64_t)(8.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEYxKHuuYNsYkpR64XNZz7Xm8vMep7mZ2rrP9HgqbbeX1uMxmGd");
     input.set_change_address("Ae2tdPwUPEYz548sTWdiTxBx13kxECHH4cmYtxQgPgEaQwmkymYFZzGkPrH");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e6861");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(0);
-    utxo0->set_amount((uint64_t)(10.0 * 1000000));
+    setUtxo(input.add_utxo(), "a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e6861", 0, (uint64_t)(10.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
 
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -194,11 +183,7 @@ TEST(CardanoSigner, SignNoChange) {
     input.set_amount((uint64_t)(14.832006 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(6);
-    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -219,11 +204,7 @@ TEST(CardanoSigner, PlanNegativeInvalidAddr) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("__INVALID_ADDRESS__");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(6);
-    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -238,11 +219,7 @@ TEST(CardanoSigner, PlanNegativeInsufficientBalance) {
     input.set_amount((uint64_t)(1000.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(6);
-    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -257,11 +234,7 @@ TEST(CardanoSigner, PlanNegativeNoPrivKey) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(6);
-    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
     EXPECT_NE("", plan.error());
@@ -273,11 +246,7 @@ TEST(CardanoSigner, SignNegativeEmptyPlan) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(6);
-    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan emptyPlan;
@@ -291,11 +260,7 @@ TEST(CardanoSigner, SignNegativeAmountMismatch) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    auto utxo0 = input.add_utxo();
-    Data txid0 = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
-    utxo0->mutable_out_point()->set_txid(txid0.data(), txid0.size());
-    utxo0->mutable_out_point()->set_index(6);
-    utxo0->set_amount((uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
