@@ -123,7 +123,7 @@ inline Data encodeEra(const uint64_t block, const uint64_t period) {
     // MortalEra(phase, period)
     // See decodeMortalObject at https://github.com/polkadot-js/api/blob/master/packages/types/src/primitive/Extrinsic/ExtrinsicEra.ts#L74
     // See toU8a at https://github.com/polkadot-js/api/blob/master/packages/types/src/primitive/Extrinsic/ExtrinsicEra.ts#L141
-    uint64_t calPeriod = pow(2, ceil(log2(double(period))));
+    auto calPeriod = uint64_t(pow(2, ceil(log2(double(period)))));
     calPeriod = std::min(std::max(calPeriod, 4ull), 1ull << 16);
     auto phase = block % calPeriod;
     auto quantizeFactor = std::max(calPeriod >> 12, 1ull);
