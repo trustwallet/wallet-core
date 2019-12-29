@@ -7,6 +7,7 @@
 #include "Signer.h"
 #include "Address.h"
 #include "../Cbor.h"
+#include "../Crc.h"
 #include "../Data.h"
 #include "../HexCoding.h"
 #include "../PrivateKey.h"
@@ -14,6 +15,8 @@
 
 #include <cmath>
 #include <cassert>
+#include <algorithm>
+#include <stdlib.h> // rand
 
 using namespace TW;
 using namespace TW::Cardano;
@@ -100,32 +103,56 @@ Proto::TransactionPlan Signer::planTransactionWithFee(const Proto::SigningInput&
     plan.set_available_amount(sumAllUtxo);
     uint64_t amount = input.amount();
     // compute change, check if enough
-    if ((amount + fee) > sumAllUtxo) {
-        throw logic_error("Insufficent balance");
+    if ((amount + fee) > sumAllUtxo || sumAllUtxo == 0) {
+        throw logic_error("Insufficient balance");
     }
     plan.set_amount(amount);
     plan.set_fee(fee);
 
     // select UTXOs
-    // TODO do it in non-default order
+    // shuffle them (pseudo-random, reproducible) and take as much as needed
+    int n = input.utxo_size();
+    assert(n > 0); // no-utxo error case is caught below, insufficient balance
+    // seed based on input parameters, for reproducibility
+    uint32_t seed = (uint32_t)((uint32_t)n + (uint32_t)input.amount() + (uint32_t)Crc::crc32(TW::data(input.utxo(0).out_point().txid())));
+    vector<int> shuffle = getShuffleMap(n, seed);
     uint64_t sumSelected = 0;
-    for (int i = 0; i < input.utxo_size(); ++i) {
+    for (int i = 0; i < n; ++i) {
+        int idx = shuffle[i];
         auto utxo = plan.add_utxo();
-        utxo->mutable_out_point()->set_txid(input.utxo(i).out_point().txid());
-        utxo->mutable_out_point()->set_index(input.utxo(i).out_point().index());
-        utxo->set_amount(input.utxo(i).amount());
-        sumSelected += input.utxo(i).amount();
+        utxo->mutable_out_point()->set_txid(input.utxo(idx).out_point().txid());
+        utxo->mutable_out_point()->set_index(input.utxo(idx).out_point().index());
+        utxo->set_amount(input.utxo(idx).amount());
+        sumSelected += input.utxo(idx).amount();
         if (sumSelected >= (amount + fee)) {
-            // enough
+            // enough, stop
             break;
         }
     }
     assert(sumSelected >= (amount + fee));
     uint64_t changeAmount = sumSelected - (amount + fee);
     plan.set_change(changeAmount);
-    assert(plan.amount() + plan.fee() + plan.change() == plan.available_amount());
+    assert(plan.amount() + plan.fee() + plan.change() == sumSelected);
 
     return plan;
+}
+
+vector<int> Signer::getShuffleMap(int n, int seed) {
+    srand(seed);
+    vector<int> shuffle = vector<int>();
+    for (int i = 0; i < n; ++i) {
+        // pick a random until found one which is not yet present
+        while (true) {
+            int idx = (int)((double)rand() * (double)n / (double)RAND_MAX);
+            assert(idx >= 0 && idx < n);
+            if (find(shuffle.begin(), shuffle.end(), idx) == shuffle.end()) {
+                // not found, add
+                shuffle.emplace_back(idx);
+                break;
+            }
+        }
+    }
+    return shuffle;
 }
 
 Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan) {
@@ -178,8 +205,8 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Tr
 Proto::SigningOutput Signer::prepareSignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan, const Data& unisgnedEncodedCborData) {
     Data txId = Hash::blake2b(unisgnedEncodedCborData, 32);
 
-    // private key per input UTXO is needed
-    if (input.private_key_size() < plan.utxo_size()) {
+    // private key needed
+    if (input.private_key_size() == 0) {
         throw logic_error("Not enough private keys");
     }
     // array with signatures

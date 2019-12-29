@@ -88,6 +88,35 @@ TEST(CardanoSigner, PlanTransaction) {
     EXPECT_EQ("", plan.error());
 }
 
+TEST(CardanoSigner, Plan3Input) {
+    // plan a transaction, with 5 available inputs, and 3 chosen
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(25.0 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000001", 1, (uint64_t)(10.1 * 1000000));
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000002", 2, (uint64_t)(10.2 * 1000000));
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000003", 3, (uint64_t)(10.3 * 1000000));
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000004", 4, (uint64_t)(10.4 * 1000000));
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000004", 5, (uint64_t)(10.5 * 1000000));
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    
+    Proto::TransactionPlan plan = Signer::planTransaction(input);
+
+    EXPECT_EQ(25000000, plan.amount());
+    EXPECT_EQ(171685, plan.fee());
+    EXPECT_EQ(5528315, plan.change());
+    EXPECT_EQ(51500000, plan.available_amount());
+    EXPECT_EQ("", plan.error());
+    // 3 utxos selected
+    ASSERT_EQ(3, plan.utxo_size());
+    // check amounts, sum(utxo)
+    uint64_t sumUtxo = 0;
+    for(int i = 0; i < 3; ++i) { sumUtxo += plan.utxo(i).amount(); }
+    EXPECT_EQ(30700000, sumUtxo);
+    EXPECT_EQ(sumUtxo, plan.amount() + plan.fee() + plan.change());
+}
+
 TEST(CardanoSigner, SignTx_d498) {
     // real-world transaction with non-default fee
     // see this tx: https://cardanoexplorer.com/tx/d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f
@@ -226,7 +255,7 @@ TEST(CardanoSigner, PlanNegativeInsufficientBalance) {
     EXPECT_EQ(0, plan.amount());
     EXPECT_EQ(0, plan.fee());
     EXPECT_NE("", plan.error());
-    EXPECT_TRUE(plan.error().find("nsufficent balance") != string::npos);
+    EXPECT_TRUE(plan.error().find("nsufficient balance") != string::npos);
 }
 
 TEST(CardanoSigner, PlanNegativeNoPrivKey) {
@@ -239,6 +268,18 @@ TEST(CardanoSigner, PlanNegativeNoPrivKey) {
     Proto::TransactionPlan plan = Signer::planTransaction(input);
     EXPECT_NE("", plan.error());
     EXPECT_TRUE(plan.error().find("enough private keys") != string::npos);
+}
+
+TEST(CardanoSigner, PlanNegativeNoUtxo) {
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(1.0 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    
+    Proto::TransactionPlan plan = Signer::planTransaction(input);
+    EXPECT_NE("", plan.error());
+    EXPECT_TRUE(plan.error().find("nsufficient balance") != string::npos);
 }
 
 TEST(CardanoSigner, SignNegativeEmptyPlan) {

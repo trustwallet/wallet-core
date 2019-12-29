@@ -12,6 +12,7 @@
 #include "../PublicKey.h"
 
 #include <string>
+#include <vector>
 
 namespace TW::Cardano {
 
@@ -40,6 +41,8 @@ public:
     static Data prepareUnsignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan);
     /// Prepare signed Tx data (Cbor).
     static Proto::SigningOutput prepareSignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan, const Data& unisgnedEncodedCborData);
+    /// Create a pseudo-random shuffle of numbers 0--(n-1).  Not true random, but reproducible.
+    static std::vector<int> getShuffleMap(int n, int seed);
 };
 
 } // namespace TW::Cardano
