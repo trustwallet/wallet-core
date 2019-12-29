@@ -123,24 +123,21 @@ inline Data encodeEra(const uint64_t block, const uint64_t period) {
     // MortalEra(phase, period)
     // See decodeMortalObject at https://github.com/polkadot-js/api/blob/master/packages/types/src/primitive/Extrinsic/ExtrinsicEra.ts#L74
     // See toU8a at https://github.com/polkadot-js/api/blob/master/packages/types/src/primitive/Extrinsic/ExtrinsicEra.ts#L141
-    auto calPeriod = uint64_t(pow(2, ceil(log2(double(period)))));
-    calPeriod = std::min(std::max(calPeriod, 4ull), 1ull << 16);
-    auto phase = block % calPeriod;
-    auto quantizeFactor = std::max(calPeriod >> 12, 1ull);
-    auto quantizedPhase = phase / quantizeFactor * quantizeFactor;
+    uint64_t calPeriod = uint64_t(pow(2, ceil(log2(double(period)))));
+    calPeriod = std::min(std::max(calPeriod, uint64_t(4)), uint64_t(1) << 16);
+    uint64_t phase = block % calPeriod;
+    uint64_t quantizeFactor = std::max(calPeriod >> uint64_t(12), uint64_t(1));
+    uint64_t quantizedPhase = phase / quantizeFactor * quantizeFactor;
 
     auto bitset = std::bitset<64>(calPeriod);
     int trailingZeros = 0;
     for (int i = 0; i < 64 - 1; i++) {
-        // std::cout<<" bitset[i] = "<<bitset[i]<<" i = "<<i<<std::endl;
         if (bitset[i] == 0) {
             trailingZeros += 1;
         } else {
             break;
         }
     }
-    // std::cout<<"\nbitset: "<<bitset<<std::endl;
-    // std::cout<<"trailingZeros: "<<trailingZeros<<std::endl;
     auto encoded = std::min(15, std::max(1, trailingZeros - 1)) + (((quantizedPhase / quantizeFactor) << 4));
     return Data{byte(encoded & 0xff), byte(encoded >> 8)};
 }
