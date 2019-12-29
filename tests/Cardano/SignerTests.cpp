@@ -88,6 +88,29 @@ TEST(CardanoSigner, PlanTransaction) {
     EXPECT_EQ("", plan.error());
 }
 
+TEST(CardanoSigner, PlanTransactionUseMax) {
+    // plan transaction, with max available
+    Proto::SigningInput input;
+    input.set_amount(1000000); // not relevsant, use_max
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    string txid = "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14";
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    input.set_use_max_amount(true);
+    
+    Proto::TransactionPlan plan = Signer::planTransaction(input);
+
+    EXPECT_EQ(14834159, plan.amount());
+    EXPECT_EQ(165841, plan.fee());
+    EXPECT_EQ(0, plan.change());
+    ASSERT_EQ(1, plan.utxo_size());
+    EXPECT_EQ(txid, hex(plan.utxo(0).out_point().txid()));
+    EXPECT_EQ(6, plan.utxo(0).out_point().index());
+    EXPECT_EQ(15000000, plan.utxo(0).amount());
+    EXPECT_EQ("", plan.error());
+}
+
 TEST(CardanoSigner, Plan3Input) {
     // plan a transaction, with 5 available inputs, and 3 chosen
     Proto::SigningInput input;
@@ -275,6 +298,20 @@ TEST(CardanoSigner, PlanNegativeNoUtxo) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    
+    Proto::TransactionPlan plan = Signer::planTransaction(input);
+    EXPECT_NE("", plan.error());
+    EXPECT_TRUE(plan.error().find("nsufficient balance") != string::npos);
+}
+
+TEST(CardanoSigner, PlanNegativeLowBalance) {
+    // balance lower than feee
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(0.000001 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(0.000009 * 1000000));
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);

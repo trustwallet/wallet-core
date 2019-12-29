@@ -57,6 +57,10 @@ message SigningInput {
 
     // Available unspent transaction outputs.
     repeated UnspentTransaction utxo = 5;
+
+    // Set if requesting sending max amount.  Overrides amount (to max minus fee).
+    bool use_max_amount = 13;
+
 }
 
 // Describes a preliminary transaction plan.

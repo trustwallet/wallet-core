@@ -101,13 +101,27 @@ Proto::TransactionPlan Signer::planTransactionWithFee(const Proto::SigningInput&
         sumAllUtxo += input.utxo(i).amount();
     }
     plan.set_available_amount(sumAllUtxo);
-    uint64_t amount = input.amount();
-    // compute change, check if enough
-    if ((amount + fee) > sumAllUtxo || sumAllUtxo == 0) {
-        throw logic_error("Insufficient balance");
+    if (fee > sumAllUtxo) {
+        throw logic_error("Insufficient balance (fee higher than balance)");
     }
-    plan.set_amount(amount);
-    plan.set_fee(fee);
+
+    // special case: max amount
+    uint64_t amount = 0;
+    if (input.use_max_amount()) {
+        assert(sumAllUtxo >= fee);
+        amount = sumAllUtxo - fee;
+        plan.set_amount(amount);
+        plan.set_fee(fee);
+    } else {
+        // normal case (not max)
+        amount = input.amount();
+        // compute change, check if enough
+        if ((amount + fee) > sumAllUtxo || sumAllUtxo == 0) {
+            throw logic_error("Insufficient balance");
+        }
+        plan.set_amount(amount);
+        plan.set_fee(fee);
+    }
 
     // select UTXOs
     // shuffle them (pseudo-random, reproducible) and take as much as needed
