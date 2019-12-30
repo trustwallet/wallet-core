@@ -63,7 +63,6 @@ class KavaTests: XCTestCase {
 {
     "mode": "block",
     "tx": {
-        "type": "cosmos-sdk/MsgSend",
         "msg": [{
             "type": "cosmos-sdk/MsgSend",
             "value": {
@@ -160,8 +159,7 @@ class KavaTests: XCTestCase {
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
             "signature": "SmgctT4b8yt4/L2qOkW+Jy2SxMflIl6gOFfhKX/o+Cpqa6xCF6rqy0p3WSz0c/vnfZTWVG7rX+612xCVcJjQCg=="
-        }],
-        "type": "cosmos-sdk/MsgSend"
+        }]
     }
 }
 """
@@ -223,8 +221,7 @@ class KavaTests: XCTestCase {
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
             "signature": "xF4I6dKOjuKR7ii3i+Q754/R9IFHULwrkNG1zO8w0VoZBQhNWITg3jZJwpgDnAyl6C7we7BuLhutHaSIhvutEg=="
-        }],
-        "type": "cosmos-sdk/MsgSend"
+        }]
     }
 }
 """
@@ -295,8 +292,7 @@ class KavaTests: XCTestCase {
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
             "signature": "p6n0wv1L4YrK6Etmpp6cLjmUO3CNE1p6/LkZF73tastw4x0sW4Jg8b9R5x45EQMVbmNP87wZ4X/6VHUXluHstQ=="
-        }],
-        "type": "cosmos-sdk/MsgSend"
+        }]
     }
 }
 """
@@ -368,8 +364,7 @@ class KavaTests: XCTestCase {
                 "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
             },
             "signature": "mDC0NuQJOJoYcbDE96D2kQy2RlodlGrhedKOX/2xAy0WrK2TzxDAYbV822xIhLtr2T67jpZfzDWNI0iRg2j/5Q=="
-        }],
-        "type": "cosmos-sdk/MsgSend"
+        }]
     }
 }
 """
