@@ -33,6 +33,7 @@ class TestCardanoSigner {
         val utxo1 = Cardano.UnspentTransaction.newBuilder()
             .setOutPoint(outPoint)
             .setAmount(15000000)
+            .setAddress("Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx")
             .build()
         signingInput.addUtxo(utxo1)
         val privateKey = "b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f".toHexBytes()

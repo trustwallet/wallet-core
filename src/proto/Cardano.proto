@@ -39,6 +39,9 @@ message TransactionOutput {
 message UnspentTransaction {
     OutPoint out_point = 1;
     int64 amount = 2;
+
+    // Address of the UTXO (to address in the output, from address if used in the input)
+    string address = 3;
 }
 
 // Input data necessary to create a signed transaction.
@@ -52,7 +55,7 @@ message SigningInput {
     // Change address.
     string change_address = 3;
 
-    // Available private keys.  Private keys must match the addresses from the UTXO's.
+    // Available private keys.  Private keys must match the addresses from the UTXO's.  Duplicates can be dropped, order does not matter.
     repeated bytes private_key = 4;
 
     // Available unspent transaction outputs.

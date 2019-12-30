@@ -15,6 +15,7 @@
 
 #include <cmath>
 #include <cassert>
+#include <map>
 #include <algorithm>
 #include <stdlib.h> // rand
 
@@ -137,6 +138,7 @@ Proto::TransactionPlan Signer::planTransactionWithFee(const Proto::SigningInput&
         utxo->mutable_out_point()->set_txid(input.utxo(idx).out_point().txid());
         utxo->mutable_out_point()->set_index(input.utxo(idx).out_point().index());
         utxo->set_amount(input.utxo(idx).amount());
+        utxo->set_address(input.utxo(idx).address());
         sumSelected += input.utxo(idx).amount();
         if (sumSelected >= (amount + fee)) {
             // enough, stop
@@ -219,14 +221,23 @@ Data Signer::prepareUnsignedTx(const Proto::SigningInput& input, const Proto::Tr
 Proto::SigningOutput Signer::prepareSignedTx(const Proto::SigningInput& input, const Proto::TransactionPlan& plan, const Data& unisgnedEncodedCborData) {
     Data txId = Hash::blake2b(unisgnedEncodedCborData, 32);
 
-    // private key needed
-    if (input.private_key_size() == 0) {
-        throw logic_error("Not enough private keys");
-    }
-    // array with signatures
-    vector<Encode> signatures;
+    // pre-process private keys, put them in map by address
+    map<string, string> priKeysByAddr;
     for (int i = 0; i < input.private_key_size(); ++i) {
         PrivateKey fromPri = PrivateKey(input.private_key(i));
+        PublicKey fromPub = fromPri.getPublicKey(TWPublicKeyTypeED25519Extended);
+        string address = Address(fromPub).string();
+        priKeysByAddr[address] = input.private_key(i);
+    }
+
+    // Array with signatures.  Go by UTXOs.
+    vector<Encode> signatures;
+    for (int i = 0; i < plan.utxo_size(); ++i) {
+        const string& address = plan.utxo(i).address();
+        if (priKeysByAddr.find(address) == priKeysByAddr.end()) {
+            throw logic_error("Private key missing");
+        }
+        PrivateKey fromPri = PrivateKey(priKeysByAddr[address]);
         PublicKey fromPub = fromPri.getPublicKey(TWPublicKeyTypeED25519Extended);
         // sign; msg is txId with prefix
         Data txToSign = parse_hex("01"); // transaction prefix

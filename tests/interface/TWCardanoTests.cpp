@@ -46,6 +46,7 @@ TEST(TWCardano, PlanAndSign) {
     utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
     utxo->mutable_out_point()->set_index(6);
     utxo->set_amount((uint64_t)(15.0 * 1000000));
+    utxo->set_address("Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     Data privateKey = parse_hex("b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f");
     input.add_private_key(privateKey.data(), privateKey.size());
 

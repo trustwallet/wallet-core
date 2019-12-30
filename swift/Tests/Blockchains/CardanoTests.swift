@@ -28,6 +28,7 @@ class CardanoTests: XCTestCase {
             $0.outPoint.txid = Data(hexString: "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14")!
             $0.outPoint.index = 6
             $0.amount = 15000000
+            $0.address = "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx"
         }
         input.utxo.append(utxo0)
         input.privateKey.append(Data(hexString: "b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f")!)
