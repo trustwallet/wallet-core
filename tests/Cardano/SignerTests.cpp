@@ -22,11 +22,12 @@ using namespace std;
 const Data privateKey_b8c3 = parse_hex("b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f");
 
 // Helper to fill an utxo
-void setUtxo(Proto::UnspentTransaction* utxo, const string& txid, int32_t index, uint64_t amount) {
+void setUtxo(Proto::UnspentTransaction* utxo, const string& txid, int32_t index, uint64_t amount, const string& address) {
     Data txidData = parse_hex(txid);
     utxo->mutable_out_point()->set_txid(txidData.data(), txidData.size());
     utxo->mutable_out_point()->set_index(index);
     utxo->set_amount(amount);
+    utxo->set_address(address);
 }
 
 TEST(CardanoSigner, SignMessage) {
@@ -50,7 +51,7 @@ TEST(CardanoSigner, PlanAndSign) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -76,10 +77,10 @@ TEST(CardanoSigner, PlanAndSign_524a) {
     input.set_amount((uint64_t)(1.000000 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ47c19RqdjJKkydcKNkGCzpNTNnMkWxr1nJQm3iF3a2vf9BZQ");
     input.set_change_address("Ae2tdPwUPEZJzHcf5jZRQ4jz2kVT2aM8rATQXqo5gbMfWQpjK6SvTzLTAxn");
-    setUtxo(input.add_utxo(), "ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", 0, (uint64_t)(8.0 * 1000000));
-    setUtxo(input.add_utxo(), "ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", 1, (uint64_t)(1.830116 * 1000000));
-    setUtxo(input.add_utxo(), "a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e6861", 1, (uint64_t)(3.660232 * 1000000));
-    setUtxo(input.add_utxo(), "d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f", 0, (uint64_t)(1.0 * 1000000));
+    setUtxo(input.add_utxo(), "ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", 0, (uint64_t)(8.0 * 1000000), "Ae2tdPwUPEYxKHuuYNsYkpR64XNZz7Xm8vMep7mZ2rrP9HgqbbeX1uMxmGd");
+    setUtxo(input.add_utxo(), "ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", 1, (uint64_t)(1.830116 * 1000000), "Ae2tdPwUPEYz548sTWdiTxBx13kxECHH4cmYtxQgPgEaQwmkymYFZzGkPrH");
+    setUtxo(input.add_utxo(), "a49bad3f69bbab0e4d3e51991ce7a1116c0fd322a7731246b92df455e67e6861", 1, (uint64_t)(3.660232 * 1000000), "Ae2tdPwUPEZJzHcf5jZRQ4jz2kVT2aM8rATQXqo5gbMfWQpjK6SvTzLTAxn");
+    setUtxo(input.add_utxo(), "d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f", 0, (uint64_t)(1.0 * 1000000), "Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     // Ae2tdPwUPEYxKHuuYNsYkpR64XNZz7Xm8vMep7mZ2rrP9HgqbbeX1uMxmGd
     Data prikey_7_f89a = parse_hex("f89a0283d06d64b5deb5216b3be1c4029796294b42dfd81faf2ac0118ff9c154d157299b76b8fd328f96c60ca51f0641e23e4085cf3f21529ae7353b2bb96c89acc6e00ab3b78d299ccaf4ee25e0ef0fd2cedbaef731ad46fd25c9cd31abe205");
     input.add_private_key(prikey_7_f89a.data(), prikey_7_f89a.size());
@@ -110,7 +111,7 @@ TEST(CardanoSigner, PlanTransaction) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     string txid = "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14";
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -133,7 +134,7 @@ TEST(CardanoSigner, PlanTransactionUseMax) {
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
     string txid = "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14";
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     input.set_use_max_amount(true);
     
@@ -156,9 +157,9 @@ TEST(CardanoSigner, PlanInput3) {
     input.set_amount((uint64_t)(25.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000001", 1, (uint64_t)(10.1 * 1000000));
-    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000002", 2, (uint64_t)(10.2 * 1000000));
-    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000003", 3, (uint64_t)(10.3 * 1000000));
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000001", 1, (uint64_t)(10.1 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000002", 2, (uint64_t)(10.2 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000003", 3, (uint64_t)(10.3 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
@@ -185,11 +186,11 @@ TEST(CardanoSigner, PlanInput3of5) {
     input.set_amount((uint64_t)(25.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000001", 1, (uint64_t)(10.1 * 1000000));
-    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000002", 2, (uint64_t)(10.2 * 1000000));
-    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000003", 3, (uint64_t)(10.3 * 1000000));
-    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000004", 4, (uint64_t)(10.4 * 1000000));
-    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000004", 5, (uint64_t)(10.5 * 1000000));
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000001", 1, (uint64_t)(10.1 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000002", 2, (uint64_t)(10.2 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000003", 3, (uint64_t)(10.3 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000004", 4, (uint64_t)(10.4 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000004", 5, (uint64_t)(10.5 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
@@ -217,7 +218,7 @@ TEST(CardanoSigner, SignTx_d498) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
 
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -246,7 +247,7 @@ TEST(CardanoSigner, PrepareUnsignedTx_d498) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
 
     Proto::TransactionPlan plan = Signer::planTransactionWithFee(input, 169884);
     EXPECT_EQ("", plan.error());
@@ -275,7 +276,7 @@ TEST(CardanoSigner, SignNoChange) {
     input.set_amount((uint64_t)(14.832006 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -296,7 +297,7 @@ TEST(CardanoSigner, PlanNegativeInvalidAddr) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("__INVALID_ADDRESS__");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -311,7 +312,7 @@ TEST(CardanoSigner, PlanNegativeInsufficientBalance) {
     input.set_amount((uint64_t)(1000.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -326,7 +327,7 @@ TEST(CardanoSigner, PlanNegativeNoPrivKey) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
     EXPECT_NE("", plan.error());
@@ -351,7 +352,7 @@ TEST(CardanoSigner, PlanNegativeLowBalance) {
     input.set_amount((uint64_t)(0.000001 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(0.000009 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(0.000009 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
@@ -364,7 +365,7 @@ TEST(CardanoSigner, SignNegativeEmptyPlan) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan emptyPlan;
@@ -378,7 +379,7 @@ TEST(CardanoSigner, SignNegativeAmountMismatch) {
     input.set_amount((uint64_t)(1.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
     input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
-    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000));
+    setUtxo(input.add_utxo(), "59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14", 6, (uint64_t)(15.0 * 1000000), "Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
     input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
     
     Proto::TransactionPlan plan = Signer::planTransaction(input);
