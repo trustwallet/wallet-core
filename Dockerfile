@@ -64,7 +64,7 @@ ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
 RUN git clone https://github.com/ackratos/wallet-core.git \
     && cd wallet-core \
-    && git checkout tss \
+    && git checkout tss-new \
     && export PREFIX=/usr/local \
     && tools/install-dependencies
 
