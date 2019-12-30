@@ -150,8 +150,37 @@ TEST(CardanoSigner, PlanTransactionUseMax) {
     EXPECT_EQ("", plan.error());
 }
 
-TEST(CardanoSigner, Plan3Input) {
-    // plan a transaction, with 5 available inputs, and 3 chosen
+TEST(CardanoSigner, PlanInput3) {
+    // plan a transaction, with 3 available inputs, 3 chosen
+    Proto::SigningInput input;
+    input.set_amount((uint64_t)(25.0 * 1000000));
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000001", 1, (uint64_t)(10.1 * 1000000));
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000002", 2, (uint64_t)(10.2 * 1000000));
+    setUtxo(input.add_utxo(), "ab00000000000000000000000000000000000000000000000000000000000003", 3, (uint64_t)(10.3 * 1000000));
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+    input.add_private_key(privateKey_b8c3.data(), privateKey_b8c3.size());
+
+    Proto::TransactionPlan plan = Signer::planTransaction(input);
+
+    EXPECT_EQ(30600000, plan.available_amount());
+    EXPECT_EQ(25000000, plan.amount());
+    EXPECT_EQ(183902, plan.fee());
+    EXPECT_EQ(5416098, plan.change());
+    EXPECT_EQ("", plan.error());
+    // 3 utxos selected
+    ASSERT_EQ(3, plan.utxo_size());
+    // check amounts, sum(utxo)
+    uint64_t sumUtxo = 0;
+    for(int i = 0; i < 3; ++i) { sumUtxo += plan.utxo(i).amount(); }
+    EXPECT_EQ(30600000, sumUtxo);
+    EXPECT_EQ(sumUtxo, plan.amount() + plan.fee() + plan.change());
+}
+
+TEST(CardanoSigner, PlanInput3of5) {
+    // plan a transaction, with 5 available inputs, and 3 chosen.  Which 3 is a matter of shuffling.
     Proto::SigningInput input;
     input.set_amount((uint64_t)(25.0 * 1000000));
     input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
