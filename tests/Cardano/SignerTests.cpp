@@ -12,6 +12,8 @@
 #include "PublicKey.h"
 #include "PrivateKey.h"
 
+#include <map>
+
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -28,6 +30,14 @@ void setUtxo(Proto::UnspentTransaction* utxo, const string& txid, int32_t index,
     utxo->mutable_out_point()->set_index(index);
     utxo->set_amount(amount);
     utxo->set_address(address);
+}
+
+// Helper to copy an utxo
+void copyUtxo(Proto::UnspentTransaction* copy, const Proto::UnspentTransaction& orig) {
+    copy->mutable_out_point()->set_txid(orig.out_point().txid());
+    copy->mutable_out_point()->set_index(orig.out_point().index());
+    copy->set_amount(orig.amount());
+    copy->set_address(orig.address());
 }
 
 TEST(CardanoSigner, SignMessage) {
@@ -144,11 +154,11 @@ TEST(CardanoSigner, PlanAndSign5InputMax_13af) {
     input.set_amount((uint64_t)(14.14 * 1000000)); // not relevant, use_max
     input.set_to_address("Ae2tdPwUPEZLmY8zETphpoDsrE7pDv3PpufADh5bS41Xqajrgzm3MhJdgmw");
     input.set_change_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
-    setUtxo(input.add_utxo(), "ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", 1, (uint64_t)(1.830116 * 1000000), "Ae2tdPwUPEYz548sTWdiTxBx13kxECHH4cmYtxQgPgEaQwmkymYFZzGkPrH");
-    setUtxo(input.add_utxo(), "524adf0cb4273108ddc1ff24508bb195ba3e03280577438a8a651b8c9a8e0c7f", 0, (uint64_t)(1.0 * 1000000), "Ae2tdPwUPEZ47c19RqdjJKkydcKNkGCzpNTNnMkWxr1nJQm3iF3a2vf9BZQ");
-    setUtxo(input.add_utxo(), "524adf0cb4273108ddc1ff24508bb195ba3e03280577438a8a651b8c9a8e0c7f", 1, (uint64_t)(6.832006 * 1000000), "Ae2tdPwUPEZJzHcf5jZRQ4jz2kVT2aM8rATQXqo5gbMfWQpjK6SvTzLTAxn");
-    setUtxo(input.add_utxo(), "51a28ad4353f18dc00e08dc3c26d39ab044f7ada9f37d0d8a4a56cf5c7ee82ed", 0, (uint64_t)(4.000000 * 1000000), "Ae2tdPwUPEZCwHtv1qHWHfbM3MNv9GnFQnvmu8HyiFckTuZhxsBuo5gBEc8");
-    setUtxo(input.add_utxo(), "51a28ad4353f18dc00e08dc3c26d39ab044f7ada9f37d0d8a4a56cf5c7ee82ed", 1, (uint64_t)(0.484284 * 1000000), "Ae2tdPwUPEZJzHcf5jZRQ4jz2kVT2aM8rATQXqo5gbMfWQpjK6SvTzLTAxn");
+    setUtxo(input.add_utxo(), "ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee", 1, 1830116, "Ae2tdPwUPEYz548sTWdiTxBx13kxECHH4cmYtxQgPgEaQwmkymYFZzGkPrH");
+    setUtxo(input.add_utxo(), "524adf0cb4273108ddc1ff24508bb195ba3e03280577438a8a651b8c9a8e0c7f", 0, 1000000, "Ae2tdPwUPEZ47c19RqdjJKkydcKNkGCzpNTNnMkWxr1nJQm3iF3a2vf9BZQ");
+    setUtxo(input.add_utxo(), "524adf0cb4273108ddc1ff24508bb195ba3e03280577438a8a651b8c9a8e0c7f", 1, 6832006, "Ae2tdPwUPEZJzHcf5jZRQ4jz2kVT2aM8rATQXqo5gbMfWQpjK6SvTzLTAxn");
+    setUtxo(input.add_utxo(), "51a28ad4353f18dc00e08dc3c26d39ab044f7ada9f37d0d8a4a56cf5c7ee82ed", 0, 4000000, "Ae2tdPwUPEZCwHtv1qHWHfbM3MNv9GnFQnvmu8HyiFckTuZhxsBuo5gBEc8");
+    setUtxo(input.add_utxo(), "51a28ad4353f18dc00e08dc3c26d39ab044f7ada9f37d0d8a4a56cf5c7ee82ed", 1, 484284, "Ae2tdPwUPEZJzHcf5jZRQ4jz2kVT2aM8rATQXqo5gbMfWQpjK6SvTzLTAxn");
     // Private keys: there are 5 inputs, but from 4 addressess, 4 private keys needed
     // Ae2tdPwUPEZJzHcf5jZRQ4jz2kVT2aM8rATQXqo5gbMfWQpjK6SvTzLTAxn
     Data prikey_8_0803 = parse_hex("0803690ed2f9058a218cb3965c1005417bbf09696a55b91953b3d4f78cf9c1547e5c062d5ca85f02318e8bd8dfbdcb7ff983598fa30394495cb01d586e0112bfec2719f8458fb56cff4ae538faaf049c1cbef916db5f49b912ebc478fea0c3de");
@@ -171,7 +181,18 @@ TEST(CardanoSigner, PlanAndSign5InputMax_13af) {
     EXPECT_EQ(197658, plan.fee());
     EXPECT_EQ(0, plan.change());
     EXPECT_EQ(5, plan.utxo_size());
-    Proto::SigningOutput output = Signer::sign(input, plan);
+    // shuffled UTXO order matters, rearrange them (in a copy plan)
+    // actual order used, defined here by utxo amounts (unique in this case):
+    vector<uint64_t> orderByAmount = {1830116, 4000000, 6832006, 484284, 1000000};
+    map<uint64_t, int> mapAmountToIdx;
+    for (int i = 0; i < plan.utxo_size(); ++i) { mapAmountToIdx[plan.utxo(i).amount()] = i; }
+    Proto::TransactionPlan planCopy(plan);
+    planCopy.clear_utxo();
+    for (int i = 0; i < orderByAmount.size(); ++i) {
+        copyUtxo(planCopy.add_utxo(), plan.utxo(mapAmountToIdx[orderByAmount[i]]));
+    }
+
+    Proto::SigningOutput output = Signer::sign(input, planCopy);
 
     EXPECT_EQ(
         "82839f8200d8185824825820ebf58670ee1512d597876fe632e92790bd70568374bdbe5a69c5d8ed107607ee018200d818582482582051a28ad4353f18dc00e08dc3c26d39ab044f7ada9f37d0d8a4a56cf5c7ee82ed008200d8185824825820524adf0cb4273108ddc1ff24508bb195ba3e03280577438a8a651b8c9a8e0c7f018200d818582482582051a28ad4353f18dc00e08dc3c26d39ab044f7ada9f37d0d8a4a56cf5c7ee82ed018200d8185824825820524adf0cb4273108ddc1ff24508bb195ba3e03280577438a8a651b8c9a8e0c7f00ff9f8282d818582183581cf0250d7450336449f8eebc0a252a179d50f3ebd32b3ecc8bff82008ba0001ac068235a1a00d4d74cffa0858200d81858858258404a33c2ee5041115dbbe82561fcab1c3b44de40b7d9ed41e46d26b354edc442fb88ae0d5ad0d49785e48243adc054bcf0b088a6d9bd77269ae478dcbd00330365584081c6a6f7cb7fb83f65dd8abd36e5fbb26c9e6adcd89af20532b89162e8cdfe40d37b83884802ee54fc2334fb33ba402e0df08bcbd5db1a02602ecfca7bc8d4008200d8185885825840eb3c2a5ec32964cf9a3cac1b0d96c1df27c6f38dc3ba506550a0db03fa8fa9a1d42e3d411b458637639a96d08d603e72a46e0f2ad31b92d22cd9a1d29e60907958400b4e6b2ecf9ffbc6802f369f808af50146309a50ec618ee72f4816196fc25e2349a437338fdced36ef3a269fa754d5ad9268249ad15eb081d02b95a01af9c70a8200d8185885825840c9e3db490cc52207bc9e12bb2d65308ebd6b45a0e36a03c8020c38e740ffbb15ec2719f8458fb56cff4ae538faaf049c1cbef916db5f49b912ebc478fea0c3de58406ec6e4db32d321b0c80aca46b91cb1b2728156d13e5b60e3f8c2b846a904ab1e9921f7217aa9af2e48b93558bfee4eb001274f676328d3d951bf42c9e0b6cd008200d8185885825840c9e3db490cc52207bc9e12bb2d65308ebd6b45a0e36a03c8020c38e740ffbb15ec2719f8458fb56cff4ae538faaf049c1cbef916db5f49b912ebc478fea0c3de58406ec6e4db32d321b0c80aca46b91cb1b2728156d13e5b60e3f8c2b846a904ab1e9921f7217aa9af2e48b93558bfee4eb001274f676328d3d951bf42c9e0b6cd008200d8185885825840bd9e52f4a2d00a142a1862db5696c5f298a50889e278e756afe43d0af75eb7a067b9f678be9941eeddc2c26abc2103d2fb767caa5e1fee93d3587e6ad013e2595840a2ba13244430eb54fa83ab0be1733882a5b202336c9db48a40459b3c1c2fedb9f3955b265350e27073abd71d0083e60749825db385ea346c9d97a75db539d00d",
