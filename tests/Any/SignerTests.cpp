@@ -12,6 +12,7 @@
 #include "Base64.h"
 #include "HexCoding.h"
 #include "Tezos/BinaryCoding.h"
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
 
 using namespace TW;
 using namespace TW::Any;
@@ -38,6 +39,31 @@ TEST(Signer, BitcoinTransactionSign) {
 
     ASSERT_TRUE(output.success());
     ASSERT_EQ(output.output(), "01000000000101db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477010000001716001479091972186c449eb1ded22b78e40d009bdf0089ffffffff0200c2eb0b000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac1e07af2f000000001976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac02473044022009195d870ecc40f54130008e392904e77d32b738c1add19d1d8ebba4edf812e602204f49de6dc60d9a3c3703e1e642942f8834f3a2cd81a6562a34b293942ce42f40012103ad1d8e89212f0b92c74d23bb710c00662ad1470198ac48c43f7d6f93a2a2687300000000");
+}
+
+TEST(Signer, BitcoinCashTransactionSign) {
+// SignP2SH_P2WPKH used line 238
+    auto transaction =  R"({"hash_type":)" + std::to_string(TWBitcoinSigHashTypeFork | TWBitcoinSigHashTypeAll) +
+                    R"(,"amount":600,"byte_fee":1,"to_address":"1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx","change_address":"1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU","scripts":{"4733f37cf4db86fbc2efed2500b4f4e49f312023":")" +
+                    TW::Base64::encode(parse_hex("001479091972186c449eb1ded22b78e40d009bdf0089")) +
+                    R"("},"utxo":{"out_point":{"hash":")" +
+                    (TW::Base64::encode(parse_hex("e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05"))) +
+                    R"(","index":2,"sequence":)" +
+                    std::to_string(UINT32_MAX) +
+                    R"(},"script":")"+
+                    TW::Base64::encode(parse_hex("76a914aff1e0789e5fe316b729577665aa0a04d5b0f8c788ac")) +
+                    R"(","amount":5151}})";
+
+    auto input = Proto::SigningInput();
+    input.set_private_key("7fdafb9db5bc501f2096e7d13d331dc7a75d9594af3d251313ba8b6200f4e384");
+    input.set_transaction(transaction);
+    input.set_coin_type(TWCoinTypeBitcoinCash);
+
+    auto signer = Signer(input);
+    auto output = signer.sign();
+
+    ASSERT_TRUE(output.success());
+    ASSERT_EQ(output.output(), "01000000000101e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05020000006b483045022100b70d158b43cbcded60e6977e93f9a84966bc0cec6f2dfd1463d1223a90563f0d02207548d081069de570a494d0967ba388ff02641d91cadb060587ead95a98d4e3534121038eab72ec78e639d02758e7860cdec018b49498c307791f785aa3019622f4ea5bffffffff0258020000000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ace5100000000000001976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac0000000000");
 }
 
 TEST(Signer, CosmosTransactionSign) {
@@ -216,7 +242,7 @@ TEST(Signer, NetworkNotSupported) {
     auto input = Proto::SigningInput();
     input.set_private_key("c9b0a273831931aa4a5f8d1a570d5021dda91d3319bd3819becdaabfb7b44e3b");
     input.set_transaction(transaction);
-    input.set_coin_type(TWCoinTypeBitcoinCash);
+    input.set_coin_type(TWCoinTypeZcash);
 
     auto signer = Signer(input);
     auto output = signer.sign();

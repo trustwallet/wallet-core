@@ -201,6 +201,8 @@ TW::Any::Proto::SigningOutput TW::Any::Signer::sign() const noexcept {
         }
         break;
     }
+    case TWCoinTypeBitcoinCash:
+    case TWCoinTypeLitecoin:
     case TWCoinTypeBitcoin: {
         Bitcoin::Proto::SigningInput message;
         parse(transaction, &message, output);
