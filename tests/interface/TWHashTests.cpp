@@ -57,6 +57,21 @@ TEST(TWHashTests, Sha512_256) {
     ASSERT_TRUE(TWDataEqual(hashed.get(), expected.get()));
 }
 
+TEST(TWHashTests, XXHash64) {
+    auto message = std::string("123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF");
+    auto message2 = std::string("123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF123456789ABCDEF");
+    auto messageData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(message.data()), message.size()));
+    auto messageData2 = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(message2.data()), message2.size()));
+    auto hashed = WRAPD(TWHashXXHash64(messageData.get(), 0));
+    auto hashed2 = WRAPD(TWHashXXHash64(messageData2.get(), 1));
+
+    auto result = const_cast<Data*>(reinterpret_cast<const Data*>(hashed.get()));
+    auto result2 = const_cast<Data*>(reinterpret_cast<const Data*>(hashed2.get()));
+
+    ASSERT_EQ(hex(*result), string("fd84b6962fcb8d09"));
+    ASSERT_EQ(hex(*result2), string("7ea0f7af4b4f9cf4"));
+}
+
 TEST(TWHashTests, TwoXXHash64Concat) {
     auto message = std::string("Balances");
     auto message2 = std::string("FreeBalance");
