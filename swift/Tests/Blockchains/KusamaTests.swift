@@ -32,6 +32,20 @@ class KusamaTests: XCTestCase {
         XCTAssertEqual(address.publicKey.hexString, pubkey.data.hexString)
     }
 
+    func testStorageKey() {
+        func generateStorageKey(module: String, function: String, publicKey: Data) -> Data {
+            var data = Data()
+            data.append(Hash.twoXXHash64Concat(data: module.data(using: .utf8)!))
+            data.append(Hash.twoXXHash64Concat(data: function.data(using: .utf8)!))
+            data.append(Hash.blake2b(data: publicKey, size: 32))
+            return data
+        }
+
+        let address = KusamaAddress(string: "HKtMPUSoTC8Hts2uqcQVzPAuPRpecBt4XJ5Q1AT1GM3tp2r")!
+        let key = generateStorageKey(module: "Balances", function: "FreeBalance", publicKey: address.publicKey)
+        XCTAssertEqual(key.hexString, "c2261276cc9d1f8598ea4b6a74b15c2f6482b9ade7bc6657aaca787ba1add3b4c801483fa04e8fd48dc5c5675891cfaab709696db6de3184d95d26a1c894f1f8")
+    }
+
     func testSigningTransfer() {
         let key = PrivateKey(data: Data(hexString: "0xabf8e5bdbe30c65656c0a3cbd181ff8a56294a69dfedd27982aace4a76909115")!)!
         let address = CoinType.kusama.deriveAddress(privateKey: key)
