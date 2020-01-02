@@ -53,14 +53,12 @@ TEST(TWCardano, PlanAndSign) {
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const byte *)inputString.data(), inputString.size());
 
-    // plan
     TW_Cardano_Proto_TransactionPlan planData = TWCardanoSignerPlanTransaction(inputData);
     auto plan = Proto::TransactionPlan();
     ASSERT_TRUE(plan.ParseFromArray(TWDataBytes(planData), TWDataSize(planData)));
     EXPECT_EQ("", plan.error());
     EXPECT_EQ(167994, plan.fee());
 
-    // sign
     auto outputData = TWCardanoSignerSign(inputData, planData);
 
     auto output = Proto::SigningOutput();
@@ -70,6 +68,41 @@ TEST(TWCardano, PlanAndSign) {
         hex(output.encoded())
     );
     EXPECT_EQ("4374315285f5af17c5fd37d78bcaa94534968e925c06e293e10d2348d9420fac", output.transaction_id());
+    EXPECT_EQ("", output.error());
+}
+
+TEST(TWCardano, PlanMaxAmount) {
+    Proto::SigningInput input;
+    input.set_amount(1000000); // does not matter, as max_amount is used
+    input.set_to_address("Ae2tdPwUPEZ4V8WWZsGRnaszaeFnTs3NKvFP2xRse56EPMDabmJAJgrWibp");
+    input.set_change_address("Ae2tdPwUPEZLKW7531GsfhQC1bNSTKTZr4NcAymSgkaDJHZAwoBk75ATZyW");
+    auto utxo = input.add_utxo();
+    Data txid = parse_hex("59991b7aa2d09961f979afddcd9571ff1c637a1bc0dab09a7233f078d17dac14");
+    utxo->mutable_out_point()->set_txid(txid.data(), txid.size());
+    utxo->mutable_out_point()->set_index(6);
+    utxo->set_amount(15000000);
+    utxo->set_address("Ae2tdPwUPEZ6SqAETdiJgPYHpAey2MWakEVRDESWYzBePi7u5uAL5ah26qx");
+    Data privateKey = parse_hex("b8c31abcc41d931ae881be11da9e4d9242b1f01cae4e69fa29d5ba1f89f9c1549ec844c6b39c70fa6d3a254fe57c1efee1a75eb9755e0b751e96dd288deabc881ae60957699bf72b212ca823520cf7d86af5d1304cd90248fe60bd1fe442870f");
+    input.add_private_key(privateKey.data(), privateKey.size());
+    input.set_use_max_amount(true);
+
+    auto inputString = input.SerializeAsString();
+    auto inputData = TWDataCreateWithBytes((const byte *)inputString.data(), inputString.size());
+
+    TW_Cardano_Proto_TransactionPlan planData = TWCardanoSignerPlanTransaction(inputData);
+    auto plan = Proto::TransactionPlan();
+    ASSERT_TRUE(plan.ParseFromArray(TWDataBytes(planData), TWDataSize(planData)));
+    EXPECT_EQ("", plan.error());
+    EXPECT_EQ(0, plan.change());
+    EXPECT_EQ(14834159, plan.amount());
+    EXPECT_EQ(165841, plan.fee());
+    EXPECT_EQ(15000000, plan.available_amount());
+
+    auto outputData = TWCardanoSignerSign(inputData, planData);
+
+    auto output = Proto::SigningOutput();
+    ASSERT_TRUE(output.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+    EXPECT_EQ("7b8f15787fa8e0f1cb8b459780e10102e8f883cb25d3a50e02a73818b3bac91f", output.transaction_id());
     EXPECT_EQ("", output.error());
 }
 
