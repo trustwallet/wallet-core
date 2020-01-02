@@ -28,6 +28,7 @@ swift/Sources/Generated
 swift/wallet-core/
 src/Generated
 include/TrustWalletCore/TWHRP.h
+include/TrustWalletCore/TW*Proto.h
 
 # Code coverage files
 coverage.info
