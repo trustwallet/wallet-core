@@ -8,7 +8,6 @@
 
 #include "Address.h"
 #include "../Cbor.h"
-#include "../uint256.h"
 
 namespace TW::Filecoin {
 
@@ -21,10 +20,10 @@ class Transaction {
     // Transaction nonce
     uint64_t nonce;
     // Transaction value
-    uint256_t value;
+    uint64_t value;
     // Miner fee
-    uint256_t gas_price;
-    uint256_t gas_limit;
+    uint64_t gas_price;
+    uint64_t gas_limit;
     // Transaction type; 0 for simple transfers
     uint64_t method;
     // Transaction data; empty for simple transfers
@@ -32,14 +31,14 @@ class Transaction {
     // secp256k1 signature data (excluding type byte)
     Data signature;
 
-    Transaction(Address to, Address from, uint64_t nonce, uint256_t value, uint256_t gprice,
-                uint256_t glimit)
+    Transaction(Address to, Address from, uint64_t nonce, uint64_t value, uint64_t gprice,
+                uint64_t glimit)
         : to(std::move(to))
         , from(std::move(from))
         , nonce(nonce)
-        , value(std::move(value))
-        , gas_price(std::move(gprice))
-        , gas_limit(std::move(glimit))
+        , value(value)
+        , gas_price(gprice)
+        , gas_limit(glimit)
         , method(0) {}
 
   public:

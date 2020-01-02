@@ -5,14 +5,15 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Transaction.h"
+#include "../BinaryCoding.h"
 
 using namespace TW;
 using namespace TW::Filecoin;
 
-// encode_varuint encodes a 256-bit number into a big endian encoding, omitting leading zeros.
-static Data encode_varuint(const uint256_t& value) {
+// encode_varuint encodes a 64-bit number into a big endian encoding, omitting leading zeros.
+static Data encode_varuint(uint64_t value) {
     Data data;
-    encode256BE(data, value, 256);
+    encode64BE(value, data);
     int i = 0;
     for (i = 0; i < (int)data.size(); ++i)
         if (data[i] != 0)
