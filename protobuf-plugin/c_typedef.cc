@@ -24,6 +24,8 @@ class Generator : public  compiler::CodeGenerator {
             "// This file is part of Trust. The full Trust copyright notice, including\n"
             "// terms governing use, modification, and redistribution, is contained in the\n"
             "// file LICENSE at the root of the source code distribution tree.\n"
+            "//\n"
+            "// This is a GENERATED FILE, changes made here WILL BE LOST.\n"
             "\n"
             "#pragma once\n"
             "\n"

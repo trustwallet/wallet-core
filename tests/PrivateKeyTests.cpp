@@ -96,11 +96,13 @@ TEST(PrivateKey, ClearMemory) {
     delete privateKey;
     privateKey = nullptr;
 
-    // Memory cleaned (filled with 0s).  The are may be written by something el, we check that it is not equal to original)
+    // Memory cleaned (filled with 0s).  They may be overwritten by something else; we check that it is not equal to original, most of it has changed.
     ASSERT_NE(hex(privKeyData), hex(data(ptr, 32)));
-    for (auto i = 0; i < PrivateKey::size; ++i) {
-        ASSERT_NE(ptr[i], privKeyData[i]);
+    int countDifferent = 0;
+    for (auto i = 0; i < privKeyData.size(); ++i) {
+        countDifferent += (int)(ptr[i] != privKeyData[i]);
     }
+    ASSERT_GE(countDifferent, 32*2/3);
 }
 
 TEST(PrivateKey, PrivateKeyExtended) {
