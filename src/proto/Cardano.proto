@@ -74,7 +74,7 @@ message TransactionPlan {
     // Maximum available amount.
     int64 available_amount = 2;
 
-    // Estimated transaction fee.
+    // Computed total transaction fee.
     int64 fee = 3;
 
     // Change.
@@ -94,9 +94,6 @@ message SigningOutput {
 
     // Transaction id
     string transaction_id = 2;
-
-    // Total transaction fees.
-    int64 fee = 3;
 
     // Error message in case of error
     string error = 4;

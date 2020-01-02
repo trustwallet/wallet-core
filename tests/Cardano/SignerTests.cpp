@@ -331,7 +331,6 @@ TEST(CardanoSigner, SignTx_d498) {
         hex(output.encoded())
     );
     EXPECT_EQ("d498c692e3101a39d19da9c7a7beccd65c7d1ea6d23008806ac8d46e81e4918f", output.transaction_id());
-    EXPECT_EQ(169884, output.fee());
     EXPECT_EQ("", output.error());
 }
 

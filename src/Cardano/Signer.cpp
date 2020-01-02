@@ -266,6 +266,5 @@ Proto::SigningOutput Signer::prepareSignedTx(const Proto::SigningInput& input, c
     Proto::SigningOutput output;
     output.set_encoded(encoded.data(), encoded.size());
     output.set_transaction_id(hex(txId));
-    output.set_fee(plan.fee());
     return output;
 }
