@@ -26,6 +26,15 @@ Keys::Keys(ostream& out, const Coins& coins) : _out(out), _coins(coins) {
     _currentMnemonic = newwall.mnemonic;
 }
 
+void privateKeyToResult(const PrivateKey& priKey, string& res_out) {
+    // take the key, but may need to take extension as well
+    res_out = hex(priKey.bytes);
+    if (priKey.extensionBytes.size() > 0) {
+        res_out += hex(priKey.extensionBytes);
+        res_out += hex(priKey.chainCodeBytes);
+    }
+}
+
 bool Keys::newKey(const string& coinid, string& res) {
     // Create a new private key by creating a new HDWallet and deriving from it
     // Use coin-specific derivation path, so that PK can be coin-specific (e.g. longer for Cardano)
@@ -37,12 +46,7 @@ bool Keys::newKey(const string& coinid, string& res) {
 
     DerivationPath derivationPath = DerivationPath(coin.derivPath);
     PrivateKey key = newWallet.getKey(derivationPath);
-    // take the key, but may need to take extension as well
-    res = hex(key.bytes);
-    if (key.extensionBytes.size() > 0) {
-        res += hex(key.extensionBytes);
-        res += hex(key.chainCodeBytes);
-    }
+    privateKeyToResult(key, res);
     return true;
 }
 
@@ -159,7 +163,7 @@ bool Keys::priDP(const string& coinid, const string& dp, string& res) {
     HDWallet wallet(_currentMnemonic, "");
     PrivateKey priKey = wallet.getKey(dp3);
 
-    res = hex(priKey.bytes);
+    privateKeyToResult(priKey, res);
     return true;
 }
 

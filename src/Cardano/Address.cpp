@@ -21,6 +21,9 @@ using namespace std;
 bool Address::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs_out, byte& type_out) {
     // Decode Bas58, decode payload + crc, decode root, attr
     Data base58decoded = Base58::bitcoin.decode(addr);
+    if (base58decoded.size() == 0) {
+        throw invalid_argument("Invalid address: could not Base58 decode");
+    }
     auto elems = Cbor::Decode(base58decoded).getArrayElements();
     if (elems.size() < 2) {
         throw invalid_argument("Could not parse address payload from CBOR data");
