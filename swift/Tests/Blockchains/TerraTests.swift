@@ -20,23 +20,98 @@ class TerraTests: XCTestCase {
         XCTAssertFalse(CoinType.terra.validate(address: "cosmos1hsk6jryyqjfhp5dhc55tc9jtckygx0eph6dd02"))
     }
 
+    func testRawJSON() {
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
+        let fromAddress = CosmosAddress(hrp: .terra, publicKey: publicKey)!.description
+
+        let message = CosmosMessage.with {
+            $0.rawJsonMessage = CosmosMessage.RawJSON.with {
+                $0.type = "bank/MsgSend"
+                $0.value = """
+                    {
+                        "amount": [{
+                            "amount": "1000000",
+                            "denom": "uluna"
+                        }],
+                        "from_address": "\(fromAddress)",
+                        "to_address": "terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms"
+                    }
+                """
+            }
+        }
+
+        let fee = CosmosFee.with {
+            $0.gas = 200000
+            $0.amounts = [CosmosAmount.with {
+                $0.amount = 3000
+                $0.denom = "uluna"
+            }]
+        }
+
+        let signingInput = CosmosSigningInput.with {
+            $0.accountNumber = 158
+            $0.chainID = "soju-0013"
+            $0.memo = ""
+            $0.sequence = 0
+            $0.messages = [message]
+            $0.fee = fee
+            $0.privateKey = privateKey.data
+        }
+
+        let output = CosmosSigner.sign(input: signingInput)
+
+        let expectedJSON: String =
+"""
+{
+    "mode": "block",
+    "tx": {
+        "msg": [{
+            "type": "bank/MsgSend",
+            "value": {
+                "from_address": "terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe",
+                "to_address": "terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms",
+                "amount": [{
+                    "denom": "uluna",
+                    "amount": "1000000"
+                }]
+            }
+        }],
+        "fee": {
+            "amount": [{
+                "denom": "uluna",
+                "amount": "3000"
+            }],
+            "gas": "200000"
+        },
+        "signatures": [{
+            "pub_key": {
+                "type": "tendermint/PubKeySecp256k1",
+                "value": "A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"
+            },
+            "signature": "KPdiVsKpY12JG/VKEJVa/FpMKclxlS0qNNG6VOAypj10R5vY5UX5IgRJET1zNYnH0wvcXxfNXV+s8jtwN2UXiQ=="
+        }],
+        "memo": ""
+    }
+}
+"""
+        XCTAssertJSONEqual(expectedJSON, output.json)
+    }
+
     func testSigningTransaction() {
         // https://finder.terra.money/soju-0013/tx/1403B07F2D218BCE961CB92D83377A924FEDB54C1F0B62E25C8B93B63470EBF7
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
         let fromAddress = CosmosAddress(hrp: .terra, publicKey: publicKey)!.description
 
-        let sendCoinsMessage = CosmosMessage.Send.with {
-            $0.fromAddress = fromAddress
-            $0.toAddress = "terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms"
-            $0.amounts = [CosmosAmount.with {
-                $0.amount = 1000000
-                $0.denom = "uluna"
-            }]
-            $0.typePrefix = "bank/MsgSend"
-        }
-
         let message = CosmosMessage.with {
-            $0.sendCoinsMessage = sendCoinsMessage
+            $0.sendCoinsMessage = CosmosMessage.Send.with {
+                $0.fromAddress = fromAddress
+                $0.toAddress = "terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms"
+                $0.amounts = [CosmosAmount.with {
+                    $0.amount = 1000000
+                    $0.denom = "uluna"
+                }]
+                $0.typePrefix = "bank/MsgSend"
+            }
         }
 
         let fee = CosmosFee.with {
