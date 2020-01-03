@@ -68,7 +68,6 @@ class CosmosSignerTests: XCTestCase {
 {
   "mode": "block",
   "tx": {
-    "type": "cosmos-sdk/MsgSend",
     "fee": {
       "amount": [
         {
@@ -179,8 +178,7 @@ class CosmosSignerTests: XCTestCase {
         },
         "signature": "wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ=="
       }
-    ],
-    "type": "cosmos-sdk/MsgSend"
+    ]
   }
 }
 
@@ -270,8 +268,7 @@ class CosmosSignerTests: XCTestCase {
                 },
                 "signature": "2k5bSnfWxaauXHBNJTKmf4CpLiCWLg7UAC/q2SVhZNkU+n0DdLBSTdmYhKYmmtpl/Njm4YrcxE0WLb/hVccQ+g=="
               }
-            ],
-            "type": "cosmos-sdk/MsgSend"
+            ]
           }
         }
 
