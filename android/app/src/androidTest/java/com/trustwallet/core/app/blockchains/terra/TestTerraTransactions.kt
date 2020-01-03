@@ -1,4 +1,4 @@
-package com.trustwalval.core.app.blockchains.cosmos
+package com.trustwalval.core.app.blockchains.terra
 
 import android.util.Log
 import com.google.protobuf.ByteString
@@ -11,7 +11,7 @@ import wallet.core.jni.HRP
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.proto.Cosmos
 
-class TestCosmosTransactions {
+class TestTerraTransactions {
 
     init {
         System.loadLibrary("TrustWalletCore")
