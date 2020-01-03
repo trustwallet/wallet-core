@@ -83,6 +83,12 @@ Signer::Signer(Proto::SigningInput&& input) {
             message.set_type_prefix(COINEX_PREFIX_CANCEL_ORDER_MESSAGE);
         }
         *input.mutable_cancel_order_message() = message;
+    } else if(input.has_proposal_vote_message()) {
+        auto message = input.proposal_vote_message();
+        if (message.type_prefix().empty()) {
+            message.set_type_prefix(COINEX_PREFIX_PROPOSAL_VOTE_MESSAGE);
+        }
+        *input.mutable_proposal_vote_message() = message;
     }
     this->input = input;
 }
@@ -127,6 +133,8 @@ json Signer::buildTransactionJSON(const Data& signature) const {
         *transaction.mutable_create_order_message() = input.create_order_message();
     } else if (input.has_cancel_order_message()) {
         *transaction.mutable_cancel_order_message() = input.cancel_order_message();
+    } else if (input.has_proposal_vote_message()) {
+        *transaction.mutable_proposal_vote_message() = input.proposal_vote_message();
     }
 
     *transaction.mutable_signature() = sig;

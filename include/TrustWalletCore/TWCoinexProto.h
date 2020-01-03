@@ -19,6 +19,7 @@ typedef TWData *_Nonnull TW_Coinex_Proto_WithdrawStakeRewardAndRestakeMessage;
 typedef TWData *_Nonnull TW_Coinex_Proto_SetAliasMessage;
 typedef TWData *_Nonnull TW_Coinex_Proto_CreateOrderMessage;
 typedef TWData *_Nonnull TW_Coinex_Proto_CancelOrderMessage;
+typedef TWData *_Nonnull TW_Coinex_Proto_ProposalVoteMessage;
 typedef TWData *_Nonnull TW_Coinex_Proto_Transaction;
 typedef TWData *_Nonnull TW_Coinex_Proto_SigningInput;
 typedef TWData *_Nonnull TW_Coinex_Proto_SigningOutput;

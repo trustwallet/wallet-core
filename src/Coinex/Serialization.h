@@ -23,6 +23,8 @@ extern const std::string COINEX_PREFIX_CANCEL_ORDER_MESSAGE;
 extern const std::string COINEX_PREFIX_TRANSACTION;
 extern const std::string COINEX_PREFIX_PUBLIC_KEY;
 
+extern const std::string COINEX_PREFIX_PROPOSAL_VOTE_MESSAGE;
+
 namespace TW::Coinex{
 
 nlohmann::json signaturePreimageJSON(const Proto::SigningInput& input);

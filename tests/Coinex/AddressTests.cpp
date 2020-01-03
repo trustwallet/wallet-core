@@ -15,23 +15,23 @@
 namespace TW::Cosmos {
 
 TEST(Address, CoinexValid) {
-    ASSERT_TRUE(Address::isValid("coinex1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
+    ASSERT_TRUE(Address::isValid("cettest1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
 }
 
 TEST(Address, CoinexInvalid) {
-    ASSERT_FALSE(Address::isValid("coinex1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra63"));
+    ASSERT_FALSE(Address::isValid("cettest1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra63"));
 }
 
 TEST(Address, CoinexFromKeyHash) {
-    auto privateKey = PrivateKey(parse_hex("4646464646464646464646464646464646464646464646464646464646464646"));
+    auto privateKey = PrivateKey(parse_hex("c4c4f50e9af57eb281f07fb5e4ebb76d7ca1132549ffaa3aba3862fe58653244"));
     auto publicKeyData = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "024bc2a31265153f07e70e0bab08724e6b85e217f8cd628ceb62974247bb493382");
+    ASSERT_EQ(hex(publicKeyData.bytes.begin(), publicKeyData.bytes.end()), "0232c6d612a131d09ba11fd3e1f93c89613e9da9bc215cc0e2322e3073b8049bdd");
 
     auto publicKey = PublicKey(publicKeyData);
     auto address = Address("coinex", publicKey);
-    ASSERT_EQ(address.string(), "coinex1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0juwxvr");
+    ASSERT_EQ(address.string(), "coinex178w9m7yzkagpq090t593r6gqe5gkfkvjqjdxsw");
     auto address_2 = Address("cettest", publicKey);
-    ASSERT_EQ(address_2.string(), "cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j");
+    ASSERT_EQ(address_2.string(), "cettest178w9m7yzkagpq090t593r6gqe5gkfkvjl76znl");
 }
 
 } // namespace TW::Cosmos
