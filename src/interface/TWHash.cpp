@@ -7,7 +7,7 @@
 #include "../Data.h"
 
 #include "BinaryCoding.h"
-#include "xxhash64.h"
+#include "XXHash64.h"
 #include <TrezorCrypto/blake2b.h>
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha2.h>
