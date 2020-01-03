@@ -3,11 +3,13 @@
 *.orig
 *.swp
 *.swo
+*.iml
 
 # Build directories
 .build/
 build/
 xcode/
+.gradle/
 
 # Dependencies
 node_modules

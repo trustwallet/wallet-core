@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package TW.Seele.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+
+    //Sign Transaction
+    SignTransaction sign_transaction = 1;
+
+    // Private key.
+    bytes private_key = 2;
+
+}
+
+message SignTransaction {
+
+    //Transfer type (256-bit number)
+    uint64 type = 1;
+
+    // Sender's address.
+    string from = 2;
+
+    // Recipient's address.
+    string to = 3;
+
+    // Amount to send in wei (256-bit number)
+    uint64 amount = 4;
+
+    // Nonce (256-bit number)
+    uint64 account_nonce = 5;
+
+    // Gas price (256-bit number)
+    uint64 gas_price = 6;
+
+    // Gas limit (256-bit number)
+    uint64 gas_limit = 7;
+
+    // Transfer time (256-bit number)
+    uint64 timestamp = 8;
+
+    // Optional payload
+    bytes payload = 9;
+
+}
+
+// Transaction
+message Transaction {
+
+    SignTransaction data = 1;
+    Signature signature = 2;
+    string hash = 3;
+
+}
+
+// Signature
+message Signature {
+    bytes sig = 1;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    bytes signature = 1;
+    string json = 2;
+}
