@@ -7,34 +7,32 @@
 #pragma once
 
 #include "TWBase.h"
-#include "TWString.h"
 #include "TWData.h"
+#include "TWString.h"
 
 TW_EXTERN_C_BEGIN
-
-static const char *_Nonnull IOTEX_STAKING_CONTRACT = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
 
 TW_EXPORT_CLASS
 struct TWIoTeXStaking;
 
 /// Function to generate Stake message
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWIoTeXStakingStake(TWData *_Nonnull canName, uint64_t stakeDuration, bool nonDecay, TWData *_Nullable data);
+TWData* _Nonnull TWIoTeXStakingStake(TWData* _Nonnull candidate, uint64_t duration, bool nonDecay, TWData* _Nonnull data);
 
 /// Function to generate Unstake message
 TW_EXPORT_STATIC_METHOD
-TWData*_Nonnull TWIoTeXStakingUnstake(uint64_t pyggIndex, TWData *_Nullable data);
+TWData* _Nonnull TWIoTeXStakingUnstake(uint64_t pyggIndex, TWData* _Nonnull data);
 
 /// Function to generate Withdraw message
 TW_EXPORT_STATIC_METHOD
-TWData*_Nonnull TWIoTeXStakingWithdraw(uint64_t pyggIndex, TWData *_Nullable data);
+TWData* _Nonnull TWIoTeXStakingWithdraw(uint64_t pyggIndex, TWData* _Nonnull data);
 
 /// Function to generate AddStake message
 TW_EXPORT_STATIC_METHOD
-TWData*_Nonnull TWIoTeXStakingAddStake(uint64_t pyggIndex, TWData *_Nullable data);
+TWData* _Nonnull TWIoTeXStakingAddStake(uint64_t pyggIndex, TWData* _Nonnull data);
 
 /// Function to generate MoveStake message
 TW_EXPORT_STATIC_METHOD
-TWData*_Nonnull TWIoTeXStakingMoveStake(uint64_t pyggIndex, TWData *_Nonnull canName, TWData *_Nullable data);
+TWData* _Nonnull TWIoTeXStakingMoveStake(uint64_t pyggIndex, TWData* _Nonnull candidate, TWData* _Nonnull data);
 
 TW_EXTERN_C_END

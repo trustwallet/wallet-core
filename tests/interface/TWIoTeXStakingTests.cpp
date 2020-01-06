@@ -11,57 +11,67 @@
 #include "PrivateKey.h"
 #include "IoTeX/Signer.h"
 #include "proto/IoTeX.pb.h"
+#include "TWTestUtilities.h"
 
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::IoTeX;
 
+static const char *_Nonnull IOTEX_STAKING_CONTRACT = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
+static const char * IOTEX_STAKING_TEST = "this is a test";
+
 TEST(TWIoTeXStaking, Stake) {
-    auto d = parse_hex("07c35fc00102030405060708090a0b0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e900000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
-
     byte name[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-    auto canName = TWDataCreateWithBytes(name, 12);
-    auto test = TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("7468697320697320612074657374"));
-    auto stake = TWIoTeXStakingStake(canName, 1001, true, test);
+    auto candidate = WRAPD(TWDataCreateWithBytes(name, 12));
 
-    ASSERT_EQ(d, data(TWDataBytes(stake), TWDataSize(stake)));
+    auto test = WRAPD(TWDataCreateWithBytes((uint8_t *)IOTEX_STAKING_TEST, 14));
+    auto stake = WRAPD(TWIoTeXStakingStake(candidate.get(), 1001, true, test.get()));
+
+    auto result = dataFromTWData(stake.get());
+
+    ASSERT_EQ(hex(*result), "07c35fc00102030405060708090a0b0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e900000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
 }
 
 TEST(TWIoTeXStaking, Unstake) {
-    auto d = parse_hex("c8fd6ed000000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+    auto test = WRAPD(TWDataCreateWithBytes((uint8_t *)IOTEX_STAKING_TEST, 14));
+    auto unstake = WRAPD(TWIoTeXStakingUnstake(1001, test.get()));
 
-    auto test = TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("7468697320697320612074657374"));
-    auto unstake = TWIoTeXStakingUnstake(1001, test);
+    auto result = dataFromTWData(unstake.get());
 
-    ASSERT_EQ(d, data(TWDataBytes(unstake), TWDataSize(unstake)));
+    ASSERT_EQ(hex(*result), "c8fd6ed000000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
 }
 
 TEST(TWIoTeXStaking, Withdraw) {
-    auto d = parse_hex("030ba25d00000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
 
-    auto test = TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("7468697320697320612074657374"));
-    auto withdraw = TWIoTeXStakingWithdraw(1001, test);
+    auto test = WRAPD(TWDataCreateWithBytes((uint8_t *)IOTEX_STAKING_TEST, 14));
+    auto withdraw = WRAPD(TWIoTeXStakingWithdraw(1001, test.get()));
 
-    ASSERT_EQ(d, data(TWDataBytes(withdraw), TWDataSize(withdraw)));
+    auto result = dataFromTWData(withdraw.get());
+
+    ASSERT_EQ(hex(*result), "030ba25d00000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
 }
 
 TEST(TWIoTeXStaking, AddStake) {
-    auto d = parse_hex("6e7b301700000000000000000000000000000000000000000000000000000000000003e900000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000");
 
-    auto add = TWIoTeXStakingAddStake(1001, nullptr);
+    auto test = WRAPD(TWDataCreateWithSize(0));
+    auto add = WRAPD(TWIoTeXStakingAddStake(1001, test.get()));
 
-    ASSERT_EQ(d, data(TWDataBytes(add), TWDataSize(add)));
+    auto result = dataFromTWData(add.get());
+
+    ASSERT_EQ(hex(*result), "6e7b301700000000000000000000000000000000000000000000000000000000000003e900000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000");
 }
 
 TEST(TWIoTeXStaking, MoveStake) {
-    auto d = parse_hex("d3e41fd200000000000000000000000000000000000000000000000000000000000003e90102030405060708090a0b0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000");
 
     byte name[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-    auto canName = TWDataCreateWithBytes(name, 12);
-    auto move = TWIoTeXStakingMoveStake(1001, canName, nullptr);
+    auto candidate = TWDataCreateWithBytes(name, 12);
+    auto test = WRAPD(TWDataCreateWithSize(0));
+    auto add = WRAPD(TWIoTeXStakingMoveStake(1001, candidate, test.get()));
 
-    ASSERT_EQ(d, data(TWDataBytes(move), TWDataSize(move)));
+    auto result = dataFromTWData(add.get());
+
+    ASSERT_EQ(hex(*result), "d3e41fd200000000000000000000000000000000000000000000000000000000000003e90102030405060708090a0b0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000");
 }
 
 TEST(TWIoTeXStaking, SignStake) {
@@ -79,11 +89,11 @@ TEST(TWIoTeXStaking, SignStake) {
     staking->set_contract(IOTEX_STAKING_CONTRACT);
     // call staking API to generate calldata
     byte name[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-    auto canName = TWDataCreateWithBytes(name, 12);
-    auto data = TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes("7468697320697320612074657374"));
+    auto candidate = WRAPD(TWDataCreateWithBytes(name, 12));
+    auto data = WRAPD(TWDataCreateWithBytes((uint8_t *)IOTEX_STAKING_TEST, 14));
     // data = "this is a test" here, it could be null (user leaves data empty when signing the tx)
-    TWData* stake = TWIoTeXStakingStake(canName, 1001, true, data);
-    staking->set_data(TWDataBytes(stake), TWDataSize(stake));
+    auto stake = WRAPD(TWIoTeXStakingStake(candidate.get(), 1001, true, data.get()));
+    staking->set_data(TWDataBytes(stake.get()), TWDataSize(stake.get()));
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
@@ -111,8 +121,9 @@ TEST(TWIoTeXStaking, SignUnstake) {
     staking->set_amount("456");
     staking->set_contract(IOTEX_STAKING_CONTRACT);
     // call staking API to generate calldata
-    TWData* unstake = TWIoTeXStakingUnstake(1001, nullptr);
-    staking->set_data(TWDataBytes(unstake), TWDataSize(unstake));
+    auto data = WRAPD(TWDataCreateWithSize(0));
+    auto unstake = WRAPD(TWIoTeXStakingUnstake(1001, data.get()));
+    staking->set_data(TWDataBytes(unstake.get()), TWDataSize(unstake.get()));
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
@@ -137,8 +148,9 @@ TEST(TWIoTeXStaking, SignWithdraw) {
     staking->set_amount("456");
     staking->set_contract(IOTEX_STAKING_CONTRACT);
     // call staking API to generate calldata
-    TWData* withdraw = TWIoTeXStakingWithdraw(1001, nullptr);
-    staking->set_data(TWDataBytes(withdraw), TWDataSize(withdraw));
+    auto data = WRAPD(TWDataCreateWithSize(0));
+    auto withdraw = WRAPD(TWIoTeXStakingWithdraw(1001, data.get()));
+    staking->set_data(TWDataBytes(withdraw.get()), TWDataSize(withdraw.get()));
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
@@ -163,8 +175,9 @@ TEST(TWIoTeXStaking, SignAddStake) {
     staking->set_amount("456");
     staking->set_contract(IOTEX_STAKING_CONTRACT);
     // call staking API to generate calldata
-    TWData* addStake = TWIoTeXStakingAddStake(1001, nullptr);
-    staking->set_data(TWDataBytes(addStake), TWDataSize(addStake));
+    auto data = WRAPD(TWDataCreateWithSize(0));
+    auto addStake = WRAPD(TWIoTeXStakingAddStake(1001, data.get()));
+    staking->set_data(TWDataBytes(addStake.get()), TWDataSize(addStake.get()));
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
@@ -190,9 +203,10 @@ TEST(TWIoTeXStaking, SignMoveStake) {
     staking->set_contract(IOTEX_STAKING_CONTRACT);
     // call staking API to generate calldata
     byte name[12] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-    auto canName = TWDataCreateWithBytes(name, 12);
-    TWData* moveStake = TWIoTeXStakingMoveStake(1001, canName, nullptr);
-    staking->set_data(TWDataBytes(moveStake), TWDataSize(moveStake));
+    auto candidate = WRAPD(TWDataCreateWithBytes(name, 12));
+    auto data = WRAPD(TWDataCreateWithSize(0));
+    auto moveStake = WRAPD(TWIoTeXStakingMoveStake(1001, candidate.get(), data.get()));
+    staking->set_data(TWDataBytes(moveStake.get()), TWDataSize(moveStake.get()));
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash

@@ -65,8 +65,8 @@ TEST(TWHashTests, XXHash64) {
     auto hashed = WRAPD(TWHashXXHash64(messageData.get(), 0));
     auto hashed2 = WRAPD(TWHashXXHash64(messageData2.get(), 1));
 
-    auto result = const_cast<Data*>(reinterpret_cast<const Data*>(hashed.get()));
-    auto result2 = const_cast<Data*>(reinterpret_cast<const Data*>(hashed2.get()));
+    auto result = dataFromTWData(hashed.get());
+    auto result2 = dataFromTWData(hashed2.get());
 
     ASSERT_EQ(hex(*result), string("fd84b6962fcb8d09"));
     ASSERT_EQ(hex(*result2), string("7ea0f7af4b4f9cf4"));
@@ -80,8 +80,8 @@ TEST(TWHashTests, TwoXXHash64Concat) {
     auto hashed = WRAPD(TWHashTwoXXHash64Concat(messageData.get()));
     auto hashed2 = WRAPD(TWHashTwoXXHash64Concat(messageData2.get()));
 
-    auto result = const_cast<Data*>(reinterpret_cast<const Data*>(hashed.get()));
-    auto result2 = const_cast<Data*>(reinterpret_cast<const Data*>(hashed2.get()));
+    auto result = dataFromTWData(hashed.get());
+    auto result2 = dataFromTWData(hashed2.get());
 
     ASSERT_EQ(hex(*result), string("c2261276cc9d1f8598ea4b6a74b15c2f"));
     ASSERT_EQ(hex(*result2), string("6482b9ade7bc6657aaca787ba1add3b4"));
