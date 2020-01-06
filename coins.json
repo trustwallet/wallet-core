@@ -241,9 +241,9 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": {
-            "url": "https://gastracker.io",
+            "url": "https://blockscout.com/etc/mainnet",
             "txPath": "/tx/",
-            "accountPath": "/addr/"
+            "accountPath": "/address/"
         },
         "info": {
             "url": "https://ethereumclassic.org",
