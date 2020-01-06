@@ -95,4 +95,3 @@ class IoTeXTests: XCTestCase {
         XCTAssertEqual(output.hash.hexString, "33290ded342efaebf795855be73d34cbac149a2415ff9558de10303e6126f30d")
     }
 }
-
