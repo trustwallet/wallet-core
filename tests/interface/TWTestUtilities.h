@@ -10,6 +10,8 @@
 #include <TrustWalletCore/TWString.h>
 #include <gtest/gtest.h>
 
+#include <vector>
+
 #define WRAP(type, x) std::shared_ptr<type>(x, type##Delete)
 #define WRAPD(x) std::shared_ptr<TWData>(x, TWDataDelete)
 #define WRAPS(x) std::shared_ptr<TWString>(x, TWStringDelete)
@@ -23,4 +25,8 @@ inline void assertStringsEqual(std::shared_ptr<TWString>& string, const char* ex
 inline void assertHexEqual(std::shared_ptr<TWData>& data, const char* expected) {
     auto hex = WRAPS(TWStringCreateWithHexData(data.get()));
     assertStringsEqual(hex, expected);
+}
+
+inline std::vector<uint8_t>* dataFromTWData(TWData* data) {
+    return const_cast<std::vector<uint8_t>*>(reinterpret_cast<const std::vector<uint8_t>*>(data));
 }
