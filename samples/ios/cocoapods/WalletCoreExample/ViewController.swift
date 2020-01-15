@@ -35,31 +35,6 @@ class ViewController: NSViewController {
         let signerOutput = EthereumSigner.sign(input: signerInput)
         print("Signed transaction:")
         print(" data:   ", signerOutput.encoded.hexString)
-
-        // Signing a transaction (using AnySigner)
-        let secretPrivateKeyHex = secretPrivateKey.data.hexString
-        let chainIdB64 = "AQ=="  // base64(parse_hex("01"))
-        let gasPriceB64 = "1pOkAA=="  // base64(parse_hex("d693a4")) decimal 3600000000
-        let gasLimitB64 = "Ugg="  // base64(parse_hex("5208")) decimal 21000
-        let amountB64 = "A0i8paFgAA=="  // base64(parse_hex("0348bca5a160"))  924400000000000
-        let transaction = "{" +
-            "\"chainId\":\"" + chainIdB64 +
-            "\",\"gasPrice\":\"" + gasPriceB64 +
-            "\",\"gasLimit\":\"" + gasLimitB64 +
-            "\",\"toAddress\":\"" + dummyReceiverAddress +
-            "\",\"amount\":\"" + amountB64 + "\"}"
-        print("transaction: ", transaction)
-        let anySignerInput = AnySigningInput.with {
-            $0.coinType = coin.rawValue
-            $0.transaction = transaction
-            $0.privateKey = secretPrivateKeyHex
-        }
-        let anySignerOutput = AnySigner.sign(input: anySignerInput)
-        if !anySignerOutput.success {
-            print("Error:", anySignerOutput.error)
-        } else {
-            print("Signed transaction data:", anySignerOutput.output)
-        }
     }
 
     override var representedObject: Any? {

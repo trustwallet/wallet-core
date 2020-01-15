@@ -4,52 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWAnyProto.h>
-#include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWString.h>
 
-// Note: the proto include files are not exposed with C++ includes
-#include <proto/Any.pb.h> // AnySigner
-
 #include <iostream>
 #include <string>
 
 using namespace std;
-
-/// Helper for AnySigner input protobuf message building
-string buildAnySignerInputMsg(uint32_t coinType, string transaction, string privKeyHex) {
-    TW::Any::Proto::SigningInput si;
-    si.set_coin_type(coinType);
-    si.set_transaction(transaction);
-    si.set_private_key(privKeyHex);
-    string serialized;
-    if (!si.SerializeToString(&serialized)) { return ""; }
-    return serialized;
-}
-
-/// Helper for Signer output protobuf message parsing.
-bool parseSignedTransactionOutput(TW_Any_Proto_SigningOutput signerOutput, string& out) {
-    // copy to byte string
-    string outStr;
-    outStr.insert(outStr.end(), TWDataBytes(signerOutput), TWDataBytes(signerOutput) + TWDataSize(signerOutput));
-    // parse protobuf message
-    TW::Any::Proto::SigningOutput so;
-    if (!so.ParseFromString(outStr)) {
-        cout << "Error parsing SignerOutput protobuf message!" << endl;
-        return false;
-    }
-    if (so.has_error()) {
-        cout << "SignerOutput has error! " << so.error().description() << endl;
-        return false;
-    }
-    // OK, get output
-    out = so.output();
-    return true;
-}
 
 int main() {
     {
@@ -122,36 +86,6 @@ int main() {
         cout << "SEND funds:" << endl;
         const string dummyReceiverAddress = "0xC37054b3b48C3317082E7ba872d7753D13da4986";
         const string secretPrivKeyHex = TWStringUTF8Bytes(TWStringCreateWithHexData(TWPrivateKeyData(secretPrivateKeyDefault)));
-        {
-            cout << "preparing transaction (using AnySigner) ... ";
-            string chainIdB64 = "AQ=="; // base64(parse_hex("01"))
-            string gasPriceB64 = "1pOkAA=="; // base64(parse_hex("d693a4")) decimal 3600000000
-            string gasLimitB64 = "Ugg="; // base64(parse_hex("5208")) decimal 21000
-            string amountB64 = "A0i8paFgAA=="; // base64(parse_hex("0348bca5a160"))  924400000000000
-            string transaction = "{"
-                "\"chainId\":\"" + chainIdB64 +
-                "\",\"gasPrice\":\"" + gasPriceB64 +
-                "\",\"gasLimit\":\"" + gasLimitB64 +
-                "\",\"toAddress\":\"" + dummyReceiverAddress +
-                "\",\"amount\":\"" + amountB64 + "\"}";
-            cout << "transaction: " << transaction << endl;
-
-            string signerInput = buildAnySignerInputMsg((uint32_t)coinType, transaction, secretPrivKeyHex);
-            cout << "signing transaction ... ";
-            TW_Any_Proto_SigningOutput signerOutput = TWAnySignerSign(TWDataCreateWithBytes((const uint8_t*)signerInput.c_str(), signerInput.size()));
-            cout << "done" << endl;
-            // Extract signed output
-            string signedTransaction;
-            if (!parseSignedTransactionOutput(signerOutput, signedTransaction)) {
-                cout << "Could not parse out signed transaction!" << endl;
-            }
-            else
-            {
-                cout << "Signed transaction data (to be broadcast to network):  (len " << signedTransaction.length() << ") '" << signedTransaction << "'" << endl;
-                // see e.g. https://github.com/flightwallet/decode-eth-tx for checking binary output content
-            }
-            cout << endl;
-        }
     }
 
     cout << "Bye!" << endl;
