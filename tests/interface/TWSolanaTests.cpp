@@ -10,7 +10,7 @@
 #include "proto/Solana.pb.h"
 
 #include <TrustWalletCore/TWHDWallet.h>
-#include <TrustWalletCore/TWSolanaAddress.h>
+#include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWSolanaProto.h>
 #include <TrustWalletCore/TWSolanaSigner.h>
 
@@ -138,8 +138,8 @@ TEST(TWSolanaAddress, HDWallet) {
 
     auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeDerivationPath(TWCoinTypeSolana));
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
-    auto address = TWSolanaAddressCreateWithPublicKey(publicKey);
-    auto addressStr = WRAPS(TWSolanaAddressDescription(address));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeSolana));
+    auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressStr, "2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m");
 }

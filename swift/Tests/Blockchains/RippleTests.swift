@@ -12,19 +12,18 @@ class RippleTests: XCTestCase {
     func testAddressValidation() {
         let coin = CoinType.xrp
         let string = "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh"
-        let xaddr = coin.address(string: string) as? RippleXAddress
+        let xaddr = RippleXAddress(string: string)
 
         XCTAssertTrue(coin.validate(address: "rDpysuumkweqeC7XdNgYNtzL5GxbdsmrtF"))
         XCTAssertTrue(coin.validate(address: "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh"))
         XCTAssertEqual(xaddr?.description, string)
         XCTAssertEqual(xaddr?.tag, 12345)
-
     }
 
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "9c3d42d0515f0406ed350ab2abf3eaf761f8907802469b64052ac17e2250ae13")!)!
         let pubkey = key.getPublicKeySecp256k1(compressed: true)
-        let address = RippleAddress(publicKey: pubkey)
+        let address = AnyAddress(publicKey: pubkey, coin: .xrp)
 
         XCTAssertEqual(address.description, "r36yxStAh7qgTQNHTzjZvXybCTzUFhrfav")
     }

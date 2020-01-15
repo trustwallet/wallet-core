@@ -12,7 +12,7 @@
 #include "../Data.h"
 #include "../proto/Decred.pb.h"
 
-#include <TrustWalletCore/TWBitcoin.h>
+#include <TrustWalletCore/TWBitcoinSignatureVersion.h>
 #include <vector>
 
 namespace TW::Decred {

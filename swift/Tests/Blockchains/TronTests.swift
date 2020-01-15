@@ -10,7 +10,7 @@ import TrustWalletCore
 class TronTests: XCTestCase {
 
     func testTronAddress() {
-        let address = TronAddress(string: "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")!
+        let address = AnyAddress(string: "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3", coin: .tron)!
         XCTAssertEqual(address.description, "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")
     }
 }

@@ -15,7 +15,6 @@
 #include "proto/Bitcoin.pb.h"
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWSegwitAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWBitcoinTransactionSigner.h>
 #include <TrustWalletCore/TWHash.h>

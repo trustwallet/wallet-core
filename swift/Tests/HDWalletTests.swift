@@ -146,9 +146,9 @@ class HDWalletTests: XCTestCase {
         let binance = CoinType.binance
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: binance)
-        let address = CosmosAddress(hrp: .binance, publicKey: key.getPublicKeySecp256k1(compressed: true))
+        let address = AnyAddress(publicKey: key.getPublicKeySecp256k1(compressed: true), coin: binance)
 
-        XCTAssertEqual("bnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8pja0td", address?.description)
+        XCTAssertEqual("bnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8pja0td", address.description)
     }
 
     func testDeriveZcash() {
@@ -189,7 +189,7 @@ class HDWalletTests: XCTestCase {
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: .tezos)
         let pubkey = key.getPublicKeyEd25519()
-        let address = TezosAddress(publicKey: pubkey)
+        let address = AnyAddress(publicKey: pubkey, coin: .tezos)
 
         XCTAssertEqual(pubkey.data.hexString, "c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371")
         XCTAssertEqual("tz1RsC3AREfrMwh6Hdu7qGKxBwb1VgwJv1qw", address.description)

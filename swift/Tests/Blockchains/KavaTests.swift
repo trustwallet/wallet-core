@@ -23,7 +23,7 @@ class KavaTests: XCTestCase {
     func testSigningTransaction() {
         // https://kava.mintscan.io/txs/2988DF83FCBFAA38179D583A96734CBD071541D6768221BB23111BC8136D5E6A
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let fromAddress = CosmosAddress(hrp: .kava, publicKey: publicKey)!.description
+        let fromAddress = AnyAddress(publicKey: publicKey, coin: .kava).description
 
         let sendCoinsMessage = CosmosMessage.Send.with {
             $0.fromAddress = fromAddress

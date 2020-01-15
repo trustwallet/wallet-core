@@ -9,7 +9,7 @@
 #include "proto/Aeternity.pb.h"
 #include "HDWallet.h"
 
-#include <TrustWalletCore/TWAeternityAddress.h>
+#include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWAeternitySigner.h>
 #include <TrustWalletCore/TWAeternityProto.h>
 #include <TrustWalletCore/TWHDWallet.h>
@@ -29,8 +29,8 @@ TEST(TWAeternityAddress, HDWallet) {
 
     auto privateKey = TWHDWalletGetKey(wallet.get(), TWCoinTypeDerivationPath(TWCoinTypeAeternity));
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(privateKey);
-    auto address = TWAeternityAddressCreateWithPublicKey(publicKey);
-    auto addressStr = WRAPS(TWAeternityAddressDescription(address));
+    auto address = TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeAeternity);
+    auto addressStr = WRAPS(TWAnyAddressDescription(address));
 
     assertStringsEqual(addressStr, "ak_QDHJSfvHG9sDHBobaWt2TAGhuhipYjEqZEH34bWugpJfJc3GN");
 }

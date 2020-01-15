@@ -11,7 +11,6 @@
 #include "proto/Waves.pb.h"
 #include "uint256.h"
 
-#include <TrustWalletCore/TWWavesAddress.h>
 #include <TrustWalletCore/TWWavesSigner.h>
 #include <PrivateKey.h>
 #include <gtest/gtest.h>

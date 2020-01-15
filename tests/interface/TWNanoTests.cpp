@@ -15,7 +15,7 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPurpose.h>
-#include <TrustWalletCore/TWNanoAddress.h>
+#include <TrustWalletCore/TWAnyAddress.h>
 
 #include <gtest/gtest.h>
 
@@ -31,8 +31,8 @@ TEST(Nano, DeriveAddress) {
     ASSERT_EQ(TW::hex(key->impl.bytes), "3be4fc2ef3f3b7374e6fc4fb6e7bb153f8a2998b3b3dab50853eabe128024143");
     ASSERT_EQ(TW::hex(publicKey->impl.bytes), "5b65b0e8173ee0802c2c3e6c9080d1a16b06de1176c938a924f58670904e82c4");
 
-    auto address = TWNanoAddressCreateWithPublicKey(publicKey);
-    auto addressString = WRAPS(TWNanoAddressDescription(address));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeNano));
+    auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressString, "nano_1pu7p5n3ghq1i1p4rhmek41f5add1uh34xpb94nkbxe8g4a6x1p69emk8y1d");
 }

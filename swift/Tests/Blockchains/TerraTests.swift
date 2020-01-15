@@ -22,7 +22,7 @@ class TerraTests: XCTestCase {
 
     func testRawJSON() {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let fromAddress = CosmosAddress(hrp: .terra, publicKey: publicKey)!.description
+        let fromAddress = AnyAddress(publicKey: publicKey, coin: .terra).description
 
         let message = CosmosMessage.with {
             $0.rawJsonMessage = CosmosMessage.RawJSON.with {
@@ -100,7 +100,7 @@ class TerraTests: XCTestCase {
     func testSigningTransaction() {
         // https://finder.terra.money/soju-0013/tx/1403B07F2D218BCE961CB92D83377A924FEDB54C1F0B62E25C8B93B63470EBF7
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let fromAddress = CosmosAddress(hrp: .terra, publicKey: publicKey)!.description
+        let fromAddress = AnyAddress(publicKey: publicKey, coin: .terra).description
 
         let message = CosmosMessage.with {
             $0.sendCoinsMessage = CosmosMessage.Send.with {

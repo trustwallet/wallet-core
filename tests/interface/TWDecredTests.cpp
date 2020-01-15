@@ -9,7 +9,6 @@
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWPrivateKey.h>
-#include <TrustWalletCore/TWDecredAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 
 #include <gtest/gtest.h>

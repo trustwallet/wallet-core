@@ -11,7 +11,7 @@ class NanoTests: XCTestCase {
 
     func testAddressFromPublicKey() {
         let pubkey = PublicKey(data: Data(hexString: "5114aad86a390897d2a91b33b931b3a59a7df9e63eb3694f9430122f5622ae50")!, type: .ed25519Blake2b)!
-        let address = NanoAddress(publicKey: pubkey)
+        let address = AnyAddress(publicKey: pubkey, coin: .nano)
 
         XCTAssertEqual(address.description, "nano_1nanode8ngaakzbck8smq6ru9bethqwyehomf79sae1k7xd47dkidjqzffeg")
     }

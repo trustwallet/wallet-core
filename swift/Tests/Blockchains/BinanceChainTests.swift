@@ -11,9 +11,9 @@ class BinanceChainTests: XCTestCase {
 
     func testAddress() {
         let publicKey = PublicKey(data: Data(hexString: "0x026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e502")!, type: .secp256k1)!
-        let address = CosmosAddress(hrp: .binance, publicKey: publicKey)
+        let address = AnyAddress(publicKey: publicKey, coin: .binance)
 
-        XCTAssertEqual("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", address?.description)
+        XCTAssertEqual("bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2", address.description)
     }
 
     func testBinanceMainnet() {
@@ -35,12 +35,12 @@ class BinanceChainTests: XCTestCase {
         }
 
         let input = BinanceSendOrder.Input.with {
-            $0.address = CosmosAddress(hrp: .binance, publicKey: publicKey)!.keyHash
+            $0.address = AnyAddress(publicKey: publicKey, coin: .binance).data
             $0.coins = [token]
         }
 
         let output = BinanceSendOrder.Output.with {
-            $0.address = CosmosAddress(string: "bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5")!.keyHash
+            $0.address = AnyAddress(string: "bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5", coin: .binance)!.data
             $0.coins = [token]
         }
 

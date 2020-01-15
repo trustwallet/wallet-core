@@ -11,7 +11,7 @@
 #include "TransactionOutput.h"
 #include "../Hash.h"
 
-#include <TrustWalletCore/TWBitcoin.h>
+#include <TrustWalletCore/TWBitcoinSignatureVersion.h>
 #include <vector>
 
 namespace TW::Bitcoin {

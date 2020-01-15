@@ -37,4 +37,7 @@ const char *_Nonnull TWStringUTF8Bytes(TWString *_Nonnull string);
 /// Deletes a string created with a `TWStringCreate*` method.  After delete it must not be used (can segfault)!
 void TWStringDelete(TWString *_Nonnull string);
 
+/// Determines whether two string blocks are equal.
+bool TWStringEqual(TWString *_Nonnull lhs, TWString *_Nonnull rhs);
+
 TW_EXTERN_C_END

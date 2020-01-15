@@ -11,7 +11,7 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPurpose.h>
-#include <TrustWalletCore/TWStellarAddress.h>
+#include <TrustWalletCore/TWAnyAddress.h>
 
 #include <gtest/gtest.h>
 #include <HDWallet.h>
@@ -24,8 +24,8 @@ TEST(Stellar, DeriveAddress) {
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKeyForCoin(wallet.get(), TWCoinTypeStellar));
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519(key.get());
 
-    auto address = TWStellarAddressCreateWithPublicKey(publicKey);
-    auto addressString = WRAPS(TWStellarAddressDescription(address));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeStellar));
+    auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressString, "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI");
 }

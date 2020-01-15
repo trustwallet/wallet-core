@@ -76,8 +76,6 @@ generate_file("newcoin/Address.h.erb", "src/#{format_name(coin)}", "Address.h", 
 generate_file("newcoin/Address.cpp.erb", "src/#{format_name(coin)}", "Address.cpp", coin)
 generate_file("newcoin/Signer.h.erb", "src/#{format_name(coin)}", "Signer.h", coin)
 generate_file("newcoin/Signer.cpp.erb", "src/#{format_name(coin)}", "Signer.cpp", coin)
-generate_file("newcoin/TWAddress.h.erb", "include/TrustWalletCore", "TW#{format_name(coin)}Address.h", coin)
-generate_file("newcoin/TWAddress.cpp.erb", "src/interface", "TW#{format_name(coin)}Address.cpp", coin)
 generate_file("newcoin/TWSigner.h.erb", "include/TrustWalletCore", "TW#{format_name(coin)}Signer.h", coin)
 generate_file("newcoin/TWSigner.cpp.erb", "src/interface", "TW#{format_name(coin)}Signer.cpp", coin)
 generate_file("newcoin/AddressTests.cpp.erb", "tests/#{format_name(coin)}", "AddressTests.cpp", coin)

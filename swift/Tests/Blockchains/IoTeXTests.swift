@@ -19,7 +19,7 @@ class IoTeXTests: XCTestCase {
             $0.gasPrice = "1"
             $0.transfer = IoTeXTransfer.with {
                 $0.amount = "1"
-                $0.recipient = IoTeXAddress(string: "io1e2nqsyt7fkpzs5x7zf2uk0jj72teu5n6aku3tr")!.description
+                $0.recipient = AnyAddress(string: "io1e2nqsyt7fkpzs5x7zf2uk0jj72teu5n6aku3tr", coin: .ioTeX)!.description
             }
             $0.privateKey = privateKey.data
         }
