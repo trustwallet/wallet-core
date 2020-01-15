@@ -491,7 +491,7 @@
         "derivationPath": "m/44'/714'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
-        "hrp": "tbnb",
+        "hrp": "bnb",
         "explorer": "https://explorer.binance.org/tx/",
         "info": {
             "url": "https://binance.org",
