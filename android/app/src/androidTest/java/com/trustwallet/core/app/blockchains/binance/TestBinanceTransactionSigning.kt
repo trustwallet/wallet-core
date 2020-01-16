@@ -4,11 +4,8 @@ import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexBytes
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.BinanceSigner
-import wallet.core.jni.HRP
-import wallet.core.jni.PrivateKey
-import wallet.core.jni.CosmosAddress
 import wallet.core.jni.proto.Binance
+import wallet.core.jni.*
 import com.trustwallet.core.app.utils.toHex
 
 class TestBinanceTransactionSigning {
@@ -34,11 +31,11 @@ class TestBinanceTransactionSigning {
         token.amount = 1
 
         val input = Binance.SendOrder.Input.newBuilder()
-        input.address = ByteString.copyFrom(CosmosAddress(HRP.BINANCE, publicKey).keyHash())
+        input.address = ByteString.copyFrom(AnyAddress(publicKey, CoinType.BINANCE).data())
         input.addAllCoins(listOf(token.build()))
 
         val output =  Binance.SendOrder.Output.newBuilder()
-        output.address = ByteString.copyFrom(CosmosAddress("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5").keyHash())
+        output.address = ByteString.copyFrom(AnyAddress("bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5", CoinType.BINANCE).data())
         output.addAllCoins(listOf(token.build()))
 
         val sendOrder = Binance.SendOrder.newBuilder()
