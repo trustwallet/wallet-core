@@ -1249,9 +1249,9 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": {
-            "url": "https://??",
-            "txPath": "/??",
-            "accountPath": "/??"
+            "url": "https://polkadot.subscan.io",
+            "txPath": "/extrinsic/",
+            "accountPath": "/account/"
         },
         "info": {
             "url": "https://polkadot.network/",

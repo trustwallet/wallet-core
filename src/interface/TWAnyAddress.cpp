@@ -6,6 +6,7 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPublicKey.h>
+#include <TrezorCrypto/cash_addr.h>
 
 #include "../Bitcoin/Address.h"
 #include "../Bitcoin/CashAddress.h"
@@ -92,7 +93,10 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
 
     case TWCoinTypeBitcoinCash: {
         auto addr = Bitcoin::CashAddress(string);
-        data = Data(addr.bytes.begin(), addr.bytes.end());
+        data.resize(Bitcoin::Address::size);
+        size_t outlen = 0;
+        cash_data_to_addr(data.data(), &outlen, addr.bytes.data(), 34);
+        data = Data(data.begin() + 1, data.end());
         break;
     }
 
@@ -145,7 +149,8 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
         if (!Zilliqa::Address::decode(string, addr)) {
             break;
         }
-        data = addr.getKeyHash();
+        auto str = Zilliqa::checkSum(addr.getKeyHash());
+        data = Data(str.begin(), str.end());
         break;
     }
 

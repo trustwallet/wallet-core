@@ -17,28 +17,26 @@
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWBlockchain.h>
 #include <TrustWalletCore/TWCoinType.h>
-#include <TrustWalletCore/TWZilliqaAddress.h>
+#include <TrustWalletCore/TWAnyAddress.h>
 
 #include <gtest/gtest.h>
 
 TEST(Zilliqa, Address) {
 
     auto string = STRING("zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6");
-    EXPECT_TRUE(TWZilliqaAddressIsValidString(string.get()));
+    EXPECT_TRUE(TWAnyAddressIsValidString(string.get(), TWCoinTypeZilliqa));
 
-    EXPECT_FALSE(TWZilliqaAddressIsValidString(STRING("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C").get()));
-    EXPECT_FALSE(TWZilliqaAddressIsValidString(STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get()));
-    EXPECT_FALSE(TWZilliqaAddressCreateWithString(STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get()) != NULL);
+    EXPECT_FALSE(TWAnyAddressIsValidString(STRING("0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C").get(), TWCoinTypeZilliqa));
+    EXPECT_FALSE(TWAnyAddressIsValidString(STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get(), TWCoinTypeZilliqa));
+    EXPECT_FALSE(TWAnyAddressCreateWithString(STRING("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4").get(), TWCoinTypeZilliqa) != NULL);
 
-    auto address = WRAP(TWZilliqaAddress, TWZilliqaAddressCreateWithString(string.get()));
-    auto desc = WRAPS(TWZilliqaAddressDescription(address.get()));
-    auto keyHashString = WRAPS(TWZilliqaAddressKeyHash(address.get()));
-    auto keyHash = WRAPD(TWDataCreateWithHexString(keyHashString.get()));
-    auto addressFromKeyHash = WRAP(TWZilliqaAddress, TWZilliqaAddressCreateWithKeyHash(keyHash.get()));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeZilliqa));
+    auto desc = WRAPS(TWAnyAddressDescription(address.get()));
+    auto keyHash = WRAPD(TWAnyAddressData(address.get()));
+    auto keyHashString = WRAPS(TWStringCreateWithUTF8Bytes((const char *)TWDataBytes(keyHash.get())));
 
     assertStringsEqual(desc, "zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6");
     assertStringsEqual(keyHashString, "0xDdb41006F7B6FA8e5FBF06A71c01F789FeBC66e8");
-    EXPECT_TRUE(TWZilliqaAddressEqual(address.get(), addressFromKeyHash.get()));
 }
 
 TEST(Zilliqa, Signing) {
