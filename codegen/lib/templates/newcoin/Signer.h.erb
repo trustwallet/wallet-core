@@ -8,27 +8,23 @@
 
 #include "../Data.h"
 #include "../PrivateKey.h"
+#include "../proto/<%= name %>.pb.h"
 
-namespace TW::<%= format_name(coin) %> {
+namespace TW::<%= name %> {
 
-/// Helper class that performs <%= format_name(coin) %> transaction signing.
+/// Helper class that performs <%= name %> transaction signing.
 class Signer {
 public:
-    // TODO: Finalize class definition
-
     /// Hide default constructor
     Signer() = delete;
 
     /// Signs a Proto::SigningInput transaction
-    //static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
-
-    /// Signs the given transaction.
-    //static Data sign(const PrivateKey& privateKey, Transaction& transaction) noexcept;
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
-} // namespace TW::<%= format_name(coin) %>
+} // namespace TW::<%= name %>
 
 /// Wrapper for C interface.
-struct TW<%= format_name(coin) %>Signer {
-    TW::<%= format_name(coin) %>::Signer impl;
+struct TW<%= name %>Signer {
+    TW::<%= name %>::Signer impl;
 };

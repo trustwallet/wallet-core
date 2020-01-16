@@ -10,12 +10,9 @@ import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.<%= format_name(coin) %>Address
-import wallet.core.jni.PrivateKey
-import wallet.core.jni.PublicKey
-import wallet.core.jni.PublicKeyType
+import wallet.core.jni.*
 
-class Test<%= format_name(coin) %>Address {
+class Test<%= name %>Address {
 
     init {
         System.loadLibrary("TrustWalletCore")
@@ -27,8 +24,8 @@ class Test<%= format_name(coin) %>Address {
 
         val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
         val pubkey = key.publicKeyEd25519
-        val address = <%= format_name(coin) %>Address(pubkey)
-        val expected = <%= format_name(coin) %>Address("__EXPECTED_RESULT_ADDRESS__")
+        val address = AnyAddress(pubkey, CoinType.<%= format_name_uppercase(coin) %>)
+        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.<%= format_name_uppercase(coin) %>)
 
         assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
         assertEquals(address.description(), expected.description())
