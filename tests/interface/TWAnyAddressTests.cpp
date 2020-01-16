@@ -91,7 +91,7 @@ TEST(AnyAddress, Data) {
     // kusama
     {
         auto string = STRING("HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg");
-        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypePolkadot));
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeKusama));
         auto pubkey = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(pubkey, "e0b3fcccfe0283cc0f8c105c68b5690aab8c5c1692a868e55eaca836c8779085");
     }
