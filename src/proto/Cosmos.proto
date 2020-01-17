@@ -13,6 +13,11 @@ message Fee {
     uint64 gas = 2;
 }
 
+enum BroadcastMode {
+    BLOCK = 0;
+    ASYNC = 1;
+}
+
 message Message {
     // cosmos-sdk/MsgSend
     message Send {
@@ -80,6 +85,8 @@ message SigningInput {
     bytes private_key = 6;
 
     repeated Message messages = 7;
+
+    BroadcastMode mode = 8;
 }
 
 // Transaction signing output.
