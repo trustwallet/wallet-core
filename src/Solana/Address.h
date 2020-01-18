@@ -43,8 +43,3 @@ class Address : public Base58Address<32> {
 TW::Solana::Address addressFromValidatorSeed(TW::Solana::Address& fromAddress,
                                              TW::Solana::Address& validatorAddress,
                                              TW::Solana::Address& programId);
-
-/// Wrapper for C interface.
-struct TWSolanaAddress {
-    TW::Solana::Address impl;
-};

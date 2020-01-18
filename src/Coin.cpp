@@ -112,6 +112,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeEOS:
         return EOS::Address::isValid(string);
+
     case TWCoinTypeFIO:
         return FIO::Address::isValid(string);
 
@@ -185,6 +186,36 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeCardano:
         return Cardano::Address::isValid(string);
+    }
+}
+
+std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
+    if (!TW::validateAddress(coin, address)) {
+        return "";
+    }
+    switch (coin) {
+    case TWCoinTypeBitcoinCash:
+        // normalized with bitcoincash: prefix
+        if (Bitcoin::CashAddress::isValid(address)) {
+            return Bitcoin::CashAddress(address).string();
+        } else {
+            return std::string(address);
+        }
+    case TWCoinTypeCallisto:
+    case TWCoinTypeEthereum:
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeGoChain:
+    case TWCoinTypePOANetwork:
+    case TWCoinTypeThunderToken:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeVeChain:
+    case TWCoinTypeTheta:
+        // normalized with EIP55 checksum
+        return Ethereum::Address(address).string();
+    case TWCoinTypeWanchain:
+        // normalized with Wanchain checksum
+        return Wanchain::Address(address).string();
+    default: return std::string(address);
     }
 }
 

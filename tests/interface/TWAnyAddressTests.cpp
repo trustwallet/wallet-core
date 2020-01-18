@@ -19,8 +19,9 @@ TEST(AnyAddress, InvalidString) {
     auto btcAddress = TWAnyAddressCreateWithString(string.get(), TWCoinTypeBitcoin);
     auto ethAaddress = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeEthereum));
 
-    EXPECT_EQ(btcAddress, nullptr);
-    EXPECT_NE(ethAaddress.get(), nullptr);
+    ASSERT_EQ(btcAddress, nullptr);
+    ASSERT_NE(ethAaddress.get(), nullptr);
+    ASSERT_EQ(TWAnyAddressCoin(ethAaddress.get()), TWCoinTypeEthereum);
 }
 
 TEST(AnyAddress, Data) {

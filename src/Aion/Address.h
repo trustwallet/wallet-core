@@ -48,8 +48,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Aion
-
-/// Wrapper for C interface.
-struct TWAionAddress {
-    TW::Aion::Address impl;
-};

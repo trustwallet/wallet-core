@@ -6,5 +6,4 @@
 
 import Foundation
 
-public protocol Address: CustomStringConvertible {
-}
+public protocol Address: CustomStringConvertible {}

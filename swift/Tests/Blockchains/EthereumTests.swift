@@ -8,6 +8,16 @@ import XCTest
 import TrustWalletCore
 
 class EthereumTests: XCTestCase {
+
+    func testAddress() {
+        let anyAddress = AnyAddress(string: "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1", coin: .ethereum)
+        let ethAddress = EthereumAddress(string: "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1")
+
+        XCTAssertEqual(anyAddress?.description, ethAddress?.description)
+        XCTAssertEqual(anyAddress?.description, "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1")
+        XCTAssertEqual(anyAddress?.coin, .ethereum)
+    }
+
     func testSigner() {
         let input = EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!

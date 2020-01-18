@@ -32,8 +32,3 @@ public:
 };
 
 } // namespace TW::Cosmos
-
-/// Wrapper for C interface.
-struct TWCosmosAddress {
-    TW::Cosmos::Address impl;
-};

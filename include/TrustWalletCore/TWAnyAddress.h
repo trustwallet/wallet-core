@@ -42,6 +42,10 @@ void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address);
 TW_EXPORT_PROPERTY
 TWString* _Nonnull TWAnyAddressDescription(struct TWAnyAddress* _Nonnull address);
 
+/// Returns coin type of address.
+TW_EXPORT_PROPERTY
+enum TWCoinType TWAnyAddressCoin(struct TWAnyAddress* _Nonnull address);
+
 /// Returns underlaying data (public key or key hash)
 TW_EXPORT_PROPERTY
 TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address);

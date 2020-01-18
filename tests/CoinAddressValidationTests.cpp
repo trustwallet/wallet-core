@@ -27,6 +27,8 @@ TEST(Coin, ValidateAddressZilliqa) {
 TEST(Coin, ValidateAddressEthereum) {
     EXPECT_TRUE(validateAddress(TWCoinTypeEthereum, "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89"));
     EXPECT_FALSE(validateAddress(TWCoinTypeEthereum, "ede8f58dada22a49db60d4f82bad428ab65f89"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeEthereum, "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1"), "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1");
 }
 
 TEST(Coin, validateAddressBitcoin) {
@@ -36,6 +38,9 @@ TEST(Coin, validateAddressBitcoin) {
 
     EXPECT_FALSE(validateAddress(TWCoinTypeBitcoin, "bc1q2ddhp55sq2l4xnqhpdv9xazg02v9dr7uu8c2p2"));
     EXPECT_FALSE(validateAddress(TWCoinTypeBitcoin, "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeBitcoin, "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy"), "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy");
+    ASSERT_EQ(normalizeAddress(TWCoinTypeBitcoin, "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny"), "");
 }
 
 TEST(Coin, ValidateAddressBinance) {
@@ -62,6 +67,9 @@ TEST(Coin, ValidateAddressBitcoinCash) {
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "qq07l6rr5lsdm3m80qxw80ku2ex0tj76vvsxpvmgme"));
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeBitcoinCash, "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4"), "bitcoincash:qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4");
+    ASSERT_EQ(normalizeAddress(TWCoinTypeBitcoinCash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"), "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2");
 }
 
 TEST(Coin, ValidateAddressDogecoin) {
@@ -170,6 +178,8 @@ TEST(Coin, ValidateAddressDGB){
 TEST(Coin, validateAddressWanchain) {
     EXPECT_TRUE(validateAddress(TWCoinTypeWanchain, "0x9D8a62F656A8D1615c1294FD71E9cfB3e4855a4f"));
     EXPECT_FALSE(validateAddress(TWCoinTypeWanchain, "xx9D8a62F656A8D1615c1294FD71E9cfB3e4855a4f"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeWanchain, "0xb08f432a3346e90e2ab61830ec227043131f70ff"), "0xb08f432A3346E90e2AB61830Ec227043131f70Ff");
 }
 
 TEST(Coin, validateAddressICON) {

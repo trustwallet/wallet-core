@@ -40,10 +40,10 @@ bool TWAnyAddressIsValidString(TWString* _Nonnull string, enum TWCoinType coin) 
 
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string,
                                                             enum TWCoinType coin) {
-    if (!TWAnyAddressIsValidString(string, coin)) {
-        return nullptr;
-    }
-    return new TWAnyAddress{TWStringCreateWithUTF8Bytes(TWStringUTF8Bytes(string)), coin};
+    auto& address = *reinterpret_cast<const std::string*>(string);
+    auto normalized = TW::normalizeAddress(coin, address);
+    if (normalized.empty()) { return nullptr; }
+    return new TWAnyAddress{TWStringCreateWithUTF8Bytes(normalized.c_str()), coin};
 }
 
 struct TWAnyAddress* _Nonnull TWAnyAddressCreateWithPublicKey(
@@ -59,6 +59,10 @@ void TWAnyAddressDelete(struct TWAnyAddress* _Nonnull address) {
 
 TWString* _Nonnull TWAnyAddressDescription(struct TWAnyAddress* _Nonnull address) {
     return TWStringCreateWithUTF8Bytes(TWStringUTF8Bytes(address->address));
+}
+
+enum TWCoinType TWAnyAddressCoin(struct TWAnyAddress* _Nonnull address) {
+    return address->coin;
 }
 
 TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {

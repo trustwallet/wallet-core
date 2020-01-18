@@ -42,8 +42,3 @@ public:
 };
 
 } // namespace TW::IoTeX
-
-/// Wrapper for C interface
-struct TWIoTeXAddress {
-    TW::IoTeX::Address impl;
-};

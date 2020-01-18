@@ -37,7 +37,7 @@ class BitcoinCashTests: XCTestCase {
             AnyAddress(string: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", coin: .bitcoinCash)?.description
         )
         XCTAssertEqual(
-            "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
+            "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
             AnyAddress(string: "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", coin: .bitcoinCash)?.description
         )
     }

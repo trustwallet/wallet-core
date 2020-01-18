@@ -22,8 +22,3 @@ class Address : public Ethereum::Address {
     std::string string() const;
 };
 } // namespace TW::Wanchain
-
-/// Wrapper for C interface.
-struct TWWanchainAddress {
-    TW::Wanchain::Address impl;
-};

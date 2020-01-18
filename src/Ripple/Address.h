@@ -39,8 +39,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Ripple
-
-/// Wrapper for C interface.
-struct TWRippleAddress {
-    TW::Ripple::Address impl;
-};

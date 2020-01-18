@@ -43,8 +43,3 @@ static std::string checkSum(const Data &keyHash) {
 } // namespace TW::Zilliqa
 
 #pragma clang diagnostic pop
-
-/// Wrapper for C interface.
-struct TWZilliqaAddress {
-    TW::Zilliqa::Address impl;
-};

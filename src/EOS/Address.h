@@ -59,7 +59,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::EOS
-
-struct TWEOSAddress {
-    TW::EOS::Address impl;
-};

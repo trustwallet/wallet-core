@@ -56,8 +56,3 @@ static inline bool operator==(const Address &lhs, const Address &rhs) {
 }
 
 } // namespace TW::Waves
-
-/// Wrapper for C interface.
-struct TWWavesAddress {
-    TW::Waves::Address impl;
-};
