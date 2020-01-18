@@ -15,7 +15,8 @@ message Fee {
 
 enum BroadcastMode {
     BLOCK = 0;
-    ASYNC = 1;
+    SYNC = 1;
+    ASYNC = 2;
 }
 
 message Message {

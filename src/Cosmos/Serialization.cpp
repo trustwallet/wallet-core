@@ -24,10 +24,24 @@ const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
-static json broadcastJSON(json& j, const string& mode) {
+static string broadcastMode(Proto::BroadcastMode mode) {
+    string s = "sync";
+    switch (mode) {
+    case Proto::BroadcastMode::BLOCK:
+        s = "block";
+        break;
+    case Proto::BroadcastMode::ASYNC:
+        s = "async";
+        break;
+    default: break;
+    }
+    return s;
+}
+
+static json broadcastJSON(json& j, Proto::BroadcastMode mode) {
     return {
         {"tx", j},
-        {"mode", mode}
+        {"mode", broadcastMode(mode)}
     };
 }
 
@@ -182,9 +196,5 @@ json Cosmos::transactionJSON(const Proto::SigningInput& input, const Data& signa
             signatureJSON(signature, Data(publicKey.bytes))
         })}
     };
-    string mode = "block";
-    if (input.mode() == Proto::BroadcastMode::ASYNC) {
-        mode = "async";
-    }
-    return broadcastJSON(tx, mode);
+    return broadcastJSON(tx, input.mode());
 }
