@@ -14,9 +14,9 @@ message Fee {
 }
 
 enum BroadcastMode {
-    BLOCK = 0;
-    SYNC = 1;
-    ASYNC = 2;
+    BLOCK = 0; // Wait for the tx to pass/fail CheckTx, DeliverTx, and be committed in a block
+    SYNC = 1;  // Wait for the tx to pass/fail CheckTx
+    ASYNC = 2; // Don't wait for pass/fail CheckTx; send and return tx immediately
 }
 
 message Message {

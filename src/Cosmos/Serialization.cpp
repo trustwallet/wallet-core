@@ -25,17 +25,13 @@ const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegation
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
 static string broadcastMode(Proto::BroadcastMode mode) {
-    string s = "sync";
     switch (mode) {
     case Proto::BroadcastMode::BLOCK:
-        s = "block";
-        break;
+        return "block";
     case Proto::BroadcastMode::ASYNC:
-        s = "async";
-        break;
-    default: break;
+        return "async";
+    default: return "sync";
     }
-    return s;
 }
 
 static json broadcastJSON(json& j, Proto::BroadcastMode mode) {
