@@ -10,26 +10,26 @@ import XCTest
 class IconTests: XCTestCase {
 
     func testInvalid() {
-        XCTAssertNil(IconAddress(string: "abc"))
-        XCTAssertNil(IconAddress(string: "dshadghasdghsadadsadjsad"))
+        XCTAssertNil(AnyAddress(string: "abc", coin: .icon))
+        XCTAssertNil(AnyAddress(string: "dshadghasdghsadadsadjsad", coin: .icon))
 
-        XCTAssertFalse(IconAddress.isValidString(string: "abc"))
-        XCTAssertFalse(IconAddress.isValidString(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed"))
+        XCTAssertFalse(AnyAddress.isValidString(string: "abc", coin: .icon))
+        XCTAssertFalse(AnyAddress.isValidString(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed", coin: .icon))
     }
 
     func testIsValid() {
-        XCTAssertTrue(IconAddress.isValidString(string: "hx116f042497e5f34268b1b91e742680f84cf4e9f3"))
-        XCTAssertTrue(IconAddress.isValidString(string: "cx116f042497e5f34268b1b91e742680f84cf4e9f3"))
+        XCTAssertTrue(AnyAddress.isValidString(string: "hx116f042497e5f34268b1b91e742680f84cf4e9f3", coin: .icon))
+        XCTAssertTrue(AnyAddress.isValidString(string: "cx116f042497e5f34268b1b91e742680f84cf4e9f3", coin: .icon))
     }
 
     func testFromPrivateKey() {
         let privateKey = PrivateKey(data: Data(hexString: "94d1a980d5e528067d44bf8a60d646f556e40ca71e17cd4ead2d56f89e4bd20f")!)!
-        let address = IconAddress(publicKey: privateKey.getPublicKeySecp256k1(compressed: false), type: .address)
+        let address = AnyAddress(publicKey: privateKey.getPublicKeySecp256k1(compressed: false), coin: .icon)
         XCTAssertEqual(address.description, "hx98c0832ca5bd8e8bf355ca9491888aa9725c2c48")
     }
 
     func testDescription() {
-        let address = IconAddress(string: "hx116f042497e5f34268b1b91e742680f84cf4e9f3")!
+        let address = AnyAddress(string: "hx116f042497e5f34268b1b91e742680f84cf4e9f3", coin: .icon)!
         XCTAssertEqual(address.description, "hx116f042497e5f34268b1b91e742680f84cf4e9f3")
     }
 

@@ -2,11 +2,7 @@ package com.trustwallet.core.app.blockchains.solana
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.Base58
-import wallet.core.jni.PrivateKey
-import wallet.core.jni.PublicKey
-import wallet.core.jni.PublicKeyType
-import wallet.core.jni.SolanaAddress
+import wallet.core.jni.*
 
 class TestSolanaAddress {
 
@@ -19,8 +15,8 @@ class TestSolanaAddress {
     @Test
     fun testAddressFromPrivateKey() {
         val key = PrivateKey(Base58.decodeNoCheck("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr"))
-        val pubkey = key.getPublicKeyEd25519()
-        val address = SolanaAddress(pubkey)
+        val pubkey = key.publicKeyEd25519
+        val address = AnyAddress(pubkey, CoinType.SOLANA)
 
         assertEquals(address.description(), expectedAddressString)
     }
@@ -28,7 +24,7 @@ class TestSolanaAddress {
     @Test
     fun testAddressFromPublicKey() {
         val pubkey = PublicKey(Base58.decodeNoCheck(expectedAddressString), PublicKeyType.ED25519)
-        val address = SolanaAddress(pubkey)
+        val address = AnyAddress(pubkey, CoinType.SOLANA)
 
         assertEquals(address.description(), expectedAddressString)
     }
@@ -36,7 +32,7 @@ class TestSolanaAddress {
     @Test
     fun testAddressFromString() {
         val addressString = expectedAddressString
-        val address = SolanaAddress(addressString)
+        val address = AnyAddress(addressString, CoinType.SOLANA)
         assertEquals(address.description(), addressString)
     }
 }

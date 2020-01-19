@@ -37,8 +37,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Nano
-
-/// Wrapper for C interface.
-struct TWNanoAddress {
-    TW::Nano::Address impl;
-};

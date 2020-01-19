@@ -4,7 +4,6 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWHarmonyChainID.h>
 #include <gtest/gtest.h>
 
 #include "Ethereum/RLP.h"
@@ -23,7 +22,7 @@ class SignerExposed : public Signer {
     using Signer::hash;
 };
 
-static uint256_t MAIN_NET = TWHarmonyChainIDMainNet;
+static uint256_t MAIN_NET = 0x1;
 
 static uint256_t LOCAL_NET = 0x2;
 

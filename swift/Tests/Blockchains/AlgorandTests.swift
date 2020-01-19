@@ -12,8 +12,8 @@ class AlgorandTests: XCTestCase {
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "a6c4394041e64fe93d889386d7922af1b9a87f12e433762759608e61434d6cf7")!)!
         let pubkey = key.getPublicKeyEd25519()
-        let address = AlgorandAddress(publicKey: pubkey)
-        let addressFromString = AlgorandAddress(string: "ADIYK65L3XR5ODNNCUIQVEET455L56MRKJHRBX5GU4TZI2752QIWK4UL5A")!
+        let address = AnyAddress(publicKey: pubkey, coin: .algorand)
+        let addressFromString = AnyAddress(string: "ADIYK65L3XR5ODNNCUIQVEET455L56MRKJHRBX5GU4TZI2752QIWK4UL5A", coin: .algorand)!
 
         XCTAssertEqual(pubkey.data.hexString, "00d1857babdde3d70dad15110a9093e77abef991524f10dfa6a727946bfdd411")
         XCTAssertEqual(address.description, addressFromString.description)

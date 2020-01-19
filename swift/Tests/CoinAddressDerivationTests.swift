@@ -192,7 +192,7 @@ class CoinAddressDerivationTests: XCTestCase {
         }
     }
 
-    private func AssetCoinDerivation(_ coin: CoinType, _ expected: String, _ derivedAddress: String, _ address: Address?) {
+    private func AssetCoinDerivation(_ coin: CoinType, _ expected: String, _ derivedAddress: String, _ address: AnyAddress?) {
         XCTAssertNotNil(address, "\(coin) is not implemented CoinType.address(string: String)")
         XCTAssertEqual(expected, derivedAddress, "\(coin) failed to match address")
         XCTAssertEqual(expected, address?.description, "\(coin) is not implemented CoinType.address(string: String)")

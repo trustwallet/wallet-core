@@ -28,7 +28,3 @@ class Address: public SS58Address {
 };
 } // namespace TW::Polkadot
 
-/// Wrapper for C interface.
-struct TWPolkadotAddress {
-    TW::Polkadot::Address impl;
-};

@@ -34,20 +34,20 @@ class BitcoinCashTests: XCTestCase {
     func testAddress() {
         XCTAssertEqual(
             "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
-            BitcoinCashAddress(string: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd")?.description
+            AnyAddress(string: "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", coin: .bitcoinCash)?.description
         )
         XCTAssertEqual(
             "bitcoincash:prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd",
-            BitcoinCashAddress(string: "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd")?.description
+            AnyAddress(string: "prm3srpqu4kmx00370m4wt5qr3cp7sekmcksezufmd", coin: .bitcoinCash)?.description
         )
     }
 
     func testLockScript() {
-        let address = BitcoinCashAddress(string: "pzukqjmcyzrkh3gsqzdcy3e3d39cqxhl3g0f405k5l")!
+        let address = AnyAddress(string: "pzukqjmcyzrkh3gsqzdcy3e3d39cqxhl3g0f405k5l", coin: .bitcoinCash)!
         let script = BitcoinScript.buildForAddress(address: address.description, coin: .bitcoinCash)
         XCTAssertEqual(script.data.hexString, "a914b9604b7820876bc510009b8247316c4b801aff8a87")
 
-        let address2 = BitcoinCashAddress(string: "qphr8l8ns8wd99a8653ctfe5qcrxaumz5qpmqlk2ex")!
+        let address2 = AnyAddress(string: "qphr8l8ns8wd99a8653ctfe5qcrxaumz5qpmqlk2ex", coin: .bitcoinCash)!
         let script2 = BitcoinScript.buildForAddress(address: address2.description, coin: .bitcoinCash)
         XCTAssertEqual(script2.data.hexString, "76a9146e33fcf381dcd297a7d52385a73406066ef362a088ac")
     }

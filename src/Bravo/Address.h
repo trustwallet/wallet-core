@@ -50,9 +50,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace
-
-
-/// Wrapper for C interface.
-struct TWBravoAddress {
-    TW::Bravo::Address impl;
-};

@@ -6,7 +6,7 @@
 
 #include "TWTestUtilities.h"
 
-#include <TrustWalletCore/TWNebulasAddress.h>
+#include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWHRP.h>
@@ -21,8 +21,8 @@
 TEST(Nebulas, Address) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), false);
-    auto address = TWNebulasAddressCreateWithPublicKey(publicKey);
-    auto addressString = WRAPS(TWNebulasAddressDescription(address));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeNebulas));
+    auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
     assertStringsEqual(addressString, "n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
 }
 
@@ -41,17 +41,17 @@ TEST(Nebulas, ExtendedKeys) {
 }
 
 TEST(Nebulas, AddressEqual) {
-    auto address1 = WRAP(TWNebulasAddress, TWNebulasAddressCreateWithString(STRING("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get()));
-    auto address2 = WRAP(TWNebulasAddress, TWNebulasAddressCreateWithString(STRING("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get()));
-    auto address3 = WRAP(TWNebulasAddress, TWNebulasAddressCreateWithString(STRING("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39").get()));
-    EXPECT_TRUE(TWNebulasAddressEqual(address1.get(),address2.get()));
-    EXPECT_FALSE(TWNebulasAddressEqual(address1.get(),address3.get()));
+    auto address1 = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
+    auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
+    auto address3 = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39").get(), TWCoinTypeNebulas));
+    EXPECT_TRUE(TWAnyAddressEqual(address1.get(),address2.get()));
+    EXPECT_FALSE(TWAnyAddressEqual(address1.get(),address3.get()));
 }
 
 TEST(Nebulas, AddressIsValidString) {
-    EXPECT_TRUE(TWNebulasAddressIsValidString(STRING("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get()));
-    EXPECT_TRUE(TWNebulasAddressIsValidString(STRING("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39").get()));
-    EXPECT_FALSE(TWNebulasAddressIsValidString(STRING("a1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get()));
-    EXPECT_FALSE(TWNebulasAddressIsValidString(STRING("n2V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get()));
-    EXPECT_FALSE(TWNebulasAddressIsValidString(STRING("n123").get()));
+    EXPECT_TRUE(TWAnyAddressIsValidString(STRING("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
+    EXPECT_TRUE(TWAnyAddressIsValidString(STRING("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39").get(), TWCoinTypeNebulas));
+    EXPECT_FALSE(TWAnyAddressIsValidString(STRING("a1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
+    EXPECT_FALSE(TWAnyAddressIsValidString(STRING("n2V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
+    EXPECT_FALSE(TWAnyAddressIsValidString(STRING("n123").get(), TWCoinTypeNebulas));
 }

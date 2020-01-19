@@ -42,8 +42,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Algorand
-
-/// Wrapper for C interface.
-struct TWAlgorandAddress {
-    TW::Algorand::Address impl;
-};

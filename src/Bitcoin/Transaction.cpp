@@ -9,7 +9,7 @@
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 
-#include <TrustWalletCore/TWBitcoin.h>
+#include <TrustWalletCore/TWBitcoinSignatureVersion.h>
 
 #include <cassert>
 

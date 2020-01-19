@@ -11,14 +11,14 @@ class AeternityTests: XCTestCase {
 
     func testAddressFromPublicKey() {
         let publicKey = PublicKey(data: Data(hexString: "ee93a4f66f8d16b819bb9beb9ffccdfcdc1412e87fee6a324c2a99a1e0e67148")!, type: PublicKeyType.ed25519)!
-        let address = AeternityAddress(publicKey: publicKey)
-        XCTAssertEqual(address!.description, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
+        let address = AnyAddress(publicKey: publicKey, coin: .aeternity)
+        XCTAssertEqual(address.description, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
     }
 
     func testAddressFromString() {
         let addressString = "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw"
-        let address = AeternityAddress(string: addressString)
-        XCTAssertEqual(address!.description, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
+        let address = AnyAddress(string: addressString, coin: .aeternity)!
+        XCTAssertEqual(address.description, "ak_2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5FeVfcw")
     }
 
     func testSigner() throws {

@@ -31,8 +31,13 @@ def self.format_name_lowercase(coin)
   format_name(coin).downcase
 end
 
+def self.format_name_uppercase(coin)
+  format_name(coin).upcase
+end
+
 def self.generate_file(templateFile, folder, fileName, coin)
     @coin = coin
+    name = format_name(coin)
     path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
     template = ERB.new(File.read(path), nil, '-')
     result = template.result(binding)
@@ -41,6 +46,37 @@ def self.generate_file(templateFile, folder, fileName, coin)
     path = File.join(folder, fileName)
     File.write(path, result)
     puts "Generated file " + path
+end
+
+def self.insert_coint_type(coin)
+    target_file = "include/TrustWalletCore/TWCoinType.h"
+    target_line = "    TWCoinType#{coin['name']} = #{coin_type(coin['derivationPath'])},\n"
+    if insert_target_line(target_file, target_line, "};\n")
+        insert_blockchain_type(coin)
+    end
+end
+
+def insert_blockchain_type(coin)
+    target_file = "include/TrustWalletCore/TWBlockchain.h"
+    line_number = File.readlines(target_file).count
+    target_line = "    TWBlockchain#{coin['blockchain']} = #{line_number - 17},\n"
+    puts target_line
+    insert_target_line(target_file, target_line, "};\n")
+end
+
+def self.insert_target_line(target_file, target_line, original_line)
+    lines = File.readlines(target_file)
+    index = lines.index(target_line)
+    if index.nil?
+        index = lines.index(original_line)
+        lines.insert(index, target_line)
+        puts "Update #{target_file}"
+        File.open(target_file, "w+") do |f|
+            f.puts(lines)
+        end
+        return true
+    end
+    return false
 end
 
 command_line_args = ARGV
@@ -71,19 +107,23 @@ if coinSelect.length() == 0
     return
 end
 coin = coinSelect.first
+name = format_name(coin)
 
-generate_file("newcoin/Address.h.erb", "src/#{format_name(coin)}", "Address.h", coin)
-generate_file("newcoin/Address.cpp.erb", "src/#{format_name(coin)}", "Address.cpp", coin)
-generate_file("newcoin/Signer.h.erb", "src/#{format_name(coin)}", "Signer.h", coin)
-generate_file("newcoin/Signer.cpp.erb", "src/#{format_name(coin)}", "Signer.cpp", coin)
-generate_file("newcoin/TWAddress.h.erb", "include/TrustWalletCore", "TW#{format_name(coin)}Address.h", coin)
-generate_file("newcoin/TWAddress.cpp.erb", "src/interface", "TW#{format_name(coin)}Address.cpp", coin)
-generate_file("newcoin/TWSigner.h.erb", "include/TrustWalletCore", "TW#{format_name(coin)}Signer.h", coin)
-generate_file("newcoin/TWSigner.cpp.erb", "src/interface", "TW#{format_name(coin)}Signer.cpp", coin)
-generate_file("newcoin/AddressTests.cpp.erb", "tests/#{format_name(coin)}", "AddressTests.cpp", coin)
-generate_file("newcoin/SignerTests.cpp.erb", "tests/#{format_name(coin)}", "SignerTests.cpp", coin)
-generate_file("newcoin/TWTests.cpp.erb", "tests/interface", "TW#{format_name(coin)}Tests.cpp", coin)
-coin_test_gen.generate_coin_test_file(coin)
-generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "AddressTests#{format_name(coin)}.kt", coin)
-generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "SignerTests#{format_name(coin)}.kt", coin)
-generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{format_name(coin)}Tests.swift", coin)
+
+insert_coint_type(coin)
+
+generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
+generate_file("newcoin/Address.cpp.erb", "src/#{name}", "Address.cpp", coin)
+generate_file("newcoin/Proto.erb", "src/proto", "#{name}.proto", coin)
+generate_file("newcoin/Signer.h.erb", "src/#{name}", "Signer.h", coin)
+generate_file("newcoin/Signer.cpp.erb", "src/#{name}", "Signer.cpp", coin)
+generate_file("newcoin/TWSigner.h.erb", "include/TrustWalletCore", "TW#{name}Signer.h", coin)
+generate_file("newcoin/TWSigner.cpp.erb", "src/interface", "TW#{name}Signer.cpp", coin)
+generate_file("newcoin/AddressTests.cpp.erb", "tests/#{name}", "AddressTests.cpp", coin)
+generate_file("newcoin/SignerTests.cpp.erb", "tests/#{name}", "SignerTests.cpp", coin)
+generate_file("newcoin/TWTests.cpp.erb", "tests/interface", "TW#{name}Tests.cpp", coin)
+generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
+generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
+generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
+
+puts "please tools/generate-files to generate Swift/Java/Protobuf files"

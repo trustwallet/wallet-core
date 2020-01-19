@@ -43,8 +43,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Nebulas
-
-/// Wrapper for C interface.
-struct TWNebulasAddress {
-    TW::Nebulas::Address impl;
-};

@@ -12,7 +12,7 @@ class TezosTests: XCTestCase {
 
     public func testAddressFromString_validAddress() {
         let validAddressString = "tz1eZwq8b5cvE2bPKokatLkVMzkxz24z3Don"
-        let address = TezosAddress(string: validAddressString)
+        let address = AnyAddress(string: validAddressString, coin: .tezos)
         
         XCTAssertNotNil(address)
         XCTAssertEqual(address?.description, validAddressString)

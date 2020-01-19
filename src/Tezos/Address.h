@@ -36,8 +36,3 @@ class Address : public TW::Base58Address<23> {
 };
 
 } // namespace TW::Tezos
-
-/// Wrapper for C interface.
-struct TWTezosAddress {
-    TW::Tezos::Address impl;
-};

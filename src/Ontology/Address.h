@@ -48,8 +48,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Ontology
-
-/// Wrapper for C interface.
-struct TWOntologyAddress {
-    TW::Ontology::Address impl;
-};

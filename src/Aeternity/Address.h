@@ -37,9 +37,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Aeternity
-
-
-// Wrapper for C interface.
-struct TWAeternityAddress {
-    TW::Aeternity::Address impl;
-};

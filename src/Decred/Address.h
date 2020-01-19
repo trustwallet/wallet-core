@@ -37,8 +37,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Decred
-
-/// Wrapper for C interface.
-struct TWDecredAddress {
-    TW::Decred::Address impl;
-};

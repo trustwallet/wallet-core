@@ -34,8 +34,3 @@ class Address : public TW::Base58Address<21> {
 };
 
 } // namespace TW::Tron
-
-/// Wrapper for C interface.
-struct TWTronAddress {
-    TW::Tron::Address impl;
-};

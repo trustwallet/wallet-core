@@ -9,25 +9,18 @@
 #include "../PublicKey.h"
 
 using namespace TW;
-using namespace TW::<%= format_name(coin) %>;
+using namespace TW::<%= name %>;
 
-/*
+
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     // TODO: Check and finalize implementation
 
     auto protoOutput = Proto::SigningOutput();
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto pubkey = key.getPublicKey(TWPublicKeyTypeED25519);
-    auto from = Address(pubkey);
+    Data encoded;
+    // auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    // auto signature = privateKey.sign(payload, TWCurveED25519);
+    // encoded = encodeSignature(signature);
 
-    // ...
-    
+    protoOutput.set_encoded(encoded.data(), encoded.size());
     return protoOutput;
 }
-
-Data Signer::sign(const PrivateKey &privateKey, Transaction &transaction) noexcept {
-    // TODO: Finalize implementation
-
-    return Data();
-}
-*/

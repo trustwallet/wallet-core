@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWCardanoAddress.h>
+#include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWCardanoSigner.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include "proto/Cardano.pb.h"
@@ -24,16 +24,16 @@ TEST(TWCardano, Address) {
     auto publicKey = TWPrivateKeyGetPublicKeyEd25519Extended(privateKey.get());
     ASSERT_NE(nullptr, publicKey);
     ASSERT_EQ(64, publicKey->impl.bytes.size());
-    auto address = WRAP(TWCardanoAddress, TWCardanoAddressCreateWithPublicKey(publicKey));
-    auto addressString = WRAPS(TWCardanoAddressDescription(address.get()));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeCardano));
+    auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
     assertStringsEqual(addressString, "Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W");
 
-    auto address2 = WRAP(TWCardanoAddress, TWCardanoAddressCreateWithString(STRING("Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W").get()));
+    auto address2 = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(STRING("Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W").get(), TWCoinTypeCardano));
     ASSERT_NE(nullptr, address2.get());
-    auto address2String = WRAPS(TWCardanoAddressDescription(address2.get()));
+    auto address2String = WRAPS(TWAnyAddressDescription(address2.get()));
     assertStringsEqual(address2String, "Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W");
 
-    ASSERT_TRUE(TWCardanoAddressEqual(address.get(), address2.get()));
+    ASSERT_TRUE(TWAnyAddressEqual(address.get(), address2.get()));
 }
 
 TEST(TWCardano, PlanAndSign) {

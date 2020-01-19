@@ -70,8 +70,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::TON
-
-/// Wrapper for C interface.
-struct TWTONAddress {
-    TW::TON::Address impl;
-};

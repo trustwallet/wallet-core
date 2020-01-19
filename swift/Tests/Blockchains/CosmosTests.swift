@@ -28,10 +28,10 @@ class CosmosSignerTests: XCTestCase {
 
     func testSigningTransaction() {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let fromAddress = CosmosAddress(hrp: .cosmos, publicKey: publicKey)!.description
+        let fromAddress = AnyAddress(publicKey: publicKey, coin: .cosmos)
 
         let sendCoinsMessage = CosmosMessage.Send.with {
-            $0.fromAddress = fromAddress
+            $0.fromAddress = fromAddress.description
             $0.toAddress = "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"
             $0.amounts = [CosmosAmount.with {
                 $0.amount = 1

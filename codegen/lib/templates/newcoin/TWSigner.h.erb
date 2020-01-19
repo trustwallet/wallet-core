@@ -6,16 +6,16 @@
 #pragma once
 
 #include "TWBase.h"
-//#include "TW<%= format_name(coin) %>Proto.h"
+#include "TW<%= name %>Proto.h"
 
 TW_EXTERN_C_BEGIN
 
-/// Helper class to sign <%= format_name(coin) %> transactions.
+/// Helper class to sign <%= name %> transactions.
 TW_EXPORT_CLASS
-struct TW<%= format_name(coin) %>Signer;
+struct TW<%= name %>Signer;
 
 /// Signs a transaction.
-//TW_EXPORT_STATIC_METHOD
-//TW_<%= format_name(coin) %>_Proto_SigningOutput TW<%= format_name(coin) %>SignerSign(TW_<%= format_name(coin) %>_Proto_SigningInput input);
+TW_EXPORT_STATIC_METHOD
+TW_<%= name %>_Proto_SigningOutput TW<%= name %>SignerSign(TW_<%= name %>_Proto_SigningInput input);
 
 TW_EXTERN_C_END

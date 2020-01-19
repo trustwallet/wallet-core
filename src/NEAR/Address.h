@@ -54,8 +54,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::NEAR
-
-/// Wrapper for C interface.
-struct TWNEARAddress {
-    TW::NEAR::Address impl;
-};

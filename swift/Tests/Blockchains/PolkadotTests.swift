@@ -24,11 +24,11 @@ class PolkadotTests: XCTestCase {
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "0xd65ed4c1a742699b2e20c0c1f1fe780878b1b9f7d387f934fe0a7dc36f1f9008")!)!
         let pubkey = key.getPublicKeyEd25519()
-        let address = PolkadotAddress(publicKey: pubkey)
-        let addressFromString = PolkadotAddress(string: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW")!
+        let address = AnyAddress(publicKey: pubkey, coin: .polkadot)
+        let addressFromString = AnyAddress(string: "12twBQPiG5yVSf3jQSBkTAKBKqCShQ5fm33KQhH3Hf6VDoKW", coin: .polkadot)!
 
         XCTAssertEqual(pubkey.data.hexString, "53d82211c4aadb8c67e1930caef2058a93bc29d7af86bf587fba4aa3b1515037")
         XCTAssertEqual(address.description, addressFromString.description)
-        XCTAssertEqual(address.publicKey, pubkey.data)
+        XCTAssertEqual(address.data, pubkey.data)
     }
 }

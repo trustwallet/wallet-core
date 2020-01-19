@@ -7,10 +7,10 @@
 import XCTest
 import TrustWalletCore
 
-class TronTests: XCTestCase {
+class WanchainTests: XCTestCase {
 
-    func testTronAddress() {
-        let address = AnyAddress(string: "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3", coin: .tron)!
-        XCTAssertEqual(address.description, "TLWEciM1CjP5fJqM2r9wymAidkkYtTU5k3")
+    func testAddress() {
+        let address = AnyAddress(string: "0xb08f432a3346e90e2ab61830ec227043131f70ff", coin: .wanchain)
+        XCTAssertEqual(address?.description, "0xb08f432A3346E90e2AB61830Ec227043131f70Ff")
     }
 }

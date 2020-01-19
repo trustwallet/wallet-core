@@ -43,7 +43,3 @@ public:
 
 } // namespace TW::Harmony
 
-/// Wrapper for C interface.
-struct TWHarmonyAddress {
-    TW::Harmony::Address impl;
-};

@@ -14,19 +14,19 @@ class SolanaTests: XCTestCase {
     func testAddressFromPrivateKey() {
         let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeyEd25519()
-        let address = SolanaAddress(publicKey: publicKey)
+        let address = AnyAddress(publicKey: publicKey, coin: .solana)
         XCTAssertEqual(address.description, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
     }
 
     func testAddressFromPublicKey() {
         let publicKey = PublicKey(data: Data(Base58.decodeNoCheck(string: "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")!), type: PublicKeyType.ed25519)!
-        let address = SolanaAddress(publicKey: publicKey)
+        let address = AnyAddress(publicKey: publicKey, coin: .solana)
         XCTAssertEqual(address.description, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
     }
 
     func testAddressFromString() {
         let addressString = "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"
-        let address = SolanaAddress(string: addressString)
+        let address = AnyAddress(string: addressString, coin: .solana)
         XCTAssertEqual(address!.description, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
     }
 

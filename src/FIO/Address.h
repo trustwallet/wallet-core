@@ -54,8 +54,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::FIO
-
-/// Wrapper for C interface.
-struct TWFIOAddress {
-    TW::FIO::Address impl;
-};

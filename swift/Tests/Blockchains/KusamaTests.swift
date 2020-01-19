@@ -24,12 +24,12 @@ class KusamaTests: XCTestCase {
     func testAddress() {
         let key = PrivateKey(data: Data(hexString: "0x85fca134b3fe3fd523d8b528608d803890e26c93c86dc3d97b8d59c7b3540c97")!)!
         let pubkey = key.getPublicKeyEd25519()
-        let address = KusamaAddress(publicKey: pubkey)
-        let addressFromString = KusamaAddress(string: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg")!
+        let address = AnyAddress(publicKey: pubkey, coin: .kusama)
+        let addressFromString = AnyAddress(string: "HewiDTQv92L2bVtkziZC8ASxrFUxr6ajQ62RXAnwQ8FDVmg", coin: .kusama)!
 
         XCTAssertEqual(pubkey.data.hexString, "e0b3fcccfe0283cc0f8c105c68b5690aab8c5c1692a868e55eaca836c8779085")
         XCTAssertEqual(address.description, addressFromString.description)
-        XCTAssertEqual(address.publicKey.hexString, pubkey.data.hexString)
+        XCTAssertEqual(address.data.hexString, pubkey.data.hexString)
     }
 
     func testStorageKey() {
@@ -41,8 +41,8 @@ class KusamaTests: XCTestCase {
             return data
         }
 
-        let address = KusamaAddress(string: "HKtMPUSoTC8Hts2uqcQVzPAuPRpecBt4XJ5Q1AT1GM3tp2r")!
-        let key = generateStorageKey(module: "Balances", function: "FreeBalance", publicKey: address.publicKey)
+        let address = AnyAddress(string: "HKtMPUSoTC8Hts2uqcQVzPAuPRpecBt4XJ5Q1AT1GM3tp2r", coin: .kusama)!
+        let key = generateStorageKey(module: "Balances", function: "FreeBalance", publicKey: address.data)
         XCTAssertEqual(key.hexString, "c2261276cc9d1f8598ea4b6a74b15c2f6482b9ade7bc6657aaca787ba1add3b4c801483fa04e8fd48dc5c5675891cfaab709696db6de3184d95d26a1c894f1f8")
     }
 

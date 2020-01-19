@@ -32,3 +32,9 @@ void TWStringDelete(TWString *_Nonnull string) {
     auto s = reinterpret_cast<const std::string*>(string);
     delete s;
 }
+
+bool TWStringEqual(TWString *_Nonnull lhs, TWString *_Nonnull rhs) {
+    auto lv = reinterpret_cast<const std::string*>(lhs);
+    auto rv = reinterpret_cast<const std::string*>(rhs);
+    return *lv == *rv;
+}

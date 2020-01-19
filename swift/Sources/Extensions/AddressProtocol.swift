@@ -6,10 +6,4 @@
 
 import Foundation
 
-public protocol Address: CustomStringConvertible {
-    /// Validates that the string is a valid address.
-    static func isValidString(string: String) -> Bool
-
-    /// Creates a address from a string representation.
-    init?(string: String)
-}
+public protocol Address: CustomStringConvertible {}

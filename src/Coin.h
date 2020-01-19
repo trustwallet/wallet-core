@@ -26,6 +26,9 @@ namespace TW {
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);
 
+/// Validates and normalizes an address for a particular coin.
+std::string normalizeAddress(TWCoinType coin, const std::string& address);
+
 /// Returns the blockchain for a coin type.
 TWBlockchain blockchain(TWCoinType coin);
 

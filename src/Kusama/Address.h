@@ -28,7 +28,3 @@ class Address: public SS58Address {
 };
 } // namespace TW::Kusama
 
-/// Wrapper for C interface.
-struct TWKusamaAddress {
-    TW::Kusama::Address impl;
-};

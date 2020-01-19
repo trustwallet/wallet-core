@@ -5,10 +5,7 @@ import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.CosmosAddress
-import wallet.core.jni.CosmosSigner
-import wallet.core.jni.HRP
-import wallet.core.jni.PrivateKey
+import wallet.core.jni.*
 import wallet.core.jni.proto.Cosmos
 
 class TestCosmosTransactions {
@@ -22,7 +19,7 @@ class TestCosmosTransactions {
         val key =
             PrivateKey("80e81ea269e66a0a05b11236df7919fb7fbeedba87452d667489d7403a02f005".toHexByteArray())
         val publicKey = key.getPublicKeySecp256k1(true)
-        val from = CosmosAddress(HRP.COSMOS, publicKey).description()
+        val from = AnyAddress(publicKey, CoinType.COSMOS).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
             amount = 1

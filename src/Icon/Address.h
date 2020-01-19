@@ -52,8 +52,3 @@ inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::Icon
-
-/// Wrapper for C interface.
-struct TWIconAddress {
-    TW::Icon::Address impl;
-};

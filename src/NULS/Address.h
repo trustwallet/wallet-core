@@ -56,8 +56,3 @@ static inline bool operator==(const Address& lhs, const Address& rhs) {
 }
 
 } // namespace TW::NULS
-
-/// Wrapper for C interface.
-struct TWNULSAddress {
-    TW::NULS::Address impl;
-};
