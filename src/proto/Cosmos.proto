@@ -13,6 +13,12 @@ message Fee {
     uint64 gas = 2;
 }
 
+enum BroadcastMode {
+    BLOCK = 0; // Wait for the tx to pass/fail CheckTx, DeliverTx, and be committed in a block
+    SYNC = 1;  // Wait for the tx to pass/fail CheckTx
+    ASYNC = 2; // Don't wait for pass/fail CheckTx; send and return tx immediately
+}
+
 message Message {
     // cosmos-sdk/MsgSend
     message Send {
@@ -80,6 +86,8 @@ message SigningInput {
     bytes private_key = 6;
 
     repeated Message messages = 7;
+
+    BroadcastMode mode = 8;
 }
 
 // Transaction signing output.
