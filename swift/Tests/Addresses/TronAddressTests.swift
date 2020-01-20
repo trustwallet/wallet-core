@@ -11,7 +11,7 @@ class TronAddressTests: XCTestCase {
 
     func testFromPrivateKey() {
         let privateKey =  PrivateKey(data: Data(hexString: "2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54")!)!
-        
+
         let address = CoinType.tron.deriveAddress(privateKey: privateKey)
 
         XCTAssertEqual(address.description, "TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC")

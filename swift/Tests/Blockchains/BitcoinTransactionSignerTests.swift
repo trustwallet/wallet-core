@@ -73,6 +73,6 @@ class BitcoinTransactionSignerTests: XCTestCase {
                 "4730440220252e92b8757f1e5577c54ce5deb8072914c1f03333128777dee96ebceeb6a99b02202b7298789316779d0aa7595abeedc03054405c42ab9859e67d9253d2c9a0cdfa01232103596d3451025c" +
                 "19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac" +
             "00000000"
-        );
+        )
     }
 }
