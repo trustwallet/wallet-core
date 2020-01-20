@@ -241,9 +241,9 @@
         "curve": "secp256k1",
         "publicKeyType": "secp256k1Extended",
         "explorer": {
-            "url": "https://blockscout.com/etc/mainnet",
+            "url": "https://etcblockexplorer.com",
             "txPath": "/tx/",
-            "accountPath": "/address/"
+            "accountPath": "/addr/"
         },
         "info": {
             "url": "https://ethereumclassic.org",
