@@ -37,11 +37,11 @@ TEST(FIOSigner, Actor) {
         EXPECT_EQ("hhq2g4qgycfb", actor);
     }
     {
-        const auto addr2 = "FIO88k6wXVpSpoWy4TeUnTpsWomvALwQ5VEuU3UjYg83JdMxck6Gr";
+        const auto addr2 = "FIO7bxrQUTbQ4mqcoefhWPz1aFieN4fA9RQAiozRz7FrUChHZ7Rb8";
         Address addr = Address(addr2);
         EXPECT_EQ(addr2, addr.string());
 
         string actor = Actor::actor(addr);
-        EXPECT_EQ("fopt11cxukby", actor);
+        EXPECT_EQ("5kmx4qbqlpld", actor);
     }
 }
