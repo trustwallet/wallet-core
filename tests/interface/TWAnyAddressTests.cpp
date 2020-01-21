@@ -88,7 +88,7 @@ TEST(AnyAddress, Data) {
 
         auto expectedKeyHash = "0xF9dad33332CF77E783B3452aE982c85effCa6DDf";
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
-        auto checksumed = WRAPS(TWStringCreateWithRawBytes(TWDataBytes(keyHash.get()), strlen(expectedKeyHash)));
+        auto checksumed = WRAPS(TWStringCreateWithRawBytes(TWDataBytes(keyHash.get()), strnlen(expectedKeyHash, 42)));
         assertStringsEqual(checksumed, expectedKeyHash);
     }
     // kusama
