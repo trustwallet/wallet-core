@@ -22,6 +22,9 @@ typedef const void TWString;
 /// Creates a string from a null-terminated UTF8 byte array. It must be deleted at the end.
 TWString *_Nonnull TWStringCreateWithUTF8Bytes(const char *_Nonnull bytes);
 
+/// Creates a string from a raw byte array and size.
+TWString *_Nonnull TWStringCreateWithRawBytes(const uint8_t *_Nonnull bytes, size_t size);
+
 /// Creates a hexadecimal string from a block of data. It must be deleted at the end.
 TWString *_Nonnull TWStringCreateWithHexData(TWData *_Nonnull data);
 
