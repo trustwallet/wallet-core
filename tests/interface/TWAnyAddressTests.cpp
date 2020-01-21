@@ -85,9 +85,11 @@ TEST(AnyAddress, Data) {
     {
         auto string = STRING("zil1l8ddxvejeam70qang54wnqkgtmlu5mwlgzy64z");
         auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeZilliqa));
-        auto data = WRAPD(TWAnyAddressData(addr.get()));
-        auto checksumed = WRAPS(TWStringCreateWithUTF8Bytes((const char *)TWDataBytes(data.get())));
-        assertStringsEqual(checksumed, "0xF9dad33332CF77E783B3452aE982c85effCa6DDf");
+
+        auto expectedKeyHash = "0xF9dad33332CF77E783B3452aE982c85effCa6DDf";
+        auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
+        auto checksumed = WRAPS(TWStringCreateWithRawBytes(TWDataBytes(keyHash.get()), strnlen(expectedKeyHash, 42)));
+        assertStringsEqual(checksumed, expectedKeyHash);
     }
     // kusama
     {
