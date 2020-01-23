@@ -16,14 +16,24 @@ void Action::serialize(Data& out) const {
     EOS::Name(name).serialize(out);
     auth.serialize(out);
     encodeVarInt(actionDataSer.size(), out);
-    append(out, 1); // 01
+    if (includeExtra01BeforeData) {
+        append(out, 1); // 01
+    }
     append(out, actionDataSer);
     append(out, 0); // 00
 }
 
-void AddAddressData::serialize(Data& out) const {
+void AddPubAddressData::serialize(Data& out) const {
     encodeString(fioAddress, out);
     addresses.serialize(out);
+    encode64LE(maxFee, out);
+    EOS::Name(actor).serialize(out);
+    encodeString(tpid, out);
+}
+
+void RegFioAddressData::serialize(Data& out) const {
+    encodeString(fioAddress, out);
+    encodeString(ownerPublicKey, out);
     encode64LE(maxFee, out);
     EOS::Name(actor).serialize(out);
     encodeString(tpid, out);

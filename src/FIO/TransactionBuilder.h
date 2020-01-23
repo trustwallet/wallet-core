@@ -34,7 +34,20 @@ public:
     static constexpr auto ApiAccountAddress = "fio.address";
     static constexpr auto AuthrizationActive = "active";
     static const auto ExpirySeconds = 3600;
- 
+
+    /// Create a signed RegisterFioAddress transaction, returned as json string (double quote delimited), suitable for register_fio_address RPC call
+    /// @address The owners' FIO address
+    /// @privateKey The private key matching the address, needed for signing.
+    /// @fioName The FIO name to be registered. Ex.: "alice:trust"
+    /// @ownerPublicKey FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+    /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
+    /// @maxFee Max fee to spend, can be obtained using get_fee API.
+    /// @walletFioName The FIO name of the originating wallet, use TransactionBuilder::WalletFioName.
+    /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
+    static std::string createRegFioAddress(const Address& address, const PrivateKey& privateKey, 
+        const std::string& fioName, const std::string& ownerPublicKey,
+        const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
+
     /// Create a signed AddAddress transaction, returned as json string (double quote delimited), suitable for add_pub_address RPC call
     /// @address The owners' FIO address
     /// @privateKey The private key matching the address, needed for signing.
@@ -45,9 +58,12 @@ public:
     /// @walletFioName The FIO name of the originating wallet, use TransactionBuilder::WalletFioName.
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
     /// Note: fee is usually 0 for add_pub_address.
-    static std::string createTx(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
+    static std::string createAddPubAddress(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
         const std::vector<std::pair<std::string, std::string>>& pubAddresses,
         const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
+
+    /// Used internally.  Creates signatures and json with transaction.
+    static std::string signAdnBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey);
 };
 
 } // namespace TW::FIO

@@ -23,7 +23,8 @@ TEST(FIOSigner, SignEncode) {
 }
 
 TEST(FIOSigner, SignInternals) {
-    PrivateKey pk = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035")); // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri
+    // 5KEDWtAUJcFX6Vz38WXsAQAv2geNqT7UaZC8gYu9kTuryr3qkri FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf
+    PrivateKey pk = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035"));
     {
         Data pk2 = parse_hex("80");
         append(pk2, pk.bytes);
@@ -50,27 +51,27 @@ TEST(FIOSigner, Actor) {
 
         uint64_t shortenedKey = Actor::shortenKey(addr.bytes);
         EXPECT_EQ(1518832697283783336U, shortenedKey);
-
         string name = Actor::name(shortenedKey);
         EXPECT_EQ("2odzomo2v4pec", name);
-
-        string actor = Actor::actor(addr);
-        EXPECT_EQ("2odzomo2v4pe", actor);
     }
-    {
-        const auto addr2 = "FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE";
-        Address addr = Address(addr2);
-        EXPECT_EQ(addr2, addr.string());
+    const int n = 4;
+    const string addrArr[n] = {
+        "FIO6cDpi7vPnvRwMEdXtLnAmFwygaQ8CzD7vqKLBJ2GfgtHBQ4PPy",
+        "FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE",
+        "FIO7bxrQUTbQ4mqcoefhWPz1aFieN4fA9RQAiozRz7FrUChHZ7Rb8",
+        "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf",
+    };
+    const string actorArr[n] = {
+        "2odzomo2v4pe",
+        "hhq2g4qgycfb",
+        "5kmx4qbqlpld",
+        "qdfejz2a5wpl",
+    };
+    for (int i = 0; i < n; ++i) {
+        Address addr = Address(addrArr[i]);
+        EXPECT_EQ(addrArr[i], addr.string());
 
         string actor = Actor::actor(addr);
-        EXPECT_EQ("hhq2g4qgycfb", actor);
-    }
-    {
-        const auto addr2 = "FIO7bxrQUTbQ4mqcoefhWPz1aFieN4fA9RQAiozRz7FrUChHZ7Rb8";
-        Address addr = Address(addr2);
-        EXPECT_EQ(addr2, addr.string());
-
-        string actor = Actor::actor(addr);
-        EXPECT_EQ("5kmx4qbqlpld", actor);
+        EXPECT_EQ(actorArr[i], actor);
     }
 }

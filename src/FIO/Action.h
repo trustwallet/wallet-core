@@ -53,8 +53,8 @@ public:
 class PublicAddresses {
 public:
     std::vector<PublicAddress> addressList;
-    PublicAddresses(const std::vector<std::pair<std::string, std::string>>& addresses_in) {
-        for (const auto& item : addresses_in) {
+    PublicAddresses(const std::vector<std::pair<std::string, std::string>>& addresses) {
+        for (const auto& item : addresses) {
             addressList.push_back(PublicAddress{item.first, item.second});
         }
     }
@@ -72,13 +72,14 @@ public:
     std::string account;
     std::string name;
     AuthorizationArray auth;
+    bool includeExtra01BeforeData = false;
     Data actionDataSer;
 
     void serialize(Data& out) const;
 };
 
-/// AddAddress action data part.
-class AddAddressData {
+/// AddPubAddress action data part.
+class AddPubAddressData {
 public:
     std::string fioAddress;
     PublicAddresses addresses;
@@ -86,9 +87,25 @@ public:
     std::string tpid;
     std::string actor;
 
-    AddAddressData(const std::string& fioAddress, std::vector<std::pair<std::string, std::string>> addresses_in,
+    AddPubAddressData(const std::string& fioAddress, std::vector<std::pair<std::string, std::string>> addresses,
         uint64_t maxFee, const std::string& tpid, const std::string& actor) :
-        fioAddress(fioAddress), addresses(addresses_in),
+        fioAddress(fioAddress), addresses(addresses),
+        maxFee(maxFee), tpid(tpid), actor(actor) {}
+    void serialize(Data& out) const;
+};
+
+/// RegFioAddress action data part.
+class RegFioAddressData {
+public:
+    std::string fioAddress;
+    std::string ownerPublicKey;
+    uint64_t maxFee;
+    std::string tpid;
+    std::string actor;
+
+    RegFioAddressData(const std::string& fioAddress, const std::string& ownerPublicKey,
+        uint64_t maxFee, const std::string& tpid, const std::string& actor) :
+        fioAddress(fioAddress), ownerPublicKey(ownerPublicKey),
         maxFee(maxFee), tpid(tpid), actor(actor) {}
     void serialize(Data& out) const;
 };
