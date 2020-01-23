@@ -27,8 +27,8 @@ TEST(TWTezosCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeTezos));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeTezos));
     assertStringsEqual(symbol, "XTZ");
-    assertStringsEqual(txUrl, "https://tezos.id/t123");
-    assertStringsEqual(accUrl, "https://tezos.id/a12");
+    assertStringsEqual(txUrl, "https://tzkt.io/t123");
+    assertStringsEqual(accUrl, "https://tzkt.io/a12");
     assertStringsEqual(id, "tezos");
     assertStringsEqual(name, "Tezos");
 }
