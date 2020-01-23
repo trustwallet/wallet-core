@@ -24,16 +24,13 @@ public:
     /// Sign the hash of the provided data
     static Data sign(const PrivateKey& privKey, const Data& data);
 
-    /// Used internally, sign provided digest data
-    static Data signData(const PrivateKey& privKey, const Data& data);
-
     /// Used internally, encode signature to base58 with prefix. Ex.: "SIG_K1_K54CA1jmhgWrSdvrNrkokPyvqh7dwsSoQHNU9xgD3Ezf6cJySzhKeUubVRqmpYdnjoP1DM6SorroVAgrCu3qqvJ9coAQ6u"
     static std::string signatureToBsase58(const Data& sig);
 
     /// Verify a signature, used in testing
     static bool verify(const PublicKey& pubKey, const Data& data, const Data& signature);
 
-    static int is_canonical(uint8_t by, uint8_t sig[64]);
+    static int isCanonical(uint8_t by, uint8_t sig[64]);
 };
 
 /// Helper class for Actor name generation from address
