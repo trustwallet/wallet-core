@@ -45,7 +45,7 @@ TEST(AlgorandSigner, EncodeStrings) {
 
     for (auto &test : tests) {
         Data data;
-        encodeString(std::get<0>(test), data);
+        Algorand::encodeString(std::get<0>(test), data);
         ASSERT_EQ(hex(data), std::get<1>(test));
     }
 }

@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+#include <string>
 
 namespace TW {
 
@@ -173,6 +174,13 @@ inline uint64_t decode64BE(const uint8_t* _Nonnull src) {
         | (static_cast<uint64_t>(src[1]) << 48)
         | (static_cast<uint64_t>(src[0]) << 56);
     // clang-format on
+}
+
+/// Encodes an ASCII string prefixed by the length (varInt)
+inline void encodeString(const std::string& str, std::vector<uint8_t>& data) {
+    size_t size = str.size();
+    encodeVarInt(size, data);
+    data.insert(data.end(), str.data(), str.data() + size);
 }
 
 } // namespace TW

@@ -6,6 +6,12 @@
 
 #include "Signer.h"
 #include "Address.h"
+#include "../Base58.h"
+#include "../Hash.h"
+#include "../HexCoding.h"
+
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/secp256k1.h>
 
 #include <cassert>
 
@@ -13,6 +19,38 @@ namespace TW::FIO {
 
 using namespace std;
 
+Data Signer::sign(const PrivateKey& privKey, const Data& data) {
+    Data hash = Hash::sha256(data);
+    return signData(privKey, hash);
+}
+
+Data Signer::signData(const PrivateKey& privKey, const Data& data) {
+    Data signature = privKey.sign(data, TWCurveSECP256k1, is_canonical);
+    return signature;
+}
+
+std::string Signer::signatureToBsase58(const Data& sig) {
+    Data sigWithSuffix(sig);
+    append(sigWithSuffix, TW::data(SignatureSuffix));
+    // take hash, ripemd, first 4 bytes 
+    Data hash = Hash::ripemd(sigWithSuffix);
+    Data sigWithChecksum(sig);
+    append(sigWithChecksum, TW::data(hash.data(), 4));
+    string s = SignaturePrefix + Base58::bitcoin.encode(sigWithChecksum);
+    return s;
+}
+
+bool Signer::verify(const PublicKey& pubKey, const Data& data, const Data& signature) {
+    return (0 == ecdsa_verify_digest(&secp256k1, pubKey.bytes.data(), signature.data() + 1, data.data()));
+}
+
+// canonical check for FIO, both R and S lenght is 32
+int Signer::is_canonical(uint8_t by, uint8_t sig[64]) {
+    return !(sig[0] & 0x80)
+        && !(sig[0] == 0 && !(sig[1] & 0x80))
+        && !(sig[32] & 0x80)
+        && !(sig[32] == 0 && !(sig[33] & 0x80));
+}
 
 string Actor::actor(const Address& addr)
 {
