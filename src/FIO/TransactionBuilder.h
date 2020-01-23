@@ -41,12 +41,13 @@ public:
     /// @fioName The FIO name already registered to the owner. Ex.: "alice:trust"
     /// @addressess List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
+    /// @maxFee Max fee to spend, can be obtained using get_fee API.
     /// @walletFioName The FIO name of the originating wallet, use TransactionBuilder::WalletFioName.
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
-    /// Note: fee is 0 for add_pub_address.
+    /// Note: fee is usually 0 for add_pub_address.
     static std::string createTx(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
         const std::vector<std::pair<std::string, std::string>>& pubAddresses,
-        const ChainParams& chainParams, const std::string& walletFioName, uint32_t expiryTime);
+        const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
 };
 
 } // namespace TW::FIO

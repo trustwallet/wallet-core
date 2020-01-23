@@ -18,9 +18,8 @@ using namespace std;
 
 string TransactionBuilder::createTx(const Address& address, const PrivateKey& privateKey, const string& fioName,
     const vector<pair<string, string>>& pubAddresses,
-    const ChainParams& chainParams, const string& walletFioName, uint32_t expiryTime) {
+    const ChainParams& chainParams, uint64_t maxFee, const string& walletFioName, uint32_t expiryTime) {
 
-    uint64_t maxFee = 0; 
     const auto apiName = "addaddress";
 
     string actor = Actor::actor(address);
