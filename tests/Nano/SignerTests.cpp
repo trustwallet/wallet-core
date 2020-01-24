@@ -43,7 +43,8 @@ TEST(NanoSigner, sign1) {
         "\"link_as_account\":\"nano_1kazsap8mc481zbqbcqjytpf9mmigj87qr5k5fhf97579t4k8fa94octjx6d\","
         "\"previous\":\"0000000000000000000000000000000000000000000000000000000000000000\","
         "\"representative\":\"nano_3arg3asgtigae3xckabaaewkx3bzsh7nwz7jkmjos79ihyaxwphhm6qgjps4\","
-        "\"signature\":\"d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09\"}",
+        "\"signature\":\"d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09\","
+        "\"type\":\"state\"}",
         out.json());
 }
 
@@ -89,7 +90,8 @@ TEST(NanoSigner, sign3) {
         "\"link_as_account\":\"nano_3osrb34x7dkm3f4tdqcixsa9czwrienzenmr4xmtyhruras4ynosarg1sdiq\","
         "\"previous\":\"2568bf76336f7a415ca236dab97c1df9de951ca057a2e79df1322e647a259e7b\","
         "\"representative\":\"nano_1nanode8ngaakzbck8smq6ru9bethqwyehomf79sae1k7xd47dkidjqzffeg\","
-        "\"signature\":\"e980d45365ae2fb291950019f7c19a3d5fa5df2736ca7e7ca1984338b4686976cb7efdda2894ddcea480f82645b50f2340c9d0fc69a05621bdc355783a21820d\"}",
+        "\"signature\":\"e980d45365ae2fb291950019f7c19a3d5fa5df2736ca7e7ca1984338b4686976cb7efdda2894ddcea480f82645b50f2340c9d0fc69a05621bdc355783a21820d\","
+        "\"type\":\"state\"}",
         out.json());
 }
 

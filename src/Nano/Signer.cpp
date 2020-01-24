@@ -146,6 +146,7 @@ Proto::SigningOutput Signer::build() const {
 
     // build json
     json json = {
+        {"type", "state"},
         {"account", Address(publicKey).string()},
         {"previous", hex(previous)},
         {"representative", Address(input.representative()).string()},
