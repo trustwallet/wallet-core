@@ -122,11 +122,10 @@ Signer::Signer(const Proto::SigningInput& input)
   : privateKey(Data(input.private_key().begin(), input.private_key().end())),
     publicKey(privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b)),
     input(input),
-    previous{0}, link{0},
+    previous{previousFromInput(input)},
+    link{linkFromInput(input)},
     blockHash(hashBlockData(publicKey, input))
 {
-    previous = previousFromInput(input);
-    link = linkFromInput(input);
 }
 
 std::array<byte, 64> Signer::sign() const noexcept {
