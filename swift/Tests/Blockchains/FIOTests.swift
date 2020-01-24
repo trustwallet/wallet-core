@@ -58,7 +58,7 @@ class FIOTests: XCTestCase {
 
         let out = FIOSigner.sign(input: input)
         XCTAssertEqual(out.error, "")
-        let expectedJson: String = 
+        let expectedJson: String =
 """
 {
 "signatures": ["SIG_K1_K19ugLriG3ApYgjJCRDsy21p9xgsjbDtqBuZrmAEix9XYzndR1kNbJ6fXCngMJMAhxUHfwHAsPnh58otXiJZkazaM1EkS5"],
@@ -87,7 +87,7 @@ class FIOTests: XCTestCase {
             $0.publicAddresses = [
                 FIOPublicAddress.with { $0.tokenCode = "BTC"; $0.address = "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v" },
                 FIOPublicAddress.with { $0.tokenCode = "ETH"; $0.address = "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51" },
-                FIOPublicAddress.with { $0.tokenCode = "BNB"; $0.address = "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s" },
+                FIOPublicAddress.with { $0.tokenCode = "BNB"; $0.address = "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s" }
             ]
             $0.maxFee = 0
             $0.tpid = FIOSigner.getDefaultTpid()
@@ -104,7 +104,7 @@ class FIOTests: XCTestCase {
 
         let out = FIOSigner.sign(input: input)
         XCTAssertEqual(out.error, "")
-        let expectedJson: String = 
+        let expectedJson: String =
 """
 {
 "signatures": ["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"],
