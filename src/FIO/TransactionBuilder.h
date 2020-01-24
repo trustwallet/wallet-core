@@ -17,8 +17,8 @@
 namespace TW::FIO {
 
 /// Represents current parameters of the FIO blockchain
-/// @chanId: constant chainId (32 bytes), obtained from get_info API
-/// @headBlockNumber: the last block number, obtained from get_info API
+/// @chanId: Constant chainId (32 bytes), obtained from get_info API
+/// @headBlockNumber: The last block number, obtained from get_info API
 /// @refBlockPrefix: Block prefix of last block, obtained from get_block API
 class ChainParams {
 public:
