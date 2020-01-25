@@ -9,12 +9,14 @@
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include <nlohmann/json.hpp>
 
 #include <boost/multiprecision/cpp_int.hpp>
 
 using namespace TW;
 
 using uint128_t = boost::multiprecision::uint128_t;
+using json = nlohmann::json;
 
 namespace TW::Nano {
 
@@ -42,7 +44,7 @@ std::array<byte, 16> store(const uint128_t& value) {
     return arr;
 }
 
-std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::SigningInput& input) {
+std::array<byte, 32> previousFromInput(const Proto::SigningInput& input) {
     std::array<byte, 32> parentHash = {0};
     if (input.parent_block().size() != 0) {
         if (input.parent_block().size() != parentHash.size()) {
@@ -50,24 +52,10 @@ std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::Sign
         }
         std::copy_n(input.parent_block().begin(), parentHash.size(), parentHash.begin());
     }
-    bool emptyParentHash = std::all_of(parentHash.begin(), parentHash.end(), [](auto b) { return b == 0; });
+    return parentHash;
+}
 
-    std::array<byte, 32> repPublicKey = {0};
-    auto repAddress = Address(input.representative());
-    std::copy_n(repAddress.bytes.begin(), repPublicKey.size(), repPublicKey.begin());
-
-    uint128_t balance_uint;
-    try {
-        balance_uint = uint128_t(input.balance());
-    } catch (const std::runtime_error&) {
-        throw std::invalid_argument("Invalid balance");
-    }
-    bool zeroBalance = balance_uint == uint128_t(0);
-    std::array<byte, 16> balance = store(balance_uint);
-    if (emptyParentHash && zeroBalance) {
-        throw std::invalid_argument("Invalid balance");
-    }
-
+std::array<byte, 32> linkFromInput(const Proto::SigningInput& input, bool emptyParentHash = false) {
     std::array<byte, 32> link = {0};
     switch (input.link_oneof_case()) {
         case Proto::SigningInput::kLinkBlock: {
@@ -86,6 +74,30 @@ std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::Sign
         }
         case Proto::SigningInput::LINK_ONEOF_NOT_SET: break;
     }
+    return link;
+}
+
+std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::SigningInput& input) {
+    std::array<byte, 32> parentHash = previousFromInput(input);
+    bool emptyParentHash = std::all_of(parentHash.begin(), parentHash.end(), [](auto b) { return b == 0; });
+
+    std::array<byte, 32> repPublicKey = {0};
+    auto repAddress = Address(input.representative());
+    std::copy_n(repAddress.bytes.begin(), repPublicKey.size(), repPublicKey.begin());
+
+    uint128_t balance_uint;
+    try {
+        balance_uint = uint128_t(input.balance());
+    } catch (const std::runtime_error&) {
+        throw std::invalid_argument("Invalid balance");
+    }
+    bool zeroBalance = balance_uint == uint128_t(0);
+    std::array<byte, 16> balance = store(balance_uint);
+    if (emptyParentHash && zeroBalance) {
+        throw std::invalid_argument("Invalid balance");
+    }
+
+    std::array<byte, 32> link = linkFromInput(input, emptyParentHash);
     bool emptyLink = std::all_of(link.begin(), link.end(), [](auto b) { return b == 0; });
     if (emptyParentHash && emptyLink) {
         throw std::invalid_argument("Missing link block hash");
@@ -109,8 +121,12 @@ std::array<byte, 32> hashBlockData(const PublicKey& publicKey, const Proto::Sign
 Signer::Signer(const Proto::SigningInput& input)
   : privateKey(Data(input.private_key().begin(), input.private_key().end())),
     publicKey(privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b)),
+    input(input),
+    previous{previousFromInput(input)},
+    link{linkFromInput(input)},
     blockHash(hashBlockData(publicKey, input))
-{}
+{
+}
 
 std::array<byte, 64> Signer::sign() const noexcept {
     auto digest = Data(blockHash.begin(), blockHash.end());
@@ -121,4 +137,25 @@ std::array<byte, 64> Signer::sign() const noexcept {
     return signature;
 }
 
+Proto::SigningOutput Signer::build() const {
+    auto output = Proto::SigningOutput();
+    const auto signature = sign();
+    output.set_signature(signature.data(), signature.size());
+    output.set_block_hash(blockHash.data(), blockHash.size());
+
+    // build json
+    json json = {
+        {"type", "state"},
+        {"account", Address(publicKey).string()},
+        {"previous", hex(previous)},
+        {"representative", Address(input.representative()).string()},
+        {"balance", input.balance()},
+        {"link", hex(link)},
+        {"link_as_account", Address(PublicKey(Data(link.begin(), link.end()), TWPublicKeyTypeED25519Blake2b)).string()},
+        {"signature", hex(signature)},
+    };
+    output.set_json(json.dump());
+    return output;
 }
+
+} // namespace TW::Nano
