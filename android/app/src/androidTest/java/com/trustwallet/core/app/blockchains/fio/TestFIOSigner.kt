@@ -25,7 +25,7 @@ class TestFIOSigner {
     }
 
     @Test
-    fun testRegFioAddress() {
+    fun testRegisterFioAddress() {
         val chainId = ByteString.copyFrom("4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77".toHexBytes())
         val privateKey = PrivateKey("ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035".toHexByteArray())
         val publicKey = privateKey.getPublicKeySecp256k1(false)
@@ -35,7 +35,7 @@ class TestFIOSigner {
             .setChainId(chainId)
             .setHeadBlockNumber(39881)
             .setRefBlockPrefix(4279583376.toInt())
-        val regAddrAction = FIO.Action.RegFioAddress.newBuilder()
+        val regAddrAction = FIO.Action.RegisterFioAddress.newBuilder()
             .setFioAddress("adam@fiotestnet")
             .setOwnerFioPublicKey(address.description())
             .setMaxFee(5000000000)

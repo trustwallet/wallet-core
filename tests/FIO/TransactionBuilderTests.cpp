@@ -25,11 +25,11 @@ const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc
 const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
 const Address addr6M(pubKey6M);
 
-TEST(FIOTransactionBuilder, RegFioAddress) {
+TEST(FIOTransactionBuilder, RegisterFioAddress) {
     ChainParams chainParams{chainId, 39881, 4279583376};
     uint64_t maxFee = 5000000000;
 
-    string t = TransactionBuilder::createRegFioAddress(addr6M, privKeyBA, "adam@fiotestnet", addr6M.string(),
+    string t = TransactionBuilder::createRegisterFioAddress(addr6M, privKeyBA, "adam@fiotestnet", addr6M.string(),
         chainParams, maxFee, "rewards@wallet", 1579784511);
 
     EXPECT_EQ(R"({
@@ -57,8 +57,8 @@ TEST(FIOTransactionBuilder, AddPubAddress) {
 })", t);
 }
 
-TEST(FIOTransaction, ActionRegFioAddressInternal) {
-    RegFioAddressData radata("adam@fiotestnet", addr6M.string(),
+TEST(FIOTransaction, ActionRegisterFioAddressInternal) {
+    RegisterFioAddressData radata("adam@fiotestnet", addr6M.string(),
         5000000000, "rewards@wallet", "qdfejz2a5wpl");
     Data ser1;
     radata.serialize(ser1);

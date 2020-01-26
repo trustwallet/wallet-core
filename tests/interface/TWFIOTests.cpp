@@ -45,7 +45,7 @@ const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc
 const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
 const Address addr6M(pubKey6M);
 
-TEST(TWFIO, RegFioAddress) {
+TEST(TWFIO, RegisterFioAddress) {
     Proto::SigningInput input;
     input.set_expiry(1579784511);
     input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));

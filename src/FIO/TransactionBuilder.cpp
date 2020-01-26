@@ -17,14 +17,14 @@ using namespace TW;
 using namespace std;
 
 
-string TransactionBuilder::createRegFioAddress(const Address& address, const PrivateKey& privateKey, 
+string TransactionBuilder::createRegisterFioAddress(const Address& address, const PrivateKey& privateKey, 
     const string& fioName, const std::string& ownerPublicKey,
     const ChainParams& chainParams, uint64_t maxFee, const string& walletFioName, uint32_t expiryTime) {
 
     const auto apiName = "regaddress";
 
     string actor = Actor::actor(address);
-    RegFioAddressData raData(fioName, ownerPublicKey, maxFee, walletFioName, actor);
+    RegisterFioAddressData raData(fioName, ownerPublicKey, maxFee, walletFioName, actor);
     Data serData;
     raData.serialize(serData);
     

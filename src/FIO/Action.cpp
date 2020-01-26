@@ -28,7 +28,7 @@ void AddPubAddressData::serialize(Data& out) const {
     encodeString(tpid, out);
 }
 
-void RegFioAddressData::serialize(Data& out) const {
+void RegisterFioAddressData::serialize(Data& out) const {
     encodeString(fioAddress, out);
     encodeString(ownerPublicKey, out);
     encode64LE(maxFee, out);

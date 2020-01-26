@@ -94,8 +94,8 @@ public:
     void serialize(Data& out) const;
 };
 
-/// RegFioAddress action data part.
-class RegFioAddressData {
+/// RegisterFioAddress action data part.
+class RegisterFioAddressData {
 public:
     std::string fioAddress;
     std::string ownerPublicKey;
@@ -103,7 +103,7 @@ public:
     std::string tpid;
     std::string actor;
 
-    RegFioAddressData(const std::string& fioAddress, const std::string& ownerPublicKey,
+    RegisterFioAddressData(const std::string& fioAddress, const std::string& ownerPublicKey,
         uint64_t maxFee, const std::string& tpid, const std::string& actor) :
         fioAddress(fioAddress), ownerPublicKey(ownerPublicKey),
         maxFee(maxFee), tpid(tpid), actor(actor) {}

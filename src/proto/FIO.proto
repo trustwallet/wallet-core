@@ -12,7 +12,7 @@ message PublicAddress {
 // Different Actions
 message Action {
     // Action for registering a FIO name; register_fio_address
-    message RegFioAddress {
+    message RegisterFioAddress {
         // The FIO name to be registered. Ex.: "alice:trust"
         string fio_address = 1;
 
@@ -46,7 +46,7 @@ message Action {
     }
 
     oneof message_oneof {
-        RegFioAddress register_fio_address_message = 1;
+        RegisterFioAddress register_fio_address_message = 1;
         AddPubAddress add_pub_address_message = 2;
     }
 }

@@ -46,7 +46,7 @@ TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input) {
             string json;
             if (in.action().has_register_fio_address_message()) {
                 const auto action = in.action().register_fio_address_message();
-                json = TransactionBuilder::createRegFioAddress(owner, privateKey, 
+                json = TransactionBuilder::createRegisterFioAddress(owner, privateKey, 
                     in.action().register_fio_address_message().fio_address(), owner.string(),
                     getChainParams(in), action.max_fee(), action.tpid(), in.expiry());
             } else if (in.action().has_add_pub_address_message()) {

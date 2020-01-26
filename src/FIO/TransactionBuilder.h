@@ -42,7 +42,7 @@ public:
     /// @maxFee Max fee to spend, can be obtained using get_fee API.
     /// @walletFioName The FIO name of the originating wallet (project-wide constant)
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
-    static std::string createRegFioAddress(const Address& address, const PrivateKey& privateKey, 
+    static std::string createRegisterFioAddress(const Address& address, const PrivateKey& privateKey, 
         const std::string& fioName, const std::string& ownerPublicKey,
         const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
 

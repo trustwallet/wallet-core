@@ -29,7 +29,7 @@ class FIOTests: XCTestCase {
         XCTAssertEqual(address.description, "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o")
     }
 
-    func testRegFioAddress() {
+    func testRegisterFioAddress() {
         let chainId = Data(hexString: "4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77")!
         let privateKey = PrivateKey(data: Data(hexString: "ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035")!)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
@@ -40,7 +40,7 @@ class FIOTests: XCTestCase {
             $0.headBlockNumber = 39881
             $0.refBlockPrefix = 4279583376
         }
-        let regAddrAction = FIOAction.RegFioAddress.with {
+        let regAddrAction = FIOAction.RegisterFioAddress.with {
             $0.fioAddress = "adam@fiotestnet"
             $0.ownerFioPublicKey = address.description
             $0.maxFee = 5000000000
