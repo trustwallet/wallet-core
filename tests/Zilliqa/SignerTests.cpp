@@ -36,8 +36,9 @@ TEST(ZilliqaSigner, PreImage) {
     input.set_gas_limit(uint64_t(1));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    auto preImage = Signer::getPreImage(input);
-    auto signature = Signer::sign(preImage, privateKey).signature();
+    Address address;
+    auto preImage = Signer::getPreImage(input, address);
+    auto signature = Signer::sign(input).signature();
 
     ASSERT_EQ(hex(preImage.begin(), preImage.end()), "0881800410041a149ca91eb535fb92fda5094110fdaeb752edb9b03922230a21034ae47910d58b9bde819c3cffa8de4441955508db00aa2540db8e6bf6e99abc1b2a120a10000000000000000000000da475abf00032120a100000000000000000000000003b9aca003801");
 
@@ -64,8 +65,8 @@ TEST(ZilliqaSigner, Signing) {
     input.set_gas_limit(uint64_t(1));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
 
-    auto preImage = Signer::getPreImage(input);
-    auto signature = Signer::sign(preImage, privateKey).signature();
+    auto output = Signer::sign(input);
 
-    ASSERT_EQ(hex(signature.begin(), signature.end()), "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268");
+    ASSERT_EQ(hex(output.signature().begin(), output.signature().end()), "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268");
+    ASSERT_EQ(output.json(), R"({"amount":"1000000000000","code":"","data":"","gasLimit":"1","gasPrice":"1000000000","nonce":2,"pubKey":"03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c","signature":"001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268","toAddr":"7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C","version":65537})");
 }

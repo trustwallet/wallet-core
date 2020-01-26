@@ -23,7 +23,7 @@ class ZilliqaTests: XCTestCase {
     func testAddress() {
         let data = Data(hexString: "029d25b68a18442590e113132a34bb524695c4291d2c49abf2e4cdd7d98db862c3")!
         let pubKey = PublicKey(data: data, type: .secp256k1)!
-        let keyHash = "0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C"
+        let keyHash = "7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C"
         let address = AnyAddress(publicKey: pubKey, coin: .zilliqa)
         let address2 = AnyAddress(string: "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz", coin: .zilliqa)!
 
@@ -32,9 +32,7 @@ class ZilliqaTests: XCTestCase {
     }
 
     func testSigner() {
-
         let privateKey = PrivateKey(data: Data(hexString: "0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748")!)!
-
         // 1 ZIL
         let input = ZilliqaSigningInput.with {
             $0.version = 65537 // mainnet tx version
@@ -46,8 +44,22 @@ class ZilliqaTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let signature = ZilliqaSigner.sign(input: input).signature
-
-        XCTAssertEqual(signature.hexString, "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268")
+        let output = ZilliqaSigner.sign(input: input)
+        let expectedJSON = """
+{
+    "amount": "1000000000000",
+    "toAddr": "7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C",
+    "pubKey": "03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c",
+    "data": "",
+    "code": "",
+    "signature": "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268",
+    "gasLimit": "1",
+    "version": 65537,
+    "gasPrice": "1000000000",
+    "nonce": 2
+}
+"""
+        XCTAssertEqual(output.signature.hexString, "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268")
+        XCTAssertJSONEqual(output.json, expectedJSON)
     }
 }
