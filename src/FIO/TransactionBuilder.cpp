@@ -8,13 +8,15 @@
 #include "Signer.h"
 #include "../HexCoding.h"
 
-#include <sstream>
+#include <nlohmann/json.hpp>
+
 #include <ctime>
 
 namespace TW::FIO {
 
 using namespace TW;
 using namespace std;
+using json = nlohmann::json;
 
 
 string TransactionBuilder::createRegisterFioAddress(const Address& address, const PrivateKey& privateKey, 
@@ -93,13 +95,13 @@ string TransactionBuilder::signAdnBuildTx(const Data& chainId, const Data& packe
     string signature = Signer::signatureToBsase58(Signer::sign(privateKey, sigBuf));
 
     // Build json
-    stringstream ss;
-    ss << "{" << endl;
-    ss << "\"signatures\": [\"" << signature << "\"]," << endl; 
-    ss << "\"compression\": \"none\"," << endl << "\"packed_context_free_data\": \"\"," << endl;
-    ss << "\"packed_trx\": \"" << hex(packedTx) << "\"" << endl;
-    ss << "}";
-    return ss.str();
+    json tx = {
+        {"signatures", json::array({signature})},
+        {"compression", "none"},
+        {"packed_context_free_data", ""},
+        {"packed_trx", hex(packedTx)}
+    };
+    return tx.dump();
 }
 
 } // namespace TW::FIO
