@@ -29,7 +29,7 @@ public:
     Address(const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2, publicKey) {}
 
     std::string checksumed() const {
-        return checkSum(getKeyHash());
+        return checksum(getKeyHash());
     }
 
     static bool decode(const std::string& addr, Address& obj_out) {
