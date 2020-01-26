@@ -24,7 +24,7 @@ class TestFIOAddress {
         assertEquals(addressFromString.description(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o")
 
         val key = PrivateKey("ea8eb60b7e5868e218f248e032769020b4fea5dcfd02f2992861eaf4fb534854".toHexByteArray())
-        val pubkey = key.publicKeyEd25519Extended
+        val pubkey = key.getPublicKeySecp256k1(false)
         val addressFromKey = AnyAddress(pubkey, CoinType.FIO)
         assertEquals(addressFromKey.description(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o")
     }
