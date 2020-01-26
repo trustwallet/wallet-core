@@ -21,8 +21,4 @@ struct TWFIOSigner;
 TW_EXPORT_STATIC_METHOD
 TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input);
 
-/// Get default TPID
-TW_EXPORT_STATIC_METHOD
-TWString *_Nonnull TWFIOSignerGetDefaultTpid();
-
 TW_EXTERN_C_END

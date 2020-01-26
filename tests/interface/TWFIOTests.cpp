@@ -55,7 +55,7 @@ TEST(TWFIO, RegFioAddress) {
     input.mutable_action()->mutable_register_fio_address_message()->set_fio_address("adam@fiotestnet");
     input.mutable_action()->mutable_register_fio_address_message()->set_owner_fio_public_key(addr6M.string());
     input.mutable_action()->mutable_register_fio_address_message()->set_max_fee(5000000000);
-    input.mutable_action()->mutable_register_fio_address_message()->set_tpid(TWStringUTF8Bytes(TWFIOSignerGetDefaultTpid()));
+    input.mutable_action()->mutable_register_fio_address_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
@@ -91,7 +91,7 @@ TEST(TWFIO, AddPubAddress) {
     action->mutable_public_addresses(2)->set_token_code("BNB");
     action->mutable_public_addresses(2)->set_address("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s");
     action->set_max_fee(0);
-    action->set_tpid(TWStringUTF8Bytes(TWFIOSignerGetDefaultTpid()));
+    action->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());

@@ -31,10 +31,6 @@ ChainParams getChainParams(const FIO::Proto::SigningInput& input) {
     };
 }
 
-TWString *_Nonnull TWFIOSignerGetDefaultTpid() {
-    return TWStringCreateWithUTF8Bytes(TransactionBuilder::DummyWalletFioName);
-}
-
 TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input) {
     FIO::Proto::SigningOutput out;
     try

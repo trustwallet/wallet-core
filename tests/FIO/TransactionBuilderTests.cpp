@@ -30,7 +30,7 @@ TEST(FIOTransactionBuilder, RegFioAddress) {
     uint64_t maxFee = 5000000000;
 
     string t = TransactionBuilder::createRegFioAddress(addr6M, privKeyBA, "adam@fiotestnet", addr6M.string(),
-        chainParams, maxFee, TransactionBuilder::WalletFioName, 1579784511);
+        chainParams, maxFee, "rewards@wallet", 1579784511);
 
     EXPECT_EQ(R"({
 "signatures": ["SIG_K1_K19ugLriG3ApYgjJCRDsy21p9xgsjbDtqBuZrmAEix9XYzndR1kNbJ6fXCngMJMAhxUHfwHAsPnh58otXiJZkazaM1EkS5"],
@@ -47,7 +47,7 @@ TEST(FIOTransactionBuilder, AddPubAddress) {
         {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"},
         {"ETH", "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"},
         {"BNB", "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"}},
-        chainParams, 0, TransactionBuilder::WalletFioName, 1579729429);
+        chainParams, 0, "rewards@wallet", 1579729429);
 
     EXPECT_EQ(R"({
 "signatures": ["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"],

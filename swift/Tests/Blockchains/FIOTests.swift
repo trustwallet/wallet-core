@@ -44,7 +44,7 @@ class FIOTests: XCTestCase {
             $0.fioAddress = "adam@fiotestnet"
             $0.ownerFioPublicKey = address.description
             $0.maxFee = 5000000000
-            $0.tpid = FIOSigner.getDefaultTpid()
+            $0.tpid = "rewards@wallet"
         }
         let action = FIOAction.with {
             $0.registerFioAddressMessage = regAddrAction
@@ -90,7 +90,7 @@ class FIOTests: XCTestCase {
                 FIOPublicAddress.with { $0.tokenCode = "BNB"; $0.address = "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s" }
             ]
             $0.maxFee = 0
-            $0.tpid = FIOSigner.getDefaultTpid()
+            $0.tpid = "rewards@wallet"
         }
         let action = FIOAction.with {
             $0.addPubAddressMessage = addAddrAction

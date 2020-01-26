@@ -29,8 +29,6 @@ public:
 
 class TransactionBuilder {
 public:
-    static constexpr auto DummyWalletFioName = "rewards@wallet";
-    static constexpr auto WalletFioName = DummyWalletFioName;
     static constexpr auto ApiAccountAddress = "fio.address";
     static constexpr auto AuthrizationActive = "active";
     static const auto ExpirySeconds = 3600;
@@ -42,7 +40,7 @@ public:
     /// @ownerPublicKey FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
     /// @maxFee Max fee to spend, can be obtained using get_fee API.
-    /// @walletFioName The FIO name of the originating wallet, use TransactionBuilder::WalletFioName.
+    /// @walletFioName The FIO name of the originating wallet (project-wide constant)
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
     static std::string createRegFioAddress(const Address& address, const PrivateKey& privateKey, 
         const std::string& fioName, const std::string& ownerPublicKey,
@@ -55,7 +53,7 @@ public:
     /// @addressess List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
     /// @maxFee Max fee to spend, can be obtained using get_fee API.
-    /// @walletFioName The FIO name of the originating wallet, use TransactionBuilder::WalletFioName.
+    /// @walletFioName The FIO name of the originating wallet (project-wide constant)
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
     /// Note: fee is usually 0 for add_pub_address.
     static std::string createAddPubAddress(const Address& address, const PrivateKey& privateKey, const std::string& fioName,

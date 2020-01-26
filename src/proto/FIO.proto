@@ -22,7 +22,7 @@ message Action {
         // Max fee to spend, can be obtained using get_fee API.
         uint64 max_fee = 3;
         
-        // The FIO name of the originating wallet, use DefaultTpid
+        // The FIO name of the originating wallet (project-wide constant)
         string tpid = 4;
 
         // Note: actor is not needed, computed from owner_fio_public_key
@@ -39,7 +39,7 @@ message Action {
         // Max fee to spend, can be obtained using get_fee API.
         uint64 max_fee = 3;
         
-        // The FIO name of the originating wallet, use DefaultTpid
+        // The FIO name of the originating wallet (project-wide constant)
         string tpid = 4;
 
         // Note: actor is not needed, computed from owner_fio_public_key
