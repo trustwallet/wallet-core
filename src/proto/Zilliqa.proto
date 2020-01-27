@@ -39,5 +39,5 @@ message SigningOutput {
     bytes signature = 1;
 
     // JSON transaction with signature
-    string json = 3;
+    string json = 2;
 }
