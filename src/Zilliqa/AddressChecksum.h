@@ -11,6 +11,6 @@
 
 namespace TW::Zilliqa {
 
-std::string checksumed(const Data& address);
+std::string checksum(const Data& address);
 
 } // namespace TW::Zilliqa

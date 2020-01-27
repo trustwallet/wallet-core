@@ -153,8 +153,8 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
         if (!Zilliqa::Address::decode(string, addr)) {
             break;
         }
-        // data in Zilliqa is a checksummed string with 0x prefix
-        auto str = Zilliqa::checkSum(addr.getKeyHash());
+        // data in Zilliqa is a checksummed string without 0x
+        auto str = Zilliqa::checksum(addr.getKeyHash());
         data = Data(str.begin(), str.end());
         break;
     }

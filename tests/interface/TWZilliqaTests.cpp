@@ -33,9 +33,9 @@ TEST(Zilliqa, Address) {
     auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeZilliqa));
     auto desc = WRAPS(TWAnyAddressDescription(address.get()));
 
-    auto expectedKeyHash = "0xDdb41006F7B6FA8e5FBF06A71c01F789FeBC66e8";
+    auto expectedKeyHash = "Ddb41006F7B6FA8e5FBF06A71c01F789FeBC66e8";
     auto keyHash = WRAPD(TWAnyAddressData(address.get()));
-    auto keyHashString = WRAPS(TWStringCreateWithRawBytes(TWDataBytes(keyHash.get()), strnlen(expectedKeyHash, 42)));
+    auto keyHashString = WRAPS(TWStringCreateWithRawBytes(TWDataBytes(keyHash.get()), strnlen(expectedKeyHash, 40)));
 
     assertStringsEqual(desc, "zil1mk6pqphhkmaguhalq6n3cq0h38ltcehg0rfmv6");
     assertStringsEqual(keyHashString, expectedKeyHash);

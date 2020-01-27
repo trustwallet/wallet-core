@@ -37,4 +37,7 @@ message SigningInput {
 message SigningOutput {
     // Signed signature bytes.
     bytes signature = 1;
+
+    // JSON transaction with signature
+    string json = 2;
 }

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Address.h"
 #include "../Data.h"
 #include "../PrivateKey.h"
 #include "../proto/Zilliqa.pb.h"
@@ -17,11 +18,11 @@ class Signer {
   public:
     Signer() = delete;
 
-    /// compute preImage from signing input.
-    static Data getPreImage(const Proto::SigningInput& input) noexcept;
+    /// Signs the given signing input
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 
-    /// Signs the given transaction preImage.
-    static Proto::SigningOutput sign(const Data& preImage, const PrivateKey& key) noexcept;
+    /// compute preImage and decode address from signing input.
+    static Data getPreImage(const Proto::SigningInput& input, Address& address) noexcept;
 };
 
 } // namespace TW::Zilliqa

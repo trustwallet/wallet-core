@@ -15,14 +15,14 @@ using namespace TW;
 using namespace TW::Zilliqa;
 
 /// see https://github.com/Zilliqa/Zilliqa/blob/1c53b792c7ae44f7b77366536a7e2f73a3eade6a/src/libServer/AddressChecksum.h
-std::string Zilliqa::checksumed(const Data& bytes) {
+std::string Zilliqa::checksum(const Data& bytes) {
     const auto addressString = hex(bytes);
     const auto hash = hex(Hash::sha256(bytes));
 
     uint256_t temp_1 = 1;
     uint256_t v("0x" + hash);
 
-    std::string string = "0x";
+    std::string string = "";
     for (auto i = 0; i < addressString.size(); i += 1) {
         const auto a = addressString[i];
         if (a >= '0' && a <= '9') {

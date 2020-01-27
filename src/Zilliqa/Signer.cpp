@@ -14,6 +14,8 @@
 
 #include <cassert>
 
+#include <nlohmann/json.hpp>
+
 using namespace TW;
 using namespace TW::Zilliqa;
 
@@ -26,13 +28,12 @@ static inline Data prependZero(Data& data) {
     return Data(data);
 }
 
-Data Signer::getPreImage(const Proto::SigningInput& input) noexcept {
-    auto internal = ZilliqaMessage::ProtoTransactionCoreInfo();
 
+Data Signer::getPreImage(const Proto::SigningInput& input, Address& address) noexcept {
+    auto internal = ZilliqaMessage::ProtoTransactionCoreInfo();
     const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    Address address;
     if (!Address::decode(input.to_address(), address)) {
-        // invalid input
+        // invalid input address
         return Data(0);
     }
     const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -60,15 +61,31 @@ Data Signer::getPreImage(const Proto::SigningInput& input) noexcept {
     internal.set_gaslimit(input.gas_limit());
 
     const auto serialized = internal.SerializeAsString();
-
     return Data(serialized.begin(), serialized.end());
 }
 
-Proto::SigningOutput Signer::sign(const Data& preImage, const PrivateKey& key) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto output = Proto::SigningOutput();
-
+    Address address;
+    const auto preImage = Signer::getPreImage(input, address);
+    const auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    const auto pubKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
     const auto signature = key.signSchnorr(preImage, TWCurveSECP256k1);
 
+    // build json
+    nlohmann::json json = {
+        {"version", input.version()},
+        {"toAddr", address.checksumed()},
+        {"amount", toString(load(input.amount()))},
+        {"nonce", input.nonce()},
+        {"gasPrice", toString(load(input.gas_price()))},
+        {"gasLimit", toString(input.gas_limit())},
+        {"code", input.code()},
+        {"data", input.data()},
+        {"pubKey", hex(pubKey.bytes)},
+        {"signature", hex(signature)},
+    };
+    output.set_json(json.dump());
     output.set_signature(signature.data(), signature.size());
 
     return output;
