@@ -21,6 +21,8 @@
 #include "Ethereum/Address.h"
 #include "FIO/Address.h"
 #include "Groestlcoin/Address.h"
+#include "Peercoin/Address.h"
+#include "Peercoin/SegwitAddress.h"
 #include "Harmony/Address.h"
 #include "Icon/Address.h"
 #include "IoTeX/Address.h"
@@ -98,6 +100,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeGroestlcoin:
         return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Groestlcoin::Address::isValid(string, {p2pkh, p2sh});
+
+    case TWCoinTypePeercoin:
+        return Peercoin::SegwitAddress::isValid(string, hrp) ||
+               Peercoin::Address::isValid(string);
 
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereum:
@@ -238,6 +244,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
     case TWCoinTypeGroestlcoin:
+    case TWCoinTypePeercoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();

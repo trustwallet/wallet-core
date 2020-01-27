@@ -14,6 +14,7 @@
 #include "../Cosmos/Address.h"
 #include "../Decred/Address.h"
 #include "../Kusama/Address.h"
+#include "../Peercoin/Address.h"
 #include "../Polkadot/Address.h"
 #include "../Zcash/TAddress.h"
 #include "../Zilliqa/Address.h"
@@ -167,6 +168,12 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
 
     case TWCoinTypePolkadot: {
         auto addr = Polkadot::Address(string);
+        data = Data(addr.bytes.begin() + 1, addr.bytes.end());
+        break;
+    }
+
+    case TWCoinTypePeercoin: {
+        auto addr = Peercoin::Address(string);
         data = Data(addr.bytes.begin() + 1, addr.bytes.end());
         break;
     }

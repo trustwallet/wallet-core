@@ -1,4 +1,34 @@
 [{
+        "id": "peercoin",
+        "name": "Peercoin",
+        "symbol": "PPC",
+        "decimals": 6,
+        "blockchain": "Peercoin",
+        "derivationPath": "m/44'/6'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "p2pkhPrefix": 55,
+        "p2shPrefix": 117,
+        "hrp": "pc",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "zpub",
+        "xprv": "zprv",
+        "explorer": {
+            "url": "https://blockbook.peercoin.net",
+            "txPath": "/tx/",
+            "accountPath": "/address/",
+            "sampleTx": "1bdae84eff34e15399335fc2a48c70fa6b0b9caf972e38b0e3bda106d223f668",
+            "sampleAccount": "P9AqJKeEe9Y8e9j4zF88mzD7gm5UG928iP"
+        },
+        "info": {
+            "url": "https://peercoin.net",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
+    },
+    {
         "id": "nebulas",
         "name": "Nebulas",
         "symbol": "NAS",
