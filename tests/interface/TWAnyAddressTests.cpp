@@ -105,4 +105,11 @@ TEST(AnyAddress, Data) {
         auto pubkey = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(pubkey, "fab55af5eaaa1a284b615946dc3dd403c44ce3448c15884d61b2dcba3ddb245a");
     }
+    // peercoin
+    {
+        auto string = STRING("PMC3KPs2UVdpQ3dStvSwFrgkeS6C2oW9yS");
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypePeercoin));
+        auto witness = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(witness, "8a39868e3537e80f1c239124e1c458741b59f308");
+    }
 }

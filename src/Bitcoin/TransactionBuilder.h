@@ -22,6 +22,7 @@ public:
     static TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) {
         auto plan = TransactionPlan();
         plan.amount = input.amount();
+        plan.timestamp = input.timestamp();
 
         auto output_size = 2;
         auto calculator =

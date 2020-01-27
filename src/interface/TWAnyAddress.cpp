@@ -86,9 +86,13 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeDigiByte:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeLitecoin:
+    case TWCoinTypePeercoin:
     case TWCoinTypeViacoin: {
         auto decoded = Bitcoin::SegwitAddress::decode(string);
         if (!decoded.second) {
+            // let's try legacy address
+            auto addr = Bitcoin::Address(string);
+            data = Data(addr.bytes.begin() + 1, addr.bytes.end());
             break;
         }
         data = decoded.first.witnessProgram;
@@ -170,6 +174,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
         data = Data(addr.bytes.begin() + 1, addr.bytes.end());
         break;
     }
+
     default: break;
     }
     return TWDataCreateWithBytes(data.data(), data.size());

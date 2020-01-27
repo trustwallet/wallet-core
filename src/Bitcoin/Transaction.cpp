@@ -24,6 +24,11 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t i
     // Version
     encode32LE(version, data);
 
+    // If timestamp is set, encode it for peercoin forks
+    if (timestamp) {
+        encode32LE(timestamp, data);
+    }
+
     // Input prevouts (none/all, depending on flags)
     if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) == 0) {
         auto hashPrevouts = getPrevoutHash();
@@ -103,6 +108,11 @@ std::vector<uint8_t> Transaction::getOutputsHash() const {
 void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
     encode32LE(version, data);
 
+    if (timestamp) {
+        // timestamp is part of transaction in peercoin and it's forks
+        encode32LE(timestamp, data);
+    }
+
     if (witness) {
         // Use extended format in case witnesses are to be serialized.
         data.push_back(0);
@@ -156,6 +166,11 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
     auto data = std::vector<uint8_t>{};
 
     encode32LE(version, data);
+
+    if (timestamp) {
+        // timestamp is part of transaction in peercoin and it's forks
+        encode32LE(timestamp, data);
+    }
 
     auto serializedInputCount =
         (hashType & TWBitcoinSigHashTypeAnyoneCanPay) != 0 ? 1 : inputs.size();
@@ -217,6 +232,7 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
 Proto::Transaction Transaction::proto() const {
     auto protoTx = Proto::Transaction();
     protoTx.set_version(version);
+    protoTx.set_timestamp(timestamp);
     protoTx.set_locktime(lockTime);
 
     for (const auto& input : inputs) {

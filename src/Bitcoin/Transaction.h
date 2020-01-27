@@ -20,6 +20,9 @@ struct Transaction {
     /// Transaction data format version (note, this is signed)
     int32_t version = 1;
 
+    /// Transaction timestamp for peercoin and it's forks (also signed)
+    uint32_t timestamp = 0;
+
     /// The block number or timestamp at which this transaction is unlocked
     ///
     ///     | Value          | Description
@@ -42,8 +45,8 @@ struct Transaction {
 
     Transaction() = default;
 
-    Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
-        : version(version), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
+    Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d, uint32_t timestamp = 0)
+        : version(version), timestamp(timestamp), lockTime(lockTime), inputs(), outputs(), hasher(hasher) {}
 
     /// Whether the transaction is empty.
     bool empty() const { return inputs.empty() && outputs.empty(); }

@@ -25,6 +25,9 @@ struct TransactionPlan {
     /// Change.
     Amount change = 0;
 
+    /// Timestamp for peercoin and forks.
+    uint32_t timestamp = 0;
+
     /// Selected unspent transaction outputs.
     std::vector<Bitcoin::Proto::UnspentTransaction> utxos;
 
@@ -38,6 +41,7 @@ struct TransactionPlan {
         , availableAmount(plan.available_amount())
         , fee(plan.fee())
         , change(plan.change())
+        , timestamp(plan.timestamp())
         , utxos(plan.utxos().begin(), plan.utxos().end())
         , branchId(plan.branch_id().begin(), plan.branch_id().end()) {}
 
@@ -47,6 +51,7 @@ struct TransactionPlan {
         plan.set_available_amount(availableAmount);
         plan.set_fee(fee);
         plan.set_change(change);
+        plan.set_timestamp(timestamp);
         *plan.mutable_utxos() = {utxos.begin(), utxos.end()};
         plan.set_branch_id(branchId.data(), branchId.size());
         return plan;

@@ -340,4 +340,11 @@ TEST(Coin, ValidateAddresCardano) {
     EXPECT_FALSE(validateAddress(TWCoinTypeCardano, "hasoiusaodiuhsaijnnsajnsaiussai"));
 }
 
+TEST(Coin, ValidateAddressPeercoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypePeercoin, "pc1qhkfq3zahaqkkzx5mjnamwjsfpq2jk7z03njkgu"));
+    EXPECT_TRUE(validateAddress(TWCoinTypePeercoin, "PU9ZnCJsFwz39F1ndzx4FdN41DWg3mDjYo"));
+
+    EXPECT_FALSE(validateAddress(TWCoinTypePeercoin, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
+}
+
 } // namespace TW

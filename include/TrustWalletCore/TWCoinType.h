@@ -53,6 +53,7 @@ enum TWCoinType {
     TWCoinTypeNEAR = 397,
     TWCoinTypeNimiq = 242,
     TWCoinTypeOntology = 1024,
+    TWCoinTypePeercoin = 6,
     TWCoinTypePOANetwork = 178,
     TWCoinTypeQtum = 2301,
     TWCoinTypeXRP = 144,

@@ -74,6 +74,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeDigiByte:
     case TWCoinTypeLitecoin:
     case TWCoinTypeMonacoin:
+    case TWCoinTypePeercoin:
     case TWCoinTypeQtum:
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress::isValid(string, hrp) ||
@@ -238,6 +239,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
     case TWCoinTypeGroestlcoin:
+    case TWCoinTypePeercoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
