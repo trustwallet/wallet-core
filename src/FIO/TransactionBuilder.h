@@ -30,6 +30,7 @@ public:
 class TransactionBuilder {
 public:
     static constexpr auto ApiAccountAddress = "fio.address";
+    static constexpr auto ApiAccountToken = "fio.token";
     static constexpr auto AuthrizationActive = "active";
     static const auto ExpirySeconds = 3600;
 
@@ -58,6 +59,19 @@ public:
     /// Note: fee is usually 0 for add_pub_address.
     static std::string createAddPubAddress(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
         const std::vector<std::pair<std::string, std::string>>& pubAddresses,
+        const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
+
+    /// Create a signed TransferTokens transaction, returned as json string (double quote delimited), suitable for transfer_tokens_pub_key RPC call
+    /// @address The owners' FIO address
+    /// @privateKey The private key matching the address, needed for signing.
+    /// @payeePublicKey FIO address of the payee. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+    /// @amount Amount of FIO coins to be transferred.
+    /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
+    /// @maxFee Max fee to spend, can be obtained using get_fee API.
+    /// @walletFioName The FIO name of the originating wallet (project-wide constant)
+    /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
+    static std::string createTransferTokens(const Address& address, const PrivateKey& privateKey, 
+        const std::string& payeePublicKey, uint64_t amount,
         const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
 
     /// Used internally.  Creates signatures and json with transaction.

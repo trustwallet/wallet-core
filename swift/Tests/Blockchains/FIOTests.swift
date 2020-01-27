@@ -106,4 +106,41 @@ class FIOTests: XCTestCase {
 
         XCTAssertEqual(out.json, expectedJson)
     }
+
+    func testTransferTokens() {
+        let chainId = Data(hexString: "4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77")!
+        let privateKey = PrivateKey(data: Data(hexString: "ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035")!)!
+        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
+        let address = AnyAddress(publicKey: publicKey, coin: .fio)
+
+        let chainParams = FIOChainParams.with {
+            $0.chainID = chainId
+            $0.headBlockNumber = 50000
+            $0.refBlockPrefix = 4000123456
+        }
+        let transferTokensAction = FIOAction.TransferTokens.with {
+            $0.payeePublicKey = "FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE"
+            $0.amount = 1000000000
+            $0.maxFee = 250000000
+            $0.tpid = "rewards@wallet"
+        }
+        let action = FIOAction.with {
+            $0.transferTokensPubKeyMessage = transferTokensAction
+        }
+        let input = FIOSigningInput.with {
+            $0.expiry = 1579790000
+            $0.chainParams = chainParams
+            $0.privateKey = privateKey.data
+            $0.action = action
+        }
+
+        let out = FIOSigner.sign(input: input)
+        XCTAssertEqual(out.error, "")
+        let expectedJson: String =
+"""
+{"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]}
+"""
+
+        XCTAssertEqual(out.json, expectedJson)
+    }
 }

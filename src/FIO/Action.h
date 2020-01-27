@@ -110,4 +110,18 @@ public:
     void serialize(Data& out) const;
 };
 
+/// TransferTokens action data part.
+class TransferTokensData {
+public:
+    std::string payeePublicKey;
+    uint64_t amount;
+    uint64_t maxFee;
+    std::string tpid;
+    std::string actor;
+
+    TransferTokensData(const std::string& payeePublicKey, uint64_t amount, uint64_t maxFee, const std::string& tpid, const std::string& actor) :
+        payeePublicKey(payeePublicKey), amount(amount), maxFee(maxFee), tpid(tpid), actor(actor) {}
+    void serialize(Data& out) const;
+};
+
 } // namespace TW::FIO

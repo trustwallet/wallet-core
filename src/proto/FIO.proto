@@ -45,9 +45,27 @@ message Action {
         // Note: actor is not needed, computed from owner_fio_public_key
     }
 
+    // Action for transfering FIO coins; transfer_tokens_pub_key
+    message TransferTokens {
+        // FIO address of the payee. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string payee_public_key = 1;
+        
+        // Amount of FIO coins to be transferred.
+        uint64 amount = 2;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 max_fee = 3;
+        
+        // The FIO name of the originating wallet (project-wide constant)
+        string tpid = 4;
+
+        // Note: actor is not needed, computed from private key
+    }
+
     oneof message_oneof {
         RegisterFioAddress register_fio_address_message = 1;
         AddPubAddress add_pub_address_message = 2;
+        TransferTokens transfer_tokens_pub_key_message = 3;
     }
 }
 

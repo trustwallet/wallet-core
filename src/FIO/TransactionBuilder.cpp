@@ -87,6 +87,40 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     return signAdnBuildTx(chainParams.chainId, serTx, privateKey);
 }
 
+string TransactionBuilder::createTransferTokens(const Address& address, const PrivateKey& privateKey, 
+        const string& payeePublicKey, uint64_t amount,
+        const ChainParams& chainParams, uint64_t maxFee, const string& walletFioName, uint32_t expiryTime) {
+
+    const auto apiName = "trnsfiopubky";
+
+    string actor = Actor::actor(address);
+    TransferTokensData ttData(payeePublicKey, amount, maxFee, walletFioName, actor);
+    Data serData;
+    ttData.serialize(serData);
+    
+    Action action;
+    action.account = ApiAccountToken;
+    action.name = apiName;
+    action.includeExtra01BeforeData = false;
+    action.actionDataSer = serData;
+    action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
+    Data serAction;
+    action.serialize(serAction);
+
+    Transaction tx;
+    if (expiryTime == 0) {
+        expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
+    }
+    tx.expiration = (int32_t)expiryTime;
+    tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
+    tx.refBlockPrefix = chainParams.refBlockPrefix;
+    tx.actions.push_back(action);
+    Data serTx;
+    tx.serialize(serTx);
+
+    return signAdnBuildTx(chainParams.chainId, serTx, privateKey);
+}
+
 string TransactionBuilder::signAdnBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey) {
     // create signature
     Data sigBuf(chainId);

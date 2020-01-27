@@ -97,3 +97,25 @@ TEST(TWFIO, AddPubAddress) {
     EXPECT_EQ("", out.error());
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232bd010f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"]})", out.json());
 }
+
+TEST(TWFIO, TransferTokens) {
+    Proto::SigningInput input;
+    input.set_expiry(1579790000);
+    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_head_block_number(50000);
+    input.mutable_chain_params()->set_ref_block_prefix(4000123456);
+    input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.mutable_action()->mutable_transfer_tokens_pub_key_message()->set_payee_public_key("FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE");
+    input.mutable_action()->mutable_transfer_tokens_pub_key_message()->set_amount(1000000000);
+    input.mutable_action()->mutable_transfer_tokens_pub_key_message()->set_max_fee(250000000);
+    input.mutable_action()->mutable_transfer_tokens_pub_key_message()->set_tpid("rewards@wallet");
+
+    auto inputString = input.SerializeAsString();
+    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
+
+    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto out = Proto::SigningOutput();
+    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+    EXPECT_EQ("", out.error());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})", out.json());
+}

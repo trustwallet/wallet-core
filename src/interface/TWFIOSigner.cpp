@@ -59,6 +59,11 @@ TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input) {
                 json = TransactionBuilder::createAddPubAddress(owner, privateKey,
                     action.fio_address(), addresses, 
                     getChainParams(in), action.max_fee(), action.tpid(), in.expiry());
+            } else if (in.action().has_transfer_tokens_pub_key_message()) {
+                const auto action = in.action().transfer_tokens_pub_key_message();
+                json = TransactionBuilder::createTransferTokens(owner, privateKey,
+                    action.payee_public_key(), action.amount(),
+                    getChainParams(in), action.max_fee(), action.tpid(), in.expiry());
             }
 
             out.set_json(json);

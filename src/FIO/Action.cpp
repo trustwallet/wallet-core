@@ -36,4 +36,12 @@ void RegisterFioAddressData::serialize(Data& out) const {
     encodeString(tpid, out);
 }
 
+void TransferTokensData::serialize(Data& out) const {
+    encodeString(payeePublicKey, out);
+    encode64LE(amount, out);
+    encode64LE(maxFee, out);
+    EOS::Name(actor).serialize(out);
+    encodeString(tpid, out);
+}
+
 } // namespace TW::FIO
