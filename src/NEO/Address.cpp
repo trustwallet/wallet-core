@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,6 +8,7 @@
 #include "../Base58.h"
 #include "../Hash.h"
 #include "../Data.h"
+#include "OpCode.h"
 
 #include "Address.h"
 
@@ -23,11 +24,11 @@ Address::Address(const PublicKey& publicKey) {
     auto publicKeyData = publicKey.bytes;
 
     auto pkdata = Data(publicKeyData.begin(), publicKeyData.end());
-    pkdata.insert(pkdata.begin(), 0x21);
-    pkdata.push_back(0xAC);
+    pkdata.insert(pkdata.begin(), PUSHBYTES21);
+    pkdata.push_back(CHECKSIG);
 
     auto keyHash = Hash::ripemd(Hash::sha256(pkdata));
-    keyHash.insert(keyHash.begin(), 0x17);
+    keyHash.insert(keyHash.begin(), (byte) Address::version);
 
     if (keyHash.size() != Address::size) {
         throw std::invalid_argument("Invalid address key data");
@@ -46,8 +47,8 @@ Data Address::toScriptHash(const Data& data) const {
 }
 
 Data Address::toScriptHash() const {
-	 byte buf[20];
-	 Data data(buf, buf + 20);
-	 std::copy(bytes.begin() + 1, bytes.begin() + 21, data.begin());
+    byte buf[20];
+    Data data(buf, buf + 20);
+    std::copy(bytes.begin() + 1, bytes.begin() + 21, data.begin());
     return data;
 }

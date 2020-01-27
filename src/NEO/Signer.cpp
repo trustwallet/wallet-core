@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,10 +13,16 @@
 using namespace TW;
 using namespace TW::NEO;
 
-Signer::Signer(const TW::PrivateKey &priKey) : privateKey(std::move(priKey)) {
+Signer::Signer(const TW::PrivateKey &priKey)
+    : privateKey(std::move(priKey)), address(NULL) {
   auto pub = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
   publicKey = pub.bytes;
-  address = Address(pub).string();
+  address = new Address(pub);
+}
+
+Signer::~Signer() {
+    if(address)
+        delete address;
 }
 
 PrivateKey Signer::getPrivateKey() const {
@@ -28,7 +34,7 @@ TW::PublicKey Signer::getPublicKey() const {
 }
 
 Address Signer::getAddress() const {
-  return Address(address);
+  return *address;
 }
 
 void Signer::sign(Transaction &tx) const {
