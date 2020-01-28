@@ -26,11 +26,11 @@ void Transaction::deserialize(const Data &data, int initial_pos) {
     version = data[initial_pos++];
     initial_pos = deserializeExclusiveData(data, initial_pos);
     attributes.clear();
-    initial_pos = ISerializable::deserialize<TransactionAttribute>(attributes, data, initial_pos);
+    initial_pos = Serializable::deserialize<TransactionAttribute>(attributes, data, initial_pos);
     inInputs.clear();
-    initial_pos = ISerializable::deserialize<CoinReference>(inInputs, data, initial_pos);
+    initial_pos = Serializable::deserialize<CoinReference>(inInputs, data, initial_pos);
     outputs.clear();
-    ISerializable::deserialize<TransactionOutput>(outputs, data, initial_pos);
+    Serializable::deserialize<TransactionOutput>(outputs, data, initial_pos);
 }
 
 Transaction * Transaction::deserializeFrom(const Data &data, int initial_pos) {
@@ -53,9 +53,9 @@ Data Transaction::serialize() const {
     resp.push_back(version);
     append(resp, serializeExclusiveData());
 
-    append(resp, ISerializable::serialize(attributes));
-    append(resp, ISerializable::serialize(inInputs));
-    append(resp, ISerializable::serialize(outputs));
+    append(resp, Serializable::serialize(attributes));
+    append(resp, Serializable::serialize(inInputs));
+    append(resp, Serializable::serialize(outputs));
     if(witnesses.size())
 	 {
 		resp.push_back((byte) witnesses.size());

@@ -8,10 +8,11 @@
 
 #include "../Data.h"
 #include "ISerializable.h"
+#include "Serializable.h"
 
 namespace TW::NEO {
 
-class Witness : public ISerializable {
+class Witness : public Serializable {
   public:
     Data invocationScript;
     Data verificationScript;

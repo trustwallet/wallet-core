@@ -9,25 +9,30 @@
 #include "../uint256.h"
 #include "../UInt.h"
 #include "../Data.h"
+#include "../Hash.h"
 #include "../BinaryCoding.h"
 #include "ISerializable.h"
+#include "Serializable.h"
 
 namespace TW::NEO {
 
-class CoinReference : public ISerializable {
+class CoinReference : public Serializable {
   public:
+    /// Number of bytes for prevIndex.
+    static const size_t prevIndexSize = 2;
+
     uint256_t prevHash;
     uint16_t prevIndex;
 
     virtual ~CoinReference() {}
 
     int64_t size() const override {
-        return 32 + 2; // sizeof(prevHash) + sizeof(prevIndex);
+        return Hash::sha256Size + prevIndexSize;
     }
 
     void deserialize(const Data &data, int initial_pos = 0) override {
-        prevHash = load<uint256_t>(readBytes(data, 32, initial_pos));
-        prevIndex = decode16LE(data.data() + initial_pos + 32);
+        prevHash = load<uint256_t>(readBytes(data, Hash::sha256Size, initial_pos));
+        prevIndex = decode16LE(data.data() + initial_pos + Hash::sha256Size);
     }
 
     Data serialize() const override {

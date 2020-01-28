@@ -9,18 +9,18 @@
 namespace TW::NEO {
 
 Data Script::CreateSignatureRedeemScript(Data publicKey) {
-  Data result;
-  result.push_back((byte)PUSHBYTES21);
-  result.insert(result.end(), publicKey.begin(), publicKey.end());
-  result.push_back((byte)CHECKSIG);
-  return result;
+    Data result;
+    result.push_back((byte)PUSHBYTES21);
+    result.insert(result.end(), publicKey.begin(), publicKey.end());
+    result.push_back((byte)CHECKSIG);
+    return result;
 }
 
 Data Script::CreateInvocationScript(Data signature) {
-  Data result;
-  result.push_back((byte)PUSHBYTES40);
-  result.insert(result.end(), signature.begin(), signature.end());
-  return result;
+    Data result;
+    result.push_back((byte)PUSHBYTES40);
+    result.insert(result.end(), signature.begin(), signature.end());
+    return result;
 }
 
 } // namespace TW::NEO

@@ -14,41 +14,36 @@ using namespace TW;
 using namespace TW::NEO;
 
 Signer::Signer(const TW::PrivateKey &priKey)
-    : privateKey(std::move(priKey)), address(NULL) {
-  auto pub = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
-  publicKey = pub.bytes;
-  address = new Address(pub);
-}
-
-Signer::~Signer() {
-    if(address)
-        delete address;
+    : privateKey(std::move(priKey)) {
+    auto pub = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
+    publicKey = pub.bytes;
+    address = Address(pub);
 }
 
 PrivateKey Signer::getPrivateKey() const {
-  return privateKey;
+    return privateKey;
 }
 
 TW::PublicKey Signer::getPublicKey() const {
-  return TW::PublicKey(publicKey, TWPublicKeyTypeNIST256p1);
+    return TW::PublicKey(publicKey, TWPublicKeyTypeNIST256p1);
 }
 
 Address Signer::getAddress() const {
-  return *address;
+    return address;
 }
 
 void Signer::sign(Transaction &tx) const {
-  auto unsignedTx = tx.serialize();
-  auto signature = sign(unsignedTx);
-  tx.witnesses.clear();
-  Witness witness;
-  witness.invocationScript = Script::CreateInvocationScript(signature);
-  witness.verificationScript = Script::CreateSignatureRedeemScript(publicKey);
-  tx.witnesses.push_back(witness);
+    auto unsignedTx = tx.serialize();
+    auto signature = sign(unsignedTx);
+    tx.witnesses.clear();
+    Witness witness;
+    witness.invocationScript = Script::CreateInvocationScript(signature);
+    witness.verificationScript = Script::CreateSignatureRedeemScript(publicKey);
+    tx.witnesses.push_back(witness);
 }
 
 Data Signer::sign(const Data &data) const {
-  auto signature = getPrivateKey().sign(TW::Hash::sha256(data), TWCurveNIST256p1);
-  signature.pop_back();
-  return signature;
+    auto signature = getPrivateKey().sign(TW::Hash::sha256(data), TWCurveNIST256p1);
+    signature.pop_back();
+    return signature;
 }

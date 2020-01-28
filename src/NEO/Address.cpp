@@ -20,6 +20,13 @@ bool Address::isValid(const std::string& string) {
     return !(decoded.size() != Address::size || decoded[0] != version);
 }
 
+Address::Address() {
+    Data keyHash;
+    for (int i = 0; i < Address::size; i++)
+        keyHash.push_back(0);
+    std::copy(keyHash.data(), keyHash.data() + Address::size, bytes.begin());
+}
+
 Address::Address(const PublicKey& publicKey) {
     auto publicKeyData = publicKey.bytes;
 
@@ -47,8 +54,8 @@ Data Address::toScriptHash(const Data& data) const {
 }
 
 Data Address::toScriptHash() const {
-    byte buf[20];
-    Data data(buf, buf + 20);
-    std::copy(bytes.begin() + 1, bytes.begin() + 21, data.begin());
+    byte buf[Hash::ripemdSize];
+    Data data(buf, buf + Hash::ripemdSize);
+    std::copy(bytes.begin() + 1, bytes.begin() + Hash::ripemdSize + 1, data.begin());
     return data;
 }

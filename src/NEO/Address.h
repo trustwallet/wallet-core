@@ -37,6 +37,9 @@ class Address : public TW::Base58Address<AddressSize> {
     /// Initializes a NEO address with a public key.
     explicit Address(const PublicKey &publicKey);
 
+    /// Initializes a NEO address without a public key.
+    explicit Address();
+
     Data toScriptHash(const Data &data) const;
 
     Data toScriptHash() const;

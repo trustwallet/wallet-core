@@ -8,11 +8,12 @@
 
 #include "TransactionAttributeUsage.h"
 #include "ISerializable.h"
+#include "Serializable.h"
 #include "../Data.h"
 
 namespace TW::NEO {
 
-class TransactionAttribute : public ISerializable {
+class TransactionAttribute : public Serializable {
   public:
     TransactionAttributeUsage usage;
     Data data;

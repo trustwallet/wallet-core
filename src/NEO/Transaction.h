@@ -8,6 +8,7 @@
 
 #include "../uint256.h"
 #include "ISerializable.h"
+#include "Serializable.h"
 #include "TransactionType.h"
 #include "TransactionAttribute.h"
 #include "TransactionOutput.h"
@@ -16,8 +17,8 @@
 
 namespace TW::NEO {
 
-class Transaction : public ISerializable {
-  public:
+class Transaction : public Serializable {
+public:
     TransactionType type;
     byte version;
     std::vector<TransactionAttribute> attributes;
