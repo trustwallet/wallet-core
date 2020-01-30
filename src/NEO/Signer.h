@@ -10,6 +10,7 @@
 #include "../Data.h"
 #include "Address.h"
 #include "Transaction.h"
+#include "../proto/NEO.pb.h"
 
 namespace TW::NEO {
 
@@ -24,6 +25,7 @@ class Signer {
     PublicKey getPublicKey() const;
     Address getAddress() const;
 
+    static Proto::SigningOutput sign(const Proto::SigningInput& input);
     void sign(Transaction &tx) const;
     Data sign(const Data &data) const;
 };

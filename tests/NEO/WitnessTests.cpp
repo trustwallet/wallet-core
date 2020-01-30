@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "UInt.h"
+#include "uint256.h"
 #include "HexCoding.h"
 #include "NEO/ReadData.h"
 #include "NEO/Witness.h"

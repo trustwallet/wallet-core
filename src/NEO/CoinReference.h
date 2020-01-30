@@ -7,7 +7,6 @@
 #pragma once
 
 #include "../uint256.h"
-#include "../UInt.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../BinaryCoding.h"
@@ -31,7 +30,7 @@ class CoinReference : public Serializable {
     }
 
     void deserialize(const Data &data, int initial_pos = 0) override {
-        prevHash = load<uint256_t>(readBytes(data, Hash::sha256Size, initial_pos));
+        prevHash = load(readBytes(data, Hash::sha256Size, initial_pos));
         prevIndex = decode16LE(data.data() + initial_pos + Hash::sha256Size);
     }
 

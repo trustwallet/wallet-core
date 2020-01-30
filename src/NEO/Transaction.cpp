@@ -85,5 +85,5 @@ Data Transaction::getHash() const {
 }
 
 uint256_t Transaction::getHashUInt256() const {
-    return load<uint256_t>(getHash());
+    return load(getHash());
 }

@@ -58,25 +58,25 @@ TEST(NEOSigner, SigningTransaction) {
     transaction.version = 0x00;
 
     CoinReference coin;
-    coin.prevHash = load<uint256_t>(parse_hex("9c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de")); //reverse hash
+    coin.prevHash = load(parse_hex("9c85b39cd5677e2bfd6bf8a711e8da93a2f1d172b2a52c6ca87757a4bccc24de")); //reverse hash
     coin.prevIndex = (uint16_t) 1;
     transaction.inInputs.push_back(coin);
 
     {
         TransactionOutput out;
-        out.assetId = load<uint256_t>(parse_hex("9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5"));
+        out.assetId = load(parse_hex("9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5"));
         out.value = (int64_t) 1 * 100000000;
         auto scriptHash = TW::NEO::Address("Ad9A1xPbuA5YBFr1XPznDwBwQzdckAjCev").toScriptHash();
-        out.scriptHash = load<uint256_t>(scriptHash);
+        out.scriptHash = load(scriptHash);
         transaction.outputs.push_back(out);
     }
 
     {
         TransactionOutput out;
-        out.assetId = load<uint256_t>(parse_hex("9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5"));
+        out.assetId = load(parse_hex("9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5"));
         out.value = (int64_t) 892 * 100000000;
         auto scriptHash = TW::NEO::Address("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV").toScriptHash();
-        out.scriptHash = load<uint256_t>(scriptHash);
+        out.scriptHash = load(scriptHash);
         transaction.outputs.push_back(out);
     }
     signer.sign(transaction);

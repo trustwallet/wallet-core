@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "UInt.h"
+#include "uint256.h"
 #include "HexCoding.h"
 #include "NEO/Transaction.h"
 #include "NEO/TransactionType.h"
@@ -85,7 +85,7 @@ TEST(NEOTransaction, SerializeDeserializeInputs) {
     const string zeroVarLong = "00";
     const string oneVarLong = "01";
     transaction.inInputs.push_back(CoinReference());
-    transaction.inInputs[0].prevHash = load<uint256_t>(parse_hex("bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.inInputs[0].prevHash = load(parse_hex("bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
     transaction.inInputs[0].prevIndex = 0xa;
     auto serialized = transaction.serialize();
     EXPECT_EQ("8007" + zeroVarLong + oneVarLong + hex(transaction.inInputs[0].serialize()) + zeroVarLong, hex(serialized));
@@ -95,7 +95,7 @@ TEST(NEOTransaction, SerializeDeserializeInputs) {
     EXPECT_EQ(transaction, deserializedTransaction);
 
     transaction.inInputs.push_back(CoinReference());
-    transaction.inInputs[1].prevHash = load<uint256_t>(parse_hex("bdecbb623eee4f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.inInputs[1].prevHash = load(parse_hex("bdecbb623eee4f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
     transaction.inInputs[1].prevIndex = 0xbc;
     serialized = transaction.serialize();
     const string twoVarLong = "02";
@@ -117,8 +117,8 @@ TEST(NEOTransaction, SerializeDeserializeOutputs) {
     const string zeroVarLong = "00";
     const string oneVarLong = "01";
     transaction.outputs.push_back(TransactionOutput());
-    transaction.outputs[0].assetId = load<uint256_t>(parse_hex("bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
-    transaction.outputs[0].scriptHash = load<uint160_t>(parse_hex("cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b"));
+    transaction.outputs[0].assetId = load(parse_hex("bdecbb623eee6f9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.outputs[0].scriptHash = load(parse_hex("cbb23e6f9ade28d5a8ff3eac9d73af039e821b1b"));
     transaction.outputs[0].value = 0x2;
     auto serialized = transaction.serialize();
     EXPECT_EQ("8007" + zeroVarLong + zeroVarLong + oneVarLong + hex(transaction.outputs[0].serialize()), hex(serialized));
@@ -128,8 +128,8 @@ TEST(NEOTransaction, SerializeDeserializeOutputs) {
     EXPECT_EQ(transaction, deserializedTransaction);
 
     transaction.outputs.push_back(TransactionOutput());
-    transaction.outputs[1].assetId = load<uint256_t>(parse_hex("bdecbb623eee6a9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
-    transaction.outputs[1].scriptHash = load<uint160_t>(parse_hex("cbb23e6f9a3e28d5a8ff3eac9d73af039e821b1b"));
+    transaction.outputs[1].assetId = load(parse_hex("bdecbb623eee6a9ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.outputs[1].scriptHash = load(parse_hex("cbb23e6f9a3e28d5a8ff3eac9d73af039e821b1b"));
     transaction.outputs[1].value = 0x2;
     serialized = transaction.serialize();
     const string twoVarLong = "02";
@@ -153,12 +153,12 @@ TEST(NEOTransaction, SerializeDeserialize) {
     transaction.attributes[0].data = parse_hex("bdecbb623eee6f9ade28d5a8ff5fbdea9c9d73af039e0286201b3b0291fb4d4a");
 
     transaction.inInputs.push_back(CoinReference());
-    transaction.inInputs[0].prevHash = load<uint256_t>(parse_hex("bdecbb623eee679ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.inInputs[0].prevHash = load(parse_hex("bdecbb623eee679ade28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
     transaction.inInputs[0].prevIndex = 0xa;
 
     transaction.outputs.push_back(TransactionOutput());
-    transaction.outputs[0].assetId = load<uint256_t>(parse_hex("bdecbb623eee6f9ad328d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
-    transaction.outputs[0].scriptHash = load<uint160_t>(parse_hex("cbb23e6f9ade28a5a8ff3eac9d73af039e821b1b"));
+    transaction.outputs[0].assetId = load(parse_hex("bdecbb623eee6f9ad328d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.outputs[0].scriptHash = load(parse_hex("cbb23e6f9ade28a5a8ff3eac9d73af039e821b1b"));
     transaction.outputs[0].value = 0x2;
 
     auto serialized = transaction.serialize();
@@ -173,8 +173,8 @@ TEST(NEOTransaction, SerializeDeserialize) {
     EXPECT_EQ(transaction, deserializedTransaction);
 
     transaction.outputs.push_back(TransactionOutput());
-    transaction.outputs[1].assetId = load<uint256_t>(parse_hex("bdecbb623eee6a9a3e28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
-    transaction.outputs[1].scriptHash = load<uint160_t>(parse_hex("cbb23e6f9a3e28d5a8ff3eac9da3af039e821b1b"));
+    transaction.outputs[1].assetId = load(parse_hex("bdecbb623eee6a9a3e28d5a8ff5fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.outputs[1].scriptHash = load(parse_hex("cbb23e6f9a3e28d5a8ff3eac9da3af039e821b1b"));
     transaction.outputs[1].value = 0x2;
     serialized = transaction.serialize();
     const string twoVarLong = "02";
@@ -189,10 +189,10 @@ TEST(NEOTransaction, SerializeDeserialize) {
     EXPECT_EQ(transaction, deserializedTransaction);
 
     transaction.inInputs.push_back(CoinReference());
-    transaction.inInputs[1].prevHash = load<uint256_t>(parse_hex("bdecbb623e3e6f9ade28d5a8ff4fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.inInputs[1].prevHash = load(parse_hex("bdecbb623e3e6f9ade28d5a8ff4fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
     transaction.inInputs[1].prevIndex = 0xbc;
     transaction.inInputs.push_back(CoinReference());
-    transaction.inInputs[2].prevHash = load<uint256_t>(parse_hex("bdecbb624eee6f9ade28d5a8ff3fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
+    transaction.inInputs[2].prevHash = load(parse_hex("bdecbb624eee6f9ade28d5a8ff3fb3ea9c9d73af039e0286201b3b0291fb4d4a"));
     transaction.inInputs[2].prevIndex = 0x1f;
 
     serialized = transaction.serialize();
