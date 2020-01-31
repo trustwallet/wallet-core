@@ -16,13 +16,10 @@ using namespace TW::Nano;
 TW_Nano_Proto_SigningOutput TWNanoSignerSign(TW_Nano_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
-    auto output = Proto::SigningOutput();
+    Proto::SigningOutput output;
     try {
         const auto signer = Signer(input);
-        const auto signature = signer.sign();
-
-        output.set_block_hash(signer.blockHash.data(), signer.blockHash.size());
-        output.set_signature(reinterpret_cast<const char *>(signature.data()), signature.size());
+        output = signer.build();
     }
     catch (...) {
     }
