@@ -76,6 +76,7 @@ TEST(NanoSigner, sign3) {
     input.set_link_block(linkBlock.data(), linkBlock.size());
     input.set_representative(kRepNanode);
     input.set_balance("196242336390000000000000000000");
+    input.set_work("123456789");
 
     // https://www.nanode.co/block/1ca240212838d053ecaa9dceee598c52a6080067edecaeede3319eb0b7db6525
     const auto signer = Signer(input);
@@ -91,7 +92,7 @@ TEST(NanoSigner, sign3) {
         "\"previous\":\"2568bf76336f7a415ca236dab97c1df9de951ca057a2e79df1322e647a259e7b\","
         "\"representative\":\"nano_1nanode8ngaakzbck8smq6ru9bethqwyehomf79sae1k7xd47dkidjqzffeg\","
         "\"signature\":\"e980d45365ae2fb291950019f7c19a3d5fa5df2736ca7e7ca1984338b4686976cb7efdda2894ddcea480f82645b50f2340c9d0fc69a05621bdc355783a21820d\","
-        "\"type\":\"state\"}",
+        "\"type\":\"state\",\"work\":\"123456789\"}",
         out.json());
 }
 
