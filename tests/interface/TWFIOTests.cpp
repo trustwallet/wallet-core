@@ -54,7 +54,7 @@ TEST(TWFIO, RegisterFioAddress) {
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
     input.mutable_action()->mutable_register_fio_address_message()->set_fio_address("adam@fiotestnet");
     input.mutable_action()->mutable_register_fio_address_message()->set_owner_fio_public_key(addr6M.string());
-    input.mutable_action()->mutable_register_fio_address_message()->set_max_fee(5000000000);
+    input.mutable_action()->mutable_register_fio_address_message()->set_fee(5000000000);
     input.mutable_action()->mutable_register_fio_address_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
@@ -85,7 +85,7 @@ TEST(TWFIO, AddPubAddress) {
     action->mutable_public_addresses(1)->set_address("0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51");
     action->mutable_public_addresses(2)->set_token_code("BNB");
     action->mutable_public_addresses(2)->set_address("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s");
-    action->set_max_fee(0);
+    action->set_fee(0);
     action->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
@@ -98,17 +98,17 @@ TEST(TWFIO, AddPubAddress) {
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232bd010f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"]})", out.json());
 }
 
-TEST(TWFIO, TransferTokens) {
+TEST(TWFIO, Transfer) {
     Proto::SigningInput input;
     input.set_expiry(1579790000);
     input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
     input.mutable_chain_params()->set_head_block_number(50000);
     input.mutable_chain_params()->set_ref_block_prefix(4000123456);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
-    input.mutable_action()->mutable_transfer_tokens_pub_key_message()->set_payee_public_key("FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE");
-    input.mutable_action()->mutable_transfer_tokens_pub_key_message()->set_amount(1000000000);
-    input.mutable_action()->mutable_transfer_tokens_pub_key_message()->set_max_fee(250000000);
-    input.mutable_action()->mutable_transfer_tokens_pub_key_message()->set_tpid("rewards@wallet");
+    input.mutable_action()->mutable_transfer_message()->set_payee_public_key("FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE");
+    input.mutable_action()->mutable_transfer_message()->set_amount(1000000000);
+    input.mutable_action()->mutable_transfer_message()->set_fee(250000000);
+    input.mutable_action()->mutable_transfer_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());

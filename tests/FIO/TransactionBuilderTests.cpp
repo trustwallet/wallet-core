@@ -27,10 +27,10 @@ const Address addr6M(pubKey6M);
 
 TEST(FIOTransactionBuilder, RegisterFioAddress) {
     ChainParams chainParams{chainId, 39881, 4279583376};
-    uint64_t maxFee = 5000000000;
+    uint64_t fee = 5000000000;
 
     string t = TransactionBuilder::createRegisterFioAddress(addr6M, privKeyBA, "adam@fiotestnet", addr6M.string(),
-        chainParams, maxFee, "rewards@wallet", 1579784511);
+        chainParams, fee, "rewards@wallet", 1579784511);
 
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"3f99295ec99b904215ff0000000001003056372503a85b0000c6eaa66498ba01102b2f46fca756b200000000a8ed3232650f6164616d4066696f746573746e65743546494f366d31664d645470526b52426e6564765973685843784c4669433573755255384b44667838787874587032686e7478706e6600f2052a01000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K19ugLriG3ApYgjJCRDsy21p9xgsjbDtqBuZrmAEix9XYzndR1kNbJ6fXCngMJMAhxUHfwHAsPnh58otXiJZkazaM1EkS5"]})", t);
 }
@@ -47,14 +47,14 @@ TEST(FIOTransactionBuilder, AddPubAddress) {
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232bd010f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"]})", t);
 }
 
-TEST(FIOTransactionBuilder, TransferTokens) {
+TEST(FIOTransactionBuilder, Transfer) {
     ChainParams chainParams{chainId, 50000, 4000123456};
     string payee = "FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE";
     uint64_t amount = 1000000000;
-    uint64_t maxFee = 250000000;
+    uint64_t fee = 250000000;
 
-    string t = TransactionBuilder::createTransferTokens(addr6M, privKeyBA, payee, amount,
-        chainParams, maxFee, "rewards@wallet", 1579790000);
+    string t = TransactionBuilder::createTransfer(addr6M, privKeyBA, payee, amount,
+        chainParams, fee, "rewards@wallet", 1579790000);
 
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})", t);
 }

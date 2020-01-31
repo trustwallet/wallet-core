@@ -20,7 +20,7 @@ message Action {
         string owner_fio_public_key = 2;
         
         // Max fee to spend, can be obtained using get_fee API.
-        uint64 max_fee = 3;
+        uint64 fee = 3;
         
         // The FIO name of the originating wallet (project-wide constant)
         string tpid = 4;
@@ -37,7 +37,7 @@ message Action {
         repeated PublicAddress public_addresses = 2;
         
         // Max fee to spend, can be obtained using get_fee API.
-        uint64 max_fee = 3;
+        uint64 fee = 3;
         
         // The FIO name of the originating wallet (project-wide constant)
         string tpid = 4;
@@ -46,7 +46,7 @@ message Action {
     }
 
     // Action for transfering FIO coins; transfer_tokens_pub_key
-    message TransferTokens {
+    message Transfer {
         // FIO address of the payee. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
         string payee_public_key = 1;
         
@@ -54,7 +54,7 @@ message Action {
         uint64 amount = 2;
 
         // Max fee to spend, can be obtained using get_fee API.
-        uint64 max_fee = 3;
+        uint64 fee = 3;
         
         // The FIO name of the originating wallet (project-wide constant)
         string tpid = 4;
@@ -65,7 +65,7 @@ message Action {
     oneof message_oneof {
         RegisterFioAddress register_fio_address_message = 1;
         AddPubAddress add_pub_address_message = 2;
-        TransferTokens transfer_tokens_pub_key_message = 3;
+        Transfer transfer_message = 3;
     }
 }
 

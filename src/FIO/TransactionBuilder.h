@@ -40,12 +40,12 @@ public:
     /// @fioName The FIO name to be registered. Ex.: "alice:trust"
     /// @ownerPublicKey FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
-    /// @maxFee Max fee to spend, can be obtained using get_fee API.
+    /// @fee Max fee to spend, can be obtained using get_fee API.
     /// @walletFioName The FIO name of the originating wallet (project-wide constant)
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
     static std::string createRegisterFioAddress(const Address& address, const PrivateKey& privateKey, 
         const std::string& fioName, const std::string& ownerPublicKey,
-        const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletFioName, uint32_t expiryTime);
 
     /// Create a signed AddAddress transaction, returned as json string (double quote delimited), suitable for add_pub_address RPC call
     /// @address The owners' FIO address
@@ -53,13 +53,13 @@ public:
     /// @fioName The FIO name already registered to the owner. Ex.: "alice:trust"
     /// @addressess List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
-    /// @maxFee Max fee to spend, can be obtained using get_fee API.
+    /// @fee Max fee to spend, can be obtained using get_fee API.
     /// @walletFioName The FIO name of the originating wallet (project-wide constant)
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
     /// Note: fee is usually 0 for add_pub_address.
     static std::string createAddPubAddress(const Address& address, const PrivateKey& privateKey, const std::string& fioName,
         const std::vector<std::pair<std::string, std::string>>& pubAddresses,
-        const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletFioName, uint32_t expiryTime);
 
     /// Create a signed TransferTokens transaction, returned as json string (double quote delimited), suitable for transfer_tokens_pub_key RPC call
     /// @address The owners' FIO address
@@ -67,12 +67,12 @@ public:
     /// @payeePublicKey FIO address of the payee. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
     /// @amount Amount of FIO coins to be transferred.
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
-    /// @maxFee Max fee to spend, can be obtained using get_fee API.
+    /// @fee Max fee to spend, can be obtained using get_fee API.
     /// @walletFioName The FIO name of the originating wallet (project-wide constant)
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
-    static std::string createTransferTokens(const Address& address, const PrivateKey& privateKey, 
+    static std::string createTransfer(const Address& address, const PrivateKey& privateKey, 
         const std::string& payeePublicKey, uint64_t amount,
-        const ChainParams& chainParams, uint64_t maxFee, const std::string& walletFioName, uint32_t expiryTime);
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletFioName, uint32_t expiryTime);
 
     /// Used internally.  Creates signatures and json with transaction.
     static std::string signAdnBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey);

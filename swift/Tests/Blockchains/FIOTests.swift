@@ -43,7 +43,7 @@ class FIOTests: XCTestCase {
         let regAddrAction = FIOAction.RegisterFioAddress.with {
             $0.fioAddress = "adam@fiotestnet"
             $0.ownerFioPublicKey = address.description
-            $0.maxFee = 5000000000
+            $0.fee = 5000000000
             $0.tpid = "rewards@wallet"
         }
         let action = FIOAction.with {
@@ -84,7 +84,7 @@ class FIOTests: XCTestCase {
                 FIOPublicAddress.with { $0.tokenCode = "ETH"; $0.address = "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51" },
                 FIOPublicAddress.with { $0.tokenCode = "BNB"; $0.address = "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s" }
             ]
-            $0.maxFee = 0
+            $0.fee = 0
             $0.tpid = "rewards@wallet"
         }
         let action = FIOAction.with {
@@ -107,7 +107,7 @@ class FIOTests: XCTestCase {
         XCTAssertEqual(out.json, expectedJson)
     }
 
-    func testTransferTokens() {
+    func testTransfer() {
         let chainId = Data(hexString: "4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77")!
         let privateKey = PrivateKey(data: Data(hexString: "ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035")!)!
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
@@ -118,14 +118,14 @@ class FIOTests: XCTestCase {
             $0.headBlockNumber = 50000
             $0.refBlockPrefix = 4000123456
         }
-        let transferTokensAction = FIOAction.TransferTokens.with {
+        let transferAction = FIOAction.Transfer.with {
             $0.payeePublicKey = "FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE"
             $0.amount = 1000000000
-            $0.maxFee = 250000000
+            $0.fee = 250000000
             $0.tpid = "rewards@wallet"
         }
         let action = FIOAction.with {
-            $0.transferTokensPubKeyMessage = transferTokensAction
+            $0.transferMessage = transferAction
         }
         let input = FIOSigningInput.with {
             $0.expiry = 1579790000

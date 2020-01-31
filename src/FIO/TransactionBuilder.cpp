@@ -21,12 +21,12 @@ using json = nlohmann::json;
 
 string TransactionBuilder::createRegisterFioAddress(const Address& address, const PrivateKey& privateKey, 
     const string& fioName, const std::string& ownerPublicKey,
-    const ChainParams& chainParams, uint64_t maxFee, const string& walletFioName, uint32_t expiryTime) {
+    const ChainParams& chainParams, uint64_t fee, const string& walletFioName, uint32_t expiryTime) {
 
     const auto apiName = "regaddress";
 
     string actor = Actor::actor(address);
-    RegisterFioAddressData raData(fioName, ownerPublicKey, maxFee, walletFioName, actor);
+    RegisterFioAddressData raData(fioName, ownerPublicKey, fee, walletFioName, actor);
     Data serData;
     raData.serialize(serData);
     
@@ -55,12 +55,12 @@ string TransactionBuilder::createRegisterFioAddress(const Address& address, cons
 
 string TransactionBuilder::createAddPubAddress(const Address& address, const PrivateKey& privateKey, const string& fioName,
     const vector<pair<string, string>>& pubAddresses,
-    const ChainParams& chainParams, uint64_t maxFee, const string& walletFioName, uint32_t expiryTime) {
+    const ChainParams& chainParams, uint64_t fee, const string& walletFioName, uint32_t expiryTime) {
 
     const auto apiName = "addaddress";
 
     string actor = Actor::actor(address);
-    AddPubAddressData aaData(fioName, pubAddresses, maxFee, walletFioName, actor);
+    AddPubAddressData aaData(fioName, pubAddresses, fee, walletFioName, actor);
     Data serData;
     aaData.serialize(serData);
     
@@ -87,14 +87,14 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     return signAdnBuildTx(chainParams.chainId, serTx, privateKey);
 }
 
-string TransactionBuilder::createTransferTokens(const Address& address, const PrivateKey& privateKey, 
+string TransactionBuilder::createTransfer(const Address& address, const PrivateKey& privateKey, 
         const string& payeePublicKey, uint64_t amount,
-        const ChainParams& chainParams, uint64_t maxFee, const string& walletFioName, uint32_t expiryTime) {
+        const ChainParams& chainParams, uint64_t fee, const string& walletFioName, uint32_t expiryTime) {
 
     const auto apiName = "trnsfiopubky";
 
     string actor = Actor::actor(address);
-    TransferTokensData ttData(payeePublicKey, amount, maxFee, walletFioName, actor);
+    TransferData ttData(payeePublicKey, amount, fee, walletFioName, actor);
     Data serData;
     ttData.serialize(serData);
     

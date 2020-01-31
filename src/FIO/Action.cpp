@@ -23,7 +23,7 @@ void Action::serialize(Data& out) const {
 void AddPubAddressData::serialize(Data& out) const {
     encodeString(fioAddress, out);
     addresses.serialize(out);
-    encode64LE(maxFee, out);
+    encode64LE(fee, out);
     EOS::Name(actor).serialize(out);
     encodeString(tpid, out);
 }
@@ -31,15 +31,15 @@ void AddPubAddressData::serialize(Data& out) const {
 void RegisterFioAddressData::serialize(Data& out) const {
     encodeString(fioAddress, out);
     encodeString(ownerPublicKey, out);
-    encode64LE(maxFee, out);
+    encode64LE(fee, out);
     EOS::Name(actor).serialize(out);
     encodeString(tpid, out);
 }
 
-void TransferTokensData::serialize(Data& out) const {
+void TransferData::serialize(Data& out) const {
     encodeString(payeePublicKey, out);
     encode64LE(amount, out);
-    encode64LE(maxFee, out);
+    encode64LE(fee, out);
     EOS::Name(actor).serialize(out);
     encodeString(tpid, out);
 }

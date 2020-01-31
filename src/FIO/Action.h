@@ -83,14 +83,14 @@ class AddPubAddressData {
 public:
     std::string fioAddress;
     PublicAddresses addresses;
-    uint64_t maxFee;
+    uint64_t fee;
     std::string tpid;
     std::string actor;
 
     AddPubAddressData(const std::string& fioAddress, std::vector<std::pair<std::string, std::string>> addresses,
-        uint64_t maxFee, const std::string& tpid, const std::string& actor) :
+        uint64_t fee, const std::string& tpid, const std::string& actor) :
         fioAddress(fioAddress), addresses(addresses),
-        maxFee(maxFee), tpid(tpid), actor(actor) {}
+        fee(fee), tpid(tpid), actor(actor) {}
     void serialize(Data& out) const;
 };
 
@@ -99,28 +99,28 @@ class RegisterFioAddressData {
 public:
     std::string fioAddress;
     std::string ownerPublicKey;
-    uint64_t maxFee;
+    uint64_t fee;
     std::string tpid;
     std::string actor;
 
     RegisterFioAddressData(const std::string& fioAddress, const std::string& ownerPublicKey,
-        uint64_t maxFee, const std::string& tpid, const std::string& actor) :
+        uint64_t fee, const std::string& tpid, const std::string& actor) :
         fioAddress(fioAddress), ownerPublicKey(ownerPublicKey),
-        maxFee(maxFee), tpid(tpid), actor(actor) {}
+        fee(fee), tpid(tpid), actor(actor) {}
     void serialize(Data& out) const;
 };
 
 /// TransferTokens action data part.
-class TransferTokensData {
+class TransferData {
 public:
     std::string payeePublicKey;
     uint64_t amount;
-    uint64_t maxFee;
+    uint64_t fee;
     std::string tpid;
     std::string actor;
 
-    TransferTokensData(const std::string& payeePublicKey, uint64_t amount, uint64_t maxFee, const std::string& tpid, const std::string& actor) :
-        payeePublicKey(payeePublicKey), amount(amount), maxFee(maxFee), tpid(tpid), actor(actor) {}
+    TransferData(const std::string& payeePublicKey, uint64_t amount, uint64_t fee, const std::string& tpid, const std::string& actor) :
+        payeePublicKey(payeePublicKey), amount(amount), fee(fee), tpid(tpid), actor(actor) {}
     void serialize(Data& out) const;
 };
 
