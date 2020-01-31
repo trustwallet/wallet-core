@@ -23,6 +23,9 @@ message SigningInput {
 
     // Account balance (128-bit unsigned integer, as a string)
     string balance = 6;
+
+    // Work
+    string work = 7;
 }
 
 // Transaction signing output.

@@ -154,6 +154,11 @@ Proto::SigningOutput Signer::build() const {
         {"link_as_account", Address(PublicKey(Data(link.begin(), link.end()), TWPublicKeyTypeED25519Blake2b)).string()},
         {"signature", hex(signature)},
     };
+
+    if (input.work().size() > 0) {
+        json["work"] = input.work();
+    }
+
     output.set_json(json.dump());
     return output;
 }
