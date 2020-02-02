@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package TW.FIO.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// A public blockchain address, such as {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}
+message PublicAddress {
+    string token_code = 1;
+    string address = 2;
+}
+
+// Different Actions
+message Action {
+    // Action for registering a FIO name; register_fio_address
+    message RegisterFioAddress {
+        // The FIO name to be registered. Ex.: "alice:trust"
+        string fio_address = 1;
+
+        // FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string owner_fio_public_key = 2;
+        
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+        
+        // The FIO name of the originating wallet (project-wide constant)
+        string tpid = 4;
+
+        // Note: actor is not needed, computed from owner_fio_public_key
+    }
+
+    // Acion for adding public chain addresses to a FIO name; add_pub_address
+    message AddPubAddress {
+        // The FIO name already registered to the owner. Ex.: "alice:trust"
+        string fio_address = 1;
+
+        // List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
+        repeated PublicAddress public_addresses = 2;
+        
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+        
+        // The FIO name of the originating wallet (project-wide constant)
+        string tpid = 4;
+
+        // Note: actor is not needed, computed from owner_fio_public_key
+    }
+
+    // Action for transfering FIO coins; transfer_tokens_pub_key
+    message Transfer {
+        // FIO address of the payee. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string payee_public_key = 1;
+        
+        // Amount of FIO coins to be transferred.
+        uint64 amount = 2;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+        
+        // The FIO name of the originating wallet (project-wide constant)
+        string tpid = 4;
+
+        // Note: actor is not needed, computed from private key
+    }
+
+    oneof message_oneof {
+        RegisterFioAddress register_fio_address_message = 1;
+        AddPubAddress add_pub_address_message = 2;
+        Transfer transfer_message = 3;
+    }
+}
+
+// Represents current parameters of the FIO blockchain
+message ChainParams {
+    // Constant chainId (32 bytes), obtained from get_info API
+    bytes chain_id = 1;
+    
+    // The last block number, obtained from get_info API
+    uint64 head_block_number = 2;
+
+    // Block prefix of last block, obtained from get_block API
+    uint32 ref_block_prefix = 3;
+}
+
+// Transaction signing input
+message SigningInput {
+    // Expiry for this message, in unix time. Can be 0, then it is taken from current time with default expiry
+    uint32 expiry = 1;
+
+    // Current parameters of the FIO blockchain
+    ChainParams chain_params = 2;
+    
+    // The private key matching the address, needed for signing
+    bytes private_key = 3;
+    
+    // Context-specific action data
+    Action action = 4;
+}
+
+// Transaction signing output
+message SigningOutput {
+    // Signed transaction in JSON
+    string json = 1;
+
+    // Filled with message upon error
+    string error = 2;
+}

@@ -110,8 +110,7 @@ class CodeGenerator
   end
 
   def should_return_string(method)
-    return false if method.parameters.empty?
-
+    # Note: method with no parameters can also return string
     method.return_type.name == :string
   end
 
