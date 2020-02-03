@@ -44,6 +44,7 @@ This list is generated from [./coins.json](../coins.json)
 | 456     | Seele            | SEELE  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/seele/info/logo.png" width="32" />        | <https://www.seele.pro/>      |
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
+| 654     | Free Cash        | FCH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/freecash/info/logo.png" width="32" />     | <https://ifblock.io/fch>      |
 | 688     | Coinex           | CET    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/coinex/info/logo.png" width="32" />       | <https://coinex.org>          |
 | 700     | xDai             | xDAI   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/xdai/info/logo.png" width="32" />         | <https://poa.network/xdai>    |
 | 714     | Binance          | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png" width="32" />      | <https://binance.org>         |

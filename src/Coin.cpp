@@ -38,6 +38,10 @@
 #include "Nebulas/Address.h"
 #include "FIO/Address.h"
 #include "Seele/Address.h"
+#include "FreeCash/CashAddress.h"
+#include "FreeCash/Address.h"
+#include "FreeCash/SegwitAddress.h"
+
 
 
 #include <TrustWalletCore/TWHRP.h>
@@ -174,6 +178,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeSeele:
         return Seele::Address::isValid(string);
+
+    case TWCoinTypeFreeCash:
+        return FreeCash::SegwitAddress::isValid(string, hrp) ||
+               FreeCash::Address::isValid(string, {{p2pkh}, {p2sh}});
     }
 }
 
@@ -310,6 +318,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeSeele:
         return Seele::Address(publicKey).string();
+
+    case TWCoinTypeFreeCash:
+        return FreeCash::Address(publicKey, p2pkh).string();
     }
 }
 
