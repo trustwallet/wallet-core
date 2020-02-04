@@ -41,7 +41,7 @@ TEST(FreeCashAddress, FromPrivateKey) {
     const auto publicKey = PublicKey(privateKey.getPublicKey(TWPublicKeyTypeSECP256k1));
     const auto address = Address(publicKey,p2pkh);
 
-    ASSERT_EQ(address.string(), "FEMRWWpVHVVShfvVCPbqUkgezXJ2rJeTrJ1");
+    ASSERT_EQ(address.string(), "FEMRWWpVHVVShfvVCPbqUkgezXJ2rJeTrJ");
 }
 
 

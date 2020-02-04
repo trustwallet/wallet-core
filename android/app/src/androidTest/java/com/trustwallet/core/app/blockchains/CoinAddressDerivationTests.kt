@@ -86,6 +86,8 @@ class CoinAddressDerivationTests {
         BITCOINSV -> assertEquals("1LiG2PZZ2Nb8s16fGe4iVod81XQwS5Djhm", address)
         SIMPLELEDGER -> assertEquals("bitcoincash:qqtvzx6gcpj5xj9ncaa5zefdd3g9uzas0gn83ep58x", address)
         SEELE -> assertEquals("0xe95d99fec90954eb8f6f899c188aef5caa20d501", address)
+        FREECASH -> assertEquals("F7Bmtw8uRnzUnZx1bDkcDUoHXoQ14Pgx3r", address)
+
 
     }
 }

@@ -8,9 +8,9 @@
 
 #include "../Coin.h"
 #include "../Base58.h"
-#include "Address.h"
-#include "SegwitAddress.h"
-#include "CashAddress.h"
+#include "../FreeCash/Address.h"
+#include "../FreeCash/SegwitAddress.h"
+#include "../FreeCash/CashAddress.h"
 
 #include "../BinaryCoding.h"
 #include "../Decred/Address.h"
