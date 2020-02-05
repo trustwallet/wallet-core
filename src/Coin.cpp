@@ -6,6 +6,9 @@
 
 #include "Coin.h"
 
+#include "FreeCash/Address.h"
+#include "FreeCash/SegwitAddress.h"
+#include "FreeCash/CashAddress.h"
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Bitcoin/Address.h"
@@ -38,9 +41,7 @@
 #include "Nebulas/Address.h"
 #include "FIO/Address.h"
 #include "Seele/Address.h"
-#include "FreeCash/CashAddress.h"
-#include "FreeCash/Address.h"
-#include "FreeCash/SegwitAddress.h"
+
 
 
 

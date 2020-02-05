@@ -4,11 +4,12 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWFreeCashSegwitAddress.h>
+
 #include "../Bech32.h"
 #include "../FreeCash/SegwitAddress.h"
 
 #include <TrezorCrypto/ecdsa.h>
-#include <TrustWalletCore/TWFreeCashSegwitAddress.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHRP.h>
 #include <TrustWalletCore/TWPublicKey.h>

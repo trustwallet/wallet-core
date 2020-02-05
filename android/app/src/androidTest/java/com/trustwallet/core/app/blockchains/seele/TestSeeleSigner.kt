@@ -7,7 +7,6 @@ import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.SeeleSigner
 import wallet.core.jni.proto.Seele
-import com.trustwallet.core.app.utils.Numeric
 
 class TestSeeleSigner {
 

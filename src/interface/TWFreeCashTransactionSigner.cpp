@@ -4,6 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include <TrustWalletCore/TWFreeCashTransactionSigner.h>
+
 #include "../FreeCash/TransactionBuilder.h"
 #include "../FreeCash/TransactionSigner.h"
 #include "../Data.h"
@@ -12,7 +14,6 @@
 #include "../proto/FreeCash.pb.h"
 #include "../proto/Common.pb.h"
 
-#include <TrustWalletCore/TWFreeCashTransactionSigner.h>
 
 #include <algorithm>
 

@@ -6,11 +6,12 @@
 
 #pragma once
 
+#include <TrustWalletCore/TWFreeCashAddress.h>
+
 #include "TWBase.h"
 #include "TWData.h"
 #include "TWString.h"
 
-#include <TrustWalletCore/TWFreeCashAddress.h>
 
 TW_EXTERN_C_BEGIN
 
