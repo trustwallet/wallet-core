@@ -14,7 +14,7 @@
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Bravo/Address.h"
-#include "Cardano/Address.h"
+//#include "Cardano/Address.h"  Current (pre-Shelley) Cardano version removed
 #include "Cosmos/Address.h"
 #include "Decred/Address.h"
 #include "EOS/Address.h"
@@ -183,9 +183,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypePolkadot:
         return Polkadot::Address::isValid(string);
-
-    case TWCoinTypeCardano:
-        return Cardano::Address::isValid(string);
     }
 }
 
@@ -351,9 +348,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypePolkadot:
         return Polkadot::Address(publicKey).string();
-
-    case TWCoinTypeCardano:
-        return Cardano::Address(publicKey).string();
     }
 }
 
