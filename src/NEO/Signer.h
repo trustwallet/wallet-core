@@ -25,9 +25,12 @@ class Signer {
     PublicKey getPublicKey() const;
     Address getAddress() const;
 
-    static Proto::SigningOutput sign(const Proto::SigningInput& input);
+    static Proto::TransactionPlan planTransaction(const Proto::SigningInput& input);
+    static Proto::SigningOutput sign(const Proto::SigningInput& input, const Proto::TransactionPlan& plan);
     void sign(Transaction &tx) const;
     Data sign(const Data &data) const;
+  private:
+    static Transaction prepareUnsignedTransaction(const Proto::SigningInput& input, const Proto::TransactionPlan& plan, bool validate = true);
 };
 
 } // namespace TW::NEO

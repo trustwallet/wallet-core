@@ -16,6 +16,9 @@ TW_EXPORT_CLASS
 struct TWNEOSigner;
 
 TW_EXPORT_STATIC_METHOD
-TW_NEO_Proto_SigningOutput TWNEOSignerSign(TW_NEO_Proto_SigningInput input);
+TW_NEO_Proto_TransactionPlan TWNEOSignerPlanTransaction(TW_NEO_Proto_SigningInput input);
+
+TW_EXPORT_STATIC_METHOD
+TW_NEO_Proto_SigningOutput TWNEOSignerSign(TW_NEO_Proto_SigningInput input, TW_NEO_Proto_TransactionPlan plan);
 
 TW_EXTERN_C_END
