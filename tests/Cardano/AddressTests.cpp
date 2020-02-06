@@ -348,3 +348,12 @@ TEST(CardanoAddress, FromDataV3) {
     EXPECT_EQ(address.string(), "addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j");
     EXPECT_EQ("6d0b99fdb1cc851fbc8dbcb7d6710fde28df46360c259d482db679c24c4e50b2", hex(address.groupKey));
 }
+
+TEST(CardanoAddress, CopyConstructorLegacy) {
+    AddressV3 address1 = AddressV3("Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvx");
+    EXPECT_TRUE(address1.legacyAddressV2 != nullptr);
+    AddressV3 address2 = AddressV3(address1);
+    EXPECT_TRUE(address2.legacyAddressV2 != nullptr);
+    EXPECT_TRUE(address2.legacyAddressV2 != address1.legacyAddressV2);
+    // if it was not a deep copy, double freeing would occur
+}

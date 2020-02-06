@@ -63,6 +63,15 @@ class AddressV3 {
     /// Initializes a Cardano address from packed data (see data())
     explicit AddressV3(const Data& data);
 
+    /// Copy constructor
+    AddressV3(const AddressV3& other) :
+        discrimination(other.discrimination),
+        kind(other.kind),
+        key1(other.key1),
+        groupKey(other.groupKey),
+        legacyAddressV2(other.legacyAddressV2 == nullptr ? nullptr : new AddressV2(*other.legacyAddressV2))
+    {}
+
     ~AddressV3() {
         if (legacyAddressV2 != nullptr) {
             delete legacyAddressV2;
