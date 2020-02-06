@@ -18,7 +18,7 @@ namespace TW::FreeCash {
 
 struct Transaction {
     /// Transaction data format version (note, this is signed)
-    int32_t version = 1;
+    int32_t version = 2;
 
     /// The block number or timestamp at which this transaction is unlocked
     ///
