@@ -37,7 +37,7 @@ namespace TW::Cardano {
  */
 
 /// A Cardano address.  Type is 0 (public key).
-class Address {
+class AddressV2 {
   public:
     /// root key
     Data root;
@@ -54,10 +54,10 @@ class Address {
     static bool isValid(const std::string& string);
 
     /// Initializes a Cardano address with a string representation.  Throws if invalid.
-    explicit Address(const std::string& string);
+    explicit AddressV2(const std::string& string);
 
     /// Initializes a V2, public key type Cardano address from an extended public key.
-    explicit Address(const PublicKey& publicKey);
+    explicit AddressV2(const PublicKey& publicKey);
 
     /// Returns a string representation of the address.
     std::string string() const;
@@ -72,8 +72,13 @@ class Address {
     static bool parseAndCheck(const std::string& addr, TW::Data& root_out, TW::Data& attrs_out, TW::byte& type_out);
 };
 
-inline bool operator==(const Address& lhs, const Address& rhs) {
+inline bool operator==(const AddressV2& lhs, const AddressV2& rhs) {
     return lhs.root == rhs.root && lhs.attrs == rhs.attrs && lhs.type == rhs.type;
 }
 
 } // namespace TW::Cardano
+
+/// Wrapper for C interface.
+struct TWCardanoAddressV2 {
+    TW::Cardano::AddressV2 impl;
+};
