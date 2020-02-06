@@ -17,6 +17,7 @@
 #include "../Polkadot/Address.h"
 #include "../Zcash/TAddress.h"
 #include "../Zilliqa/Address.h"
+#include "../NEO/Address.h"
 #include "../Nano/Address.h"
 
 #include "../Coin.h"
@@ -168,6 +169,12 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypePolkadot: {
         auto addr = Polkadot::Address(string);
         data = Data(addr.bytes.begin() + 1, addr.bytes.end());
+        break;
+    }
+
+    case TWCoinTypeNEO: {
+        auto addr = NEO::Address(string);
+        data = Data(addr.bytes.begin(), addr.bytes.end());
         break;
     }
     default: break;

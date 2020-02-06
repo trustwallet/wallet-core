@@ -68,6 +68,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypePolkadot, privateKey), "16PpFrXrC6Ko3pYcyMAx6gPMp3mFFaxgyYMt4G5brkgNcSz8");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeKava, privateKey), "kava1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z09wt76x");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeCardano, privateKeyExt), "addr1sn0sqpku8yfj2dazh7czyspcd5flzkzu6x9wqt0lsn4wfvds9sg3s3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxdnpy03");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEO, privateKeyExt), "AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
 }
 
 } // namespace TW
