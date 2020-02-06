@@ -53,7 +53,7 @@ TEST(TWStoredKey, importPrivateKey) {
     
     const auto privateKey3 = TWStoredKeyPrivateKey(key, coin, password.get());
     const auto pkData3 = WRAPD(TWPrivateKeyData(privateKey3));
-    EXPECT_EQ(hex(data(TWDataBytes(privateKey2.get()), TWDataSize(privateKey2.get()))), privateKeyHex);
+    EXPECT_EQ(hex(data(TWDataBytes(pkData3.get()), TWDataSize(pkData3.get()))), privateKeyHex);
     TWPrivateKeyDelete(privateKey3);
 
     TWStoredKeyDelete(key);
