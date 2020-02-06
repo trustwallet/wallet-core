@@ -68,8 +68,9 @@ Proto::TransactionPlan Signer::planTransaction(const Proto::SigningInput &input)
         }
 
         if (input.inputs(i).asset_id() != input.gas_asset_id()
-                && required[input.inputs(i).asset_id()] < available[input.inputs(i).asset_id()])
+                && required[input.inputs(i).asset_id()] < available[input.inputs(i).asset_id()]) {
             continue;
+        }
 
         available[input.inputs(i).asset_id()] += input.inputs(i).value();
         plan.add_inputs()->MergeFrom(input.inputs(i));
@@ -80,11 +81,13 @@ Proto::TransactionPlan Signer::planTransaction(const Proto::SigningInput &input)
         auto outputPlan = plan.add_outputs();
 
         if (available.find(input.inputs(i).asset_id()) == available.end()
-            || available[input.outputs(i).asset_id()] < input.outputs(i).amount())
+            || available[input.outputs(i).asset_id()] < input.outputs(i).amount()) {
             throw "Input balance for asset too low";
+        }
 
-        if (input.outputs(i).asset_id() == input.gas_asset_id())
+        if (input.outputs(i).asset_id() == input.gas_asset_id()) {
             existGASTransfer = i;
+        }
 
         int64_t availableAmount = available[input.outputs(i).asset_id()];
         outputPlan->set_available_amount(availableAmount);
@@ -112,8 +115,9 @@ Proto::TransactionPlan Signer::planTransaction(const Proto::SigningInput &input)
         existGASTransfer = plan.outputs_size() - 1;
 
         if (available.find(input.gas_asset_id()) == available.end()
-            || available[input.gas_asset_id()] < 1024)
+            || available[input.gas_asset_id()] < 1024) {
             throw "Transaction too big, fee in GAS needed or try send by parts";
+        }
 
         int64_t availableAmount = available[input.gas_asset_id()];
         outputPlan->set_available_amount(availableAmount);
@@ -159,8 +163,9 @@ Transaction Signer::prepareUnsignedTransaction(const Proto::SigningInput &input,
         for (int i = 0; i < plan.outputs_size(); i++) {
             if (plan.outputs(i).asset_id() == input.gas_asset_id()) {
                 if (validate && plan.outputs(i).amount() + plan.outputs(i).change() + plan.fee()
-                    != plan.outputs(i).available_amount())
+                    != plan.outputs(i).available_amount()) {
                     throw "Wrong fee";
+                }
             }
 
             if (plan.outputs(i).amount() > 0) { // to recipient, 0 if gas change only exist
