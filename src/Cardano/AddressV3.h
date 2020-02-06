@@ -57,8 +57,11 @@ class AddressV3 {
     /// Initializes a Cardano address with a string representation.  Throws if invalid.
     explicit AddressV3(const std::string& addr);
 
-    /// Initializes a V2, public key type Cardano address from an extended public key.
+    /// Initializes a Cardano address from an extended public key.
     explicit AddressV3(const PublicKey& publicKey);
+
+    /// Initializes a Cardano address from packed data (see data())
+    explicit AddressV3(const Data& data);
 
     ~AddressV3() {
         if (legacyAddressV2 != nullptr) {
@@ -75,6 +78,9 @@ class AddressV3 {
 
     /// Check validity and parse elements of a string address.  Throws on error. Used internally by isValid and ctor.
     static bool parseAndCheckV3(const std::string& addr, Discrimination& discrimination, Kind& kind, TW::Data& key1, TW::Data& key2);
+
+    /// Return the binary data representation (keys appended, internal format)
+    Data data() const;
 
 private:
     AddressV3() : legacyAddressV2(nullptr) {}

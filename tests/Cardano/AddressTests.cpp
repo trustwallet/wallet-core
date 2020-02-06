@@ -327,3 +327,24 @@ TEST(CardanoAddress, FromStringNegativeBadChecksumV2) {
     }
     FAIL() << "Expected exception!";
 }
+
+TEST(CardanoAddress, DataV3) {
+    // group addr
+    auto address = AddressV3("addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j");
+    EXPECT_EQ("4dc3393959139f00bc88d33d4b2582fecc237238f2269fc094b286acdb892295", hex(address.key1));
+    EXPECT_EQ("6d0b99fdb1cc851fbc8dbcb7d6710fde28df46360c259d482db679c24c4e50b2", hex(address.groupKey));
+    Data data = address.data();
+    EXPECT_EQ(
+        "0104"
+        "20" "4dc3393959139f00bc88d33d4b2582fecc237238f2269fc094b286acdb892295"
+        "20" "6d0b99fdb1cc851fbc8dbcb7d6710fde28df46360c259d482db679c24c4e50b2",
+        hex(data)
+    );
+}
+
+TEST(CardanoAddress, FromDataV3) {
+    Data data = parse_hex("0104204dc3393959139f00bc88d33d4b2582fecc237238f2269fc094b286acdb892295206d0b99fdb1cc851fbc8dbcb7d6710fde28df46360c259d482db679c24c4e50b2");
+    auto address = AddressV3(data);
+    EXPECT_EQ(address.string(), "addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j");
+    EXPECT_EQ("6d0b99fdb1cc851fbc8dbcb7d6710fde28df46360c259d482db679c24c4e50b2", hex(address.groupKey));
+}

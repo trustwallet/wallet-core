@@ -6,7 +6,6 @@
 
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWPrivateKey.h>
-#include "proto/Cardano.pb.h"
 #include "TWTestUtilities.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
@@ -14,7 +13,6 @@
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace TW::Cardano;
 
 
 TEST(TWCardano, Address) {

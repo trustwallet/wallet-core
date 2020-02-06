@@ -14,7 +14,6 @@
 #include "../Hash.h"
 
 #include <array>
-#include <iostream>
 
 using namespace TW;
 using namespace TW::Cardano;
@@ -142,6 +141,28 @@ AddressV3::AddressV3(const PublicKey& publicKey) : legacyAddressV2(nullptr) {
     std::copy(publicKey.bytes.begin() + 32, publicKey.bytes.begin() + 64, groupKey.begin());
 }
 
+AddressV3::AddressV3(const Data& data) : legacyAddressV2(nullptr) {
+    // min 4 bytes, 2 prefix + 2 len
+    if (data.size() < 4) { throw std::invalid_argument("Address data too short"); }
+    assert(data.size() >= 4);
+    int index = 0;
+    discrimination = (Discrimination)data[index++];
+    kind = (Kind)data[index++];
+    // key1:
+    byte len1 = data[index++];
+    if (data.size() < 4 + len1) { throw std::invalid_argument("Address data too short"); }
+    assert(data.size() >= 4 + len1);
+    key1 = Data(len1);
+    std::copy(data.begin() + index, data.begin() + index + len1, key1.begin());
+    index += len1;
+    // groupKey:
+    byte len2 = data[index++];
+    if (data.size() < 4 + len1 + len2) { throw std::invalid_argument("Address data too short"); }
+    assert(data.size() >= 4 + len1 + len2);
+    groupKey = Data(len2);
+    std::copy(data.begin() + index, data.begin() + index + len2, groupKey.begin());
+}
+
 string AddressV3::string() const {
     std::string hrp;
     switch (kind) {
@@ -191,4 +212,15 @@ string AddressV3::stringBase32() const {
     }
     std::string base32 = Base32::encode(keys, "abcdefghijklmnopqrstuvwxyz23456789");
     return base32;
+}
+
+Data AddressV3::data() const {
+    Data data;
+    TW::append(data, (uint8_t)discrimination);
+    TW::append(data, (uint8_t)kind);
+    TW::append(data, (uint8_t)key1.size());
+    TW::append(data, key1);
+    TW::append(data, (uint8_t)groupKey.size());
+    TW::append(data, groupKey);
+    return data;
 }
