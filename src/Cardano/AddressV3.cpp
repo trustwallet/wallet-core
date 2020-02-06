@@ -163,6 +163,14 @@ AddressV3::AddressV3(const Data& data) : legacyAddressV2(nullptr) {
     std::copy(data.begin() + index, data.begin() + index + len2, groupKey.begin());
 }
 
+AddressV3::AddressV3(const AddressV3& other) :
+    discrimination(other.discrimination),
+    kind(other.kind),
+    key1(other.key1),
+    groupKey(other.groupKey),
+    legacyAddressV2(other.legacyAddressV2 == nullptr ? nullptr : new AddressV2(*other.legacyAddressV2))
+{}
+
 string AddressV3::string() const {
     std::string hrp;
     switch (kind) {
