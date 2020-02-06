@@ -1306,5 +1306,28 @@
             "clientPublic": "",
             "clientDocs": "https://cardanodocs.com/introduction/"
         }
+    },
+    {
+        "id": "neo",
+        "name": "NEO",
+        "symbol": "NEO",
+        "decimals": 8,
+        "blockchain": "NEO",
+        "derivationPath": "m/44'/888'/0'/0/0",
+        "curve": "nist256p1",
+        "publicKeyType": "nist256p1",
+        "explorer": {
+            "url": "https://neoscan.io",
+            "txPath": "/transaction/",
+            "accountPath": "/address/",
+            "sampleTx": "e0ddf7c81c732df26180aca0c36d5868ad009fdbbe6e7a56ebafc14bba41cd53",
+            "sampleAccount": "AcxuqWhTureEQGeJgbmtSWNAtssjMLU7pb"
+        },
+        "info": {
+            "url": "https://neo.org",
+            "client": "https://github.com/neo-project/neo",
+            "clientPublic": "http://seed1.ngd.network:10332",
+            "clientDocs": "https://neo.org/eco"
+        }
     }
 ]

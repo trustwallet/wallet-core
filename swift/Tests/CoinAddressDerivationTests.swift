@@ -187,6 +187,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .cardano:
                     let expectedResult = "Ae2tdPwUPEZJ2TwjFBMCnjz6t43pr4QVnBjCGSW8BMsttrt2WagC1D7LUWa"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .neo:
+                    let expectedResult = "AT6w7PJvwPcSqHvtbNBY2aHPDv12eW5Uuf"
+                    AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 }
             }
         }
