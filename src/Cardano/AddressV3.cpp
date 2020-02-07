@@ -6,6 +6,7 @@
 
 #include "AddressV3.h"
 #include "AddressV2.h"
+#include <TrustWalletCore/TWCoinType.h>
 #include "../Data.h"
 #include "../Bech32.h"
 #include "../Base32.h"
@@ -178,7 +179,7 @@ string AddressV3::string() const {
         case Kind_Single:
         case Kind_Group:
         case Kind_Account:
-            hrp = "addr"; break;
+            hrp = stringForHRP(TWHRPCardano); break;
         default:
             hrp = ""; break;
     }

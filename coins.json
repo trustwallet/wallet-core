@@ -1293,6 +1293,7 @@
         "derivationPath": "m/1852'/1815'/0'/0/0",
         "curve": "ed25519Extended",
         "publicKeyType": "ed25519Extended",
+        "hrp": "addr",
         "explorer": {
             "url": "https://shelleyexplorer.cardano.org",
             "txPath": "/tx/",
