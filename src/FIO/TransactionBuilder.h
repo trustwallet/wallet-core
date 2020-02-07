@@ -74,6 +74,19 @@ public:
         const std::string& payeePublicKey, uint64_t amount,
         const ChainParams& chainParams, uint64_t fee, const std::string& walletFioName, uint32_t expiryTime);
 
+    /// Create a signed RenewFioAddress transaction, returned as json string (double quote delimited), suitable for register_fio_address RPC call
+    /// @address The owners' FIO address
+    /// @privateKey The private key matching the address, needed for signing.
+    /// @fioName The FIO name to be renewed. Ex.: "alice:trust"
+    /// @ownerPublicKey FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+    /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
+    /// @fee Max fee to spend, can be obtained using get_fee API.
+    /// @walletFioName The FIO name of the originating wallet (project-wide constant)
+    /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
+    static std::string createRenewFioAddress(const Address& address, const PrivateKey& privateKey, 
+        const std::string& fioName, const std::string& ownerPublicKey,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletFioName, uint32_t expiryTime);
+
     /// Used internally.  Creates signatures and json with transaction.
     static std::string signAdnBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey);
 };

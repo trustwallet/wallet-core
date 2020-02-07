@@ -62,10 +62,28 @@ message Action {
         // Note: actor is not needed, computed from private key
     }
 
+    // Action for renewing a FIO name; renew_fio_address
+    message RenewFioAddress {
+        // The FIO name to be renewed. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string owner_fio_public_key = 2;
+        
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+
+        // The FIO name of the originating wallet (project-wide constant)
+        string tpid = 4;
+
+        // Note: actor is not needed, computed from owner_fio_public_key
+    }
+
     oneof message_oneof {
         RegisterFioAddress register_fio_address_message = 1;
         AddPubAddress add_pub_address_message = 2;
         Transfer transfer_message = 3;
+        RenewFioAddress renew_fio_address_message = 4;
     }
 }
 

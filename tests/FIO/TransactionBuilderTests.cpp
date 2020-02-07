@@ -59,6 +59,16 @@ TEST(FIOTransactionBuilder, Transfer) {
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})", t);
 }
 
+TEST(FIOTransactionBuilder, RenewFioAddress) {
+    ChainParams chainParams{chainId, 39881, 4279583376};
+    uint64_t fee = 3000000000;
+
+    string t = TransactionBuilder::createRenewFioAddress(addr6M, privKeyBA, "nick@fiotestnet", addr6M.string(),
+        chainParams, fee, "rewards@wallet", 1579785000);
+
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff0000000001003056372503a85b80b1ba2919aea6ba01102b2f46fca756b200000000a8ed32322f0f6e69636b4066696f746573746e6574005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_Jxz7oCJ7Z4ECsxqb2utqBcyP3zPQCeQCBws9wWQjyptUKoWVk2AyCVEqtdMHJwqtLniio5Z7npMnaZB8E4pa2G75P9uGkb"]})", t);
+}
+
 TEST(FIOTransaction, ActionRegisterFioAddressInternal) {
     RegisterFioAddressData radata("adam@fiotestnet", addr6M.string(),
         5000000000, "rewards@wallet", "qdfejz2a5wpl");

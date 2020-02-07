@@ -124,4 +124,17 @@ public:
     void serialize(Data& out) const;
 };
 
+/// RenewFioAddress action data part.
+class RenewFioAddressData {
+public:
+    std::string fioAddress;
+    uint64_t fee;
+    std::string tpid;
+    std::string actor;
+
+    RenewFioAddressData(const std::string& fioAddress, uint64_t fee, const std::string& tpid, const std::string& actor) :
+        fioAddress(fioAddress), fee(fee), tpid(tpid), actor(actor) {}
+    void serialize(Data& out) const;
+};
+
 } // namespace TW::FIO

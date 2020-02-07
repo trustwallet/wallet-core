@@ -44,4 +44,11 @@ void TransferData::serialize(Data& out) const {
     encodeString(tpid, out);
 }
 
+void RenewFioAddressData::serialize(Data& out) const {
+    encodeString(fioAddress, out);
+    encode64LE(fee, out);
+    EOS::Name(actor).serialize(out);
+    encodeString(tpid, out);
+}
+
 } // namespace TW::FIO
