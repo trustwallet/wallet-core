@@ -31,11 +31,14 @@ const std::string COINEX_PREFIX_CANCEL_ORDER_MESSAGE = "market/MsgCancelOrder";
 const std::string COINEX_PREFIX_TRANSACTION = "auth/StdTx";
 const std::string COINEX_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
+const std::string COINEX_PREFIX_PROPOSAL_VOTE_MESSAGE = "cosmos-sdk/MsgVote";
+
+
 json coinexHigherWrapperJSON(json& jsonObj) {
     json jsonMsgWrapper;
 
     jsonMsgWrapper["tx"] = jsonObj;
-    jsonMsgWrapper["mode"] = "sync";
+    jsonMsgWrapper["mode"] = "block";
 
     return jsonMsgWrapper;
 }
@@ -301,6 +304,22 @@ json coinexCancelOrderMessageJSON(const CancelOrderMessage& message) {
     return coinexCancelOrderMessageJSON(message.order_id(), message.sender(), message.type_prefix());
 }
 
+//proposal vote
+json coinexProposalVoteMessageJSON(std::string voter, std::string proposal_id, std::string option, std::string type_prefix) {
+    json jsonMsg;
+
+    jsonMsg["voter"] = voter;
+    jsonMsg["proposal_id"] = proposal_id;
+    jsonMsg["option"] = option;
+
+    return coinexWrapperJSON(type_prefix, jsonMsg);
+}
+
+json coinexProposalVoteMessageJSON(const ProposalVoteMessage& message) {
+    return coinexProposalVoteMessageJSON(message.voter(), message.proposal_id(),message.option(), message.type_prefix());
+}
+
+
 //
 json coinexMessageJSON(const Coinex::Proto::SigningInput& input) {
     if (input.has_send_coins_message()) {
@@ -322,6 +341,8 @@ json coinexMessageJSON(const Coinex::Proto::SigningInput& input) {
         return json::array({coinexCreateOrderMessageJSON(input.create_order_message())});
     } else if (input.has_cancel_order_message()) {
         return json::array({coinexCancelOrderMessageJSON(input.cancel_order_message())});
+    } else if (input.has_proposal_vote_message()) {
+             return json::array({coinexProposalVoteMessageJSON(input.proposal_vote_message())});
     }
 
 
@@ -348,6 +369,8 @@ json coinexMessageJSON(const Coinex::Proto::Transaction& transaction) {
         return json::array({coinexCreateOrderMessageJSON(transaction.create_order_message())});
     } else if (transaction.has_cancel_order_message()) {
         return json::array({coinexCancelOrderMessageJSON(transaction.cancel_order_message())});
+    } else if (transaction.has_proposal_vote_message()) {
+             return json::array({coinexProposalVoteMessageJSON(transaction.proposal_vote_message())});
     }
 
     return json::array({nullptr});

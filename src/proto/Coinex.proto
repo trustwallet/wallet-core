@@ -100,6 +100,15 @@ message CancelOrderMessage {
     string type_prefix = 3;
 }
 
+// Message for Proposal Vote
+message ProposalVoteMessage {
+    string voter = 1;
+    string proposal_id = 2;
+    string option = 3;
+    string type_prefix = 4;
+}
+
+
 // Transaction
 message Transaction {
     Fee fee = 1;
@@ -116,6 +125,7 @@ message Transaction {
         SetAliasMessage set_alias_message = 10;
         CreateOrderMessage create_order_message = 11;
         CancelOrderMessage cancel_order_message = 12;
+        ProposalVoteMessage proposal_vote_message = 13;
     }
 }
 
@@ -139,9 +149,11 @@ message SigningInput {
         SetAliasMessage set_alias_message = 13;
         CreateOrderMessage create_order_message = 14;
         CancelOrderMessage cancel_order_message = 15;
+        ProposalVoteMessage proposal_vote_message = 16;
+
     }
     // default is cosmos-sdk/MsgSend
-    string type_prefix = 16;
+    string type_prefix = 17;
 }
 
 // Transaction signing output.

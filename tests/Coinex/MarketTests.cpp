@@ -123,4 +123,36 @@ TEST(CoinexMarket, CancelOrder) {
 
 }
 
+TEST(CoinexMarket, ProposalVote) {
+    auto input = Proto::SigningInput();
+    input.set_account_number(24);
+    input.set_chain_id("coinexdex-test2006");
+    input.set_memo("ifwallet");
+    input.set_sequence(183);
+
+    auto& message = *input.mutable_proposal_vote_message();
+    message.set_voter("cettest178w9m7yzkagpq090t593r6gqe5gkfkvjl76znl");
+    message.set_proposal_id("14");
+    message.set_option("Yes");
+
+    auto &fee = *input.mutable_fee();
+    fee.set_gas(100000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("cet");
+    amountOfFee->set_amount(2000000);
+
+    auto privateKey = parse_hex("c4c4f50e9af57eb281f07fb5e4ebb76d7ca1132549ffaa3aba3862fe58653244");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto signer = Coinex::Signer(std::move(input));
+    auto signature = signer.sign();
+    auto signatureInBase64 = Base64::encode(signature);
+
+    auto output = signer.build();
+
+    ASSERT_EQ("", output.json());
+
+}
+
+
 }
