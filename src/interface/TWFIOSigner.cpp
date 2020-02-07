@@ -47,7 +47,7 @@ TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input) {
             if (in.action().has_register_fio_address_message()) {
                 const auto action = in.action().register_fio_address_message();
                 json = TransactionBuilder::createRegisterFioAddress(owner, privateKey, 
-                    in.action().register_fio_address_message().fio_address(), owner.string(),
+                    in.action().register_fio_address_message().fio_address(),
                     getChainParams(in), action.fee(), action.tpid(), in.expiry());
             } else if (in.action().has_add_pub_address_message()) {
                 const auto action = in.action().add_pub_address_message();
@@ -63,6 +63,16 @@ TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input) {
                 const auto action = in.action().transfer_message();
                 json = TransactionBuilder::createTransfer(owner, privateKey,
                     action.payee_public_key(), action.amount(),
+                    getChainParams(in), action.fee(), action.tpid(), in.expiry());
+            } else if (in.action().has_renew_fio_address_message()) {
+                const auto action = in.action().renew_fio_address_message();
+                json = TransactionBuilder::createRenewFioAddress(owner, privateKey,
+                    action.fio_address(),
+                    getChainParams(in), action.fee(), action.tpid(), in.expiry());
+            } else if (in.action().has_new_funds_request_message()) {
+                const auto action = in.action().new_funds_request_message();
+                json = TransactionBuilder::createNewFundsRequest(owner, privateKey,
+                    action.payer_fio_address(), action.payee_fio_address(), action.content(),
                     getChainParams(in), action.fee(), action.tpid(), in.expiry());
             }
 

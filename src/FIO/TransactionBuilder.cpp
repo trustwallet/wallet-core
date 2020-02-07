@@ -20,13 +20,13 @@ using json = nlohmann::json;
 
 
 string TransactionBuilder::createRegisterFioAddress(const Address& address, const PrivateKey& privateKey, 
-    const string& fioName, const std::string& ownerPublicKey,
-    const ChainParams& chainParams, uint64_t fee, const string& walletFioName, uint32_t expiryTime) {
+    const string& fioName,
+    const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
     const auto apiName = "regaddress";
 
     string actor = Actor::actor(address);
-    RegisterFioAddressData raData(fioName, ownerPublicKey, fee, walletFioName, actor);
+    RegisterFioAddressData raData(fioName, address.string(), fee, walletTpId, actor);
     Data serData;
     raData.serialize(serData);
     
@@ -55,12 +55,12 @@ string TransactionBuilder::createRegisterFioAddress(const Address& address, cons
 
 string TransactionBuilder::createAddPubAddress(const Address& address, const PrivateKey& privateKey, const string& fioName,
     const vector<pair<string, string>>& pubAddresses,
-    const ChainParams& chainParams, uint64_t fee, const string& walletFioName, uint32_t expiryTime) {
+    const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
     const auto apiName = "addaddress";
 
     string actor = Actor::actor(address);
-    AddPubAddressData aaData(fioName, pubAddresses, fee, walletFioName, actor);
+    AddPubAddressData aaData(fioName, pubAddresses, fee, walletTpId, actor);
     Data serData;
     aaData.serialize(serData);
     
@@ -89,12 +89,12 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
 
 string TransactionBuilder::createTransfer(const Address& address, const PrivateKey& privateKey, 
         const string& payeePublicKey, uint64_t amount,
-        const ChainParams& chainParams, uint64_t fee, const string& walletFioName, uint32_t expiryTime) {
+        const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
     const auto apiName = "trnsfiopubky";
 
     string actor = Actor::actor(address);
-    TransferData ttData(payeePublicKey, amount, fee, walletFioName, actor);
+    TransferData ttData(payeePublicKey, amount, fee, walletTpId, actor);
     Data serData;
     ttData.serialize(serData);
     
@@ -122,18 +122,52 @@ string TransactionBuilder::createTransfer(const Address& address, const PrivateK
 }
 
 string TransactionBuilder::createRenewFioAddress(const Address& address, const PrivateKey& privateKey, 
-    const string& fioName, const std::string& ownerPublicKey,
-    const ChainParams& chainParams, uint64_t fee, const string& walletFioName, uint32_t expiryTime) {
+    const string& fioName,
+    const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
 
     const auto apiName = "renewaddress";
 
     string actor = Actor::actor(address);
-    RenewFioAddressData raData(fioName, fee, walletFioName, actor);
+    RenewFioAddressData raData(fioName, fee, walletTpId, actor);
     Data serData;
     raData.serialize(serData);
     
     Action action;
     action.account = ApiAccountAddress;
+    action.name = apiName;
+    action.includeExtra01BeforeData = false;
+    action.actionDataSer = serData;
+    action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
+    Data serAction;
+    action.serialize(serAction);
+
+    Transaction tx;
+    if (expiryTime == 0) {
+        expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
+    }
+    tx.expiration = (int32_t)expiryTime;
+    tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
+    tx.refBlockPrefix = chainParams.refBlockPrefix;
+    tx.actions.push_back(action);
+    Data serTx;
+    tx.serialize(serTx);
+
+    return signAdnBuildTx(chainParams.chainId, serTx, privateKey);
+}
+
+string TransactionBuilder::createNewFundsRequest(const Address& address, const PrivateKey& privateKey,
+        const string& payerFioName, const string& payeeFioName, const string& content,
+        const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
+
+    const auto apiName = "newfundsreq";
+
+    string actor = Actor::actor(address);
+    NewFundsRequestData nfData(payerFioName, payerFioName, content, fee, walletTpId, actor);
+    Data serData;
+    nfData.serialize(serData);
+    
+    Action action;
+    action.account = ApiAccountPayRequest;
     action.name = apiName;
     action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;

@@ -119,3 +119,48 @@ TEST(TWFIO, Transfer) {
     EXPECT_EQ("", out.error());
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})", out.json());
 }
+
+TEST(TWFIO, RenewFioAddress) {
+    Proto::SigningInput input;
+    input.set_expiry(1579785000);
+    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_head_block_number(39881);
+    input.mutable_chain_params()->set_ref_block_prefix(4279583376);
+    input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.mutable_action()->mutable_renew_fio_address_message()->set_fio_address("nick@fiotestnet");
+    input.mutable_action()->mutable_renew_fio_address_message()->set_owner_fio_public_key(addr6M.string());
+    input.mutable_action()->mutable_renew_fio_address_message()->set_fee(3000000000);
+    input.mutable_action()->mutable_renew_fio_address_message()->set_tpid("rewards@wallet");
+
+    auto inputString = input.SerializeAsString();
+    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
+
+    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto out = Proto::SigningOutput();
+    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+    EXPECT_EQ("", out.error());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff0000000001003056372503a85b80b1ba2919aea6ba01102b2f46fca756b200000000a8ed32322f0f6e69636b4066696f746573746e6574005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_Jxz7oCJ7Z4ECsxqb2utqBcyP3zPQCeQCBws9wWQjyptUKoWVk2AyCVEqtdMHJwqtLniio5Z7npMnaZB8E4pa2G75P9uGkb"]})", out.json());
+}
+
+TEST(TWFIO, NewFundsRequest) {
+    Proto::SigningInput input;
+    input.set_expiry(1579785000);
+    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_head_block_number(39881);
+    input.mutable_chain_params()->set_ref_block_prefix(4279583376);
+    input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_address("alice@fiotestnet");
+    input.mutable_action()->mutable_new_funds_request_message()->set_payee_fio_address("nick@fiotestnet");
+    input.mutable_action()->mutable_new_funds_request_message()->set_content("bKvTtSRddSzknPGqfNnqcFMqAXMDTXKDAEsbcTKAGAVyjLOagMNVjCNtlJZRbQfe");
+    input.mutable_action()->mutable_new_funds_request_message()->set_fee(3000000000);
+    input.mutable_action()->mutable_new_funds_request_message()->set_tpid("rewards@wallet");
+
+    auto inputString = input.SerializeAsString();
+    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
+
+    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto out = Proto::SigningOutput();
+    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+    EXPECT_EQ("", out.error());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed32328210616c6963654066696f746573746e657410616c6963654066696f746573746e657440624b76547453526464537a6b6e504771664e6e7163464d7141584d4454584b444145736263544b41474156796a4c4f61674d4e566a434e746c4a5a5262516665005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_JuuGtqMwyu6q9i8tm7tiAA2kvYHXU3SdP7bgUL9VPyvBscz5TAUtqExUUeP9tDL8AQsNiSoFYDrjs8u5CnDtLTC4VbKxvr"]})", out.json());
+}

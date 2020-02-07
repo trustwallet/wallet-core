@@ -51,4 +51,13 @@ void RenewFioAddressData::serialize(Data& out) const {
     encodeString(tpid, out);
 }
 
+void NewFundsRequestData::serialize(Data& out) const {
+    encodeString(payerFioAddress, out);
+    encodeString(payeeFioAddress, out);
+    encodeString(content, out);
+    encode64LE(fee, out);
+    EOS::Name(actor).serialize(out);
+    encodeString(tpid, out);
+}
+
 } // namespace TW::FIO
