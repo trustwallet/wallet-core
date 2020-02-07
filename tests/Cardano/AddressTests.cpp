@@ -179,7 +179,7 @@ TEST(CardanoAddress, MnemonicToAddressV2) {
 
 TEST(CardanoAddress, KeyHashV2) {
     auto xpub = parse_hex("e6f04522f875c1563682ca876ddb04c2e2e3ae718e3ff9f11c03dd9f9dccf69869272d81c376382b8a87c21370a7ae9618df8da708d1a9490939ec54ebe43000");
-    auto hash = TW::Cardano::AddressV2::keyHash(xpub);
+    auto hash = AddressV2::keyHash(xpub);
     ASSERT_EQ("a1eda96a9952a56c983d9f49117f935af325e8a6c9d38496e945faa8", hex(hash));
 }
 

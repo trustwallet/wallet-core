@@ -42,7 +42,7 @@ class AddressV3 {
     Data groupKey;
 
     /// Used in case of legacy address (V2)
-    TW::Cardano::AddressV2* legacyAddressV2;
+    AddressV2* legacyAddressV2;
 
     /// Determines whether a string makes a valid address.
     static bool isValid(const std::string& addr);
