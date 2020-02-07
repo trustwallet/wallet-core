@@ -15,11 +15,27 @@
 
 #include <gtest/gtest.h>
 
+#include <fstream>
+
 extern std::string TESTS_ROOT;
 
 using namespace TW;
 using namespace std;
 
+
+/// Return a StoredKey instance that can be used for further tests.  Needs to be deleted at the end.
+struct TWStoredKey *_Nonnull createAStoredKey(TWCoinType coin, const string& password) {
+    const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto password2 = WRAPS(TWStringCreateWithUTF8Bytes(password.c_str()));
+    const auto key = TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password2.get(), coin);
+    return key;
+}
+
+/// Return a StoredKey instance that can be used for further tests.  Needs to be deleted at the end.
+struct TWStoredKey *_Nonnull createDefaultStoredKey() {
+    return createAStoredKey(TWCoinTypeBitcoin, "password");
+}
 
 TEST(TWStoredKey, loadPBKDF2Key) {
     const auto filename = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "/Keystore/Data/pbkdf2.json").c_str()));
@@ -66,8 +82,15 @@ TEST(TWStoredKey, importHDWallet) {
     const auto coin = TWCoinTypeBitcoin;
     const auto key = TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password.get(), coin);
     EXPECT_TRUE(TWStoredKeyIsMnemonic(key));
+    TWStoredKeyDelete(key);
+}
 
-    const auto wallet = TWStoredKeyWallet(key, password.get());
+TEST(TWStoredKey, addressAddRemove) {
+    const auto password = "password";
+    const auto coin = TWCoinTypeBitcoin;
+    const auto key = createAStoredKey(coin, password);
+
+    const auto wallet = TWStoredKeyWallet(key, WRAPS(TWStringCreateWithUTF8Bytes(password)).get());
     const auto accountCoin = TWStoredKeyAccountForCoin(key, coin, wallet);
     const auto accountAddress = WRAPS(TWAccountAddress(accountCoin));
     EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress.get())), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
@@ -80,15 +103,21 @@ TEST(TWStoredKey, importHDWallet) {
     TWStoredKeyRemoveAccountForCoin(key, coin);
     EXPECT_EQ(TWStoredKeyAccountCount(key), 0);
 
+    const auto addressAdd = "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny";
+    const auto derivationPath = "m/84'/0'/0'/0/0";
+    const auto extPubKeyAdd = "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn";
+
+    TWStoredKeyAddAccount(key,
+        WRAPS(TWStringCreateWithUTF8Bytes(addressAdd)).get(),
+        WRAPS(TWStringCreateWithUTF8Bytes(derivationPath)).get(),
+        WRAPS(TWStringCreateWithUTF8Bytes(extPubKeyAdd)).get());
+    EXPECT_EQ(TWStoredKeyAccountCount(key), 1);
+
     TWStoredKeyDelete(key);
 }
 
 TEST(TWStoredKey, exportJSON) {
-    const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
-    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
-    const auto password = WRAPS(TWStringCreateWithUTF8Bytes("password"));
-    const auto coin = TWCoinTypeBitcoin;
-    const auto key = TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password.get(), coin);
+    const auto key = createDefaultStoredKey();
     const auto json = WRAPD(TWStoredKeyExportJSON(key));
     // check size and first character
     EXPECT_TRUE(TWDataSize(json.get()) > 100);
@@ -96,13 +125,33 @@ TEST(TWStoredKey, exportJSON) {
     TWStoredKeyDelete(key);
 }
 
+TEST(TWStoredKey, storeAndImportJSON) {
+    const auto key = createDefaultStoredKey();
+    const auto outFileName = string(getTestTempDir() + "/TWStoredKey_store.json");
+    const auto outFileNameStr = WRAPS(TWStringCreateWithUTF8Bytes(outFileName.c_str()));
+    EXPECT_TRUE(TWStoredKeyStore(key, outFileNameStr.get()));
+    EXPECT_TRUE(filesystem::exists(outFileName));
+    
+    // read contents of file
+    ifstream ifs(outFileName);
+    // get length of file:
+    ifs.seekg (0, ifs.end);
+    int length = ifs.tellg();
+    ifs.seekg (0, ifs.beg);
+    EXPECT_TRUE(length > 20);
+    Data json(length);
+    ifs.read((char*)json.data(), length);
+
+    const auto key2 = TWStoredKeyImportJSON(TWDataCreateWithData(&json));
+    const auto name2 = WRAPS(TWStoredKeyName(key2));
+    EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
+    TWStoredKeyDelete(key2);
+}
+
 TEST(TWStoredKey, fixAddresses) {
-    const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
-    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
-    const auto password = WRAPS(TWStringCreateWithUTF8Bytes("password"));
-    const auto coin = TWCoinTypeBitcoin;
-    const auto key = TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password.get(), coin);
-    EXPECT_TRUE(TWStoredKeyFixAddresses(key, password.get()));
+    const auto password = "password";
+    const auto key = createAStoredKey(TWCoinTypeBitcoin, password);
+    EXPECT_TRUE(TWStoredKeyFixAddresses(key, WRAPS(TWStringCreateWithUTF8Bytes(password)).get()));
     TWStoredKeyDelete(key);
 }
 
