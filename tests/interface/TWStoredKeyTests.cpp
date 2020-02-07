@@ -140,9 +140,10 @@ TEST(TWStoredKey, storeAndImportJSON) {
     ifs.seekg (0, ifs.beg);
     EXPECT_TRUE(length > 20);
 
-    char* buf = new char[length];
-    ifs.read(buf, length);
-    Data json = TW::data((const uint8_t*)buf, length);
+    Data json(length);
+    size_t idx = 0;
+    // read the slow way, ifs.read gave some false warnings with codacy 
+    while (!ifs.eof() && idx < length) { char c = ifs.get(); json[idx++] = (uint8_t)c; }
 
     const auto key2 = TWStoredKeyImportJSON(TWDataCreateWithData(&json));
     const auto name2 = WRAPS(TWStoredKeyName(key2));
