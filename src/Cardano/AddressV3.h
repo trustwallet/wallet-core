@@ -79,7 +79,7 @@ class AddressV3 {
     /// Returns the internal Base32 string representation of the address.
     std::string stringBase32() const;
 
-    /// Check validity and parse elements of a string address.  Throws on error. Used internally by isValid and ctor.
+    /// Check validity and parse elements of a string address.  Used internally by isValid and ctor.
     static bool parseAndCheckV3(const std::string& addr, Discrimination& discrimination, Kind& kind, TW::Data& key1, TW::Data& key2);
 
     /// Return the binary data representation (keys appended, internal format)

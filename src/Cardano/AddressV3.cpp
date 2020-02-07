@@ -20,65 +20,66 @@ using namespace TW::Cardano;
 using namespace std;
 
 bool AddressV3::parseAndCheckV3(const std::string& addr, Discrimination& discrimination, Kind& kind, Data& key1, Data& key2) {
-    auto bech = Bech32::decode(addr);
-    if (bech.second.size() == 0) {
-        // empty Bech data
-        return false;
-    }
-    // Bech bits conversion
-    Data conv;
-    auto success = Bech32::convertBits<5, 8, false>(conv, bech.second);
-    if (!success) {
-        return false;
-    }
-    if (conv.size() != 33 && conv.size() != 65) {
-        return false;
-    }
-    discrimination = (Discrimination)((conv[0] & 0b10000000) >> 7);
-    kind = (Kind)(conv[0] & 0b01111111);
-    if (kind <= Kind_Sentinel_Low || kind >= Kind_Sentinel_High) {
-        return false;
-    }
-    if ((kind == Kind_Group && conv.size() != 65) ||
-        (kind != Kind_Group && conv.size() != 33)) {
-        return false;
-    }
-
-    switch (kind) {
-        case Kind_Single:
-        case Kind_Account:
-        case Kind_Multisig:
-            assert(conv.size() == 33);
-            key1 = Data(32);
-            std::copy(conv.begin() + 1, conv.begin() + 33, key1.begin());
-            return true;
-
-        case Kind_Group:
-            assert(conv.size() == 65);
-            key1 = Data(32);
-            key2 = Data(32);
-            std::copy(conv.begin() + 1, conv.begin() + 33, key1.begin());
-            std::copy(conv.begin() + 33, conv.begin() + 65, key2.begin());
-            return true;
-
-        default:
+    try {
+        auto bech = Bech32::decode(addr);
+        if (bech.second.size() == 0) {
+            // empty Bech data
             return false;
+        }
+        // Bech bits conversion
+        Data conv;
+        auto success = Bech32::convertBits<5, 8, false>(conv, bech.second);
+        if (!success) {
+            return false;
+        }
+        if (conv.size() != 33 && conv.size() != 65) {
+            return false;
+        }
+        discrimination = (Discrimination)((conv[0] & 0b10000000) >> 7);
+        kind = (Kind)(conv[0] & 0b01111111);
+        if (kind <= Kind_Sentinel_Low || kind >= Kind_Sentinel_High) {
+            return false;
+        }
+        if ((kind == Kind_Group && conv.size() != 65) ||
+            (kind != Kind_Group && conv.size() != 33)) {
+            return false;
+        }
+
+        switch (kind) {
+            case Kind_Single:
+            case Kind_Account:
+            case Kind_Multisig:
+                assert(conv.size() == 33);
+                key1 = Data(32);
+                std::copy(conv.begin() + 1, conv.begin() + 33, key1.begin());
+                return true;
+
+            case Kind_Group:
+                assert(conv.size() == 65);
+                key1 = Data(32);
+                key2 = Data(32);
+                std::copy(conv.begin() + 1, conv.begin() + 33, key1.begin());
+                std::copy(conv.begin() + 33, conv.begin() + 65, key2.begin());
+                return true;
+
+            default:
+                return false;
+        }
+    } catch (...) {
+        return false;
     }
 }
 
 bool AddressV3::isValid(const std::string& addr) {
-    try {
-        Discrimination discrimination;
-        Kind kind;
-        Data key1;
-        Data key2;
-        if (parseAndCheckV3(addr, discrimination, kind, key1, key2)) {
-            return true;
-        }
-    } catch (exception& ex) {
+    Discrimination discrimination;
+    Kind kind;
+    Data key1;
+    Data key2;
+    if (parseAndCheckV3(addr, discrimination, kind, key1, key2)) {
+        return true;
     }
     // not V3, try older
-    return TW::Cardano::AddressV2::isValid(addr);
+    return AddressV2::isValid(addr);
 }
 
 AddressV3 AddressV3::createSingle(Discrimination discrimination_in, const Data& spendingKey) {
@@ -125,7 +126,7 @@ AddressV3::AddressV3(const std::string& addr) : legacyAddressV2(nullptr) {
     }
     // try legacy
     // throw on error
-    legacyAddressV2 = new TW::Cardano::AddressV2(addr);
+    legacyAddressV2 = new AddressV2(addr);
 }
 
 AddressV3::AddressV3(const PublicKey& publicKey) : legacyAddressV2(nullptr) {
