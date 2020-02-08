@@ -30,3 +30,6 @@ inline void assertHexEqual(std::shared_ptr<TWData>& data, const char* expected) 
 inline std::vector<uint8_t>* dataFromTWData(TWData* data) {
     return const_cast<std::vector<uint8_t>*>(reinterpret_cast<const std::vector<uint8_t>*>(data));
 }
+
+/// Return a writeable temp dir which can be used to create files during testing
+std::string getTestTempDir(void);
