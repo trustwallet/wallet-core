@@ -30,60 +30,60 @@ static const size_t sha512Size = 64;
 static const size_t ripemdSize = 20;
 
 /// Computes the SHA1 hash.
-Data sha1(const byte* begin, size_t size);
+Data sha1(const byte* data, size_t size);
 
 /// Computes the SHA256 hash.
-Data sha256(const byte* begin, size_t size);
+Data sha256(const byte* data, size_t size);
 
 /// Computes the SHA512 hash.
-Data sha512(const byte* begin, size_t size);
+Data sha512(const byte* data, size_t size);
 
 /// Computes the SHA512/256 hash.
-Data sha512_256(const byte* begin, size_t size);
+Data sha512_256(const byte* data, size_t size);
 
 /// Computes the Keccak SHA256 hash.
-Data keccak256(const byte* begin, size_t size);
+Data keccak256(const byte* data, size_t size);
 
 /// Computes the Keccak SHA512 hash.
-Data keccak512(const byte* begin, size_t size);
+Data keccak512(const byte* data, size_t size);
 
 /// Computes the version 3 SHA256 hash.
-Data sha3_256(const byte* begin, size_t size);
+Data sha3_256(const byte* data, size_t size);
 
 /// Computes the version 3 SHA512 hash.
-Data sha3_512(const byte* begin, size_t size);
+Data sha3_512(const byte* data, size_t size);
 
 /// Computes the RIPEMD160 hash.
-Data ripemd(const byte* begin, size_t size);
+Data ripemd(const byte* data, size_t size);
 
 /// Computes the Blake256 hash.
-Data blake256(const byte* begin, size_t size);
+Data blake256(const byte* data, size_t size);
 
 /// Computes the Blake2b hash.
-Data blake2b(const byte* begin, size_t dataSize, size_t hashSize);
+Data blake2b(const byte* data, size_t dataSize, size_t hashSize);
 
-Data blake2b(const byte* begin, size_t dataSize, size_t hsshSize, const Data& personal);
+Data blake2b(const byte* data, size_t dataSize, size_t hsshSize, const Data& personal);
 
 /// Computes the Groestl 512 hash.
-Data groestl512(const byte* begin, size_t size);
+Data groestl512(const byte* data, size_t size);
 
 /// Computes the XXHash hash.
-uint64_t xxhash(const byte* begin, size_t size, uint64_t seed);
+uint64_t xxhash(const byte* data, size_t size, uint64_t seed);
 
 /// Computes the XXHash hash with 64 encoding.
-Data xxhash64(const byte* begin, size_t size, uint64_t seed);
+Data xxhash64(const byte* data, size_t size, uint64_t seed);
 
 /// Computes the XXHash hash concatenated, xxhash64 with seed 0 and 1,
-Data xxhash64concat(const byte* begin, size_t size);
+Data xxhash64concat(const byte* data, size_t size);
 
 /// Computes the XXHash hash.
-uint64_t xxhash(const byte* begin, const byte* end, uint64_t seed);
+uint64_t xxhash(const byte* data, const byte* end, uint64_t seed);
 
 /// Computes the XXHash hash with 64 encoding.
-Data xxhash64(const byte* begin, const byte* end, uint64_t seed);
+Data xxhash64(const byte* data, const byte* end, uint64_t seed);
 
 /// Computes the XXHash hash concatenated, xxhash64 with seed 0 and 1,
-Data xxhash64concat(const byte* begin, const byte* end);
+Data xxhash64concat(const byte* data, const byte* end);
 
 // Templated versions for any type with data() and size()
 
@@ -171,33 +171,33 @@ Data groestl512(const T& data) {
 }
 
 /// Computes the SHA256 hash of the SHA256 hash.
-inline Data sha256d(const byte* begin, size_t size) {
-    return sha256(sha256(begin, size));
+inline Data sha256d(const byte* data, size_t size) {
+    return sha256(sha256(data, size));
 }
 
 /// Computes the ripemd hash of the SHA256 hash.
-inline Data sha256ripemd(const byte* begin, size_t size) {
-    return ripemd(sha256(begin, size));
+inline Data sha256ripemd(const byte* data, size_t size) {
+    return ripemd(sha256(data, size));
 }
 
 /// Computes the ripemd hash of the SHA256 hash.
-inline Data sha3_256ripemd(const byte* begin, size_t size) {
-    return ripemd(sha3_256(begin, size));
+inline Data sha3_256ripemd(const byte* data, size_t size) {
+    return ripemd(sha3_256(data, size));
 }
 
 /// Computes the Blake256 hash of the Blake256 hash.
-inline Data blake256d(const byte* begin, size_t size) {
-    return blake256(blake256(begin, size));
+inline Data blake256d(const byte* data, size_t size) {
+    return blake256(blake256(data, size));
 }
 
 /// Computes the ripemd hash of the Blake256 hash.
-inline Data blake256ripemd(const byte* begin, size_t size) {
-    return ripemd(blake256(begin, size));
+inline Data blake256ripemd(const byte* data, size_t size) {
+    return ripemd(blake256(data, size));
 }
 
 /// Computes the Groestl512 hash of the Groestl512 hash.
-inline Data groestl512d(const byte* begin, size_t size) {
-    return groestl512(groestl512(begin, size));
+inline Data groestl512d(const byte* data, size_t size) {
+    return groestl512(groestl512(data, size));
 }
 
 } // namespace TW::Hash

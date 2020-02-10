@@ -9,10 +9,11 @@
 #include "../Hash.h"
 
 using namespace TW::Bravo;
+using namespace TW;
 
 const std::vector<std::string> Address::prefixes = {"BRV", "TST"};
 
-const auto ripemd = static_cast<TW::Hash::HasherSimpleType>(&TW::Hash::ripemd);
+const auto ripemd = static_cast<Hash::HasherSimpleType>(&Hash::ripemd);
 
 bool Address::isValid(const std::string& string, const std::vector<std::string>& validPrefixes) {
     return extractKeyData(string, validPrefixes);
