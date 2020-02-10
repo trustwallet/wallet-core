@@ -77,7 +77,7 @@ Bech32Address::Bech32Address(const std::string& hrp, HasherType hasher, const Pu
 
         case HASHER_SHA3K:
             {
-                const auto hash = publicKey.hash({}, static_cast<Data (*)(const byte *, const byte *)>(Hash::keccak256), true);
+                const auto hash = publicKey.hash({}, static_cast<Hash::HasherSimpleType>(Hash::keccak256), true);
                 auto key = Data(20);
                 std::copy(hash.end() - 20, hash.end(), key.begin());
                 setKey(key);

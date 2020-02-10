@@ -20,101 +20,101 @@
 using namespace TW;
 
 TWData* _Nonnull TWHashSHA1(TWData* _Nonnull data) {
-    const auto result = Hash::sha1(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::sha1(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithData(&result);
 }
 
 TWData* _Nonnull TWHashSHA256(TWData* _Nonnull data) {
-    const auto result = Hash::sha256(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::sha256(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashSHA512(TWData* _Nonnull data) {
-    const auto result = Hash::sha512(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::sha512(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashSHA512_256(TWData* _Nonnull data) {
-    const auto result = Hash::sha512_256(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::sha512_256(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashKeccak256(TWData* _Nonnull data) {
-    const auto result = Hash::keccak256(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::keccak256(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashKeccak512(TWData* _Nonnull data) {
-    const auto result = Hash::keccak512(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::keccak512(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashSHA3_256(TWData* _Nonnull data) {
-    const auto result = Hash::sha3_256(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::sha3_256(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashSHA3_512(TWData* _Nonnull data) {
-    const auto result = Hash::sha3_512(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::sha3_512(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashRIPEMD(TWData* _Nonnull data) {
-    const auto result = Hash::ripemd(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::ripemd(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashBlake256(TWData* _Nonnull data) {
-    const auto result = Hash::blake256(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::blake256(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashBlake2b(TWData* _Nonnull data, size_t outlen) {
-    const auto result = Hash::blake2b(*(reinterpret_cast<const Data*>(data)), outlen);
+    const auto result = Hash::blake2b(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data), outlen);
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashGroestl512(TWData* _Nonnull data) {
-    const auto result = Hash::groestl512(*(reinterpret_cast<const Data*>(data)));
+    const auto result = Hash::groestl512(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashXXHash64(TWData* _Nonnull data, uint64_t seed) {
-    const auto result = Hash::xxhash64(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataBytes(data) + TWDataSize(data), seed);
+    const auto result = Hash::xxhash64(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data), seed);
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashTwoXXHash64Concat(TWData* _Nonnull data) {
-    const auto result = Hash::xxhash64concat(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataBytes(data) + TWDataSize(data));
+    const auto result = Hash::xxhash64concat(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashSHA256SHA256(TWData* _Nonnull data) {
-    const auto result = Hash::sha256d(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataBytes(data) + TWDataSize(data));
+    const auto result = Hash::sha256d(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashSHA256RIPEMD(TWData* _Nonnull data) {
-    const auto result = Hash::sha256ripemd(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataBytes(data) + TWDataSize(data));
+    const auto result = Hash::sha256ripemd(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashSHA3_256RIPEMD(TWData* _Nonnull data) {
-    const auto result = Hash::sha3_256ripemd(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataBytes(data) + TWDataSize(data));
+    const auto result = Hash::sha3_256ripemd(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashBlake256Blake256(TWData* _Nonnull data) {
-    const auto result = Hash::blake256d(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataBytes(data) + TWDataSize(data));
+    const auto result = Hash::blake256d(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashBlake256RIPEMD(TWData* _Nonnull data) {
-    const auto result = Hash::blake256ripemd(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataBytes(data) + TWDataSize(data));
+    const auto result = Hash::blake256ripemd(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }
 
 TWData* _Nonnull TWHashGroestl512Groestl512(TWData* _Nonnull data) {
-    const auto result = Hash::groestl512d(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataBytes(data) + TWDataSize(data));
+    const auto result = Hash::groestl512d(reinterpret_cast<const byte*>(TWDataBytes(data)), TWDataSize(data));
     return TWDataCreateWithBytes(result.data(), result.size());
 }

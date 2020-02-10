@@ -6,12 +6,13 @@
 
 #include "../BinaryCoding.h"
 #include "../Base58.h"
+#include "../Hash.h"
 
 using namespace TW::Bravo;
 
 const std::vector<std::string> Address::prefixes = {"BRV", "TST"};
 
-const auto ripemd = static_cast<TW::Data (*)(const TW::byte *, const TW::byte *)>(&TW::Hash::ripemd);
+const auto ripemd = static_cast<TW::Hash::HasherSimpleType>(&TW::Hash::ripemd);
 
 bool Address::isValid(const std::string& string, const std::vector<std::string>& validPrefixes) {
     return extractKeyData(string, validPrefixes);
