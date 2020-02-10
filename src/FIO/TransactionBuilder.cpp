@@ -31,7 +31,7 @@ string TransactionBuilder::createRegisterFioAddress(const Address& address, cons
     raData.serialize(serData);
     
     Action action;
-    action.account = ApiAccountAddress;
+    action.account = ContractAddress;
     action.name = apiName;
     action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
@@ -65,7 +65,7 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     aaData.serialize(serData);
     
     Action action;
-    action.account = ApiAccountAddress;
+    action.account = ContractAddress;
     action.name = apiName;
     action.includeExtra01BeforeData = true;
     action.actionDataSer = serData;
@@ -99,7 +99,7 @@ string TransactionBuilder::createTransfer(const Address& address, const PrivateK
     ttData.serialize(serData);
     
     Action action;
-    action.account = ApiAccountToken;
+    action.account = ContractToken;
     action.name = apiName;
     action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
@@ -133,7 +133,7 @@ string TransactionBuilder::createRenewFioAddress(const Address& address, const P
     raData.serialize(serData);
     
     Action action;
-    action.account = ApiAccountAddress;
+    action.account = ContractAddress;
     action.name = apiName;
     action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
@@ -167,7 +167,7 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
     nfData.serialize(serData);
     
     Action action;
-    action.account = ApiAccountPayRequest;
+    action.account = ContractPayRequest;
     action.name = apiName;
     action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;

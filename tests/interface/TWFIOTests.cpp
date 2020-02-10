@@ -52,10 +52,10 @@ TEST(TWFIO, RegisterFioAddress) {
     input.mutable_chain_params()->set_head_block_number(39881);
     input.mutable_chain_params()->set_ref_block_prefix(4279583376);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
     input.mutable_action()->mutable_register_fio_address_message()->set_fio_address("adam@fiotestnet");
     input.mutable_action()->mutable_register_fio_address_message()->set_owner_fio_public_key(addr6M.string());
     input.mutable_action()->mutable_register_fio_address_message()->set_fee(5000000000);
-    input.mutable_action()->mutable_register_fio_address_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
@@ -74,6 +74,7 @@ TEST(TWFIO, AddPubAddress) {
     input.mutable_chain_params()->set_head_block_number(11565);
     input.mutable_chain_params()->set_ref_block_prefix(4281229859);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
     auto action = input.mutable_action()->mutable_add_pub_address_message();
     action->set_fio_address("adam@fiotestnet");
     action->add_public_addresses();
@@ -86,7 +87,6 @@ TEST(TWFIO, AddPubAddress) {
     action->mutable_public_addresses(2)->set_token_code("BNB");
     action->mutable_public_addresses(2)->set_address("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s");
     action->set_fee(0);
-    action->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
@@ -105,10 +105,10 @@ TEST(TWFIO, Transfer) {
     input.mutable_chain_params()->set_head_block_number(50000);
     input.mutable_chain_params()->set_ref_block_prefix(4000123456);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
     input.mutable_action()->mutable_transfer_message()->set_payee_public_key("FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE");
     input.mutable_action()->mutable_transfer_message()->set_amount(1000000000);
     input.mutable_action()->mutable_transfer_message()->set_fee(250000000);
-    input.mutable_action()->mutable_transfer_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
@@ -127,10 +127,10 @@ TEST(TWFIO, RenewFioAddress) {
     input.mutable_chain_params()->set_head_block_number(39881);
     input.mutable_chain_params()->set_ref_block_prefix(4279583376);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
     input.mutable_action()->mutable_renew_fio_address_message()->set_fio_address("nick@fiotestnet");
     input.mutable_action()->mutable_renew_fio_address_message()->set_owner_fio_public_key(addr6M.string());
     input.mutable_action()->mutable_renew_fio_address_message()->set_fee(3000000000);
-    input.mutable_action()->mutable_renew_fio_address_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
@@ -149,11 +149,11 @@ TEST(TWFIO, NewFundsRequest) {
     input.mutable_chain_params()->set_head_block_number(39881);
     input.mutable_chain_params()->set_ref_block_prefix(4279583376);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
     input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_address("alice@fiotestnet");
     input.mutable_action()->mutable_new_funds_request_message()->set_payee_fio_address("nick@fiotestnet");
     input.mutable_action()->mutable_new_funds_request_message()->set_content("bKvTtSRddSzknPGqfNnqcFMqAXMDTXKDAEsbcTKAGAVyjLOagMNVjCNtlJZRbQfe");
     input.mutable_action()->mutable_new_funds_request_message()->set_fee(3000000000);
-    input.mutable_action()->mutable_new_funds_request_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());

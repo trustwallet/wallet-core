@@ -29,9 +29,9 @@ public:
 
 class TransactionBuilder {
 public:
-    static constexpr auto ApiAccountAddress = "fio.address";
-    static constexpr auto ApiAccountToken = "fio.token";
-    static constexpr auto ApiAccountPayRequest = "fio.reqobt";
+    static constexpr auto ContractAddress = "fio.address";
+    static constexpr auto ContractToken = "fio.token";
+    static constexpr auto ContractPayRequest = "fio.reqobt";
     static constexpr auto AuthrizationActive = "active";
     static const auto ExpirySeconds = 3600;
 

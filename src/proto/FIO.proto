@@ -22,9 +22,6 @@ message Action {
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
         
-        // The FIO name of the originating wallet (project-wide constant)
-        string tpid = 4;
-
         // Note: actor is not needed, computed from owner_fio_public_key
     }
 
@@ -39,9 +36,6 @@ message Action {
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
         
-        // The FIO name of the originating wallet (project-wide constant)
-        string tpid = 4;
-
         // Note: actor is not needed, computed from private key
     }
 
@@ -56,9 +50,6 @@ message Action {
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
         
-        // The FIO name of the originating wallet (project-wide constant)
-        string tpid = 4;
-
         // Note: actor is not needed, computed from private key
     }
 
@@ -72,9 +63,6 @@ message Action {
         
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
-
-        // The FIO name of the originating wallet (project-wide constant)
-        string tpid = 4;
 
         // Note: actor is not needed, computed from owner_fio_public_key
     }
@@ -92,9 +80,6 @@ message Action {
 
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 4;
-
-        // The FIO name of the originating wallet (project-wide constant)
-        string tpid = 5;
 
         // Note: actor is not needed, computed from private key
     }
@@ -130,9 +115,12 @@ message SigningInput {
     
     // The private key matching the address, needed for signing
     bytes private_key = 3;
-    
+
+    // The FIO name of the originating wallet (project-wide constant)
+    string tpid = 4;
+
     // Context-specific action data
-    Action action = 4;
+    Action action = 5;
 }
 
 // Transaction signing output
