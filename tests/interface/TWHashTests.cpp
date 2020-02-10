@@ -167,6 +167,19 @@ TEST(TWHashTests, RIPEMD) {
     }
 }
 
+TEST(TWHashTests, Blake256) {
+    auto tests = {
+        make_tuple(string(""), string("716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a")),
+        make_tuple(brownFox, string("7576698ee9cad30173080678e5965916adbb11cb5245d386bf1ffda1cb26c9d7")),
+        make_tuple(brownFoxDot, string("13af722eafeab6bb2ed498129044e6782c84a7604bba9988b135d98158fbe816")),
+    };
+    for (auto &test: tests) {
+        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
+        const auto hash = WRAPD(TWHashBlake256(inData.get()));
+        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
+    }
+}
+
 TEST(TWHashTests, Blake2b) {
     auto tests = {
         make_tuple(string(""), string("786a02f742015903c6c6fd852552d272912f4740e15847618a86e217f71f5419d25e1031afee585313896444934eb04b903a685b1448b755d56f701afe9be2ce")),
@@ -180,28 +193,15 @@ TEST(TWHashTests, Blake2b) {
     }
 }
 
-TEST(TWHashTests, SHA256RIPEMD) {
+TEST(TWHashTests, Groestl512) {
     auto tests = {
-        make_tuple(string(""), string("b472a266d0bd89c13706a4132ccfb16f7c3b9fcb")),
-        make_tuple(brownFox, string("0e3397b4abc7a382b3ea2365883c3c7ca5f07600")),
-        make_tuple(brownFoxDot, string("49f3b08d52a030415a5f7e84f72386e10acc4ebf")),
+        make_tuple(string(""), string("6d3ad29d279110eef3adbd66de2a0345a77baede1557f5d099fce0c03d6dc2ba8e6d4a6633dfbd66053c20faa87d1a11f39a7fbe4a6c2f009801370308fc4ad8")),
+        make_tuple(brownFox, string("badc1f70ccd69e0cf3760c3f93884289da84ec13c70b3d12a53a7a8a4a513f99715d46288f55e1dbf926e6d084a0538e4eebfc91cf2b21452921ccde9131718d")),
+        make_tuple(brownFoxDot, string("518a55cc274fc887d8dcbd0bb24000395f6d3be62445d84cc9e85d419161a968268e490f7537e475e57d8c009b0957caa05882bc8c20ce22d50caa2106d0dcfd")),
     };
     for (auto &test: tests) {
         const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
-        const auto hash = WRAPD(TWHashSHA256RIPEMD(inData.get()));
-        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
-    }
-}
-
-TEST(TWHashTests, SHA256SHA256) {
-    auto tests = {
-        make_tuple(string(""), string("5df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c9456")),
-        make_tuple(brownFox, string("6d37795021e544d82b41850edf7aabab9a0ebe274e54a519840c4666f35b3937")),
-        make_tuple(brownFoxDot, string("a51a910ecba8a599555b32133bf1829455d55fe576677b49cb561d874077385c")),
-    };
-    for (auto &test: tests) {
-        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
-        const auto hash = WRAPD(TWHashSHA256SHA256(inData.get()));
+        const auto hash = WRAPD(TWHashGroestl512(inData.get()));
         EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
     }
 }
@@ -234,6 +234,84 @@ TEST(TWHashTests, XXHash64Concat) {
     for (auto &test: tests) {
         const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
         const auto hash = WRAPD(TWHashTwoXXHash64Concat(inData.get()));
+        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
+    }
+}
+
+TEST(TWHashTests, SHA256SHA256) {
+    auto tests = {
+        make_tuple(string(""), string("5df6e0e2761359d30a8275058e299fcc0381534545f55cf43e41983f5d4c9456")),
+        make_tuple(brownFox, string("6d37795021e544d82b41850edf7aabab9a0ebe274e54a519840c4666f35b3937")),
+        make_tuple(brownFoxDot, string("a51a910ecba8a599555b32133bf1829455d55fe576677b49cb561d874077385c")),
+    };
+    for (auto &test: tests) {
+        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
+        const auto hash = WRAPD(TWHashSHA256SHA256(inData.get()));
+        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
+    }
+}
+
+TEST(TWHashTests, SHA256RIPEMD) {
+    auto tests = {
+        make_tuple(string(""), string("b472a266d0bd89c13706a4132ccfb16f7c3b9fcb")),
+        make_tuple(brownFox, string("0e3397b4abc7a382b3ea2365883c3c7ca5f07600")),
+        make_tuple(brownFoxDot, string("49f3b08d52a030415a5f7e84f72386e10acc4ebf")),
+    };
+    for (auto &test: tests) {
+        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
+        const auto hash = WRAPD(TWHashSHA256RIPEMD(inData.get()));
+        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
+    }
+}
+
+TEST(TWHashTests, SHA3_256RIPEMD) {
+    auto tests = {
+        make_tuple(string(""), string("b0a2c9108b9cff7f0f686fef1d2ecbd5f1999972")),
+        make_tuple(brownFox, string("e70a0c74dd1b0c0d5af3c7ccbbe4b488d1b474b5")),
+        make_tuple(brownFoxDot, string("e88da28af1e8ded701c54eba19d10b79e7828d1c")),
+    };
+    for (auto &test: tests) {
+        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
+        const auto hash = WRAPD(TWHashSHA3_256RIPEMD(inData.get()));
+        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
+    }
+}
+
+TEST(TWHashTests, Blake256Blake256) {
+    auto tests = {
+        make_tuple(string(""), string("d8ee5f957b78a961fb729098b4efb56440a14e05e3c55890f5edbc626380aaa6")),
+        make_tuple(brownFox, string("4511ab8713d8d580cae73061345df903f603b99e7ec699ddae63c56eea200059")),
+        make_tuple(brownFoxDot, string("f776b4c84c298bb8b1fdd0303eca63071611b9fa354991626f1a06430a6890bf")),
+    };
+    for (auto &test: tests) {
+        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
+        const auto hash = WRAPD(TWHashBlake256Blake256(inData.get()));
+        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
+    }
+}
+
+TEST(TWHashTests, Blake256RIPEMD) {
+    auto tests = {
+        make_tuple(string(""), string("413320bee32a3bdb92b145d337316739d54a9287")),
+        make_tuple(brownFox, string("b4b44de1e854f7f3c0520b654204163f75f704e5")),
+        make_tuple(brownFoxDot, string("a2561519857a11175d1a85c424104aaeff6ccffd")),
+    };
+    for (auto &test: tests) {
+        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
+        const auto hash = WRAPD(TWHashBlake256RIPEMD(inData.get()));
+        EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
+    }
+}
+
+TEST(TWHashTests, Groestl512Groestl512) {
+    auto tests = {
+        make_tuple(string(""), string("fdfb14d386c6dff85715c50efb826c43e04205b18410497aa47f121eceb3a65e36a4671c728176311b4341d1d8d1d335822b9ed4b12a26e9c907557b4fcb385e")),
+        make_tuple(brownFox, string("1209d229cfc9d7d6711369e2d7f369b0efc1459a9d407cbfc7daf4f54209347f2ee7e3e7522ba5d5ac4e7365445739919e23e2917baee10f23557f3d3fbc696d")),
+        make_tuple(brownFoxDot, string("f3322dae351473fff342278c15202b0f713c4c24de61a3525700c145c3453277bf6c01931dc677f5ada3f8d837d88a2c6b7a9662cf4536ea9649d46bddf62ed5")),
+    };
+    for (auto &test: tests) {
+        const auto inData = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(get<0>(test).c_str()), get<0>(test).length()));
+        const auto hash = WRAPD(TWHashGroestl512Groestl512(inData.get()));
         EXPECT_EQ(hex(data(TWDataBytes(hash.get()), TWDataSize(hash.get()))), get<1>(test));
     }
 }

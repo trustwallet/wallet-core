@@ -15,6 +15,7 @@ namespace TW::Hash {
 /// Hashing function.
 using Hasher = std::function<Data(const byte*, const byte*)>;
 
+// Digest size constants, duplicating constants from underlying lib 
 /// Number of bytes in a SHA1 hash.
 static const size_t sha1Size = 20;
 
@@ -28,7 +29,7 @@ static const size_t sha512Size = 64;
 static const size_t ripemdSize = 20;
 
 /// Computes the SHA1 hash.
-Data sha1(const byte* begin, const byte* end);
+Data sha1(const byte* begin, size_t size);
 
 /// Computes the SHA256 hash.
 Data sha256(const byte* begin, const byte* end);
@@ -62,8 +63,17 @@ Data blake2b(const byte* begin, const byte* end, size_t size);
 
 Data blake2b(const byte* begin, const byte* end, size_t size, const Data& personal);
 
-/// Computed the Groestl 512 hash.
+/// Computes the Groestl 512 hash.
 Data groestl512(const byte* begin, const byte* end);
+
+/// Computes the XXHash hash.
+uint64_t xxhash(const byte* begin, const byte* end, uint64_t seed);
+
+/// Computes the XXHash hash with 64 encoding.
+Data xxhash64(const byte* begin, const byte* end, uint64_t seed);
+
+/// Computes the XXHash hash concatenated, xxhash64 with seed 0 and 1,
+Data xxhash64concat(const byte* begin, const byte* end);
 
 /// Computes requested hash for data.
 template <typename T>
@@ -72,11 +82,13 @@ Data hash(Hasher hasher, const T& data) {
     return hasher(begin, begin + data.size());
 }
 
+// Templated versions for any type with data() and size()
+
 /// Computes the SHA1 hash.
 template <typename T>
 Data sha1(const T& data) {
     const auto begin = reinterpret_cast<const byte*>(data.data());
-    return sha1(begin, begin + data.size());
+    return sha1(begin, data.size());
 }
 
 /// Computes the SHA256 hash.

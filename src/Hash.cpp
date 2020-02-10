@@ -5,6 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Hash.h"
+#include "XXHash64.h"
+#include "BinaryCoding.h"
 
 #include <TrezorCrypto/blake256.h>
 #include <TrezorCrypto/blake2b.h>
@@ -17,9 +19,9 @@
 
 using namespace TW;
 
-Data Hash::sha1(const byte* begin, const byte* end) {
+Data Hash::sha1(const byte* begin, size_t size) {
     Data result(sha1Size);
-    sha1_Raw(begin, end - begin, result.data());
+    sha1_Raw(begin, size, result.data());
     return result;
 }
 
@@ -96,4 +98,25 @@ Data Hash::groestl512(const byte* begin, const byte* end) {
     groestl512_Update(&ctx, begin, end - begin);
     groestl512_Final(&ctx, result.data());
     return result;
+}
+
+uint64_t Hash::xxhash(const byte* begin, const byte* end, uint64_t seed)
+{
+    return XXHash64::hash(begin, end - begin, seed);
+}
+
+Data Hash::xxhash64(const byte* begin, const byte* end, uint64_t seed)
+{
+    const auto hash = XXHash64::hash(begin, end - begin, seed);
+    Data result;
+    encode64LE(hash, result);
+    return result; 
+}
+
+Data Hash::xxhash64concat(const byte* begin, const byte* end)
+{
+    auto key1 = xxhash64(begin, end, 0);
+    const auto key2 = xxhash64(begin, end, 1);
+    TW::append(key1, key2);
+    return key1;
 }
