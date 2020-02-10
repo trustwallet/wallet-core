@@ -85,103 +85,89 @@ Data xxhash64(const byte* begin, const byte* end, uint64_t seed);
 /// Computes the XXHash hash concatenated, xxhash64 with seed 0 and 1,
 Data xxhash64concat(const byte* begin, const byte* end);
 
+// Templated versions for any type with data() and size()
+
 /// Computes requested hash for data.
 template <typename T>
 Data hash(Hasher hasher, const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return hasher(begin, data.size());
+    return hasher(reinterpret_cast<const byte*>(data.data()), data.size());
 }
-
-// Templated versions for any type with data() and size()
 
 /// Computes the SHA1 hash.
 template <typename T>
 Data sha1(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return sha1(begin, data.size());
+    return sha1(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the SHA256 hash.
 template <typename T>
 Data sha256(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return sha256(begin, data.size());
+    return sha256(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the SHA512 hash.
 template <typename T>
 Data sha512(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return sha512(begin, data.size());
+    return sha512(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the SHA512/256 hash.
 template <typename T>
 Data sha512_256(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return sha512_256(begin, data.size());
+    return sha512_256(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the Keccak SHA256 hash.
 template <typename T>
 Data keccak256(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return keccak256(begin, data.size());
+    return keccak256(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the Keccak SHA512 hash.
 template <typename T>
 Data keccak512(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return keccak512(begin, data.size());
+    return keccak512(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the version 3 SHA256 hash.
 template <typename T>
 Data sha3_256(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return sha3_256(begin, data.size());
+    return sha3_256(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the version 3 SHA512 hash.
 template <typename T>
 Data sha3_512(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return sha3_512(begin, data.size());
+    return sha3_512(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the RIPEMD160 hash.
 template <typename T>
 Data ripemd(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return ripemd(begin, data.size());
+    return ripemd(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the Blake256 hash.
 template <typename T>
 Data blake256(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return blake256(begin, data.size());
+    return blake256(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the Blake2b hash.
 template <typename T>
 Data blake2b(const T& data, size_t size) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return blake2b(begin, data.size(), size);
+    return blake2b(reinterpret_cast<const byte*>(data.data()), data.size(), size);
 }
 
 template <typename T>
 Data blake2b(const T& data, size_t size, const Data& personal) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return blake2b(begin, data.size(), size, personal);
+    return blake2b(reinterpret_cast<const byte*>(data.data()), data.size(), size, personal);
 }
 
 /// Computes the Groestl512 hash.
 template <typename T>
 Data groestl512(const T& data) {
-    const auto begin = reinterpret_cast<const byte*>(data.data());
-    return groestl512(begin, data.size());
+    return groestl512(reinterpret_cast<const byte*>(data.data()), data.size());
 }
 
 /// Computes the SHA256 hash of the SHA256 hash.
