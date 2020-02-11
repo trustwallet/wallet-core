@@ -49,9 +49,9 @@ TEST(Nebulas, AddressEqual) {
 }
 
 TEST(Nebulas, AddressIsValidString) {
-    EXPECT_TRUE(TWAnyAddressIsValidString(STRING("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
-    EXPECT_TRUE(TWAnyAddressIsValidString(STRING("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39").get(), TWCoinTypeNebulas));
-    EXPECT_FALSE(TWAnyAddressIsValidString(STRING("a1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
-    EXPECT_FALSE(TWAnyAddressIsValidString(STRING("n2V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
-    EXPECT_FALSE(TWAnyAddressIsValidString(STRING("n123").get(), TWCoinTypeNebulas));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("n1zUNqeBPvsyrw5zxp9mKcDdLTjuaEL7s39").get(), TWCoinTypeNebulas));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("a1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("n2V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY").get(), TWCoinTypeNebulas));
+    EXPECT_FALSE(TWAnyAddressIsValid(STRING("n123").get(), TWCoinTypeNebulas));
 }

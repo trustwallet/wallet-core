@@ -34,7 +34,7 @@ bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _
     return TWStringEqual(lhs->address, rhs->address) && lhs->coin == rhs->coin;
 }
 
-bool TWAnyAddressIsValidString(TWString* _Nonnull string, enum TWCoinType coin) {
+bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
     auto& address = *reinterpret_cast<const std::string*>(string);
     return TW::validateAddress(coin, address);
 }

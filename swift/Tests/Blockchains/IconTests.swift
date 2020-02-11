@@ -13,13 +13,13 @@ class IconTests: XCTestCase {
         XCTAssertNil(AnyAddress(string: "abc", coin: .icon))
         XCTAssertNil(AnyAddress(string: "dshadghasdghsadadsadjsad", coin: .icon))
 
-        XCTAssertFalse(AnyAddress.isValidString(string: "abc", coin: .icon))
-        XCTAssertFalse(AnyAddress.isValidString(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed", coin: .icon))
+        XCTAssertFalse(AnyAddress.isValid(string: "abc", coin: .icon))
+        XCTAssertFalse(AnyAddress.isValid(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed", coin: .icon))
     }
 
     func testIsValid() {
-        XCTAssertTrue(AnyAddress.isValidString(string: "hx116f042497e5f34268b1b91e742680f84cf4e9f3", coin: .icon))
-        XCTAssertTrue(AnyAddress.isValidString(string: "cx116f042497e5f34268b1b91e742680f84cf4e9f3", coin: .icon))
+        XCTAssertTrue(AnyAddress.isValid(string: "hx116f042497e5f34268b1b91e742680f84cf4e9f3", coin: .icon))
+        XCTAssertTrue(AnyAddress.isValid(string: "cx116f042497e5f34268b1b91e742680f84cf4e9f3", coin: .icon))
     }
 
     func testFromPrivateKey() {

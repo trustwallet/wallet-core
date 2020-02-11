@@ -15,9 +15,9 @@ class NEOAddressTests: XCTestCase {
     }
 
     func testIsValid() {
-        XCTAssertFalse(AnyAddress.isValidString(string: "abc", coin: .neo))
-        XCTAssertFalse(AnyAddress.isValidString(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed", coin: .neo))
-        XCTAssertTrue(AnyAddress.isValidString(string: "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD", coin: .neo))
+        XCTAssertFalse(AnyAddress.isValid(string: "abc", coin: .neo))
+        XCTAssertFalse(AnyAddress.isValid(string: "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed", coin: .neo))
+        XCTAssertTrue(AnyAddress.isValid(string: "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD", coin: .neo))
     }
 
     func testFromPublicKey() {
