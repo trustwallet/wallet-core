@@ -124,6 +124,6 @@ Data Hash::xxhash64concat(const byte* data, size_t size)
 
 Data Hash::hmac256(const Data& key, const Data& message) {
     Data hmac(SHA256_DIGEST_LENGTH);
-    hmac_sha256(key.data(), key.size(), message.data(), message.size(), hmac.data());
+    hmac_sha256(key.data(), static_cast<uint32_t>(key.size()), message.data(), static_cast<uint32_t>(message.size()), hmac.data());
     return hmac;
 }
