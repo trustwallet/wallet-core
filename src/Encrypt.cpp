@@ -5,57 +5,86 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Encrypt.h"
-
 #include "Data.h"
-
 #include <TrezorCrypto/aes.h>
-
 #include <cassert>
 
 namespace TW::Encrypt {
 
-Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv) {
+size_t paddingSize(size_t origSize, size_t blockSize, PaddingMode paddingMode) {
+    if (origSize % blockSize == 0) {
+        // even blocks
+        if (paddingMode == PadWithPaddingSize) {
+            return blockSize;
+        }
+        return 0;
+    }
+    // non-even
+    return blockSize - origSize % blockSize;
+}
+
+Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, PaddingMode paddingMode) {
     aes_encrypt_ctx ctx;
-    if (aes_encrypt_key(key.data(), key.size(), &ctx) == EXIT_FAILURE) {
+    if (aes_encrypt_key(key.data(), static_cast<int>(key.size()), &ctx) == EXIT_FAILURE) {
         throw std::invalid_argument("Invalid key");
     }
 
-    const auto resultSize = 16 * ((data.size() + 15) / 16);
+    // Message is padded to round block size, or by a full padding block if even
+    const size_t blockSize = AES_BLOCK_SIZE;
+    const auto padding = paddingSize(data.size(), blockSize, paddingMode);
+    const auto resultSize = data.size() + padding;
     Data result(resultSize);
-    size_t i;
-    for (i = 0; i <= data.size() - 16; i += 16) {
-        aes_cbc_encrypt(data.data() + i, result.data() + i, 16, iv.data(), &ctx);
+    size_t idx;
+    for (idx = 0; idx < resultSize - blockSize; idx += blockSize) {
+        aes_cbc_encrypt(data.data() + idx, result.data() + idx, blockSize, iv.data(), &ctx);
     }
-    if (i < data.size()) {
-        uint8_t padded[16] = {0};
-        std::memcpy(padded, data.data() + i, data.size() - i);
-        aes_cbc_encrypt(padded, result.data() + i, 16, iv.data(), &ctx);
+    // last block
+    if (idx < data.size()) {
+        uint8_t padded[blockSize] = {0};
+        if (paddingMode == PadWithPaddingSize) {
+            std::memset(padded, padding, blockSize);
+        }
+        std::memcpy(padded, data.data() + idx, data.size() - idx);
+        aes_cbc_encrypt(padded, result.data() + idx, blockSize, iv.data(), &ctx);
     }
 
     return result;
 }
 
-Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv) {
-    if (data.size() % 16 != 0) {
+Data AESCBCDecrypt(const Data& key, const Data& data, Data& iv, PaddingMode paddingMode) {
+    const size_t blockSize = AES_BLOCK_SIZE;
+    if (data.size() % blockSize != 0) {
         throw std::invalid_argument("Invalid data size");
     }
-    assert((data.size() % 16) == 0);
+    assert((data.size() % blockSize) == 0);
 
     aes_decrypt_ctx ctx;
-    if (aes_decrypt_key(key.data(), key.size(), &ctx) != EXIT_SUCCESS) {
+    if (aes_decrypt_key(key.data(), static_cast<int>(key.size()), &ctx) != EXIT_SUCCESS) {
         throw std::invalid_argument("Invalid key");
     }
 
     Data result(data.size());
-    for (std::size_t i = 0; i < data.size(); i += 16) {
-        aes_cbc_decrypt(data.data() + i, result.data() + i, 16, iv.data(), &ctx);
+    for (std::size_t i = 0; i < data.size(); i += blockSize) {
+        aes_cbc_decrypt(data.data() + i, result.data() + i, blockSize, iv.data(), &ctx);
+    }
+
+    if (paddingMode == PadWithPaddingSize && result.size() > 0) {
+        // need to remove padding
+        assert(result.size() > 0);
+        const byte paddingSize = result[result.size() - 1];
+        if (paddingSize <= result.size()) {
+            // remove last paddingSize number of bytes
+            const size_t unpaddedSize = result.size() - paddingSize;
+            Data resultUnpadded = TW::data(result.data(), unpaddedSize);
+            return resultUnpadded;
+        }
     }
     return result;
 }
 
 Data AESCTREncrypt(const Data& key, const Data& data, Data& iv) {
 	aes_encrypt_ctx ctx;
-    if (aes_encrypt_key(key.data(), key.size(), &ctx) != EXIT_SUCCESS) {
+    if (aes_encrypt_key(key.data(), static_cast<int>(key.size()), &ctx) != EXIT_SUCCESS) {
         throw std::invalid_argument("Invalid key");
     }
 
@@ -66,7 +95,7 @@ Data AESCTREncrypt(const Data& key, const Data& data, Data& iv) {
 
 Data AESCTRDecrypt(const Data& key, const Data& data, Data& iv) {
     aes_encrypt_ctx ctx;
-    if (aes_encrypt_key(key.data(), key.size(), &ctx) != EXIT_SUCCESS) {
+    if (aes_encrypt_key(key.data(), static_cast<int>(key.size()), &ctx) != EXIT_SUCCESS) {
         throw std::invalid_argument("Invalid key");
     }
 
