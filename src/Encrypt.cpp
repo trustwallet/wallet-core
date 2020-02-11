@@ -42,7 +42,7 @@ Data AESCBCEncrypt(const Data& key, const Data& data, Data& iv, PaddingMode padd
     if (idx < data.size()) {
         uint8_t padded[blockSize] = {0};
         if (paddingMode == PadWithPaddingSize) {
-            std::memset(padded, padding, blockSize);
+            std::memset(padded, static_cast<int>(padding), blockSize);
         }
         std::memcpy(padded, data.data() + idx, data.size() - idx);
         aes_cbc_encrypt(padded, result.data() + idx, blockSize, iv.data(), &ctx);
