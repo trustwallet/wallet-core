@@ -16,10 +16,10 @@ class FIOTests: XCTestCase {
 
         XCTAssertNotNil(address)
         XCTAssertEqual(address?.description, valid)
-        XCTAssertTrue(AnyAddress.isValidString(string: valid, coin: .fio))
+        XCTAssertTrue(AnyAddress.isValid(string: valid, coin: .fio))
 
         XCTAssertNil(AnyAddress(string: invalid, coin: .fio))
-        XCTAssertFalse(AnyAddress.isValidString(string: invalid, coin: .fio))
+        XCTAssertFalse(AnyAddress.isValid(string: invalid, coin: .fio))
     }
 
     func testAddressFromKey() {
