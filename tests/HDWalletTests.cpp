@@ -34,11 +34,11 @@ TEST(HDWallet, privateKeyFromMptv) {
     auto publicKey = privateKey->getPublicKey(TWPublicKeyTypeSECP256k1);
 
     auto witness = Data{0x00, 0x14};
-    auto keyHash = Hash::sha256ripemd(publicKey.bytes.data(), publicKey.bytes.data() + 33);
+    auto keyHash = Hash::sha256ripemd(publicKey.bytes.data(), 33);
     witness.insert(witness.end(), keyHash.begin(), keyHash.end());
 
     auto prefix = Data{TW::p2shPrefix(TWCoinTypeLitecoin)};
-    auto redeemScript = Hash::sha256ripemd(witness.data(), witness.data() + witness.size());
+    auto redeemScript = Hash::sha256ripemd(witness.data(), witness.size());
     prefix.insert(prefix.end(), redeemScript.begin(), redeemScript.end());
 
     auto address = Bitcoin::Address(prefix);

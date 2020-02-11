@@ -50,18 +50,36 @@ TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashRIPEMD(TWData *_Nonnull data);
 
 TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashBlake256(TWData *_Nonnull data);
+
+TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashBlake2b(TWData *_Nonnull data, size_t size);
 
 TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWHashSHA256RIPEMD(TWData *_Nonnull data);
-
-TW_EXPORT_STATIC_METHOD
-TWData *_Nonnull TWHashSHA256SHA256(TWData *_Nonnull data);
+TWData *_Nonnull TWHashGroestl512(TWData *_Nonnull data);
 
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashXXHash64(TWData *_Nonnull data, uint64_t seed);
 
 TW_EXPORT_STATIC_METHOD
 TWData *_Nonnull TWHashTwoXXHash64Concat(TWData *_Nonnull data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashSHA256SHA256(TWData *_Nonnull data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashSHA256RIPEMD(TWData *_Nonnull data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashSHA3_256RIPEMD(TWData *_Nonnull data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashBlake256Blake256(TWData *_Nonnull data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashBlake256RIPEMD(TWData *_Nonnull data);
+
+TW_EXPORT_STATIC_METHOD
+TWData *_Nonnull TWHashGroestl512Groestl512(TWData *_Nonnull data);
 
 TW_EXTERN_C_END
