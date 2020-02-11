@@ -119,7 +119,7 @@ Data Address::keyHash(const TW::Data& xpub) {
         Cbor::Encode::map({}),
     }).encoded();
     // SHA3 hash, then blake
-    Data firstHash = Hash::sha3_256(cborData.data(), cborData.data() + cborData.size());
-    Data blake = Hash::blake2b(firstHash.data(), firstHash.data() + firstHash.size(), 28);
+    Data firstHash = Hash::sha3_256(cborData);
+    Data blake = Hash::blake2b(firstHash, 28);
     return blake;
 }
