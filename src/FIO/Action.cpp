@@ -54,7 +54,7 @@ void RenewFioAddressData::serialize(Data& out) const {
 void NewFundsRequestData::serialize(Data& out) const {
     encodeString(payerFioAddress, out);
     encodeString(payeeFioAddress, out);
-    encodeString(content, out);
+    encodeString(encryptedContent, out);
     encode64LE(fee, out);
     EOS::Name(actor).serialize(out);
     encodeString(tpid, out);

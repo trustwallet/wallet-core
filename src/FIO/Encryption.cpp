@@ -9,8 +9,12 @@
 #include "../Encrypt.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include "../PrivateKey.h"
+#include "../PublicKey.h"
 
 #include <TrezorCrypto/rand.h>
+#include <TrezorCrypto/ecdsa.h>
+#include <TrezorCrypto/secp256k1.h>
 
 #include <cassert>
 
@@ -77,6 +81,36 @@ Data Encryption::checkDecrypt(const Data& secret, const Data& message) {
     // Decrypt, unpadding is done
     const Data unencrypted = Encrypt::AESCBCDecrypt(Ke, C, iv, Encrypt::PadWithPaddingSize);
     return unencrypted;
+}
+
+Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey& publicKey2) {
+    // See https://github.com/fioprotocol/fiojs/blob/master/src/ecc/key_private.js
+    
+    curve_point KBP;
+	assert(ecdsa_read_pubkey(&secp256k1, publicKey2.bytes.data(), &KBP));
+
+    bignum256 privBN;
+    bn_read_be(privateKey1.bytes.data(), &privBN);
+    
+    curve_point P;
+    point_multiply(&secp256k1, &privBN, &KBP, &P);
+
+    Data S(32);
+    bn_write_be(&P.x, S.data());
+    
+    // SHA512 used in ECIES
+    return Hash::sha512(S);
+}
+
+Data Encryption::encryptBinaryMessage(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv) {
+    const Data sharedSecret = getSharedSecret(privateKey1, publicKey2);
+    Data ivCopy(iv); // writeably copy
+    return checkEncrypt(sharedSecret, message, ivCopy);
+}
+
+Data Encryption::decryptBinaryMessage(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& encrypted) {
+    const Data sharedSecret = getSharedSecret(privateKey1, publicKey2);
+    return checkDecrypt(sharedSecret, encrypted);
 }
 
 } // namespace TW::FIO

@@ -7,6 +7,8 @@
 #pragma once
 
 #include "../Data.h"
+#include "../PrivateKey.h"
+#include "../PublicKey.h"
 
 namespace TW::FIO {
 
@@ -19,9 +21,9 @@ public:
      * The CBC cipher is used for good platform native compatability.
      * @see https://security.stackexchange.com/a/63134
      * @see https://security.stackexchange.com/a/20493
-     * @arg {Buffer} secret - Shared secret (64-bytes).
-     * @arg {Buffer} message - Plaintext message (arbitrary length).
-     * @arg {Buffer} [iv = randomBytes(16)] - An unpredictable strong random value (16 bytes) is required
+     * @arg secret - Shared secret (64-bytes).
+     * @arg message - Plaintext message (arbitrary length).
+     * @arg iv - An unpredictable strong random value (16 bytes) is required
      *        and supplied by default. Unit tests may provide a static value to achieve predictable results.
      * @throws {Error} invalid IV size
      */
@@ -29,12 +31,21 @@ public:
 
     /**
      * Provides AES-256-CBC message authentication then decryption.
-     * @arg {Buffer} secret - Shared secret (64-bytes).
-     * @arg {Buffer} message - Ciphertext (from checkEncrypt())
+     * @arg secret - Shared secret (64-bytes).
+     * @arg message - Ciphertext (from checkEncrypt())
      * @throws {Error} Message too short
      * @throws {Error} Decrypt failed, HMAC mismatch
      */
     static Data checkDecrypt(const Data& secret, const Data& message);
+
+    /// Derive 64-byte shared secret from the private key and public key.
+    static Data getSharedSecret(const PrivateKey& privateKey1, const PublicKey& publicKey2);
+
+    /// Encrypt a message.  Own private key, recipient public key, and optional initial vector (may be empty) is needed.
+    static Data encryptBinaryMessage(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv);
+
+    /// Decrypt a message.  Own private key and sender's public key is needed.
+    static Data decryptBinaryMessage(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& encrypted);
 };
 
 } // namespace TW::FIO
