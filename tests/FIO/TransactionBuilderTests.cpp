@@ -178,6 +178,13 @@ TEST(FIONewFundsContent, serialize) {
         newFunds.seralize(ser);
         EXPECT_EQ(hex(ser), "000000000000");
     }
+    {
+        // test from https://github.com/fioprotocol/fiojs/blob/master/src/tests/encryption-fio.test.ts
+        NewFundsContent newFunds {"purse.alice", "1", "fio.reqobt", "", "", ""};
+        Data ser;
+        newFunds.seralize(ser);
+        EXPECT_EQ(hex(ser), "0b70757273652e616c69636501310a66696f2e7265716f6274000000");
+    }
 }
 
 TEST(FIONewFundsContent, deserialize) {
