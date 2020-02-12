@@ -38,6 +38,9 @@
 // Marker for exported static properties
 #define TW_EXPORT_STATIC_PROPERTY extern
 
+// Marker for discardable result (static) method
+#define TW_METHOD_DISCARDABLE_RESULT
+
 // Marker for Protobuf types to be serialized across the interface
 #define PROTO(x) TWData *
 

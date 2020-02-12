@@ -18,7 +18,7 @@ TEST(TWTONAddress, CreateWithString) {
     auto addrStr = STRING(expect);
 
     // first call isValid
-    bool isValid = TWAnyAddressIsValidString(addrStr.get(), TWCoinTypeTON);
+    bool isValid = TWAnyAddressIsValid(addrStr.get(), TWCoinTypeTON);
     ASSERT_TRUE(isValid);
 
     // create address

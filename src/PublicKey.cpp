@@ -172,7 +172,7 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
 
 Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte) const {
     const auto offset = std::size_t(skipTypeByte ? 1 : 0);
-    const auto hash = hasher(bytes.data() + offset, bytes.data() + bytes.size());
+    const auto hash = hasher(bytes.data() + offset, bytes.size() - offset);
 
     auto result = Data();
     result.reserve(prefix.size() + hash.size());

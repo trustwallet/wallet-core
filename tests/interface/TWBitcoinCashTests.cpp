@@ -26,7 +26,7 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 TEST(BitcoinCash, Address) {
-    EXPECT_TRUE(TWAnyAddressIsValidString(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
+    EXPECT_TRUE(TWAnyAddressIsValid(STRING("pqx578nanz2h2estzmkr53zqdg6qt8xyqvwhn6qeyc").get(), TWCoinTypeBitcoinCash));
 }
 
 TEST(BitcoinCash, ValidAddress) {
