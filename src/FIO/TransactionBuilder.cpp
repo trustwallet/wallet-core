@@ -177,7 +177,8 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
     Data encryptedBinaryContent = Encryption::encryptBinaryMessage(privateKey, payerPublicKey, serContent, iv);
 
     string actor = Actor::actor(address);
-    const string encodedEncryptedContent = hex(encryptedBinaryContent); // TODO encpde
+    // encode binary encrypted data to string -- hex format
+    const string encodedEncryptedContent = hex(encryptedBinaryContent);
     NewFundsRequestData nfData(payerFioName, payeeFioName, encodedEncryptedContent, fee, walletTpId, actor);
     Data serData;
     nfData.serialize(serData);

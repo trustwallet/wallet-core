@@ -158,7 +158,6 @@ TEST(TWFIO, NewFundsRequest) {
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_memo("Memo");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_hash("Hash");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_offline_url("https://trustwallet.com");
-    //set_content("bKvTtSRddSzknPGqfNnqcFMqAXMDTXKDAEsbcTKAGAVyjLOagMNVjCNtlJZRbQfe"); TODO
     input.mutable_action()->mutable_new_funds_request_message()->set_fee(3000000000);
 
     auto inputString = input.SerializeAsString();
