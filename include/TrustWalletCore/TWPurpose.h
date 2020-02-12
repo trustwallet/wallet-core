@@ -19,6 +19,7 @@ enum TWPurpose {
     TWPurposeBIP44 = 44,
     TWPurposeBIP49 = 49, // Derivation scheme for P2WPKH-nested-in-P2SH
     TWPurposeBIP84 = 84, // Derivation scheme for P2WPKH
+    TWPurposeBIP1852 = 1852, // Derivation scheme used by Cardano-Shelley
 };
 
 TW_EXTERN_C_END

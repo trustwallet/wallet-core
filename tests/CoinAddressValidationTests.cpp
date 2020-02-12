@@ -330,6 +330,8 @@ TEST(Coin, ValidateAddresKavaa) {
 }
 
 TEST(Coin, ValidateAddresCardano) {
+    // valid V3 address
+    EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "addr1s3hdtrqgs47l7ue5srga8wmk9dzw279x9e7lxadalt6z0fk64nnn2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59j5lempe"));
     // valid V2 address
     EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W"));
     // valid V1 address

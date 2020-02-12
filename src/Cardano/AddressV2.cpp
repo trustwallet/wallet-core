@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Address.h"
+#include "AddressV2.h"
 #include "../Cbor.h"
 #include "../Data.h"
 #include "../Base58.h"
@@ -18,7 +18,7 @@ using namespace TW;
 using namespace TW::Cardano;
 using namespace std;
 
-bool Address::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs_out, byte& type_out) {
+bool AddressV2::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs_out, byte& type_out) {
     // Decode Bas58, decode payload + crc, decode root, attr
     Data base58decoded = Base58::bitcoin.decode(addr);
     if (base58decoded.size() == 0) {
@@ -49,7 +49,7 @@ bool Address::parseAndCheck(const std::string& addr, Data& root_out, Data& attrs
     return true;
 }
 
-bool Address::isValid(const std::string& string) {
+bool AddressV2::isValid(const std::string& string) {
     try {
         Data root;
         Data attrs;
@@ -62,14 +62,14 @@ bool Address::isValid(const std::string& string) {
     }
 }
 
-Address::Address(const std::string& string) {
+AddressV2::AddressV2(const std::string& string) {
     if (!parseAndCheck(string, root, attrs, type)) {
         throw std::invalid_argument("Invalid address string");
     }
     // values stored
 }
 
-Address::Address(const PublicKey& publicKey) {
+AddressV2::AddressV2(const PublicKey& publicKey) {
     // input is extended pubkey, 64-byte
     if (publicKey.type != TWPublicKeyTypeED25519Extended) {
         throw std::invalid_argument("Invalid public key type");
@@ -81,7 +81,7 @@ Address::Address(const PublicKey& publicKey) {
     attrs = emptyMap.encoded();
 }
 
-Data Address::getCborData() const {
+Data AddressV2::getCborData() const {
     // put together string represenatation, CBOR representation
     // inner data: pubkey, attrs, type
     auto cbor1 = Cbor::Encode::array({
@@ -101,12 +101,12 @@ Data Address::getCborData() const {
     return cbor2.encoded();
 }
 
-string Address::string() const {
+string AddressV2::string() const {
     // Base58 encode the CBOR data
     return Base58::bitcoin.encode(getCborData());
 }
 
-Data Address::keyHash(const TW::Data& xpub) {
+Data AddressV2::keyHash(const TW::Data& xpub) {
     if (xpub.size() != 64) { throw invalid_argument("invalid xbub length"); }
     // hash of follwoing Cbor-array: [0, [0, xbub], {} ]
     // 3rd entry map is empty map for V2, contains derivation path for V1

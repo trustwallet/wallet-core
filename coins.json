@@ -1290,15 +1290,16 @@
         "symbol": "ADA",
         "decimals": 6,
         "blockchain": "Cardano",
-        "derivationPath": "m/44'/1815'/0'/0/0",
+        "derivationPath": "m/1852'/1815'/0'/0/0",
         "curve": "ed25519Extended",
         "publicKeyType": "ed25519Extended",
+        "hrp": "addr",
         "explorer": {
-            "url": "https://cardanoexplorer.com",
+            "url": "https://shelleyexplorer.cardano.org",
             "txPath": "/tx/",
             "accountPath": "/address/",
             "sampleTx": "b7a6c5cadab0f64bdc89c77ee4a351463aba5c33f2cef6bbd6542a74a90a3af3",
-            "sampleAccount": "DdzFFzCqrhstpwKc8WMvPwwBb5oabcTW9zc5ykA37wJR4tYQucvsR9dXb2kEGNXkFJz2PtrpzfRiZkx8R1iNo8NYqdsukVmv7EAybFwC"
+            "sampleAccount": "addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j"
         },
         "info": {
             "url": "https://www.cardano.org",

@@ -105,6 +105,13 @@ TEST(AnyAddress, Data) {
         auto pubkey = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(pubkey, "fab55af5eaaa1a284b615946dc3dd403c44ce3448c15884d61b2dcba3ddb245a");
     }
+    // cardano
+    {
+        auto string = STRING("addr1s3xuxwfetyfe7q9u3rfn6je9stlvcgmj8rezd87qjjegdtxm3y3f2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59jz29g8j");
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeCardano));
+        auto pubkey = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(pubkey, "0104204dc3393959139f00bc88d33d4b2582fecc237238f2269fc094b286acdb892295206d0b99fdb1cc851fbc8dbcb7d6710fde28df46360c259d482db679c24c4e50b2");
+    }
     // neo
     {
         auto string = STRING("AKmrAHRD9ZDUnu4m3vWWonpsojo4vgSuqp");
