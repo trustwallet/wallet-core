@@ -60,7 +60,7 @@ TEST(FreeCashTransactionPlan, MaxAmount) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     utxos.push_back(buildUTXO(txOutPoint, 1000000000));
 
-    ASSERT_EQ(sum(utxos), 39200);
+    ASSERT_EQ(sum(utxos), 1000000000);
 
     auto sigingInput = buildSigningInput(39200, 32, utxos, true, TWCoinTypeBitcoin);
     auto txPlan = TransactionBuilder::plan(sigingInput);
@@ -79,7 +79,7 @@ TEST(FreeCashTransactionPlan, MaxAmountDoge) {
 
     ASSERT_EQ(sum(utxos), Amount(2300000000));
 
-    auto sigingInput = buildSigningInput(Amount(2300000000), 100, utxos, true, TWCoinTypeDogecoin);
+    auto sigingInput = buildSigningInput(Amount(2300000000), 100, utxos, true, TWCoinTypeFreeCash);
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     ASSERT_EQ(txPlan.availableAmount, Amount(2300000000));
@@ -92,11 +92,11 @@ TEST(FreeCashTransactionPlan, AmountDecred) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     utxos.push_back(buildUTXO(txOutPoint, Amount(39900000)));
 
-    auto sigingInput = buildSigningInput(Amount(10000000), 10, utxos, false, TWCoinTypeDecred);
+    auto sigingInput = buildSigningInput(Amount(10000000), 10, utxos, false, TWCoinTypeFreeCash);
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     ASSERT_EQ(txPlan.availableAmount, Amount(39900000));
     ASSERT_EQ(txPlan.amount, Amount(10000000));
-    ASSERT_EQ(txPlan.change, 29897460);
-    ASSERT_EQ(txPlan.fee, 2540);
+    ASSERT_EQ(txPlan.change, 29897740);
+    ASSERT_EQ(txPlan.fee, 2260);
 }

@@ -51,7 +51,7 @@ TEST(CoinexMarket, CreateSellOrder) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("", output.json());
+    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"2000000\",\"denom\":\"cet\"}],\"gas\":\"100000\"},\"memo\":\"ifwallet\",\"msg\":[{\"type\":\"market/MsgCreateOrder\",\"value\":{\"exist_blocks\":\"10000\",\"identify\":1,\"order_type\":2,\"price\":\"100000\",\"price_precision\":2,\"quantity\":\"10000\",\"sender\":\"cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j\",\"side\":2,\"time_in_force\":\"3\",\"trading_pair\":\"ift/cet\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AkvCoxJlFT8H5w4LqwhyTmuF4hf4zWKM62KXQke7STOC\"},\"signature\":\"Ut24BNxDG7XQ3GyEx7lwn1Oh9QUVDTE4tXAiq86+4C0YDFxQqFOVn7sM7qp6lxY45EB71Q1WoxHX7sN7PR2xlg==\"}],\"type\":\"bankx/MsgSend\"}}", output.json());
 
 }
 
@@ -89,7 +89,7 @@ TEST(CoinexMarket, CreateBuyOrder) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("", output.json());
+    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"2000000\",\"denom\":\"cet\"}],\"gas\":\"100000\"},\"memo\":\"ifwallet\",\"msg\":[{\"type\":\"market/MsgCreateOrder\",\"value\":{\"exist_blocks\":\"10000\",\"identify\":1,\"order_type\":2,\"price\":\"100000\",\"price_precision\":2,\"quantity\":\"10000\",\"sender\":\"cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j\",\"side\":1,\"time_in_force\":\"3\",\"trading_pair\":\"ift/cet\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AkvCoxJlFT8H5w4LqwhyTmuF4hf4zWKM62KXQke7STOC\"},\"signature\":\"mH18NltKZNZUN0XZupYtf2e+dAOl/VLMU8NLp6WEJr9vJuOmnNTTvPII9OQpX3Q/FJyu7d5NDTsFY/BGJ/YClA==\"}],\"type\":\"bankx/MsgSend\"}}", output.json());
 
 }
 
@@ -119,7 +119,7 @@ TEST(CoinexMarket, CancelOrder) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("", output.json());
+    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"2000000\",\"denom\":\"cet\"}],\"gas\":\"100000\"},\"memo\":\"ifwallet\",\"msg\":[{\"type\":\"market/MsgCancelOrder\",\"value\":{\"order_id\":\"cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j-5\",\"sender\":\"cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AkvCoxJlFT8H5w4LqwhyTmuF4hf4zWKM62KXQke7STOC\"},\"signature\":\"gxj/47/F/L2cIWlZnWnRQAVtTYJz8hn4p03eaZIjTMI1qr83R90MRnFhhxn7cCLc1k4FWE6hN66dYnxJS+9QMg==\"}],\"type\":\"bankx/MsgSend\"}}", output.json());
 
 }
 
@@ -150,7 +150,7 @@ TEST(CoinexMarket, ProposalVote) {
 
     auto output = signer.build();
 
-    ASSERT_EQ("", output.json());
+    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"2000000\",\"denom\":\"cet\"}],\"gas\":\"100000\"},\"memo\":\"ifwallet\",\"msg\":[{\"type\":\"cosmos-sdk/MsgVote\",\"value\":{\"option\":\"Yes\",\"proposal_id\":\"14\",\"voter\":\"cettest178w9m7yzkagpq090t593r6gqe5gkfkvjl76znl\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AjLG1hKhMdCboR/T4fk8iWE+nam8IVzA4jIuMHO4BJvd\"},\"signature\":\"llA/STsCnnFLTJ9qneDQsOCcGXML58O22OKPhK2ycbpSWSXFSXj60KCfcQQFTKIdGhOHEVTEQ5ozayCg0PqYcg==\"}],\"type\":\"bankx/MsgSend\"}}", output.json());
 
 }
 
