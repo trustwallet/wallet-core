@@ -7,6 +7,7 @@
 #include "FIO/Action.h"
 #include "FIO/Transaction.h"
 #include "FIO/TransactionBuilder.h"
+#include "FIO/NewFundsRequest.h"
 
 #include "HexCoding.h"
 
@@ -161,4 +162,40 @@ TEST(FIOTransaction, ActionAddPubAddressInternal) {
         "bd01"
         "0f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400",
         hex(ser3));
+}
+
+TEST(FIONewFundsContent, serialize) {
+    {
+        NewFundsContent newFunds {"mario@trust", "10", "BNB", "Memo", "", "https://trustwallet.com"};
+        Data ser;
+        newFunds.seralize(ser);
+        EXPECT_EQ(hex(ser), "0b6d6172696f40747275737402313003424e42044d656d6f001768747470733a2f2f747275737477616c6c65742e636f6d");
+    }
+    {
+        // empty struct 
+        NewFundsContent newFunds {"", "", "", "", "", ""};
+        Data ser;
+        newFunds.seralize(ser);
+        EXPECT_EQ(hex(ser), "000000000000");
+    }
+}
+
+TEST(FIONewFundsContent, deserialize) {
+    {
+        const Data ser = parse_hex("0b6d6172696f40747275737402313003424e42044d656d6f001768747470733a2f2f747275737477616c6c65742e636f6d");
+        size_t index = 0;
+        const auto newFunds = NewFundsContent::deserialize(ser, index);
+        EXPECT_EQ(newFunds.payeePublicAddress, "mario@trust");
+        EXPECT_EQ(newFunds.amount, "10");
+        EXPECT_EQ(newFunds.offlineUrl, "https://trustwallet.com");
+    }
+    {
+        // incomplete inpiut
+        const Data ser = parse_hex("0b6d");
+        size_t index = 0;
+        const auto newFunds = NewFundsContent::deserialize(ser, index);
+        EXPECT_EQ(newFunds.payeePublicAddress, "");
+        EXPECT_EQ(newFunds.amount, "");
+        EXPECT_EQ(newFunds.offlineUrl, "");
+    }
 }
