@@ -9,6 +9,26 @@ message PublicAddress {
     string address = 2;
 }
 
+// Payload content for New Funds requests
+message NewFundsContent {
+    // Note: payee FIO name is not included here, it is present outside.
+
+    // Amount requested (as string)
+    string amount = 1;
+
+    // Token code of the amount requested
+    string token_code = 2;
+
+    // Memo free text.  Optional, may be empty.
+    string memo = 3;
+
+    // Hash.  Optional, may be empty.
+    string hash = 4;
+
+    // Attached offline URL.  Optional, may be empty.
+    string offline_url = 5;
+}
+
 // Different Actions
 message Action {
     // Action for registering a FIO name; register_fio_address
@@ -70,16 +90,19 @@ message Action {
     // Action for creating a new payment request; new_funds_request
     message NewFundsRequest {
         // The FIO name of the requested payer. Ex.: "alice@trust"
-        string payer_fio_address = 1;
+        string payer_fio_name = 1;
+
+        // The FIO address (not name) of the payer, owner of payee_fio_name.  Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string payer_fio_address = 2;
 
         // Own FIO name.  Ex.: "bob@trust"
-        string payee_fio_address = 2;
+        string payee_fio_name = 3;
 
-        // Encrypted content of the request
-        string content = 3;
+        // Payload content of the request
+        NewFundsContent content = 4;
 
         // Max fee to spend, can be obtained using get_fee API.
-        uint64 fee = 4;
+        uint64 fee = 5;
 
         // Note: actor is not needed, computed from private key
     }

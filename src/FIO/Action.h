@@ -140,15 +140,15 @@ public:
 /// NewFundsRequest action data part.
 class NewFundsRequestData {
 public:
-    std::string payerFioAddress;
-    std::string payeeFioAddress;
+    std::string payerFioName;
+    std::string payeeFioName;
     std::string encryptedContent;
     uint64_t fee;
     std::string tpid;
     std::string actor;
 
-    NewFundsRequestData(const std::string& payerFioAddress, const std::string& payeeFioAddress, const std::string& encryptedContent, uint64_t fee, const std::string& tpid, const std::string& actor) :
-        payerFioAddress(payerFioAddress), payeeFioAddress(payeeFioAddress), encryptedContent(encryptedContent), fee(fee), tpid(tpid), actor(actor) {}
+    NewFundsRequestData(const std::string& payerFioName, const std::string& payeeFioName, const std::string& encryptedContent, uint64_t fee, const std::string& tpid, const std::string& actor) :
+        payerFioName(payerFioName), payeeFioName(payeeFioName), encryptedContent(encryptedContent), fee(fee), tpid(tpid), actor(actor) {}
     void serialize(Data& out) const;
 };
 

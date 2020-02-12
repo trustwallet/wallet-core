@@ -16,7 +16,7 @@ namespace TW::FIO {
 class NewFundsContent {
 public:
     /// FIO name of the addressed payee, e.g. "mario@trust"
-    std::string payeePublicAddress;
+    std::string payeeFioName;
     /// Amount requested (string)
     std::string amount;
     /// Token code of the amount requested
@@ -29,7 +29,7 @@ public:
     std::string offlineUrl;
 
     /// Serialize into binary stream (abi)
-    void seralize(Data& out);
+    void serialize(Data& out) const;
 
     /// Deserialize, create from binary stream.  Return default (empty fields) on error.
     static NewFundsContent deserialize(const Data& in, size_t& indexInOut);

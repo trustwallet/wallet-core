@@ -90,15 +90,23 @@ public:
     /// @address The owners' FIO address. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
     /// @privateKey The private key matching the address, needed for signing.
     /// @payerFioName The FIO name of the requested payer. Ex.: "alice@trust"
+    /// @payerFioAddress The FIO address (not name) of the payer, owner of payerFioName.
     /// @payeeFioName Own FIO name.  Ex.: "bob@trust"
-    /// @content Encrypted content of the request
+    /// @amount Amount requested (as string)
+    /// @tokenCode Token code of the amount requested
+    /// @memo Memo free text.  Optional, may be empty.
+    /// @hash Hash.  Optional, may be empty.
+    /// @offlineUrl Attached offline URL.  Optional, may be empty.
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
     /// @fee Max fee to spend, can be obtained using get_fee API.
     /// @walletTpId The FIO name of the originating wallet (project-wide constant)
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
+    /// @iv Optional initial values for encryption, should be empty.  Can be set for testability (16 bytes).
     static std::string createNewFundsRequest(const Address& address, const PrivateKey& privateKey,
-        const std::string& payerFioName, const std::string& payeeFioName, const std::string& content,
-        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime);
+        const std::string& payerFioName, const std::string& payerFioAddress, const std::string& payeeFioName,
+        const std::string& amount, const std::string& tokenCode, const std::string& memo, const std::string& hash, const std::string& offlineUrl,
+        const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime,
+        const Data& iv);
 
     /// Used internally.  Creates signatures and json with transaction.
     static std::string signAdnBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey);

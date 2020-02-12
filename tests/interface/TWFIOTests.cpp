@@ -150,9 +150,15 @@ TEST(TWFIO, NewFundsRequest) {
     input.mutable_chain_params()->set_ref_block_prefix(4279583376);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
     input.set_tpid("rewards@wallet");
-    input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_address("alice@fiotestnet");
-    input.mutable_action()->mutable_new_funds_request_message()->set_payee_fio_address("nick@fiotestnet");
-    input.mutable_action()->mutable_new_funds_request_message()->set_content("bKvTtSRddSzknPGqfNnqcFMqAXMDTXKDAEsbcTKAGAVyjLOagMNVjCNtlJZRbQfe");
+    input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_name("mario@fiotestnet");
+    input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+    input.mutable_action()->mutable_new_funds_request_message()->set_payee_fio_name("alice@fiotestnet");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_amount("5");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_token_code("BNB");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_memo("Memo");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_hash("Hash");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_offline_url("https://trustwallet.com");
+    //set_content("bKvTtSRddSzknPGqfNnqcFMqAXMDTXKDAEsbcTKAGAVyjLOagMNVjCNtlJZRbQfe"); TODO
     input.mutable_action()->mutable_new_funds_request_message()->set_fee(3000000000);
 
     auto inputString = input.SerializeAsString();
@@ -162,5 +168,10 @@ TEST(TWFIO, NewFundsRequest) {
     auto out = Proto::SigningOutput();
     ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
     EXPECT_EQ("", out.error());
-    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed32328210616c6963654066696f746573746e657410616c6963654066696f746573746e657440624b76547453526464537a6b6e504771664e6e7163464d7141584d4454584b444145736263544b41474156796a4c4f61674d4e566a434e746c4a5a5262516665005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_JuuGtqMwyu6q9i8tm7tiAA2kvYHXU3SdP7bgUL9VPyvBscz5TAUtqExUUeP9tDL8AQsNiSoFYDrjs8u5CnDtLTC4VbKxvr"]})", out.json());
+    // Packed transacton varies, as there is no way to control encryption IV parameter from this level.
+    // Therefore full equality cannot be checked, tail is cut off.  The first N chars are checked, works in this case.
+    EXPECT_EQ(
+        R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232fd2201106d6172696f4066696f7465737)",
+        out.json().substr(0, 195)
+    );
 }

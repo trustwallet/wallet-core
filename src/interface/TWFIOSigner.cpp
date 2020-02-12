@@ -71,9 +71,11 @@ TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input) {
                     getChainParams(in), action.fee(), in.tpid(), in.expiry());
             } else if (in.action().has_new_funds_request_message()) {
                 const auto action = in.action().new_funds_request_message();
+                const auto content = action.content();
                 json = TransactionBuilder::createNewFundsRequest(owner, privateKey,
-                    action.payer_fio_address(), action.payee_fio_address(), action.content(),
-                    getChainParams(in), action.fee(), in.tpid(), in.expiry());
+                    action.payer_fio_name(), action.payer_fio_address(), action.payee_fio_name(), 
+                    content.amount(), content.token_code(), content.memo(), content.hash(), content.offline_url(),
+                    getChainParams(in), action.fee(), in.tpid(), in.expiry(), Data());
             }
 
             out.set_json(json);

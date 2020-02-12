@@ -5,7 +5,11 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TransactionBuilder.h"
+
+#include "Encryption.h"
+#include "NewFundsRequest.h"
 #include "Signer.h"
+
 #include "../HexCoding.h"
 
 #include <nlohmann/json.hpp>
@@ -156,13 +160,25 @@ string TransactionBuilder::createRenewFioAddress(const Address& address, const P
 }
 
 string TransactionBuilder::createNewFundsRequest(const Address& address, const PrivateKey& privateKey,
-        const string& payerFioName, const string& payeeFioName, const string& content,
-        const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime) {
+        const string& payerFioName, const string& payerFioAddress, const string& payeeFioName, 
+        const string& amount, const string& tokenCode, const string& memo, const string& hash, const string& offlineUrl,
+        const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime,
+        const Data& iv) {
 
     const auto apiName = "newfundsreq";
 
+    NewFundsContent newFundsContent { payeeFioName, amount, tokenCode, memo, hash, offlineUrl };
+    // serialize and encrypt
+    Data serContent;
+    newFundsContent.serialize(serContent);
+    Address payerAddress(payerFioAddress);
+    PublicKey payerPublicKey = payerAddress.publicKey();
+    // encrypt
+    Data encryptedBinaryContent = Encryption::encryptBinaryMessage(privateKey, payerPublicKey, serContent, iv);
+
     string actor = Actor::actor(address);
-    NewFundsRequestData nfData(payerFioName, payerFioName, content, fee, walletTpId, actor);
+    const string encodedEncryptedContent = hex(encryptedBinaryContent); // TODO encpde
+    NewFundsRequestData nfData(payerFioName, payeeFioName, encodedEncryptedContent, fee, walletTpId, actor);
     Data serData;
     nfData.serialize(serData);
     
