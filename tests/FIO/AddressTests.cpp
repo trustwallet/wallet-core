@@ -29,10 +29,18 @@ TEST(FIOAddress, FromString) {
     );
 }
 
-TEST(FIOAddress, FromPrivateKey) {
+TEST(FIOAddress, FromPublicKey) {
     auto key = PrivateKey(parse_hex("ea8eb60b7e5868e218f248e032769020b4fea5dcfd02f2992861eaf4fb534854"));
     auto publicKey = key.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_EQ(hex(publicKey.bytes), "0271195c66ec2799e436757a70cd8431d4b17733a097b18a5f7f1b6b085978ff0f");
     auto address = Address(publicKey);
 
     ASSERT_EQ(address.string(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+}
+
+TEST(FIOAddress, GetPublicKey) {
+    const auto publicKeyHex = "0271195c66ec2799e436757a70cd8431d4b17733a097b18a5f7f1b6b085978ff0f";
+    const PublicKey publicKey(parse_hex(publicKeyHex), TWPublicKeyTypeSECP256k1);
+    auto address = Address(publicKey);
+    EXPECT_EQ(hex(address.publicKey().bytes), publicKeyHex);
 }
