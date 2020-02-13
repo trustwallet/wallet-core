@@ -8,6 +8,8 @@
 
 #include "Transaction.h"
 #include "Address.h"
+#include "../proto/FIO.pb.h"
+
 #include "../Data.h"
 #include "../PrivateKey.h"
 
@@ -34,6 +36,9 @@ public:
     static constexpr auto ContractPayRequest = "fio.reqobt";
     static constexpr auto AuthrizationActive = "active";
     static const auto ExpirySeconds = 3600;
+
+    /// Generic transaction signer: Build a signed transaction, in Json, from the specific SigningInput messages.
+    static std::string sign(Proto::SigningInput in);
 
     /// Create a signed RegisterFioAddress transaction, returned as json string (double quote delimited), suitable for register_fio_address RPC call
     /// @address The owners' FIO address. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
