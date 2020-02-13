@@ -160,7 +160,6 @@ bool PublicKey::verifySchnorr(const Data& signature, const Data& message) const 
         return zil_schnorr_verify(&secp256k1, bytes.data(), signature.data(), message.data(), static_cast<uint32_t>(message.size())) == 0;
     case TWPublicKeyTypeNIST256p1:
     case TWPublicKeyTypeNIST256p1Extended:
-        return false;
     case TWPublicKeyTypeED25519:
     case TWPublicKeyTypeED25519Blake2b:
     case TWPublicKeyTypeED25519Extended:
