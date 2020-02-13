@@ -174,3 +174,14 @@ TEST(TWFIO, NewFundsRequest) {
         out.json().substr(0, 195)
     );
 }
+
+
+TEST(TWFIO, InvalidInputMessage) {
+    auto dummyInputString = parse_hex("010203040506");
+    auto inputData = TWDataCreateWithBytes((const TW::byte *)dummyInputString.data(), dummyInputString.size());
+
+    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto out = Proto::SigningOutput();
+    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+    EXPECT_EQ("Error: could not parse input", out.error());
+}

@@ -115,6 +115,9 @@ public:
 
     /// Used internally.  Creates signatures and json with transaction.
     static std::string signAdnBuildTx(const Data& chainId, const Data& packedTx, const PrivateKey& privateKey);
+
+    /// Used internally.  If expiry is 0, fill it based on current time.  Return true if value has been changed.
+    static bool expirySetDefaultIfNeeded(uint32_t& expiryTime);
 };
 
 } // namespace TW::FIO

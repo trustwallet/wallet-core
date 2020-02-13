@@ -26,6 +26,23 @@ const PrivateKey privKeyBA = PrivateKey(parse_hex("ba0828d5734b65e3bcc2c51c93dfc
 const PublicKey pubKey6M = privKeyBA.getPublicKey(TWPublicKeyTypeSECP256k1);
 const Address addr6M(pubKey6M);
 
+TEST(FIOTransactionBuilder, RegisterFioAddressGeneric) {
+    Proto::SigningInput input;
+    input.set_expiry(1579784511);
+    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_head_block_number(39881);
+    input.mutable_chain_params()->set_ref_block_prefix(4279583376);
+    input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
+    input.mutable_action()->mutable_register_fio_address_message()->set_fio_address("adam@fiotestnet");
+    input.mutable_action()->mutable_register_fio_address_message()->set_owner_fio_public_key(addr6M.string());
+    input.mutable_action()->mutable_register_fio_address_message()->set_fee(5000000000);
+
+    auto json = TransactionBuilder::sign(input);
+
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"3f99295ec99b904215ff0000000001003056372503a85b0000c6eaa66498ba01102b2f46fca756b200000000a8ed3232650f6164616d4066696f746573746e65743546494f366d31664d645470526b52426e6564765973685843784c4669433573755255384b44667838787874587032686e7478706e6600f2052a01000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K19ugLriG3ApYgjJCRDsy21p9xgsjbDtqBuZrmAEix9XYzndR1kNbJ6fXCngMJMAhxUHfwHAsPnh58otXiJZkazaM1EkS5"]})", json);
+}
+
 TEST(FIOTransactionBuilder, RegisterFioAddress) {
     ChainParams chainParams{chainId, 39881, 4279583376};
     uint64_t fee = 5000000000;
@@ -207,4 +224,14 @@ TEST(FIONewFundsContent, deserialize) {
         EXPECT_EQ(newFunds.amount, "");
         EXPECT_EQ(newFunds.offlineUrl, "");
     }
+}
+
+TEST(FIOTransactionBuilder, expirySetDefault) {
+    uint32_t expiry = 1579790000;
+    EXPECT_EQ(TransactionBuilder::expirySetDefaultIfNeeded(expiry), false);
+    EXPECT_EQ(expiry, 1579790000);
+    expiry = 0;
+    EXPECT_EQ(expiry, 0);
+    EXPECT_EQ(TransactionBuilder::expirySetDefaultIfNeeded(expiry), true);
+    EXPECT_TRUE(expiry > 1579790000);
 }

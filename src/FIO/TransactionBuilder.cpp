@@ -32,6 +32,13 @@ ChainParams getChainParams(const Proto::SigningInput& input) {
     };
 }
 
+bool TransactionBuilder::expirySetDefaultIfNeeded(uint32_t& expiryTime) {
+    if (expiryTime != 0) { return false; } // no change
+    // fill based on current time 
+    expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
+    return true;
+}
+
 string TransactionBuilder::sign(Proto::SigningInput in) {
     PrivateKey privateKey(in.private_key());
     PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
@@ -95,9 +102,7 @@ string TransactionBuilder::createRegisterFioAddress(const Address& address, cons
     action.serialize(serAction);
 
     Transaction tx;
-    if (expiryTime == 0) {
-        expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
-    }
+    expirySetDefaultIfNeeded(expiryTime);
     tx.expiration = (int32_t)expiryTime;
     tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
     tx.refBlockPrefix = chainParams.refBlockPrefix;
@@ -129,9 +134,7 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     action.serialize(serAction);
 
     Transaction tx;
-    if (expiryTime == 0) {
-        expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
-    }
+    expirySetDefaultIfNeeded(expiryTime);
     tx.expiration = (int32_t)expiryTime;
     tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
     tx.refBlockPrefix = chainParams.refBlockPrefix;
@@ -163,9 +166,7 @@ string TransactionBuilder::createTransfer(const Address& address, const PrivateK
     action.serialize(serAction);
 
     Transaction tx;
-    if (expiryTime == 0) {
-        expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
-    }
+    expirySetDefaultIfNeeded(expiryTime);
     tx.expiration = (int32_t)expiryTime;
     tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
     tx.refBlockPrefix = chainParams.refBlockPrefix;
@@ -197,9 +198,7 @@ string TransactionBuilder::createRenewFioAddress(const Address& address, const P
     action.serialize(serAction);
 
     Transaction tx;
-    if (expiryTime == 0) {
-        expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
-    }
+    expirySetDefaultIfNeeded(expiryTime);
     tx.expiration = (int32_t)expiryTime;
     tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
     tx.refBlockPrefix = chainParams.refBlockPrefix;
@@ -244,9 +243,7 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
     action.serialize(serAction);
 
     Transaction tx;
-    if (expiryTime == 0) {
-        expiryTime = (uint32_t)time(nullptr) + ExpirySeconds;
-    }
+    expirySetDefaultIfNeeded(expiryTime);
     tx.expiration = (int32_t)expiryTime;
     tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
     tx.refBlockPrefix = chainParams.refBlockPrefix;
