@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package TW.Filecoin.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    // Private key of sender account.
+    bytes private_key = 1;
+
+    // Recipient's address.
+    string to_address = 2;
+
+    // Transaction nonce.
+    uint64 nonce = 3;
+
+    // Transfer value.
+    bytes value = 4;
+
+    // Gas price.
+    bytes gas_price = 5;
+
+    // Gas limit.
+    uint64 gas_limit = 6;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    bytes encoded = 1;
+}

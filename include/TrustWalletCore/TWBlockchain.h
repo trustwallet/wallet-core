@@ -44,6 +44,7 @@ enum TWBlockchain {
     TWBlockchainPolkadot = 29,
     TWBlockchainCardano = 30,
     TWBlockchainNEO = 31,
+    TWBlockchainFilecoin = 32,
 };
 
 TW_EXTERN_C_END
