@@ -43,7 +43,7 @@ public:
     /// Create a signed RegisterFioAddress transaction, returned as json string (double quote delimited), suitable for register_fio_address RPC call
     /// @address The owners' FIO address. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
     /// @privateKey The private key matching the address, needed for signing.
-    /// @fioName The FIO name to be registered. Ex.: "alice@trust"
+    /// @fioName The FIO name to be registered. Ex.: "mario@trust"
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
     /// @fee Max fee to spend, can be obtained using get_fee API.
     /// @walletTpId The FIO name of the originating wallet (project-wide constant)
@@ -55,7 +55,7 @@ public:
     /// Create a signed AddAddress transaction, returned as json string (double quote delimited), suitable for add_pub_address RPC call
     /// @address The owners' FIO address
     /// @privateKey The private key matching the address, needed for signing.
-    /// @fioName The FIO name already registered to the owner. Ex.: "alice@trust"
+    /// @fioName The FIO name already registered to the owner. Ex.: "dmitry@trust"
     /// @addressess List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
     /// @chainParams Current parameters from the FIO chain, must be obtained recently using get_info and get_block calls.
     /// @fee Max fee to spend, can be obtained using get_fee API.
