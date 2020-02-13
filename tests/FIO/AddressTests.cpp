@@ -14,7 +14,7 @@
 using namespace TW;
 using namespace TW::FIO;
 
-TEST(FIOAddress, Validation) {
+TEST(FIOAddress, ValidateString) {
     ASSERT_FALSE(Address::isValid("abc"));
     ASSERT_FALSE(Address::isValid("65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjTF"));
     ASSERT_FALSE(Address::isValid("EOS65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjT"));
@@ -22,11 +22,32 @@ TEST(FIOAddress, Validation) {
     ASSERT_TRUE(Address::isValid("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"));
 }
 
+TEST(FIOAddress, ValidateData) {
+    Address address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+    EXPECT_EQ(address.bytes.size(), 37);
+    Data addrData = TW::data(address.bytes.data(), address.bytes.size());
+
+    EXPECT_EQ(Address::isValid(addrData), true);
+
+    // create invalid data, too short
+    Data addressDataShort = subData(addrData, 0, addrData.size() - 1);
+    EXPECT_EQ(Address::isValid(addressDataShort), false);
+}
+
 TEST(FIOAddress, FromString) {
     ASSERT_EQ(
         Address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o").string(),
         "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
     );
+}
+
+TEST(FIOAddress, FromStringInvalid) {
+    try {
+        Address address("WRP5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+    } catch (std::invalid_argument&) {
+        return; // ok
+    }
+    ADD_FAILURE() << "Missed expected exeption";
 }
 
 TEST(FIOAddress, FromPublicKey) {
