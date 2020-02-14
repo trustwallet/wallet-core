@@ -9,11 +9,31 @@ message PublicAddress {
     string address = 2;
 }
 
+// Payload content for New Funds requests
+message NewFundsContent {
+    // Note: payee FIO name is not included here, it is present outside.
+
+    // Amount requested (as string)
+    string amount = 1;
+
+    // Token code of the amount requested
+    string token_code = 2;
+
+    // Memo free text.  Optional, may be empty.
+    string memo = 3;
+
+    // Hash.  Optional, may be empty.
+    string hash = 4;
+
+    // Attached offline URL.  Optional, may be empty.
+    string offline_url = 5;
+}
+
 // Different Actions
 message Action {
     // Action for registering a FIO name; register_fio_address
     message RegisterFioAddress {
-        // The FIO name to be registered. Ex.: "alice:trust"
+        // The FIO name to be registered. Ex.: "alice@trust"
         string fio_address = 1;
 
         // FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
@@ -22,15 +42,12 @@ message Action {
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
         
-        // The FIO name of the originating wallet (project-wide constant)
-        string tpid = 4;
-
         // Note: actor is not needed, computed from owner_fio_public_key
     }
 
     // Acion for adding public chain addresses to a FIO name; add_pub_address
     message AddPubAddress {
-        // The FIO name already registered to the owner. Ex.: "alice:trust"
+        // The FIO name already registered to the owner. Ex.: "alice@trust"
         string fio_address = 1;
 
         // List of public addresses to be registered, ex. {{"BTC", "bc1qv...7v"},{"BNB", "bnb1ts3...9s"}}
@@ -39,10 +56,7 @@ message Action {
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
         
-        // The FIO name of the originating wallet (project-wide constant)
-        string tpid = 4;
-
-        // Note: actor is not needed, computed from owner_fio_public_key
+        // Note: actor is not needed, computed from private key
     }
 
     // Action for transfering FIO coins; transfer_tokens_pub_key
@@ -56,8 +70,39 @@ message Action {
         // Max fee to spend, can be obtained using get_fee API.
         uint64 fee = 3;
         
-        // The FIO name of the originating wallet (project-wide constant)
-        string tpid = 4;
+        // Note: actor is not needed, computed from private key
+    }
+
+    // Action for renewing a FIO name; renew_fio_address
+    message RenewFioAddress {
+        // The FIO name to be renewed. Ex.: "alice@trust"
+        string fio_address = 1;
+
+        // FIO address of the owner. Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string owner_fio_public_key = 2;
+        
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 3;
+
+        // Note: actor is not needed, computed from owner_fio_public_key
+    }
+
+    // Action for creating a new payment request; new_funds_request
+    message NewFundsRequest {
+        // The FIO name of the requested payer. Ex.: "alice@trust"
+        string payer_fio_name = 1;
+
+        // The FIO address (not name) of the payer, owner of payee_fio_name.  Ex.: "FIO6m1fMdTpRkRBnedvYshXCxLFiC5suRU8KDfx8xxtXp2hntxpnf"
+        string payer_fio_address = 2;
+
+        // Own FIO name.  Ex.: "bob@trust"
+        string payee_fio_name = 3;
+
+        // Payload content of the request
+        NewFundsContent content = 4;
+
+        // Max fee to spend, can be obtained using get_fee API.
+        uint64 fee = 5;
 
         // Note: actor is not needed, computed from private key
     }
@@ -66,6 +111,8 @@ message Action {
         RegisterFioAddress register_fio_address_message = 1;
         AddPubAddress add_pub_address_message = 2;
         Transfer transfer_message = 3;
+        RenewFioAddress renew_fio_address_message = 4;
+        NewFundsRequest new_funds_request_message = 5;
     }
 }
 
@@ -91,9 +138,12 @@ message SigningInput {
     
     // The private key matching the address, needed for signing
     bytes private_key = 3;
-    
+
+    // The FIO name of the originating wallet (project-wide constant)
+    string tpid = 4;
+
     // Context-specific action data
-    Action action = 4;
+    Action action = 5;
 }
 
 // Transaction signing output

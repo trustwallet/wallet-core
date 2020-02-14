@@ -44,7 +44,6 @@ class FIOTests: XCTestCase {
             $0.fioAddress = "adam@fiotestnet"
             $0.ownerFioPublicKey = address.description
             $0.fee = 5000000000
-            $0.tpid = "rewards@wallet"
         }
         let action = FIOAction.with {
             $0.registerFioAddressMessage = regAddrAction
@@ -53,6 +52,7 @@ class FIOTests: XCTestCase {
             $0.expiry = 1579784511
             $0.chainParams = chainParams
             $0.privateKey = privateKey.data
+            $0.tpid = "rewards@wallet"
             $0.action = action
         }
 
@@ -85,7 +85,6 @@ class FIOTests: XCTestCase {
                 FIOPublicAddress.with { $0.tokenCode = "BNB"; $0.address = "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s" }
             ]
             $0.fee = 0
-            $0.tpid = "rewards@wallet"
         }
         let action = FIOAction.with {
             $0.addPubAddressMessage = addAddrAction
@@ -94,6 +93,7 @@ class FIOTests: XCTestCase {
             $0.expiry = 1579729429
             $0.chainParams = chainParams
             $0.privateKey = privateKey.data
+            $0.tpid = "rewards@wallet"
             $0.action = action
         }
 
@@ -122,7 +122,6 @@ class FIOTests: XCTestCase {
             $0.payeePublicKey = "FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE"
             $0.amount = 1000000000
             $0.fee = 250000000
-            $0.tpid = "rewards@wallet"
         }
         let action = FIOAction.with {
             $0.transferMessage = transferAction
@@ -131,6 +130,7 @@ class FIOTests: XCTestCase {
             $0.expiry = 1579790000
             $0.chainParams = chainParams
             $0.privateKey = privateKey.data
+            $0.tpid = "rewards@wallet"
             $0.action = action
         }
 

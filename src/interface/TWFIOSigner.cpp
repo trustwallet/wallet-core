@@ -7,13 +7,11 @@
 #include <TrustWalletCore/TWFIOSigner.h>
 
 #include "../FIO/TransactionBuilder.h"
-//#include "../FIO/Signer.h"
 
 #include "../Data.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
 #include "../proto/FIO.pb.h"
-//#include "../proto/Common.pb.h"
 
 #include <string>
 
@@ -21,15 +19,6 @@ using namespace TW;
 using namespace TW::FIO;
 using namespace std;
 
-
-/// Internal helper
-ChainParams getChainParams(const FIO::Proto::SigningInput& input) {
-    return ChainParams{
-        TW::data(input.chain_params().chain_id()),
-        input.chain_params().head_block_number(),
-        input.chain_params().ref_block_prefix()
-    };
-}
 
 TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input) {
     FIO::Proto::SigningOutput out;
@@ -39,33 +28,7 @@ TW_FIO_Proto_SigningOutput TWFIOSignerSign(TW_FIO_Proto_SigningInput input) {
         if (!in.ParseFromArray(TWDataBytes(input), static_cast<int>(TWDataSize(input)))) {
             out.set_error("Error: could not parse input");
         } else {
-            PrivateKey privateKey(in.private_key());
-            PublicKey publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-            Address owner(publicKey);
-            
-            string json;
-            if (in.action().has_register_fio_address_message()) {
-                const auto action = in.action().register_fio_address_message();
-                json = TransactionBuilder::createRegisterFioAddress(owner, privateKey, 
-                    in.action().register_fio_address_message().fio_address(), owner.string(),
-                    getChainParams(in), action.fee(), action.tpid(), in.expiry());
-            } else if (in.action().has_add_pub_address_message()) {
-                const auto action = in.action().add_pub_address_message();
-                // process addresses
-                std::vector<std::pair<std::string, std::string>> addresses;
-                for (int i = 0; i < action.public_addresses_size(); ++i) {
-                    addresses.push_back(std::make_pair(action.public_addresses(i).token_code(), action.public_addresses(i).address()));
-                }
-                json = TransactionBuilder::createAddPubAddress(owner, privateKey,
-                    action.fio_address(), addresses, 
-                    getChainParams(in), action.fee(), action.tpid(), in.expiry());
-            } else if (in.action().has_transfer_message()) {
-                const auto action = in.action().transfer_message();
-                json = TransactionBuilder::createTransfer(owner, privateKey,
-                    action.payee_public_key(), action.amount(),
-                    getChainParams(in), action.fee(), action.tpid(), in.expiry());
-            }
-
+            const string json = TransactionBuilder::sign(in);
             out.set_json(json);
         }
     }

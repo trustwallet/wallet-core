@@ -200,4 +200,7 @@ inline Data groestl512d(const byte* data, size_t size) {
     return groestl512(groestl512(data, size));
 }
 
+/// Compute the SHA256-based HMAC of a message
+Data hmac256(const Data& key, const Data& message);
+
 } // namespace TW::Hash

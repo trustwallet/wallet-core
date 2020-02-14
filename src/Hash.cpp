@@ -14,6 +14,7 @@
 #include <TrezorCrypto/ripemd160.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
+#include <TrezorCrypto/hmac.h>
 
 #include <string>
 
@@ -119,4 +120,10 @@ Data Hash::xxhash64concat(const byte* data, size_t size)
     const auto key2 = xxhash64(data, size, 1);
     TW::append(key1, key2);
     return key1;
+}
+
+Data Hash::hmac256(const Data& key, const Data& message) {
+    Data hmac(SHA256_DIGEST_LENGTH);
+    hmac_sha256(key.data(), static_cast<uint32_t>(key.size()), message.data(), static_cast<uint32_t>(message.size()), hmac.data());
+    return hmac;
 }

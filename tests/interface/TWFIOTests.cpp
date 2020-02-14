@@ -52,10 +52,10 @@ TEST(TWFIO, RegisterFioAddress) {
     input.mutable_chain_params()->set_head_block_number(39881);
     input.mutable_chain_params()->set_ref_block_prefix(4279583376);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
     input.mutable_action()->mutable_register_fio_address_message()->set_fio_address("adam@fiotestnet");
     input.mutable_action()->mutable_register_fio_address_message()->set_owner_fio_public_key(addr6M.string());
     input.mutable_action()->mutable_register_fio_address_message()->set_fee(5000000000);
-    input.mutable_action()->mutable_register_fio_address_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
@@ -74,6 +74,7 @@ TEST(TWFIO, AddPubAddress) {
     input.mutable_chain_params()->set_head_block_number(11565);
     input.mutable_chain_params()->set_ref_block_prefix(4281229859);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
     auto action = input.mutable_action()->mutable_add_pub_address_message();
     action->set_fio_address("adam@fiotestnet");
     action->add_public_addresses();
@@ -86,7 +87,6 @@ TEST(TWFIO, AddPubAddress) {
     action->mutable_public_addresses(2)->set_token_code("BNB");
     action->mutable_public_addresses(2)->set_address("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s");
     action->set_fee(0);
-    action->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
@@ -105,10 +105,10 @@ TEST(TWFIO, Transfer) {
     input.mutable_chain_params()->set_head_block_number(50000);
     input.mutable_chain_params()->set_ref_block_prefix(4000123456);
     input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
     input.mutable_action()->mutable_transfer_message()->set_payee_public_key("FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE");
     input.mutable_action()->mutable_transfer_message()->set_amount(1000000000);
     input.mutable_action()->mutable_transfer_message()->set_fee(250000000);
-    input.mutable_action()->mutable_transfer_message()->set_tpid("rewards@wallet");
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
@@ -118,4 +118,70 @@ TEST(TWFIO, Transfer) {
     ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
     EXPECT_EQ("", out.error());
     EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})", out.json());
+}
+
+TEST(TWFIO, RenewFioAddress) {
+    Proto::SigningInput input;
+    input.set_expiry(1579785000);
+    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_head_block_number(39881);
+    input.mutable_chain_params()->set_ref_block_prefix(4279583376);
+    input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
+    input.mutable_action()->mutable_renew_fio_address_message()->set_fio_address("nick@fiotestnet");
+    input.mutable_action()->mutable_renew_fio_address_message()->set_owner_fio_public_key(addr6M.string());
+    input.mutable_action()->mutable_renew_fio_address_message()->set_fee(3000000000);
+
+    auto inputString = input.SerializeAsString();
+    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
+
+    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto out = Proto::SigningOutput();
+    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+    EXPECT_EQ("", out.error());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff0000000001003056372503a85b80b1ba2919aea6ba01102b2f46fca756b200000000a8ed32322f0f6e69636b4066696f746573746e6574005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_Jxz7oCJ7Z4ECsxqb2utqBcyP3zPQCeQCBws9wWQjyptUKoWVk2AyCVEqtdMHJwqtLniio5Z7npMnaZB8E4pa2G75P9uGkb"]})", out.json());
+}
+
+TEST(TWFIO, NewFundsRequest) {
+    Proto::SigningInput input;
+    input.set_expiry(1579785000);
+    input.mutable_chain_params()->set_chain_id(string(chainId.begin(), chainId.end()));
+    input.mutable_chain_params()->set_head_block_number(39881);
+    input.mutable_chain_params()->set_ref_block_prefix(4279583376);
+    input.set_private_key(string(privKeyBA.bytes.begin(), privKeyBA.bytes.end()));
+    input.set_tpid("rewards@wallet");
+    input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_name("mario@fiotestnet");
+    input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+    input.mutable_action()->mutable_new_funds_request_message()->set_payee_fio_name("alice@fiotestnet");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_amount("5");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_token_code("BNB");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_memo("Memo");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_hash("Hash");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_offline_url("https://trustwallet.com");
+    input.mutable_action()->mutable_new_funds_request_message()->set_fee(3000000000);
+
+    auto inputString = input.SerializeAsString();
+    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
+
+    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto out = Proto::SigningOutput();
+    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+    EXPECT_EQ("", out.error());
+    // Packed transacton varies, as there is no way to control encryption IV parameter from this level.
+    // Therefore full equality cannot be checked, tail is cut off.  The first N chars are checked, works in this case.
+    EXPECT_EQ(
+        R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232fd2201106d6172696f4066696f7465737)",
+        out.json().substr(0, 195)
+    );
+}
+
+
+TEST(TWFIO, InvalidInputMessage) {
+    auto dummyInputString = parse_hex("010203040506");
+    auto inputData = TWDataCreateWithBytes((const TW::byte *)dummyInputString.data(), dummyInputString.size());
+
+    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto out = Proto::SigningOutput();
+    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
+    EXPECT_EQ("Error: could not parse input", out.error());
 }

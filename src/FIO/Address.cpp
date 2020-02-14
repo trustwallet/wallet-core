@@ -80,7 +80,7 @@ Address::Address(const std::string& string) {
 /// Initializes a FIO address from a public key.
 Address::Address(const PublicKey& publicKey) {
     // copy the raw, compressed key data
-    auto data = publicKey.compressed().bytes;
+    Data data = publicKey.compressed().bytes;
 
     // append the checksum
     uint32_t checksum = createChecksum(data);
@@ -94,4 +94,10 @@ Address::Address(const PublicKey& publicKey) {
 /// Returns a string representation of the FIO address.
 std::string Address::string() const {
     return prefix() + Base58::bitcoin.encode(bytes);
+}
+
+PublicKey Address::publicKey() const {
+    assert(bytes.size() >= PublicKey::secp256k1Size);
+    const Data keyData = TW::data(bytes.data(), PublicKey::secp256k1Size);
+    return PublicKey(keyData, TWPublicKeyTypeSECP256k1);
 }
