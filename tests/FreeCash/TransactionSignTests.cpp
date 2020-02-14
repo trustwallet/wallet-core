@@ -10,6 +10,7 @@
 #include "FreeCash/TransactionPlan.h"
 #include "FreeCash/TransactionBuilder.h"
 #include "proto/FreeCash.pb.h"
+
 #include <TrustWalletCore/TWCoinType.h>
 
 #include <gtest/gtest.h>
@@ -100,3 +101,4 @@ TEST(FreeCashTransactionPlan, AmountDecred) {
     ASSERT_EQ(txPlan.change, 29897740);
     ASSERT_EQ(txPlan.fee, 2260);
 }
+

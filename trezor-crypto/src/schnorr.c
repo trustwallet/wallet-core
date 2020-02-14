@@ -59,7 +59,7 @@ int schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key,
 
   // Compute challenge r = H(Q, kpub, m)
   calc_r(&Q, pub_key, msg, msg_len, &r_temp);
-  
+
   // Fully reduce the bignum
   bn_mod(&r_temp, &curve->order);
 

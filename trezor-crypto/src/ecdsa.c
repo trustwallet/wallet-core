@@ -1202,38 +1202,3 @@ int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const u
 	return schnorr_verify(curve, pub_key, msg, msg_len, &sign);
 }
 
-int bch_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const uint8_t *msg, const uint32_t msg_len, uint8_t *sig)
-{
-	bignum256 k;
-
-	uint8_t hash[32];
-	sha256_Raw(msg, msg_len, hash);
-
-	rfc6979_state rng;
-	init_rfc6979(priv_key, hash, &rng);
-
-	// generate K deterministically
-	generate_k_rfc6979(&k, &rng);
-
-	schnorr_sign_pair sign;
-	schnorr_sign(curve, priv_key, &k, msg, msg_len, &sign);
-
-	// we're done
-	memcpy(sig, sign.r, 32);
-	memcpy(sig + 32, sign.s, 32);
-
-	memzero(&k, sizeof(k));
-	memzero(&rng, sizeof(rng));
-	memzero(&sign, sizeof(sign));
-	return 0;
-}
-
-int bch_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
-{
-	schnorr_sign_pair sign;
-
-	memcpy(sign.r, sig, 32);
-	memcpy(sign.s, sig + 32, 32);
-
-	return schnorr_verify(curve, pub_key, msg, msg_len, &sign);
-}
