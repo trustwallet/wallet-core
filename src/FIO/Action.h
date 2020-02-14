@@ -42,9 +42,11 @@ public:
 class PublicAddress {
 public:
     std::string tokenCode;
+    std::string chainCode;
     std::string address;
     void serialize(Data& out) const {
         encodeString(tokenCode, out);
+        encodeString(chainCode, out);
         encodeString(address, out);
     }
 };
@@ -53,11 +55,7 @@ public:
 class PublicAddresses {
 public:
     std::vector<PublicAddress> addressList;
-    PublicAddresses(const std::vector<std::pair<std::string, std::string>>& addresses) {
-        for (const auto& item : addresses) {
-            addressList.push_back(PublicAddress{item.first, item.second});
-        }
-    }
+    PublicAddresses(const std::vector<PublicAddress>& addresses) : addressList(addresses) {}
     void serialize(Data& out) const {
         encodeVarInt(addressList.size(), out);
         for (const auto& item : addressList) {
@@ -87,7 +85,7 @@ public:
     std::string tpid;
     std::string actor;
 
-    AddPubAddressData(const std::string& fioAddress, std::vector<std::pair<std::string, std::string>> addresses,
+    AddPubAddressData(const std::string& fioAddress, std::vector<PublicAddress> addresses,
         uint64_t fee, const std::string& tpid, const std::string& actor) :
         fioAddress(fioAddress), addresses(addresses),
         fee(fee), tpid(tpid), actor(actor) {}

@@ -120,7 +120,12 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     const auto apiName = "addaddress";
 
     string actor = Actor::actor(address);
-    AddPubAddressData aaData(fioName, pubAddresses, fee, walletTpId, actor);
+    // convert addresses to add chainCode -- set it to tokenCode
+    vector<PublicAddress> pubAddresses2;
+    for (const auto a: pubAddresses) {
+        pubAddresses2.push_back(PublicAddress{a.first, a.first, a.second});
+    }
+    AddPubAddressData aaData(fioName, pubAddresses2, fee, walletTpId, actor);
     Data serData;
     aaData.serialize(serData);
     
