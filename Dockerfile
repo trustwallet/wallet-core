@@ -62,7 +62,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Clone repo
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
-RUN git clone https://github.com/ackratos/wallet-core.git \
+COPY ./.git-credentials /root/.git-credentials
+COPY ./.gitconfig /root/.gitconfig
+RUN git clone https://github.com/binance-chain/wallet-core.git \
     && cd wallet-core \
     && git checkout tss-new \
     && export PREFIX=/usr/local \
