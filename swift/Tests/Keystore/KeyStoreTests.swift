@@ -24,8 +24,8 @@ extension KeyStore {
 }
 
 class KeyStoreTests: XCTestCase {
-    let keyAddress = EthereumAddress(string: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b")!
-    let walletAddress = EthereumAddress(string: "0x32dd55E0BCF509a35A3F5eEb8593fbEb244796b1")!
+    let keyAddress = AnyAddress(string: "0x008AeEda4D805471dF9b2A5B0f38A0C3bCBA786b", coin: .ethereum)!
+    let walletAddress = AnyAddress(string: "0x32dd55E0BCF509a35A3F5eEb8593fbEb244796b1", coin: .ethereum)!
     let mnemonic = "often tobacco bread scare imitate song kind common bar forest yard wisdom"
 
     var keyDirectory: URL!

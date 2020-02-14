@@ -13,7 +13,6 @@
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
-#include "Bravo/Address.h"
 #include "Cardano/AddressV3.h"
 #include "Cosmos/Address.h"
 #include "Decred/Address.h"
@@ -84,9 +83,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress::isValid(string) ||
                Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
-
-    case TWCoinTypeBravoCoin:
-        return Bravo::Address::isValid(string);
 
     case TWCoinTypeDash:
     case TWCoinTypeDogecoin:
@@ -252,9 +248,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeBitcoinCash:
         return Bitcoin::CashAddress(publicKey).string();
-
-    case TWCoinTypeBravoCoin:
-        return Bravo::Address(publicKey).string();
 
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:

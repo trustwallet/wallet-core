@@ -8,7 +8,7 @@
 #include "proto/VeChain.pb.h"
 #include "uint256.h"
 
-#include <TrustWalletCore/TWVeChainSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -34,7 +34,7 @@ TEST(TWVeChainSigner, Sign) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWVeChainSignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeVeChain);
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 

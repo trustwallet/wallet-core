@@ -10,27 +10,28 @@
 using namespace TW;
 using namespace TW::Wanchain;
 
-Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput &input) const noexcept {
+Ethereum::Proto::SigningOutput Signer::sign(const Ethereum::Proto::SigningInput& input) noexcept {
+    auto signer = Signer(load(input.chain_id()));
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     auto transaction = Ethereum::Signer::build(input);
 
-    sign(key, transaction);
+    signer.sign(key, transaction);
 
-    auto protoOutput = Ethereum::Proto::SigningOutput();
+    auto output = Ethereum::Proto::SigningOutput();
 
-    auto encoded = encode(transaction);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
+    auto encoded = signer.encode(transaction);
+    output.set_encoded(encoded.data(), encoded.size());
 
     auto v = store(transaction.v);
-    protoOutput.set_v(v.data(), v.size());
+    output.set_v(v.data(), v.size());
 
     auto r = store(transaction.r);
-    protoOutput.set_r(r.data(), r.size());
+    output.set_r(r.data(), r.size());
 
     auto s = store(transaction.s);
-    protoOutput.set_s(s.data(), s.size());
+    output.set_s(s.data(), s.size());
 
-    return protoOutput;
+    return output;
 }
 
 void Signer::sign(const PrivateKey& privateKey, Ethereum::Transaction& transaction) const noexcept {

@@ -12,7 +12,7 @@
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWAnyAddress.h>
 #include <TrustWalletCore/TWSolanaProto.h>
-#include <TrustWalletCore/TWSolanaSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
 
@@ -30,7 +30,7 @@ TEST(TWSolanaSigner, SignTransfer) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWSolanaSignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeSolana);
     auto output = Solana::Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
@@ -55,7 +55,7 @@ TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWSolanaSignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeSolana);
     auto output = Solana::Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
@@ -87,7 +87,7 @@ TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWSolanaSignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeSolana);
     auto output = Solana::Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 
@@ -113,7 +113,7 @@ TEST(TWSolanaSigner, SignWithdrawStakeTransaction) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWSolanaSignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeSolana);
     auto output = Solana::Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 

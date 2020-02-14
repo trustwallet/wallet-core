@@ -87,6 +87,9 @@ message SigningInput {
 
     // Coin type (forks).
     uint32 coin_type = 14;
+
+    // Optional transaction plan
+    TransactionPlan plan = 15;
 }
 
 // Describes a preliminary transaction plan.
@@ -118,12 +121,9 @@ message SigningOutput {
     // Signed and encoded transaction bytes.
     bytes encoded = 2;
 
-    // Total transaction fees.
-    int64 fee = 3;
-
-    // Maximum spendable amount.
-    int64 max_amount = 4;
-
     // Transaction id
-    string transaction_id = 5;
+    string transaction_id = 3;
+
+    // Optional error message
+    string error = 4;
 }

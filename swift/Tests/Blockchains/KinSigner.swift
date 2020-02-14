@@ -25,7 +25,7 @@ class KinSigner: XCTestCase {
             $0.operationType = .payment
         }
 
-        let output = StellarSigner.sign(input: input)
+        let output: StellarSigningOutput = AnySigner.sign(input: input, coin: .kin)
         XCTAssertEqual(output.signature, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAxYC2MXoOs5v3/NT6PBn9q0uJu6u/YQle5FBa9uzteq4AAAAAAAAAAACYloAAAAAAAAAAARnfXKIAAABA9tSWyvGnmF7maZ+en5bRu5MurhQw9yDU/U0bKFZN0Og3Px8UKlQuFIGnddh47/rOM8AYtqpQbcbvWgKhS31DAw==")
     }
 }

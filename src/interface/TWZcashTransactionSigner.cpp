@@ -40,27 +40,23 @@ TW_Bitcoin_Proto_TransactionPlan TWZcashTransactionSignerPlan(struct TWZcashTran
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TW_Proto_Result TWZcashTransactionSignerSign(struct TWZcashTransactionSigner *_Nonnull signer) {
+TW_Bitcoin_Proto_SigningOutput TWZcashTransactionSignerSign(struct TWZcashTransactionSigner *_Nonnull signer) {
     auto result = signer->impl.sign();
-    auto protoResult = TW::Proto::Result();
+    auto output = Bitcoin::Proto::SigningOutput();
     if (!result) {
-        protoResult.set_success(false);
-        protoResult.set_error(result.error());
-        auto serialized = protoResult.SerializeAsString();
+        output.set_error(result.error());
+        auto serialized = output.SerializeAsString();
         return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
     }
 
     const auto& tx = result.payload();
-    auto protoOutput = Bitcoin::Proto::SigningOutput();
-    *protoOutput.mutable_transaction() = tx.proto();
+
+    *output.mutable_transaction() = tx.proto();
 
     TW::Data encoded;
     tx.encode(encoded);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
+    output.set_encoded(encoded.data(), encoded.size());
 
-    protoResult.set_success(true);
-    protoResult.add_objects()->PackFrom(protoOutput);
-
-    auto serialized = protoResult.SerializeAsString();
+    auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

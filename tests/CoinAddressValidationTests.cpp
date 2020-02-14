@@ -137,13 +137,6 @@ TEST(Coin, validateAddressQtum) {
     EXPECT_FALSE(validateAddress(TWCoinTypeQtum, "qc2qn9gjawre2t6xmcv5gyqkujqhd8cfvvyx0rx2mp"));
 }
 
-TEST(Coin, ValidateAddressBravo) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeBravoCoin, "BRV5LZBF18uucMKVyKMQ7r6qnXBWn9StM5AJYHs1kidPeyNexuBUm"));
-    EXPECT_TRUE(validateAddress(TWCoinTypeBravoCoin, "TST4yPnD1zXSqyK4LFHkt1d5m5LZq2oaMFGYjosVXURUfqaUAXTKQ"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeBravoCoin, "5LZBF18uucMKVyKMQ7r6qnXBWn9StM5AJYHs1kidPeyNexuBUm"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeBravoCoin, "TST4yPnD1zXSqyK4LFHkt1d5m5LZq2oaMFGYjosVXURUfqaUAXTK"));
-}
-
 TEST(Coin, ValidateAddressEOS) {
     EXPECT_TRUE(validateAddress(TWCoinTypeEOS, "EOS65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjTF"));
     EXPECT_TRUE(validateAddress(TWCoinTypeEOS, "PUB_R1_5hieQEFWh68h6bjaYAY25Ptd2bmqLCaFsunaneh9gZsmSgUBUe"));

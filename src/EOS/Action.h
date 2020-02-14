@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "../Bravo/Asset.h"
+#include "../EOS/Asset.h"
 #include "Name.h"
 
 #include <nlohmann/json.hpp>

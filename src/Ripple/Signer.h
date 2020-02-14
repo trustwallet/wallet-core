@@ -16,13 +16,11 @@ namespace TW::Ripple {
 /// Helper class that performs Ripple transaction signing.
 class Signer {
   public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
 };
 
 } // namespace TW::Ripple
-
-/// Wrapper for C interface.
-struct TWRippleSigner {
-    TW::Ripple::Signer impl;
-};

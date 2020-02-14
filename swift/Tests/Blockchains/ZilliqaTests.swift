@@ -44,7 +44,7 @@ class ZilliqaTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = ZilliqaSigner.sign(input: input)
+        let output: ZilliqaSigningOutput = AnySigner.sign(input: input, coin: .zilliqa)
         let expectedJSON = """
 {
     "amount": "1000000000000",

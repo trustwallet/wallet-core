@@ -6,7 +6,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TWTestUtilities.h"
-#include <TrustWalletCore/TWEthereumSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include "Ethereum/Transaction.h"
 #include "Data.h"
 #include "HexCoding.h"
@@ -64,7 +64,7 @@ TEST(TWEthereumSigner, Sign) {
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const byte *)inputString.data(), inputString.size());
 
-    auto outputData = TWEthereumSignerSign(inputData);
+    auto outputData = TWAnySignerSign(inputData, TWCoinTypeEthereum);
     
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData));

@@ -9,7 +9,6 @@
 #include "TWBase.h"
 #include "TWData.h"
 #include "TWBitcoinProto.h"
-#include "TWCommonProto.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -36,6 +35,6 @@ TW_Bitcoin_Proto_TransactionPlan TWBitcoinTransactionSignerPlan(struct TWBitcoin
 ///
 /// On success the result will contain a BitcoinSigningOutput.
 TW_EXPORT_METHOD
-TW_Proto_Result TWBitcoinTransactionSignerSign(struct TWBitcoinTransactionSigner *_Nonnull signer);
+TW_Bitcoin_Proto_SigningOutput TWBitcoinTransactionSignerSign(struct TWBitcoinTransactionSigner *_Nonnull signer);
 
 TW_EXTERN_C_END

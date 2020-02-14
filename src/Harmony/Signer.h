@@ -22,6 +22,10 @@ namespace TW::Harmony {
 
 /// Helper class that performs Harmony transaction signing.
 class Signer {
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
   private:
     static Proto::SigningOutput
     signTransaction(const Proto::SigningInput &input) noexcept;
@@ -49,9 +53,6 @@ class Signer {
 
     template <typename T>
     static Proto::SigningOutput prepareOutput(const Data &encoded, const T &transaction) noexcept;
-
-    /// Signs a Proto::SigningInput transaction or staking
-    static Proto::SigningOutput sign(const Proto::SigningInput &input) noexcept;
 
     /// Signs the given transaction.
     template <typename T>

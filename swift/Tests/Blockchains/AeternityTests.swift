@@ -33,7 +33,7 @@ class AeternityTests: XCTestCase {
             $0.privateKey = Data(hexString: "4646464646464646464646464646464646464646464646464646464646464646")!
         }
 
-        let output = AeternitySigner.sign(input: input)
+        let output: AeternitySigningOutput = AnySigner.sign(input: input, coin: .aeternity)
 
         XCTAssertEqual(output.signature, "sg_VW42qDPP3MMNFAStYaumjZz7mC7BZYpbNa15E57ejqUe7JdQFWCiX65eLNUpGMpt8tSpfgCfkYzcaFppqx7W75CrcWdC8")
 

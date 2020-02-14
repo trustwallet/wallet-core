@@ -8,7 +8,7 @@
 #include "proto/Ethereum.pb.h"
 #include "uint256.h"
 
-#include <TrustWalletCore/TWWanchainSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -38,7 +38,7 @@ TEST(TWWanchainSigner, Sign) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWWanchainSignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeWanchain);
     auto output = Ethereum::Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 

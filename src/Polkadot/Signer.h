@@ -23,8 +23,3 @@ public:
 };
 
 } // namespace TW::Polkadot
-
-/// Wrapper for C interface.
-struct TWPolkadotSigner {
-    TW::Polkadot::Signer impl;
-};

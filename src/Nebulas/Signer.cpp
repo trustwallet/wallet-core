@@ -11,8 +11,10 @@
 using namespace TW;
 using namespace TW::Nebulas;
 
-Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
-    Transaction tx(Address(input.from_address()),
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(load(input.chain_id()));
+
+    auto tx = Transaction(Address(input.from_address()),
         load(input.nonce()),
         load(input.gas_price()),
         load(input.gas_limit()),
@@ -23,13 +25,13 @@ Proto::SigningOutput Signer::sign(Proto::SigningInput &input) const noexcept {
     );
     
     auto privateKey = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    sign(privateKey, tx);
+    signer.sign(privateKey, tx);
 
-    auto protoOutput = Proto::SigningOutput();
-    protoOutput.set_algorithm(tx.algorithm);
-    protoOutput.set_signature(reinterpret_cast<const char *>(tx.signature.data()), tx.signature.size());
-    protoOutput.set_raw(TW::Base64::encode(tx.raw));
-    return protoOutput;
+    auto output = Proto::SigningOutput();
+    output.set_algorithm(tx.algorithm);
+    output.set_signature(tx.signature.data(), tx.signature.size());
+    output.set_raw(TW::Base64::encode(tx.raw));
+    return output;
 }
 
 void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {

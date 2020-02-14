@@ -14,15 +14,15 @@
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWPublicKey.h>
 #include <TrustWalletCore/TWPurpose.h>
-#include <TrustWalletCore/TWZcashTAddress.h>
+#include <TrustWalletCore/TWAnyAddress.h>
 
 #include <gtest/gtest.h>
 
 TEST(Zcash, TransparentAddress) {
     auto privateKey = WRAP(TWPrivateKey, TWPrivateKeyCreateWithData(DATA("987919d988ef94e678bce254c932e7a7a76744b2c008467448406d4246513132").get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(privateKey.get(), true);
-    auto address = TWZcashTAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeZcash));
-    auto addressString = WRAPS(TWZcashTAddressDescription(address));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeZcash));
+    auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
     assertStringsEqual(addressString, "t1RygJmrLdNGgi98gUgEJDTVaELTAYWoMBy");
 }
 
@@ -35,8 +35,8 @@ TEST(Zcash, DeriveTransparentAddress) {
     auto key = WRAP(TWPrivateKey, TWHDWalletGetKey(wallet.get(), derivationPath.get()));
     auto publicKey = TWPrivateKeyGetPublicKeySecp256k1(key.get(), true);
 
-    auto address = TWZcashTAddressCreateWithPublicKey(publicKey, TWCoinTypeP2pkhPrefix(TWCoinTypeZcash));
-    auto addressString = WRAPS(TWZcashTAddressDescription(address));
+    auto address = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(publicKey, TWCoinTypeZcash));
+    auto addressString = WRAPS(TWAnyAddressDescription(address.get()));
 
     assertStringsEqual(addressString, "t1TWk2mmvESDnE4dmCfT7MQ97ij6ZqLpNVU");
 }
@@ -59,11 +59,11 @@ TEST(Zcash, DerivePubkeyFromXpub) {
     auto pubKey3 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/133'/0'/0/3").get());
     auto pubKey5 = TWHDWalletGetPublicKeyFromExtended(xpub.get(), STRING("m/44'/133'/0'/0/5").get());
 
-    auto address3 = TWZcashTAddressCreateWithPublicKey(pubKey3, TWCoinTypeP2pkhPrefix(TWCoinTypeZcash));
-    auto address3String = WRAPS(TWZcashTAddressDescription(address3));
+    auto address3 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey3, TWCoinTypeZcash));
+    auto address3String = WRAPS(TWAnyAddressDescription(address3.get()));
 
-    auto address5 = TWZcashTAddressCreateWithPublicKey(pubKey5, TWCoinTypeP2pkhPrefix(TWCoinTypeZcash));
-    auto address5String = WRAPS(TWZcashTAddressDescription(address5));
+    auto address5 = WRAP(TWAnyAddress, TWAnyAddressCreateWithPublicKey(pubKey5, TWCoinTypeZcash));
+    auto address5String = WRAPS(TWAnyAddressDescription(address5.get()));
 
     assertStringsEqual(address3String, "t1cWhcXydPYTG1pgHMsZ6JEPsWGxVMdJ5t6");
     assertStringsEqual(address5String, "t1TWk2mmvESDnE4dmCfT7MQ97ij6ZqLpNVU");

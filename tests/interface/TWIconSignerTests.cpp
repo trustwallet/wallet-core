@@ -6,7 +6,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TWTestUtilities.h"
-#include <TrustWalletCore/TWIconSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include "Data.h"
 #include "HexCoding.h"
 #include "uint256.h"
@@ -42,7 +42,7 @@ TEST(IconSigner, Sign) {
 
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const byte*)inputString.data(), inputString.size());
-    auto outputData = TWIconSignerSign(inputData);
+    auto outputData = TWAnySignerSign(inputData, TWCoinTypeICON);
     auto output = Proto::SigningOutput();
 
     output.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData));

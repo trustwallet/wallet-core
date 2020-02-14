@@ -15,6 +15,13 @@
 using namespace TW;
 using namespace TW::Stellar;
 
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(input);
+    auto output = Proto::SigningOutput();
+    output.set_signature(signer.sign());
+    return output;
+}
+
 std::string Signer::sign() const noexcept {
 
     auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));

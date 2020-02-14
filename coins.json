@@ -153,7 +153,7 @@
         "name": "Decred",
         "symbol": "DCR",
         "decimals": 8,
-        "blockchain": "Bitcoin",
+        "blockchain": "Decred",
         "derivationPath": "m/44'/42'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
@@ -825,27 +825,6 @@
             "client": "https://github.com/trezor/blockbook",
             "clientPublic": "",
             "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
-        }
-    },
-    {
-        "id": "bravocoin",
-        "name": "BravoCoin",
-        "symbol": "BRAVO",
-        "decimals": 3,
-        "blockchain": "EOS",
-        "derivationPath": "m/44'/282'/0'/0/0",
-        "curve": "secp256k1",
-        "publicKeyType": "secp256k1",
-        "explorer": {
-            "url": "https://explorer.bravocoin.com",
-            "txPath": "/txid/",
-            "accountPath": "/?"
-        },
-        "info": {
-            "url": "https://bravocoin.com",
-            "client": "https://github.com/bravo-project/bravo",
-            "clientPublic": "",
-            "clientDocs": "https://github.com/bravo-project/bravo"
         }
     },
     {

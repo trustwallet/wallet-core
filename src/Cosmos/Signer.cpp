@@ -14,17 +14,14 @@
 using namespace TW;
 using namespace TW::Cosmos;
 
-Data Signer::sign() const {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto key = PrivateKey(input.private_key());
     auto preimage = signaturePreimage(input).dump();
     auto hash = Hash::sha256(preimage);
-    auto signature = key.sign(hash, TWCurveSECP256k1);
-    return Data(signature.begin(), signature.end() - 1);
-}
+    auto signedHash = key.sign(hash, TWCurveSECP256k1);
 
-Proto::SigningOutput Signer::build() const {
     auto output = Proto::SigningOutput();
-    auto signature = sign();
+    auto signature = Data(signedHash.begin(), signedHash.end() - 1);
     auto txJson = transactionJSON(input, signature);
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());

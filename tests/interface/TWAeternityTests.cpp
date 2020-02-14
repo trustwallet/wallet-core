@@ -6,12 +6,8 @@
 
 #include "HexCoding.h"
 #include "TWTestUtilities.h"
-#include "proto/Aeternity.pb.h"
-#include "HDWallet.h"
 
 #include <TrustWalletCore/TWAnyAddress.h>
-#include <TrustWalletCore/TWAeternitySigner.h>
-#include <TrustWalletCore/TWAeternityProto.h>
 #include <TrustWalletCore/TWHDWallet.h>
 
 #include <gtest/gtest.h>

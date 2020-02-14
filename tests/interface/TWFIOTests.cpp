@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWAnyAddress.h>
-#include <TrustWalletCore/TWFIOSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include "proto/FIO.pb.h"
 #include "FIO/Address.h"
@@ -60,7 +60,7 @@ TEST(TWFIO, RegisterFioAddress) {
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
 
-    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
     auto out = Proto::SigningOutput();
     ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
     EXPECT_EQ("", out.error());
@@ -91,7 +91,7 @@ TEST(TWFIO, AddPubAddress) {
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
 
-    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
     auto out = Proto::SigningOutput();
     ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
     EXPECT_EQ("", out.error());
@@ -113,7 +113,7 @@ TEST(TWFIO, Transfer) {
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
 
-    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
     auto out = Proto::SigningOutput();
     ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
     EXPECT_EQ("", out.error());

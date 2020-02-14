@@ -6,33 +6,16 @@
 
 #pragma once
 
-#include "../proto/Cosmos.pb.h"
 #include "../Data.h"
+#include "../proto/Cosmos.pb.h"
 
 namespace TW::Cosmos {
 
 /// Helper class that performs Cosmos transaction signing.
 class Signer {
-public:
-    Proto::SigningInput input;
-
-    /// Initializes a transaction signer.
-    Signer(Proto::SigningInput&& input) :input(input) {}
-
-    /// Signs the transaction.
-    ///
-    /// \returns the transaction signature or an empty vector if there is an error.
-    Data sign() const;
-
-    /// Builds the signed transaction.
-    ///
-    /// \returns the signed transaction.
-    Proto::SigningOutput build() const;
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
-} // namespace
-
-/// Wrapper for C interface.
-struct TWCosmosSigner {
-    TW::Cosmos::Signer impl;
-};
+} // namespace TW::Cosmos

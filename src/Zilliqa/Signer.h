@@ -26,8 +26,3 @@ class Signer {
 };
 
 } // namespace TW::Zilliqa
-
-/// Wrapper for C interface.
-struct TWZilliqaSigner {
-    TW::Zilliqa::Signer impl;
-};

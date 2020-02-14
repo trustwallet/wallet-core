@@ -26,8 +26,3 @@ class Signer {
 };
 
 } // namespace TW::Algorand
-
-/// Wrapper for C interface.
-struct TWAlgorandSigner {
-    TW::Algorand::Signer impl;
-};

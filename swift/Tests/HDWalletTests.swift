@@ -37,8 +37,8 @@ class HDWalletTests: XCTestCase {
         let key0 = wallet.getKeyBIP44(coin: .ethereum, account: 0, change: 0, address: 0)
         let key1 = wallet.getKeyBIP44(coin: .ethereum, account: 0, change: 0, address: 1)
 
-        XCTAssertEqual(EthereumAddress(publicKey: key0.getPublicKeySecp256k1(compressed: false)).description, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979")
-        XCTAssertEqual(EthereumAddress(publicKey: key1.getPublicKeySecp256k1(compressed: false)).description, "0x98f5438cDE3F0Ff6E11aE47236e93481899d1C47")
+        XCTAssertEqual(AnyAddress(publicKey: key0.getPublicKeySecp256k1(compressed: false), coin: .ethereum).description, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979")
+        XCTAssertEqual(AnyAddress(publicKey: key1.getPublicKeySecp256k1(compressed: false), coin: .ethereum).description, "0x98f5438cDE3F0Ff6E11aE47236e93481899d1C47")
     }
 
     func testWanchain() {

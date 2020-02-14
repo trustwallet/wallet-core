@@ -41,7 +41,7 @@ class SolanaTests: XCTestCase {
             $0.privateKey = privateKeyData
         }
 
-        let output = SolanaSigner.sign(input: input)
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
         let expectedHexString = """
         01fda1c8ad8872d94f7eab52f9c38dc77e1061f4897e3de2b8469eb0992269f6fa1f173e93dbb2da738ab4e895\
@@ -65,7 +65,7 @@ class SolanaTests: XCTestCase {
             $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
-        let output = SolanaSigner.sign(input: input)
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
         let expectedHexString = """
         01be20567f2db0b09802bf70bbaf397d819c29496c6472a70e2db5c92dff1b666f5f5a4787b07d951bf46435c8\
@@ -96,7 +96,7 @@ class SolanaTests: XCTestCase {
             $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
-        let output = SolanaSigner.sign(input: input)
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
         let expectedHexString = """
         014a85ccf3aa7e684b3352ed825dc4517daf3a95565d6ce0fcab0a7747bac87749c99e428e9ae7f42d38bc265b\
@@ -121,7 +121,7 @@ class SolanaTests: XCTestCase {
             $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
-        let output = SolanaSigner.sign(input: input)
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
         let expectedHexString = """
         014e808302fa771ccccfa4e82280bfd4b4ec267dc5107ff5baa8b718f6dae13aa23b888c1b7f44e8c8ea5fb750\

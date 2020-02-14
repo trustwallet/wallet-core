@@ -9,6 +9,30 @@
 using namespace TW;
 using namespace TW::Ethereum;
 
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(load(input.chain_id()));
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto transaction = Signer::build(input);
+
+    signer.sign(key, transaction);
+
+    auto output = Proto::SigningOutput();
+
+    auto encoded = RLP::encode(transaction);
+    output.set_encoded(encoded.data(), encoded.size());
+
+    auto v = store(transaction.v);
+    output.set_v(v.data(), v.size());
+
+    auto r = store(transaction.r);
+    output.set_r(r.data(), r.size());
+
+    auto s = store(transaction.s);
+    output.set_s(s.data(), s.size());
+
+    return output;
+}
+
 std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
                                                            const Data &signature) noexcept {
     boost::multiprecision::uint256_t r, s, v;
@@ -48,29 +72,6 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         /* amount: */ load(input.amount()),
         /* payload: */ Data(input.payload().begin(), input.payload().end()));
     return transaction;
-}
-
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) const noexcept {
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto transaction = Signer::build(input);
-
-    sign(key, transaction);
-
-    auto protoOutput = Proto::SigningOutput();
-
-    auto encoded = RLP::encode(transaction);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-
-    auto v = store(transaction.v);
-    protoOutput.set_v(v.data(), v.size());
-
-    auto r = store(transaction.r);
-    protoOutput.set_r(r.data(), r.size());
-
-    auto s = store(transaction.s);
-    protoOutput.set_s(s.data(), s.size());
-
-    return protoOutput;
 }
 
 void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {

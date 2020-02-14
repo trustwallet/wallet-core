@@ -13,20 +13,11 @@
 
 namespace TW::Nebulas {
 
-using boost::multiprecision::uint256_t;
-
 class SignerExposed : public Signer {
   public:
     SignerExposed(boost::multiprecision::uint256_t chainID) : Signer(chainID) {}
     using Signer::hash;
 };
-
-TEST(NebulasSigner, EmptyData) {
-    Data data(0);
-    uint256_t zero = load(data);
-
-    ASSERT_EQ(zero, uint256_t(0));
-}
 
 TEST(NebulasSigner, Hash) {
     auto from = Address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
@@ -64,12 +55,12 @@ TEST(NebulasSigner, Sign) {
 
     const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
     input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    input.set_chain_id("1");
-    auto signer = SignerExposed(1);
-    Proto::SigningOutput output = signer.sign(input);
+    auto chainid = store(uint256_t(1));
+    input.set_chain_id(chainid.data(), chainid.size());
+    Proto::SigningOutput output = Signer::sign(input);
 
     auto signature = output.signature();
-    ASSERT_EQ(hex(signature.begin(),signature.end()), "f53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500");
+    ASSERT_EQ(hex(signature.begin(), signature.end()), "f53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500");
 }
 
 } // namespace TW::Nebulas

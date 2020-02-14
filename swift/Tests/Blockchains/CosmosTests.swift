@@ -51,7 +51,7 @@ class CosmosSignerTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 1037
             $0.chainID = "gaia-13003"
             $0.memo = ""
@@ -61,7 +61,7 @@ class CosmosSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
         let expectedJSON: String =
 """
@@ -131,7 +131,7 @@ class CosmosSignerTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 1037
             $0.chainID = "gaia-13003"
             $0.memo = ""
@@ -141,7 +141,7 @@ class CosmosSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
         let expectedJSON = """
 {
@@ -224,7 +224,8 @@ class CosmosSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: input)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
+
         let expectedJSON = """
         {
           "mode": "block",

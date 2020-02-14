@@ -12,7 +12,7 @@
 #include "TWTestUtilities.h"
 #include "proto/Harmony.pb.h"
 #include "uint256.h"
-#include <TrustWalletCore/TWHarmonySigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
 
@@ -57,7 +57,7 @@ TEST(TWHarmonySigner, Sign) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWHarmonySignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeHarmony);
 
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));

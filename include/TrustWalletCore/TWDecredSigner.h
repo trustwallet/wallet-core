@@ -10,7 +10,6 @@
 #include "TWData.h"
 #include "TWBitcoinProto.h"
 #include "TWDecredProto.h"
-#include "TWCommonProto.h"
 
 TW_EXTERN_C_BEGIN
 
@@ -37,6 +36,6 @@ TW_Bitcoin_Proto_TransactionPlan TWDecredSignerPlan(struct TWDecredSigner *_Nonn
 ///
 /// On success the result will contain a DecredSigningOutput.
 TW_EXPORT_METHOD
-TW_Proto_Result TWDecredSignerSign(struct TWDecredSigner *_Nonnull signer);
+TW_Decred_Proto_SigningOutput TWDecredSignerSign(struct TWDecredSigner *_Nonnull signer);
 
 TW_EXTERN_C_END

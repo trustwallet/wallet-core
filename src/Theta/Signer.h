@@ -11,11 +11,16 @@
 #include "Transaction.h"
 #include "../Data.h"
 #include "../PrivateKey.h"
+#include "../proto/Theta.pb.h"
 
 namespace TW::Theta {
 
 /// Helper class that performs Theta transaction signing
 class Signer {
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
   public:
     std::string chainID;
 

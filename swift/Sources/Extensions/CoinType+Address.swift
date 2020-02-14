@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 import Foundation
+import SwiftProtobuf
 
 public extension CoinType {
     /// Converts a string to an address for this coin type.

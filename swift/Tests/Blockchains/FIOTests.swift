@@ -56,7 +56,7 @@ class FIOTests: XCTestCase {
             $0.action = action
         }
 
-        let out = FIOSigner.sign(input: input)
+        let out: FIOSigningOutput = AnySigner.sign(input: input, coin: .fio)
         XCTAssertEqual(out.error, "")
         let expectedJson: String =
 """
@@ -69,8 +69,6 @@ class FIOTests: XCTestCase {
     func testAddPubAddress() {
         let chainId = Data(hexString: "4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77")!
         let privateKey = PrivateKey(data: Data(hexString: "ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035")!)!
-        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
-        let address = AnyAddress(publicKey: publicKey, coin: .fio)
 
         let chainParams = FIOChainParams.with {
             $0.chainID = chainId
@@ -97,7 +95,7 @@ class FIOTests: XCTestCase {
             $0.action = action
         }
 
-        let out = FIOSigner.sign(input: input)
+        let out: FIOSigningOutput = AnySigner.sign(input: input, coin: .fio)
         XCTAssertEqual(out.error, "")
         let expectedJson: String =
 """
@@ -110,8 +108,6 @@ class FIOTests: XCTestCase {
     func testTransfer() {
         let chainId = Data(hexString: "4e46572250454b796d7296eec9e8896327ea82dd40f2cd74cf1b1d8ba90bcd77")!
         let privateKey = PrivateKey(data: Data(hexString: "ba0828d5734b65e3bcc2c51c93dfc26dd71bd666cc0273adee77d73d9a322035")!)!
-        let publicKey = privateKey.getPublicKeySecp256k1(compressed: false)
-        let address = AnyAddress(publicKey: publicKey, coin: .fio)
 
         let chainParams = FIOChainParams.with {
             $0.chainID = chainId
@@ -134,7 +130,7 @@ class FIOTests: XCTestCase {
             $0.action = action
         }
 
-        let out = FIOSigner.sign(input: input)
+        let out: FIOSigningOutput = AnySigner.sign(input: input, coin: .fio)
         XCTAssertEqual(out.error, "")
         let expectedJson: String =
 """

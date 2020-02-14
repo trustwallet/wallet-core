@@ -10,7 +10,7 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include <proto/Solana.pb.h>
+#include "../proto/Solana.pb.h"
 
 namespace TW::Solana {
 
@@ -23,12 +23,7 @@ class Signer {
                                     Transaction& transaction, Solana::Hash& recentBlockhash);
     static Data signRawMessage(const std::vector<PrivateKey>& privateKeys, const Data messageData);
 
-    static Proto::SigningOutput signProtobuf(const Proto::SigningInput& input);
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 };
 
 } // namespace TW::Solana
-
-/// Wrapper for C interface.
-struct TWSolanaSigner {
-    TW::Solana::Signer impl;
-};

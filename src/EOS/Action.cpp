@@ -6,7 +6,7 @@
 
 #include "Action.h"
 #include "../HexCoding.h"
-#include "../Bravo/Serialization.h"
+#include "../EOS/Serialization.h"
 
 using namespace TW;
 using namespace TW::EOS;

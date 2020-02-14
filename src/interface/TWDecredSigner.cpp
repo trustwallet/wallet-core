@@ -43,30 +43,26 @@ TW_Bitcoin_Proto_TransactionPlan TWDecredSignerPlan(struct TWDecredSigner *_Nonn
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TW_Proto_Result TWDecredSignerSign(struct TWDecredSigner *_Nonnull signer) {
+TW_Decred_Proto_SigningOutput TWDecredSignerSign(struct TWDecredSigner *_Nonnull signer) {
     auto result = signer->impl.sign();
-    auto protoResult = TW::Proto::Result();
+    auto output = Decred::Proto::SigningOutput();
     if (!result) {
-        protoResult.set_success(false);
-        protoResult.set_error(result.error());
-        auto serialized = protoResult.SerializeAsString();
+        output.set_error(result.error());
+        auto serialized = output.SerializeAsString();
         return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
     }
 
     const auto& tx = result.payload();
-    auto protoOutput = Decred::Proto::SigningOutput();
-    *protoOutput.mutable_transaction() = tx.proto();
+
+    *output.mutable_transaction() = tx.proto();
 
     TW::Data encoded;
     tx.encode(encoded);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
+    output.set_encoded(encoded.data(), encoded.size());
 
     auto txHash = TW::Hash::blake256(encoded);
-    protoOutput.set_transaction_id(TW::hex(txHash));
+    output.set_transaction_id(TW::hex(txHash));
 
-    protoResult.set_success(true);
-    protoResult.add_objects()->PackFrom(protoOutput);
-
-    auto serialized = protoResult.SerializeAsString();
+    auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

@@ -7,7 +7,7 @@
 #include "HexCoding.h"
 #include "Base64.h"
 #include "proto/Algorand.pb.h"
-#include <TrustWalletCore/TWAlgorandSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include "TWTestUtilities.h"
 #include <gtest/gtest.h>
@@ -34,7 +34,7 @@ TEST(TWAlgorandSigner, Sign) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWAlgorandSignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeAlgorand);
 
     auto output = Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));

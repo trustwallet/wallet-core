@@ -11,7 +11,7 @@
 #include "proto/Waves.pb.h"
 #include "uint256.h"
 
-#include <TrustWalletCore/TWWavesSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include <PrivateKey.h>
 #include <gtest/gtest.h>
 
@@ -35,7 +35,7 @@ TEST(TWWavesSigner, Sign) {
 
     auto inputData = input.SerializeAsString();
     auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWWavesSignerSign(inputTWData);
+    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeWaves);
     auto output = Waves::Proto::SigningOutput();
     output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
 

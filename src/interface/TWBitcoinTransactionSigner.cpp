@@ -42,24 +42,23 @@ TW_Bitcoin_Proto_TransactionPlan TWBitcoinTransactionSignerPlan(struct TWBitcoin
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TW_Proto_Result TWBitcoinTransactionSignerSign(struct TWBitcoinTransactionSigner *_Nonnull signer) {
+TW_Bitcoin_Proto_SigningOutput TWBitcoinTransactionSignerSign(struct TWBitcoinTransactionSigner *_Nonnull signer) {
     auto result = signer->impl.sign();
-    auto protoResult = TW::Proto::Result();
+    auto output = Proto::SigningOutput();
     if (!result) {
-        protoResult.set_success(false);
-        protoResult.set_error(result.error());
-        auto serialized = protoResult.SerializeAsString();
+        output.set_error(result.error());
+        auto serialized = output.SerializeAsString();
         return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
     }
 
     const auto& tx = result.payload();
-    auto protoOutput = Proto::SigningOutput();
-    *protoOutput.mutable_transaction() = tx.proto();
+
+    *output.mutable_transaction() = tx.proto();
 
     TW::Data encoded;
     auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
     tx.encode(hasWitness, encoded);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
+    output.set_encoded(encoded.data(), encoded.size());
 
     TW::Data txHashData = encoded;
     if (hasWitness) {
@@ -68,11 +67,8 @@ TW_Proto_Result TWBitcoinTransactionSignerSign(struct TWBitcoinTransactionSigner
     }
     auto txHash = TW::Hash::sha256(TW::Hash::sha256(txHashData));
     std::reverse(txHash.begin(), txHash.end());
-    protoOutput.set_transaction_id(TW::hex(txHash));
+    output.set_transaction_id(TW::hex(txHash));
 
-    protoResult.set_success(true);
-    protoResult.add_objects()->PackFrom(protoOutput);
-
-    auto serialized = protoResult.SerializeAsString();
+    auto serialized = output.SerializeAsString();
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }

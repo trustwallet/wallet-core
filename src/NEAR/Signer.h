@@ -20,8 +20,3 @@ class Signer {
 };
 
 } // namespace
-
-/// Wrapper for C interface.
-struct TWNEARSigner {
-    TW::NEAR::Signer impl;
-};

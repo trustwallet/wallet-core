@@ -7,6 +7,8 @@
 #include "Signer.h"
 #include "HexCoding.h"
 #include "SigData.h"
+#include "../Ontology/OngTxBuilder.h"
+#include "../Ontology/OntTxBuilder.h"
 
 #include "../Hash.h"
 
@@ -14,6 +16,22 @@
 
 using namespace TW;
 using namespace TW::Ontology;
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto contract = std::string(input.contract().begin(), input.contract().end());
+    auto output = Proto::SigningOutput();
+    try {
+        if (contract == "ONT") {
+            auto encoded = OntTxBuilder::build(input);
+            output.set_encoded(encoded.data(), encoded.size());
+        } else if (contract == "ONG") {
+            auto encoded = OngTxBuilder::build(input);
+            output.set_encoded(encoded.data(), encoded.size());
+        }
+    } catch (...) {
+    }
+    return output;
+}
 
 Signer::Signer(TW::PrivateKey priKey) : privateKey(std::move(priKey)) {
     auto pubKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);

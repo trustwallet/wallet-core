@@ -54,11 +54,8 @@ class EOSTests: XCTestCase {
 
 
     func testSigning() throws {
-        let result = EOSSigner.sign(input: signingInput)
-        XCTAssertTrue(result.success, "Error signing: \(result.error)")
-        XCTAssertEqual(result.objects.count, 1)
-
-        let signingOutput = try EOSSigningOutput(unpackingAny: result.objects[0])
+        let signingOutput: EOSSigningOutput = AnySigner.sign(input: signingInput, coin: .eos)
+        XCTAssertTrue(signingOutput.error.isEmpty)
 
         let signedJSON = signingOutput.jsonEncoded
         print(signedJSON)
@@ -75,22 +72,22 @@ class EOSTests: XCTestCase {
     func testSigningFailures() throws {
         var badInput = signingInput
         badInput.asset.decimals = 19
-        var result = EOSSigner.sign(input: badInput)
-        XCTAssertFalse(result.success, "Expected error but signing suceeded!")
+        var signingOutput: EOSSigningOutput = AnySigner.sign(input: badInput, coin: .eos)
+        XCTAssertFalse(signingOutput.error.isEmpty, "Expected error but signing suceeded!")
 
         badInput = signingInput
         badInput.asset.symbol = "xyz"
-        result = EOSSigner.sign(input: badInput)
-        XCTAssertFalse(result.success, "Expected error but signing suceeded!")
+        signingOutput = AnySigner.sign(input: badInput, coin: .eos)
+        XCTAssertFalse(signingOutput.error.isEmpty, "Expected error but signing suceeded!")
 
         badInput = signingInput
         badInput.recipient = String(repeating: "A", count: 15)
-        result = EOSSigner.sign(input: badInput)
-        XCTAssertFalse(result.success, "Expected error but signing suceeded!")
+        signingOutput = AnySigner.sign(input: badInput, coin: .eos)
+        XCTAssertFalse(signingOutput.error.isEmpty, "Expected error but signing suceeded!")
 
         badInput = signingInput
         badInput.referenceBlockID = Data(hexString: "0000086bf9e7704509aa41311a66fa0a1b479c")!
-        result = EOSSigner.sign(input: badInput)
-        XCTAssertFalse(result.success, "Expected error but signing suceeded!")
+        signingOutput = AnySigner.sign(input: badInput, coin: .eos)
+        XCTAssertFalse(signingOutput.error.isEmpty, "Expected error but signing suceeded!")
     }
 }

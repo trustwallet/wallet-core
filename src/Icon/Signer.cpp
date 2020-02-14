@@ -73,6 +73,11 @@ std::string Signer::encode(const Data& signature) const noexcept {
     return json.dump();
 }
 
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(input);
+    return signer.sign();
+}
+
 Proto::SigningOutput Signer::sign() const noexcept {
     const auto hash = Hash::sha3_256(Signer::preImage());
 
