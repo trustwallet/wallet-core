@@ -44,7 +44,7 @@ json Action::serialize() const noexcept {
 TransferAction::TransferAction( const std::string& currency,
                                 const std::string& from, 
                                 const std::string& to, 
-                                const Bravo::Asset& asset, 
+                                const Asset& asset, 
                                 const std::string& memo) {
     account = Name(currency);
     name = Name("transfer");
@@ -53,7 +53,7 @@ TransferAction::TransferAction( const std::string& currency,
     setData(from, to, asset, memo);
 }
 
-void TransferAction::setData(const std::string& from, const std::string& to, const Bravo::Asset& asset, const std::string& memo) {
+void TransferAction::setData(const std::string& from, const std::string& to, const Asset& asset, const std::string& memo) {
     if (asset.amount <= 0) {
         throw std::invalid_argument("Amount in a transfer action must be greater than zero.");
     }

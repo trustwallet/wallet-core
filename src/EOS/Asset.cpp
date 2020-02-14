@@ -1,10 +1,19 @@
+// Copyright © 2017-2020 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 #include "Asset.h"
 
-#include <stdexcept>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
+#include <stdexcept>
 
-using namespace TW::Bravo;
+using namespace TW::EOS;
+
+static const int64_t precision = 1000;
+static const uint8_t maxDecimals = 18;
 
 Asset::Asset(int64_t amount, uint8_t decimals, const std::string& symbol) {
     if (decimals > maxDecimals) {
@@ -28,9 +37,6 @@ Asset::Asset(int64_t amount, uint8_t decimals, const std::string& symbol) {
     this->amount = amount;
 }
 
-Asset::Asset(int64_t amount, bool isTestNet) : 
-                        Asset(amount, decimals, isTestNet ? testNetSymbol : mainNetSymbol) { }
-
 Asset Asset::fromString(std::string assetString) {
     using namespace std;
 
@@ -51,7 +57,11 @@ Asset Asset::fromString(std::string assetString) {
         throw std::invalid_argument("Missing decimal fraction after decimal point");
     }
 
-    uint8_t decimals = (dotPosition == string::npos) ? 0 : static_cast<uint8_t>(amountString.size() - dotPosition - 1);
+    uint8_t decimals = 0;
+    if (dotPosition != string::npos) {
+        decimals = static_cast<uint8_t>(amountString.size() - dotPosition - 1);
+    }
+                           
     int64_t precision = static_cast<uint64_t>(pow(10, static_cast<double>(decimals)));
 
     // Parse amount
@@ -59,7 +69,9 @@ Asset Asset::fromString(std::string assetString) {
     if (dotPosition != string::npos) {
         intPart = boost::lexical_cast<int64_t>(amountString.data(), dotPosition);
         fractPart = boost::lexical_cast<int64_t>(amountString.data() + dotPosition + 1, decimals);
-        if (amountString[0] == '-') fractPart *= -1;
+        if (amountString[0] == '-') {
+            fractPart *= -1;
+        }
     } else {
         intPart = boost::lexical_cast<int64_t>(amountString);
     }
@@ -99,9 +111,9 @@ std::string Asset::string() const {
     auto decimals = getDecimals();
 
     int charsWritten = snprintf(buffer, maxBufferSize, "%.*f %s", 
-                        decimals,
-                        static_cast<double>(amount) / precision,
-                        getSymbol().c_str());
+                            decimals, 
+                            static_cast<double>(amount) / precision,
+                            getSymbol().c_str());
 
     if (charsWritten < 0 || charsWritten > maxBufferSize) {
         throw std::runtime_error("Failed to create string representation of asset!");

@@ -10,6 +10,7 @@
 #include "../Base58.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
+#include "TransactionBuilder.h"
 
 #include <TrezorCrypto/ecdsa.h>
 #include <TrezorCrypto/secp256k1.h>
@@ -19,6 +20,17 @@
 namespace TW::FIO {
 
 using namespace std;
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    FIO::Proto::SigningOutput output;
+    try {    
+        const string json = TransactionBuilder::sign(input);
+        output.set_json(json);
+    } catch(const std::exception& e) {
+        output.set_error("Internal error");
+    }
+    return output;
+}
 
 Data Signer::signData(const PrivateKey& privKey, const Data& data) {
     Data hash = Hash::sha256(data);

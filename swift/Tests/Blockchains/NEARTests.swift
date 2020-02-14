@@ -43,7 +43,7 @@ class NEARSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: NEARSigningOutput = AnySigner.sign(input: input, coin: .solana)
+        let output: NEARSigningOutput = AnySigner.sign(input: input, coin: .near)
         // swiftlint:disable:next line_length
         let expectedBase64Encoded = "CQAAAHRlc3QubmVhcgCRez0mjUtY9/7BsVC9aNab4+5dTMOYVeNBU4Rlu3eGDQEAAAAAAAAADQAAAHdoYXRldmVyLm5lYXIPpHP9JpAd8pa+atxMxN800EDvokNSJLaYaRDmMML+9gEAAAADAQAAAAAAAAAAAAAAAAAAAACWmoMzIYbul1Xkg5MlUlgG4Ymj0tK7S0dg6URD6X4cTyLe7vAFmo6XExAO2m4ZFE2n6KDvflObIHCLodjQIb0B"
         XCTAssertEqual(Data(base64Encoded: expectedBase64Encoded), output.signedTransaction)

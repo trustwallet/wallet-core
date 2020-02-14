@@ -15,6 +15,7 @@
 #include "Decred/Signer.h"
 #include "EOS/Signer.h"
 #include "Ethereum/Signer.h"
+#include "Filecoin/Signer.h"
 #include "FIO/Signer.h"
 #include "Harmony/Signer.h"
 #include "Icon/Signer.h"
@@ -82,10 +83,12 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return SimpleSign<Cosmos::Signer, Cosmos::Proto::SigningInput>(data);
     case TWCoinTypeEthereum:
         return SimpleSign<Ethereum::Signer, Ethereum::Proto::SigningInput>(data);
+    case TWCoinTypeFilecoin:
+        return SimpleSign<Filecoin::Signer, Filecoin::Proto::SigningInput>(data);
     case TWCoinTypeFIO:
-        // wait master master
-        break;
+        return SimpleSign<FIO::Signer, FIO::Proto::SigningInput>(data);
     case TWCoinTypeGroestlcoin:
+        //FIXME
         break;
     case TWCoinTypeHarmony:
         return SimpleSign<Harmony::Signer, Harmony::Proto::SigningInput>(data);

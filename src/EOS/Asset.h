@@ -1,3 +1,9 @@
+// Copyright © 2017-2020 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
 #pragma once
 
 #include <nlohmann/json.hpp>
@@ -6,7 +12,7 @@
 
 #include <memory>
 
-namespace TW::Bravo {
+namespace TW::EOS {
 
 // An asset class that can be used by Bravo, EOS, steem, et. al.
 class Asset {
@@ -23,9 +29,6 @@ public:
     // Returns: an Asset object initialized with the values in the string.
     static Asset fromString(std::string assetString);
 
-    // Bravo specific constructor
-    Asset(int64_t amount, bool isTestNet = false);
-
     std::string getSymbol() const noexcept;
     inline uint8_t getDecimals() const noexcept { return symbol & 0xFF; }
     inline uint64_t getPrecision() const noexcept { 
@@ -37,14 +40,5 @@ public:
 
     void serialize(Data& os) const noexcept;
     std::string string() const;
-
-    // Bravo defaults
-    static const uint8_t decimals = 3;
-    static const int64_t precision = 1000;
-    static const constexpr char * mainNetSymbol = "BRAVO";
-    static const constexpr char * testNetSymbol = "TESTS";
-
-    static const uint8_t maxDecimals = 18;
-
 };
 } // namespace

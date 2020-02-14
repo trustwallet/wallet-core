@@ -135,7 +135,7 @@ TEST(TWFIO, RenewFioAddress) {
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
 
-    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
     auto out = Proto::SigningOutput();
     ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
     EXPECT_EQ("", out.error());
@@ -163,7 +163,7 @@ TEST(TWFIO, NewFundsRequest) {
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
 
-    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
+    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
     auto out = Proto::SigningOutput();
     ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
     EXPECT_EQ("", out.error());
@@ -173,15 +173,4 @@ TEST(TWFIO, NewFundsRequest) {
         R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232fd2201106d6172696f4066696f7465737)",
         out.json().substr(0, 195)
     );
-}
-
-
-TEST(TWFIO, InvalidInputMessage) {
-    auto dummyInputString = parse_hex("010203040506");
-    auto inputData = TWDataCreateWithBytes((const TW::byte *)dummyInputString.data(), dummyInputString.size());
-
-    TW_FIO_Proto_SigningOutput outputData = TWFIOSignerSign(inputData);
-    auto out = Proto::SigningOutput();
-    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
-    EXPECT_EQ("Error: could not parse input", out.error());
 }

@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "Asset.h"
 #include "Signer.h"
 #include "PackedTransaction.h"
 #include "../HexCoding.h"
@@ -20,15 +21,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     try {
         // create an asset object
         auto assetData = input.asset();
-
-        if (assetData.decimals() > Bravo::Asset::maxDecimals) {
-            output.set_error("Max decimal places supported in an asset: " +
-                             std::to_string(Bravo::Asset::maxDecimals));
-            return output;
-        }
-
-        Bravo::Asset asset{assetData.amount(), static_cast<uint8_t>(assetData.decimals()),
-                           assetData.symbol()};
+        auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()), assetData.symbol());
 
         // create a transfer action
         TransferAction action{input.currency(), input.sender(), input.recipient(), asset,
@@ -85,7 +78,7 @@ void Signer::sign(const PrivateKey& privateKey, Type type, Transaction& transact
 
     // values for Legacy and ModernK1
     TWCurve curve = TWCurveSECP256k1;
-    auto canonicalChecker = is_canonical;
+    auto canonicalChecker = isCanonical;
 
     //  Values for ModernR1
     if (type == Type::ModernR1) {
@@ -112,7 +105,9 @@ TW::Data Signer::hash(const Transaction& transaction) const noexcept {
 }
 
 // canonical check for EOS
-int Signer::is_canonical(uint8_t by, uint8_t sig[64]) {
-    return !(sig[0] & 0x80) && !(sig[0] == 0 && !(sig[1] & 0x80)) && !(sig[32] & 0x80) &&
-           !(sig[32] == 0 && !(sig[33] & 0x80));
+int Signer::isCanonical(uint8_t by, uint8_t sig[64]) {
+    return !(sig[0] & 0x80) 
+        && !(sig[0] == 0 && !(sig[1] & 0x80))
+        && !(sig[32] & 0x80)
+        && !(sig[32] == 0 && !(sig[33] & 0x80));
 }

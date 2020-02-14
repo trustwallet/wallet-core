@@ -27,7 +27,7 @@ class FilecoinTests: XCTestCase {
             $0.gasLimit = 1000
         }
 
-        let output = FilecoinSigner.sign(input: input)
+        let output: FilecoinSigningOutput = AnySigner.sign(input: input, coin: .filecoin)
 
         XCTAssertEqual(output.encoded.hexString, "8288583103a33d476e13eb8bde5d21becf2b86dd60642f0297cc6a5b914de86bb1d096861ba99bb13c577fee003e72f51e89f837c45501cf01bf485f61435e6770b52615bf455e043a2361024a002086ac351052600000420002430003e800405842014e896d4fa72a1f39c37a4415629dfbb7ea301b7f001fff60befa485903f51d824659ba19c5bc969d7206de7afabfc4a0eec2dd34f15e58a064adf4ee9f72e64f01")
     }

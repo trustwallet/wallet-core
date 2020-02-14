@@ -5,7 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "TWTestUtilities.h"
-#include <TrustWalletCore/TWFilecoinSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include "Data.h"
 #include "HexCoding.h"
@@ -39,7 +39,7 @@ TEST(TWFilecoinSigner, Sign) {
     auto inputString = input.SerializeAsString();
     auto inputData = TWDataCreateWithBytes((const byte*)inputString.data(), inputString.size());
 
-    auto outputData = TWFilecoinSignerSign(inputData);
+    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFilecoin);
 
     ASSERT_EQ(hex(TWDataBytes(outputData), TWDataBytes(outputData) + TWDataSize(outputData)),
               "0aa4018288583103a33d476e13eb8bde5d21becf2b86dd60642f0297cc6a5b914de86bb1d096861ba99b"

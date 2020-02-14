@@ -35,7 +35,7 @@ class Signer {
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
 
-    static int is_canonical(uint8_t by, uint8_t sig[64]);
+    static int isCanonical(uint8_t by, uint8_t sig[64]);
 };
 
 } // namespace TW::EOS

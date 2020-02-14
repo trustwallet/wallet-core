@@ -17,6 +17,7 @@
 #include <TrustWalletCore/TWBitcoinOpCodes.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWSegwitAddress.h>
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include <jni.h>
 #include "TWJNIData.h"

@@ -34,14 +34,14 @@ static std::string r1Sigs[5] {
 };
 
 TEST(EOSTransaction, Serialization) {
-    ASSERT_THROW(TransferAction("token", "eosio", "token", Bravo::Asset::fromString("-20.1234 TKN"), "my first transfer"), std::invalid_argument);
+    ASSERT_THROW(TransferAction("token", "eosio", "token", Asset::fromString("-20.1234 TKN"), "my first transfer"), std::invalid_argument);
 
     Data referenceBlockId = parse_hex("000046dc08ad384ca452d92c59348aba888fcbb6ef1ebffc3181617706664d4c");
     int32_t referenceBlockTime = 1554121728;
     auto chainId = parse_hex("cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f");
 
     Transaction tx {referenceBlockId, referenceBlockTime};
-    tx.actions.push_back(TransferAction("token", "eosio", "token", Bravo::Asset::fromString("20.1234 TKN"), "my first transfer"));
+    tx.actions.push_back(TransferAction("token", "eosio", "token", Asset::fromString("20.1234 TKN"), "my first transfer"));
     ASSERT_EQ(tx.actions.back().serialize().dump(), "{\"account\":\"token\",\"authorizations\":[{\"actor\":\"eosio\",\"permission\":\"active\"}],\"data\":\"0000000000ea30550000000080a920cd121203000000000004544b4e00000000116d79206669727374207472616e73666572\",\"name\":\"transfer\"}");
 
     Data buf;
@@ -67,7 +67,7 @@ TEST(EOSTransaction, Serialization) {
     referenceBlockTime = 1554209118;
 
     Transaction tx2 {referenceBlockId, referenceBlockTime};
-    tx2.actions.push_back(TransferAction("token", "token", "eosio", Bravo::Asset::fromString("30.0000 TKN"), "my second transfer"));
+    tx2.actions.push_back(TransferAction("token", "token", "eosio", Asset::fromString("30.0000 TKN"), "my second transfer"));
 
     buf.clear();
     tx2.serialize(buf);
