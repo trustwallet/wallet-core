@@ -5,9 +5,11 @@ import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.HarmonySigner
+import wallet.core.java.AnySigner
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.proto.Harmony
+import wallet.core.jni.proto.Harmony.SigningOutput
+import wallet.core.jni.CoinType.HARMONY
 
 class TestHarmonyStakingDelegateSigner {
 
@@ -79,7 +81,7 @@ class TestHarmonyStakingDelegateSigner {
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
-        val sign: Harmony.SigningOutput = HarmonySigner.sign(signingInput.build())
+        val sign = AnySigner.sign(signingInput.build(), HARMONY, SigningOutput.parser())
 
         val expected = "0xf8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345785d8a0000c9880c7d713b49da0000c887b1a2bc2ec500000a820bb8f1b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b622476086116402806428a0476e8a0fe478e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28a03b2be18e73b2f99d7e2691485a0e166f28e62815079c126e68f876dc97339f8f"
 
@@ -127,8 +129,8 @@ class TestHarmonyStakingDelegateSigner {
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
-        val sign: Harmony.SigningOutput = HarmonySigner.sign(signingInput.build())
 
+        val sign = AnySigner.sign(signingInput.build(), HARMONY, SigningOutput.parser())
         val expected = "0xf9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121c988016345785d8a00000a820bb8b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b6224760861102806427a05e54b55272f6bf5ffeca10d85976749d6b844cc9f30ba3285b9ab8a82d53e3e3a03ce04d9a9f834e20b22aa918ead346c84a04b1504fe3ff9e38f21c5e5712f013"
 
         assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), expected)
@@ -158,8 +160,7 @@ class TestHarmonyStakingDelegateSigner {
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
-        val sign: Harmony.SigningOutput = HarmonySigner.sign(signingInput.build())
-
+        val sign = AnySigner.sign(signingInput.build(), HARMONY, SigningOutput.parser())
         val expected = "0xf87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c580a02806428a0ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80a05c28dbc41763dc2391263e1aae30f842f90734d7ec68cee2352af0d4b0662b54"
 
         assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), expected)
@@ -189,8 +190,7 @@ class TestHarmonyStakingDelegateSigner {
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
-        val sign: Harmony.SigningOutput = HarmonySigner.sign(signingInput.build())
-
+        val sign = AnySigner.sign(signingInput.build(), HARMONY, SigningOutput.parser())
         val expected = "0xf87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c580a02806428a05bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2a05202c4b51652d5144c6a30d14d1a7a316b5a4a6b49be985b4bc6980e49f7acb7"
 
         assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), expected)
@@ -218,8 +218,8 @@ class TestHarmonyStakingDelegateSigner {
             chainId = ByteString.copyFrom("0x02".toHexByteArray())
             stakingMessage = staking.build()
         }
-        val sign: Harmony.SigningOutput = HarmonySigner.sign(signingInput.build())
 
+        val sign = AnySigner.sign(signingInput.build(), HARMONY, SigningOutput.parser())
         val expected = "0xf85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f42577001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd91f2988c7e7673950bac5a08c174f2d0af27a82039f1e3d"
 
         assertEquals(Numeric.toHexString(sign.encoded.toByteArray()), expected)

@@ -5,9 +5,10 @@ import com.trustwallet.core.app.utils.toHex
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.PrivateKey
-import wallet.core.jni.NanoSigner
+import wallet.core.jni.CoinType.NANO
+import wallet.core.java.AnySigner
 import wallet.core.jni.proto.Nano
+import wallet.core.jni.proto.Nano.SigningOutput
 
 class TestNanoSigner {
 
@@ -25,7 +26,7 @@ class TestNanoSigner {
             balance = "96242336390000000000000000000"
         }
 
-        val output: Nano.SigningOutput = NanoSigner.sign(signingInput.build())
+        val output = AnySigner.sign(signingInput.build(), NANO, SigningOutput.parser())
         val blockHash = output.blockHash.toByteArray()
         val signature = output.signature.toByteArray()
         assertEquals(blockHash.toHex(), "0xf9a323153daefe041efb94d69b9669c882c935530ed953bbe8a665dfedda9696")

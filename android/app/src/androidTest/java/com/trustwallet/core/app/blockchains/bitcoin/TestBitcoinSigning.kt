@@ -7,9 +7,6 @@ import wallet.core.jni.BitcoinTransactionSigner
 import wallet.core.jni.proto.Bitcoin
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.CoinType
-import wallet.core.jni.Curve
-import wallet.core.jni.Purpose
 
 class TestBitcoinSigning {
 
@@ -68,11 +65,8 @@ class TestBitcoinSigning {
         signerBuilder.addUtxo(utxo1)
 
         val signer = BitcoinTransactionSigner(signerBuilder.build())
-        val result = signer.sign()
-        assert(result.success)
-        assertEquals(1, result.objectsCount)
-
-        val output = result.getObjects(0).unpack(wallet.core.jni.proto.Bitcoin.SigningOutput::class.java)
+        val output = signer.sign()
+        assert(output.error.isEmpty())
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
         assertEquals(1, signedTransaction.version)
@@ -135,11 +129,8 @@ class TestBitcoinSigning {
         signerBuilder.addUtxo(utxo1)
 
         val signer = BitcoinTransactionSigner(signerBuilder.build())
-        val result = signer.sign()
-        assert(result.success)
-        assertEquals(1, result.objectsCount)
-
-        val output = result.getObjects(0).unpack(Bitcoin.SigningOutput::class.java)
+        val output = signer.sign()
+        assert(output.error.isEmpty())
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
         assertEquals(1, signedTransaction.version)

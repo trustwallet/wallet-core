@@ -6,14 +6,14 @@
 
 package com.trustwallet.core.app.blockchains.polkadot
 
-import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
-import com.trustwallet.core.app.utils.toHexByteArray
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.PolkadotSigner
+import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType.POLKADOT
 import wallet.core.jni.proto.Polkadot
+import wallet.core.jni.proto.Polkadot.SigningOutput
 
 class TestPolkadotSigner {
 
@@ -44,7 +44,7 @@ class TestPolkadotSigner {
             }.build()
         }.build()
 
-        val output = PolkadotSigner.sign(signingInput)
+        val output = AnySigner.sign(signingInput, POLKADOT, SigningOutput.parser())
         val encoded = Numeric.toHexString(output.encoded.toByteArray())
 
         val expected = "0x2d0284ff88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0034a113577b56545c45e18969471eebe11ed434f3b2f06e2e3dc8dc137ba804caf60757787ebdeb298327e2f29d68c5520965405ef5582db0445c06e1c11a8a0e0000000400ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0"

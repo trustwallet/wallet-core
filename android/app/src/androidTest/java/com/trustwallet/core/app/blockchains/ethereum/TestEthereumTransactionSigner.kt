@@ -5,9 +5,11 @@ import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.PrivateKey
-import wallet.core.jni.EthereumSigner
+import wallet.core.java.AnySigner
 import wallet.core.jni.proto.Ethereum
+import wallet.core.jni.proto.Ethereum.SigningOutput
 import com.trustwallet.core.app.utils.Numeric
+import wallet.core.jni.CoinType.ETHEREUM
 
 class TestEthereumTransactionSigner {
 
@@ -28,7 +30,7 @@ class TestEthereumTransactionSigner {
             amount = ByteString.copyFrom("0x0de0b6b3a7640000".toHexByteArray())
         }
 
-        val sign: Ethereum.SigningOutput = EthereumSigner.sign(signingInput.build())
+        val sign = AnySigner.sign(signingInput.build(), ETHEREUM, SigningOutput.parser())
 
         assertEquals(Numeric.toHexString(sign.v.toByteArray()), "0x25")
         assertEquals(Numeric.toHexString(sign.r.toByteArray()), "0x28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276")
