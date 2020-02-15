@@ -11,7 +11,6 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 #include "../proto/Bitcoin.pb.h"
-#include "../proto/Common.pb.h"
 
 #include <TrustWalletCore/TWGroestlcoinTransactionSigner.h>
 

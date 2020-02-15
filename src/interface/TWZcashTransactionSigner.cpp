@@ -8,7 +8,6 @@
 #include "../Bitcoin/TransactionSigner.h"
 #include "../Data.h"
 #include "../proto/Bitcoin.pb.h"
-#include "../proto/Common.pb.h"
 #include "../Zcash/Transaction.h"
 
 #include <TrustWalletCore/TWZcashTransactionSigner.h>
