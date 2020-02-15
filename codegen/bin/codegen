@@ -25,10 +25,10 @@ OptionParser.new do |opts|
   opts.banner = 'Usage: codegen [options]'
 
   opts.on('-i', '--input FOLDER', "Input folder with C headers. Default: #{options.input}") do |v|
-    options.swift = v
+    options.input = v
   end
   opts.on('-o', '--output FOLDER', "Output folder. Default: #{options.output}") do |v|
-    options.swift = v
+    options.output = v
   end
   opts.on('-s', '--swift', "Generate Swift code. Default: #{options.swift}") do |v|
     options.swift = v
