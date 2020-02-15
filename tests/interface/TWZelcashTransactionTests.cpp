@@ -76,7 +76,7 @@ TEST(ZelcashTransaction, Encode) {
         /* sequence */            "feffffff"
     );
 
-    auto sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashTypeAll, 0x02faf080, BASE);
+    auto sighash = transaction.getSignatureHash(scriptCode, 0, TWBitcoinSigHashTypeAll, 0x02faf080, Bitcoin::BASE);
     ASSERT_EQ(hex(sighash.begin(), sighash.end()), "f3148f80dfab5e573d5edfe7a850f5fd39234f80b5429d3a57edcc11e34c585b");
 }
 

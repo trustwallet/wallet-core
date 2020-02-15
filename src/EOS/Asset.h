@@ -41,4 +41,4 @@ public:
     void serialize(Data& os) const noexcept;
     std::string string() const;
 };
-} // namespace
+} // TW::EOS namespace

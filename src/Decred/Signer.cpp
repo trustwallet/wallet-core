@@ -13,7 +13,7 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
+#include "Bitcoin/OpCodes.h"
 
 using namespace TW;
 using namespace TW::Decred;

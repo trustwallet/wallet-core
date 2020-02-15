@@ -286,7 +286,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Wanchain::Address(publicKey).string();
 
     case TWCoinTypeICON:
-        return Icon::Address(publicKey, TWIconAddressTypeAddress).string();
+        return Icon::Address(publicKey, Icon::TypeAddress).string();
 
     case TWCoinTypeIoTeX:
         return IoTeX::Address(publicKey).string();

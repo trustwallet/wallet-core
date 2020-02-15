@@ -21,7 +21,7 @@
 #include "../PublicKey.h"
 #include "../Zcash/TAddress.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
+#include "OpCodes.h"
 
 #include <algorithm>
 #include <cassert>

@@ -8,7 +8,7 @@
 
 #include "../Data.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
+#include "OpCodes.h"
 #include <TrustWalletCore/TWCoinType.h>
 
 #include <string>

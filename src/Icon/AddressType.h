@@ -5,15 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #pragma once
-#include "TWBase.h"
 
-TW_EXTERN_C_BEGIN
+namespace TW::Icon {
 
 /// Icon address types
-TW_EXPORT_ENUM()
-enum TWIconAddressType {
-    TWIconAddressTypeAddress  /* "hx" */,
-    TWIconAddressTypeContract /* "cx" */,
+enum AddressType {
+    TypeAddress  /* "hx" */,
+    TypeContract /* "cx" */,
 };
-
-TW_EXTERN_C_END
+} // TW::ICON namespace

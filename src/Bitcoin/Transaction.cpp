@@ -9,7 +9,7 @@
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 
-#include <TrustWalletCore/TWBitcoinSignatureVersion.h>
+#include "SignatureVersion.h"
 
 #include <cassert>
 
@@ -130,7 +130,7 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
 
 std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, size_t index,
                                                    enum TWBitcoinSigHashType hashType, uint64_t amount,
-                                                   TWBitcoinSignatureVersion version) const {
+                                                   enum SignatureVersion version) const {
     switch (version) {
     case BASE:
         return getSignatureHashBase(scriptCode, index, hashType);

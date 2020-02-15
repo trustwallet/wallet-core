@@ -13,7 +13,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
+#include <Bitcoin/OpCodes.h>
 #include <gtest/gtest.h>
 
 using namespace TW;

@@ -6,14 +6,10 @@
 
 #pragma once
 
-#include "TWBase.h"
-#include "TWBitcoinSigHashType.h"
-
-TW_EXTERN_C_BEGIN
-
-enum TWBitcoinSignatureVersion {
-    BASE,
-    WITNESS_V0
+namespace TW::EOS {
+enum KeyType {
+    KeyTypeLegacy = 0,
+    KeyTypeModernK1 = 1,
+    KeyTypeModernR1 = 2,
 };
-
-TW_EXTERN_C_END
+} // TW::EOS namespace
