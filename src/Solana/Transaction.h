@@ -78,7 +78,7 @@ struct CompiledInstruction {
         auto data = Data();
         std::string seed = voteAddress.string();
         Data vecSeed(seed.begin(), seed.end());
-        vecSeed.resize(seedLength);
+        vecSeed.resize(static_cast<size_t>(seedLength));
         encode32LE(static_cast<uint32_t>(type), data);
         encode64LE(static_cast<uint64_t>(seedLength), data);
         append(data, vecSeed);

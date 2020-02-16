@@ -86,10 +86,10 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
     //    (1) bigger than what we need
     //    (2) closer to 2x the amount,
     //    (3) and does not produce dust change.
-    for (auto numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
+    for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
         const auto fee = calculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
-        auto slices = slice(sortedUtxos, numInputs);
+        auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(std::remove_if(slices.begin(), slices.end(),
                                     [targetWithFeeAndDust](
                                         const std::vector<Proto::UnspentTransaction>& slice) {
@@ -108,10 +108,10 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
 
     // 2. If not, find a combination of outputs that may produce dust change.
     numOutputs = 1;
-    for (auto numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
+    for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
         const auto fee = calculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
-        auto slices = slice(sortedUtxos, numInputs);
+        auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(
             std::remove_if(slices.begin(), slices.end(),
                            [targetWithFee](const std::vector<Proto::UnspentTransaction>& slice) {

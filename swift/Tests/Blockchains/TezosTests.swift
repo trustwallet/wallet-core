@@ -64,14 +64,9 @@ class TezosTests: XCTestCase {
 
         operationList.operations = [ revealOperation, transactionOperation ]
 
-        let privateKeyBytes: [UInt8] = [
-            46, 137, 5, 129, 155, 135, 35, 254, 44, 29, 22, 24, 96, 229, 238, 24, 48, 49, 141, 191, 73, 168, 59, 212,
-            81, 207, 184, 68, 12, 40, 189, 111
-        ]
-
         let input = TezosSigningInput.with {
             $0.operationList = operationList
-            $0.privateKey = Data(privateKeyBytes)
+            $0.privateKey = Data(hexString: "2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f")!
         }
 
         let output: TezosSigningOutput = AnySigner.sign(input: input, coin: .tezos)

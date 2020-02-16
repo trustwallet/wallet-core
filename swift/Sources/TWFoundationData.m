@@ -13,5 +13,5 @@ TWData *_Nonnull TWDataCreateWithNSData(NSData *data) {
 }
 
 NSData *_Nonnull TWDataNSData(TWData *_Nonnull data) {
-    return [[NSData alloc] initWithBytes:TWDataBytes(data) length:TWDataSize(data)];
+    return [[NSData alloc] initWithBytesNoCopy:TWDataBytes(data) length:TWDataSize(data) freeWhenDone:YES];
 }

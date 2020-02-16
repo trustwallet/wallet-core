@@ -31,9 +31,9 @@ TEST(TezosSigner, SignString) {
 
 TEST(TezosSigner, SignOperationList) {
     auto branch = "BLDnkhhVgwdBAtmDNQc5HtEMsrxq8L3t7NQbjUbbdTdw5Ug1Mpe";
-    auto op_list = TW::Tezos::OperationList(branch);
+    auto op_list = Tezos::OperationList(branch);
 
-    auto transactionOperationData = new TW::Tezos::Proto::TransactionOperationData();
+    auto transactionOperationData = new Proto::TransactionOperationData();
     transactionOperationData->set_amount(11100000);
     transactionOperationData->set_destination("tz1gSM6yiwr85jEASZ1q3UekgHEoxYt7wg2M");
 
@@ -43,7 +43,7 @@ TEST(TezosSigner, SignOperationList) {
     transactionOperation.set_counter(1878);
     transactionOperation.set_gas_limit(10307);
     transactionOperation.set_storage_limit(0);
-    transactionOperation.set_kind(TW::Tezos::Proto::Operation::TRANSACTION);
+    transactionOperation.set_kind(Proto::Operation::TRANSACTION);
     transactionOperation.set_allocated_transaction_operation_data(transactionOperationData);
 
     op_list.addOperation(transactionOperation);
@@ -52,27 +52,27 @@ TEST(TezosSigner, SignOperationList) {
     auto revealOperationData = new TW::Tezos::Proto::RevealOperationData();
     revealOperationData->set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
 
-    auto revealOperation = TW::Tezos::Proto::Operation();
+    auto revealOperation = Proto::Operation();
     revealOperation.set_source("tz1RKLoYm4vtLzo7TAgGifMDAkiWhjfyXwP4");
     revealOperation.set_fee(1268);
     revealOperation.set_counter(1876);
     revealOperation.set_gas_limit(10100);
     revealOperation.set_storage_limit(0);
-    revealOperation.set_kind(TW::Tezos::Proto::Operation::REVEAL);
+    revealOperation.set_kind(Proto::Operation::REVEAL);
     revealOperation.set_allocated_reveal_operation_data(revealOperationData);
 
     op_list.addOperation(revealOperation);
 
-    auto delegateOperationData = new TW::Tezos::Proto::DelegationOperationData();
+    auto delegateOperationData = new Tezos::Proto::DelegationOperationData();
     delegateOperationData->set_delegate("tz1gSM6yiwr85jEASZ1q3UekgHEoxYt7wg2M");
 
-    auto delegateOperation = TW::Tezos::Proto::Operation();
+    auto delegateOperation = Proto::Operation();
     delegateOperation.set_source("tz1RKLoYm4vtLzo7TAgGifMDAkiWhjfyXwP4");
     delegateOperation.set_fee(1257);
     delegateOperation.set_counter(1879);
     delegateOperation.set_gas_limit(10100);
     delegateOperation.set_storage_limit(0);
-    delegateOperation.set_kind(TW::Tezos::Proto::Operation::DELEGATION);
+    delegateOperation.set_kind(Proto::Operation::DELEGATION);
     delegateOperation.set_allocated_delegation_operation_data(delegateOperationData);
 
     op_list.addOperation(delegateOperation);

@@ -39,6 +39,9 @@
 #include "Waves/Signer.h"
 #include "Zilliqa/Signer.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic fatal "-Wswitch"
+
 using namespace TW;
 
 template <typename Signer, typename Input>
@@ -139,6 +142,8 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     }
     return TWDataCreateWithSize(0);
 }
+
+#pragma clang diagnostic pop
 
 TWData* _Nonnull TWAnySignerSignWithPlan(TWData* _Nonnull data, TWData* _Nonnull plan, enum TWCoinType coin) {
     return TWDataCreateWithSize(0);
