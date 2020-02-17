@@ -85,12 +85,9 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeHarmony);
 
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeHarmony);
 
     auto shouldBeV = "28";
     auto shouldBeR = "476e8a0fe478e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28";
@@ -148,12 +145,8 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeHarmony);
-
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeHarmony);
 
     auto shouldBeV = "27";
     auto shouldBeR = "5e54b55272f6bf5ffeca10d85976749d6b844cc9f30ba3285b9ab8a82d53e3e3";
@@ -188,12 +181,8 @@ TEST(TWHarmonyStakingSigner, Delegate) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeHarmony);
-
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeHarmony);
 
     auto shouldBeV = "28";
     auto shouldBeR = "ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80";
@@ -228,12 +217,8 @@ TEST(TWHarmonyStakingSigner, Undelegate) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeHarmony);
-
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeHarmony);
 
     auto shouldBeV = "28";
     auto shouldBeR = "5bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2";
@@ -264,12 +249,8 @@ TEST(TWHarmonyStakingSigner, CollectRewards) {
     value = store(uint256_t("0x64"));
     stakingMessage->set_gas_limit(value.data(), value.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeHarmony);
-
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeHarmony);
 
     auto shouldBeV = "28";
     auto shouldBeR = "4c15c72f42577001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625";

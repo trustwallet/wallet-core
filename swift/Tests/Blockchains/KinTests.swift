@@ -7,7 +7,7 @@
 import XCTest
 import TrustWalletCore
 
-class KinSigner: XCTestCase {
+class KinTests: XCTestCase {
 
     func testSigner() {
         let account = "GAE2SZV4VLGBAPRYRFV2VY7YYLYGYIP5I7OU7BSP6DJT7GAZ35OKFDYI"

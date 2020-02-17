@@ -15,8 +15,7 @@ using namespace TW;
 using namespace TW::NEO;
 using namespace std;
 
-Signer::Signer(const PrivateKey &priKey)
-    : privateKey(std::move(priKey)) {
+Signer::Signer(const PrivateKey &priKey) : privateKey(std::move(priKey)) {
     auto pub = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
     publicKey = pub.bytes;
     address = Address(pub);

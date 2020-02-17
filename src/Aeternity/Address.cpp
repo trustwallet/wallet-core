@@ -43,7 +43,7 @@ Address::Address(const std::string &string) {
     bytes = Base58::bitcoin.decodeCheck(payload);
 }
 
-/// Returns a string representation of the Bravo address.
+/// Returns a string representation of the Aeternity address.
 std::string Address::string() const {
     return Identifiers::prefixAccountPubkey + Base58::bitcoin.encodeCheck(bytes);
 }

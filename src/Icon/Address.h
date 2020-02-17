@@ -37,9 +37,6 @@ class Address {
     /// Initializes an address with a string representation.
     explicit Address(const std::string& string);
 
-    /// Initializes an address with a collection of bytes.
-    Address(const std::vector<uint8_t>& data, enum AddressType type);
-
     /// Initializes an address with a public key.
     Address(const PublicKey& publicKey, enum AddressType type);
 

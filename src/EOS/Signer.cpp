@@ -4,8 +4,8 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Asset.h"
 #include "Signer.h"
+#include "Asset.h"
 #include "PackedTransaction.h"
 #include "../HexCoding.h"
 
@@ -21,16 +21,16 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     try {
         // create an asset object
         auto assetData = input.asset();
-        auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()), assetData.symbol());
+        auto asset = Asset(assetData.amount(), static_cast<uint8_t>(assetData.decimals()),
+                           assetData.symbol());
 
         // create a transfer action
-        TransferAction action{input.currency(), input.sender(), input.recipient(), asset,
-                              input.memo()};
+        auto action = TransferAction(input.currency(), input.sender(), input.recipient(), asset,
+                                     input.memo());
 
         // create a Transaction and add the transfer action
-        Transaction tx{
-            TW::Data(input.reference_block_id().begin(), input.reference_block_id().end()),
-            input.reference_block_time()};
+        auto tx = Transaction(Data(input.reference_block_id().begin(), input.reference_block_id().end()),
+                        input.reference_block_time());
         tx.actions.push_back(action);
 
         // get key type
@@ -62,10 +62,6 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         output.set_json_encoded(ptx.serialize().dump());
         return output;
     } catch (const std::exception& e) {
-        output.set_error(e.what());
-    } catch (const std::logic_error& e) {
-        output.set_error(e.what());
-    } catch (const std::runtime_error& e) {
         output.set_error(e.what());
     }
     return output;

@@ -58,7 +58,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON: String =
 """
@@ -132,7 +132,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON: String =
 """
@@ -273,7 +273,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON = """
 {
@@ -341,7 +341,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON = """
 {
@@ -414,7 +414,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON = """
 {

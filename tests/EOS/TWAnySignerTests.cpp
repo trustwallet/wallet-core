@@ -35,9 +35,19 @@ TEST(TWAnySignerEOS, Sign) {
     input.set_private_key(key.data(), key.size());
     input.set_private_key_type(Proto::KeyType::MODERNK1);
 
-    Proto::SigningOutput output;
-    ANY_SIGN(input, TWCoinTypeEOS);
+    {
+        Proto::SigningOutput output;
+        ANY_SIGN(input, TWCoinTypeEOS);
 
-    ASSERT_TRUE(output.error().empty());
-    ASSERT_EQ(output.json_encoded(), R"({"compression":"none","packed_context_free_data":"","packed_trx":"7c59a35cd6679a1f3d4800000000010000000080a920cd000000572d3ccdcd010000000080a920cd00000000a8ed3232330000000080a920cd0000000000ea3055e09304000000000004544b4e00000000126d79207365636f6e64207472616e7366657200","signatures":["SIG_K1_KfCdjsrTnx5cBpbA5cUdHZAsRYsnC9uKzuS1shFeqfMCfdZwX4PBm9pfHwGRT6ffz3eavhtkyNci5GoFozQAx8P8PBnDmj"]})");
+        EXPECT_TRUE(output.error().empty());
+        EXPECT_EQ(output.json_encoded(), R"({"compression":"none","packed_context_free_data":"","packed_trx":"7c59a35cd6679a1f3d4800000000010000000080a920cd000000572d3ccdcd010000000080a920cd00000000a8ed3232330000000080a920cd0000000000ea3055e09304000000000004544b4e00000000126d79207365636f6e64207472616e7366657200","signatures":["SIG_K1_KfCdjsrTnx5cBpbA5cUdHZAsRYsnC9uKzuS1shFeqfMCfdZwX4PBm9pfHwGRT6ffz3eavhtkyNci5GoFozQAx8P8PBnDmj"]})");
+    }
+
+    input.set_private_key_type(Proto::KeyType::LEGACY);
+    {
+        Proto::SigningOutput output;
+        ANY_SIGN(input, TWCoinTypeEOS);
+        EXPECT_FALSE(output.error().empty());
+        EXPECT_TRUE(output.json_encoded().empty());
+    }
 }

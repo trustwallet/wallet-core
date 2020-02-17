@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-namespace TW::Bravo {
+namespace TW::EOS {
 inline void encodeVarInt64(uint64_t x, Data& os) {
     // 64-bit int would take at most 10 bytes as a varint
     static const int maxBytes = 10;

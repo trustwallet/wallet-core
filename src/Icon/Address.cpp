@@ -46,13 +46,6 @@ Address::Address(const std::string& string) {
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const std::vector<uint8_t>& data, enum AddressType type) : type(type) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
-}
-
 Address::Address(const PublicKey& publicKey, enum AddressType type) : type(type) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
     sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
