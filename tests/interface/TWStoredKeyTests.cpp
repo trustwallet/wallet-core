@@ -45,6 +45,11 @@ TEST(TWStoredKey, loadPBKDF2Key) {
     TWStoredKeyDelete(key);
 }
 
+TEST(TWStoredKey, loadNonexistent) {
+    const auto filenameInvalid = WRAPS(TWStringCreateWithUTF8Bytes((TESTS_ROOT + "_NO_/_SUCH_/_FILE_").c_str()));
+    EXPECT_EQ(TWStoredKeyLoad(filenameInvalid.get()), nullptr);
+}
+
 TEST(TWStoredKey, createWallet) {
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
     const auto password = WRAPS(TWStringCreateWithUTF8Bytes("password"));
@@ -82,6 +87,11 @@ TEST(TWStoredKey, importHDWallet) {
     const auto coin = TWCoinTypeBitcoin;
     const auto key = TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password.get(), coin);
     EXPECT_TRUE(TWStoredKeyIsMnemonic(key));
+
+    // invalid mnemonic
+    const auto mnemonicInvalid = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_AN_INVALID_MNEMONIC_"));
+    EXPECT_EQ(TWStoredKeyImportHDWallet(mnemonicInvalid.get(), name.get(), password.get(), coin), nullptr);
+
     TWStoredKeyDelete(key);
 }
 
@@ -112,6 +122,9 @@ TEST(TWStoredKey, addressAddRemove) {
         WRAPS(TWStringCreateWithUTF8Bytes(derivationPath)).get(),
         WRAPS(TWStringCreateWithUTF8Bytes(extPubKeyAdd)).get());
     EXPECT_EQ(TWStoredKeyAccountCount(key), 1);
+
+    // invalid account index
+    EXPECT_EQ(TWStoredKeyAccount(key, 1001), nullptr);
 
     TWStoredKeyDelete(key);
 }
@@ -151,6 +164,12 @@ TEST(TWStoredKey, storeAndImportJSON) {
     TWStoredKeyDelete(key2);
 }
 
+TEST(TWStoredKey, importJsonInvalid) {
+    const string jsonInvalidStr = "]]]}}}_THIS_IS_AN_INVALID_JSON_}}}]]]";
+    auto json = WRAPD(TWDataCreateWithBytes((const uint8_t*)jsonInvalidStr.c_str(), jsonInvalidStr.length()));
+    EXPECT_EQ(TWStoredKeyImportJSON(json.get()), nullptr);
+}
+
 TEST(TWStoredKey, fixAddresses) {
     const auto password = "password";
     const auto key = createAStoredKey(TWCoinTypeBitcoin, password);
@@ -188,4 +207,14 @@ TEST(TWStoredKey, removeAccountForCoin) {
     
     ASSERT_NE(TWStoredKeyAccountForCoin(key, TWCoinTypeEthereum, nullptr), nullptr);
     ASSERT_EQ(TWStoredKeyAccountForCoin(key, TWCoinTypeBitcoin, nullptr), nullptr);
+}
+
+TEST(TWStoredKey, getWalletPasswordInvalid) {
+    const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
+    const auto password = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto passwordInvalid = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_INVALID_PASSWORD_"));
+    auto key = TWStoredKeyCreate (name.get(), password.get());
+    ASSERT_NE(TWStoredKeyWallet(key, password.get()), nullptr);
+    ASSERT_EQ(TWStoredKeyWallet(key, passwordInvalid.get()), nullptr);
+    TWStoredKeyDelete(key);
 }

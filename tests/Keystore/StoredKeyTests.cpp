@@ -5,6 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Keystore/StoredKey.h"
+
+#include "Coin.h"
+#include "HexCoding.h"
 #include "PrivateKey.h"
 
 #include <stdexcept>
@@ -14,8 +17,159 @@ extern std::string TESTS_ROOT;
 
 namespace TW::Keystore {
 
+using namespace std;
+
+const auto password = "password";
+const auto mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
+
+TEST(StoredKey, CreateWithMnemonic) {
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(password);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    EXPECT_EQ(key.accounts.size(), 0);
+    EXPECT_EQ(key.wallet(password).mnemonic, string(mnemonic));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "mnemonic");
+    EXPECT_EQ(json["version"], 3);
+}
+
+TEST(StoredKey, CreateWithMnemonicInvalid) {
+    try {
+        auto key = StoredKey::createWithMnemonic("name", password, "_THIS_IS_NOT_A_VALID_MNEMONIC_");
+    } catch (std::invalid_argument&) {
+        // expedcted exception OK
+        return;
+    }
+    FAIL() << "Missing excpected excpetion";
+}
+
+TEST(StoredKey, CreateWithMnemonicRandom) {
+    const auto key = StoredKey::createWithMnemonicRandom("name", password);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    // random mnemonic: check only length and validity
+    const Data& mnemo2Data = key.payload.decrypt(password);
+    EXPECT_TRUE(mnemo2Data.size() >= 36);
+    EXPECT_TRUE(HDWallet::isValid(string(mnemo2Data.begin(), mnemo2Data.end())));
+    EXPECT_EQ(key.accounts.size(), 0);
+}
+
+TEST(StoredKey, CreateWithMnemonicAddDefaultAddress) {
+    auto key = StoredKey::createWithMnemonicAddDefaultAddress("name", password, mnemonic, coinTypeBc);
+    EXPECT_EQ(key.type, StoredKeyType::mnemonicPhrase);
+    const Data& mnemo2Data = key.payload.decrypt(password);
+    EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
+    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts[0].coin(), coinTypeBc);
+    EXPECT_EQ(key.accounts[0].address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    EXPECT_EQ(hex(key.privateKey(coinTypeBc, password).bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
+}
+
+TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddress) {
+    const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKey);
+    EXPECT_EQ(key.type, StoredKeyType::privateKey);
+    EXPECT_EQ(key.accounts.size(), 1);
+    EXPECT_EQ(key.accounts[0].coin(), coinTypeBc);
+    EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
+    EXPECT_EQ(hex(key.privateKey(coinTypeBc, password).bytes), hex(privateKey));
+
+    const auto json = key.json();
+    EXPECT_EQ(json["name"], "name");
+    EXPECT_EQ(json["type"], "private-key");
+    EXPECT_EQ(json["version"], 3);
+}
+
+TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddressInvalid) {
+    try {
+        const auto privateKeyInvalid = parse_hex("0001020304");
+        auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKeyInvalid);
+    } catch (std::invalid_argument&) {
+        // expected exception ok
+        return;
+    }
+    FAIL() << "Missing expected exception";
+}
+
+TEST(StoredKey, AccountGetCreate) {
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    EXPECT_EQ(key.accounts.size(), 0);
+
+    // not exists
+    EXPECT_EQ(key.account(coinTypeBc), nullptr);
+    EXPECT_EQ(key.accounts.size(), 0);
+
+    auto wallet = key.wallet(password);
+    // not exists, wallet null, not create
+    EXPECT_EQ(key.account(coinTypeBc, nullptr), nullptr);
+    EXPECT_EQ(key.accounts.size(), 0);
+
+    // not exists, wallet nonnull, create
+    const Account* acc3 = key.account(coinTypeBc, &wallet);
+    EXPECT_TRUE(acc3 != nullptr);
+    EXPECT_EQ(acc3->coin(), coinTypeBc); 
+    EXPECT_EQ(key.accounts.size(), 1);
+
+    // exists
+    const Account* acc4 = key.account(coinTypeBc);
+    EXPECT_TRUE(acc4 != nullptr);
+    EXPECT_EQ(acc4->coin(), coinTypeBc); 
+    EXPECT_EQ(key.accounts.size(), 1);
+
+    // exists, wallet nonnull, not create
+    const Account* acc5 = key.account(coinTypeBc, &wallet);
+    EXPECT_TRUE(acc5 != nullptr);
+    EXPECT_EQ(acc5->coin(), coinTypeBc); 
+    EXPECT_EQ(key.accounts.size(), 1);
+
+    // exists, wallet null, not create
+    const Account* acc6 = key.account(coinTypeBc, nullptr);
+    EXPECT_TRUE(acc6 != nullptr);
+    EXPECT_EQ(acc6->coin(), coinTypeBc); 
+    EXPECT_EQ(key.accounts.size(), 1);
+}
+
+TEST(StoredKey, AddRemoveAccount) {
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+    EXPECT_EQ(key.accounts.size(), 0);
+
+    const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
+    key.addAccount("bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr", derivationPath, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+    EXPECT_EQ(key.accounts.size(), 1);
+
+    key.removeAccount(coinTypeBc);
+    EXPECT_EQ(key.accounts.size(), 0);
+}
+
+TEST(StoredKey, FixAddress) {
+    {
+        auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
+        key.fixAddresses(password);
+    }
+    {
+        const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
+        auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKey);
+        key.fixAddresses(password);
+    }
+}
+
+TEST(StoredKey, WalletInvalid) {
+    const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
+    auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKey);
+    try {
+        auto wallet = key.wallet(password);
+    } catch (std::invalid_argument&) {
+        // expected exception ok
+        return;
+    }
+    FAIL() << "Missing expected exception";
+}
+
 TEST(StoredKey, LoadNonexistent) {
-    ASSERT_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/nonexistent.json"), std::invalid_argument);
+    ASSERT_THROW(StoredKey::load(TESTS_ROOT + "/Keystore/Data/nonexistent.json"), invalid_argument);
 }
 
 TEST(StoredKey, LoadLegacyPrivateKey) {
@@ -49,14 +203,14 @@ TEST(StoredKey, LoadLegacyMnemonic) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-mnemonic.json");
     EXPECT_EQ(key.id, "629aad29-0b22-488e-a0e7-b4219d4f311c");
 
-    const auto data = key.payload.decrypt("password");
-    const auto mnemonic = std::string(reinterpret_cast<const char*>(data.data()));
+    const auto data = key.payload.decrypt(password);
+    const auto mnemonic = string(reinterpret_cast<const char*>(data.data()));
     EXPECT_EQ(mnemonic, "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn back");
 
     EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeEthereum);
     EXPECT_EQ(key.accounts[0].derivationPath.string(), "m/44'/60'/0'/0/0");
     EXPECT_EQ(key.accounts[0].address, "");
-    EXPECT_EQ(key.accounts[1].coin(), TWCoinTypeBitcoin);
+    EXPECT_EQ(key.accounts[1].coin(), coinTypeBc);
     EXPECT_EQ(key.accounts[1].derivationPath.string(), "m/84'/0'/0'/0/0");
     EXPECT_EQ(key.accounts[1].address, "");
     EXPECT_EQ(key.accounts[1].extendedPublicKey, "zpub6r97AegwVxVbJeuDAWP5KQgX5y4Q6KyFUrsFQRn8yzSXrnmpwg1ZKHSWwECR1Kiqgr4h93WN5kdS48KC6hVFniuZHqVFXjULZZkCwurqyPn");
@@ -90,7 +244,7 @@ TEST(StoredKey, ReadMyEtherWallet) {
 TEST(StoredKey, InvalidPassword) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
 
-    ASSERT_THROW(key.payload.decrypt("password"), DecryptionError);
+    ASSERT_THROW(key.payload.decrypt(password), DecryptionError);
 }
 
 TEST(StoredKey, EmptyAccounts) {
@@ -108,24 +262,22 @@ TEST(StoredKey, Decrypt) {
 
 TEST(StoredKey, CreateWallet) {
     const auto privateKey = parse_hex("3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266");
-    const auto key = StoredKey(StoredKeyType::privateKey, "name", "password", privateKey);
-    const auto decrypted = key.payload.decrypt("password");
+    const auto key = StoredKey::createWithPrivateKey("name", password, privateKey);
+    const auto decrypted = key.payload.decrypt(password);
 
     EXPECT_EQ(hex(decrypted), hex(privateKey));
 }
 
 TEST(StoredKey, CreateAccounts) {
-    const auto password = "password";
-    std::string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
-    const auto mnemonicData = TW::Data(mnemonicPhrase.c_str(), mnemonicPhrase.c_str() + mnemonicPhrase.size());
-    auto key = StoredKey(StoredKeyType::mnemonicPhrase, "name", password, mnemonicData);
+    string mnemonicPhrase = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
+    auto key = StoredKey::createWithMnemonic("name", password, mnemonicPhrase);
     const auto wallet = key.wallet(password);
     
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->address, "0x494f60cb6Ac2c8F5E1393aD9FdBdF4Ad589507F7");
     EXPECT_EQ(key.account(TWCoinTypeEthereum, &wallet)->extendedPublicKey, "");
 
-    EXPECT_EQ(key.account(TWCoinTypeBitcoin, &wallet)->address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
-    EXPECT_EQ(key.account(TWCoinTypeBitcoin, &wallet)->extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
+    EXPECT_EQ(key.account(coinTypeBc, &wallet)->address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
+    EXPECT_EQ(key.account(coinTypeBc, &wallet)->extendedPublicKey, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
 }
     
 TEST(StoredKey, DecodingEthereumAddress) {
@@ -145,15 +297,15 @@ TEST(StoredKey, RemoveAccount) {
     EXPECT_EQ(key.accounts.size(), 2);
     key.removeAccount(TWCoinTypeEthereum);
     EXPECT_EQ(key.accounts.size(), 1);
-    EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeBitcoin);
+    EXPECT_EQ(key.accounts[0].coin(), coinTypeBc);
 }
 
 TEST(StoredKey, MissingAddress) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/missing-address.json");
-    key.fixAddresses("password");
+    key.fixAddresses(password);
 
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0x04De84ec355BAe81b51cD53Fdc8AA30A61872C95");
-    EXPECT_EQ(key.account(TWCoinTypeBitcoin, nullptr)->address, "bc1qe938ncm8fhdqg27xmxd7lq02jz9xh0x48r22lc");
+    EXPECT_EQ(key.account(coinTypeBc, nullptr)->address, "bc1qe938ncm8fhdqg27xmxd7lq02jz9xh0x48r22lc");
 }
 
 TEST(StoredKey, EtherWalletAddressNo0x) {

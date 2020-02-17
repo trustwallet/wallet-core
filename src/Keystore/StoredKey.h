@@ -24,7 +24,8 @@ namespace TW::Keystore {
 enum class StoredKeyType { privateKey, mnemonicPhrase };
 
 /// Represents a key stored as an encrypted file.
-struct StoredKey {
+class StoredKey {
+public:
     /// Type of key stored.
     StoredKeyType type;
 
@@ -40,21 +41,33 @@ struct StoredKey {
     /// Active accounts.
     std::vector<Account> accounts;
 
-    /// Initializes a `StoredKey` with a type and an encrypted payload.
-    StoredKey(StoredKeyType type, std::string name, EncryptionParameters payload);
+    /// Create a new StoredKey, with the given name, mnemonic and password.
+    /// @throws std::invalid_argument if mnemonic is invalid
+    static StoredKey createWithMnemonic(const std::string& name, const std::string& password, const std::string& mnemonic);
 
-    /// Initializes a `StoredKey` with a type, an encryption password, and
-    /// unencrypted data.
-    ///
-    /// This contstructor will encrypt the provided data with default encryption
-    /// parameters.
-    StoredKey(StoredKeyType type, std::string name, const std::string& password, Data data);
+    /// Create a new StoredKey, with the given name, mnemonic and password.
+    /// @throws std::invalid_argument if mnemonic is invalid
+    static StoredKey createWithMnemonicRandom(const std::string& name, const std::string& password);
+
+    /// Create a new StoredKey, with the given name, mnemonic and password, and also add the default address for the given coin..
+    /// @throws std::invalid_argument if mnemonic is invalid
+    static StoredKey createWithMnemonicAddDefaultAddress(const std::string& name, const std::string& password, const std::string& mnemonic, TWCoinType coin);
+
+    /// Create a new StoredKey, with the given name and private key.
+    /// @throws std::invalid_argument if privateKeyData is not a vald private key
+    static StoredKey createWithPrivateKey(const std::string& name, const std::string& password, const Data& privateKeyData);
+
+    /// Create a new StoredKey, with the given name and private key, and also add the default address for the given coin..
+    /// @throws std::invalid_argument if privateKeyData is not a vald private key
+    static StoredKey createWithPrivateKeyAddDefaultAddress(const std::string& name, const std::string& password, TWCoinType coin, const Data& privateKeyData);
+
+    /// Create a StoredKey from a JSON object.
+    static StoredKey createWithJson(const nlohmann::json& json);
 
     /// Returns the HDWallet for this key.
     ///
-    /// @throws std::invalid_argument if this key is of a type other than
-    /// `mnemonicPhrase`.
-    HDWallet wallet(const std::string& password);
+    /// @throws std::invalid_argument if this key is of a type other than `mnemonicPhrase`.
+    const HDWallet wallet(const std::string& password) const;
 
     /// Returns the account for a specific coin, creating it if necessary and
     /// the provided wallet is not `nullptr`.
@@ -63,11 +76,13 @@ struct StoredKey {
     /// Returns the account for a specific coin if it exists.
     const Account* account(TWCoinType coin) const;
     
+    /// Add an account
+    void addAccount(const std::string& address, const DerivationPath& derivationPath, const std::string& extetndedPublicKey);
+
     /// Remove the account for a specific coin
     void removeAccount(TWCoinType coin);
     
-    /// Returns the private key for a specific coin, creating an account if
-    /// necessary.
+    /// Returns the private key for a specific coin, creating an account if necessary.
     ///
     /// @throws std::invalid_argument if this key is of a type other than
     /// `mnemonicPhrase` and a coin other than the default is requested.
@@ -86,7 +101,7 @@ struct StoredKey {
     void store(const std::string& path);
 
     /// Initializes `StoredKey` with a JSON object.
-    StoredKey(const nlohmann::json& json);
+    void loadJson(const nlohmann::json& json);
 
     /// Saves `this` as a JSON object.
     nlohmann::json json() const;
@@ -96,6 +111,15 @@ struct StoredKey {
     /// Use to fix legacy wallets with invalid address data. This method needs
     /// the encryption password to re-derive addresses from private keys.
     void fixAddresses(const std::string& password);
+
+private:
+    /// Default constructor, private
+    StoredKey() : type(StoredKeyType::mnemonicPhrase) {}
+
+    /// Initializes a `StoredKey` with a type, an encryption password, and unencrypted data.
+    /// This contstructor will encrypt the provided data with default encryption
+    /// parameters.
+    StoredKey(StoredKeyType type, std::string name, const std::string& password, Data data);
 };
 
 } // namespace TW::Keystore
