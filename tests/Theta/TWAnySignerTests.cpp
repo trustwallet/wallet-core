@@ -15,7 +15,7 @@
 using namespace TW;
 using namespace TW::Theta;
 
-TEST(TWThetaSigner, Sign) {
+TEST(TWAnySignerTheta, Sign) {
     auto privateKey = parse_hex("93a90ea508331dfdf27fb79757d4250b4e84954927ba0073cd67454ac432c737");
     
     Proto::SigningInput input;
@@ -30,15 +30,8 @@ TEST(TWThetaSigner, Sign) {
     input.set_sequence(1);
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeTheta);
-    
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
-
-    TWDataDelete(inputTWData);
-    TWDataDelete(outputTWData);
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeTheta);
 
     ASSERT_EQ(hex(output.encoded()), "02f887c78085e8d4a51000f863f861942e833968e5bb786ae419c4d13189fb081cc43babc70a85e8d4a5101401b8415190868498d587d074d57298f41853d0109d997f15ddf617f471eb8cbb7fff267cb8fe9134ccdef053ec7cabd18070325c9c436efe1abbacd14eb7561d3fc10501d9d8949f1233798e905e173560071255140b4a8abd3ec6c20a14");
 }

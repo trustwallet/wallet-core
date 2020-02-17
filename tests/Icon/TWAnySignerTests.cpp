@@ -17,7 +17,7 @@
 using namespace TW;
 using namespace TW::Icon;
 
-TEST(IconSigner, Sign) {
+TEST(TWAnySignerIcon, Sign) {
     auto key = parse_hex("2d42994b2f7735bbc93a3e64381864d06747e574aa94655c516f9ad0a74eed79");
     auto input = Proto::SigningInput();
 
@@ -40,14 +40,8 @@ TEST(IconSigner, Sign) {
     input.set_timestamp(1516942975500598);
     input.set_private_key(key.data(), key.size());
 
-    auto inputString = input.SerializeAsString();
-    auto inputData = TWDataCreateWithBytes((const byte*)inputString.data(), inputString.size());
-    auto outputData = TWAnySignerSign(inputData, TWCoinTypeICON);
-    auto output = Proto::SigningOutput();
-
-    output.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData));
-
-    TWDataDelete(inputData);
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeICON);
 
     auto expected = std::string("{\"from\":\"hxbe258ceb872e08851f1f59694dac2558708ece11\",\"nid\":\"0x1\",\"nonce\":\"0x1\",\"signature\":\"xR6wKs+IA+7E91bT8966jFKlK5mayutXCvayuSMCrx9KB7670CsWa0B7LQzgsxU0GLXaovlAT2MLs1XuDiSaZQE=\",\"stepLimit\":\"0x12345\",\"timestamp\":\"0x563a6cf330136\",\"to\":\"hx5bfdb090f43a808005ffc27c25b213145e80b7cd\",\"value\":\"0xde0b6b3a7640000\",\"version\":\"0x3\"}");
     ASSERT_EQ(output.encoded(), expected);

@@ -6,15 +6,14 @@
 
 #include "HexCoding.h"
 #include "proto/VeChain.pb.h"
-#include "uint256.h"
-
+#include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::VeChain;
 
-TEST(TWVeChainSigner, Sign) {
+TEST(TWAnySignerVeChain, Sign) {
     auto input = Proto::SigningInput();
 
     input.set_chain_tag(1);
@@ -32,11 +31,8 @@ TEST(TWVeChainSigner, Sign) {
     clause.set_to("0x3535353535353535353535353535353535353535");
     clause.set_value(amount.data(), amount.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeVeChain);
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeVeChain);
 
     ASSERT_EQ(hex(output.encoded()), "f86a010101dcdb943535353535353535353535353535353535353535843130303080808252088001c0b841bf8edf9600e645b5abd677cb52f585e7f655d1361075d511b37f707a9f31da6702d28739933b264527a1d05b046f5b74044b88c30c3f5a09d616bd7a4af4901601");
 }

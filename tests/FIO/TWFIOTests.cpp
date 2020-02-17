@@ -57,14 +57,10 @@ TEST(TWFIO, RegisterFioAddress) {
     input.mutable_action()->mutable_register_fio_address_message()->set_owner_fio_public_key(addr6M.string());
     input.mutable_action()->mutable_register_fio_address_message()->set_fee(5000000000);
 
-    auto inputString = input.SerializeAsString();
-    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
-
-    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
-    auto out = Proto::SigningOutput();
-    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
-    EXPECT_EQ("", out.error());
-    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"3f99295ec99b904215ff0000000001003056372503a85b0000c6eaa66498ba01102b2f46fca756b200000000a8ed3232650f6164616d4066696f746573746e65743546494f366d31664d645470526b52426e6564765973685843784c4669433573755255384b44667838787874587032686e7478706e6600f2052a01000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K19ugLriG3ApYgjJCRDsy21p9xgsjbDtqBuZrmAEix9XYzndR1kNbJ6fXCngMJMAhxUHfwHAsPnh58otXiJZkazaM1EkS5"]})", out.json());
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeFIO);
+    EXPECT_EQ("", output.error());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"3f99295ec99b904215ff0000000001003056372503a85b0000c6eaa66498ba01102b2f46fca756b200000000a8ed3232650f6164616d4066696f746573746e65743546494f366d31664d645470526b52426e6564765973685843784c4669433573755255384b44667838787874587032686e7478706e6600f2052a01000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K19ugLriG3ApYgjJCRDsy21p9xgsjbDtqBuZrmAEix9XYzndR1kNbJ6fXCngMJMAhxUHfwHAsPnh58otXiJZkazaM1EkS5"]})", output.json());
 }
 
 TEST(TWFIO, AddPubAddress) {
@@ -88,14 +84,10 @@ TEST(TWFIO, AddPubAddress) {
     action->mutable_public_addresses(2)->set_address("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s");
     action->set_fee(0);
 
-    auto inputString = input.SerializeAsString();
-    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
-
-    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
-    auto out = Proto::SigningOutput();
-    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
-    EXPECT_EQ("", out.error());
-    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232bd010f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"]})", out.json());
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeFIO);
+    EXPECT_EQ("", output.error());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232bd010f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"]})", output.json());
 }
 
 TEST(TWFIO, Transfer) {
@@ -110,14 +102,10 @@ TEST(TWFIO, Transfer) {
     input.mutable_action()->mutable_transfer_message()->set_amount(1000000000);
     input.mutable_action()->mutable_transfer_message()->set_fee(250000000);
 
-    auto inputString = input.SerializeAsString();
-    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
-
-    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
-    auto out = Proto::SigningOutput();
-    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
-    EXPECT_EQ("", out.error());
-    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})", out.json());
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeFIO);
+    EXPECT_EQ("", output.error());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"b0ae295e50c3400a6dee00000000010000980ad20ca85be0e1d195ba85e7cd01102b2f46fca756b200000000a8ed32325d3546494f37754d5a6f6565693548745841443234433479436b70575762663234626a597472524e6a57646d474358485a63637775694500ca9a3b0000000080b2e60e00000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K9VRCnvaTYN7vgcoVKVXgyJTdKUGV8hLXgFLoEbvqAcFxy7DXQ1rSnAfEuabi4ATkgmvnpaSBdVFN7TBtM1wrbZYqeJQw9"]})", output.json());
 }
 
 TEST(TWFIO, RenewFioAddress) {
@@ -132,14 +120,10 @@ TEST(TWFIO, RenewFioAddress) {
     input.mutable_action()->mutable_renew_fio_address_message()->set_owner_fio_public_key(addr6M.string());
     input.mutable_action()->mutable_renew_fio_address_message()->set_fee(3000000000);
 
-    auto inputString = input.SerializeAsString();
-    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
-
-    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
-    auto out = Proto::SigningOutput();
-    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
-    EXPECT_EQ("", out.error());
-    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff0000000001003056372503a85b80b1ba2919aea6ba01102b2f46fca756b200000000a8ed32322f0f6e69636b4066696f746573746e6574005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_Jxz7oCJ7Z4ECsxqb2utqBcyP3zPQCeQCBws9wWQjyptUKoWVk2AyCVEqtdMHJwqtLniio5Z7npMnaZB8E4pa2G75P9uGkb"]})", out.json());
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeFIO);
+    EXPECT_EQ("", output.error());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff0000000001003056372503a85b80b1ba2919aea6ba01102b2f46fca756b200000000a8ed32322f0f6e69636b4066696f746573746e6574005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_Jxz7oCJ7Z4ECsxqb2utqBcyP3zPQCeQCBws9wWQjyptUKoWVk2AyCVEqtdMHJwqtLniio5Z7npMnaZB8E4pa2G75P9uGkb"]})", output.json());
 }
 
 TEST(TWFIO, NewFundsRequest) {
@@ -160,17 +144,12 @@ TEST(TWFIO, NewFundsRequest) {
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_offline_url("https://trustwallet.com");
     input.mutable_action()->mutable_new_funds_request_message()->set_fee(3000000000);
 
-    auto inputString = input.SerializeAsString();
-    auto inputData = TWDataCreateWithBytes((const TW::byte *)inputString.data(), inputString.size());
-
-    auto outputData = TWAnySignerSign(inputData, TWCoinTypeFIO);
-    auto out = Proto::SigningOutput();
-    ASSERT_TRUE(out.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData)));
-    EXPECT_EQ("", out.error());
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeFIO);
     // Packed transacton varies, as there is no way to control encryption IV parameter from this level.
     // Therefore full equality cannot be checked, tail is cut off.  The first N chars are checked, works in this case.
     EXPECT_EQ(
         R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232fd2201106d6172696f4066696f7465737)",
-        out.json().substr(0, 195)
+        output.json().substr(0, 195)
     );
 }

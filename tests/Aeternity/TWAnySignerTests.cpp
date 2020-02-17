@@ -15,7 +15,7 @@
 using namespace TW;
 using namespace TW::Aeternity;
 
-TEST(TWAeternitySigner, Sign) {
+TEST(TWAnySignerAeternity, Sign) {
     auto privateKey = parse_hex("4646464646464646464646464646464646464646464646464646464646464646");
     
     Proto::SigningInput input;
@@ -30,15 +30,8 @@ TEST(TWAeternitySigner, Sign) {
     input.set_nonce(49);
     input.set_private_key(privateKey.data(), privateKey.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeAeternity);
-
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeAeternity);
 
     ASSERT_EQ(output.encoded(), "tx_+KkLAfhCuEDZ2XDV5OuHv1iuLn66sFLBUwnzp1K8JW1Zz+fEgmuEh6HEvNu0R112M3IYkVzvTSnT0pJ3TWhVOumgJ+IWwW8HuGH4XwwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKMKhhIwnOVAAIMBQ0Uxi0hlbGxvIFdvcmxkDZqNSg==");
-
-    TWDataDelete(inputTWData);
-    TWDataDelete(outputTWData);
 }

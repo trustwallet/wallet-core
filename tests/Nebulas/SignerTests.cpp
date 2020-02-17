@@ -37,30 +37,4 @@ TEST(NebulasSigner, Hash) {
     ASSERT_EQ(hex(hash), "505dd4769de32a9c4bb6d6afd4f8e1ea6474815fd43484d8917cbd9e0993b885");
 }
 
-TEST(NebulasSigner, Sign) {
-    auto input = Proto::SigningInput();
-    input.set_from_address("n1V5bB2tbaM3FUiL4eRwpBLgEredS5C2wLY");
-    input.set_to_address("n1SAeQRVn33bamxN4ehWUT7JGdxipwn8b17");
-    auto value = store(uint256_t(7));
-    input.set_nonce(value.data(),value.size());
-    value = store(uint256_t(1000000));
-    input.set_gas_price(value.data(),value.size());
-    value = store(uint256_t(200000));
-    input.set_gas_limit(value.data(),value.size());
-    value = store(uint256_t(11000000000000000000ULL));
-    input.set_amount(value.data(),value.size());
-    input.set_payload("");
-    value = store(uint256_t(1560052938));
-    input.set_timestamp(value.data(),value.size());
-
-    const auto privateKey = PrivateKey(parse_hex("d2fd0ec9f6268fc8d1f563e3e976436936708bdf0dc60c66f35890f5967a8d2b"));
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
-    auto chainid = store(uint256_t(1));
-    input.set_chain_id(chainid.data(), chainid.size());
-    Proto::SigningOutput output = Signer::sign(input);
-
-    auto signature = output.signature();
-    ASSERT_EQ(hex(signature.begin(), signature.end()), "f53f4a9141ff8e462b094138eccd8c3a5d7865f9e9ab509626c78460a9e0b0fc35f7ed5ba1795ceb81a5e46b7580a6f7fb431d44fdba92515399cf6a8e47e71500");
-}
-
 } // namespace TW::Nebulas

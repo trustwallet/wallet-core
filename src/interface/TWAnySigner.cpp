@@ -15,8 +15,8 @@
 #include "Decred/Signer.h"
 #include "EOS/Signer.h"
 #include "Ethereum/Signer.h"
-#include "Filecoin/Signer.h"
 #include "FIO/Signer.h"
+#include "Filecoin/Signer.h"
 #include "Harmony/Signer.h"
 #include "Icon/Signer.h"
 #include "IoTeX/Signer.h"
@@ -31,8 +31,8 @@
 #include "Ripple/Signer.h"
 #include "Solana/Signer.h"
 #include "Stellar/Signer.h"
-#include "Theta/Signer.h"
 #include "Tezos/Signer.h"
+#include "Theta/Signer.h"
 #include "Tron/Signer.h"
 #include "VeChain/Signer.h"
 #include "Wanchain/Signer.h"
@@ -45,7 +45,7 @@
 using namespace TW;
 
 template <typename Signer, typename Input>
-TWData* _Nonnull SimpleSign(TWData* _Nonnull data) {
+TWData* _Nonnull AnySign(TWData* _Nonnull data) {
     auto input = Input();
     input.ParseFromArray(TWDataBytes(data), (int)TWDataSize(data));
     auto serialized = Signer::sign(input).SerializeAsString();
@@ -56,95 +56,105 @@ TWData* _Nonnull SimpleSign(TWData* _Nonnull data) {
 TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     switch (coin) {
     case TWCoinTypeAeternity:
-        return SimpleSign<Aeternity::Signer, Aeternity::Proto::SigningInput>(data);
+        return AnySign<Aeternity::Signer, Aeternity::Proto::SigningInput>(data);
     case TWCoinTypeAion:
-        return SimpleSign<Aion::Signer, Aion::Proto::SigningInput>(data);
+        return AnySign<Aion::Signer, Aion::Proto::SigningInput>(data);
     case TWCoinTypeAlgorand:
-        return SimpleSign<Algorand::Signer, Algorand::Proto::SigningInput>(data);
+        return AnySign<Algorand::Signer, Algorand::Proto::SigningInput>(data);
     case TWCoinTypeBinance:
-        return SimpleSign<Binance::Signer, Binance::Proto::SigningInput>(data);
+        return AnySign<Binance::Signer, Binance::Proto::SigningInput>(data);
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeDogecoin:
     case TWCoinTypeDash:
-    case TWCoinTypeZcoin:
-    case TWCoinTypeQtum:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeRavencoin:
     case TWCoinTypeDigiByte:
+    case TWCoinTypeDogecoin:
+    case TWCoinTypeLitecoin:
+    case TWCoinTypeMonacoin:
+    case TWCoinTypeQtum:
+    case TWCoinTypeRavencoin:
+    case TWCoinTypeViacoin:
+    case TWCoinTypeZcoin:
         // FIXME
+        break;
+    case TWCoinTypeCardano:
+        // not implemented yet
         break;
     case TWCoinTypeDecred:
         // FIXME
         break;
     case TWCoinTypeEOS:
-        return SimpleSign<EOS::Signer, EOS::Proto::SigningInput>(data);
+        return AnySign<EOS::Signer, EOS::Proto::SigningInput>(data);
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
-        return SimpleSign<Cosmos::Signer, Cosmos::Proto::SigningInput>(data);
+        return AnySign<Cosmos::Signer, Cosmos::Proto::SigningInput>(data);
     case TWCoinTypeEthereum:
-        return SimpleSign<Ethereum::Signer, Ethereum::Proto::SigningInput>(data);
+    case TWCoinTypeEthereumClassic:
+    case TWCoinTypeCallisto:
+    case TWCoinTypeGoChain:
+    case TWCoinTypePOANetwork:
+    case TWCoinTypeTomoChain:
+    case TWCoinTypeThunderToken:
+        return AnySign<Ethereum::Signer, Ethereum::Proto::SigningInput>(data);
     case TWCoinTypeFilecoin:
-        return SimpleSign<Filecoin::Signer, Filecoin::Proto::SigningInput>(data);
+        return AnySign<Filecoin::Signer, Filecoin::Proto::SigningInput>(data);
     case TWCoinTypeFIO:
-        return SimpleSign<FIO::Signer, FIO::Proto::SigningInput>(data);
+        return AnySign<FIO::Signer, FIO::Proto::SigningInput>(data);
     case TWCoinTypeGroestlcoin:
-        //FIXME
-        break;
-    case TWCoinTypeHarmony:
-        return SimpleSign<Harmony::Signer, Harmony::Proto::SigningInput>(data);
-    case TWCoinTypeICON:
-        return SimpleSign<Icon::Signer, Icon::Proto::SigningInput>(data);
-    case TWCoinTypeIoTeX:
-        return SimpleSign<IoTeX::Signer, IoTeX::Proto::SigningInput>(data);
-    case TWCoinTypeNEAR:
-        return SimpleSign<NEAR::Signer, NEAR::Proto::SigningInput>(data);
-    case TWCoinTypeNEO:
         // FIXME
         break;
+    case TWCoinTypeHarmony:
+        return AnySign<Harmony::Signer, Harmony::Proto::SigningInput>(data);
+    case TWCoinTypeICON:
+        return AnySign<Icon::Signer, Icon::Proto::SigningInput>(data);
+    case TWCoinTypeIoTeX:
+        return AnySign<IoTeX::Signer, IoTeX::Proto::SigningInput>(data);
+    case TWCoinTypeNEAR:
+        return AnySign<NEAR::Signer, NEAR::Proto::SigningInput>(data);
+    case TWCoinTypeNEO:
+        return AnySign<NEO::Signer, NEO::Proto::SigningInput>(data);
     case TWCoinTypeNULS:
-        return SimpleSign<NULS::Signer, NULS::Proto::SigningInput>(data);
+        return AnySign<NULS::Signer, NULS::Proto::SigningInput>(data);
     case TWCoinTypeNano:
-        return SimpleSign<Nano::Signer, Nano::Proto::SigningInput>(data);
+        return AnySign<Nano::Signer, Nano::Proto::SigningInput>(data);
     case TWCoinTypeNebulas:
-        return SimpleSign<Nebulas::Signer, Nebulas::Proto::SigningInput>(data);
+        return AnySign<Nebulas::Signer, Nebulas::Proto::SigningInput>(data);
     case TWCoinTypeNimiq:
-        return SimpleSign<Nimiq::Signer, Nimiq::Proto::SigningInput>(data);
+        return AnySign<Nimiq::Signer, Nimiq::Proto::SigningInput>(data);
     case TWCoinTypeOntology:
-        return SimpleSign<Ontology::Signer, Ontology::Proto::SigningInput>(data);
+        return AnySign<Ontology::Signer, Ontology::Proto::SigningInput>(data);
     case TWCoinTypePolkadot:
     case TWCoinTypeKusama:
-        return SimpleSign<Polkadot::Signer, Polkadot::Proto::SigningInput>(data);
+        return AnySign<Polkadot::Signer, Polkadot::Proto::SigningInput>(data);
     case TWCoinTypeXRP:
-        return SimpleSign<Ripple::Signer, Ripple::Proto::SigningInput>(data);
+        return AnySign<Ripple::Signer, Ripple::Proto::SigningInput>(data);
     case TWCoinTypeSolana:
-        return SimpleSign<Solana::Signer, Solana::Proto::SigningInput>(data);
+        return AnySign<Solana::Signer, Solana::Proto::SigningInput>(data);
     case TWCoinTypeStellar:
     case TWCoinTypeKin:
-        return SimpleSign<Stellar::Signer, Stellar::Proto::SigningInput>(data);
+        return AnySign<Stellar::Signer, Stellar::Proto::SigningInput>(data);
     case TWCoinTypeTheta:
-        return SimpleSign<Theta::Signer, Theta::Proto::SigningInput>(data);
+        return AnySign<Theta::Signer, Theta::Proto::SigningInput>(data);
     case TWCoinTypeTezos:
-        return SimpleSign<Tezos::Signer, Tezos::Proto::SigningInput>(data);
+        return AnySign<Tezos::Signer, Tezos::Proto::SigningInput>(data);
+    case TWCoinTypeTON:
+        // not implemented yet
+        break;
     case TWCoinTypeTron:
-        return SimpleSign<Tron::Signer, Tron::Proto::SigningInput>(data);
+        return AnySign<Tron::Signer, Tron::Proto::SigningInput>(data);
     case TWCoinTypeVeChain:
-        return SimpleSign<VeChain::Signer, VeChain::Proto::SigningInput>(data);
+        return AnySign<VeChain::Signer, VeChain::Proto::SigningInput>(data);
     case TWCoinTypeWanchain:
-        return SimpleSign<Wanchain::Signer, Ethereum::Proto::SigningInput>(data);
+        return AnySign<Wanchain::Signer, Ethereum::Proto::SigningInput>(data);
     case TWCoinTypeWaves:
-        return SimpleSign<Waves::Signer, Waves::Proto::SigningInput>(data);
+        return AnySign<Waves::Signer, Waves::Proto::SigningInput>(data);
     case TWCoinTypeZilliqa:
-        return SimpleSign<Zilliqa::Signer, Zilliqa::Proto::SigningInput>(data);
-    default: break;
+        return AnySign<Zilliqa::Signer, Zilliqa::Proto::SigningInput>(data);
+    case TWCoinTypeZcash:
+    case TWCoinTypeZelcash:
+        break;
     }
     return TWDataCreateWithSize(0);
 }
 
 #pragma clang diagnostic pop
-
-TWData* _Nonnull TWAnySignerSignWithPlan(TWData* _Nonnull data, TWData* _Nonnull plan, enum TWCoinType coin) {
-    return TWDataCreateWithSize(0);
-}

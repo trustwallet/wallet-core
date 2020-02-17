@@ -194,17 +194,22 @@ Transaction Signer::prepareUnsignedTransaction(const Proto::SigningInput &input,
     return Transaction();
 }
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input, const Proto::TransactionPlan& plan) {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto output = Proto::SigningOutput();
     try {
         auto signer = Signer(PrivateKey(Data(input.private_key().begin(), input.private_key().end())));
+        Proto::TransactionPlan plan;
+        if (input.has_plan()) {
+            plan = input.plan();
+        } else {
+            plan = signer.planTransaction(input);
+        }
         auto transaction = prepareUnsignedTransaction(input, plan);
         signer.sign(transaction);
         auto signedTx = transaction.serialize();
 
         output.set_encoded(signedTx.data(), signedTx.size());
-    }
-    catch (char const *error) {
+    } catch (char const *error) {
         output.set_error(error);
     }
 

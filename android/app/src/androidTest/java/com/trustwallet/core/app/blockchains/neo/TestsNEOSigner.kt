@@ -8,10 +8,13 @@ package com.trustwallet.core.app.blockchains.neo
 
 import com.trustwallet.core.app.utils.Numeric
 import org.junit.Test
-import wallet.core.jni.NEOSigner
+import wallet.core.java.AnySigner
+import wallet.core.jni.NEOPlanner
 import wallet.core.jni.proto.NEO
+import wallet.core.jni.proto.NEO.SigningOutput
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
+import wallet.core.jni.CoinType
 
 class TestNEOSigner {
 
@@ -89,8 +92,8 @@ class TestNEOSigner {
                 .build()
         signerBuilder.addOutputs(output)
 
-        val plan = NEOSigner.planTransaction(signerBuilder.build())
-        val result = NEOSigner.sign(signerBuilder.build(), plan).encoded.toByteArray()
+        val plan = NEOPlanner.plan(signerBuilder.build())
+        val result = AnySigner.sign(signerBuilder.build(), CoinType.NEO, SigningOutput.parser()).encoded.toByteArray()
         val hex = Numeric.toHexString(result, 0, result.size, false)
 
         //  https://testnet-explorer.o3.network/transactions/0x7b138c753c24f474d0f70af30a9d79756e0ee9c1f38c12ed07fbdf6fc5132eaf

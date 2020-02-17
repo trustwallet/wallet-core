@@ -17,7 +17,7 @@
 using namespace TW;
 using namespace Filecoin;
 
-TEST(TWFilecoinSigner, Sign) {
+TEST(TWAnySignerFilecoin, Sign) {
     Proto::SigningInput input;
     auto privateKey = parse_hex("1d969865e189957b9824bd34f26d5cbf357fda1a6d844cbf0c9ab1ed93fa7dbe");
     auto toAddress =
@@ -57,4 +57,5 @@ TEST(TWFilecoinSigner, Sign) {
               "5903f51d824659ba19c5bc969d7206de7afabfc4a0eec2dd34f15e58a064adf4ee9f72e64f01");
 
     TWDataDelete(inputData);
+    TWDataDelete(outputData);
 }

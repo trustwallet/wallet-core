@@ -7,13 +7,13 @@
 #include "HexCoding.h"
 #include "proto/Ethereum.pb.h"
 #include "uint256.h"
-
+#include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 #include <gtest/gtest.h>
 
 using namespace TW;
 
-TEST(TWWanchainSigner, Sign) {
+TEST(TWAnySignerWanchain, Sign) {
     auto input = Ethereum::Proto::SigningInput();
 
     auto chainId = store(uint256_t(1));
@@ -36,11 +36,8 @@ TEST(TWWanchainSigner, Sign) {
     auto key = parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646");
     input.set_private_key(key.data(), key.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeWanchain);
-    auto output = Ethereum::Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Ethereum::Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeWanchain);
 
     ASSERT_EQ(hex(output.encoded()), "f86d01098504a817c800825208943535353535353535353535353535353535353535880de0b6b3a76400008025a0b3efa52659bb3dfcc1356942a5024ca55d742d8a2b551a142c5a0427c11c6272a07f616e839104c8c9c8f83254afc4e5c7010293cd5e471f6756629d17c8392467");
 

@@ -153,7 +153,7 @@
         "name": "Decred",
         "symbol": "DCR",
         "decimals": 8,
-        "blockchain": "Decred",
+        "blockchain": "Bitcoin",
         "derivationPath": "m/44'/42'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",

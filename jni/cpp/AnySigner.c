@@ -13,6 +13,10 @@
 
 jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSign(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
     TWData *inputData = TWDataCreateWithJByteArray(env, input);
-    jbyteArray resultData = TWDataJByteArray(TWAnySignerSign(inputData, coin), env);
+    TWData *outputData = TWAnySignerSign(inputData, coin);
+    jbyteArray resultData = TWDataJByteArray(outputData, env);
+    TWDataDelete(inputData);
+    // Will check if we can move this delete into TWDataJByteArray
+    TWDataDelete(resultData);
     return resultData;
 }

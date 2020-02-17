@@ -5,10 +5,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "Data.h"
-#include "Harmony/Transaction.h"
 #include "HexCoding.h"
-#include "PrivateKey.h"
 #include "../interface/TWTestUtilities.h"
 #include "proto/Harmony.pb.h"
 #include "uint256.h"
@@ -23,16 +20,14 @@ static auto TEST_RECEIVER = "one129r9pj3sk0re76f7zs3qz92rggmdgjhtwge62k";
 
 static uint256_t LOCAL_NET = 0x2;
 
-TEST(TWHarmonySigner, Sign) {
+TEST(TWAnySignerHarmony, Sign) {
     Proto::SigningInput input;
 
     auto transactionMessage = input.mutable_transaction_message();
     transactionMessage->set_to_address(TEST_RECEIVER);
-    const auto privateKey =
-        PrivateKey(parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48"));
-    auto payload = parse_hex("");
-    transactionMessage->set_payload(payload.data(), payload.size());
-    input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+    const auto privateKey = parse_hex("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48");
+
+    input.set_private_key(privateKey.data(), privateKey.size());
 
     auto value = store(LOCAL_NET);
     input.set_chain_id(value.data(), value.size());
@@ -55,12 +50,8 @@ TEST(TWHarmonySigner, Sign) {
     value = store(uint256_t("0x6bfc8da5ee8220000"));
     transactionMessage->set_amount(value.data(), value.size());
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeHarmony);
-
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeHarmony);
 
     auto shouldBeV = "28";
     auto shouldBeR = "84cc200aab11f5e1b2f7ece0d56ec67385ac50cefb6e3dc2a2f3e036ed575a5c";

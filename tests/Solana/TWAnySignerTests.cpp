@@ -6,20 +6,18 @@
 
 #include "Base58.h"
 #include "HexCoding.h"
-#include "../interface/TWTestUtilities.h"
-
 #include "proto/Solana.pb.h"
-
-#include <TrustWalletCore/TWHDWallet.h>
+#include "../interface/TWTestUtilities.h"
 #include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
+using namespace TW::Solana;
 
-TEST(TWSolanaSigner, SignTransfer) {
+TEST(TWAnySignerSolana, SignTransfer) {
     auto privateKey = Base58::bitcoin.decode("A7psj2GW7ZMdY4E5hJq14KMeYg7HFjULSsWSrTXZLvYr");
-    auto input = Solana::Proto::SigningInput();
+    auto input = Proto::SigningInput();
 
     auto& message = *input.mutable_transfer_transaction();
     message.set_recipient("EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd");
@@ -27,11 +25,8 @@ TEST(TWSolanaSigner, SignTransfer) {
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("11111111111111111111111111111111");
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeSolana);
-    auto output = Solana::Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
 
     auto expectedHex =
         "01fda1c8ad8872d94f7eab52f9c38dc77e1061f4897e3de2b8469eb0992269f6fa1f173e93dbb2da738ab4e895"
@@ -42,7 +37,7 @@ TEST(TWSolanaSigner, SignTransfer) {
     ASSERT_EQ(hex(output.encoded()), expectedHex);
 }
 
-TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
+TEST(TWAnySignerSolana, SignDelegateStakeTransaction) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
@@ -52,11 +47,8 @@ TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("11111111111111111111111111111111");
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeSolana);
-    auto output = Solana::Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
 
     auto expectedHex =
         "01be20567f2db0b09802bf70bbaf397d819c29496c6472a70e2db5c92dff1b666f5f5a4787b07d951bf46435c8"
@@ -75,7 +67,7 @@ TEST(TWSolanaSigner, SignDelegateStakeTransaction) {
     ASSERT_EQ(hex(output.encoded()), expectedHex);
 }
 
-TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
+TEST(TWAnySignerSolana, SignDeactivateStakeTransaction) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
@@ -84,11 +76,8 @@ TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("11111111111111111111111111111111");
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeSolana);
-    auto output = Solana::Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
 
     auto expectedHex =
         "014a85ccf3aa7e684b3352ed825dc4517daf3a95565d6ce0fcab0a7747bac87749c99e428e9ae7f42d38bc265b"
@@ -100,7 +89,7 @@ TEST(TWSolanaSigner, SignDeactivateStakeTransaction) {
     ASSERT_EQ(hex(output.encoded()), expectedHex);
 }
 
-TEST(TWSolanaSigner, SignWithdrawStakeTransaction) {
+TEST(TWAnySignerSolana, SignWithdrawStakeTransaction) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
 
@@ -110,11 +99,8 @@ TEST(TWSolanaSigner, SignWithdrawStakeTransaction) {
     input.set_private_key(privateKey.data(), privateKey.size());
     input.set_recent_blockhash("11111111111111111111111111111111");
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte*)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeSolana);
-    auto output = Solana::Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
 
     auto expectedHex =
         "014e808302fa771ccccfa4e82280bfd4b4ec267dc5107ff5baa8b718f6dae13aa23b888c1b7f44e8c8ea5fb750"

@@ -4,16 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWAnySigner.h>
-#include "proto/Tezos.pb.h"
 #include "HexCoding.h"
+#include "proto/Tezos.pb.h"
+#include "../interface/TWTestUtilities.h"
+#include <TrustWalletCore/TWAnySigner.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::Tezos;
 
-TEST(TWTezosSigner, Sign) {
+TEST(TWAnySignerTezos, Sign) {
     auto key = parse_hex("2e8905819b8723fe2c1d161860e5ee1830318dbf49a83bd451cfb8440c28bd6f");
     auto revealKey = parse_hex("311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff95");
 
@@ -43,15 +44,8 @@ TEST(TWTezosSigner, Sign) {
     transaction.set_storage_limit(257);
     transaction.set_kind(Proto::Operation::TRANSACTION);
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeTezos);
-    
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
-
-    TWDataDelete(inputTWData);
-    TWDataDelete(outputTWData);
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeTezos);
 
     EXPECT_EQ(hex(output.signed_bytes()), "3756ef37b1be849e3114643f0aa5847cabf9a896d3bfe4dd51448de68e91da016b0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80992f001f44e810200311f002e899cdd9a52d96cb8be18ea2bbab867c505da2b44ce10906f511cff956c0081faa75f741ef614b0e35fcc8c90dfa3b0b95721f80993f001f44e810201000081faa75f741ef614b0e35fcc8c90dfa3b0b95721000217034271b815e5f0c0a881342838ce49d7b48cdf507c72b1568c69a10db70c98774cdad1a74df760763e25f760ff13afcbbf3a1f2c833a0beeb9576a579c05");
 }

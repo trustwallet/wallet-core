@@ -17,7 +17,7 @@
 using namespace TW;
 using namespace TW::Ontology;
 
-TEST(TWOntologySignerSign, OntBalanceOf) {
+TEST(TWAnySingerOntology, OntBalanceOf) {
     // curl  -H "Content-Type: application/json"  -X POST -d '{"Action":"sendrawtransaction",
     // "Version":"1.0.0","00d1885602ec0000000000000000000000000000000000000000000000000000000000000000000000004d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f661400000000000000000000000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"}'
     // http://polaris2.ont.io:20334/api/v1/transaction?preExec=1
@@ -36,7 +36,7 @@ TEST(TWOntologySignerSign, OntBalanceOf) {
               rawTx);
 }
 
-TEST(TWOntologySignerSign, OntDecimals) {
+TEST(TWAnySingerOntology, OntDecimals) {
     // curl  -H "Content-Type: application/json"  -X POST -d '{"Action":"sendrawtransaction",
     // "Version":"1.0.0","Data":"00d1bdc12a48000000000000000000000000000000000000000000000000000000000000000000000000380008646563696d616c731400000000000000000000000000000000000000010068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"}'
     // http://polaris2.ont.io:20334/api/v1/transaction?preExec=1
@@ -54,7 +54,7 @@ TEST(TWOntologySignerSign, OntDecimals) {
               rawTx);
 }
 
-TEST(TWOntologySignerSign, OntTransfer) {
+TEST(TWAnySingerOntology, OntTransfer) {
     // tx on polaris test net.
     // https://explorer.ont.io/transaction/4a672ce813d3fac9042e9472cf9b470f8a5e59a2deb41fd7b23a1f7479a155d5/testnet
     auto ownerPrivateKey =
@@ -71,19 +71,10 @@ TEST(TWOntologySignerSign, OntTransfer) {
     input.set_amount(1);
     input.set_gas_price(500);
     input.set_gas_limit(20000);
-    auto data = OntTxBuilder::build(input);
 
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeOntology);
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeOntology);
 
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
-
-    TWDataDelete(inputTWData);
-    TWDataDelete(outputTWData);
-
-    EXPECT_EQ(hex(output.encoded()), hex(data));
     EXPECT_EQ("00d102d45c8bf401000000000000204e00000000000057e9d1a61f9aafa798b6c7fbeae35639681d7df6"
               "7100c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed299ea06fcb94aba"
               "c41aaf3ead76586a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
@@ -93,10 +84,10 @@ TEST(TWOntologySignerSign, OntTransfer) {
               "47125f927b7486ac414038466b25ac49a22ba8c301328ef049a61711b257987e85e25d63e0444a14e860"
               "305a4cd3bb6ea2fe80fd293abb3c592e679c42c546cbf3baa051a07b28b374a6232103d9fd62df332403"
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
-              hex(data));
+              hex(output.encoded()));
 }
 
-TEST(TWOntologySignerSign, OngDecimals) {
+TEST(TWAnySingerOntology, OngDecimals) {
     // curl  -H "Content-Type: application/json"  -X POST -d '{"Action":"sendrawtransaction",
     // "Version":"1.0.0","Data":"00d1e3f2e679000000000000000000000000000000000000000000000000000000000000000000000000380008646563696d616c731400000000000000000000000000000000000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"}'
     // http://polaris2.ont.io:20334/api/v1/transaction?preExec=1
@@ -114,7 +105,7 @@ TEST(TWOntologySignerSign, OngDecimals) {
               rawTx);
 }
 
-TEST(TWOntologySignerSign, OngBalanceOf) {
+TEST(TWAnySingerOntology, OngBalanceOf) {
     // curl  -H "Content-Type: application/json"  -X POST -d '{"Action":"sendrawtransaction",
     // "Version":"1.0.0","Data":"00d1ab1ad0cf0000000000000000000000000000000000000000000000000000000000000000000000004d1446b1a18af6b7c9f8a4602f9f73eeb3030f0c29b70962616c616e63654f661400000000000000000000000000000000000000020068164f6e746f6c6f67792e4e61746976652e496e766f6b650000"}'
     // http://polaris2.ont.io:20334/api/v1/transaction?preExec=1
@@ -133,7 +124,7 @@ TEST(TWOntologySignerSign, OngBalanceOf) {
               rawTx);
 }
 
-TEST(TWOntologySignerSign, OngTransfer) {
+TEST(TWAnySingerOntology, OngTransfer) {
     // tx on polaris test net.
     // https://explorer.ont.io/transaction/8a1e59396dcb72d9095088f50d1023294bf9c7b79ba693bd641578f748cbd4e6/testnet
     auto ownerPrivateKey =
@@ -150,18 +141,10 @@ TEST(TWOntologySignerSign, OngTransfer) {
     input.set_gas_price(500);
     input.set_gas_limit(20000);
     input.set_nonce(2827104669);
-    auto data = OngTxBuilder::build(input);
-    auto inputData = input.SerializeAsString();
-    auto inputTWData = TWDataCreateWithBytes((const byte *)inputData.data(), inputData.size());
-    auto outputTWData = TWAnySignerSign(inputTWData, TWCoinTypeOntology);
 
-    auto output = Proto::SigningOutput();
-    output.ParseFromArray(TWDataBytes(outputTWData), TWDataSize(outputTWData));
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeOntology);
 
-    TWDataDelete(inputTWData);
-    TWDataDelete(outputTWData);
-
-    EXPECT_EQ(hex(output.encoded()), hex(data));
     EXPECT_EQ("00d19d3182a8f401000000000000204e00000000000057e9d1a61f9aafa798b6c7fbeae35639681d7df6"
               "7100c66b14fbacc8214765d457c8e3f2b5a1d3c4981a2e9d2a6a7cc814feec06b79ed299ea06fcb94aba"
               "c41aaf3ead76586a7cc8516a7cc86c51c1087472616e7366657214000000000000000000000000000000"
@@ -171,10 +154,10 @@ TEST(TWOntologySignerSign, OngTransfer) {
               "47125f927b7486ac4140450047b2efb384129a16ec4c707790e9379b978cc7085170071d8d7c5c037d74"
               "3b078bd4e21bb4404c0182a32ee05260e22454dffb34dacccf458dfbee6d32db232103d9fd62df332403"
               "d9114f3fa3da0d5aec9dfa42948c2f50738d52470469a1a1eeac",
-              hex(data));
+              hex(output.encoded()));
 }
 
-TEST(TWOntologySignerSign, OngWithdraw) {
+TEST(TWAnySingerOntology, OngWithdraw) {
     // tx on polaris test net.
     // https://explorer.ont.io/transaction/433cb7ed4dec32d55be0db104aaa7ade4c7dbe0f62ef94f7b17829f7ac7cd75b/testnet
     auto ownerPrivateKey =
