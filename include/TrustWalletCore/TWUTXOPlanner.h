@@ -4,17 +4,16 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#ifndef JNI_TW_ANYSIGNER_H
-#define JNI_TW_ANYSIGNER_H
+#pragma once
 
-#include <jni.h>
-#include <TrustWalletCore/TWBase.h>
+#include "TWBase.h"
+#include "TWData.h"
+#include "TWCoinType.h"
 
 TW_EXTERN_C_BEGIN
 
-JNIEXPORT
-jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSign(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin);
+struct TWUTXOPlanner;
+
+TWData * _Nonnull TWUTXOPlannerPlan(TWData *_Nonnull input, enum TWCoinType coin);
 
 TW_EXTERN_C_END
-
-#endif // JNI_TW_ANYSIGNER_H

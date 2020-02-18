@@ -36,7 +36,7 @@ TEST(RavencoinTransaction, SignTransaction) {
     const int64_t amount = 50000000;
     const int64_t fee = 2000000;
 
-    auto input = Bitcoin::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
@@ -61,8 +61,11 @@ TEST(RavencoinTransaction, SignTransaction) {
     plan.fee = fee;
     plan.change = utxo_amount - amount - fee;
 
+    auto &protoPlan = *input.mutable_plan();
+    protoPlan = plan.proto();
+
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input), plan);
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
     auto result = signer.sign();
     auto signedTx = result.payload();
 

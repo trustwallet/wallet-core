@@ -4,18 +4,17 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#pragma once
+#ifndef JNI_TW_UTXOPLANNER_H
+#define JNI_TW_UTXOPLANNER_H
 
-#include "TWBase.h"
-#include "TWData.h"
-#include "TWNEOProto.h"
+#include <jni.h>
+#include <TrustWalletCore/TWBase.h>
 
 TW_EXTERN_C_BEGIN
 
-TW_EXPORT_CLASS
-struct TWNEOPlanner;
-
-TW_EXPORT_STATIC_METHOD
-TW_NEO_Proto_TransactionPlan TWNEOPlannerPlan(TW_NEO_Proto_SigningInput input);
+JNIEXPORT
+jbyteArray JNICALL Java_wallet_core_java_UTXOPlanner_nativePlan(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin);
 
 TW_EXTERN_C_END
+
+#endif // JNI_TW_UTXOPLANNER_H

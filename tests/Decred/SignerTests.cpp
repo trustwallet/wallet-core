@@ -81,8 +81,8 @@ TEST(DecredSigner, Sign) {
     // Sign
     auto signer = Signer(std::move(input));
     signer.transaction = redeemTx;
-    signer.plan.utxos.push_back(*utxo0);
-    signer.plan.amount = 100'000'000;
+    signer.txPlan.utxos.push_back(*utxo0);
+    signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
     ASSERT_TRUE(result);

@@ -16,7 +16,7 @@
 #include "../interface/TWTestUtilities.h"
 
 #include <TrustWalletCore/TWBitcoinScript.h>
-#include <TrustWalletCore/TWBitcoinTransactionSigner.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 

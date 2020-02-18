@@ -10,13 +10,14 @@
 #include "Aion/Signer.h"
 #include "Algorand/Signer.h"
 #include "Binance/Signer.h"
-#include "Bitcoin/TransactionSigner.h"
+#include "Bitcoin/Signer.h"
 #include "Cosmos/Signer.h"
 #include "Decred/Signer.h"
 #include "EOS/Signer.h"
 #include "Ethereum/Signer.h"
 #include "FIO/Signer.h"
 #include "Filecoin/Signer.h"
+#include "Groestlcoin/Signer.h"
 #include "Harmony/Signer.h"
 #include "Icon/Signer.h"
 #include "IoTeX/Signer.h"
@@ -37,6 +38,7 @@
 #include "VeChain/Signer.h"
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
+#include "Zcash/Signer.h"
 #include "Zilliqa/Signer.h"
 
 #pragma clang diagnostic push
@@ -74,14 +76,9 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     case TWCoinTypeRavencoin:
     case TWCoinTypeViacoin:
     case TWCoinTypeZcoin:
-        // FIXME
-        break;
-    case TWCoinTypeCardano:
-        // not implemented yet
-        break;
+        return AnySign<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeDecred:
-        // FIXME
-        break;
+        return AnySign<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeEOS:
         return AnySign<EOS::Signer, EOS::Proto::SigningInput>(data);
     case TWCoinTypeCosmos:
@@ -101,8 +98,7 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     case TWCoinTypeFIO:
         return AnySign<FIO::Signer, FIO::Proto::SigningInput>(data);
     case TWCoinTypeGroestlcoin:
-        // FIXME
-        break;
+        return AnySign<Groestlcoin::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeHarmony:
         return AnySign<Harmony::Signer, Harmony::Proto::SigningInput>(data);
     case TWCoinTypeICON:
@@ -137,9 +133,6 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<Theta::Signer, Theta::Proto::SigningInput>(data);
     case TWCoinTypeTezos:
         return AnySign<Tezos::Signer, Tezos::Proto::SigningInput>(data);
-    case TWCoinTypeTON:
-        // not implemented yet
-        break;
     case TWCoinTypeTron:
         return AnySign<Tron::Signer, Tron::Proto::SigningInput>(data);
     case TWCoinTypeVeChain:
@@ -152,6 +145,10 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<Zilliqa::Signer, Zilliqa::Proto::SigningInput>(data);
     case TWCoinTypeZcash:
     case TWCoinTypeZelcash:
+        return AnySign<Zcash::Signer, Bitcoin::Proto::SigningInput>(data);
+    case TWCoinTypeCardano:
+    case TWCoinTypeTON:
+        // not implemented yet
         break;
     }
     return TWDataCreateWithSize(0);

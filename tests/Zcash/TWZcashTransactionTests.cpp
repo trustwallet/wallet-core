@@ -18,7 +18,6 @@
 #include "Zcash/Transaction.h"
 
 #include <TrustWalletCore/TWBitcoinScript.h>
-#include <TrustWalletCore/TWHDWallet.h>
 
 #include <gtest/gtest.h>
 
@@ -112,8 +111,11 @@ TEST(TWZcashTransaction, SaplingSigning) {
     plan.change = 0;
     plan.branchId = Data(Zcash::SaplingBranchID.begin(), Zcash::SaplingBranchID.end());
 
+    auto &protoPlan = *input.mutable_plan();
+    protoPlan = plan.proto();
+
     // Sign
-    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input), plan).sign();
+    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input)).sign();
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
@@ -172,8 +174,11 @@ TEST(TWZcashTransaction, BlossomSigning) {
     plan.fee = fee;
     plan.change = 0;
 
+    auto &protoPlan = *input.mutable_plan();
+    protoPlan = plan.proto();
+
     // Sign
-    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input), plan).sign();
+    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input)).sign();
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 

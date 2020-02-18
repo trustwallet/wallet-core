@@ -74,7 +74,7 @@ class BitcoinCashTests: XCTestCase {
             $0.privateKey = [privateKey.data]
         }
 
-        let output = BitcoinTransactionSigner(input: input).sign()
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoinCash)
         guard output.error.isEmpty else { return }
 
         XCTAssertEqual(output.transactionID, "96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4")

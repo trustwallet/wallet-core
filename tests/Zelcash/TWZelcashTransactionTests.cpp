@@ -8,14 +8,13 @@
 #include "../interface/TWTestUtilities.h"
 
 #include "Bitcoin/OutPoint.h"
-#include "Zcash/TransactionBuilder.h"
-#include "Bitcoin/TransactionSigner.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
 #include "Zcash/Transaction.h"
 
 #include <TrustWalletCore/TWBitcoinScript.h>
-#include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWUTXOPlanner.h>
 
 #include <gtest/gtest.h>
 
@@ -104,22 +103,23 @@ TEST(TWZelcashTransaction, Signing) {
     auto utxoKey0 = DATA("eda043f40029e67edc6e9edba61f47795e03ad57169074ac81e898c04cc45b29");
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
-    auto plan = Bitcoin::TransactionBuilder::plan(input);
-    plan.amount = amount;
-    plan.fee = fee;
-    plan.change = 0;
-    plan.branchId = Data(Zcash::SaplingBranchID.begin(), Zcash::SaplingBranchID.end());
+    auto branchId = Data(Zcash::SaplingBranchID.begin(), Zcash::SaplingBranchID.end());
 
-    // Sign
-    auto result = Bitcoin::TransactionSigner<Zcash::Transaction, Zcash::TransactionBuilder>(std::move(input), plan).sign();
-    ASSERT_TRUE(result) << result.error();
-    auto signedTx = result.payload();
+    Bitcoin::Proto::TransactionPlan plan;
+    UTXO_PLAN(input, TWCoinTypeZelcash);
+    plan.set_amount(amount);
+    plan.set_fee(fee);
+    plan.set_change(0);
+    plan.set_branch_id(branchId.data(), branchId.size());
 
-    // txid = "ac5e4683ca4859daea1e91302f43e76a12d60c3e5fa955a55ee8629260655ddf"
+    auto& protoPlan = *input.mutable_plan();
+    protoPlan = plan;
 
-    Data serialized;
-    signedTx.encode(serialized);
-    ASSERT_EQ(hex(serialized),
+    Bitcoin::Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeZelcash);
+
+    ASSERT_TRUE(output.error().empty());
+    ASSERT_EQ(hex(output.encoded()),
         "04000080"
         "85202f89"
         "01"

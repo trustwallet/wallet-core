@@ -6,20 +6,18 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "../interface/TWTestUtilities.h"
-
-#include "Bitcoin/OutPoint.h"
-#include "Bitcoin/TransactionBuilder.h"
-#include "Bitcoin/TransactionSigner.h"
 #include "HexCoding.h"
 #include "PublicKey.h"
-
+#include "proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWBitcoinScript.h>
-#include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
+#include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWUTXOPlanner.h>
 
 #include <gtest/gtest.h>
 
 using namespace TW;
-using namespace Bitcoin;
+using namespace TW::Bitcoin;
 
 TEST(MonacoinTransaction, SignTransaction) {
     /*
@@ -36,7 +34,7 @@ TEST(MonacoinTransaction, SignTransaction) {
     const int64_t amount = 50000000;
     const int64_t fee = 20000;
 
-    auto input = Bitcoin::Proto::SigningInput();
+    auto input = Proto::SigningInput();
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_amount(amount);
     input.set_byte_fee(1);
@@ -56,22 +54,20 @@ TEST(MonacoinTransaction, SignTransaction) {
     auto utxoKey0 = DATA("a356a193a24c73c657e0c7bbf4e876964984a2dcba986ea1ea1fca7b025218f3");
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
-    auto plan = Bitcoin::TransactionBuilder::plan(input);
-    plan.amount = amount;
-    plan.fee = fee;
-    plan.change = utxo_amount - amount - fee;
+    Proto::TransactionPlan plan;
+    UTXO_PLAN(input, TWCoinTypeDigiByte);
+    plan.set_amount(amount);
+    plan.set_fee(fee);
+    plan.set_change(utxo_amount - amount - fee);
 
-    auto signer = Bitcoin::TransactionSigner<Bitcoin::Transaction, TransactionBuilder>(std::move(input), plan);
-    auto result = signer.sign();
-    auto signedTx = result.payload();
+    auto &protoPlan = *input.mutable_plan();
+    protoPlan = plan;
 
-    ASSERT_TRUE(result);
-    ASSERT_EQ(fee, signer.plan.fee);
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeDigiByte);
 
-    Data serialized;
-    signedTx.encode(false, serialized);
-    ASSERT_EQ(
-        hex(serialized),
+    ASSERT_TRUE(output.error().empty());
+    ASSERT_EQ(hex(output.encoded()),
         "0100000001441a513dccc3b660c09c42ceaac147fcdc12b5de4b8b56a078fce5d5ce420aed000000006a473044022047789dc7483b178199439bbfce0ab0caf532fec51095ba099d0d9b0b2169033402201745a0160d8d327655a8ef0542367396ce86bbb13df6b183d58c922e422cfa10012102fc08693599fda741558613cd44a50fc65953b1be797637f8790a495b85554f3effffffff0280f0fa02000000001976a914076df984229a2731cbf465ec8fbd35b8da94380f88ac60a2fa02000000001976a914fea39370769d4fed2d8ab98dd5daa482cc56113b88ac00000000"
     );
 }

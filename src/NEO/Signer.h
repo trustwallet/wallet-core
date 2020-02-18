@@ -26,7 +26,7 @@ class Signer {
     PublicKey getPublicKey() const;
     Address getAddress() const;
 
-    static Proto::TransactionPlan planTransaction(const Proto::SigningInput& input);
+    static Proto::TransactionPlan plan(const Proto::SigningInput& input);
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
     void sign(Transaction& tx) const;
     Data sign(const Data& data) const;

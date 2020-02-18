@@ -45,18 +45,15 @@ class TransactionSigner {
 
   public:
     /// Initializes a transaction signer with signing input.
-    TransactionSigner(Bitcoin::Proto::SigningInput&& input)
-        : input(input), plan(TransactionBuilder::plan(input)) {
-        transaction = TransactionBuilder::template build<Transaction>(
-            plan, input.to_address(), input.change_address(), TWCoinType(input.coin_type()));
-    }
-
-    /// Initializes a transaction signer with signing input, a transaction, and
-    /// a hash type.
-    TransactionSigner(Bitcoin::Proto::SigningInput&& input, const TransactionPlan& plan)
-        : input(input), plan(plan) {
-        transaction = TransactionBuilder::template build<Transaction>(
-            plan, input.to_address(), input.change_address(), TWCoinType(input.coin_type()));
+    TransactionSigner(const Bitcoin::Proto::SigningInput& input) : input(input) {
+      if (input.has_plan()) {
+        plan = TransactionPlan(input.plan());
+      } else {
+        plan = TransactionBuilder::plan(input);
+      }
+      transaction = TransactionBuilder::template build<Transaction>(
+        plan, input.to_address(), input.change_address(), TWCoinType(input.coin_type())
+      );
     }
 
     /// Signs the transaction.
@@ -80,18 +77,3 @@ class TransactionSigner {
 };
 
 } // namespace TW::Bitcoin
-
-/// Wrapper for C interface.
-struct TWBitcoinTransactionSigner {
-    TW::Bitcoin::TransactionSigner<TW::Bitcoin::Transaction, TW::Bitcoin::TransactionBuilder> impl;
-};
-
-/// Wrapper for Zcash C interface.
-struct TWZcashTransactionSigner {
-    TW::Bitcoin::TransactionSigner<TW::Zcash::Transaction, TW::Zcash::TransactionBuilder> impl;
-};
-
-/// Wrapper for Groestlcoin C interface.
-struct TWGroestlcoinTransactionSigner {
-    TW::Bitcoin::TransactionSigner<TW::Groestlcoin::Transaction, TW::Bitcoin::TransactionBuilder> impl;
-};

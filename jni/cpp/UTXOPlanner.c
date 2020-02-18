@@ -8,12 +8,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "AnySigner.h"
+#include "UTXOPlanner.h"
 #include "TWJNI.h"
 
-jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSign(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
+jbyteArray JNICALL Java_wallet_core_java_UTXOPlanner_nativePlan(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
     TWData *inputData = TWDataCreateWithJByteArray(env, input);
-    TWData *outputData = TWAnySignerSign(inputData, coin);
+    TWData *outputData = TWUTXOPlannerPlan(inputData, coin);
     jbyteArray resultData = TWDataJByteArray(outputData, env);
     TWDataDelete(inputData);
     return resultData;

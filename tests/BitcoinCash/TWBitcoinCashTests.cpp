@@ -4,20 +4,19 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "../interface/TWTestUtilities.h"
-
+#include "Bitcoin/Address.h"
 #include "HexCoding.h"
 #include "proto/Bitcoin.pb.h"
-#include "Bitcoin/Address.h"
-#include "Bitcoin/TransactionBuilder.h"
-#include "Bitcoin/TransactionSigner.h"
+#include "../interface/TWTestUtilities.h"
 
-#include <TrustWalletCore/TWBitcoinAddress.h>
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
+
 #include <TrustWalletCore/TWAnyAddress.h>
+#include <TrustWalletCore/TWAnySigner.h>
+#include <TrustWalletCore/TWBitcoinAddress.h>
 #include <TrustWalletCore/TWBitcoinScript.h>
-#include <TrustWalletCore/TWBitcoinTransactionSigner.h>
-#include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWHDWallet.h>
+#include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 
 #include <gtest/gtest.h>
@@ -128,18 +127,10 @@ TEST(BitcoinCash, SignTransaction) {
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
     // Sign
-    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    auto result = signer.sign();
-    auto signedTx = result.payload();
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeBitcoinCash);
 
-    ASSERT_TRUE(result);
-    ASSERT_EQ(fee, signer.plan.fee);
-
-    // txid = "96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4"
-
-    Data serialized;
-    signedTx.encode(false, serialized);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(output.encoded()),
         "01000000"
         "01"
             "e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05" "02000000" "6b483045022100b70d158b43cbcded60e6977e93f9a84966bc0cec6f2dfd1463d1223a90563f0d02207548d081069de570a494d0967ba388ff02641d91cadb060587ead95a98d4e3534121038eab72ec78e639d02758e7860cdec018b49498c307791f785aa3019622f4ea5b" "ffffffff"
