@@ -114,10 +114,7 @@ bool Keys::newMnemonic(const string& param1, string& res) {
 }
 
 bool Keys::dumpSeed(string& res) {
-    if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
-        return false;
-    }
+    assert(_currentMnemonic.length() > 0); // a mnemonic is always set
     HDWallet wallet(_currentMnemonic, "");
     string seedHex = hex(wallet.seed);
     res = seedHex;
@@ -125,10 +122,7 @@ bool Keys::dumpSeed(string& res) {
 }
 
 bool Keys::dumpMnemonic(string& res) {
-    if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
-        return false;
-    }
+    assert(_currentMnemonic.length() > 0); // a mnemonic is always set
     res = _currentMnemonic;
     return true;
 }
@@ -146,10 +140,7 @@ bool Keys::priDP(const string& coinid, const string& dp, string& res) {
     if (!_coins.findCoin(coinid, coin)) { return false; }
 
     // mnemo
-    if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
-        return false;
-    }
+    assert(_currentMnemonic.length() > 0); // a mnemonic is always set
 
     // derivation path
     string dp2 = dp;
