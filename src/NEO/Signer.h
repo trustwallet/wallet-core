@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include "../PrivateKey.h"
-#include "../Data.h"
 #include "Address.h"
 #include "Transaction.h"
+#include "../Data.h"
+#include "../PrivateKey.h"
 #include "../proto/NEO.pb.h"
 
 namespace TW::NEO {
@@ -19,23 +19,22 @@ class Signer {
     Data publicKey;
     TW::PrivateKey privateKey;
     Address address;
+
   public:
-    explicit Signer(const TW::PrivateKey &priKey);
+    explicit Signer(const TW::PrivateKey& priKey);
     PrivateKey getPrivateKey() const;
     PublicKey getPublicKey() const;
     Address getAddress() const;
 
-    static Proto::TransactionPlan planTransaction(const Proto::SigningInput& input);
-    static Proto::SigningOutput sign(const Proto::SigningInput& input, const Proto::TransactionPlan& plan);
-    void sign(Transaction &tx) const;
-    Data sign(const Data &data) const;
+    static Proto::TransactionPlan plan(const Proto::SigningInput& input);
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    void sign(Transaction& tx) const;
+    Data sign(const Data& data) const;
+
   private:
-    static Transaction prepareUnsignedTransaction(const Proto::SigningInput& input, const Proto::TransactionPlan& plan, bool validate = true);
+    static Transaction prepareUnsignedTransaction(const Proto::SigningInput& input,
+                                                  const Proto::TransactionPlan& plan,
+                                                  bool validate = true);
 };
 
 } // namespace TW::NEO
-
-/// Wrapper for C interface.
-struct TWNEOSigner {
-    TW::NEO::Signer impl;
-};

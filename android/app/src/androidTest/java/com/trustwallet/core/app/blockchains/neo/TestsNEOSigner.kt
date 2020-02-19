@@ -8,10 +8,12 @@ package com.trustwallet.core.app.blockchains.neo
 
 import com.trustwallet.core.app.utils.Numeric
 import org.junit.Test
-import wallet.core.jni.NEOSigner
+import wallet.core.java.AnySigner
+import wallet.core.java.UTXOPlanner
 import wallet.core.jni.proto.NEO
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
+import wallet.core.jni.CoinType
 
 class TestNEOSigner {
 
@@ -74,23 +76,24 @@ class TestNEOSigner {
         val NEO_ASSET_ID = "9b7cffdaa674beae0f930ebe6085af9093e5fe56b34a5c220ccdcf6efc336fc5"
         val GAS_ASSET_ID = "e72d286979ee6cb1b7e65dfddfb2e384100b8d148e7758de42e4168b71792c60"
 
-        val signerBuilder = NEO.SigningInput.newBuilder().apply {
+        val input = NEO.SigningInput.newBuilder().apply {
             privateKey = "F18B2F726000E86B4950EBEA7BFF151F69635951BC4A31C44F28EE6AF7AEC128".toHexBytesInByteString()
             fee = 12345
             gasAssetId = GAS_ASSET_ID
             gasChangeAddress = "AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV"
         }
-        prepareInputs(signerBuilder)
+        prepareInputs(input)
         val output = NEO.TransactionOutput.newBuilder()
                 .setAssetId(NEO_ASSET_ID)
                 .setAmount(25000000000)
                 .setToAddress("Ad9A1xPbuA5YBFr1XPznDwBwQzdckAjCev")
                 .setChangeAddress("AdtSLMBqACP4jv8tRWwyweXGpyGG46eMXV")
                 .build()
-        signerBuilder.addOutputs(output)
+        input.addOutputs(output)
 
-        val plan = NEOSigner.planTransaction(signerBuilder.build())
-        val result = NEOSigner.sign(signerBuilder.build(), plan).encoded.toByteArray()
+        val plan = UTXOPlanner.plan(input.build(), CoinType.NEO,NEO.TransactionPlan.parser())
+        input.setPlan(plan)
+        val result = AnySigner.sign(input.build(), CoinType.NEO, NEO.SigningOutput.parser()).encoded.toByteArray()
         val hex = Numeric.toHexString(result, 0, result.size, false)
 
         //  https://testnet-explorer.o3.network/transactions/0x7b138c753c24f474d0f70af30a9d79756e0ee9c1f38c12ed07fbdf6fc5132eaf

@@ -10,7 +10,6 @@
 
 #include <gtest/gtest.h>
 
-using namespace std;
 using namespace TW;
 using namespace TW::Nano;
 

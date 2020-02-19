@@ -28,6 +28,7 @@ message SigningInput {
     int64 fee = 4;
     string gas_asset_id = 5;
     string gas_change_address = 6;
+    TransactionPlan plan = 7;
 }
 
 // Transaction signing output.

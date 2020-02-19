@@ -9,7 +9,6 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include "../interface/TWTestUtilities.h"
-#include <TrustWalletCore/TWPKCS8.h>
 
 #include "HexCoding.h"
 #include <Aeternity/Signer.h>

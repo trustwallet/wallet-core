@@ -15,11 +15,14 @@ namespace TW::IoTeX {
 /// Helper class that performs IoTeX transaction signing
 class Signer {
   public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+  public:
     Proto::SigningInput input;
     Proto::ActionCore action;
 
     /// Initializes a transaction signer
-    Signer(Proto::SigningInput&& input) : input(input) { toActionCore(); }
+    Signer(const Proto::SigningInput& input) : input(input) { toActionCore(); }
 
     /// Signs the transaction
     ///
@@ -40,8 +43,3 @@ class Signer {
 };
 
 } // namespace TW::IoTeX
-
-/// Wrapper for C interface
-struct TWIoTeXSigner {
-    TW::IoTeX::Signer impl;
-};

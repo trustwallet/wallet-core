@@ -46,7 +46,7 @@ class KavaTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 204
             $0.chainID = "kava-2"
             $0.memo = ""
@@ -56,7 +56,7 @@ class KavaTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .kava)
 
         let expectedJSON: String =
 """
@@ -118,7 +118,7 @@ class KavaTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 204
             $0.chainID = "kava-2"
             $0.memo = ""
@@ -128,7 +128,7 @@ class KavaTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .kava)
 
         let expectedJSON = """
 {
@@ -185,7 +185,7 @@ class KavaTests: XCTestCase {
             $0.gas = 200000
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 204
             $0.chainID = "kava-2"
             $0.memo = ""
@@ -195,7 +195,8 @@ class KavaTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .kava)
+
         let expectedJSON = """
 {
     "mode": "block",
@@ -251,7 +252,7 @@ class KavaTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 204
             $0.chainID = "kava-2"
             $0.memo = ""
@@ -261,7 +262,7 @@ class KavaTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .kava)
 
         let expectedJSON = """
 {
@@ -323,7 +324,7 @@ class KavaTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 204
             $0.chainID = "kava-2"
             $0.memo = ""
@@ -333,7 +334,7 @@ class KavaTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .kava)
         let expectedJSON = """
 {
     "mode": "block",

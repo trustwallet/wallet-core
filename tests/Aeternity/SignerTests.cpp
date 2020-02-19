@@ -8,9 +8,9 @@
 #include "Aeternity/Transaction.h"
 #include "HexCoding.h"
 
-#include <Aeternity/Address.h>
+#include "Aeternity/Address.h"
 #include <gtest/gtest.h>
-#include <uint256.h>
+#include "uint256.h"
 
 using namespace TW;
 using namespace TW::Aeternity;
@@ -82,5 +82,3 @@ TEST(AeternitySigner, SignTxWithZeroNonce) {
     EXPECT_EQ(result.signature(), "sg_MaJc4ptSUhq5kH6mArszDAvu4f7PejyuhmgM6U8GEr8bRUTaSFbdFPx4C6FEYA5v5Lgwu9EToaWnHgR2xkqZ9JjHnaBpA");
     EXPECT_EQ(result.encoded(), "tx_+LULAfhCuECdQsgcE8bp+9CANdasxkt5gxfjBSI1ztyPl1aNJbm+MwUvE7Lu/qvAkHijfe+Eui2zrqhZRYc5mblRa+oLOIIEuG34awwBoQHuk6T2b40WuBm7m+uf/M383BQS6H/uajJMKpmh4OZxSKEBHxOjsIvwAUAGYqaLadh194A87EwIZH9u1dhMeJe9UKOILsSS9IArwACGEjCc5UAAgwG7qwCPWmVybyBub25jZSB0ZXN0piWfFA==");
 }
-
-

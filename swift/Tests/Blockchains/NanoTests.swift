@@ -25,7 +25,7 @@ class NanoTests: XCTestCase {
             $0.work = "123456789"
         }
 
-        let output = NanoSigner.sign(input: input)
+        let output: NanoSigningOutput = AnySigner.sign(input: input, coin: .nano)
         XCTAssertEqual(output.blockHash.hexString, "f9a323153daefe041efb94d69b9669c882c935530ed953bbe8a665dfedda9696")
         XCTAssertEqual(output.signature.hexString, "d247f6b90383b24e612569c75a12f11242f6e03b4914eadc7d941577dcf54a3a7cb7f0a4aba4246a40d9ebb5ee1e00b4a0a834ad5a1e7bef24e11f62b95a9e09")
         XCTAssertEqual(output.json, """

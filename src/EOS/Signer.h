@@ -6,11 +6,12 @@
 
 #pragma once
 
+#include "Prefixes.h"
+#include "Transaction.h"
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
-#include "Prefixes.h"
-#include "Transaction.h"
+#include "../proto/EOS.pb.h"
 
 #include <stdexcept>
 
@@ -18,7 +19,11 @@ namespace TW::EOS {
 
 /// Helper class that performs EOS transaction signing.
 class Signer {
-public:
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
+  public:
     const Data chainID;
 
     /// Initializes a signer with a chain identifier.
@@ -30,7 +35,7 @@ public:
     /// Computes the transaction hash.
     Data hash(const Transaction& transaction) const noexcept;
 
-    static int is_canonical(uint8_t by, uint8_t sig[64]);
+    static int isCanonical(uint8_t by, uint8_t sig[64]);
 };
 
 } // namespace TW::EOS

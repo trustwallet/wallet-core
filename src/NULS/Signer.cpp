@@ -14,7 +14,18 @@
 using namespace TW;
 using namespace TW::NULS;
 
-Signer::Signer(Proto::SigningInput& input) : input(input) {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto output = Proto::SigningOutput();
+    try {
+        auto signer = Signer(input);
+        auto data = signer.sign();
+        output.set_encoded(data.data(), data.size());
+    }
+    catch(...) {}
+    return output;
+}
+
+Signer::Signer(const Proto::SigningInput& input) : input(input) {
     Proto::TransactionCoinFrom coinFrom;
     coinFrom.set_from_address(input.from());
     coinFrom.set_assets_chainid(input.chain_id());
@@ -102,11 +113,6 @@ Data Signer::sign() const {
     std::copy(transactionSignature.begin(), transactionSignature.end(), std::back_inserter(dataRet));
 
     return dataRet;
-}
-
-Data Signer::sign(Proto::SigningInput& input) const {
-    Signer signer = Signer(input);
-    return signer.sign();
 }
 
 uint32_t Signer::CalculatorTransactionSize(uint32_t inputCount, uint32_t outputCount, uint32_t remarkSize) const {

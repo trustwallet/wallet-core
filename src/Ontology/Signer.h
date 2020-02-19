@@ -9,6 +9,7 @@
 #include "Address.h"
 #include "Transaction.h"
 #include "../PrivateKey.h"
+#include "../proto/Ontology.pb.h"
 
 #include <array>
 #include <string>
@@ -18,6 +19,9 @@
 namespace TW::Ontology {
 
 class Signer {
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
   private:
     Data publicKey;
     TW::PrivateKey privateKey;

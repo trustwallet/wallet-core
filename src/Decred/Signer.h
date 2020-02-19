@@ -26,13 +26,19 @@ namespace TW::Decred {
 
 /// Helper class that performs Decred transaction signing.
 class Signer {
+  public:
+    /// Returns a transaction plan (utxo selection, fee estimation)
+    static Bitcoin::Proto::TransactionPlan plan(const Bitcoin::Proto::SigningInput& input) noexcept;
+
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Bitcoin::Proto::SigningInput& input) noexcept;
   private:
     /// Private key and redeem script provider for signing.
     Bitcoin::Proto::SigningInput input;
 
   public:
     /// Transaction plan.
-    Bitcoin::TransactionPlan plan;
+    Bitcoin::TransactionPlan txPlan;
 
     /// Transaction being signed.
     Transaction transaction;
@@ -46,16 +52,14 @@ class Signer {
     Signer() = default;
 
     /// Initializes a transaction signer with signing input.
-    explicit Signer(Bitcoin::Proto::SigningInput&& input) 
-      : input(input), plan(TransactionBuilder::plan(input)) {
-        transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
-    }
-
-    /// Initializes a transaction signer with signing input, a transaction, and
-    /// a hash type.
-    Signer(Bitcoin::Proto::SigningInput&& input, const Bitcoin::TransactionPlan& plan)
-        : input(input), plan(plan) {
-        transaction = TransactionBuilder::build(plan, input.to_address(), input.change_address());
+    explicit Signer(const Bitcoin::Proto::SigningInput& input) 
+      : input(input) {
+        if (input.has_plan()) {
+          txPlan = Bitcoin::TransactionPlan(input.plan());
+        } else {
+          txPlan = TransactionBuilder::plan(input);
+        }
+        transaction = TransactionBuilder::build(txPlan, input.to_address(), input.change_address());
     }
 
     /// Signs the transaction.
@@ -82,8 +86,3 @@ class Signer {
 };
 
 } // namespace TW::Decred
-
-/// Wrapper for C interface.
-struct TWDecredSigner {
-    TW::Decred::Signer impl;
-};

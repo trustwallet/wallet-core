@@ -22,8 +22,3 @@ class Signer {
 };
 
 } // namespace TW::Tron
-
-/// Wrapper for C interface.
-struct TWTronSigner {
-    TW::Tron::Signer impl;
-};

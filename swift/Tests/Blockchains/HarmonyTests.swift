@@ -26,7 +26,7 @@ class HarmonyTests: XCTestCase {
             $0.chainID = Data(hexString: localNet)!
             $0.privateKey = Data(hexString: "0xb578822c5c718e510f67a9e291e9c6efdaf753f406020f55223b940e1ddb282e")!
         }
-        let output = HarmonySigner.sign(input: input)
+        let output: HarmonySigningOutput = AnySigner.sign(input: input, coin: .harmony)
         let expected = "f86909808252080180946a87346f3ba9958d08d09484a2b7fdbbe42b0df6884c53ecdc18a600008028a0325aed6caa01a5235b"
             + "7a508c8ab67f0c43946b05a1ea6a3e0628de4033fe372da06c19085d3376c30f6dc47cec795991cd37d6d0ebddfa633b0a8f494bc19cd01b"
         XCTAssertEqual(output.encoded.hexString, expected)
@@ -85,7 +85,7 @@ class HarmonyTests: XCTestCase {
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
         }
-        let output = HarmonySigner.sign(input: input)
+        let output: HarmonySigningOutput = AnySigner.sign(input: input, coin: .harmony)
 
         let expected = "f8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
             + "652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345"
@@ -132,7 +132,7 @@ class HarmonyTests: XCTestCase {
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
         }
-        let output = HarmonySigner.sign(input: input)
+        let output: HarmonySigningOutput = AnySigner.sign(input: input, coin: .harmony)
 
         let expected = "f9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
             + "6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121c9880163"
@@ -164,7 +164,7 @@ class HarmonyTests: XCTestCase {
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
         }
-        let output = HarmonySigner.sign(input: input)
+        let output: HarmonySigningOutput = AnySigner.sign(input: input, coin: .harmony)
 
         let e1 = "f87302eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a"
         let e2 = "9c580a02806428a0ada9a8fb49eb3cd74f0f861e16bc1f1d56a0c6e3c25b0391f9e07a7963317e80a05c28dbc4"
@@ -193,7 +193,7 @@ class HarmonyTests: XCTestCase {
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
         }
-        let output = HarmonySigner.sign(input: input)
+        let output: HarmonySigningOutput = AnySigner.sign(input: input, coin: .harmony)
 
         let expected = "f87303eb94ebcd16e8c1d8f493ba04e99a56474122d81a9c5894ebcd16e8c1d8f493ba04e99a56474122d81a9c"
             + "580a02806428a05bf8c653567defe2c3728732bc9d67dd099a977df91c740a883fd89e03abb6e2a05202c4b516"
@@ -220,7 +220,7 @@ class HarmonyTests: XCTestCase {
             $0.privateKey = privateKeyData
             $0.stakingMessage = staking
         }
-        let output = HarmonySigner.sign(input: input)
+        let output: HarmonySigningOutput = AnySigner.sign(input: input, coin: .harmony)
 
         let expected = "f85d04d594ebcd16e8c1d8f493ba04e99a56474122d81a9c5802806428a04c15c72f425"
             + "77001083a9c7ff9d9724077aec704a524e53dc7c9afe97ca4e625a055c13ea17c3efd1cd9"

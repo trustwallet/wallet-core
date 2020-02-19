@@ -68,7 +68,7 @@ class KusamaTests: XCTestCase {
             $0.extrinsicVersion = 4
             $0.privateKey = key.data
         }
-        let output = PolkadotSigner.sign(input: input)
+        let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .kusama)
 
         XCTAssertEqual(output.encoded.hexString, "2d0284ff88dc3417d5058ec4b4503e0c12ea1a0a89be200fe98922423d4334014fa6b0ee0034a113577b56545c45e18969471eebe11ed434f3b2f06e2e3dc8dc137ba804caf60757787ebdeb298327e2f29d68c5520965405ef5582db0445c06e1c11a8a0e0000000400ff8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48e5c0")
     }
@@ -96,7 +96,7 @@ class KusamaTests: XCTestCase {
             $0.extrinsicVersion = 4
             $0.privateKey = key.data
         }
-        let output = PolkadotSigner.sign(input: input)
+        let output: PolkadotSigningOutput = AnySigner.sign(input: input, coin: .kusama)
 
         XCTAssertEqual(output.encoded.hexString, "3d0284fff41296779fd61a5bed6c2f506cc6c9ea93d6aeb357b9c69717193f434ba24ae70043e0fe7497f1d11ca6635b7860ef9551d395172b18af22c16e375326326f524cd32ffafb3e1e73112f016a8028c50eebb608df29523751a11147e36a49f2d40a0000000400ff0e33fdfb980e4499e5c3576e742a563b6a4fc0f6f598b1917fd7a6fe393ffc720700e40b5402")
     }

@@ -53,4 +53,6 @@ message SigningInput {
 message SigningOutput {
     // JSON of the packed transaction.
     string json_encoded = 1;
+
+    string error = 2;
 }

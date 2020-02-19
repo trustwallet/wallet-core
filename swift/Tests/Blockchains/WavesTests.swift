@@ -28,7 +28,7 @@ class WavesTests: XCTestCase {
             $0.transferMessage = transferMessage
         }
 
-        let output = WavesSigner.sign(input: input)
+        let output: WavesSigningOutput = AnySigner.sign(input: input, coin: .waves)
         guard let json = try JSONSerialization.jsonObject(with: output.json.data(using: .utf8)!, options: []) as? [String: Any] else {
             XCTFail("unable to decode json")
             return

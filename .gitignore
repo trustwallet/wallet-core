@@ -23,7 +23,7 @@ lib/protobuf
 
 # Generated files
 jni/cpp/generated
-jni/java
+jni/java/wallet/core/jni
 swift/Sources/Generated
 swift/wallet-core/
 src/Generated

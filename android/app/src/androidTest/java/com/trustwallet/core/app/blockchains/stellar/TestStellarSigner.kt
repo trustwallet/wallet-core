@@ -6,8 +6,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.jni.PrivateKey
 import wallet.core.jni.StellarPassphrase
-import wallet.core.jni.StellarSigner
+import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType.STELLAR
 import wallet.core.jni.proto.Stellar
+import wallet.core.jni.proto.Stellar.SigningOutput
 
 class TestStellarTransactionSigner {
 
@@ -30,7 +32,7 @@ class TestStellarTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
-        val sign: Stellar.SigningOutput = StellarSigner.sign(signingInput.build())
+        val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
         val signBytes = sign.signature
 
         assertEquals(signBytes, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAAAAAABAAAAAAAAAAEAAAAAxYC2MXoOs5v3/NT6PBn9q0uJu6u/YQle5FBa9uzteq4AAAAAAAAAAACYloAAAAAAAAAAARnfXKIAAABAocQZwTnVvGMQlpdGacWvgenxN5ku8YB8yhEGrDfEV48yDqcj6QaePAitDj/N2gxfYD9Q2pJ+ZpkQMsZZG4ACAg==")
@@ -51,7 +53,7 @@ class TestStellarTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
-        val sign: Stellar.SigningOutput = StellarSigner.sign(signingInput.build())
+        val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
         val signBytes = sign.signature
 
         assertEquals(signBytes, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAMxX1vbdtB4xDuKwAZOSgFkYSsfznfIaTRb/JTHWJTt0wAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAECIyh1BG+hER5W+dgHDKe49X6VEYRWIjajM4Ufq3DUG/yw7Xv1MMF4eax3U0TRi7Qwj2fio/DRD3+/Ljtvip2MD")
@@ -72,7 +74,7 @@ class TestStellarTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
-        val sign: Stellar.SigningOutput = StellarSigner.sign(signingInput.build())
+        val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
         val signBytes = sign.signature
 
         assertEquals(signBytes, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAQxX1vbdtB4xDuKwAZOSgFkYSsfznfIaTRb/JTHWJTt0wAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEBd77iui04quoaoWMfeJO06nRfn3Z9bptbAj7Ol44j3ApU8c9dJwVhJbQ7La4mKgIkYviEhGx3AIulFYCkokb8M")
@@ -93,7 +95,7 @@ class TestStellarTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
-        val sign: Stellar.SigningOutput = StellarSigner.sign(signingInput.build())
+        val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
         val signBytes = sign.signature
 
         assertEquals(signBytes, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAQAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAAAAAAJiWgAAAAAAAAAABGd9cogAAAEAOJ8wwCizQPf6JmkCsCNZolQeqet2qN7fgLUUQlwx3TNzM0+/GJ6Qc2faTybjKy111rE60IlnfaPeMl/nyxKIB")
@@ -114,7 +116,7 @@ class TestStellarTransactionSigner {
             privateKey = ByteString.copyFrom(PrivateKey("59a313f46ef1c23a9e4f71cea10fc0c56a2a6bb8a4b9ea3d5348823e5a478722".toHexByteArray()).data())
         }
 
-        val sign: Stellar.SigningOutput = StellarSigner.sign(signingInput.build())
+        val sign = AnySigner.sign(signingInput.build(), STELLAR, SigningOutput.parser())
         val signBytes = sign.signature
 
         assertEquals(signBytes, "AAAAAAmpZryqzBA+OIlrquP4wvBsIf1H3U+GT/DTP5gZ31yiAAAD6AAAAAAAAAACAAAAAAAAAAIAAAAASZYC0gAAAAEAAAAAAAAAAAAAAADFgLYxeg6zm/f81Po8Gf2rS4m7q79hCV7kUFr27O16rgAAAAAAmJaAAAAAAAAAAAEZ31yiAAAAQNgqNDqbe0X60gyH+1xf2Tv2RndFiJmyfbrvVjsTfjZAVRrS2zE9hHlqPQKpZkGKEFka7+1ElOS+/m/1JDnauQg=")

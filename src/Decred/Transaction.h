@@ -8,11 +8,11 @@
 
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
-#include "../Bitcoin/Script.h"
+#include "Bitcoin/Script.h"
 #include "../Data.h"
 #include "../proto/Decred.pb.h"
 
-#include <TrustWalletCore/TWBitcoinSignatureVersion.h>
+#include "Bitcoin/SignatureVersion.h"
 #include <vector>
 
 namespace TW::Decred {

@@ -10,6 +10,7 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "../proto/Waves.pb.h"
 
 #include <cstdint>
 #include <tuple>
@@ -22,13 +23,11 @@ class Signer {
   public:
     Signer() = delete;
 
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
     /// Signs the given transaction.
     static Data sign(const PrivateKey &privateKey, Transaction &transaction) noexcept;
 };
 
 } // namespace TW::Waves
-
-/// Wrapper for C interface.
-struct TWWavesSigner {
-    TW::Waves::Signer impl;
-};

@@ -22,9 +22,9 @@ void Signer::sign(const std::vector<PrivateKey>& privateKeys, Transaction& trans
     }
 }
 
-Proto::SigningOutput Signer::signProtobuf(const Proto::SigningInput& input) {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto blockhash = Solana::Hash(input.recent_blockhash());
-    auto key = PrivateKey(input.private_key());
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
     Message message;
     std::string stakePubkey;
     std::vector<PrivateKey> signerKeys;

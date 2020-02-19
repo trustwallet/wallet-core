@@ -3,12 +3,13 @@ package com.trustwallet.core.app.blockchains.algorand
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexByteArray
-import com.trustwallet.core.app.utils.toHexBytes
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.AlgorandSigner
+import wallet.core.java.AnySigner
+import wallet.core.jni.CoinType.ALGORAND
 import wallet.core.jni.proto.Algorand
+import wallet.core.jni.proto.Algorand.SigningOutput
 
 class TestAlgorandSigner {
 
@@ -33,7 +34,7 @@ class TestAlgorandSigner {
             .setTransactionPay(transaction)
             .build()
 
-        val output: Algorand.SigningOutput = AlgorandSigner.sign(signingInput)
+        val output = AnySigner.sign(signingInput, ALGORAND, SigningOutput.parser())
 
         assertEquals(
             Numeric.toHexString(output.encoded.toByteArray()),

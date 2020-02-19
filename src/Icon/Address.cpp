@@ -35,9 +35,9 @@ Address::Address(const std::string& string) {
     }
 
     if (std::equal(addressPrefix.begin(), addressPrefix.end(), string.begin())) {
-        type = TWIconAddressTypeAddress;
+        type = TypeAddress;
     } else if (std::equal(contractPrefix.begin(), contractPrefix.end(), string.begin())) {
-        type = TWIconAddressTypeContract;
+        type = TypeContract;
     } else {
         throw std::invalid_argument("Invalid address prefix");
     }
@@ -46,14 +46,7 @@ Address::Address(const std::string& string) {
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const std::vector<uint8_t>& data, TWIconAddressType type) : type(type) {
-    if (!isValid(data)) {
-        throw std::invalid_argument("Invalid address data");
-    }
-    std::copy(data.begin(), data.end(), bytes.begin());
-}
-
-Address::Address(const PublicKey& publicKey, TWIconAddressType type) : type(type) {
+Address::Address(const PublicKey& publicKey, enum AddressType type) : type(type) {
     auto hash = std::array<uint8_t, Hash::sha256Size>();
     sha3_256(publicKey.bytes.data() + 1, publicKey.bytes.size() - 1, hash.data());
     std::copy(hash.end() - Address::size, hash.end(), bytes.begin());
@@ -61,9 +54,9 @@ Address::Address(const PublicKey& publicKey, TWIconAddressType type) : type(type
 
 std::string Address::string() const {
     switch (type) {
-    case TWIconAddressTypeAddress:
+    case TypeAddress:
         return addressPrefix + hex(bytes);
-    case TWIconAddressTypeContract:
+    case TypeContract:
         return contractPrefix + hex(bytes);
     default:
         return "";

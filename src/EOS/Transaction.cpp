@@ -31,7 +31,7 @@ Signature::Signature(Data sig, Type type) : data(sig), type(type) {
 void Signature::serialize(Data& os) const noexcept {
     // type should never be Legacy
     uint32_t typeId = type == Type::ModernK1 ? 0 : 1;
-    Bravo::encodeVarInt32(typeId, os);
+    encodeVarInt32(typeId, os);
     os.insert(os.end(), data.begin(), data.end());
 }
 
@@ -63,7 +63,7 @@ std::string Signature::string() const noexcept {
 
 void Extension::serialize(Data& os) const noexcept {
     encode16LE(type, os);
-    Bravo::encodeVarInt64(buffer.size(), os);
+    encodeVarInt64(buffer.size(), os);
     append(os, buffer);
 }
 
@@ -86,7 +86,6 @@ void Transaction::setReferenceBlock(const Data& refBlockId) {
 }
 
 void Transaction::serialize(Data& os) const noexcept{
-    using namespace Bravo;
 
     encode32LE(expiration, os);
     encode16LE(refBlockNumber, os);
@@ -101,7 +100,6 @@ void Transaction::serialize(Data& os) const noexcept{
 }
 
 json Transaction::serialize() const {
-    using namespace Bravo;
 
     // get a formatted date
     char formattedDate[20];

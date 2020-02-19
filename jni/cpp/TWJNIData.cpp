@@ -12,6 +12,7 @@
 jbyteArray TWDataJByteArray(TWData *_Nonnull data, JNIEnv *env) {
     jbyteArray array = env->NewByteArray(TWDataSize(data));
     env->SetByteArrayRegion(array, 0, TWDataSize(data), (jbyte *) TWDataBytes(data));
+    TWDataDelete(data);
     return array;
 }
 

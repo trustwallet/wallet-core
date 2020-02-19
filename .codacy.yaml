@@ -3,3 +3,4 @@ exclude_paths:
   - 'tools/**'
   - 'trezor-crypto/**'
   - 'walletconsole/lib/Util.cpp'
+  - 'tests/**'

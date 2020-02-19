@@ -13,10 +13,36 @@
 #include "../Hash.h"
 #include "../HexCoding.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
+#include "Bitcoin/OpCodes.h"
 
 using namespace TW;
 using namespace TW::Decred;
+
+Bitcoin::Proto::TransactionPlan Signer::plan(const Bitcoin::Proto::SigningInput& input) noexcept {
+    auto signer = Signer(std::move(input));
+    return signer.txPlan.proto();
+}
+
+Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noexcept {
+    auto signer = Signer(std::move(input));
+    auto result = signer.sign();
+    auto output = Proto::SigningOutput();
+    if (!result) {
+        output.set_error(result.error());
+        return output;
+    }
+
+    const auto& tx = result.payload();
+    *output.mutable_transaction() = tx.proto();
+
+    Data encoded;
+    tx.encode(encoded);
+    output.set_encoded(encoded.data(), encoded.size());
+
+    auto txHash = Hash::blake256(encoded);
+    output.set_transaction_id(hex(txHash));
+    return output;
+}
 
 Result<Transaction> Signer::sign() {
     signedInputs.clear();
@@ -25,8 +51,8 @@ Result<Transaction> Signer::sign() {
 
     const bool hashSingle =
         ((input.hash_type() & ~TWBitcoinSigHashTypeAnyoneCanPay) == TWBitcoinSigHashTypeSingle);
-    for (auto i = 0; i < plan.utxos.size(); i += 1) {
-        auto& utxo = plan.utxos[i];
+    for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
+        auto& utxo = txPlan.utxos[i];
 
         // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
         if (hashSingle && i >= transaction.outputs.size()) {

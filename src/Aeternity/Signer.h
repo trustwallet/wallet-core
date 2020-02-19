@@ -12,6 +12,9 @@ namespace TW::Aeternity {
 
 class Signer {
   public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
     /// Signs the given transaction.
     static Proto::SigningOutput sign(const PrivateKey &privateKey, Transaction &transaction);
 
@@ -29,8 +32,3 @@ class Signer {
 };
 
 } // namespace TW::Aeternity
-
-/// Wrapper for C interface.
-struct TWAeternitySigner {
-    TW::Aeternity::Signer impl;
-};

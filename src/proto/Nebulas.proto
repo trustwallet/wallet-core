@@ -17,7 +17,6 @@ message SigningInput {
     // Gas price (256-bit number)
     bytes gas_price = 4;
 
-    
     // Gas limit (256-bit number)
     bytes gas_limit = 5;
 

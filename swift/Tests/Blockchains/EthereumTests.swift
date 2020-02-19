@@ -11,9 +11,7 @@ class EthereumTests: XCTestCase {
 
     func testAddress() {
         let anyAddress = AnyAddress(string: "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1", coin: .ethereum)
-        let ethAddress = EthereumAddress(string: "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1")
 
-        XCTAssertEqual(anyAddress?.description, ethAddress?.description)
         XCTAssertEqual(anyAddress?.description, "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1")
         XCTAssertEqual(anyAddress?.coin, .ethereum)
     }
@@ -29,7 +27,7 @@ class EthereumTests: XCTestCase {
             $0.privateKey = Data(hexString: "0x4646464646464646464646464646464646464646464646464646464646464646")!
         }
 
-        let output = EthereumSigner.sign(input: input)
+        let output: EthereumSigningOutput = AnySigner.sign(input: input, coin: .ethereum)
 
         XCTAssertEqual(output.v.hexString, "25")
         XCTAssertEqual(output.r.hexString, "28ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276")

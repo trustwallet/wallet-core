@@ -1,16 +1,14 @@
 package com.trustwallet.core.app.blockchains.eos
 
-import android.util.Log
-import com.google.common.base.Utf8
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.*
 import org.junit.Test
-import wallet.core.jni.proto.Bravo
 import org.json.JSONObject
 import wallet.core.jni.*
 import wallet.core.jni.proto.EOS
-import java.util.*
+import wallet.core.jni.proto.EOS.SigningOutput
+import wallet.core.java.AnySigner
 
 
 class TestEOSSigning {
@@ -71,12 +69,10 @@ class TestEOSSigning {
             privateKeyType = EOS.KeyType.MODERNK1
         }
 
-        val result = EOSSigner.sign(signingInput.build())
-        assertTrue("Error signing: " + result.error, result.success)
-        assertEquals(1, result.objectsCount)
+        val output = AnySigner.sign(signingInput.build(), CoinType.EOS, SigningOutput.parser())
+        assertTrue(output.error.isEmpty())
 
-        val signingOutput: EOS.SigningOutput = result.getObjects(0).unpack(EOS.SigningOutput::class.java)
-        val jsonObj = JSONObject(signingOutput.jsonEncoded)
+        val jsonObj = JSONObject(output.jsonEncoded)
         assertNotNull(jsonObj)
 
         val signatures = jsonObj.getJSONArray("signatures")
@@ -111,28 +107,26 @@ class TestEOSSigning {
 
         var badinput = goodInput;
         badinput.asset = getAssetBuilder(300000, 19, "TKN").build();
-        var result = EOSSigner.sign(badinput.build())
-        assertFalse("Expected error but signing suceeded!", result.success)
+        var result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
+        assertFalse("Expected error but signing suceeded!", result.error.isEmpty())
 
 
         badinput = goodInput;
         badinput.asset = getAssetBuilder(300000, 4, "xyz").build()
-        result = EOSSigner.sign(badinput.build())
-        assertFalse("Expected error but signing suceeded!", result.success)
+        result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
+        assertFalse("Expected error but signing suceeded!", result.error.isEmpty())
 
 
         badinput = goodInput;
         badinput.recipient = "A".repeat(15)
-        result = EOSSigner.sign(badinput.build())
-        assertFalse("Expected error but signing suceeded!", result.success)
+        result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
+        assertFalse("Expected error but signing suceeded!", result.error.isEmpty())
 
 
 
         badinput = goodInput;
         badinput.referenceBlockId = ByteString.copyFrom("0000086bf9e7704509aa41311a66fa0a1b479c".toHexByteArray())
-        result = EOSSigner.sign(badinput.build())
-        assertFalse("Expected error but signing suceeded!", result.success)
+        result = AnySigner.sign(badinput.build(), CoinType.EOS, SigningOutput.parser())
+        assertFalse("Expected error but signing suceeded!", result.error.isEmpty())
     }
-
-
 }

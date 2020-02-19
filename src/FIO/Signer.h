@@ -10,6 +10,7 @@
 #include "../Data.h"
 #include "../PrivateKey.h"
 #include "../PublicKey.h"
+#include "../proto/FIO.pb.h"
 
 #include <string>
 
@@ -17,7 +18,11 @@ namespace TW::FIO {
 
 /// FIO Signer, signing primitives.  See also TransactionBuilder for building full signed transaction
 class Signer {
-public:
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+
+  public:
     static constexpr auto SignatureSuffix = "K1";
     static constexpr auto SignaturePrefix = "SIG_K1_";
 
@@ -35,7 +40,7 @@ public:
 
 /// Helper class for Actor name generation from address
 class Actor {
-public:
+  public:
     /// Generate the actor name of the address
     static std::string actor(const Address& addr);
 

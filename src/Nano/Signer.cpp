@@ -124,8 +124,17 @@ Signer::Signer(const Proto::SigningInput& input)
     input(input),
     previous{previousFromInput(input)},
     link{linkFromInput(input)},
-    blockHash(hashBlockData(publicKey, input))
-{
+    blockHash(hashBlockData(publicKey, input)) {}
+
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    Proto::SigningOutput output;
+    try {
+        auto signer = Signer(input);
+        output = signer.build();
+    }
+    catch (...) {}
+    return output;
 }
 
 std::array<byte, 64> Signer::sign() const noexcept {

@@ -22,8 +22,3 @@ class OperationList {
 };
 
 } // namespace TW::Tezos
-
-/// Wrapper for C interface.
-struct TWTezosOperationList {
-  TW::Tezos::OperationList impl;
-};

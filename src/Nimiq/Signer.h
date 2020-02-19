@@ -10,11 +10,15 @@
 #include "../Data.h"
 #include "../Hash.h"
 #include "../PrivateKey.h"
+#include "../proto/Nimiq.pb.h"
 
 namespace TW::Nimiq {
 
 /// Helper class that performs Nimiq transaction signing.
 class Signer {
+  public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
   public:
     /// Signs the given transaction.
     void sign(const PrivateKey& privateKey, Transaction& transaction) const noexcept;
@@ -30,8 +34,3 @@ class Signer {
 };
 
 } // namespace TW::Nimiq
-
-/// Wrapper for C interface.
-struct TWNimiqSigner {
-    TW::Nimiq::Signer impl;
-};

@@ -3,13 +3,12 @@ package com.trustwallet.core.app.blockchains.bitcoin
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexBytes
-import wallet.core.jni.BitcoinTransactionSigner
+import wallet.core.java.AnySigner
 import wallet.core.jni.proto.Bitcoin
+import wallet.core.jni.proto.Bitcoin.SigningOutput
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import wallet.core.jni.CoinType
-import wallet.core.jni.Curve
-import wallet.core.jni.Purpose
+import wallet.core.jni.CoinType.BITCOIN
 
 class TestBitcoinSigning {
 
@@ -19,7 +18,7 @@ class TestBitcoinSigning {
 
     @Test
     fun testSignP2WPKH() {
-        val signerBuilder = Bitcoin.SigningInput.newBuilder()
+        val input = Bitcoin.SigningInput.newBuilder()
             .setAmount(335_790_000)
             .setHashType(0x01)
             .setToAddress("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx")
@@ -30,10 +29,10 @@ class TestBitcoinSigning {
 
         val utxoKey0 =
             (Numeric.hexStringToByteArray("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"))
-        signerBuilder.addPrivateKey(ByteString.copyFrom(utxoKey0))
+        input.addPrivateKey(ByteString.copyFrom(utxoKey0))
         val utxoKey1 =
             (Numeric.hexStringToByteArray("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"))
-        signerBuilder.addPrivateKey(ByteString.copyFrom(utxoKey1))
+        input.addPrivateKey(ByteString.copyFrom(utxoKey1))
 
 
         // Redeem scripts
@@ -50,7 +49,7 @@ class TestBitcoinSigning {
             .setScript(ByteString.copyFrom("2103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432ac".toHexBytes()))
             .build()
 
-        signerBuilder.addUtxo(utxo0)
+        input.addUtxo(utxo0)
 
 
         val outpoint1 = Bitcoin.OutPoint.newBuilder()
@@ -65,14 +64,10 @@ class TestBitcoinSigning {
             .setScript(ByteString.copyFrom(Numeric.hexStringToByteArray("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1")))
             .build()
 
-        signerBuilder.addUtxo(utxo1)
+        input.addUtxo(utxo1)
 
-        val signer = BitcoinTransactionSigner(signerBuilder.build())
-        val result = signer.sign()
-        assert(result.success)
-        assertEquals(1, result.objectsCount)
-
-        val output = result.getObjects(0).unpack(wallet.core.jni.proto.Bitcoin.SigningOutput::class.java)
+        val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
+        assert(output.error.isEmpty())
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
         assertEquals(1, signedTransaction.version)
@@ -87,7 +82,7 @@ class TestBitcoinSigning {
 
     @Test
     fun testSignP2PKH() {
-        val signerBuilder = Bitcoin.SigningInput.newBuilder()
+        val input = Bitcoin.SigningInput.newBuilder()
             .setAmount(55_000)
             .setHashType(0x01)
             .setToAddress("1GDCMHsTLBkawQXP8dqcZtr8zGgb4XpCug")
@@ -98,10 +93,10 @@ class TestBitcoinSigning {
 
         val utxoKey0 =
             (Numeric.hexStringToByteArray("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"))
-        signerBuilder.addPrivateKey(ByteString.copyFrom(utxoKey0))
+        input.addPrivateKey(ByteString.copyFrom(utxoKey0))
         val utxoKey1 =
             (Numeric.hexStringToByteArray("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"))
-        signerBuilder.addPrivateKey(ByteString.copyFrom(utxoKey1))
+        input.addPrivateKey(ByteString.copyFrom(utxoKey1))
 
 
         // Redeem scripts
@@ -118,7 +113,7 @@ class TestBitcoinSigning {
             .setScript(ByteString.copyFrom("2103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432ac".toHexBytes()))
             .build()
 
-        signerBuilder.addUtxo(utxo0)
+        input.addUtxo(utxo0)
 
         val outpoint1 = Bitcoin.OutPoint.newBuilder()
             .setHash(ByteString.copyFrom("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a".toHexBytes()))
@@ -132,14 +127,11 @@ class TestBitcoinSigning {
             .setScript(ByteString.copyFrom(Numeric.hexStringToByteArray("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1")))
             .build()
 
-        signerBuilder.addUtxo(utxo1)
+        input.addUtxo(utxo1)
 
-        val signer = BitcoinTransactionSigner(signerBuilder.build())
-        val result = signer.sign()
-        assert(result.success)
-        assertEquals(1, result.objectsCount)
+        val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
 
-        val output = result.getObjects(0).unpack(Bitcoin.SigningOutput::class.java)
+        assert(output.error.isEmpty())
         val signedTransaction = output.transaction
         assert(signedTransaction.isInitialized)
         assertEquals(1, signedTransaction.version)

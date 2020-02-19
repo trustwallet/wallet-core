@@ -5,8 +5,11 @@ import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.toHexByteArray
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import wallet.core.java.AnySigner
 import wallet.core.jni.*
+import wallet.core.jni.CoinType.TERRA
 import wallet.core.jni.proto.Cosmos
+import wallet.core.jni.proto.Cosmos.SigningOutput
 
 class TestTerraTransactions {
 
@@ -19,7 +22,7 @@ class TestTerraTransactions {
         val key =
             PrivateKey("1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6".toHexByteArray())
         val publicKey = key.getPublicKeySecp256k1(true)
-        val from = AnyAddress(publicKey, CoinType.TERRA).description()
+        val from = AnyAddress(publicKey, TERRA).description()
 
         val txAmount = Cosmos.Amount.newBuilder().apply {
             amount = 1000000
@@ -57,7 +60,8 @@ class TestTerraTransactions {
             addAllMessages(listOf(message))
         }.build()
 
-        val jsonPayload = CosmosSigner.sign(signingInput).json
+        val output = AnySigner.sign(signingInput, TERRA, SigningOutput.parser())
+        val jsonPayload = output.json
 
         val expectedJsonPayload = """{"mode":"block","tx":{"fee":{"amount":[{"amount":"3000","denom":"uluna"}],"gas":"200000"},"memo":"","msg":[{"type":"bank/MsgSend","value":{"amount":[{"amount":"1000000","denom":"uluna"}],"from_address":"terra1jf9aaj9myrzsnmpdr7twecnaftzmku2mhs2hfe","to_address":"terra1hdp298kaz0eezpgl6scsykxljrje3667d233ms"}}],"signatures":[{"pub_key":{"type":"tendermint/PubKeySecp256k1","value":"A13xhVZlIdangCMZ7gbhoo6Xt3ct+1/dE8pvBXVRiWjk"},"signature":"KPdiVsKpY12JG/VKEJVa/FpMKclxlS0qNNG6VOAypj10R5vY5UX5IgRJET1zNYnH0wvcXxfNXV+s8jtwN2UXiQ=="}]}}"""
         assertEquals(expectedJsonPayload, jsonPayload)

@@ -8,12 +8,10 @@
 
 #include "Stellar/Address.h"
 #include "Stellar/Signer.h"
-#include "Bitcoin/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWStellarMemoType.h>
-#include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWStellarPassphrase.h>
 #include "BinaryCoding.h"
 

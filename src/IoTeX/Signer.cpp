@@ -13,6 +13,11 @@
 using namespace TW;
 using namespace TW::IoTeX;
 
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(input);
+    return signer.build();
+}
+
 Data Signer::sign() const {
     auto key = PrivateKey(input.privatekey());
     return key.sign(hash(), TWCurveSECP256k1);

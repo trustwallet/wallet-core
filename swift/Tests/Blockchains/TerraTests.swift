@@ -48,7 +48,7 @@ class TerraTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 158
             $0.chainID = "soju-0013"
             $0.memo = ""
@@ -58,7 +58,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON: String =
 """
@@ -122,7 +122,7 @@ class TerraTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 158
             $0.chainID = "soju-0013"
             $0.memo = ""
@@ -132,7 +132,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON: String =
 """
@@ -195,7 +195,7 @@ class TerraTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 158
             $0.chainID = "soju-0013"
             $0.memo = ""
@@ -205,7 +205,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON = """
 {
@@ -263,7 +263,7 @@ class TerraTests: XCTestCase {
             $0.gas = 200000
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 158
             $0.chainID = "soju-0013"
             $0.memo = ""
@@ -273,7 +273,8 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
+
         let expectedJSON = """
 {
     "mode": "block",
@@ -330,7 +331,7 @@ class TerraTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 158
             $0.chainID = "soju-0013"
             $0.memo = ""
@@ -340,7 +341,7 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
 
         let expectedJSON = """
 {
@@ -403,7 +404,7 @@ class TerraTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 158
             $0.chainID = "soju-0013"
             $0.memo = ""
@@ -413,7 +414,8 @@ class TerraTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .terra)
+
         let expectedJSON = """
 {
     "mode": "block",

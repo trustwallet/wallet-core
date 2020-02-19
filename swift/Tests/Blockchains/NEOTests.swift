@@ -89,8 +89,9 @@ class NEOTests: XCTestCase {
         }
         signingInput.outputs.append(output)
 
-        let plan = NEOSigner.planTransaction(input: signingInput)
-        let signedTx = NEOSigner.sign(input: signingInput, plan: plan)
+        let plan: NEOTransactionPlan = UTXOPlanner.plan(input: signingInput, coin: .neo)
+        signingInput.plan = plan
+        let signedTx: NEOSigningOutput = AnySigner.sign(input: signingInput, coin: .neo)
         let result = signedTx.encoded.hexString
 
         //  https://testnet-explorer.o3.network/transactions/0x7b138c753c24f474d0f70af30a9d79756e0ee9c1f38c12ed07fbdf6fc5132eaf
