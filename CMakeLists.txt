@@ -88,6 +88,14 @@ target_include_directories(TrustWalletCore
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
 )
 
+# include libsecp256k1
+target_link_libraries(TrustWalletCore
+    PUBLIC
+        "/usr/local/lib/libsecp256k1.la"
+        "/usr/local/lib/libsecp256k1.dylib"
+        "/usr/local/lib/libsecp256k1.0.dylib"
+    )
+
 if(NOT ANDROID AND NOT IOS_PLATFORM)
     add_subdirectory(tests)
 endif()
