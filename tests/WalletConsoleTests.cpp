@@ -82,20 +82,30 @@ TEST(WalletConsole, coins) {
 }
 
 TEST(WalletConsole, coin) {
-    auto pos1 = outputss.str().length();
-    cmd.executeLine("coin btc");
-    string res1 = outputss.str().substr(pos1);
-    EXPECT_TRUE(res1.find("Set active coin to: bitcoin") != string::npos);
-
-    auto pos2 = outputss.str().length();
-    cmd.executeLine("coin eth");
-    string res2 = outputss.str().substr(pos2);
-    EXPECT_TRUE(res2.find("Set active coin to: ethereum") != string::npos);
-
-    auto pos3 = outputss.str().length();
-    cmd.executeLine("coin bitcoin");
-    string res3 = outputss.str().substr(pos3);
-    EXPECT_TRUE(res3.find("Set active coin to: bitcoin") != string::npos);
+    {
+        auto pos = outputss.str().length();
+        cmd.executeLine("coin btc");
+        string res = outputss.str().substr(pos);
+        EXPECT_TRUE(res.find("Set active coin to: bitcoin") != string::npos);
+    }
+    {
+        auto pos = outputss.str().length();
+        cmd.executeLine("coin eth");
+        string res = outputss.str().substr(pos);
+        EXPECT_TRUE(res.find("Set active coin to: ethereum") != string::npos);
+    }
+    {
+        auto pos = outputss.str().length();
+        cmd.executeLine("coin bitcoin");
+        string res = outputss.str().substr(pos);
+        EXPECT_TRUE(res.find("Set active coin to: bitcoin") != string::npos);
+    }
+    {
+        auto pos = outputss.str().length();
+        cmd.executeLine("coin no_such_coin_exists");
+        string res = outputss.str().substr(pos);
+        EXPECT_TRUE(res.find("Error: No such coin") != string::npos);
+    }
 }
 
 TEST(WalletConsole, unknownCommand) {
@@ -382,10 +392,20 @@ TEST(WalletConsole, buffer) {
     int lines3 = countLines(res3);
     EXPECT_TRUE(lines3 >= 3);
 
-    auto pos4 = outputss.str().length();
-    cmd.executeLine("#79");
-    string res4 = outputss.str().substr(pos4);
-    EXPECT_TRUE(res4.find("Error processing input") != string::npos);
+    {
+        auto pos = outputss.str().length();
+        cmd.executeLine("#79");
+        string res = outputss.str().substr(pos);
+        EXPECT_TRUE(res.find("out of range") != string::npos);
+        EXPECT_TRUE(res.find("Error processing input") != string::npos);
+    }
+    {
+        auto pos = outputss.str().length();
+        cmd.executeLine("#jj");
+        string res = outputss.str().substr(pos);
+        EXPECT_TRUE(res.find("Invalid input") != string::npos);
+        EXPECT_TRUE(res.find("Error processing input") != string::npos);
+    }
 }
 
 TEST(WalletConsole, fileWriteRead) {
