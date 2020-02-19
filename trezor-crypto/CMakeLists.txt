@@ -59,12 +59,19 @@ target_compile_options(TrezorCrypto
         -Werror
 )
 
-target_link_libraries(TrezorCrypto 
-    PUBLIC
-        "/usr/local/lib/libsecp256k1.la"
-        "/usr/local/lib/libsecp256k1.dylib"
-        "/usr/local/lib/libsecp256k1.0.dylib"
-    )
+# Source files
+if(${ANDROID})
+    target_link_libraries(TrezorCrypto 
+        PUBLIC
+            "/usr/local/lib/libsecp256k1.a"
+            "/usr/local/lib/libsecp256k1.la"
+        )
+else()
+    target_link_libraries(TrezorCrypto 
+        PUBLIC
+            "/usr/local/lib/libsecp256k1.dylib"
+        )
+endif()
 
 target_include_directories(TrezorCrypto
     PUBLIC
