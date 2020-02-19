@@ -207,29 +207,15 @@ Data TransactionSigner<Transaction>::createSignature(const Transaction& transact
                                                      const TW::FreeCash::Script& script, const Data& key,
                                                      size_t index, Amount amount,
                                                      uint32_t version) {
-    auto sighash = transaction.getSignatureHash(script, index, static_cast<TWFreeCashSigHashType>(input.hash_type()), amount,
-                                                static_cast<TWFreeCashSignatureVersion>(version));
+    auto sighash = transaction.getSignatureHash(script, index, static_cast<TWFreeCashSigHashType>(input.hash_type()), amount, static_cast<TWFreeCashSignatureVersion>(version));
     auto pk = PrivateKey(key);
-    //auto buffer = reverseBuffer(sighash);
-    //auto sig = pk.signSchnorr(Data(begin(buffer), end(buffer)), TWCurveSECP256k1);
-    auto sig = pk.signSchnorr(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
+
+    auto sig = pk.signBchSchnorr(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
     if (sig.empty()) {
         return {};
     }
     sig.push_back(static_cast<uint8_t>(input.hash_type()));
     return sig;
-}
-
-template <typename Transaction>
-Data TransactionSigner<Transaction>::reverseBuffer(const Data& data) {
-
-    std::vector<uint8_t> buffer;
-    //printf("%d", data.size());
-    for(int i=data.size()-1;i>0;i--){
-        buffer.push_back(data[i]);
-    }
-    return buffer;
-
 }
 
 template <typename Transaction>

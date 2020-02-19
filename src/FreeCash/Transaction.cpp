@@ -17,7 +17,6 @@ using namespace TW::FreeCash;
 std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t index,
                                               enum TWFreeCashSigHashType hashType, uint64_t amount) const {
     assert(index < inputs.size());
-
     auto data = std::vector<uint8_t>{};
 
     // Version
@@ -26,7 +25,7 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t i
     // Input prevouts (none/all, depending on flags)
     if ((hashType & TWFreeCashSigHashTypeAnyoneCanPay) == 0) {
         auto hashPrevouts = getPrevoutHash();
-        std::copy(std::begin(hashPrevouts), std::end(hashPrevouts), std::back_inserter(data));
+        std::move(hashPrevouts.begin(), hashPrevouts.end(), std::back_inserter(data));
     } else {
         std::fill_n(back_inserter(data), 32, 0);
     }
@@ -35,7 +34,7 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t i
     if ((hashType & TWFreeCashSigHashTypeAnyoneCanPay) == 0 &&
         !TWFreeCashSigHashTypeIsSingle(hashType) && !TWFreeCashSigHashTypeIsNone(hashType)) {
         auto hashSequence = getSequenceHash();
-        std::copy(std::begin(hashSequence), std::end(hashSequence), std::back_inserter(data));
+        std::move(hashSequence.begin(), hashSequence.end(), std::back_inserter(data));
     } else {
         std::fill_n(back_inserter(data), 32, 0);
     }
@@ -52,12 +51,12 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t i
     // Outputs (none/one/all, depending on flags)
     if (!TWFreeCashSigHashTypeIsSingle(hashType) && !TWFreeCashSigHashTypeIsNone(hashType)) {
         auto hashOutputs = getOutputsHash();
-        copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
+        std::move(std::begin(hashOutputs), std::end(hashOutputs), std::back_inserter(data));
     } else if (TWFreeCashSigHashTypeIsSingle(hashType) && index < outputs.size()) {
         auto outputData = std::vector<uint8_t>{};
         outputs[index].encode(outputData);
         auto hashOutputs = TW::Hash::hash(hasher, outputData);
-        copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
+        std::move(begin(hashOutputs), end(hashOutputs), std::back_inserter(data));
     } else {
         fill_n(back_inserter(data), 32, 0);
     }

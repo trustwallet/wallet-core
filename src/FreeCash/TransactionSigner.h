@@ -74,8 +74,6 @@ class TransactionSigner {
 
     /// Returns the redeem script for the given script hash.
     Data scriptForScriptHash(const Data &hash) const;
-
-    Data reverseBuffer(const Data &data);
 };
 
 } // namespace TW::FreeCash

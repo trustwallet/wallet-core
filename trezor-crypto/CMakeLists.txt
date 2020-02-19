@@ -30,6 +30,13 @@ add_library(TrezorCrypto
     src/schnorr.c
 )
 
+# ----add config for libsecp256k1------
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -lsecp256k1")
+
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+# --------------end--------------------
+
 target_compile_options(TrezorCrypto
     PRIVATE
         -W
@@ -52,6 +59,10 @@ target_compile_options(TrezorCrypto
         -Werror
 )
 
+target_link_libraries(TrezorCrypto 
+    PUBLIC
+        "/usr/local/lib/libsecp256k1.dylib"
+    )
 target_include_directories(TrezorCrypto
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

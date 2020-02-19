@@ -76,7 +76,7 @@ TEST(Zilliqa, Signing2) {
 
     auto signature = WRAPD(TWPrivateKeySignSchnorr(privateKey.get(), data.get(), TWCurveSECP256k1));
 
-    assertHexEqual(signature, "bb1ea6e2c96933555606fd0494bbe09bb131166d084934f02e2621bb8b880f9d825678b706971304abb3a6d83ac5d1e641b9b75b9cc6f9341f5d4e026d200d26");
+    assertHexEqual(signature, "8edf22b204373c377347dadfbd396ceab7ee35f8c83f04b4cc142cc392e7ca3bffce40b513dee9b0b816f8588e003c442b2f66185b7bb16d18a3e8af000b0b5e");
 
     ASSERT_TRUE(TWPublicKeyVerifySchnorr(pubKey, signature.get(), data.get()));
 }

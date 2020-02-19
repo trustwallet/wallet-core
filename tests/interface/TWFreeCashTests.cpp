@@ -37,13 +37,15 @@ TEST(FreeCash, SignTransaction) {
     input.set_to_address("FEMRWWpVHVVShfvVCPbqUkgezXJ2rJeTrJ");
     input.set_change_address("FEMRWWpVHVVShfvVCPbqUkgezXJ2rJeTrJ");
 
-    // 5f84d17d261f5c141086edf393ef4aeecf11a253d46360e05c5e70b51222bece
-    auto hash0 = DATA("cebe2212b5705e5ce06063d453a211cfee4aef93f3ed8610145c1f267dd1845f");
+    // 5f84d17d261f5c141086edf393ef4aeecf11a253d46360e05c5e70b51222bece/cebe2212b5705e5ce06063d453a211cfee4aef93f3ed8610145c1f267dd1845f
+    // a9967f9d48cab4eca02d54ec158a1178ef3b4cfbbd9aa72d6b896197df0707b3/b30707df9761896b2da79abdfb4c3bef78118a15ec542da0ecb4ca489d7f96a9
+    // 83c707056fa6a682c2d0fca4f0e1d6308a1cc4ef6523d430a96dd7249de0e489/89e4e09d24d76da930d42365efc41c8a30d6e1f0a4fcd0c282a6a66f0507c783
+    auto hash0 = DATA("89e4e09d24d76da930d42365efc41c8a30d6e1f0a4fcd0c282a6a66f0507c783");
     auto utxo0 = input.add_utxo();
     utxo0->mutable_out_point()->set_hash(TWDataBytes(hash0.get()), TWDataSize(hash0.get()));
-    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
-    utxo0->set_amount(1000000000);
+    utxo0->set_amount(899942848);
 
     auto script0 = parse_hex("76a9145d7c8cc11e2f5f00af866f3d47e069e648c44ac388ac");
     utxo0->set_script(script0.data(), script0.size());
@@ -61,6 +63,6 @@ TEST(FreeCash, SignTransaction) {
 
     Data serialized;
     signedTx.encode(false, serialized);
-    ASSERT_EQ(hex(serialized), "");
+    ASSERT_EQ(hex(serialized), "020000000189e4e09d24d76da930d42365efc41c8a30d6e1f0a4fcd0c282a6a66f0507c78301000000644147eda8fa998d10e67d904bca1601ee354c1da2eb21fdbfacc571a02a4a970c2e6469aa656076650f832d4fd28cb6b5a0e44f361d752b7b386390cc97a68106bb412103de641a2dbbf3846635a509d423482fdc432df69eacfd89f0a7c79e952581e823ffffffff027cdd0000000000001976a9145d7c8cc11e2f5f00af866f3d47e069e648c44ac388ac622ba335000000001976a9145d7c8cc11e2f5f00af866f3d47e069e648c44ac388ac00000000");
 }
 
