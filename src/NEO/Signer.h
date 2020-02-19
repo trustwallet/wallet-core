@@ -38,8 +38,3 @@ class Signer {
 };
 
 } // namespace TW::NEO
-
-/// Wrapper for C interface.
-struct TWNEOPlanner {
-    TW::NEO::Signer impl;
-};

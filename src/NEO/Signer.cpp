@@ -142,7 +142,7 @@ Proto::TransactionPlan Signer::plan(const Proto::SigningInput& input) {
             plan.mutable_outputs(existGASTransfer)->set_change(change);
             plan.set_fee(fee);
         }
-    } catch (char* error) {
+    } catch (char const* error) {
         plan.set_error(error);
     }
 
