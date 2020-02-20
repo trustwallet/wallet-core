@@ -14,6 +14,7 @@
 namespace TW::Ethereum::EIP712 {
 
 /// Encode a type according to EIP712, into 32 bytes.  Values are padded by 0 on the left, if not specified otherwise.
+/// See: https://github.com/ethereum/EIPs/blob/master/EIPS/eip-712.md
 class Encoder {
 public:
     static const int encodedIntSize = 32;
