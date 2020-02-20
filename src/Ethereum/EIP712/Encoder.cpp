@@ -45,7 +45,7 @@ Data Encoder::encodeInt256(const int256_t& value) {
 }
 
 inline Data paddedOnLeft(const Data& data) {
-    int paddingSize = Encoder::encodedIntSize - data.size();
+    int paddingSize = (int)(Encoder::encodedIntSize - data.size());
     if (paddingSize <= 0) { return data; }
     assert(data.size() < Encoder::encodedIntSize);
     Data res(paddingSize); // padding on left

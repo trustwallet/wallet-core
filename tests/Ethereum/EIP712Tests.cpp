@@ -57,7 +57,6 @@ TEST(EthereumEIP712, encodeBytesDyn) {
     EXPECT_EQ(hex(EIP712::Encoder::encodeBytesDyn(TW::data(std::string("trustwallet")))), "31924c4e2bb082322d1efa718bf67c73ca297b481dac9f76ad35670cff0056a3");
 }
 
-
 TEST(EthereumEIP712, uint256FromInt256) {
     EXPECT_EQ(EIP712::Encoder::uint256FromInt256(0), 0);
     EXPECT_EQ(EIP712::Encoder::uint256FromInt256(1), 1);

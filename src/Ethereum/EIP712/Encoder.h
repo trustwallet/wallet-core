@@ -30,15 +30,10 @@ public:
     static Data encodeString(const std::string& value);
     /// Encode a number of bytes, up to 32 bytes, padded on the right.  Longer arrays are truncated.
     static Data encodeBytes(const Data& value);
-    /// Encode a dynamic number of bytes by encodign its hash
+    /// Encode a dynamic number of bytes by encoding its hash
     static Data encodeBytesDyn(const Data& value);
 
     static uint256_t uint256FromInt256(int256_t x);
 };
 
 } // namespace TW::Ethereum::EIP712
-
-/// Wrapper for C interface.
-struct TWEthereumAEIP712Encoder {
-    TW::Ethereum::EIP712::Encoder impl;
-};
