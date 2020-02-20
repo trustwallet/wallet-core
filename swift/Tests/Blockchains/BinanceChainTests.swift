@@ -34,17 +34,17 @@ class BinanceChainTests: XCTestCase {
             $0.amount = 1
         }
 
-        let input = BinanceSendOrder.Input.with {
+        let orderInput = BinanceSendOrder.Input.with {
             $0.address = AnyAddress(publicKey: publicKey, coin: .binance).data
             $0.coins = [token]
         }
 
-        let output = BinanceSendOrder.Output.with {
+        let orderOutput = BinanceSendOrder.Output.with {
             $0.address = AnyAddress(string: "bnb1hlly02l6ahjsgxw9wlcswnlwdhg4xhx38yxpd5", coin: .binance)!.data
             $0.coins = [token]
         }
 
-        let signingInput = BinanceSigningInput.with {
+        let input = BinanceSigningInput.with {
             $0.chainID = "Binance-Chain-Nile" // Chain id (network id),                 from /v1/node-info api
             $0.accountNumber = 0              // On chain account / address number,     from /v1/account/<address> api
             $0.sequence = 0                   // Sequence number, plus 1 for new order, from /v1/account/<address> api
@@ -52,14 +52,14 @@ class BinanceChainTests: XCTestCase {
             $0.privateKey = privateKey.data
             $0.memo = ""
             $0.sendOrder = BinanceSendOrder.with {
-                $0.inputs = [input]
-                $0.outputs = [output]
+                $0.inputs = [orderInput]
+                $0.outputs = [orderOutput]
             }
         }
 
-        let data: BinanceSigningOutput = AnySigner.sign(input: signingInput, coin: .binance)
+        let output: BinanceSigningOutput = AnySigner.sign(input: input, coin: .binance)
 
         // swiftlint:disable:next line_length
-        XCTAssertEqual(data.encoded.hexString, "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212401b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679")
+        XCTAssertEqual(output.encoded.hexString, "b801f0625dee0a462a2c87fa0a1f0a1440c2979694bbc961023d1d27be6fc4d21a9febe612070a03424e421001121f0a14bffe47abfaede50419c577f1074fee6dd1535cd112070a03424e421001126a0a26eb5ae98721026a35920088d98c3888ca68c53dfc93f4564602606cbb87f0fe5ee533db38e50212401b1181faec30b60a2ddaa2804c253cf264c69180ec31814929b5de62088c0c5a45e8a816d1208fc5366bb8b041781a6771248550d04094c3d7a504f9e8310679")
     }
 }

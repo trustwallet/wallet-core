@@ -3,11 +3,14 @@
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
+
 #pragma once
+
 #include "../uint256.h"
 #include "../BinaryCoding.h"
 #include "../proto/NULS.pb.h"
 #include "../HexCoding.h"
+#include "Address.h"
 
 using namespace TW;
 using namespace TW::NULS;
