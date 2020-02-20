@@ -51,6 +51,6 @@ void TWEthereumEIP712EncodeBytes(TWData* _Nonnull value, TWData* _Nonnull data_i
 
 /// Encode a dynamic number of bytes by encoding its hash
 TW_EXPORT_STATIC_METHOD
-void TWEthereumEIP712EncodeBytesDyn(TWData* _Nonnull value, TWData  * _Nonnull data_inout);
+void TWEthereumEIP712EncodeBytesDyn(TWData* _Nonnull value, TWData* _Nonnull data_inout);
 
 TW_EXTERN_C_END
