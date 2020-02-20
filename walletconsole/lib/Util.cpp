@@ -26,19 +26,15 @@ bool Util::hex(const string& p, string& res) {
 }
 
 bool Util::base64Encode(const string& p, string& res) {
-    try {
-        Data data = parse_hex(p);
-        try {
-            res = Base64::encode(data);
-            return true;
-        } catch (exception& ex) {
-            cout << "Error while Base64 encode" << endl;
-            return false;
-        }
-    } catch (exception& ex) {
-        cout << "Error decoding input as hex" << endl;
+    _out << p << endl;
+    Data data = parse_hex(p);
+    if (data.size() == 0) {
+        _out << "Error decoding input as hex" << endl;
         return false;
     }
+    _out << TW::hex(data) << endl;
+    res = Base64::encode(data);
+    return true;
 }
 
 bool Util::base64Decode(const string& p, string& res) {
@@ -47,14 +43,14 @@ bool Util::base64Decode(const string& p, string& res) {
         res = TW::hex(dec);
         return true;
     } catch (exception& ex) {
-        cout << "Error while Base64 decode" << endl;
+        _out << "Error while Base64 decode" << endl;
         return false;
     }
 }
 
-bool Util::fileW(const string& fileName, const string& data, string& res, ostream& out) {
+bool Util::fileW(const string& fileName, const string& data, string& res) {
     if (fileExists(fileName)) {
-        out << "Warning: File '" << fileName << "' already exists, not overwriting to be safe." << endl;
+        _out << "Warning: File '" << fileName << "' already exists, not overwriting to be safe." << endl;
         return false;
     }
     try {
@@ -62,16 +58,16 @@ bool Util::fileW(const string& fileName, const string& data, string& res, ostrea
         Data bindata = parse_hex(data);
         outfile.write((const char*)bindata.data(), bindata.size());
         outfile.close();
-        out << "Written to file '" << fileName << "', " << bindata.size() << " bytes." << endl;
+        _out << "Written to file '" << fileName << "', " << bindata.size() << " bytes." << endl;
     } catch (exception& ex) {
-        out << "Error writing to file '" << fileName << "': " << ex.what() << endl;
+        _out << "Error writing to file '" << fileName << "': " << ex.what() << endl;
     }
     return false;
 }
 
-bool Util::fileR(const string& fileName, string& res, ostream& out) {
+bool Util::fileR(const string& fileName, string& res) {
     if (!fileExists(fileName)) {
-        out << "Error: File not found '" << fileName << "'" << endl;
+        _out << "Error: File not found '" << fileName << "'" << endl;
         return false;
     }
     try {
@@ -82,17 +78,17 @@ bool Util::fileR(const string& fileName, string& res, ostream& out) {
         infile.seekg (0, infile.beg);
         char* buffer = new char[length];
         if (!infile.read(buffer, length)) {
-            out << "Could not read file '" << fileName << "'" << endl;
+            _out << "Could not read file '" << fileName << "'" << endl;
             return false;
         }
         int red = infile.gcount();
         infile.close();
         res = string(TW::hex(data((const byte*)buffer, red)));
         delete[] buffer;
-        out << "Read " << red << " bytes from file '" << fileName << "'." << endl;
+        _out << "Read " << red << " bytes from file '" << fileName << "'." << endl;
         return true;
     } catch (exception& ex) {
-        out << "Error reading from file '" << fileName << "': " << ex.what() << endl;
+        _out << "Error reading from file '" << fileName << "': " << ex.what() << endl;
         return false;
     }
 }
