@@ -296,6 +296,14 @@ TEST(EthereumAbi, ParamUInt80) {
     }
 }
 
+TEST(EthereumAbi, int256FromUint256) {
+    EXPECT_EQ(Util::int256FromUint256(0), 0);
+    EXPECT_EQ(Util::int256FromUint256(1), 1);
+    EXPECT_EQ(Util::int256FromUint256(100), 100);
+    EXPECT_EQ(Util::int256FromUint256(~uint256_t(0)), -1);
+    EXPECT_EQ(Util::int256FromUint256(~uint256_t(1)), -2);
+}
+
 TEST(EthereumAbi, ParamInt80) {
     // large negative, above number of bits, and its counterpart truncated to 80 bits
     int256_t largeNeg2 = Util::int256FromUint256(load(Data(parse_hex("ffff101010101010101010101010101010101010101010101010101010101010"))));
