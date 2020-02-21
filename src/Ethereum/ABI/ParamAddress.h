@@ -7,7 +7,6 @@
 #pragma once
 
 #include "Bytes.h"
-#include "Util.h"
 #include "../../Data.h"
 
 namespace TW::Ethereum::ABI {

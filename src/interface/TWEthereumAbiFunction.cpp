@@ -135,7 +135,7 @@ int TWEthereumAbiFunctionAddParamInt256(struct TWEthereumAbiFunction *_Nonnull f
     Function& function = func_in->impl;
 
     assert(val != nullptr);
-    int256_t val2 = Util::int256FromUint256(load(*static_cast<const Data*>(val)));
+    int256_t val2 = ValueEncoder::int256FromUint256(load(*static_cast<const Data*>(val)));
     auto param = std::make_shared<ParamInt256>(val2);
     auto idx = function.addParam(param, isOutput);
     return idx;
@@ -146,7 +146,7 @@ int TWEthereumAbiFunctionAddParamIntN(struct TWEthereumAbiFunction *_Nonnull fun
     Function& function = func_in->impl;
 
     assert(val != nullptr);
-    int256_t val2 = Util::int256FromUint256(load(*static_cast<const Data*>(val)));
+    int256_t val2 = ValueEncoder::int256FromUint256(load(*static_cast<const Data*>(val)));
     auto param = std::make_shared<ParamIntN>(bits, val2);
     auto idx = function.addParam(param, isOutput);
     return idx;
@@ -374,7 +374,7 @@ int TWEthereumAbiFunctionAddInArrayParamInt256(struct TWEthereumAbiFunction *_No
     Function& function = func_in->impl;
 
     assert(val != nullptr);
-    int256_t val2 = Util::int256FromUint256(load(*static_cast<const Data*>(val)));
+    int256_t val2 = ValueEncoder::int256FromUint256(load(*static_cast<const Data*>(val)));
     return addInArrayParam(function, arrayIdx, std::make_shared<ParamInt256>(val2));
 }
 
@@ -383,7 +383,7 @@ int TWEthereumAbiFunctionAddInArrayParamIntN(struct TWEthereumAbiFunction *_Nonn
     Function& function = func_in->impl;
 
     assert(val != nullptr);
-    int256_t val2 = Util::int256FromUint256(load(*static_cast<const Data*>(val)));
+    int256_t val2 = ValueEncoder::int256FromUint256(load(*static_cast<const Data*>(val)));
     return addInArrayParam(function, arrayIdx, std::make_shared<ParamIntN>(bits, val2));
 }
 

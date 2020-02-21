@@ -7,7 +7,7 @@
 #pragma once
 
 #include "ParamBase.h"
-#include "Util.h"
+#include "ValueEncoder.h"
 #include "../../Data.h"
 
 namespace TW::Ethereum::ABI {
@@ -23,7 +23,7 @@ public:
     void setVal(const Data& val) { _bytes = val; }
     const Data& getVal() const { return _bytes; }
     virtual std::string getType() const { return "bytes"; };
-    virtual size_t getSize() const { return 32 + Util::paddedTo32(_bytes.size()); }
+    virtual size_t getSize() const { return 32 + ValueEncoder::paddedTo32(_bytes.size()); }
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _bytes.size(); }
     static void encodeBytes(const Data& bytes, Data& data);
@@ -46,7 +46,7 @@ public:
     void setVal(const Data& val) { _bytes = val; }
     const std::vector<uint8_t>& getVal() const { return _bytes; }
     virtual std::string getType() const { return "bytes" + std::to_string(_n); };
-    virtual size_t getSize() const { return Util::paddedTo32(_bytes.size()); }
+    virtual size_t getSize() const { return ValueEncoder::paddedTo32(_bytes.size()); }
     virtual bool isDynamic() const { return false; }
     virtual size_t getCount() const { return _bytes.size(); }
     virtual void encode(Data& data) const;
@@ -67,7 +67,7 @@ public:
     void setVal(std::string& val) { _str = val; }
     const std::string& getVal() const { return _str; }
     virtual std::string getType() const { return "string"; };
-    virtual size_t getSize() const { return 32 + Util::paddedTo32(_str.size()); }
+    virtual size_t getSize() const { return 32 + ValueEncoder::paddedTo32(_str.size()); }
     virtual bool isDynamic() const { return true; }
     virtual size_t getCount() const { return _str.size(); }
     static void encodeString(const std::string& decoded, Data& data);
