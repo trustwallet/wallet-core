@@ -4,7 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include <TrustWalletCore/TWEthereumAbiValueEncoder.h>
+#include <TrustWalletCore/TWEthereumAbiValueEncode.h>
 
 #include <Ethereum/ABI/ValueEncoder.h>
 #include <Data.h>
