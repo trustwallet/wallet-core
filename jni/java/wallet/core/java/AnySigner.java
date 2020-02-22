@@ -16,6 +16,7 @@ public class AnySigner {
         byte[] data = input.toByteArray();
         byte[] outputData = nativeSign(data, coin.value());
         T output = parser.parseFrom(outputData);
+        outputData = null;
         return output;
     }
     public static native byte[] nativeSign(byte[] data, int coin);
