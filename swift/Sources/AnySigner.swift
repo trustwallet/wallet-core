@@ -12,14 +12,18 @@ public typealias SigningInput = Message
 public final class AnySigner {
     public static func sign<SigningOutput: Message>(input: SigningInput, coin: CoinType) -> SigningOutput {
         do {
-            let inputData = TWDataCreateWithNSData(try input.serializedData())
-            defer {
-                TWDataDelete(inputData)
-            }
-            let outputData = TWDataNSData(TWAnySignerSign(inputData, TWCoinType(rawValue: coin.rawValue)))
+            let outputData = nativeSign(data: try input.serializedData(), coin: coin)
             return try SigningOutput(serializedData: outputData)
         } catch let error {
             fatalError(error.localizedDescription)
         }
+    }
+
+    public static func nativeSign(data: Data, coin: CoinType) -> Data {
+        let inputData = TWDataCreateWithNSData(data)
+        defer {
+            TWDataDelete(inputData)
+        }
+        return TWDataNSData(TWAnySignerSign(inputData, TWCoinType(rawValue: coin.rawValue)))
     }
 }
