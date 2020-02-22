@@ -9,9 +9,7 @@
 #include "TWJNIString.h"
 
 jstring _Nonnull TWStringJString(TWString *_Nonnull string, JNIEnv *env) {
-    jstring result = env->NewStringUTF(TWStringUTF8Bytes(string));
-    TWStringDelete(string);
-    return result;
+    return env->NewStringUTF(TWStringUTF8Bytes(string));
 }
 
 TWString *_Nonnull TWStringCreateWithJString(JNIEnv *env, jstring _Nonnull string) {
