@@ -8,5 +8,8 @@
 
 #include <TrustWalletCore/TWString.h>
 
+/// Converts a NSString object to TWString, caller must delete it after use.
 const TWString *_Nonnull TWStringCreateWithNSString(NSString *_Nonnull other);
+
+/// Converts a TWString (will be deleted within this call) to a NSString object.
 NSString *_Nonnull TWStringNSString(TWString *_Nonnull string);
