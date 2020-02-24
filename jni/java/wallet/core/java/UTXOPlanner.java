@@ -16,6 +16,7 @@ public class UTXOPlanner {
         byte[] data = input.toByteArray();
         byte[] outputData = nativePlan(data, coin.value());
         T output = parser.parseFrom(outputData);
+        outputData = null;
         return output;
     }
     public static native byte[] nativePlan(byte[] data, int coin);

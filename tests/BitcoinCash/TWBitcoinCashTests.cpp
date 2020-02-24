@@ -102,7 +102,6 @@ TEST(BitcoinCash, DeriveFromXPub) {
 
 TEST(BitcoinCash, SignTransaction) {
     const int64_t amount = 600;
-    const int64_t fee = 226;
 
     // Transaction on Bitcoin Cash Mainnet
     // https://blockchair.com/bitcoin-cash/transaction/96ee20002b34e468f9d3c5ee54f6a8ddaa61c118889c4f35395c2cd93ba5bbb4
