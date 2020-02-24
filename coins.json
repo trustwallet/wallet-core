@@ -1154,7 +1154,7 @@
         "symbol": "FCH",
         "decimals": 8,
         "blockchain": "Bitcoin",
-        "derivationPath": "m/44'/654'/0'/0/0",
+        "derivationPath": "m/44'/485'/0'/0/0",
         "curve": "secp256k1",
         "publicKeyType": "secp256k1",
         "p2pkhPrefix": 35,
