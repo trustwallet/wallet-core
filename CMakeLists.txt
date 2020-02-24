@@ -22,8 +22,6 @@ include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
 # ----add config for libsecp256k1------
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
 # --------------end--------------------
