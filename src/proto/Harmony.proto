@@ -99,7 +99,8 @@ message DirectiveCreateValidator {
     bytes min_self_delegation = 4;
     bytes max_total_delegation = 5;
     repeated bytes slot_pub_keys = 6;
-    bytes amount = 7;
+    repeated bytes slot_key_sigs = 7;
+    bytes amount = 8;
 }
 
 message DirectiveEditValidator {
@@ -110,6 +111,8 @@ message DirectiveEditValidator {
     bytes max_total_delegation = 5;
     bytes slot_key_to_remove = 6;
     bytes slot_key_to_add = 7;
+    bytes slot_key_to_add_sig = 8;
+    bytes active = 9;
 }
 
 message DirectiveDelegate {
