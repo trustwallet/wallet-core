@@ -16,6 +16,7 @@ class TestHarmonyStakingDelegateSigner {
     val oneAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
     val privateKeyData = ByteString.copyFrom(PrivateKey("4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48".toHexByteArray()).data())
     val pubKeyData = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
+    val blsSigData = ByteString.copyFrom("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611".toHexByteArray())
 
     init {
         System.loadLibrary("TrustWalletCore")
@@ -52,6 +53,7 @@ class TestHarmonyStakingDelegateSigner {
             maxChangeRate = mcr.build()
         }
         val pubKey = pubKeyData
+        val blsSig = blsSigData
         val createValidator = Harmony.DirectiveCreateValidator.newBuilder()
         createValidator.apply {
             validatorAddress = oneAddress
@@ -60,6 +62,7 @@ class TestHarmonyStakingDelegateSigner {
             minSelfDelegation = ByteString.copyFrom("0xa".toHexByteArray())
             maxTotalDelegation = ByteString.copyFrom("0x0bb8".toHexByteArray())
             addAllSlotPubKeys(listOf(pubKey))
+            slotKeySigs(listOf(blsSig))
             amount = ByteString.copyFrom("0x64".toHexByteArray())
         }
         return createValidator
@@ -115,6 +118,7 @@ class TestHarmonyStakingDelegateSigner {
             maxTotalDelegation = ByteString.copyFrom("0x0bb8".toHexByteArray())
             slotKeyToRemove = pubKeyData
             slotKeyToAdd = pubKeyData
+            active = true
         }
         val staking = Harmony.StakingMessage.newBuilder()
         staking.apply {

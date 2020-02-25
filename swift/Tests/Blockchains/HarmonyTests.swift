@@ -38,6 +38,7 @@ class HarmonyTests: XCTestCase {
     let oneAddress = "one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9"
     let privateKeyData = Data(hexString: "4edef2c24995d15b0e25cbd152fb0e2c05d3b79b9c2afd134e6f59f91bf99e48")!
     let pubKeyData = Data(hexString: "b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611")!
+    let blsSigData = Data(hexString: "b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611")!
 
     func testStakingCreateValidator() {
         let description = HarmonyDescription.with {
@@ -65,6 +66,7 @@ class HarmonyTests: XCTestCase {
             $0.maxChangeRate = maxChangeRate
         }
         let pubKey = pubKeyData
+        let blsSig = blsSigData
         let createValidator = HarmonyDirectiveCreateValidator.with {
             $0.validatorAddress = oneAddress
             $0.description_p = description
@@ -72,6 +74,7 @@ class HarmonyTests: XCTestCase {
             $0.minSelfDelegation = Data(hexString: "0xa")!
             $0.maxTotalDelegation = Data(hexString: "0x0bb8")!
             $0.slotPubKeys = [pubKey]
+            $0.slotKeySigs = [blsSig]
             $0.amount = Data(hexString: "0x64")!
         }
         let staking = HarmonyStakingMessage.with {
@@ -120,6 +123,8 @@ class HarmonyTests: XCTestCase {
             $0.maxTotalDelegation = Data(hexString: "0x0bb8")!
             $0.slotKeyToRemove = pubKeyData
             $0.slotKeyToAdd = pubKeyData
+            $0.slotKeyToAddSig = blsSigData
+            $0.active = true
         }
         let staking = HarmonyStakingMessage.with {
             $0.editValidatorMessage = editValidator
