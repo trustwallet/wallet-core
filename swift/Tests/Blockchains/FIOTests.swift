@@ -78,9 +78,9 @@ class FIOTests: XCTestCase {
         let addAddrAction = FIOAction.AddPubAddress.with {
             $0.fioAddress = "adam@fiotestnet"
             $0.publicAddresses = [
-                FIOPublicAddress.with { $0.coinSymbol = "BTC"; $0.address = "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v" },
-                FIOPublicAddress.with { $0.coinSymbol = "ETH"; $0.address = "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51" },
-                FIOPublicAddress.with { $0.coinSymbol = "BNB"; $0.address = "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s" }
+                FIOPublicAddress.with { $0.tokenCode = "BTC"; $0.address = "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v" },
+                FIOPublicAddress.with { $0.tokenCode = "ETH"; $0.address = "0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51" },
+                FIOPublicAddress.with { $0.tokenCode = "BNB"; $0.address = "bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s" }
             ]
             $0.fee = 0
         }
