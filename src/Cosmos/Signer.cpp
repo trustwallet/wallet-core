@@ -116,7 +116,7 @@ Proto::SigningOutput Signer::build() const {
     return output;
 }
 
-Data Signer::encodeTransaction(const Data& signature) const {
+Data Signer::encodeTransaction(const Cosmos::Proto::Signature& sig) const {
     auto transaction = Cosmos::Proto::Transaction();
     *transaction.mutable_fee() = input.fee();
     transaction.set_memo(input.memo());
@@ -131,26 +131,17 @@ Data Signer::encodeTransaction(const Data& signature) const {
         *transaction.mutable_withdraw_stake_reward_message() = input.withdraw_stake_reward_message();
     }
 
-    auto sig = Cosmos::Proto::Signature();
-    sig.set_signature(signature.data(), signature.size());
-
     *transaction.mutable_signature() = sig;
 
-    auto output =  transactionJSON(transaction, input.type_prefix()).dump();
+    auto output = transactionJSON(transaction, input.type_prefix()).dump();
 
     return std::vector<uint8_t>(output.begin(), output.end());
 }
 
-Data Signer::encodeSignature(const PublicKey& publicKey, const Data& signature) const {
-    auto encodedPublicKey = AMINO_PREFIX_PUBLIC_KEY;
-    encodedPublicKey.insert(encodedPublicKey.end(), static_cast<uint8_t>(publicKey.bytes.size()));
-    encodedPublicKey.insert(encodedPublicKey.end(), publicKey.bytes.begin(), publicKey.bytes.end());
-
+Cosmos::Proto::Signature Signer::encodeSignature(const PublicKey& publicKey, const Data& signature) const {
     auto sig = Cosmos::Proto::Signature();
-    sig.set_public_key(encodedPublicKey.data(), encodedPublicKey.size());
+    sig.set_public_key(publicKey.bytes.data(), publicKey.bytes.size());
     sig.set_signature(signature.data(), signature.size());
 
-    auto sigStr = sig.SerializeAsString();
-
-    return std::vector<uint8_t>(sigStr.begin(), sigStr.end());
+    return sig;
 }

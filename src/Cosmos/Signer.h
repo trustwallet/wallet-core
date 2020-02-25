@@ -33,8 +33,8 @@ public:
     /// \returns the signed transaction.
     Proto::SigningOutput build() const;
 
-    Data encodeTransaction(const Data& signature) const;
-    Data encodeSignature(const PublicKey& publicKey, const Data& signature) const;
+    Data encodeTransaction(const Cosmos::Proto::Signature& signature) const;
+    Cosmos::Proto::Signature encodeSignature(const PublicKey& publicKey, const Data& signature) const;
     std::string signaturePreimage() const;
 
 private:
