@@ -14,20 +14,6 @@ using namespace TW::Ethereum::ABI;
 
 ///// Util
 
-TEST(EthereumAbi, pad32) {
-    EXPECT_EQ(64, Util::paddedTo32(40));
-    EXPECT_EQ(32, Util::paddedTo32(32));
-    EXPECT_EQ(64, Util::paddedTo32(33));
-    EXPECT_EQ(64, Util::paddedTo32(63));
-    EXPECT_EQ(64, Util::paddedTo32(64));
-    EXPECT_EQ(96, Util::paddedTo32(65));
-    EXPECT_EQ(24, Util::padNeeded32(40));
-    EXPECT_EQ(0, Util::padNeeded32(32));
-    EXPECT_EQ(31, Util::padNeeded32(33));
-    EXPECT_EQ(1, Util::padNeeded32(63));
-    EXPECT_EQ(0, Util::padNeeded32(64));
-    EXPECT_EQ(31, Util::padNeeded32(65));
-}
 
 ///// Parameter types
 
@@ -298,8 +284,8 @@ TEST(EthereumAbi, ParamUInt80) {
 
 TEST(EthereumAbi, ParamInt80) {
     // large negative, above number of bits, and its counterpart truncated to 80 bits
-    int256_t largeNeg2 = Util::int256FromUint256(load(Data(parse_hex("ffff101010101010101010101010101010101010101010101010101010101010"))));
-    int256_t largeNeg1 = Util::int256FromUint256(load(Data(parse_hex("ffffffffffffffffffffffffffffffffffffffffffff10101010101010101010"))));
+    int256_t largeNeg2 = ValueEncoder::int256FromUint256(load(Data(parse_hex("ffff101010101010101010101010101010101010101010101010101010101010"))));
+    int256_t largeNeg1 = ValueEncoder::int256FromUint256(load(Data(parse_hex("ffffffffffffffffffffffffffffffffffffffffffff10101010101010101010"))));
     {
         auto param = ParamIntN(80, 0);
         EXPECT_EQ(0, param.getVal());
@@ -533,23 +519,6 @@ TEST(EthereumAbi, ParamArrayAddress) {
 }
 
 ///// Direct encode & decode
-
-TEST(EthereumAbi, EncodeUInt) {
-    Data encoded;
-    encode(69u, encoded);
-    EXPECT_EQ(hex(encoded), "0000000000000000000000000000000000000000000000000000000000000045");
-}
-
-TEST(EthereumAbi, EncodeBigIntOverflow) {
-    Data encoded;
-    try {
-        encode(uint256_t(int256_t("F123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0")), encoded);
-    } catch (std::exception& ex) {
-        // expected exception
-        return;
-    }
-    FAIL() << "Should fail due to overflow";
-}
 
 TEST(EthereumAbi, EncodeVectorByte10) {
     auto p = ParamByteArrayFix(10, std::vector<byte>{0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x30});
