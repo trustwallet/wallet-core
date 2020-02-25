@@ -41,11 +41,12 @@ public:
 /// Represents a tokentype:address pair, such as {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}
 class PublicAddress {
 public:
-    std::string tokenCode;
+    // Coin symbol for the address (a.k.a. tokenCode)
+    std::string coinSymbol;
     std::string chainCode;
     std::string address;
     void serialize(Data& out) const {
-        encodeString(tokenCode, out);
+        encodeString(coinSymbol, out);
         encodeString(chainCode, out);
         encodeString(address, out);
     }

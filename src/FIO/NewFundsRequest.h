@@ -19,8 +19,8 @@ public:
     std::string payeeFioName;
     /// Amount requested (string)
     std::string amount;
-    /// Token code of the amount requested
-    std::string tokenCode;
+    /// Coin symbol of the amount requested (a.k.a. tokenCode)
+    std::string coinSymbol;
     /// Memo free text (optional, may be empty)
     std::string memo;
     /// Optional hash

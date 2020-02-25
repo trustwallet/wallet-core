@@ -98,7 +98,7 @@ public:
     /// @payerFioAddress The FIO address (not name) of the payer, owner of payerFioName.
     /// @payeeFioName Own FIO name.  Ex.: "bob@trust"
     /// @amount Amount requested (as string)
-    /// @tokenCode Token code of the amount requested
+    /// @coinSymbol Token code of the amount requested
     /// @memo Memo free text.  Optional, may be empty.
     /// @hash Hash.  Optional, may be empty.
     /// @offlineUrl Attached offline URL.  Optional, may be empty.
@@ -109,7 +109,7 @@ public:
     /// @iv Optional initial values for encryption, should be empty.  Can be set for testability (16 bytes).
     static std::string createNewFundsRequest(const Address& address, const PrivateKey& privateKey,
         const std::string& payerFioName, const std::string& payerFioAddress, const std::string& payeeFioName,
-        const std::string& amount, const std::string& tokenCode, const std::string& memo, const std::string& hash, const std::string& offlineUrl,
+        const std::string& amount, const std::string& coinSymbol, const std::string& memo, const std::string& hash, const std::string& offlineUrl,
         const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime,
         const Data& iv);
 

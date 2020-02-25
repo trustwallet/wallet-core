@@ -5,7 +5,10 @@ option java_package = "wallet.core.jni.proto";
 
 // A public blockchain address, such as {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}
 message PublicAddress {
-    string token_code = 1;
+    // Coin symbol for the address (a.k.a. tokenCode)
+    string coin_symbol = 1;
+
+    // The address
     string address = 2;
 }
 
@@ -16,8 +19,8 @@ message NewFundsContent {
     // Amount requested (as string)
     string amount = 1;
 
-    // Token code of the amount requested
-    string token_code = 2;
+    // Coin symbol of the amount requested (a.k.a. tokenCode)
+    string coin_symbol = 2;
 
     // Memo free text.  Optional, may be empty.
     string memo = 3;

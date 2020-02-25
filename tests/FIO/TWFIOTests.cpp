@@ -76,11 +76,11 @@ TEST(TWFIO, AddPubAddress) {
     action->add_public_addresses();
     action->add_public_addresses();
     action->add_public_addresses();
-    action->mutable_public_addresses(0)->set_token_code("BTC");
+    action->mutable_public_addresses(0)->set_coin_symbol("BTC");
     action->mutable_public_addresses(0)->set_address("bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v");
-    action->mutable_public_addresses(1)->set_token_code("ETH");
+    action->mutable_public_addresses(1)->set_coin_symbol("ETH");
     action->mutable_public_addresses(1)->set_address("0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51");
-    action->mutable_public_addresses(2)->set_token_code("BNB");
+    action->mutable_public_addresses(2)->set_coin_symbol("BNB");
     action->mutable_public_addresses(2)->set_address("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s");
     action->set_fee(0);
 
@@ -138,7 +138,7 @@ TEST(TWFIO, NewFundsRequest) {
     input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
     input.mutable_action()->mutable_new_funds_request_message()->set_payee_fio_name("alice@fiotestnet");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_amount("5");
-    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_token_code("BNB");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_coin_symbol("BNB");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_memo("Memo");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_hash("Hash");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_offline_url("https://trustwallet.com");
