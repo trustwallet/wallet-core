@@ -6,6 +6,12 @@
 
 #include "Coin.h"
 
+#include "CoinEntry.h"
+
+#include "Bitcoin/Entry.h"
+#include "Binance/Entry.h"
+#include "Ethereum/Entry.h"
+
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Algorand/Address.h"
@@ -47,15 +53,40 @@
 
 #include <TrustWalletCore/TWHRP.h>
 
+#include <map>
 #pragma clang diagnostic push
 #pragma clang diagnostic fatal "-Wswitch"
 
 using namespace TW;
 
+map<TWCoinType, CoinEntry*> dispatchMap; 
+
+int setupDispatchers() {
+    std::vector<CoinEntry*> dispatchers = {
+        new Binance::Entry(),
+        new Bitcoin::Entry(),
+        new Ethereum::Entry(),
+    };
+    for (auto d : dispatchers) {
+        dispatchMap[d->coinType()] = d;
+    }
+    return 0;
+    // TODO: delete at the end?
+}
+
+static int dummy = setupDispatchers();
+
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
     auto hrp = stringForHRP(TW::hrp(coin));
+
+    // dispatch
+    if (dispatchMap.find(coin) != dispatchMap.end()) {
+        assert(dispatchMap[coin] != nullptr);
+        return dispatchMap[coin]->validateAddress(string, p2pkh, p2sh, hrp);
+    }
+
     switch (coin) {
     case TWCoinTypeAeternity:
         return Aeternity::Address::isValid(string);
@@ -197,6 +228,13 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
     if (!TW::validateAddress(coin, address)) {
         return "";
     }
+
+    // dispatch
+    if (dispatchMap.find(coin) != dispatchMap.end()) {
+        assert(dispatchMap[coin] != nullptr);
+        return dispatchMap[coin]->normalizeAddress(address);
+    }
+
     switch (coin) {
     case TWCoinTypeBitcoinCash:
         // normalized with bitcoincash: prefix
@@ -231,6 +269,12 @@ std::string TW::deriveAddress(TWCoinType coin, const PrivateKey& privateKey) {
 std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto hrp = stringForHRP(TW::hrp(coin));
+
+    // dispatch
+    if (dispatchMap.find(coin) != dispatchMap.end()) {
+        assert(dispatchMap[coin] != nullptr);
+        return dispatchMap[coin]->deriveAddress(publicKey, p2pkh, hrp);
+    }
 
     switch (coin) {
     case TWCoinTypeAeternity:
