@@ -6,7 +6,7 @@ import org.junit.Test
 import wallet.core.jni.EthereumAbiFunction
 import com.trustwallet.core.app.utils.Numeric
 import wallet.core.jni.EthereumAbiEncoder
-import wallet.core.jni.EthereumAbiValueEncode
+import wallet.core.jni.EthereumAbiValueEncoder
 
 class TestEthereumAbiEncoder {
 
@@ -65,7 +65,7 @@ class TestEthereumAbiEncoder {
 
     @Test
     fun testEthereumAbiValueEncodeInt32() {
-        val data = EthereumAbiValueEncode.int32(69)
+        val data = EthereumAbiValueEncoder.encodeInt32(69)
         assertEquals(Numeric.toHexString(data), "0x0000000000000000000000000000000000000000000000000000000000000045")
     }
 }
