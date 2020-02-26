@@ -77,6 +77,6 @@ enum TWHRP hrp(TWCoinType coin);
 // Note: use output parameter to avoid unneeded copies
 bool anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
-bool anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
+void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 } // namespace TW

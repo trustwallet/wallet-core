@@ -450,13 +450,10 @@ bool TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     return false;
 }
 
-bool TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
+void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
-    if (dispatcher != nullptr) {
-        dispatcher->plan(coinType, dataIn, dataOut);
-        return true;
-    }
-    return false;
+    assert(dispatcher != nullptr);
+    dispatcher->plan(coinType, dataIn, dataOut);
 }
 
 #pragma clang diagnostic pop
