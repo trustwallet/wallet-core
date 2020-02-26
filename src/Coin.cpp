@@ -425,10 +425,19 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     }
 }
 
-bool TW::anySignerSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
+bool TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
     if (dispatcher != nullptr) {
         dispatcher->sign(dataIn, dataOut);
+        return true;
+    }
+    return false;
+}
+
+bool TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
+    auto dispatcher = coinDispatcher(coinType);
+    if (dispatcher != nullptr) {
+        dispatcher->plan(dataIn, dataOut);
         return true;
     }
     return false;

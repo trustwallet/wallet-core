@@ -6,6 +6,8 @@
 
 #include <TrustWalletCore/TWUTXOPlanner.h>
 
+#include "Coin.h"
+
 #include "Bitcoin/Signer.h"
 #include "Decred/Signer.h"
 #include "Groestlcoin/Signer.h"
@@ -28,6 +30,14 @@ TWData* _Nonnull PlanAny(TWData* _Nonnull data) {
 }
 
 TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) {
+
+    const Data& dataIn = *(reinterpret_cast<const Data*>(data));
+    Data dataOut;
+    bool found = TW::anyCoinPlan(coin, dataIn, dataOut);
+    if (found) {
+        return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
+    }
+
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
     case TWCoinTypeBitcoin:

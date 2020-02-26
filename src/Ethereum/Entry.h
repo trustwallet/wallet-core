@@ -17,6 +17,7 @@ public:
     virtual std::string normalizeAddress(const std::string& address) const;
     virtual std::string deriveAddress(const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(const Data& dataIn, Data& dataOut) const;
+    // plan(): not used here
 };
 
 } // namespace TW::Ethereum

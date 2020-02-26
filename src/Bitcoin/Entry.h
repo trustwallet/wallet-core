@@ -17,6 +17,7 @@ public:
     // normalizeAddress: do not override
     virtual std::string deriveAddress(const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(const Data& dataIn, Data& dataOut) const;
+    virtual void plan(const Data& dataIn, Data& dataOut) const;
 };
 
 } // namespace TW::Bitcoin

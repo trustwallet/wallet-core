@@ -25,3 +25,7 @@ string Entry::deriveAddress(const PublicKey& publicKey, TW::byte, const char* hr
 void Entry::sign(const TW::Data& dataIn, TW::Data& dataOut) const {
     AnySignTempl<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
+
+void Entry::plan(const TW::Data& dataIn, TW::Data& dataOut) const {
+    planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
+}

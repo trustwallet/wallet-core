@@ -60,7 +60,7 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
 
     const Data& dataIn = *(reinterpret_cast<const Data*>(data));
     Data dataOut;
-    bool found = anySignerSign(coin, dataIn, dataOut);
+    bool found = TW::anyCoinSign(coin, dataIn, dataOut);
     if (found) {
         return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
     }
