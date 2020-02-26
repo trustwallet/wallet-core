@@ -28,4 +28,14 @@ public:
     virtual void sign(const Data& dataIn, Data& dataOut) const = 0;
 };
 
+// TODO: Is this template really needed?  Each typed Entry.cpp can include it's own typed version anyways
+// Note: use output parameter to avoid unneeded copies
+template <typename Signer, typename Input>
+void AnySignTempl(const Data& dataIn, Data& dataOut) {
+    auto input = Input();
+    input.ParseFromArray(dataIn.data(), (int)dataIn.size());
+    auto serialized = Signer::sign(input).SerializeAsString();
+    dataOut.insert(dataOut.end(), serialized.begin(), serialized.end());
+}
+
 } // namespace TW

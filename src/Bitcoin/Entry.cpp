@@ -7,7 +7,6 @@
 #include "Entry.h"
 
 #include "Address.h"
-#include "AnySigner.h"
 #include "SegwitAddress.h"
 #include "Signer.h"
 

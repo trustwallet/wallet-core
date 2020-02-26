@@ -7,7 +7,6 @@
 #include "Entry.h"
 
 #include "Address.h"
-#include "AnySigner.h"
 #include "Signer.h"
 
 using namespace TW::Binance;

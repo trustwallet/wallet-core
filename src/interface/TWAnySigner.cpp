@@ -8,8 +8,6 @@
 
 #include "Coin.h"
 
-#include "AnySigner.h" // TODO remove
-
 #include "Aeternity/Signer.h"
 #include "Aion/Signer.h"
 #include "Algorand/Signer.h"
@@ -48,6 +46,15 @@
 #pragma clang diagnostic fatal "-Wswitch"
 
 using namespace TW;
+
+template <typename Signer, typename Input>
+TWData* _Nonnull AnySign(TWData* _Nonnull data) {
+    auto input = Input();
+    input.ParseFromArray(TWDataBytes(data), (int)TWDataSize(data));
+    auto serialized = Signer::sign(input).SerializeAsString();
+    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
+                                 serialized.size());
+}
 
 TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
 
