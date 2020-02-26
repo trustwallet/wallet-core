@@ -13,6 +13,7 @@
 #include "Decred/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Groestlcoin/Entry.h"
+#include "Zcash/Entry.h"
 
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
@@ -48,7 +49,7 @@
 #include "Tron/Address.h"
 #include "Wanchain/Address.h"
 #include "Waves/Address.h"
-#include "Zcash/TAddress.h"
+//#include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
 #include "NEO/Address.h"
 
@@ -70,6 +71,7 @@ int setupDispatchers() {
         new Ethereum::Entry(),
         new Decred::Entry(),
         new Groestlcoin::Entry(),
+        new Zcash::Entry(),
     };
     for (auto d : dispatchers) {
         auto coinTypes = d->coinTypes();
@@ -190,9 +192,9 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeTron:
         return Tron::Address::isValid(string);
 
-    case TWCoinTypeZelcash:
-    case TWCoinTypeZcash:
-        return Zcash::TAddress::isValid(string);
+    //case TWCoinTypeZelcash:
+    //case TWCoinTypeZcash:
+    //    return Zcash::TAddress::isValid(string);
 
     case TWCoinTypeZilliqa:
         return Zilliqa::Address::isValid(string);
@@ -378,9 +380,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeTron:
         return Tron::Address(publicKey).string();
 
-    case TWCoinTypeZelcash:
-    case TWCoinTypeZcash:
-        return Zcash::TAddress(publicKey, p2pkh).string();
+    //case TWCoinTypeZelcash:
+    //case TWCoinTypeZcash:
+    //    return Zcash::TAddress(publicKey, p2pkh).string();
 
     case TWCoinTypeZilliqa:
         return Zilliqa::Address(publicKey).string();

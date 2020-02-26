@@ -39,7 +39,7 @@
 #include "VeChain/Signer.h"
 #include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
-#include "Zcash/Signer.h"
+//#include "Zcash/Signer.h"
 #include "Zilliqa/Signer.h"
 
 #pragma clang diagnostic push
@@ -154,9 +154,9 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<Waves::Signer, Waves::Proto::SigningInput>(data);
     case TWCoinTypeZilliqa:
         return AnySign<Zilliqa::Signer, Zilliqa::Proto::SigningInput>(data);
-    case TWCoinTypeZcash:
-    case TWCoinTypeZelcash:
-        return AnySign<Zcash::Signer, Bitcoin::Proto::SigningInput>(data);
+    //case TWCoinTypeZcash:
+    //case TWCoinTypeZelcash:
+    //    return AnySign<Zcash::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeCardano:
     case TWCoinTypeTON:
         // not implemented yet
