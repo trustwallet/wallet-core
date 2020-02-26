@@ -9,7 +9,6 @@
 #include "CoinEntry.h"
 
 #include "Bitcoin/Entry.h"
-#include "Bitcoin/EntryBitcoinCash.h"
 #include "Binance/Entry.h"
 #include "Ethereum/Entry.h"
 
@@ -66,7 +65,6 @@ int setupDispatchers() {
     std::vector<CoinEntry*> dispatchers = {
         new Binance::Entry(),
         new Bitcoin::Entry(),
-        new Bitcoin::EntryBitcoinCash(),
         new Ethereum::Entry(),
     };
     for (auto d : dispatchers) {
