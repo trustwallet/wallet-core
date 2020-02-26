@@ -15,12 +15,12 @@ namespace TW::Bitcoin {
 /// Note: do not put the implementation here (no matter how simple), to avoid having coin-specific includes in this file
 class EntryBitcoinCash: public Entry {
 public:
-    virtual TWCoinType coinType() const { return TWCoinTypeBitcoinCash; }
+    virtual std::vector<TWCoinType> coinTypes() const { return {TWCoinTypeBitcoinCash}; }
     // validateAddress is different
-    virtual bool validateAddress(const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    virtual std::string normalizeAddress(const std::string& address) const;
+    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
+    virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
     // deriveAddress is different
-    virtual std::string deriveAddress(const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
+    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
 };
 
 } // namespace TW::Bitcoin

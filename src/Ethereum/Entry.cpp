@@ -12,19 +12,19 @@
 using namespace TW::Ethereum;
 using namespace std;
 
-bool Entry::validateAddress(const string& address, TW::byte, TW::byte, const char*) const {
+bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte, TW::byte, const char*) const {
     return Address::isValid(address);
 }
 
-string Entry::normalizeAddress(const string& address) const {
+string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
     // normalized with EIP55 checksum
     return Address(address).string();
 }
 
-string Entry::deriveAddress(const PublicKey& publicKey, TW::byte, const char*) const {
+string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char*) const {
     return Address(publicKey).string();
 }
 
-void Entry::sign(const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     AnySignTempl<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

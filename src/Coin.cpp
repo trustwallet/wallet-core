@@ -70,7 +70,10 @@ int setupDispatchers() {
         new Ethereum::Entry(),
     };
     for (auto d : dispatchers) {
-        dispatchMap[d->coinType()] = d;
+        auto coinTypes = d->coinTypes();
+        for (auto c : coinTypes) {
+            dispatchMap[c] = d;
+        }
     }
     return 0;
     // TODO: delete at the end?
@@ -95,7 +98,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     // dispatch
     auto dispatcher = coinDispatcher(coin);
     if (dispatcher != nullptr) {
-        return dispatcher->validateAddress(string, p2pkh, p2sh, hrp);
+        return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
     }
 
     // TODO: remove the switch once all coins have dispatchers
@@ -242,7 +245,7 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
     // dispatch
     auto dispatcher = coinDispatcher(coin);
     if (dispatcher != nullptr) {
-        return dispatcher->normalizeAddress(address);
+        return dispatcher->normalizeAddress(coin, address);
     }
 
     // TODO: remove the switch once all coins have dispatchers
@@ -281,7 +284,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     // dispatch
     auto dispatcher = coinDispatcher(coin);
     if (dispatcher != nullptr) {
-        return dispatcher->deriveAddress(publicKey, p2pkh, hrp);
+        return dispatcher->deriveAddress(coin, publicKey, p2pkh, hrp);
     }
 
     // TODO: remove the switch once all coins have dispatchers
@@ -419,7 +422,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 bool TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
     if (dispatcher != nullptr) {
-        dispatcher->sign(dataIn, dataOut);
+        dispatcher->sign(coinType, dataIn, dataOut);
         return true;
     }
     return false;
@@ -428,7 +431,7 @@ bool TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
 bool TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
     if (dispatcher != nullptr) {
-        dispatcher->plan(dataIn, dataOut);
+        dispatcher->plan(coinType, dataIn, dataOut);
         return true;
     }
     return false;

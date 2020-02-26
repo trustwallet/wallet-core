@@ -13,19 +13,19 @@
 using namespace TW::Bitcoin;
 using namespace std;
 
-bool Entry::validateAddress(const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
+bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
     return SegwitAddress::isValid(address, hrp)
         || Address::isValid(address, {{p2pkh}, {p2sh}});
 }
 
-string Entry::deriveAddress(const PublicKey& publicKey, TW::byte, const char* hrp) const {
+string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte, const char* hrp) const {
     return SegwitAddress(publicKey, 0, hrp).string();
 }
 
-void Entry::sign(const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     AnySignTempl<Signer, Proto::SigningInput>(dataIn, dataOut);
 }
 
-void Entry::plan(const TW::Data& dataIn, TW::Data& dataOut) const {
+void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     planTemplate<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

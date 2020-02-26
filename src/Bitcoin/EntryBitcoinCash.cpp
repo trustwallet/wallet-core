@@ -12,12 +12,12 @@
 using namespace TW::Bitcoin;
 using namespace std;
 
-bool EntryBitcoinCash::validateAddress(const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
+bool EntryBitcoinCash::validateAddress(TWCoinType coin, const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
     return CashAddress::isValid(address)
         || Address::isValid(address, {{p2pkh}, {p2sh}});
 }
 
-string EntryBitcoinCash::normalizeAddress(const string& address) const {
+string EntryBitcoinCash::normalizeAddress(TWCoinType coin, const string& address) const {
     // normalized with bitcoincash: prefix
     if (CashAddress::isValid(address)) {
         return CashAddress(address).string();
@@ -26,6 +26,6 @@ string EntryBitcoinCash::normalizeAddress(const string& address) const {
     }
 }
 
-string EntryBitcoinCash::deriveAddress(const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
+string EntryBitcoinCash::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const {
     return CashAddress(publicKey).string();
 }

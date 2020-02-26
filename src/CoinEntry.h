@@ -11,7 +11,8 @@
 #include "Data.h"
 #include "PublicKey.h"
 
-#include <string> // to avoid std::string, to simplify the interface implemented by each coin
+#include <string>
+#include <vector>
 
 namespace TW {
 
@@ -19,16 +20,17 @@ namespace TW {
 /// Implement this for all coins.
 class CoinEntry {
 public:
-    virtual TWCoinType coinType() const = 0;
-    virtual bool validateAddress(const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const = 0;
+    // Report the coin types this implementation is responsible of
+    virtual std::vector<TWCoinType> coinTypes() const = 0;
+    virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const = 0;
     // normalizeAddress is optional, it may leave this default, no-change implementation
-    virtual std::string normalizeAddress(const std::string& address) const { return address; }
-    virtual std::string deriveAddress(const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const = 0;
+    virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const { return address; }
+    virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const = 0;
     // Signing
-    virtual void sign(const Data& dataIn, Data& dataOut) const = 0;
+    virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const = 0;
     // Planning, for UTXO chains, in preparation for signing
     // It is optional, only UTXO chains need it, default impl. leaves empty result.
-    virtual void plan(const Data& dataIn, Data& dataOut) const { return; }
+    virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 };
 
 // TODO: Is this template really needed?  Each typed Entry.cpp can include it's own typed version anyways
