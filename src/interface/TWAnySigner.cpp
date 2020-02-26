@@ -68,6 +68,7 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
     case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinCash:
     case TWCoinTypeBinance:
     case TWCoinTypeEthereum:
         assert(false); // TODO remove
@@ -79,7 +80,6 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<Aion::Signer, Aion::Proto::SigningInput>(data);
     case TWCoinTypeAlgorand:
         return AnySign<Algorand::Signer, Algorand::Proto::SigningInput>(data);
-    case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
     case TWCoinTypeDigiByte:
     case TWCoinTypeDogecoin:

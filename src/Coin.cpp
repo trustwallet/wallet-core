@@ -9,6 +9,7 @@
 #include "CoinEntry.h"
 
 #include "Bitcoin/Entry.h"
+#include "Bitcoin/EntryBitcoinCash.h"
 #include "Binance/Entry.h"
 #include "Ethereum/Entry.h"
 
@@ -65,6 +66,7 @@ int setupDispatchers() {
     std::vector<CoinEntry*> dispatchers = {
         new Binance::Entry(),
         new Bitcoin::Entry(),
+        new Bitcoin::EntryBitcoinCash(),
         new Ethereum::Entry(),
     };
     for (auto d : dispatchers) {
@@ -101,6 +103,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
     case TWCoinTypeEthereum:
+    case TWCoinTypeBitcoinCash:
         assert(false);
         break;
 
@@ -121,10 +124,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeQtum:
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress::isValid(string, hrp) ||
-               Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
-
-    case TWCoinTypeBitcoinCash:
-        return Bitcoin::CashAddress::isValid(string) ||
                Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
 
     case TWCoinTypeDash:
@@ -248,17 +247,11 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
+    case TWCoinTypeBitcoinCash:
     case TWCoinTypeEthereum:
         assert(false);
         break;
 
-    case TWCoinTypeBitcoinCash:
-        // normalized with bitcoincash: prefix
-        if (Bitcoin::CashAddress::isValid(address)) {
-            return Bitcoin::CashAddress(address).string();
-        } else {
-            return std::string(address);
-        }
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGoChain:
@@ -295,6 +288,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     switch (coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinCash:
     case TWCoinTypeEthereum:
         assert(false);
         break;
@@ -307,9 +301,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
-
-    case TWCoinTypeBitcoinCash:
-        return Bitcoin::CashAddress(publicKey).string();
 
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:
