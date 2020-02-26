@@ -24,6 +24,10 @@ targets:
         headerVisibility: project
         excludes:
         - ".vscode"
+        - "proto/*.proto"
+        - "Tron/Protobuf/*.proto"
+        - "Zilliqa/Protobuf/*.proto"
+        - "TON/*.md"
       - Sources
     dependencies:
       - target: trezor-crypto
