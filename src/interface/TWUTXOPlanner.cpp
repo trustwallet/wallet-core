@@ -9,13 +9,13 @@
 #include "Coin.h"
 
 //#include "Bitcoin/Signer.h"
-#include "Decred/Signer.h"
+//#include "Decred/Signer.h"
 //#include "Groestlcoin/Signer.h"
 #include "NEO/Signer.h"
 #include "Zcash/Signer.h"
 
 #include "../proto/Bitcoin.pb.h"
-#include "../proto/Decred.pb.h"
+//#include "../proto/Decred.pb.h"
 #include "../proto/NEO.pb.h"
 
 using namespace TW;
@@ -53,8 +53,8 @@ TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) 
     //case TWCoinTypeZcoin:
     //    return PlanAny<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
         
-    case TWCoinTypeDecred:
-        return PlanAny<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
+    //case TWCoinTypeDecred:
+    //    return PlanAny<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
     //case TWCoinTypeGroestlcoin:
     //    return PlanAny<Groestlcoin::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeNEO:

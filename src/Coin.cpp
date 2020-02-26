@@ -10,6 +10,7 @@
 
 #include "Bitcoin/Entry.h"
 #include "Binance/Entry.h"
+#include "Decred/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Groestlcoin/Entry.h"
 
@@ -21,7 +22,7 @@
 //#include "Bitcoin/SegwitAddress.h"
 #include "Cardano/AddressV3.h"
 #include "Cosmos/Address.h"
-#include "Decred/Address.h"
+//#include "Decred/Address.h"
 #include "EOS/Address.h"
 #include "Ethereum/Address.h"
 #include "FIO/Address.h"
@@ -67,6 +68,7 @@ int setupDispatchers() {
         new Binance::Entry(),
         new Bitcoin::Entry(),
         new Ethereum::Entry(),
+        new Decred::Entry(),
         new Groestlcoin::Entry(),
     };
     for (auto d : dispatchers) {
@@ -136,8 +138,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     //case TWCoinTypeZcoin:
     //    return Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
 
-    case TWCoinTypeDecred:
-        return Decred::Address::isValid(string);
+    //case TWCoinTypeDecred:
+    //    return Decred::Address::isValid(string);
 
     //case TWCoinTypeGroestlcoin:
     //    return Bitcoin::SegwitAddress::isValid(string, hrp) ||
@@ -329,8 +331,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //case TWCoinTypeZcoin:
     //    return Bitcoin::Address(publicKey, p2pkh).string();
 
-    case TWCoinTypeDecred:
-        return Decred::Address(publicKey).string();
+    //case TWCoinTypeDecred:
+    //    return Decred::Address(publicKey).string();
 
     case TWCoinTypeCallisto:
     //case TWCoinTypeEthereum:

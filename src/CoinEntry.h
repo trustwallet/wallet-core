@@ -44,11 +44,11 @@ void signTemplate(const Data& dataIn, Data& dataOut) {
 }
 
 // Note: use output parameter to avoid unneeded copies
-template <typename Signer, typename Input>
+template <typename Planner, typename Input>
 void planTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
-    auto serializedOut = Signer::plan(input).SerializeAsString();
+    auto serializedOut = Planner::plan(input).SerializeAsString();
     dataOut.insert(dataOut.end(), serializedOut.begin(), serializedOut.end());
 }
 

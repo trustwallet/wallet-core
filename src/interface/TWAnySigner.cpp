@@ -11,9 +11,9 @@
 #include "Aeternity/Signer.h"
 #include "Aion/Signer.h"
 #include "Algorand/Signer.h"
-#include "Bitcoin/Signer.h"
+//#include "Bitcoin/Signer.h"
 #include "Cosmos/Signer.h"
-#include "Decred/Signer.h"
+//#include "Decred/Signer.h"
 #include "EOS/Signer.h"
 #include "Ethereum/Signer.h"
 #include "FIO/Signer.h"
@@ -88,8 +88,8 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     //case TWCoinTypeZcoin:
     //    return AnySign<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
 
-    case TWCoinTypeDecred:
-        return AnySign<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
+    //case TWCoinTypeDecred:
+    //    return AnySign<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeEOS:
         return AnySign<EOS::Signer, EOS::Proto::SigningInput>(data);
     case TWCoinTypeCosmos:
