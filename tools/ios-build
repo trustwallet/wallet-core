@@ -7,7 +7,7 @@ set -e
 
 BUILD_FOLDER_DEVICE="build/ios-dev"
 BUILD_FOLDER_SIMULATOR="build/ios-sim"
-BUILD_FOLDER_CATALYST="build/mac-catalyst"
+BUILD_FOLDER_CATALYST="build/ios-mac-catalyst"
 TARGETS="TrezorCrypto protobuf TrustWalletCore"
 
 function buildDevices() {
@@ -20,7 +20,7 @@ function buildDevices() {
     make -C "$BUILD_FOLDER_DEVICE" $TARGETS
 }
 
-function buildSimulator() {
+function buildSimulators() {
     echo -e "\nBuilding for iOS Simulator..."
     mkdir -p "$BUILD_FOLDER_SIMULATOR"
     cmake -H. -B "$BUILD_FOLDER_SIMULATOR" -DCMAKE_TOOLCHAIN_FILE=cmake/ios.toolchain.cmake \
@@ -59,6 +59,8 @@ function fattenBinary() {
 
 function main() {
     buildDevices
-    buildSimulator
+    buildSimulators
     fattenBinary
 }
+
+main
