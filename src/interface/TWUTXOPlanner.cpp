@@ -10,7 +10,7 @@
 
 //#include "Bitcoin/Signer.h"
 #include "Decred/Signer.h"
-#include "Groestlcoin/Signer.h"
+//#include "Groestlcoin/Signer.h"
 #include "NEO/Signer.h"
 #include "Zcash/Signer.h"
 
@@ -55,8 +55,8 @@ TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) 
         
     case TWCoinTypeDecred:
         return PlanAny<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
-    case TWCoinTypeGroestlcoin:
-        return PlanAny<Groestlcoin::Signer, Bitcoin::Proto::SigningInput>(data);
+    //case TWCoinTypeGroestlcoin:
+    //    return PlanAny<Groestlcoin::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeNEO:
         return PlanAny<NEO::Signer, NEO::Proto::SigningInput>(data);
     case TWCoinTypeZcash:

@@ -18,7 +18,7 @@
 #include "Ethereum/Signer.h"
 #include "FIO/Signer.h"
 #include "Filecoin/Signer.h"
-#include "Groestlcoin/Signer.h"
+//#include "Groestlcoin/Signer.h"
 #include "Harmony/Signer.h"
 #include "Icon/Signer.h"
 #include "IoTeX/Signer.h"
@@ -108,8 +108,8 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<Filecoin::Signer, Filecoin::Proto::SigningInput>(data);
     case TWCoinTypeFIO:
         return AnySign<FIO::Signer, FIO::Proto::SigningInput>(data);
-    case TWCoinTypeGroestlcoin:
-        return AnySign<Groestlcoin::Signer, Bitcoin::Proto::SigningInput>(data);
+    //case TWCoinTypeGroestlcoin:
+    //    return AnySign<Groestlcoin::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeHarmony:
         return AnySign<Harmony::Signer, Harmony::Proto::SigningInput>(data);
     case TWCoinTypeICON:
