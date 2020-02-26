@@ -18,7 +18,7 @@
 #include "Algorand/Address.h"
 //#include "Bitcoin/Address.h"
 //#include "Bitcoin/CashAddress.h"
-#include "Bitcoin/SegwitAddress.h"
+//#include "Bitcoin/SegwitAddress.h"
 #include "Cardano/AddressV3.h"
 #include "Cosmos/Address.h"
 #include "Decred/Address.h"
@@ -311,7 +311,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //case TWCoinTypeGroestlcoin:
     //case TWCoinTypeLitecoin:
     //case TWCoinTypeViacoin:
-        return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
+    //    return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
 
     //case TWCoinTypeBitcoinCash:
     //    return Bitcoin::CashAddress(publicKey).string();
