@@ -13,6 +13,7 @@
 #include "Decred/Entry.h"
 #include "Ethereum/Entry.h"
 #include "Groestlcoin/Entry.h"
+#include "NEO/Entry.h"
 #include "Zcash/Entry.h"
 
 #include "Aeternity/Address.h"
@@ -51,7 +52,7 @@
 #include "Waves/Address.h"
 //#include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
-#include "NEO/Address.h"
+//#include "NEO/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 
@@ -71,6 +72,7 @@ int setupDispatchers() {
         new Ethereum::Entry(),
         new Decred::Entry(),
         new Groestlcoin::Entry(),
+        new NEO::Entry(),
         new Zcash::Entry(),
     };
     for (auto d : dispatchers) {
@@ -235,8 +237,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeCardano:
         return Cardano::AddressV3::isValid(string);
 
-    case TWCoinTypeNEO:
-        return NEO::Address::isValid(string);
+    //case TWCoinTypeNEO:
+    //    return NEO::Address::isValid(string);
 
     case TWCoinTypeFilecoin:
         return Filecoin::Address::isValid(string);
@@ -427,8 +429,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeCardano:
         return Cardano::AddressV3(publicKey).string();
 
-    case TWCoinTypeNEO:
-        return NEO::Address(publicKey).string();
+    //case TWCoinTypeNEO:
+    //    return NEO::Address(publicKey).string();
 
     case TWCoinTypeFilecoin:
         return Filecoin::Address(publicKey).string();

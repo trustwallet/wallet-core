@@ -23,7 +23,7 @@
 #include "Icon/Signer.h"
 #include "IoTeX/Signer.h"
 #include "NEAR/Signer.h"
-#include "NEO/Signer.h"
+//#include "NEO/Signer.h"
 #include "NULS/Signer.h"
 #include "Nano/Signer.h"
 #include "Nebulas/Signer.h"
@@ -118,8 +118,8 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<IoTeX::Signer, IoTeX::Proto::SigningInput>(data);
     case TWCoinTypeNEAR:
         return AnySign<NEAR::Signer, NEAR::Proto::SigningInput>(data);
-    case TWCoinTypeNEO:
-        return AnySign<NEO::Signer, NEO::Proto::SigningInput>(data);
+    //case TWCoinTypeNEO:
+    //    return AnySign<NEO::Signer, NEO::Proto::SigningInput>(data);
     case TWCoinTypeNULS:
         return AnySign<NULS::Signer, NULS::Proto::SigningInput>(data);
     case TWCoinTypeNano:

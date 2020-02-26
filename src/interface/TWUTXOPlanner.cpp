@@ -11,12 +11,12 @@
 //#include "Bitcoin/Signer.h"
 //#include "Decred/Signer.h"
 //#include "Groestlcoin/Signer.h"
-#include "NEO/Signer.h"
+//#include "NEO/Signer.h"
 //#include "Zcash/Signer.h"
 
 //#include "../proto/Bitcoin.pb.h"
 //#include "../proto/Decred.pb.h"
-#include "../proto/NEO.pb.h"
+//#include "../proto/NEO.pb.h"
 
 using namespace TW;
 
@@ -34,37 +34,6 @@ TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) 
     const Data& dataIn = *(reinterpret_cast<const Data*>(data));
     Data dataOut;
     bool found = TW::anyCoinPlan(coin, dataIn, dataOut);
-    if (found) {
-        return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
-    }
-
-    // TODO: remove the switch once all coins have dispatchers
-    switch (coin) {
-    //case TWCoinTypeBitcoin:
-    //case TWCoinTypeBitcoinCash:
-    //case TWCoinTypeDash:
-    //case TWCoinTypeDigiByte:
-    //case TWCoinTypeDogecoin:
-    //case TWCoinTypeLitecoin:
-    //case TWCoinTypeMonacoin:
-    //case TWCoinTypeQtum:
-    //case TWCoinTypeRavencoin:
-    //case TWCoinTypeViacoin:
-    //case TWCoinTypeZcoin:
-    //    return PlanAny<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
-        
-    //case TWCoinTypeDecred:
-    //    return PlanAny<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
-    //case TWCoinTypeGroestlcoin:
-    //    return PlanAny<Groestlcoin::Signer, Bitcoin::Proto::SigningInput>(data);
-    case TWCoinTypeNEO:
-        return PlanAny<NEO::Signer, NEO::Proto::SigningInput>(data);
-    //case TWCoinTypeZcash:
-    //case TWCoinTypeZelcash:
-    //    return PlanAny<Zcash::Signer, Bitcoin::Proto::SigningInput>(data);
-
-    default:
-        assert(false);
-        return TWDataCreateWithSize(0);
-    }
+    assert(found);
+    return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
 }
