@@ -23,7 +23,7 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 }
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    AnySignTempl<Signer, TW::Bitcoin::Proto::SigningInput>(dataIn, dataOut);
+    signTemplate<Signer, TW::Bitcoin::Proto::SigningInput>(dataIn, dataOut);
 }
 
 void Entry::plan(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {

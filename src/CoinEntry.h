@@ -36,7 +36,7 @@ public:
 // TODO: Is this template really needed?  Each typed Entry.cpp can include it's own typed version anyways
 // Note: use output parameter to avoid unneeded copies
 template <typename Signer, typename Input>
-void AnySignTempl(const Data& dataIn, Data& dataOut) {
+void signTemplate(const Data& dataIn, Data& dataOut) {
     auto input = Input();
     input.ParseFromArray(dataIn.data(), (int)dataIn.size());
     auto serializedOut = Signer::sign(input).SerializeAsString();
