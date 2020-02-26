@@ -5,17 +5,24 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Entry.h"
+
 #include "Address.h"
+#include "AnySigner.h"
 #include "SegwitAddress.h"
+#include "Signer.h"
 
 using namespace TW::Bitcoin;
 using namespace std;
 
 bool Entry::validateAddress(const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const {
-    return Bitcoin::SegwitAddress::isValid(address, hrp)
-        || Bitcoin::Address::isValid(address, {{p2pkh}, {p2sh}});
+    return SegwitAddress::isValid(address, hrp)
+        || Address::isValid(address, {{p2pkh}, {p2sh}});
 }
 
 string Entry::deriveAddress(const PublicKey& publicKey, TW::byte, const char* hrp) const {
     return SegwitAddress(publicKey, 0, hrp).string();
+}
+
+void Entry::sign(const TW::Data& dataIn, TW::Data& dataOut) const {
+    AnySignTempl<Signer, Proto::SigningInput>(dataIn, dataOut);
 }

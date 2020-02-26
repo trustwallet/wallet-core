@@ -6,10 +6,13 @@
 
 #include <TrustWalletCore/TWAnySigner.h>
 
+#include "Coin.h"
+
+#include "AnySigner.h" // TODO remove
+
 #include "Aeternity/Signer.h"
 #include "Aion/Signer.h"
 #include "Algorand/Signer.h"
-#include "Binance/Signer.h"
 #include "Bitcoin/Signer.h"
 #include "Cosmos/Signer.h"
 #include "Decred/Signer.h"
@@ -46,26 +49,29 @@
 
 using namespace TW;
 
-template <typename Signer, typename Input>
-TWData* _Nonnull AnySign(TWData* _Nonnull data) {
-    auto input = Input();
-    input.ParseFromArray(TWDataBytes(data), (int)TWDataSize(data));
-    auto serialized = Signer::sign(input).SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
-                                 serialized.size());
-}
-
 TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
+
+    const Data& dataIn = *(reinterpret_cast<const Data*>(data));
+    Data dataOut;
+    bool found = anySignerSign(coin, dataIn, dataOut);
+    if (found) {
+        return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
+    }
+
+    // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeBinance:
+    case TWCoinTypeEthereum:
+        assert(false); // TODO remove
+        break;
+
     case TWCoinTypeAeternity:
         return AnySign<Aeternity::Signer, Aeternity::Proto::SigningInput>(data);
     case TWCoinTypeAion:
         return AnySign<Aion::Signer, Aion::Proto::SigningInput>(data);
     case TWCoinTypeAlgorand:
         return AnySign<Algorand::Signer, Algorand::Proto::SigningInput>(data);
-    case TWCoinTypeBinance:
-        return AnySign<Binance::Signer, Binance::Proto::SigningInput>(data);
-    case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:
     case TWCoinTypeDash:
     case TWCoinTypeDigiByte:
@@ -85,7 +91,6 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
         return AnySign<Cosmos::Signer, Cosmos::Proto::SigningInput>(data);
-    case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeCallisto:
     case TWCoinTypeGoChain:

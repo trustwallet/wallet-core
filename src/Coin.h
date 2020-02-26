@@ -74,4 +74,7 @@ byte p2shPrefix(TWCoinType coin);
 /// Returns human readable part for a coin type.
 enum TWHRP hrp(TWCoinType coin);
 
+// Note: use output parameter to avoid unneeded copies
+bool anySignerSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
+
 } // namespace TW

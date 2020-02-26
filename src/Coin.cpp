@@ -15,7 +15,6 @@
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Algorand/Address.h"
-#include "Binance/Address.h"
 #include "Bitcoin/Address.h"
 #include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
@@ -58,6 +57,7 @@
 #pragma clang diagnostic fatal "-Wswitch"
 
 using namespace TW;
+using namespace std;
 
 map<TWCoinType, CoinEntry*> dispatchMap; 
 
@@ -76,33 +76,45 @@ int setupDispatchers() {
 
 static int dummy = setupDispatchers();
 
+CoinEntry* coinDispatcher(TWCoinType coinType) {
+    if (dispatchMap.find(coinType) == dispatchMap.end()) {
+        // no such dispatcher
+        return nullptr;
+    }
+    assert(dispatchMap[coinType] != nullptr);
+    return dispatchMap[coinType];
+}
+
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
     auto p2sh = TW::p2shPrefix(coin);
     auto hrp = stringForHRP(TW::hrp(coin));
 
     // dispatch
-    if (dispatchMap.find(coin) != dispatchMap.end()) {
-        assert(dispatchMap[coin] != nullptr);
-        return dispatchMap[coin]->validateAddress(string, p2pkh, p2sh, hrp);
+    auto dispatcher = coinDispatcher(coin);
+    if (dispatcher != nullptr) {
+        return dispatcher->validateAddress(string, p2pkh, p2sh, hrp);
     }
 
+    // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
+    case TWCoinTypeBinance:
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeEthereum:
+        assert(false);
+        break;
+
     case TWCoinTypeAeternity:
         return Aeternity::Address::isValid(string);
 
     case TWCoinTypeAion:
         return Aion::Address::isValid(string);
 
-    case TWCoinTypeBinance:
-        return Binance::Address::isValid(string);
-
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
         return Cosmos::Address::isValid(string, hrp);
 
-    case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
     case TWCoinTypeLitecoin:
     case TWCoinTypeMonacoin:
@@ -129,7 +141,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
                Groestlcoin::Address::isValid(string, {p2pkh, p2sh});
 
     case TWCoinTypeCallisto:
-    case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
@@ -230,12 +241,17 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
     }
 
     // dispatch
-    if (dispatchMap.find(coin) != dispatchMap.end()) {
-        assert(dispatchMap[coin] != nullptr);
-        return dispatchMap[coin]->normalizeAddress(address);
+    auto dispatcher = coinDispatcher(coin);
+    if (dispatcher != nullptr) {
+        return dispatcher->normalizeAddress(address);
     }
 
+    // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
+    case TWCoinTypeEthereum:
+        assert(false);
+        break;
+
     case TWCoinTypeBitcoinCash:
         // normalized with bitcoincash: prefix
         if (Bitcoin::CashAddress::isValid(address)) {
@@ -244,7 +260,6 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
             return std::string(address);
         }
     case TWCoinTypeCallisto:
-    case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
@@ -271,19 +286,22 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     auto hrp = stringForHRP(TW::hrp(coin));
 
     // dispatch
-    if (dispatchMap.find(coin) != dispatchMap.end()) {
-        assert(dispatchMap[coin] != nullptr);
-        return dispatchMap[coin]->deriveAddress(publicKey, p2pkh, hrp);
+    auto dispatcher = coinDispatcher(coin);
+    if (dispatcher != nullptr) {
+        return dispatcher->deriveAddress(publicKey, p2pkh, hrp);
     }
 
+    // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
+    case TWCoinTypeBinance:
+    case TWCoinTypeBitcoin:
+    case TWCoinTypeEthereum:
+        assert(false);
+        break;
+
     case TWCoinTypeAeternity:
         return Aeternity::Address(publicKey).string();
 
-    case TWCoinTypeBinance:
-        return Binance::Address(publicKey).string();
-
-    case TWCoinTypeBitcoin:
     case TWCoinTypeDigiByte:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeLitecoin:
@@ -310,7 +328,6 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
         return Decred::Address(publicKey).string();
 
     case TWCoinTypeCallisto:
-    case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
@@ -406,6 +423,15 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeFilecoin:
         return Filecoin::Address(publicKey).string();
     }
+}
+
+bool TW::anySignerSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
+    auto dispatcher = coinDispatcher(coinType);
+    if (dispatcher != nullptr) {
+        dispatcher->sign(dataIn, dataOut);
+        return true;
+    }
+    return false;
 }
 
 #pragma clang diagnostic pop

@@ -28,6 +28,7 @@ TWData* _Nonnull PlanAny(TWData* _Nonnull data) {
 }
 
 TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) {
+    // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
     case TWCoinTypeBitcoin:
     case TWCoinTypeBitcoinCash:

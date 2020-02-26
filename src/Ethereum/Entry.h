@@ -13,9 +13,10 @@ namespace TW::Ethereum {
 class Entry: public CoinEntry {
 public:
     virtual TWCoinType coinType() const { return TWCoinTypeEthereum; }
-    virtual bool validateAddress(const string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    virtual string normalizeAddress(const string& address) const;
-    virtual string deriveAddress(const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
+    virtual bool validateAddress(const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
+    virtual std::string normalizeAddress(const std::string& address) const;
+    virtual std::string deriveAddress(const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
+    virtual void sign(const Data& dataIn, Data& dataOut) const;
 };
 
 } // namespace TW::Ethereum
