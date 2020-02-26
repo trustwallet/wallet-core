@@ -15,8 +15,8 @@
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Algorand/Address.h"
-#include "Bitcoin/Address.h"
-#include "Bitcoin/CashAddress.h"
+//#include "Bitcoin/Address.h"
+//#include "Bitcoin/CashAddress.h"
 #include "Bitcoin/SegwitAddress.h"
 #include "Cardano/AddressV3.h"
 #include "Cosmos/Address.h"
@@ -107,24 +107,32 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeAion:
         return Aion::Address::isValid(string);
 
+    //case TWCoinTypeBinance:
+    //    return Binance::Address::isValid(string);
+
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
         return Cosmos::Address::isValid(string, hrp);
 
+    //case TWCoinTypeBitcoin:
     //case TWCoinTypeDigiByte:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeMonacoin:
-    case TWCoinTypeQtum:
-    case TWCoinTypeViacoin:
-        return Bitcoin::SegwitAddress::isValid(string, hrp) ||
-               Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
+    //case TWCoinTypeLitecoin:
+    //case TWCoinTypeMonacoin:
+    //case TWCoinTypeQtum:
+    //case TWCoinTypeViacoin:
+    //    return Bitcoin::SegwitAddress::isValid(string, hrp) ||
+    //           Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
+
+    //case TWCoinTypeBitcoinCash:
+    //    return Bitcoin::CashAddress::isValid(string) ||
+    //           Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
 
     //case TWCoinTypeDash:
     //case TWCoinTypeDogecoin:
-    case TWCoinTypeRavencoin:
-    case TWCoinTypeZcoin:
-        return Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
+    //case TWCoinTypeRavencoin:
+    //case TWCoinTypeZcoin:
+    //    return Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
 
     case TWCoinTypeDecred:
         return Decred::Address::isValid(string);
@@ -134,6 +142,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
                Groestlcoin::Address::isValid(string, {p2pkh, p2sh});
 
     case TWCoinTypeCallisto:
+    //case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
@@ -245,7 +254,15 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
+    //case TWCoinTypeBitcoinCash:
+    //    // normalized with bitcoincash: prefix
+    //    if (Bitcoin::CashAddress::isValid(address)) {
+    //        return Bitcoin::CashAddress(address).string();
+    //    } else {
+    //        return std::string(address);
+    //    }
     case TWCoinTypeCallisto:
+    //case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:
@@ -284,11 +301,18 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeAeternity:
         return Aeternity::Address(publicKey).string();
 
+    //case TWCoinTypeBinance:
+    //    return Binance::Address(publicKey).string();
+
+    //case TWCoinTypeBitcoin:
     //case TWCoinTypeDigiByte:
     case TWCoinTypeGroestlcoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeViacoin:
+    //case TWCoinTypeLitecoin:
+    //case TWCoinTypeViacoin:
         return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
+
+    //case TWCoinTypeBitcoinCash:
+    //    return Bitcoin::CashAddress(publicKey).string();
 
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:
@@ -297,16 +321,17 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     //case TWCoinTypeDash:
     //case TWCoinTypeDogecoin:
-    case TWCoinTypeMonacoin:
-    case TWCoinTypeQtum:
-    case TWCoinTypeRavencoin:
-    case TWCoinTypeZcoin:
-        return Bitcoin::Address(publicKey, p2pkh).string();
+    //case TWCoinTypeMonacoin:
+    //case TWCoinTypeQtum:
+    //case TWCoinTypeRavencoin:
+    //case TWCoinTypeZcoin:
+    //    return Bitcoin::Address(publicKey, p2pkh).string();
 
     case TWCoinTypeDecred:
         return Decred::Address(publicKey).string();
 
     case TWCoinTypeCallisto:
+    //case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGoChain:
     case TWCoinTypePOANetwork:

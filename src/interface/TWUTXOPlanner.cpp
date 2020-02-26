@@ -8,7 +8,7 @@
 
 #include "Coin.h"
 
-#include "Bitcoin/Signer.h"
+//#include "Bitcoin/Signer.h"
 #include "Decred/Signer.h"
 #include "Groestlcoin/Signer.h"
 #include "NEO/Signer.h"
@@ -40,16 +40,18 @@ TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) 
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
+    //case TWCoinTypeBitcoin:
+    //case TWCoinTypeBitcoinCash:
     //case TWCoinTypeDash:
     //case TWCoinTypeDigiByte:
     //case TWCoinTypeDogecoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeMonacoin:
-    case TWCoinTypeQtum:
-    case TWCoinTypeRavencoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeZcoin:
-        return PlanAny<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
+    //case TWCoinTypeLitecoin:
+    //case TWCoinTypeMonacoin:
+    //case TWCoinTypeQtum:
+    //case TWCoinTypeRavencoin:
+    //case TWCoinTypeViacoin:
+    //case TWCoinTypeZcoin:
+    //    return PlanAny<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
         
     case TWCoinTypeDecred:
         return PlanAny<Decred::Signer, Bitcoin::Proto::SigningInput>(data);

@@ -18,6 +18,10 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2p
     switch (coin) {
         case TWCoinTypeBitcoin:
         case TWCoinTypeDigiByte:
+        case TWCoinTypeLitecoin:
+        case TWCoinTypeMonacoin:
+        case TWCoinTypeQtum:
+        case TWCoinTypeViacoin:
             return SegwitAddress::isValid(address, hrp)
                 || Address::isValid(address, {{p2pkh}, {p2sh}});
 
@@ -27,6 +31,8 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2p
 
         case TWCoinTypeDash:
         case TWCoinTypeDogecoin:
+        case TWCoinTypeRavencoin:
+        case TWCoinTypeZcoin:
             return Address::isValid(address, {{p2pkh}, {p2sh}});
 
         default:
@@ -37,12 +43,6 @@ bool Entry::validateAddress(TWCoinType coin, const string& address, TW::byte p2p
 
 string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
     switch (coin) {
-        case TWCoinTypeBitcoin:
-        case TWCoinTypeDash:
-        case TWCoinTypeDigiByte:
-        case TWCoinTypeDogecoin:
-            return address;
-
         case TWCoinTypeBitcoinCash:
             // normalized with bitcoincash: prefix
             if (CashAddress::isValid(address)) {
@@ -52,8 +52,8 @@ string Entry::normalizeAddress(TWCoinType coin, const string& address) const {
             }
 
         default:
-            assert(false);
-            return "";
+            // no change
+            return address;
     }
 }
 
@@ -61,6 +61,8 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
     switch (coin) {
         case TWCoinTypeBitcoin:
         case TWCoinTypeDigiByte:
+        case TWCoinTypeLitecoin:
+        case TWCoinTypeViacoin:
             return SegwitAddress(publicKey, 0, hrp).string();
 
         case TWCoinTypeBitcoinCash:
@@ -68,6 +70,10 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 
         case TWCoinTypeDash:
         case TWCoinTypeDogecoin:
+        case TWCoinTypeMonacoin:
+        case TWCoinTypeQtum:
+        case TWCoinTypeRavencoin:
+        case TWCoinTypeZcoin:
             return Address(publicKey, p2pkh).string();
 
         default:

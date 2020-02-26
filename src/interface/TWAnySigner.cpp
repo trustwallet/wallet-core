@@ -73,16 +73,20 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<Aion::Signer, Aion::Proto::SigningInput>(data);
     case TWCoinTypeAlgorand:
         return AnySign<Algorand::Signer, Algorand::Proto::SigningInput>(data);
+    //case TWCoinTypeBinance:
+    //    return AnySign<Binance::Signer, Binance::Proto::SigningInput>(data);
+    //case TWCoinTypeBitcoin:
+    //case TWCoinTypeBitcoinCash:
     //case TWCoinTypeDash:
     //case TWCoinTypeDigiByte:
     //case TWCoinTypeDogecoin:
-    case TWCoinTypeLitecoin:
-    case TWCoinTypeMonacoin:
-    case TWCoinTypeQtum:
-    case TWCoinTypeRavencoin:
-    case TWCoinTypeViacoin:
-    case TWCoinTypeZcoin:
-        return AnySign<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
+    //case TWCoinTypeLitecoin:
+    //case TWCoinTypeMonacoin:
+    //case TWCoinTypeQtum:
+    //case TWCoinTypeRavencoin:
+    //case TWCoinTypeViacoin:
+    //case TWCoinTypeZcoin:
+    //    return AnySign<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
 
     case TWCoinTypeDecred:
         return AnySign<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
@@ -92,6 +96,7 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
         return AnySign<Cosmos::Signer, Cosmos::Proto::SigningInput>(data);
+    //case TWCoinTypeEthereum:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeCallisto:
     case TWCoinTypeGoChain:
