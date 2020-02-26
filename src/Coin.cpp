@@ -101,13 +101,6 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeEthereum:
-    case TWCoinTypeBitcoinCash:
-        assert(false);
-        break;
-
     case TWCoinTypeAeternity:
         return Aeternity::Address::isValid(string);
 
@@ -119,7 +112,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeTerra:
         return Cosmos::Address::isValid(string, hrp);
 
-    case TWCoinTypeDigiByte:
+    //case TWCoinTypeDigiByte:
     case TWCoinTypeLitecoin:
     case TWCoinTypeMonacoin:
     case TWCoinTypeQtum:
@@ -127,8 +120,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
         return Bitcoin::SegwitAddress::isValid(string, hrp) ||
                Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
 
-    case TWCoinTypeDash:
-    case TWCoinTypeDogecoin:
+    //case TWCoinTypeDash:
+    //case TWCoinTypeDogecoin:
     case TWCoinTypeRavencoin:
     case TWCoinTypeZcoin:
         return Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
@@ -232,6 +225,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeFilecoin:
         return Filecoin::Address::isValid(string);
+
+    default:
+        assert(false);
+        return false;
     }
 }
 
@@ -248,11 +245,6 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeEthereum:
-        assert(false);
-        break;
-
     case TWCoinTypeCallisto:
     case TWCoinTypeEthereumClassic:
     case TWCoinTypeGoChain:
@@ -266,7 +258,9 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
     case TWCoinTypeWanchain:
         // normalized with Wanchain checksum
         return Wanchain::Address(address).string();
-    default: return std::string(address);
+
+    default:
+        return std::string(address);
     }
 }
 
@@ -287,17 +281,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
-    case TWCoinTypeBinance:
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeEthereum:
-        assert(false);
-        break;
-
     case TWCoinTypeAeternity:
         return Aeternity::Address(publicKey).string();
 
-    case TWCoinTypeDigiByte:
+    //case TWCoinTypeDigiByte:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeViacoin:
@@ -308,8 +295,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeTerra:
         return Cosmos::Address(hrp, publicKey).string();
 
-    case TWCoinTypeDash:
-    case TWCoinTypeDogecoin:
+    //case TWCoinTypeDash:
+    //case TWCoinTypeDogecoin:
     case TWCoinTypeMonacoin:
     case TWCoinTypeQtum:
     case TWCoinTypeRavencoin:
@@ -414,6 +401,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeFilecoin:
         return Filecoin::Address(publicKey).string();
+
+    default:
+        assert(false);
+        return "";
     }
 }
 

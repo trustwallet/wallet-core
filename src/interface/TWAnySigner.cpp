@@ -67,22 +67,15 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-    case TWCoinTypeBinance:
-    case TWCoinTypeEthereum:
-        assert(false); // TODO remove
-        break;
-
     case TWCoinTypeAeternity:
         return AnySign<Aeternity::Signer, Aeternity::Proto::SigningInput>(data);
     case TWCoinTypeAion:
         return AnySign<Aion::Signer, Aion::Proto::SigningInput>(data);
     case TWCoinTypeAlgorand:
         return AnySign<Algorand::Signer, Algorand::Proto::SigningInput>(data);
-    case TWCoinTypeDash:
-    case TWCoinTypeDigiByte:
-    case TWCoinTypeDogecoin:
+    //case TWCoinTypeDash:
+    //case TWCoinTypeDigiByte:
+    //case TWCoinTypeDogecoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeMonacoin:
     case TWCoinTypeQtum:
@@ -90,6 +83,7 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     case TWCoinTypeViacoin:
     case TWCoinTypeZcoin:
         return AnySign<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
+
     case TWCoinTypeDecred:
         return AnySign<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeEOS:
@@ -162,6 +156,9 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     case TWCoinTypeTON:
         // not implemented yet
         break;
+
+    default:
+        assert(false);
     }
     return TWDataCreateWithSize(0);
 }

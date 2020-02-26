@@ -40,14 +40,9 @@ TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) 
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
-    case TWCoinTypeBitcoin:
-    case TWCoinTypeBitcoinCash:
-        assert(false);
-        break;
-
-    case TWCoinTypeDash:
-    case TWCoinTypeDigiByte:
-    case TWCoinTypeDogecoin:
+    //case TWCoinTypeDash:
+    //case TWCoinTypeDigiByte:
+    //case TWCoinTypeDogecoin:
     case TWCoinTypeLitecoin:
     case TWCoinTypeMonacoin:
     case TWCoinTypeQtum:
@@ -55,6 +50,7 @@ TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) 
     case TWCoinTypeViacoin:
     case TWCoinTypeZcoin:
         return PlanAny<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
+        
     case TWCoinTypeDecred:
         return PlanAny<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeGroestlcoin:
@@ -64,6 +60,9 @@ TWData* _Nonnull TWUTXOPlannerPlan(TWData* _Nonnull data, enum TWCoinType coin) 
     case TWCoinTypeZcash:
     case TWCoinTypeZelcash:
         return PlanAny<Zcash::Signer, Bitcoin::Proto::SigningInput>(data);
-    default: return TWDataCreateWithSize(0);
+
+    default:
+        assert(false);
+        return TWDataCreateWithSize(0);
     }
 }
