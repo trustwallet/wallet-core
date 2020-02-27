@@ -8,6 +8,7 @@
 
 #include "CoinEntry.h"
 
+// Includes for entry points for coin implementations
 #include "Aeternity/Entry.h"
 #include "Aion/Entry.h"
 #include "Algorand/Entry.h"
@@ -21,8 +22,18 @@
 #include "Groestlcoin/Entry.h"
 #include "Harmony/Entry.h"
 #include "Icon/Entry.h"
+#include "IoTeX/Entry.h"
+#include "Nano/Entry.h"
+#include "NEAR/Entry.h"
+#include "Nebulas/Entry.h"
 #include "NEO/Entry.h"
+#include "Nimiq/Entry.h"
+#include "NULS/Entry.h"
+#include "Ontology/Entry.h"
+#include "Tezos/Entry.h"
 #include "Theta/Entry.h"
+#include "TON/Entry.h"
+#include "Tron/Entry.h"
 #include "VeChain/Entry.h"
 #include "Wanchain/Entry.h"
 #include "Zcash/Entry.h"
@@ -37,28 +48,28 @@
 #include "Cosmos/Address.h"
 //#include "Decred/Address.h"
 //#include "EOS/Address.h"
-#include "Ethereum/Address.h"
+//#include "Ethereum/Address.h"
 //#include "FIO/Address.h"
 //#include "Filecoin/Address.h"
 //#include "Groestlcoin/Address.h"
 //#include "Harmony/Address.h"
 //#include "Icon/Address.h"
-#include "IoTeX/Address.h"
+//#include "IoTeX/Address.h"
 #include "Kusama/Address.h"
-#include "NEAR/Address.h"
-#include "NULS/Address.h"
-#include "Nano/Address.h"
-#include "Nebulas/Address.h"
-#include "Nimiq/Address.h"
-#include "Ontology/Address.h"
+//#include "NEAR/Address.h"
+//#include "NULS/Address.h"
+//#include "Nano/Address.h"
+//#include "Nebulas/Address.h"
+//#include "Nimiq/Address.h"
+//#include "Ontology/Address.h"
 #include "Polkadot/Address.h"
 #include "Ripple/Address.h"
 #include "Ripple/XAddress.h"
 #include "Solana/Address.h"
 #include "Stellar/Address.h"
-#include "TON/Address.h"
-#include "Tezos/Address.h"
-#include "Tron/Address.h"
+//#include "TON/Address.h"
+//#include "Tezos/Address.h"
+//#include "Tron/Address.h"
 //#include "Wanchain/Address.h"
 #include "Waves/Address.h"
 //#include "Zcash/TAddress.h"
@@ -91,8 +102,18 @@ int setupDispatchers() {
         new Groestlcoin::Entry(),
         new Harmony::Entry(),
         new Icon::Entry(),
+        new IoTeX::Entry(),
+        new Nano::Entry(),
+        new NEAR::Entry(),
+        new Nebulas::Entry(),
         new NEO::Entry(),
+        new Nimiq::Entry(),
+        new NULS::Entry(),
+        new Ontology::Entry(),
+        new Tezos::Entry(),
         new Theta::Entry(),
+        new TON::Entry(),
+        new Tron::Entry(),
         new VeChain::Entry(),
         new Wanchain::Entry(),
         new Zcash::Entry(),
@@ -185,15 +206,12 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     //    return Wanchain::Address::isValid(string);
     //case TWCoinTypeICON:
     //    return Icon::Address::isValid(string);
-
-    case TWCoinTypeIoTeX:
-        return IoTeX::Address::isValid(string);
-
-    case TWCoinTypeOntology:
-        return Ontology::Address::isValid(string);
-
-    case TWCoinTypeNimiq:
-        return Nimiq::Address::isValid(string);
+    //case TWCoinTypeIoTeX:
+    //    return IoTeX::Address::isValid(string);
+    //case TWCoinTypeOntology:
+    //    return Ontology::Address::isValid(string);
+    //case TWCoinTypeNimiq:
+    //    return Nimiq::Address::isValid(string);
 
     case TWCoinTypeXRP:
         return Ripple::Address::isValid(string) || Ripple::XAddress::isValid(string);
@@ -202,12 +220,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeKin:
         return Stellar::Address::isValid(string);
 
-    case TWCoinTypeTezos:
-        return Tezos::Address::isValid(string);
-
-    case TWCoinTypeTron:
-        return Tron::Address::isValid(string);
-
+    //case TWCoinTypeTezos:
+    //    return Tezos::Address::isValid(string);
+    //case TWCoinTypeTron:
+    //    return Tron::Address::isValid(string);
     //case TWCoinTypeZelcash:
     //case TWCoinTypeZcash:
     //    return Zcash::TAddress::isValid(string);
@@ -215,30 +231,26 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeZilliqa:
         return Zilliqa::Address::isValid(string);
 
-    case TWCoinTypeNano:
-        return Nano::Address::isValid(string);
-
-    case TWCoinTypeNEAR:
-        return NEAR::Address::isValid(string);
-
-    case TWCoinTypeNULS:
-        return NULS::Address::isValid(string);
+    //case TWCoinTypeNano:
+    //    return Nano::Address::isValid(string);
+    //case TWCoinTypeNEAR:
+    //    return NEAR::Address::isValid(string);
+    //case TWCoinTypeNULS:
+    //    return NULS::Address::isValid(string);
 
     case TWCoinTypeWaves:
         return Waves::Address::isValid(string);
 
-    case TWCoinTypeNebulas:
-        return Nebulas::Address::isValid(string);
-
+    //case TWCoinTypeNebulas:
+    //    return Nebulas::Address::isValid(string);
     //case TWCoinTypeHarmony:
     //    return Harmony::Address::isValid(string);
 
     case TWCoinTypeSolana:
         return Solana::Address::isValid(string);
 
-    case TWCoinTypeTON:
-        return TON::Address::isValid(string);
-
+    //case TWCoinTypeTON:
+    //    return TON::Address::isValid(string);
     //case TWCoinTypeAlgorand:
     //    return Algorand::Address::isValid(string);
 
@@ -339,28 +351,22 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //    return Wanchain::Address(publicKey).string();
     //case TWCoinTypeICON:
     //    return Icon::Address(publicKey, Icon::TypeAddress).string();
-
-    case TWCoinTypeIoTeX:
-        return IoTeX::Address(publicKey).string();
-
-    case TWCoinTypeOntology:
-        return Ontology::Address(publicKey).string();
-
-    case TWCoinTypeNimiq:
-        return Nimiq::Address(publicKey).string();
-
+    //case TWCoinTypeIoTeX:
+    //    return IoTeX::Address(publicKey).string();
+    //case TWCoinTypeOntology:
+    //    return Ontology::Address(publicKey).string();
+    //case TWCoinTypeNimiq:
+    //    return Nimiq::Address(publicKey).string();
     //case TWCoinTypeAion:
     //    return Aion::Address(publicKey).string();
 
     case TWCoinTypeXRP:
         return Ripple::Address(publicKey).string();
 
-    case TWCoinTypeTezos:
-        return Tezos::Address(publicKey).string();
-
-    case TWCoinTypeTron:
-        return Tron::Address(publicKey).string();
-
+    //case TWCoinTypeTezos:
+    //    return Tezos::Address(publicKey).string();
+    //case TWCoinTypeTron:
+    //    return Tron::Address(publicKey).string();
     //case TWCoinTypeZelcash:
     //case TWCoinTypeZcash:
     //    return Zcash::TAddress(publicKey, p2pkh).string();
@@ -372,30 +378,26 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeKin:
         return Stellar::Address(publicKey).string();
 
-    case TWCoinTypeNano:
-        return Nano::Address(publicKey).string();
-
-    case TWCoinTypeNULS:
-        return NULS::Address(publicKey).string();
-
-    case TWCoinTypeNEAR:
-        return NEAR::Address(publicKey).string();
+    //case TWCoinTypeNano:
+    //    return Nano::Address(publicKey).string();
+    //case TWCoinTypeNULS:
+    //    return NULS::Address(publicKey).string();
+    //case TWCoinTypeNEAR:
+    //    return NEAR::Address(publicKey).string();
 
     case TWCoinTypeWaves:
         return Waves::Address(publicKey).string();
 
-    case TWCoinTypeNebulas:
-        return Nebulas::Address(publicKey).string();
-
+    //case TWCoinTypeNebulas:
+    //    return Nebulas::Address(publicKey).string();
     //case TWCoinTypeHarmony:
     //    return Harmony::Address(publicKey).string();
 
     case TWCoinTypeSolana:
         return Solana::Address(publicKey).string();
 
-    case TWCoinTypeTON:
-        return TON::Address(publicKey).string();
-
+    //case TWCoinTypeTON:
+    //    return TON::Address(publicKey).string();
     //case TWCoinTypeAlgorand:
     //    return Algorand::Address(publicKey).string();
 

@@ -15,27 +15,27 @@
 #include "Cosmos/Signer.h"
 //#include "Decred/Signer.h"
 //#include "EOS/Signer.h"
-#include "Ethereum/Signer.h"
+//#include "Ethereum/Signer.h"
 //#include "FIO/Signer.h"
 //#include "Filecoin/Signer.h"
 //#include "Groestlcoin/Signer.h"
 //#include "Harmony/Signer.h"
 //#include "Icon/Signer.h"
-#include "IoTeX/Signer.h"
-#include "NEAR/Signer.h"
+//#include "IoTeX/Signer.h"
+//#include "NEAR/Signer.h"
 //#include "NEO/Signer.h"
-#include "NULS/Signer.h"
-#include "Nano/Signer.h"
-#include "Nebulas/Signer.h"
-#include "Nimiq/Signer.h"
-#include "Ontology/Signer.h"
+//#include "NULS/Signer.h"
+//#include "Nano/Signer.h"
+//#include "Nebulas/Signer.h"
+//#include "Nimiq/Signer.h"
+//#include "Ontology/Signer.h"
 #include "Polkadot/Signer.h"
 #include "Ripple/Signer.h"
 #include "Solana/Signer.h"
 #include "Stellar/Signer.h"
-#include "Tezos/Signer.h"
+//#include "Tezos/Signer.h"
 //#include "Theta/Signer.h"
-#include "Tron/Signer.h"
+//#include "Tron/Signer.h"
 //#include "VeChain/Signer.h"
 //#include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
@@ -115,22 +115,22 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     //    return AnySign<Harmony::Signer, Harmony::Proto::SigningInput>(data);
     //case TWCoinTypeICON:
     //    return AnySign<Icon::Signer, Icon::Proto::SigningInput>(data);
-    case TWCoinTypeIoTeX:
-        return AnySign<IoTeX::Signer, IoTeX::Proto::SigningInput>(data);
-    case TWCoinTypeNEAR:
-        return AnySign<NEAR::Signer, NEAR::Proto::SigningInput>(data);
+    //case TWCoinTypeIoTeX:
+    //    return AnySign<IoTeX::Signer, IoTeX::Proto::SigningInput>(data);
+    //case TWCoinTypeNEAR:
+    //    return AnySign<NEAR::Signer, NEAR::Proto::SigningInput>(data);
     //case TWCoinTypeNEO:
     //    return AnySign<NEO::Signer, NEO::Proto::SigningInput>(data);
-    case TWCoinTypeNULS:
-        return AnySign<NULS::Signer, NULS::Proto::SigningInput>(data);
-    case TWCoinTypeNano:
-        return AnySign<Nano::Signer, Nano::Proto::SigningInput>(data);
-    case TWCoinTypeNebulas:
-        return AnySign<Nebulas::Signer, Nebulas::Proto::SigningInput>(data);
-    case TWCoinTypeNimiq:
-        return AnySign<Nimiq::Signer, Nimiq::Proto::SigningInput>(data);
-    case TWCoinTypeOntology:
-        return AnySign<Ontology::Signer, Ontology::Proto::SigningInput>(data);
+    //case TWCoinTypeNULS:
+    //    return AnySign<NULS::Signer, NULS::Proto::SigningInput>(data);
+    //case TWCoinTypeNano:
+    //    return AnySign<Nano::Signer, Nano::Proto::SigningInput>(data);
+    //case TWCoinTypeNebulas:
+    //    return AnySign<Nebulas::Signer, Nebulas::Proto::SigningInput>(data);
+    //case TWCoinTypeNimiq:
+    //    return AnySign<Nimiq::Signer, Nimiq::Proto::SigningInput>(data);
+    //case TWCoinTypeOntology:
+    //    return AnySign<Ontology::Signer, Ontology::Proto::SigningInput>(data);
     case TWCoinTypePolkadot:
     case TWCoinTypeKusama:
         return AnySign<Polkadot::Signer, Polkadot::Proto::SigningInput>(data);
@@ -143,10 +143,10 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<Stellar::Signer, Stellar::Proto::SigningInput>(data);
     //case TWCoinTypeTheta:
     //    return AnySign<Theta::Signer, Theta::Proto::SigningInput>(data);
-    case TWCoinTypeTezos:
-        return AnySign<Tezos::Signer, Tezos::Proto::SigningInput>(data);
-    case TWCoinTypeTron:
-        return AnySign<Tron::Signer, Tron::Proto::SigningInput>(data);
+    //case TWCoinTypeTezos:
+    //    return AnySign<Tezos::Signer, Tezos::Proto::SigningInput>(data);
+    //case TWCoinTypeTron:
+    //    return AnySign<Tron::Signer, Tron::Proto::SigningInput>(data);
     //case TWCoinTypeVeChain:
     //    return AnySign<VeChain::Signer, VeChain::Proto::SigningInput>(data);
     //case TWCoinTypeWanchain:
@@ -159,7 +159,7 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     //case TWCoinTypeZelcash:
     //    return AnySign<Zcash::Signer, Bitcoin::Proto::SigningInput>(data);
     case TWCoinTypeCardano:
-    case TWCoinTypeTON:
+    //case TWCoinTypeTON:
         // not implemented yet
         break;
 
