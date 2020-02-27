@@ -423,9 +423,11 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     }
 }
 
+// TOOD remove bool return once all coins have dispatchers
 bool TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
-    if (dispatcher != nullptr) {
+    if (dispatcher != nullptr) { // TODO remove this condition once all coins have dispatchers
+        assert(dispatcher != nullptr);
         dispatcher->sign(coinType, dataIn, dataOut);
         return true;
     }
