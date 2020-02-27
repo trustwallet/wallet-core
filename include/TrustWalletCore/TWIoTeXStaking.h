@@ -15,23 +15,23 @@ TW_EXTERN_C_BEGIN
 TW_EXPORT_CLASS
 struct TWIoTeXStaking;
 
-/// Function to generate Stake message
+/// Function to generate Stake message.  Result must be freed.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWIoTeXStakingStake(TWData* _Nonnull candidate, uint64_t duration, bool nonDecay, TWData* _Nonnull data);
 
-/// Function to generate Unstake message
+/// Function to generate Unstake message.  Result must be freed.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWIoTeXStakingUnstake(uint64_t pyggIndex, TWData* _Nonnull data);
 
-/// Function to generate Withdraw message
+/// Function to generate Withdraw message.  Result must be freed.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWIoTeXStakingWithdraw(uint64_t pyggIndex, TWData* _Nonnull data);
 
-/// Function to generate AddStake message
+/// Function to generate AddStake message.  Result must be freed.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWIoTeXStakingAddStake(uint64_t pyggIndex, TWData* _Nonnull data);
 
-/// Function to generate MoveStake message
+/// Function to generate MoveStake message.  Result must be freed.
 TW_EXPORT_STATIC_METHOD
 TWData* _Nonnull TWIoTeXStakingMoveStake(uint64_t pyggIndex, TWData* _Nonnull candidate, TWData* _Nonnull data);
 
