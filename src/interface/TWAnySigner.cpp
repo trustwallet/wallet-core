@@ -31,16 +31,16 @@
 //#include "Ontology/Signer.h"
 #include "Polkadot/Signer.h"
 #include "Ripple/Signer.h"
-#include "Solana/Signer.h"
-#include "Stellar/Signer.h"
+//#include "Solana/Signer.h"
+//#include "Stellar/Signer.h"
 //#include "Tezos/Signer.h"
 //#include "Theta/Signer.h"
 //#include "Tron/Signer.h"
 //#include "VeChain/Signer.h"
 //#include "Wanchain/Signer.h"
-#include "Waves/Signer.h"
+//#include "Waves/Signer.h"
 //#include "Zcash/Signer.h"
-#include "Zilliqa/Signer.h"
+//#include "Zilliqa/Signer.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic fatal "-Wswitch"
@@ -136,11 +136,11 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
         return AnySign<Polkadot::Signer, Polkadot::Proto::SigningInput>(data);
     case TWCoinTypeXRP:
         return AnySign<Ripple::Signer, Ripple::Proto::SigningInput>(data);
-    case TWCoinTypeSolana:
-        return AnySign<Solana::Signer, Solana::Proto::SigningInput>(data);
-    case TWCoinTypeStellar:
-    case TWCoinTypeKin:
-        return AnySign<Stellar::Signer, Stellar::Proto::SigningInput>(data);
+    //case TWCoinTypeSolana:
+    //    return AnySign<Solana::Signer, Solana::Proto::SigningInput>(data);
+    //case TWCoinTypeStellar:
+    //case TWCoinTypeKin:
+    //    return AnySign<Stellar::Signer, Stellar::Proto::SigningInput>(data);
     //case TWCoinTypeTheta:
     //    return AnySign<Theta::Signer, Theta::Proto::SigningInput>(data);
     //case TWCoinTypeTezos:
@@ -151,17 +151,17 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     //    return AnySign<VeChain::Signer, VeChain::Proto::SigningInput>(data);
     //case TWCoinTypeWanchain:
     //    return AnySign<Wanchain::Signer, Ethereum::Proto::SigningInput>(data);
-    case TWCoinTypeWaves:
-        return AnySign<Waves::Signer, Waves::Proto::SigningInput>(data);
-    case TWCoinTypeZilliqa:
-        return AnySign<Zilliqa::Signer, Zilliqa::Proto::SigningInput>(data);
+    //case TWCoinTypeWaves:
+    //    return AnySign<Waves::Signer, Waves::Proto::SigningInput>(data);
+    //case TWCoinTypeZilliqa:
+    //    return AnySign<Zilliqa::Signer, Zilliqa::Proto::SigningInput>(data);
     //case TWCoinTypeZcash:
     //case TWCoinTypeZelcash:
     //    return AnySign<Zcash::Signer, Bitcoin::Proto::SigningInput>(data);
-    case TWCoinTypeCardano:
+    //case TWCoinTypeCardano:
     //case TWCoinTypeTON:
-        // not implemented yet
-        break;
+    //    // not implemented yet
+    //    break;
 
     default:
         assert(false);
