@@ -9,18 +9,18 @@
 #include "Coin.h"
 
 //#include "Aeternity/Signer.h"
-#include "Aion/Signer.h"
-#include "Algorand/Signer.h"
+//#include "Aion/Signer.h"
+//#include "Algorand/Signer.h"
 //#include "Bitcoin/Signer.h"
 #include "Cosmos/Signer.h"
 //#include "Decred/Signer.h"
-#include "EOS/Signer.h"
+//#include "EOS/Signer.h"
 #include "Ethereum/Signer.h"
-#include "FIO/Signer.h"
-#include "Filecoin/Signer.h"
+//#include "FIO/Signer.h"
+//#include "Filecoin/Signer.h"
 //#include "Groestlcoin/Signer.h"
-#include "Harmony/Signer.h"
-#include "Icon/Signer.h"
+//#include "Harmony/Signer.h"
+//#include "Icon/Signer.h"
 #include "IoTeX/Signer.h"
 #include "NEAR/Signer.h"
 //#include "NEO/Signer.h"
@@ -69,10 +69,10 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     switch (coin) {
     //case TWCoinTypeAeternity:
     //    return AnySign<Aeternity::Signer, Aeternity::Proto::SigningInput>(data);
-    case TWCoinTypeAion:
-        return AnySign<Aion::Signer, Aion::Proto::SigningInput>(data);
-    case TWCoinTypeAlgorand:
-        return AnySign<Algorand::Signer, Algorand::Proto::SigningInput>(data);
+    //case TWCoinTypeAion:
+    //    return AnySign<Aion::Signer, Aion::Proto::SigningInput>(data);
+    //case TWCoinTypeAlgorand:
+    //    return AnySign<Algorand::Signer, Algorand::Proto::SigningInput>(data);
     //case TWCoinTypeBinance:
     //    return AnySign<Binance::Signer, Binance::Proto::SigningInput>(data);
     //case TWCoinTypeBitcoin:
@@ -87,15 +87,16 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     //case TWCoinTypeViacoin:
     //case TWCoinTypeZcoin:
     //    return AnySign<Bitcoin::Signer, Bitcoin::Proto::SigningInput>(data);
-
     //case TWCoinTypeDecred:
     //    return AnySign<Decred::Signer, Bitcoin::Proto::SigningInput>(data);
-    case TWCoinTypeEOS:
-        return AnySign<EOS::Signer, EOS::Proto::SigningInput>(data);
+    //case TWCoinTypeEOS:
+    //    return AnySign<EOS::Signer, EOS::Proto::SigningInput>(data);
+
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
         return AnySign<Cosmos::Signer, Cosmos::Proto::SigningInput>(data);
+
     //case TWCoinTypeEthereum:
     //case TWCoinTypeEthereumClassic:
     //case TWCoinTypeCallisto:
@@ -104,16 +105,16 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     //case TWCoinTypeTomoChain:
     //case TWCoinTypeThunderToken:
     //    return AnySign<Ethereum::Signer, Ethereum::Proto::SigningInput>(data);
-    case TWCoinTypeFilecoin:
-        return AnySign<Filecoin::Signer, Filecoin::Proto::SigningInput>(data);
-    case TWCoinTypeFIO:
-        return AnySign<FIO::Signer, FIO::Proto::SigningInput>(data);
+    //case TWCoinTypeFilecoin:
+    //    return AnySign<Filecoin::Signer, Filecoin::Proto::SigningInput>(data);
+    //case TWCoinTypeFIO:
+    //    return AnySign<FIO::Signer, FIO::Proto::SigningInput>(data);
     //case TWCoinTypeGroestlcoin:
     //    return AnySign<Groestlcoin::Signer, Bitcoin::Proto::SigningInput>(data);
-    case TWCoinTypeHarmony:
-        return AnySign<Harmony::Signer, Harmony::Proto::SigningInput>(data);
-    case TWCoinTypeICON:
-        return AnySign<Icon::Signer, Icon::Proto::SigningInput>(data);
+    //case TWCoinTypeHarmony:
+    //    return AnySign<Harmony::Signer, Harmony::Proto::SigningInput>(data);
+    //case TWCoinTypeICON:
+    //    return AnySign<Icon::Signer, Icon::Proto::SigningInput>(data);
     case TWCoinTypeIoTeX:
         return AnySign<IoTeX::Signer, IoTeX::Proto::SigningInput>(data);
     case TWCoinTypeNEAR:

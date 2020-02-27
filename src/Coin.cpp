@@ -9,11 +9,18 @@
 #include "CoinEntry.h"
 
 #include "Aeternity/Entry.h"
+#include "Aion/Entry.h"
+#include "Algorand/Entry.h"
 #include "Bitcoin/Entry.h"
 #include "Binance/Entry.h"
 #include "Decred/Entry.h"
+#include "EOS/Entry.h"
 #include "Ethereum/Entry.h"
+#include "Filecoin/Entry.h"
+#include "FIO/Entry.h"
 #include "Groestlcoin/Entry.h"
+#include "Harmony/Entry.h"
+#include "Icon/Entry.h"
 #include "NEO/Entry.h"
 #include "Theta/Entry.h"
 #include "VeChain/Entry.h"
@@ -21,21 +28,21 @@
 #include "Zcash/Entry.h"
 
 //#include "Aeternity/Address.h"
-#include "Aion/Address.h"
-#include "Algorand/Address.h"
+//#include "Aion/Address.h"
+//#include "Algorand/Address.h"
 //#include "Bitcoin/Address.h"
 //#include "Bitcoin/CashAddress.h"
 //#include "Bitcoin/SegwitAddress.h"
 #include "Cardano/AddressV3.h"
 #include "Cosmos/Address.h"
 //#include "Decred/Address.h"
-#include "EOS/Address.h"
+//#include "EOS/Address.h"
 #include "Ethereum/Address.h"
-#include "FIO/Address.h"
-#include "Filecoin/Address.h"
+//#include "FIO/Address.h"
+//#include "Filecoin/Address.h"
 //#include "Groestlcoin/Address.h"
-#include "Harmony/Address.h"
-#include "Icon/Address.h"
+//#include "Harmony/Address.h"
+//#include "Icon/Address.h"
 #include "IoTeX/Address.h"
 #include "Kusama/Address.h"
 #include "NEAR/Address.h"
@@ -72,11 +79,18 @@ map<TWCoinType, CoinEntry*> dispatchMap;
 int setupDispatchers() {
     std::vector<CoinEntry*> dispatchers = {
         new Aeternity::Entry(),
+        new Aion::Entry(),
+        new Algorand::Entry(),
         new Binance::Entry(),
         new Bitcoin::Entry(),
+        new EOS::Entry(),
         new Ethereum::Entry(),
         new Decred::Entry(),
+        new Filecoin::Entry(),
+        new FIO::Entry(),
         new Groestlcoin::Entry(),
+        new Harmony::Entry(),
+        new Icon::Entry(),
         new NEO::Entry(),
         new Theta::Entry(),
         new VeChain::Entry(),
@@ -98,9 +112,11 @@ static int dummy = setupDispatchers();
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
     if (dispatchMap.find(coinType) == dispatchMap.end()) {
-        // no such dispatcher
+        // no such dispatcher, TODO remove this once all coins have dispatcher
         return nullptr;
     }
+    // Coin must be present, and not null.  Otherwise that is a fatal code configuration error.
+    assert(dispatchMap.find(coinType) != dispatchMap.end()); // coin must be present
     assert(dispatchMap[coinType] != nullptr);
     return dispatchMap[coinType];
 }
@@ -120,10 +136,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     switch (coin) {
     //case TWCoinTypeAeternity:
     //    return Aeternity::Address::isValid(string);
-
-    case TWCoinTypeAion:
-        return Aion::Address::isValid(string);
-
+    //case TWCoinTypeAion:
+    //    return Aion::Address::isValid(string);
     //case TWCoinTypeBinance:
     //    return Binance::Address::isValid(string);
 
@@ -140,24 +154,19 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     //case TWCoinTypeViacoin:
     //    return Bitcoin::SegwitAddress::isValid(string, hrp) ||
     //           Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
-
     //case TWCoinTypeBitcoinCash:
     //    return Bitcoin::CashAddress::isValid(string) ||
     //           Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
-
     //case TWCoinTypeDash:
     //case TWCoinTypeDogecoin:
     //case TWCoinTypeRavencoin:
     //case TWCoinTypeZcoin:
     //    return Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
-
     //case TWCoinTypeDecred:
     //    return Decred::Address::isValid(string);
-
     //case TWCoinTypeGroestlcoin:
     //    return Bitcoin::SegwitAddress::isValid(string, hrp) ||
     //           Groestlcoin::Address::isValid(string, {p2pkh, p2sh});
-
     //case TWCoinTypeCallisto:
     //case TWCoinTypeEthereum:
     //case TWCoinTypeEthereumClassic:
@@ -168,18 +177,14 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     //case TWCoinTypeVeChain:
     //case TWCoinTypeTheta:
     //    return Ethereum::Address::isValid(string);
-
-    case TWCoinTypeEOS:
-        return EOS::Address::isValid(string);
-
-    case TWCoinTypeFIO:
-        return FIO::Address::isValid(string);
-
+    //case TWCoinTypeEOS:
+    //    return EOS::Address::isValid(string);
+    //case TWCoinTypeFIO:
+    //    return FIO::Address::isValid(string);
     //case TWCoinTypeWanchain:
     //    return Wanchain::Address::isValid(string);
-
-    case TWCoinTypeICON:
-        return Icon::Address::isValid(string);
+    //case TWCoinTypeICON:
+    //    return Icon::Address::isValid(string);
 
     case TWCoinTypeIoTeX:
         return IoTeX::Address::isValid(string);
@@ -225,8 +230,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeNebulas:
         return Nebulas::Address::isValid(string);
 
-    case TWCoinTypeHarmony:
-        return Harmony::Address::isValid(string);
+    //case TWCoinTypeHarmony:
+    //    return Harmony::Address::isValid(string);
 
     case TWCoinTypeSolana:
         return Solana::Address::isValid(string);
@@ -234,8 +239,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     case TWCoinTypeTON:
         return TON::Address::isValid(string);
 
-    case TWCoinTypeAlgorand:
-        return Algorand::Address::isValid(string);
+    //case TWCoinTypeAlgorand:
+    //    return Algorand::Address::isValid(string);
 
     case TWCoinTypeKusama:
         return Kusama::Address::isValid(string);
@@ -248,9 +253,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     //case TWCoinTypeNEO:
     //    return NEO::Address::isValid(string);
-
-    case TWCoinTypeFilecoin:
-        return Filecoin::Address::isValid(string);
+    //case TWCoinTypeFilecoin:
+    //    return Filecoin::Address::isValid(string);
 
     default:
         assert(false);
@@ -292,17 +296,14 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     switch (coin) {
     //case TWCoinTypeAeternity:
     //    return Aeternity::Address(publicKey).string();
-
     //case TWCoinTypeBinance:
     //    return Binance::Address(publicKey).string();
-
     //case TWCoinTypeBitcoin:
     //case TWCoinTypeDigiByte:
     //case TWCoinTypeGroestlcoin:
     //case TWCoinTypeLitecoin:
     //case TWCoinTypeViacoin:
     //    return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
-
     //case TWCoinTypeBitcoinCash:
     //    return Bitcoin::CashAddress(publicKey).string();
 
@@ -318,10 +319,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //case TWCoinTypeRavencoin:
     //case TWCoinTypeZcoin:
     //    return Bitcoin::Address(publicKey, p2pkh).string();
-
     //case TWCoinTypeDecred:
     //    return Decred::Address(publicKey).string();
-
     //case TWCoinTypeCallisto:
     //case TWCoinTypeEthereum:
     //case TWCoinTypeEthereumClassic:
@@ -332,18 +331,14 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //case TWCoinTypeVeChain:
     //case TWCoinTypeTheta:
     //    return Ethereum::Address(publicKey).string();
-
-    case TWCoinTypeEOS:
-        return EOS::Address(publicKey).string();
-
-    case TWCoinTypeFIO:
-        return FIO::Address(publicKey).string();
-
+    //case TWCoinTypeEOS:
+    //    return EOS::Address(publicKey).string();
+    //case TWCoinTypeFIO:
+    //    return FIO::Address(publicKey).string();
     //case TWCoinTypeWanchain:
     //    return Wanchain::Address(publicKey).string();
-
-    case TWCoinTypeICON:
-        return Icon::Address(publicKey, Icon::TypeAddress).string();
+    //case TWCoinTypeICON:
+    //    return Icon::Address(publicKey, Icon::TypeAddress).string();
 
     case TWCoinTypeIoTeX:
         return IoTeX::Address(publicKey).string();
@@ -354,8 +349,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeNimiq:
         return Nimiq::Address(publicKey).string();
 
-    case TWCoinTypeAion:
-        return Aion::Address(publicKey).string();
+    //case TWCoinTypeAion:
+    //    return Aion::Address(publicKey).string();
 
     case TWCoinTypeXRP:
         return Ripple::Address(publicKey).string();
@@ -392,8 +387,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeNebulas:
         return Nebulas::Address(publicKey).string();
 
-    case TWCoinTypeHarmony:
-        return Harmony::Address(publicKey).string();
+    //case TWCoinTypeHarmony:
+    //    return Harmony::Address(publicKey).string();
 
     case TWCoinTypeSolana:
         return Solana::Address(publicKey).string();
@@ -401,8 +396,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     case TWCoinTypeTON:
         return TON::Address(publicKey).string();
 
-    case TWCoinTypeAlgorand:
-        return Algorand::Address(publicKey).string();
+    //case TWCoinTypeAlgorand:
+    //    return Algorand::Address(publicKey).string();
 
     case TWCoinTypeKusama:
         return Kusama::Address(publicKey).string();
@@ -416,8 +411,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //case TWCoinTypeNEO:
     //    return NEO::Address(publicKey).string();
 
-    case TWCoinTypeFilecoin:
-        return Filecoin::Address(publicKey).string();
+    //case TWCoinTypeFilecoin:
+    //    return Filecoin::Address(publicKey).string();
 
     default:
         assert(false);
