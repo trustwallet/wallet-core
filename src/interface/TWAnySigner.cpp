@@ -8,7 +8,7 @@
 
 #include "Coin.h"
 
-#include "Aeternity/Signer.h"
+//#include "Aeternity/Signer.h"
 #include "Aion/Signer.h"
 #include "Algorand/Signer.h"
 //#include "Bitcoin/Signer.h"
@@ -67,8 +67,8 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
-    case TWCoinTypeAeternity:
-        return AnySign<Aeternity::Signer, Aeternity::Proto::SigningInput>(data);
+    //case TWCoinTypeAeternity:
+    //    return AnySign<Aeternity::Signer, Aeternity::Proto::SigningInput>(data);
     case TWCoinTypeAion:
         return AnySign<Aion::Signer, Aion::Proto::SigningInput>(data);
     case TWCoinTypeAlgorand:

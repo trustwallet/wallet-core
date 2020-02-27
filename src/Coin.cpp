@@ -8,6 +8,7 @@
 
 #include "CoinEntry.h"
 
+#include "Aeternity/Entry.h"
 #include "Bitcoin/Entry.h"
 #include "Binance/Entry.h"
 #include "Decred/Entry.h"
@@ -19,7 +20,7 @@
 #include "Wanchain/Entry.h"
 #include "Zcash/Entry.h"
 
-#include "Aeternity/Address.h"
+//#include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Algorand/Address.h"
 //#include "Bitcoin/Address.h"
@@ -70,6 +71,7 @@ map<TWCoinType, CoinEntry*> dispatchMap;
 
 int setupDispatchers() {
     std::vector<CoinEntry*> dispatchers = {
+        new Aeternity::Entry(),
         new Binance::Entry(),
         new Bitcoin::Entry(),
         new Ethereum::Entry(),
@@ -116,8 +118,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
-    case TWCoinTypeAeternity:
-        return Aeternity::Address::isValid(string);
+    //case TWCoinTypeAeternity:
+    //    return Aeternity::Address::isValid(string);
 
     case TWCoinTypeAion:
         return Aion::Address::isValid(string);
@@ -288,8 +290,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     // TODO: remove the switch once all coins have dispatchers
     switch (coin) {
-    case TWCoinTypeAeternity:
-        return Aeternity::Address(publicKey).string();
+    //case TWCoinTypeAeternity:
+    //    return Aeternity::Address(publicKey).string();
 
     //case TWCoinTypeBinance:
     //    return Binance::Address(publicKey).string();
