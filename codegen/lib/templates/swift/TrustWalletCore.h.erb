@@ -21,6 +21,6 @@ FOUNDATION_EXPORT const unsigned char TrustWalletCoreVersionString[];
 #include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWUTXOPlanner.h>
 
-<% entities.sort { |x,y| x.name <=> y.name }.each do |entity| -%>
+<% entities.sort { |x,y| x.name <=> y.name }.select { |entity| !entity.name.end_with?("Proto") }.each do |entity| -%>
 #include <TrustWalletCore/TW<%= entity.name %>.h>
 <% end -%>

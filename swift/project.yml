@@ -20,6 +20,8 @@ targets:
     sources:
       - path: include
         headerVisibility: public
+        excludes:
+          - "TrustWalletCore/TW*Proto.h"
       - path: wallet-core
         headerVisibility: project
         excludes:
