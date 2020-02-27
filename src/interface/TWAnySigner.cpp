@@ -34,10 +34,10 @@
 #include "Solana/Signer.h"
 #include "Stellar/Signer.h"
 #include "Tezos/Signer.h"
-#include "Theta/Signer.h"
+//#include "Theta/Signer.h"
 #include "Tron/Signer.h"
-#include "VeChain/Signer.h"
-#include "Wanchain/Signer.h"
+//#include "VeChain/Signer.h"
+//#include "Wanchain/Signer.h"
 #include "Waves/Signer.h"
 //#include "Zcash/Signer.h"
 #include "Zilliqa/Signer.h"
@@ -97,13 +97,13 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     case TWCoinTypeTerra:
         return AnySign<Cosmos::Signer, Cosmos::Proto::SigningInput>(data);
     //case TWCoinTypeEthereum:
-    case TWCoinTypeEthereumClassic:
-    case TWCoinTypeCallisto:
-    case TWCoinTypeGoChain:
-    case TWCoinTypePOANetwork:
-    case TWCoinTypeTomoChain:
-    case TWCoinTypeThunderToken:
-        return AnySign<Ethereum::Signer, Ethereum::Proto::SigningInput>(data);
+    //case TWCoinTypeEthereumClassic:
+    //case TWCoinTypeCallisto:
+    //case TWCoinTypeGoChain:
+    //case TWCoinTypePOANetwork:
+    //case TWCoinTypeTomoChain:
+    //case TWCoinTypeThunderToken:
+    //    return AnySign<Ethereum::Signer, Ethereum::Proto::SigningInput>(data);
     case TWCoinTypeFilecoin:
         return AnySign<Filecoin::Signer, Filecoin::Proto::SigningInput>(data);
     case TWCoinTypeFIO:
@@ -140,16 +140,16 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     case TWCoinTypeStellar:
     case TWCoinTypeKin:
         return AnySign<Stellar::Signer, Stellar::Proto::SigningInput>(data);
-    case TWCoinTypeTheta:
-        return AnySign<Theta::Signer, Theta::Proto::SigningInput>(data);
+    //case TWCoinTypeTheta:
+    //    return AnySign<Theta::Signer, Theta::Proto::SigningInput>(data);
     case TWCoinTypeTezos:
         return AnySign<Tezos::Signer, Tezos::Proto::SigningInput>(data);
     case TWCoinTypeTron:
         return AnySign<Tron::Signer, Tron::Proto::SigningInput>(data);
-    case TWCoinTypeVeChain:
-        return AnySign<VeChain::Signer, VeChain::Proto::SigningInput>(data);
-    case TWCoinTypeWanchain:
-        return AnySign<Wanchain::Signer, Ethereum::Proto::SigningInput>(data);
+    //case TWCoinTypeVeChain:
+    //    return AnySign<VeChain::Signer, VeChain::Proto::SigningInput>(data);
+    //case TWCoinTypeWanchain:
+    //    return AnySign<Wanchain::Signer, Ethereum::Proto::SigningInput>(data);
     case TWCoinTypeWaves:
         return AnySign<Waves::Signer, Waves::Proto::SigningInput>(data);
     case TWCoinTypeZilliqa:
