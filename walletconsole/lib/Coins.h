@@ -33,7 +33,7 @@ public:
     bool findCoin(const string& coin, Coin& coin_out) const;
     void init();
 protected:
-    void scanCoinRange(int from, int to);
+    void scanCoins();
     int findCoinId(const string& coin) const;
     static int pubKeyTypeFromCurve(int cc);
     ostream& _out;

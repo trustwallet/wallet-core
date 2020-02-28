@@ -55,11 +55,11 @@ using namespace TW;
 using namespace std;
 
 // Map with coin entry dispatchers, key is coin type
-map<TWCoinType, CoinEntry*> dispatchMap; 
+map<TWCoinType, CoinEntry*> dispatchMap = {}; 
 // List of supported coint types
 set<TWCoinType> coinTypes = {};
 
-int setupDispatchers() {
+void setupDispatchers() {
     std::vector<CoinEntry*> dispatchers = {
         new Aeternity::Entry(),
         new Aion::Entry(),
@@ -99,29 +99,40 @@ int setupDispatchers() {
         new Zcash::Entry(),
         new Zilliqa::Entry(),
     };
+
+    dispatchMap.clear();
+    coinTypes.clear();
     for (auto d : dispatchers) {
         auto dispCoins = d->coinTypes();
         for (auto c : dispCoins) {
             assert(dispatchMap.find(c) == dispatchMap.end()); // each coin must appear only once
             dispatchMap[c] = d;
             auto setResult = coinTypes.emplace(c);
-            assert(setResult.second == true); / each coin must appear only once
+            assert(setResult.second == true); // each coin must appear only once
         }
     }
-    return 0;
-    // Note: dispatchers are created from a static initializer, and never freed
+    return;
+    // Note: dispatchers are created at first use, and never freed
 }
 
-static int dummy = setupDispatchers();
+inline void setupDispatchersIfNeeded() {
+    if (dispatchMap.size() == 0) {
+        setupDispatchers();
+    }
+}
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
+    setupDispatchersIfNeeded();
     // Coin must be present, and not null.  Otherwise that is a fatal code configuration error.
     assert(dispatchMap.find(coinType) != dispatchMap.end()); // coin must be present
     assert(dispatchMap[coinType] != nullptr);
     return dispatchMap[coinType];
 }
 
-set<TWCoinType> TW::getCoinTypes() { return coinTypes; }
+set<TWCoinType> TW::getCoinTypes() {
+    setupDispatchersIfNeeded();
+    return coinTypes;
+}
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
