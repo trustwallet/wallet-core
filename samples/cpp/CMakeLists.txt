@@ -55,7 +55,6 @@ if (APPLE)
 	set (PLATFORM_LINK_FLAGS "-framework Foundation -framework OpenCL")
 elseif (WIN32)
 	set (PLATFORM_LINK_FLAGS "/STACK:8000000") #provides 8MB default stack size for linux on windows
-else ()
 endif ()
 
 SET (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINK_FLAGS}")
