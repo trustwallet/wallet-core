@@ -9,7 +9,7 @@ Trust Wallet Core is a cross-platform library that implements low-level cryptogr
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/82e76f6ea4ba4f0d9029e8846c04c093)](https://www.codacy.com/app/hewigovens/wallet-core?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TrustWallet/wallet-core&amp;utm_campaign=Badge_Grade)
 ![Codecov](https://codecov.io/gh/TrustWallet/wallet-core/branch/master/graph/badge.svg)
 ![GitHub](https://img.shields.io/github/license/TrustWallet/wallet-core.svg)
-![Maven Central](https://img.shields.io/maven-central/v/com.trustwallet.walletcore/walletcore.svg)
+![Maven](https://api.bintray.com/packages/trust/wallet-core/com.trustwallet.wallet-core/images/download.svg)
 ![Cocoapods](https://img.shields.io/cocoapods/v/TrustWalletCore.svg)
 ![Cocoapods platforms](https://img.shields.io/cocoapods/p/TrustWalletCore.svg)
 
@@ -47,9 +47,10 @@ Add this dependency to build.gradle:
 
 ```groovy
 dependencies {
-    implementation 'com.trustwallet:wallet-core:0.12.24'
+    implementation 'com.trustwallet:wallet-core:x.x.x'
 }
 ```
+[Replace with version](https://github.com/trustwallet/wallet-core/releases)
 
 ## iOS
 
