@@ -42,10 +42,24 @@ function buildCatalyst() {
     build "platform=macOS,arch=x86_64,variant=Mac Catalyst" "mac-catalyst"
 }
 
+function buildMac() {
+    echo -e "\nBuilding for Mac..."
+    git apply swift/project.yml.patch swift/Podfile.patch
+    pushd swift
+    xcodegen && pod install
+    popd
+    xcodebuild archive -workspace swift/$FRAMEWORK.xcworkspace \
+                -scheme $FRAMEWORK \
+                -archivePath $BUILD_FOLDER/mac-x64.xcarchive \
+                SKIP_INSTALL=NO clean
+    git checkout swift/project.yml swift/Podfile
+}
+
 function buildXCFramework() {
     echo -e "\nCreateing xcframework..."
     xcodebuild -create-xcframework -output $BUILD_FOLDER/$FRAMEWORK.xcframework \
                -framework $BUILD_FOLDER/mac-catalyst.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
+               -framework $BUILD_FOLDER/mac-x64.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
                -framework $BUILD_FOLDER/ios-dev.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
                -framework $BUILD_FOLDER/ios-sim.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework
 }
@@ -55,6 +69,7 @@ function main() {
     buildDevices
     buildSimulators
     buildCatalyst
+    buildMac
     buildXCFramework
 }
 
