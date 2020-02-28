@@ -15,6 +15,7 @@
 #include "Bitcoin/Entry.h"
 #include "Binance/Entry.h"
 #include "Cardano/Entry.h"
+#include "Cosmos/Entry.h"
 #include "Decred/Entry.h"
 #include "EOS/Entry.h"
 #include "Ethereum/Entry.h"
@@ -53,7 +54,7 @@
 //#include "Bitcoin/CashAddress.h"
 //#include "Bitcoin/SegwitAddress.h"
 //#include "Cardano/AddressV3.h"
-#include "Cosmos/Address.h"
+//#include "Cosmos/Address.h"
 //#include "Decred/Address.h"
 //#include "EOS/Address.h"
 //#include "Ethereum/Address.h"
@@ -103,6 +104,7 @@ int setupDispatchers() {
         new Binance::Entry(),
         new Bitcoin::Entry(),
         new Cardano::Entry(),
+        new Cosmos::Entry(),
         new EOS::Entry(),
         new Ethereum::Entry(),
         new Decred::Entry(),
@@ -177,12 +179,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     //    return Aion::Address::isValid(string);
     //case TWCoinTypeBinance:
     //    return Binance::Address::isValid(string);
-
-    case TWCoinTypeCosmos:
-    case TWCoinTypeKava:
-    case TWCoinTypeTerra:
-        return Cosmos::Address::isValid(string, hrp);
-
+    //case TWCoinTypeCosmos:
+    //case TWCoinTypeKava:
+    //case TWCoinTypeTerra:
+    //    return Cosmos::Address::isValid(string, hrp);
     //case TWCoinTypeBitcoin:
     //case TWCoinTypeDigiByte:
     //case TWCoinTypeLitecoin:
@@ -321,12 +321,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //    return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
     //case TWCoinTypeBitcoinCash:
     //    return Bitcoin::CashAddress(publicKey).string();
-
-    case TWCoinTypeCosmos:
-    case TWCoinTypeKava:
-    case TWCoinTypeTerra:
-        return Cosmos::Address(hrp, publicKey).string();
-
+    //case TWCoinTypeCosmos:
+    //case TWCoinTypeKava:
+    //case TWCoinTypeTerra:
+    //    return Cosmos::Address(hrp, publicKey).string();
     //case TWCoinTypeDash:
     //case TWCoinTypeDogecoin:
     //case TWCoinTypeMonacoin:
