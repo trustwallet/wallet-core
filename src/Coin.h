@@ -75,7 +75,7 @@ byte p2shPrefix(TWCoinType coin);
 enum TWHRP hrp(TWCoinType coin);
 
 // Note: use output parameter to avoid unneeded copies
-bool anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
+void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 

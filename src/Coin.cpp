@@ -144,16 +144,12 @@ int setupDispatchers() {
         }
     }
     return 0;
-    // TODO: delete dispatchers at the end?
+    // Note: dispatchers are created from a static initializer, and never freed
 }
 
 static int dummy = setupDispatchers();
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
-    if (dispatchMap.find(coinType) == dispatchMap.end()) {
-        // no such dispatcher, TODO remove this once all coins have dispatcher
-        return nullptr;
-    }
     // Coin must be present, and not null.  Otherwise that is a fatal code configuration error.
     assert(dispatchMap.find(coinType) != dispatchMap.end()); // coin must be present
     assert(dispatchMap[coinType] != nullptr);
@@ -167,114 +163,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     // dispatch
     auto dispatcher = coinDispatcher(coin);
-    if (dispatcher != nullptr) {
-        return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
-    }
-
-    // TODO: remove the switch once all coins have dispatchers
-    switch (coin) {
-    //case TWCoinTypeAeternity:
-    //    return Aeternity::Address::isValid(string);
-    //case TWCoinTypeAion:
-    //    return Aion::Address::isValid(string);
-    //case TWCoinTypeBinance:
-    //    return Binance::Address::isValid(string);
-    //case TWCoinTypeCosmos:
-    //case TWCoinTypeKava:
-    //case TWCoinTypeTerra:
-    //    return Cosmos::Address::isValid(string, hrp);
-    //case TWCoinTypeBitcoin:
-    //case TWCoinTypeDigiByte:
-    //case TWCoinTypeLitecoin:
-    //case TWCoinTypeMonacoin:
-    //case TWCoinTypeQtum:
-    //case TWCoinTypeViacoin:
-    //    return Bitcoin::SegwitAddress::isValid(string, hrp) ||
-    //           Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
-    //case TWCoinTypeBitcoinCash:
-    //    return Bitcoin::CashAddress::isValid(string) ||
-    //           Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
-    //case TWCoinTypeDash:
-    //case TWCoinTypeDogecoin:
-    //case TWCoinTypeRavencoin:
-    //case TWCoinTypeZcoin:
-    //    return Bitcoin::Address::isValid(string, {{p2pkh}, {p2sh}});
-    //case TWCoinTypeDecred:
-    //    return Decred::Address::isValid(string);
-    //case TWCoinTypeGroestlcoin:
-    //    return Bitcoin::SegwitAddress::isValid(string, hrp) ||
-    //           Groestlcoin::Address::isValid(string, {p2pkh, p2sh});
-    //case TWCoinTypeCallisto:
-    //case TWCoinTypeEthereum:
-    //case TWCoinTypeEthereumClassic:
-    //case TWCoinTypeGoChain:
-    //case TWCoinTypePOANetwork:
-    //case TWCoinTypeThunderToken:
-    //case TWCoinTypeTomoChain:
-    //case TWCoinTypeVeChain:
-    //case TWCoinTypeTheta:
-    //    return Ethereum::Address::isValid(string);
-    //case TWCoinTypeEOS:
-    //    return EOS::Address::isValid(string);
-    //case TWCoinTypeFIO:
-    //    return FIO::Address::isValid(string);
-    //case TWCoinTypeWanchain:
-    //    return Wanchain::Address::isValid(string);
-    //case TWCoinTypeICON:
-    //    return Icon::Address::isValid(string);
-    //case TWCoinTypeIoTeX:
-    //    return IoTeX::Address::isValid(string);
-    //case TWCoinTypeOntology:
-    //    return Ontology::Address::isValid(string);
-    //case TWCoinTypeNimiq:
-    //    return Nimiq::Address::isValid(string);
-    //case TWCoinTypeXRP:
-    //    return Ripple::Address::isValid(string) || Ripple::XAddress::isValid(string);
-    //case TWCoinTypeStellar:
-    //case TWCoinTypeKin:
-    //    return Stellar::Address::isValid(string);
-    //case TWCoinTypeTezos:
-    //    return Tezos::Address::isValid(string);
-    //case TWCoinTypeTron:
-    //    return Tron::Address::isValid(string);
-    //case TWCoinTypeZelcash:
-    //case TWCoinTypeZcash:
-    //    return Zcash::TAddress::isValid(string);
-    //case TWCoinTypeZilliqa:
-    //    return Zilliqa::Address::isValid(string);
-    //case TWCoinTypeNano:
-    //    return Nano::Address::isValid(string);
-    //case TWCoinTypeNEAR:
-    //    return NEAR::Address::isValid(string);
-    //case TWCoinTypeNULS:
-    //    return NULS::Address::isValid(string);
-    //case TWCoinTypeWaves:
-    //    return Waves::Address::isValid(string);
-    //case TWCoinTypeNebulas:
-    //    return Nebulas::Address::isValid(string);
-    //case TWCoinTypeHarmony:
-    //    return Harmony::Address::isValid(string);
-    //case TWCoinTypeSolana:
-    //    return Solana::Address::isValid(string);
-    //case TWCoinTypeTON:
-    //    return TON::Address::isValid(string);
-    //case TWCoinTypeAlgorand:
-    //    return Algorand::Address::isValid(string);
-    //case TWCoinTypeKusama:
-    //    return Kusama::Address::isValid(string);
-    //case TWCoinTypePolkadot:
-    //    return Polkadot::Address::isValid(string);
-    //case TWCoinTypeCardano:
-    //    return Cardano::AddressV3::isValid(string);
-    //case TWCoinTypeNEO:
-    //    return NEO::Address::isValid(string);
-    //case TWCoinTypeFilecoin:
-    //    return Filecoin::Address::isValid(string);
-
-    default:
-        assert(false);
-        return false;
-    }
+    assert(dispatcher != nullptr);
+    return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
 }
 
 std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
@@ -284,10 +174,6 @@ std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
 
     // dispatch
     auto dispatcher = coinDispatcher(coin);
-    if (dispatcher == nullptr) {
-        // TODO: remove this branch once all coins have dispatchers
-        return std::string(address);
-    }
     assert(dispatcher != nullptr);
     return dispatcher->normalizeAddress(coin, address);
 }
@@ -303,121 +189,14 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     // dispatch
     auto dispatcher = coinDispatcher(coin);
-    if (dispatcher != nullptr) {
-        return dispatcher->deriveAddress(coin, publicKey, p2pkh, hrp);
-    }
-
-    // TODO: remove the switch once all coins have dispatchers
-    switch (coin) {
-    //case TWCoinTypeAeternity:
-    //    return Aeternity::Address(publicKey).string();
-    //case TWCoinTypeBinance:
-    //    return Binance::Address(publicKey).string();
-    //case TWCoinTypeBitcoin:
-    //case TWCoinTypeDigiByte:
-    //case TWCoinTypeGroestlcoin:
-    //case TWCoinTypeLitecoin:
-    //case TWCoinTypeViacoin:
-    //    return Bitcoin::SegwitAddress(publicKey, 0, hrp).string();
-    //case TWCoinTypeBitcoinCash:
-    //    return Bitcoin::CashAddress(publicKey).string();
-    //case TWCoinTypeCosmos:
-    //case TWCoinTypeKava:
-    //case TWCoinTypeTerra:
-    //    return Cosmos::Address(hrp, publicKey).string();
-    //case TWCoinTypeDash:
-    //case TWCoinTypeDogecoin:
-    //case TWCoinTypeMonacoin:
-    //case TWCoinTypeQtum:
-    //case TWCoinTypeRavencoin:
-    //case TWCoinTypeZcoin:
-    //    return Bitcoin::Address(publicKey, p2pkh).string();
-    //case TWCoinTypeDecred:
-    //    return Decred::Address(publicKey).string();
-    //case TWCoinTypeCallisto:
-    //case TWCoinTypeEthereum:
-    //case TWCoinTypeEthereumClassic:
-    //case TWCoinTypeGoChain:
-    //case TWCoinTypePOANetwork:
-    //case TWCoinTypeThunderToken:
-    //case TWCoinTypeTomoChain:
-    //case TWCoinTypeVeChain:
-    //case TWCoinTypeTheta:
-    //    return Ethereum::Address(publicKey).string();
-    //case TWCoinTypeEOS:
-    //    return EOS::Address(publicKey).string();
-    //case TWCoinTypeFIO:
-    //    return FIO::Address(publicKey).string();
-    //case TWCoinTypeWanchain:
-    //    return Wanchain::Address(publicKey).string();
-    //case TWCoinTypeICON:
-    //    return Icon::Address(publicKey, Icon::TypeAddress).string();
-    //case TWCoinTypeIoTeX:
-    //    return IoTeX::Address(publicKey).string();
-    //case TWCoinTypeOntology:
-    //    return Ontology::Address(publicKey).string();
-    //case TWCoinTypeNimiq:
-    //    return Nimiq::Address(publicKey).string();
-    //case TWCoinTypeAion:
-    //    return Aion::Address(publicKey).string();
-    //case TWCoinTypeXRP:
-    //    return Ripple::Address(publicKey).string();
-    //case TWCoinTypeTezos:
-    //    return Tezos::Address(publicKey).string();
-    //case TWCoinTypeTron:
-    //    return Tron::Address(publicKey).string();
-    //case TWCoinTypeZelcash:
-    //case TWCoinTypeZcash:
-    //    return Zcash::TAddress(publicKey, p2pkh).string();
-    //case TWCoinTypeZilliqa:
-    //    return Zilliqa::Address(publicKey).string();
-    //case TWCoinTypeStellar:
-    //case TWCoinTypeKin:
-    //    return Stellar::Address(publicKey).string();
-    //case TWCoinTypeNano:
-    //    return Nano::Address(publicKey).string();
-    //case TWCoinTypeNULS:
-    //    return NULS::Address(publicKey).string();
-    //case TWCoinTypeNEAR:
-    //    return NEAR::Address(publicKey).string();
-    //case TWCoinTypeWaves:
-    //    return Waves::Address(publicKey).string();
-    //case TWCoinTypeNebulas:
-    //    return Nebulas::Address(publicKey).string();
-    //case TWCoinTypeHarmony:
-    //    return Harmony::Address(publicKey).string();
-    //case TWCoinTypeSolana:
-    //    return Solana::Address(publicKey).string();
-    //case TWCoinTypeTON:
-    //    return TON::Address(publicKey).string();
-    //case TWCoinTypeAlgorand:
-    //    return Algorand::Address(publicKey).string();
-    //case TWCoinTypeKusama:
-    //    return Kusama::Address(publicKey).string();
-    //case TWCoinTypePolkadot:
-    //    return Polkadot::Address(publicKey).string();
-    //case TWCoinTypeCardano:
-    //    return Cardano::AddressV3(publicKey).string();
-    //case TWCoinTypeNEO:
-    //    return NEO::Address(publicKey).string();
-    //case TWCoinTypeFilecoin:
-    //    return Filecoin::Address(publicKey).string();
-
-    default:
-        assert(false);
-        return "";
-    }
+    assert(dispatcher != nullptr);
+    return dispatcher->deriveAddress(coin, publicKey, p2pkh, hrp);
 }
 
-// TOOD remove bool return once all coins have dispatchers
-bool TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
+void TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
-    if (dispatcher != nullptr) { // TODO remove this condition once all coins have dispatchers
-        assert(dispatcher != nullptr);
-        dispatcher->sign(coinType, dataIn, dataOut);
-        return true;
-    }
-    return false;
+    assert(dispatcher != nullptr);
+    dispatcher->sign(coinType, dataIn, dataOut);
 }
 
 void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
