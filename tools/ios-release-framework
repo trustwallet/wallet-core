@@ -13,6 +13,7 @@ echo Build version "$VERSION"
 
 # Defines
 BUILD_FOLDER=build/ios-frameworks
+S3_BUCKET=wallet-core
 
 # Build first
 tools/ios-build-framework
@@ -33,7 +34,7 @@ function releaseXCFramework() {
 
     # Upload to S3
     echo Upload "$ZIP_FILENAME" to S3
-    aws s3 cp "$BUILD_FOLDER/$ZIP_FILENAME" s3://wallet-core/ --acl public-read
+    aws s3 cp "$BUILD_FOLDER/$ZIP_FILENAME" s3://$S3_BUCKET/ --acl public-read
 
     cat << EOF > "$PODSPEC_FILE"
 Pod::Spec.new do |s|
@@ -46,7 +47,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/trustwallet/wallet-core.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/wallet_core'
   s.source = {
-    http: "https://s3.amazonaws.com/wallet-core/$ZIP_FILENAME"
+    http: 'https://s3.amazonaws.com/$S3_BUCKET/$ZIP_FILENAME'
   }
   s.vendored_frameworks = 'TrustWalletCore.xcframework'
   s.ios.deployment_target = '11.0'
@@ -75,7 +76,7 @@ function releaseTypes() {
 
     # Upload to S3
     echo Upload "$ZIP_FILENAME" to S3
-    aws s3 cp "$BUILD_FOLDER/$ZIP_FILENAME" s3://wallet-core/ --acl public-read
+    aws s3 cp "$BUILD_FOLDER/$ZIP_FILENAME" s3://$S3_BUCKET/ --acl public-read
 
     cat << EOF > "$PODSPEC_FILE"
 Pod::Spec.new do |s|
@@ -88,7 +89,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/trustwallet/wallet-core.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/wallet_core'
   s.source = {
-    http: "https://s3.amazonaws.com/wallet-core/$ZIP_FILENAME"
+    http: 'https://s3.amazonaws.com/$S3_BUCKET/$ZIP_FILENAME'
   }
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
