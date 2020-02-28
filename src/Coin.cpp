@@ -7,6 +7,10 @@
 #include "Coin.h"
 
 #include "CoinEntry.h"
+#include <TrustWalletCore/TWHRP.h>
+
+#include <map>
+#include <set>
 
 // Includes for entry points for coin implementations
 #include "Aeternity/Entry.h"
@@ -47,54 +51,13 @@
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
 
-//#include "Aeternity/Address.h"
-//#include "Aion/Address.h"
-//#include "Algorand/Address.h"
-//#include "Bitcoin/Address.h"
-//#include "Bitcoin/CashAddress.h"
-//#include "Bitcoin/SegwitAddress.h"
-//#include "Cardano/AddressV3.h"
-//#include "Cosmos/Address.h"
-//#include "Decred/Address.h"
-//#include "EOS/Address.h"
-//#include "Ethereum/Address.h"
-//#include "FIO/Address.h"
-//#include "Filecoin/Address.h"
-//#include "Groestlcoin/Address.h"
-//#include "Harmony/Address.h"
-//#include "Icon/Address.h"
-//#include "IoTeX/Address.h"
-//#include "Kusama/Address.h"
-//#include "NEAR/Address.h"
-//#include "NULS/Address.h"
-//#include "Nano/Address.h"
-//#include "Nebulas/Address.h"
-//#include "Nimiq/Address.h"
-//#include "Ontology/Address.h"
-//#include "Polkadot/Address.h"
-//#include "Ripple/Address.h"
-//#include "Ripple/XAddress.h"
-//#include "Solana/Address.h"
-//#include "Stellar/Address.h"
-//#include "TON/Address.h"
-//#include "Tezos/Address.h"
-//#include "Tron/Address.h"
-//#include "Wanchain/Address.h"
-//#include "Waves/Address.h"
-//#include "Zcash/TAddress.h"
-//#include "Zilliqa/Address.h"
-//#include "NEO/Address.h"
-
-#include <TrustWalletCore/TWHRP.h>
-
-#include <map>
-#pragma clang diagnostic push
-#pragma clang diagnostic fatal "-Wswitch"
-
 using namespace TW;
 using namespace std;
 
+// Map with coin entry dispatchers, key is coin type
 map<TWCoinType, CoinEntry*> dispatchMap; 
+// List of supported coint types
+set<TWCoinType> coinTypes = {};
 
 int setupDispatchers() {
     std::vector<CoinEntry*> dispatchers = {
@@ -137,10 +100,12 @@ int setupDispatchers() {
         new Zilliqa::Entry(),
     };
     for (auto d : dispatchers) {
-        auto coinTypes = d->coinTypes();
-        for (auto c : coinTypes) {
+        auto dispCoins = d->coinTypes();
+        for (auto c : dispCoins) {
             assert(dispatchMap.find(c) == dispatchMap.end()); // each coin must appear only once
             dispatchMap[c] = d;
+            auto setResult = coinTypes.emplace(c);
+            assert(setResult.second == true); / each coin must appear only once
         }
     }
     return 0;
@@ -155,6 +120,8 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
     assert(dispatchMap[coinType] != nullptr);
     return dispatchMap[coinType];
 }
+
+set<TWCoinType> TW::getCoinTypes() { return coinTypes; }
 
 bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     auto p2pkh = TW::p2pkhPrefix(coin);
@@ -205,5 +172,3 @@ void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     assert(dispatcher != nullptr);
     dispatcher->plan(coinType, dataIn, dataOut);
 }
-
-#pragma clang diagnostic pop
