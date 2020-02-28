@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
-  s.swift_version = '5.0'
+  s.swift_version = '5.1'
 
   s.source = {
     git: 'git@github.com:TrustWallet/wallet-core.git',

@@ -1,0 +1,50 @@
+diff --git a/swift/project.yml b/swift/project.yml
+index 0d0db77..49ea836 100644
+--- a/swift/project.yml
++++ b/swift/project.yml
+@@ -15,8 +15,8 @@ settings:
+ targets:
+   TrustWalletCore:
+     type: framework
+-    platform: iOS
+-    deploymentTarget: 11.0
++    platform: macOS
++    deploymentTarget: 10.12
+     sources:
+       - path: include
+         headerVisibility: public
+@@ -43,7 +43,6 @@ targets:
+       gatherCoverageData: true
+     settings:
+       SKIP_INSTALL: false
+-      SUPPORTS_MACCATALYST: true
+       BUILD_LIBRARY_FOR_DISTRIBUTION: true
+       INFOPLIST_FILE: 'Info.plist'
+       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
+@@ -53,7 +52,7 @@ targets:
+ 
+   TrustWalletCoreTests:
+     type: bundle.unit-test
+-    platform: iOS
++    platform: macOS
+     sources: [Tests]
+     dependencies:
+       - target: TrustWalletCore
+@@ -61,7 +60,7 @@ targets:
+ 
+   trezor-crypto:
+     type: library.static
+-    platform: iOS
++    platform: macOS
+     sources:
+       - trezor-crypto/src/bignum.c
+       - trezor-crypto/src/ecdsa.c
+@@ -125,7 +124,7 @@ targets:
+ 
+   protobuf:
+     type: library.static
+-    platform: iOS
++    platform: macOS
+     sources:
+       - protobuf/google/protobuf/any.cc
+       - protobuf/google/protobuf/any.pb.cc
