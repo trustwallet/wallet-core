@@ -33,7 +33,7 @@ public:
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 };
 
-// TODO: Is this template really needed?  Each typed Entry.cpp can include it's own typed version anyways
+// In each coin's Entry.cpp the specific types of the coin are used, this convenience template is kept nonetheless.
 // Note: use output parameter to avoid unneeded copies
 template <typename Signer, typename Input>
 void signTemplate(const Data& dataIn, Data& dataOut) {
