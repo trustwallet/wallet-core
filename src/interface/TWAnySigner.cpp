@@ -29,8 +29,8 @@
 //#include "Nebulas/Signer.h"
 //#include "Nimiq/Signer.h"
 //#include "Ontology/Signer.h"
-#include "Polkadot/Signer.h"
-#include "Ripple/Signer.h"
+//#include "Polkadot/Signer.h"
+//#include "Ripple/Signer.h"
 //#include "Solana/Signer.h"
 //#include "Stellar/Signer.h"
 //#include "Tezos/Signer.h"
@@ -131,11 +131,11 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     //    return AnySign<Nimiq::Signer, Nimiq::Proto::SigningInput>(data);
     //case TWCoinTypeOntology:
     //    return AnySign<Ontology::Signer, Ontology::Proto::SigningInput>(data);
-    case TWCoinTypePolkadot:
-    case TWCoinTypeKusama:
-        return AnySign<Polkadot::Signer, Polkadot::Proto::SigningInput>(data);
-    case TWCoinTypeXRP:
-        return AnySign<Ripple::Signer, Ripple::Proto::SigningInput>(data);
+    //case TWCoinTypePolkadot:
+    //case TWCoinTypeKusama:
+    //    return AnySign<Polkadot::Signer, Polkadot::Proto::SigningInput>(data);
+    //case TWCoinTypeXRP:
+    //    return AnySign<Ripple::Signer, Ripple::Proto::SigningInput>(data);
     //case TWCoinTypeSolana:
     //    return AnySign<Solana::Signer, Solana::Proto::SigningInput>(data);
     //case TWCoinTypeStellar:

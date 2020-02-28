@@ -24,6 +24,7 @@
 #include "Harmony/Entry.h"
 #include "Icon/Entry.h"
 #include "IoTeX/Entry.h"
+#include "Kusama/Entry.h"
 #include "Nano/Entry.h"
 #include "NEAR/Entry.h"
 #include "Nebulas/Entry.h"
@@ -31,6 +32,8 @@
 #include "Nimiq/Entry.h"
 #include "NULS/Entry.h"
 #include "Ontology/Entry.h"
+#include "Polkadot/Entry.h"
+#include "Ripple/Entry.h"
 #include "Solana/Entry.h"
 #include "Stellar/Entry.h"
 #include "Tezos/Entry.h"
@@ -60,16 +63,16 @@
 //#include "Harmony/Address.h"
 //#include "Icon/Address.h"
 //#include "IoTeX/Address.h"
-#include "Kusama/Address.h"
+//#include "Kusama/Address.h"
 //#include "NEAR/Address.h"
 //#include "NULS/Address.h"
 //#include "Nano/Address.h"
 //#include "Nebulas/Address.h"
 //#include "Nimiq/Address.h"
 //#include "Ontology/Address.h"
-#include "Polkadot/Address.h"
-#include "Ripple/Address.h"
-#include "Ripple/XAddress.h"
+//#include "Polkadot/Address.h"
+//#include "Ripple/Address.h"
+//#include "Ripple/XAddress.h"
 //#include "Solana/Address.h"
 //#include "Stellar/Address.h"
 //#include "TON/Address.h"
@@ -109,6 +112,7 @@ int setupDispatchers() {
         new Harmony::Entry(),
         new Icon::Entry(),
         new IoTeX::Entry(),
+        new Kusama::Entry(),
         new Nano::Entry(),
         new NEAR::Entry(),
         new Nebulas::Entry(),
@@ -116,6 +120,8 @@ int setupDispatchers() {
         new Nimiq::Entry(),
         new NULS::Entry(),
         new Ontology::Entry(),
+        new Polkadot::Entry(),
+        new Ripple::Entry(),
         new Solana::Entry(),
         new Stellar::Entry(),
         new Tezos::Entry(),
@@ -222,10 +228,8 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     //    return Ontology::Address::isValid(string);
     //case TWCoinTypeNimiq:
     //    return Nimiq::Address::isValid(string);
-
-    case TWCoinTypeXRP:
-        return Ripple::Address::isValid(string) || Ripple::XAddress::isValid(string);
-
+    //case TWCoinTypeXRP:
+    //    return Ripple::Address::isValid(string) || Ripple::XAddress::isValid(string);
     //case TWCoinTypeStellar:
     //case TWCoinTypeKin:
     //    return Stellar::Address::isValid(string);
@@ -256,13 +260,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     //    return TON::Address::isValid(string);
     //case TWCoinTypeAlgorand:
     //    return Algorand::Address::isValid(string);
-
-    case TWCoinTypeKusama:
-        return Kusama::Address::isValid(string);
-
-    case TWCoinTypePolkadot:
-        return Polkadot::Address::isValid(string);
-
+    //case TWCoinTypeKusama:
+    //    return Kusama::Address::isValid(string);
+    //case TWCoinTypePolkadot:
+    //    return Polkadot::Address::isValid(string);
     //case TWCoinTypeCardano:
     //    return Cardano::AddressV3::isValid(string);
     //case TWCoinTypeNEO:
@@ -361,10 +362,8 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //    return Nimiq::Address(publicKey).string();
     //case TWCoinTypeAion:
     //    return Aion::Address(publicKey).string();
-
-    case TWCoinTypeXRP:
-        return Ripple::Address(publicKey).string();
-
+    //case TWCoinTypeXRP:
+    //    return Ripple::Address(publicKey).string();
     //case TWCoinTypeTezos:
     //    return Tezos::Address(publicKey).string();
     //case TWCoinTypeTron:
@@ -395,13 +394,10 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
     //    return TON::Address(publicKey).string();
     //case TWCoinTypeAlgorand:
     //    return Algorand::Address(publicKey).string();
-
-    case TWCoinTypeKusama:
-        return Kusama::Address(publicKey).string();
-
-    case TWCoinTypePolkadot:
-        return Polkadot::Address(publicKey).string();
-
+    //case TWCoinTypeKusama:
+    //    return Kusama::Address(publicKey).string();
+    //case TWCoinTypePolkadot:
+    //    return Polkadot::Address(publicKey).string();
     //case TWCoinTypeCardano:
     //    return Cardano::AddressV3(publicKey).string();
     //case TWCoinTypeNEO:
