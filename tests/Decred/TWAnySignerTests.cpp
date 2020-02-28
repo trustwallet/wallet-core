@@ -74,7 +74,7 @@ TEST(TWAnySignerDecred, Plan) {
     auto input = createInput();
 
     Bitcoin::Proto::TransactionPlan plan;
-    ANY_PLAN(input, plan, TWCoinTypeGroestlcoin);
+    ANY_PLAN(input, plan, TWCoinTypeDecred);
 
     EXPECT_EQ(plan.amount(), 10000000);
     EXPECT_EQ(plan.available_amount(), 39900000);
@@ -88,7 +88,7 @@ TEST(TWAnySignerDecred, PlanAndSign) {
     auto input = createInput();
 
     Bitcoin::Proto::TransactionPlan plan;
-    ANY_PLAN(input, plan, TWCoinTypeGroestlcoin);
+    ANY_PLAN(input, plan, TWCoinTypeDecred);
 
     EXPECT_EQ(plan.amount(), 10000000);
     EXPECT_EQ(plan.available_amount(), 39900000);
