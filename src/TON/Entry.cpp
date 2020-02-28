@@ -26,5 +26,4 @@ string Entry::deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byt
 
 void Entry::sign(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
     // not implemented yet
-    assert(false);
 }

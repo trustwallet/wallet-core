@@ -5,8 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWAnyAddress.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWString.h>
 #include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWData.h>
 #include <TrustWalletCore/TWHDWallet.h>
 
 #include "../interface/TWTestUtilities.h"
@@ -59,4 +61,10 @@ TEST(TWTONAddress, HDWallet) {
     auto addressStr = WRAPS(TWAnyAddressDescription(address.get()));
 
     ASSERT_EQ(std::string("EQAmXWk7P7avw96EViZULpA85Lz6Si3MeWG-vFXmbEjpL-fo"), TWStringUTF8Bytes(addressStr.get()));
+}
+
+TEST(TWTON, SigningNotImplemented) {
+    // not implemented, returns empty data
+    auto result = WRAPD(TWAnySignerSign(WRAPD(TWDataCreateWithSize(0)).get(), TWCoinType::TWCoinTypeTON));
+    EXPECT_EQ(TWDataSize(result.get()), 0);
 }

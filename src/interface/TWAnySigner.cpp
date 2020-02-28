@@ -8,21 +8,7 @@
 
 #include "Coin.h"
 
-//#pragma clang diagnostic push
-//#pragma clang diagnostic fatal "-Wswitch"
-
 using namespace TW;
-
-/*
-template <typename Signer, typename Input>
-TWData* _Nonnull AnySign(TWData* _Nonnull data) {
-    auto input = Input();
-    input.ParseFromArray(TWDataBytes(data), (int)TWDataSize(data));
-    auto serialized = Signer::sign(input).SerializeAsString();
-    return TWDataCreateWithBytes(reinterpret_cast<const uint8_t*>(serialized.data()),
-                                 serialized.size());
-}
-*/
 
 TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     const Data& dataIn = *(reinterpret_cast<const Data*>(data));
@@ -31,4 +17,9 @@ TWData* _Nonnull TWAnySignerSign(TWData* _Nonnull data, enum TWCoinType coin) {
     return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
 }
 
-//#pragma clang diagnostic pop
+TWData* _Nonnull TWAnySignerPlan(TWData* _Nonnull data, enum TWCoinType coin) {
+    const Data& dataIn = *(reinterpret_cast<const Data*>(data));
+    Data dataOut;
+    TW::anyCoinPlan(coin, dataIn, dataOut);
+    return TWDataCreateWithBytes(dataOut.data(), dataOut.size());
+}

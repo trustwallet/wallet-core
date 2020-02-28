@@ -17,4 +17,7 @@ struct TWAnySigner;
 /// Signs a transaction.
 extern TWData *_Nonnull TWAnySignerSign(TWData *_Nonnull input, enum TWCoinType coin);
 
+/// Plan a transaction (for UTXO chains).
+extern TWData *_Nonnull TWAnySignerPlan(TWData *_Nonnull input, enum TWCoinType coin);
+
 TW_EXTERN_C_END

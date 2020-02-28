@@ -169,6 +169,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
 std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
     if (!TW::validateAddress(coin, address)) {
+        // invalid address, not normalizing
         return "";
     }
 

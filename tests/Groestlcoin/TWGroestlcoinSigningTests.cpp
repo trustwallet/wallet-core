@@ -112,3 +112,34 @@ TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
     // https://blockbook.groestlcoin.org/tx/8f4ecc7844e19aa1d3183e47eee89d795f9e7c875a55ec0203946d6c9eb06895
     ASSERT_EQ(hex(output.encoded()), "01000000000101fdae0772d7d1d33804a6b1ca0e391668b116bb7a70028427d3d82232189ce86300000000171600142fc7d70acef142d1f7b5ef2f20b1a9b759797674ffffffff0288130000000000001976a91498af0aaca388a7e1024f505c033626d908e3b54a88aca6120000000000001600147557920fbc32a1ef4ef26bae5e8ce3f95abf09ce024730440220614df57babf74029afaa6dda202afa47d3555cca7a0f20a22e466aeb7029e7d002207974b4c16f346811aff6720d09b9c58d0c4e01e8d258c3d203cc3c1ad228c61a012102fb6ad115761ea928f1367befb2bee79c0b3497314b45e0b734cd150f0601706c00000000");
 }
+
+TEST(GroestlcoinSigning, PlanP2WPKH) {
+    Proto::SigningInput input;
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(2500);
+    input.set_byte_fee(1);
+    input.set_to_address("31inaRqambLsd9D7Ke4USZmGEVd3PHkh7P");
+    input.set_change_address("Fj62rBJi8LvbmWu2jzkaUX1NFXLEqDLoZM");
+
+    auto utxoKey0 = parse_hex("dc334e7347f2f9f72fce789b11832bdf78adf0158bc6617e6d2d2a530a0d4bc6");
+    input.add_private_key(utxoKey0.data(), utxoKey0.size());
+
+    auto utxo0 = input.add_utxo();
+    auto utxo0Script = Script(parse_hex("00147557920fbc32a1ef4ef26bae5e8ce3f95abf09ce"));
+    utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo0->set_amount(4774);
+    auto hash0 = parse_hex("9568b09e6c6d940302ec555a877c9e5f799de8ee473e18d3a19ae14478cc4e8f");
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
+    utxo0->mutable_out_point()->set_index(1);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    Proto::TransactionPlan plan;
+    ANY_PLAN(input, plan, TWCoinTypeGroestlcoin);
+
+    EXPECT_EQ(plan.amount(), 2500);
+    EXPECT_EQ(plan.available_amount(), 4774);
+    EXPECT_EQ(plan.fee(), 226);
+    EXPECT_EQ(plan.change(), 2048);
+    EXPECT_EQ(plan.utxos_size(), 1);
+    EXPECT_EQ(plan.branch_id(), "");
+}
