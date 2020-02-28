@@ -76,18 +76,18 @@ TEST(TWFIO, AddPubAddress) {
     action->add_public_addresses();
     action->add_public_addresses();
     action->add_public_addresses();
-    action->mutable_public_addresses(0)->set_token_code("BTC");
+    action->mutable_public_addresses(0)->set_coin_symbol("BTC");
     action->mutable_public_addresses(0)->set_address("bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v");
-    action->mutable_public_addresses(1)->set_token_code("ETH");
+    action->mutable_public_addresses(1)->set_coin_symbol("ETH");
     action->mutable_public_addresses(1)->set_address("0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51");
-    action->mutable_public_addresses(2)->set_token_code("BNB");
+    action->mutable_public_addresses(2)->set_coin_symbol("BNB");
     action->mutable_public_addresses(2)->set_address("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s");
     action->set_fee(0);
 
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeFIO);
     EXPECT_EQ("", output.error());
-    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232bd010f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"]})", output.json());
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232c9010f6164616d4066696f746573746e65740303425443034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c787770373064377603455448034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e4203424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K3zimaMKU8cBhVRPw46KM2u7uQWaAKXrnoeYZ7MEbp6sVJcDQmQR2RtdavpUPwkAnYUkd8NqLun8H48tcxZBcTUgkiPGVJ"]})", output.json());
 }
 
 TEST(TWFIO, Transfer) {
@@ -138,7 +138,7 @@ TEST(TWFIO, NewFundsRequest) {
     input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
     input.mutable_action()->mutable_new_funds_request_message()->set_payee_fio_name("alice@fiotestnet");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_amount("5");
-    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_token_code("BNB");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_coin_symbol("BNB");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_memo("Memo");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_hash("Hash");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_offline_url("https://trustwallet.com");

@@ -16,7 +16,7 @@ using namespace std;
 void NewFundsContent::serialize(Data& out) const {
     encodeString(payeeFioName, out);
     encodeString(amount, out);
-    encodeString(tokenCode, out);
+    encodeString(coinSymbol, out);
     encodeString(memo, out);
     encodeString(hash, out);
     encodeString(offlineUrl, out);
@@ -33,7 +33,7 @@ NewFundsContent NewFundsContent::deserialize(const Data& in, size_t& indexInOut)
     newFunds.amount = get<1>(result);
     result = decodeString(in, indexInOut);
     if (!get<0>(result)) { return newFunds; }
-    newFunds.tokenCode = get<1>(result);
+    newFunds.coinSymbol = get<1>(result);
     result = decodeString(in, indexInOut);
     if (!get<0>(result)) { return newFunds; }
     newFunds.memo = get<1>(result);

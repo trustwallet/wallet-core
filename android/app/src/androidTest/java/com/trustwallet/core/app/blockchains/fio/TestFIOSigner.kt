@@ -66,9 +66,9 @@ class TestFIOSigner {
             .setRefBlockPrefix(4281229859.toInt())
         val addAddrAction = FIO.Action.AddPubAddress.newBuilder()
             .setFioAddress("adam@fiotestnet")
-            .addPublicAddresses(FIO.PublicAddress.newBuilder().setTokenCode("BTC").setAddress("bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"))
-            .addPublicAddresses(FIO.PublicAddress.newBuilder().setTokenCode("ETH").setAddress("0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"))
-            .addPublicAddresses(FIO.PublicAddress.newBuilder().setTokenCode("BNB").setAddress("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"))
+            .addPublicAddresses(FIO.PublicAddress.newBuilder().setCoinSymbol("BTC").setAddress("bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"))
+            .addPublicAddresses(FIO.PublicAddress.newBuilder().setCoinSymbol("ETH").setAddress("0xce5cB6c92Da37bbBa91Bd40D4C9D4D724A3a8F51"))
+            .addPublicAddresses(FIO.PublicAddress.newBuilder().setCoinSymbol("BNB").setAddress("bnb1ts3dg54apwlvr9hupv2n0j6e46q54znnusjk9s"))
             .setFee(0)
         val action = FIO.Action.newBuilder()
             .setAddPubAddressMessage(addAddrAction)
@@ -82,7 +82,7 @@ class TestFIOSigner {
         val out = AnySigner.sign(input.build(), CoinType.FIO, SigningOutput.parser())
         assertEquals(out.error, "")
         val expectedJson =
-"""{"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232bd010f6164616d4066696f746573746e657403034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c7877703730643776034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K85BxXzJwvjPs3mFeKatWSjBHuMXTw634RRtf6ZMytpzLCdpHcJ7CQWPeXJvwm7aoz7XJJKapmoT4jzCLoVBv2cxP149Bx"]}"""
+"""{"compression":"none","packed_context_free_data":"","packed_trx":"15c2285e2d2d23622eff0000000001003056372503a85b0000c6eaa664523201102b2f46fca756b200000000a8ed3232c9010f6164616d4066696f746573746e65740303425443034254432a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c787770373064377603455448034554482a30786365356342366339324461333762624261393142643430443443394434443732344133613846353103424e4203424e422a626e6231747333646735346170776c76723968757076326e306a366534367135347a6e6e75736a6b39730000000000000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K3zimaMKU8cBhVRPw46KM2u7uQWaAKXrnoeYZ7MEbp6sVJcDQmQR2RtdavpUPwkAnYUkd8NqLun8H48tcxZBcTUgkiPGVJ"]}"""
         assertEquals(expectedJson, out.json)
     }
 
