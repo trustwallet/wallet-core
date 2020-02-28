@@ -47,9 +47,10 @@ Add this dependency to build.gradle:
 
 ```groovy
 dependencies {
-    implementation 'com.trustwallet:wallet-core:0.12.24'
+    implementation 'com.trustwallet:wallet-core:x.x.x'
 }
 ```
+[Replace with version](https://github.com/trustwallet/wallet-core/releases)
 
 ## iOS
 
