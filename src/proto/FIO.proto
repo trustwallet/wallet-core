@@ -128,7 +128,7 @@ message ChainParams {
     uint64 head_block_number = 2;
 
     // Block prefix of last block, obtained from get_block API
-    uint32 ref_block_prefix = 3;
+    uint64 ref_block_prefix = 3;
 }
 
 // Transaction signing input

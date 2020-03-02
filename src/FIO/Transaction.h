@@ -18,7 +18,7 @@ class Transaction {
 public:
     int32_t expiration = 0;
     uint16_t refBlockNumber = 0;
-    uint32_t refBlockPrefix = 0;
+    uint64_t refBlockPrefix = 0;
     std::vector<Action> actions;
 
     void serialize(Data& os) const;
