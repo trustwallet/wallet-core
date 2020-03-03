@@ -5,9 +5,16 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Transaction.h"
+#include "TransactionBuilder.h"
 #include "../BinaryCoding.h"
 
 namespace TW::FIO {
+
+void Transaction::set(uint32_t expiryTime, const ChainParams& chainParams) {
+    expiration = expiryTime;
+    refBlockNumber = static_cast<uint16_t>(chainParams.headBlockNumber & 0xffff);
+    refBlockPrefix = static_cast<uint32_t>(chainParams.refBlockPrefix & 0xffffffff);
+}
 
 void Transaction::serialize(Data& out) const {
     encode32LE(expiration, out);
