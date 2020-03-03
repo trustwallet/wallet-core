@@ -19,7 +19,7 @@ void Transaction::set(uint32_t expiryTime, const ChainParams& chainParams) {
 void Transaction::serialize(Data& out) const {
     encode32LE(expiration, out);
     encode16LE(refBlockNumber, out);
-    encode32LE(static_cast<uint32_t>(refBlockPrefix), out);
+    encode32LE(refBlockPrefix, out);
     encode32LE(0, out); // 00000000
     encodeVarInt(actions.size(), out);
     for (const auto& item : actions) {

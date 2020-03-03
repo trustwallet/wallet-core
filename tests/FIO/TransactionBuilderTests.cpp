@@ -277,6 +277,7 @@ TEST(FIOTransactionBuilder, chainParansRange) {
     checkBlockNum(0xFFAB1234, 0x1234);
     checkBlockNum(0x0000000112345678, 0x5678);
     checkBlockNum(0xFFABCDEF12345678, 0x5678);
+
     // refBlockPrefix, 4 bytes; Large refBlockPrefix values used to cause problem
     checkRefBlockPrefix(101, 101);
     checkRefBlockPrefix(4281229859, 4281229859);
