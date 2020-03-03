@@ -22,6 +22,7 @@ This list is generated from [./coins.json](../coins.json)
 | 144     | XRP              | XRP    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ripple/info/logo.png" width="32" />       | <https://ripple.com/xrp>      |
 | 145     | Bitcoin Cash     | BCH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png" width="32" />  | <https://bitcoincash.org>     |
 | 148     | Stellar          | XLM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stellar/info/logo.png" width="32" />      | <https://stellar.org>         |
+| 156     | Bitcoin Gold     | BTG    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoingold/info/logo.png" width="32" />  | <https://bitcoingold.org>     |
 | 165     | Nano             | NANO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nano/info/logo.png" width="32" />         | <https://nano.org>            |
 | 175     | Ravencoin        | RVN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ravencoin/info/logo.png" width="32" />    | <https://ravencoin.org>       |
 | 178     | POA Network      | POA    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/poa/info/logo.png" width="32" />          | <https://poa.network>         |

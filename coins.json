@@ -101,6 +101,34 @@
         }
     },
     {
+        "id": "bitcoingold",
+        "name": "Bitcoin Gold",
+        "symbol": "BTG",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/84'/156'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "p2pkhPrefix": 38,
+        "p2shPrefix": 23,
+        "hrp": "btg",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "zpub",
+        "xprv": "zprv",
+        "explorer": {
+            "url": "https://explorer.bitcoingold.org/insight",
+            "txPath": "/tx/",
+            "accountPath": "/address/"
+        },
+        "info": {
+            "url": "https://bitcoingold.org",
+            "client": "https://github.com/trezor/blockbook",
+            "clientPublic": "",
+            "clientDocs": "https://github.com/trezor/blockbook/blob/master/docs/api.md"
+        }
+    },
+    {
         "id": "callisto",
         "name": "Callisto",
         "symbol": "CLO",
