@@ -10,9 +10,11 @@
 #include "FIO/NewFundsRequest.h"
 
 #include "HexCoding.h"
+#include "BinaryCoding.h"
 
 #include <gtest/gtest.h>
 
+#include <nlohmann/json.hpp>
 #include <iostream>
 
 using namespace TW;
@@ -234,4 +236,53 @@ TEST(FIOTransactionBuilder, expirySetDefault) {
     EXPECT_EQ(expiry, 0);
     EXPECT_EQ(TransactionBuilder::expirySetDefaultIfNeeded(expiry), true);
     EXPECT_TRUE(expiry > 1579790000);
+}
+
+// May throw nlohmann::json::type_error
+void createTxWithChainParam(const ChainParams& paramIn, ChainParams& paramOut) {
+    string tx = TransactionBuilder::createAddPubAddress(addr6M, privKeyBA, "adam@fiotestnet", {
+        {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}},
+        paramIn, 0, "rewards@wallet", 1579729429);
+    // retrieve chain params from encoded tx; parse out packed tx
+    try {
+        nlohmann::json txJson = nlohmann::json::parse(tx);
+        Data txData = parse_hex(txJson.at("packed_trx").get<std::string>());
+        // decode values
+        ASSERT_TRUE(txData.size() >= 10);
+        paramOut.headBlockNumber = decode16LE(txData.data() + 4);
+        paramOut.refBlockPrefix = decode32LE(txData.data() + 4 + 2);
+    } catch (nlohmann::json::type_error& e) {
+        FAIL() << "Json parse error " << e.what();
+    }
+}
+
+void checkBlockNum(uint64_t blockNumIn, uint64_t blockNumExpected) {
+    ChainParams paramOut;
+    createTxWithChainParam(ChainParams{chainId, blockNumIn, 4281229859}, paramOut);
+    EXPECT_EQ(paramOut.headBlockNumber, blockNumExpected);
+}
+
+void checkRefBlockPrefix(uint64_t blockPrefixIn, uint64_t blockPrefixExpected) {
+    ChainParams paramOut;
+    createTxWithChainParam(ChainParams{chainId, 11565, blockPrefixIn}, paramOut);
+    EXPECT_EQ(paramOut.refBlockPrefix, blockPrefixExpected);
+}
+
+TEST(FIOTransactionBuilder, chainParansRange) {
+    // headBlockNumber, 2 bytes
+    checkBlockNum(101, 101);
+    checkBlockNum(0xFFFF, 0xFFFF);
+    checkBlockNum(0x00011234, 0x1234);
+    // large values truncated
+    checkBlockNum(0xFFAB1234, 0x1234);
+    checkBlockNum(0x0000000112345678, 0x5678);
+    checkBlockNum(0xFFABCDEF12345678, 0x5678);
+
+    // refBlockPrefix, 4 bytes; Large refBlockPrefix values used to cause problem
+    checkRefBlockPrefix(101, 101);
+    checkRefBlockPrefix(4281229859, 4281229859);
+    checkRefBlockPrefix(0xFFFFFFFF, 0xFFFFFFFF);
+    // large values truncated
+    checkRefBlockPrefix(0x0000000112345678, 0x12345678);
+    checkRefBlockPrefix(0xFFABCDEF12345678, 0x12345678);
 }

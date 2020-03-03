@@ -26,7 +26,7 @@ class ChainParams {
 public:
     Data chainId;
     uint64_t headBlockNumber;
-    uint32_t refBlockPrefix;
+    uint64_t refBlockPrefix;
 };
 
 class TransactionBuilder {

@@ -103,9 +103,7 @@ string TransactionBuilder::createRegisterFioAddress(const Address& address, cons
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
-    tx.expiration = (int32_t)expiryTime;
-    tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
-    tx.refBlockPrefix = chainParams.refBlockPrefix;
+    tx.set(expiryTime, chainParams);
     tx.actions.push_back(action);
     Data serTx;
     tx.serialize(serTx);
@@ -122,7 +120,7 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     string actor = Actor::actor(address);
     // convert addresses to add chainCode -- set it equal to coinSymbol
     vector<PublicAddress> pubAddresses2;
-    for (const auto a: pubAddresses) {
+    for (const auto& a: pubAddresses) {
         pubAddresses2.push_back(PublicAddress{a.first, a.first, a.second});
     }
     AddPubAddressData aaData(fioName, pubAddresses2, fee, walletTpId, actor);
@@ -140,9 +138,7 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
-    tx.expiration = (int32_t)expiryTime;
-    tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
-    tx.refBlockPrefix = chainParams.refBlockPrefix;
+    tx.set(expiryTime, chainParams);
     tx.actions.push_back(action);
     Data serTx;
     tx.serialize(serTx);
@@ -172,9 +168,7 @@ string TransactionBuilder::createTransfer(const Address& address, const PrivateK
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
-    tx.expiration = (int32_t)expiryTime;
-    tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
-    tx.refBlockPrefix = chainParams.refBlockPrefix;
+    tx.set(expiryTime, chainParams);
     tx.actions.push_back(action);
     Data serTx;
     tx.serialize(serTx);
@@ -204,9 +198,7 @@ string TransactionBuilder::createRenewFioAddress(const Address& address, const P
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
-    tx.expiration = (int32_t)expiryTime;
-    tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
-    tx.refBlockPrefix = chainParams.refBlockPrefix;
+    tx.set(expiryTime, chainParams);
     tx.actions.push_back(action);
     Data serTx;
     tx.serialize(serTx);
@@ -249,9 +241,7 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
-    tx.expiration = (int32_t)expiryTime;
-    tx.refBlockNumber = (uint16_t)(chainParams.headBlockNumber & 0xffff);
-    tx.refBlockPrefix = chainParams.refBlockPrefix;
+    tx.set(expiryTime, chainParams);
     tx.actions.push_back(action);
     Data serTx;
     tx.serialize(serTx);
