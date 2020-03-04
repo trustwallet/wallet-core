@@ -14,7 +14,7 @@
 using namespace TW;
 using namespace TW::Solana;
 
-Data Transaction::serialize() const {
+std::string Transaction::serialize() const {
     Data buffer;
 
     append(buffer, shortVecLength<Signature>(this->signatures));
@@ -24,7 +24,7 @@ Data Transaction::serialize() const {
     }
     append(buffer, this->messageData());
 
-    return buffer;
+    return Base58::bitcoin.encode(buffer);
 }
 
 Data Transaction::messageData() const {

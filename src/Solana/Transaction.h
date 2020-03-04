@@ -292,7 +292,7 @@ class Transaction {
     }
 
   public:
-    std::vector<uint8_t> serialize() const;
+    std::string serialize() const;
     std::vector<uint8_t> messageData() const;
     uint8_t getAccountIndex(Address publicKey);
 
