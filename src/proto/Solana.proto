@@ -36,5 +36,5 @@ message SigningInput {
 
 // Transaction signing output.
 message SigningOutput {
-    bytes encoded = 1;
+    string encoded = 1;
 }

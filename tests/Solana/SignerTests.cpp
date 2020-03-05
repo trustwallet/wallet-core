@@ -32,17 +32,16 @@ TEST(SolanaSigner, SingleSignTransaction) {
 
     std::vector<Signature> expectedSignatures;
     Signature expectedSignature(
-        "657ZT4gMXRVQZz1mqzcWbP6sDx6ziM41HMpZRMrZYYP2CaEU3QMj8jxV6xRwM3rUKiXnihXLsXWEPRyw7nn4Ssst");
+        "5T6uZBHnHFd8uWErDBTFRVkbKuhbcm94K5MJ2beTYDruzqv4FjS7EMKvC94ZfxNAiWUXZ6bZxS3WXUbhJwYNPWn");
     expectedSignatures.push_back(expectedSignature);
     ASSERT_EQ(transaction.signatures, expectedSignatures);
 
-    auto expectedHex =
-        "01fda1c8ad8872d94f7eab52f9c38dc77e1061f4897e3de2b8469eb0992269f6fa1f173e93dbb2da738ab4e895"
-        "9ffa50cd087cdfa889f3a1b8acdd62552f7c1d070100020366c2f508c9c555cacc9fb26d88e88dd54e210bb5a8"
-        "bce5687f60d7e75c4cd07fc68b3c894c782b05a9c27fc6c66eb14d4e7d31de9086ab7d2129bcb0493afa020000"
-        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "000000000000000000000000000000000001020200010c020000002a00000000000000";
-    ASSERT_EQ(hex(transaction.serialize()), expectedHex);
+    auto expectedString =
+        "3p2kzZ1DvquqC6LApPuxpTg5CCDVPqJFokGSnGhnBHrta4uq7S2EyehV1XNUVXp51D69GxGzQZU"
+        "jikfDzbWBG2aFtG3gHT1QfLzyFKHM4HQtMQMNXqay1NAeiiYZjNhx9UvMX4uAQZ4Q6rx6m2AYfQ"
+        "7aoMUrejq298q1wBFdtS9XVB5QTiStnzC7zs97FUEK2T4XapjF1519EyFBViTfHpGpnf5bfizDz"
+        "sW9kYUtRDW1UC2LgHr7npgq5W9TBmHf9hSmRgM9XXucjXLqubNWE7HUMhbKjuBqkirRM";
+    ASSERT_EQ(transaction.serialize(), expectedString);
 
     const auto additionalPrivateKey =
         PrivateKey(Base58::bitcoin.decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));
@@ -97,15 +96,13 @@ TEST(SolanaSigner, MultipleSignTransaction) {
     expectedSignatures.push_back(expectedSignature1);
     ASSERT_EQ(transaction.signatures, expectedSignatures);
 
-    auto expectedHex =
-        "0269b92a9c9200611a8860844c834ba572dc1b867593c9ab15316e517b9834e0046fab1668b1bb9bf34d5a948d"
-        "ca4c46923690ffad3fe8e877ee9c920a0adbbf06db00609388620b50a174c518e240f5de00ac5f019c834aa8bb"
-        "10d51b73c723e496e4dee8218370a46dde5f834816e3848e32f20baa9b521cfe6ced01f962230b02000103ed69"
-        "c4e13965c8d4df50c63287b392072333fb4fe2eead3ff926d07ec80a44c41ab9aa05053f7941592cd027d40810"
-        "96f820b28012aa07d2274b3dfd1cdec30400000000000000000000000000000000000000000000000000000000"
-        "000000000000000000000000000000000000000000000000000000000000000000000000010202000104000000"
-        "00";
-    ASSERT_EQ(hex(transaction.serialize()), expectedHex);
+    auto expectedString =
+        "oL2CmkcP9xf2DiU7eo6hh3JdHnX3NGjunheXYo6SjVchzc8LtFJpPs4jccWUd7oPZUPQNTcR7Ee"
+        "Hn259ror9A7aXgJdP4djhntoD8irF1kuBZCj7pubtoWfiAKzagSL4hChQsTSe7e9jaGtoXu58mP"
+        "HCMKTz55TLjhdmCj7ixoWRowWEzkrF49MxXnurb4yf6ASru1XdHPFn3DdzkRHgypYwvRM6ci8p2"
+        "7trQvXFukhWX6qG6JkxqsWYSzACcAAGGWfAxSi63Yx1RxkxGUzyxy5f2thQhWZ6Nx6pR1im65yV"
+        "YMYPXj94kgtHxXw9h5V4p7xSAwRpmhw4jewYyQVX4jmnfro3gFNdX9AqpqMs4uGHA4rZM";
+    ASSERT_EQ(transaction.serialize(), expectedString);
 }
 
 TEST(SolanaSigner, SignUpdateBlockhash) {
@@ -129,17 +126,16 @@ TEST(SolanaSigner, SignUpdateBlockhash) {
 
     std::vector<Signature> expectedSignatures;
     Signature expectedSignature(
-        "5aYWTCsc9UZibHcGLxA7SMJ6gJ4KNJovnR8VWTf4m35nHb28wh5LYdN9B48mC1FXVe8zSj3GBNyJyLPLTzWuRYnP");
+        "5AFhXjvGdENXCAe9MPvUA2qjoL4XtZwZKG7kK2HmZf1ibpxjx5kzogHZjN39uYB9J33UFJN15KhSggBZhzyNQmta");
     expectedSignatures.push_back(expectedSignature);
     ASSERT_EQ(transaction.signatures, expectedSignatures);
 
-    auto expectedHex =
-        "01e4fe918e5b3fdb97bd0e02665d8f92465938bdfd4542181366aee0de676e2668184fe3a59d35dbbcdb7fcedd"
-        "b7155d740c4917f3eafc5bfd76cb1dd4b9c1d004010002032cb8775e08dca27a9b723611f42d474c5e809df576"
-        "e242816cfee4bfc56835da373109b0e40ba3d915ac3ae2417dfd0544369bf31f5ce6e3b8329cdf4e6b058a0000"
-        "000000000000000000000000000000000000000000000000000000000000040404040404040404040404040404"
-        "040404040404040404040404040404040401020200010c020000002a00000000000000";
-    ASSERT_EQ(hex(transaction.serialize()), expectedHex);
+    auto expectedString =
+        "62ABadDCoPfGGRnhLoBhfcPekMHyN5ee8DgTY8wD4iwKDjyFAsNbsaahTcqMWxmwa61q9iAGCQB"
+        "v1bETcYzWsTwLKMVGLoEpwqA84mPjqHyr5sQD5dcghyQiQ1ckYNub9K7s8FspVwwowK8gJG69xe"
+        "DEaqi7G1zrChBVbQYTmVUwJETyDmP1Vs8QU3CaxBs8qwcxoziU52KWLBpRj9o38QVBdxJtJ7hig"
+        "hgPKJubfqUfTWdN94PzqEfyPqwoCpFD39nvBn8C5xe1caPKivicg6U7Lzm9s8RYTLCEB";
+    ASSERT_EQ(transaction.serialize(), expectedString);
 }
 
 TEST(SolanaSigner, SignRawMessage) {
@@ -190,23 +186,20 @@ TEST(SolanaSigner, SignDelegateStake) {
 
     std::vector<Signature> expectedSignatures;
     Signature expectedSignature(
-        "4oUMPVJ6NHGX1DFaxnDKSyZkxuN4osjqZE4mzA4iiNHd9kub3RtVKi3SUvRPsB5x2kB6EuRmBcWR4nbiKeoKF9os");
+        "4Q3ctvLybffZJBGdvrnEg171AjZeiMPGf3rVfGCpDVZRq9QaKVw8jWTMqHzZckGi2yXbGoQdBgeua24iMfPGHTtV");
     expectedSignatures.push_back(expectedSignature);
     ASSERT_EQ(transaction.signatures, expectedSignatures);
 
-    auto expectedHex =
-        "01be20567f2db0b09802bf70bbaf397d819c29496c6472a70e2db5c92dff1b666f5f5a4787b07d951bf46435c8"
-        "4248a974bb417c789041fbc512d0a06869fb1d0e010006080eba44e56f060007284dc037275a15094c1d6c0697"
-        "ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7"
-        "d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a00000000378ba8d9f9881e9be69cf1d70ee0a9"
-        "3ed0378b83203f42fa29f9df5c887f1c0d06a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b21"
-        "0000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000"
-        "000000000000000000000000000000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78"
-        "722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000030602"
-        "00015c030000002000000000000000346a707754717431715a6f52377536753633397a32416e675946474e336e"
-        "616b2a00000000000000d00700000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49d"
-        "c000000000070201026c000000000eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4ba"
-        "b80eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab8000000000000000000000000"
-        "00000000000000000000000000000000000000000000000000000000070501030405000402000000";
-    ASSERT_EQ(hex(transaction.serialize()), expectedHex);
+    auto expectedString =
+        "7gcsGMV8fPkuSDegrBk5KF4eZtmGqdixEr5Kxx7m74nErH5EWxkKcvy5LKg3kqKHLMtzqGXrM8EdVskLu5k6cQUVmz"
+        "nfd6iGpuDkn4BWi8HaqSoaeL7DCx6QHLUwcyvorfqPkgSaYopY9MeB6MGKS4bKCQi1paP7eEKZj9JgAZTHnpzAuFzq"
+        "E5dC98MrbThoBmHqfybw1jHssp4NZjrxsuMz4oYcHe837WmnpinE68QEVf9FzuoXKrMDwYZQYogJHUZgxghvMmJu3X"
+        "VZk7hL1h7SgE9ow2SvvNfAUYfUTuz8N9m6JcXgwmNL51ZweW9F1fekmSKE3vLEAaVvvYFsDxn1gt4bXuTdAMuUDKdH"
+        "33YMLQr8eEsdUDZUm33KtuE7Ddy84NEg3KbpWAy8T4vkwiLyvoyjmMdzCkMuobyXWQV1rfRk5vTJ4x6dMgznfAeKEq"
+        "md6xZ2hN8JBmTenP5dsvZCCSCf4G7cUkdndKu552KALqiNHd5msgLJvJKSHmZjFhS43fDCvkG7njF8yaZzWjmAknWU"
+        "BbV6YaGmD3XmcWfJgvB1zivZJhiMbzopP8Nm5wL5iDbCrSZTGq2tzEsTvje75wv2RtuAcgiicEPTuPAin9fKyMbCpf"
+        "67pGgWPwH5DwYumMwd8zwoJyuakyqFsFLnBKTvp8pFCijdj7fEhyC31xuMV7crwyrN5X3y7QKCE7PZcBP637YHEPtT"
+        "vt1ECp4CqBSnvPc8vRD8EMhHe5jRFSDkQriUenEPFc51dTDTJWL26xuiTivktEm6ahHq5d6MPr4NRDvcRG2cZvEgxH"
+        "BLpKfuB5XL3JfQZ3Nn3B916gaK8owz9Rk2e3";
+    ASSERT_EQ(transaction.serialize(), expectedString);
 }

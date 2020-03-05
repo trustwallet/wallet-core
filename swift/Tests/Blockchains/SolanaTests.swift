@@ -43,15 +43,14 @@ class SolanaTests: XCTestCase {
 
         let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
-        let expectedHexString = """
-        01fda1c8ad8872d94f7eab52f9c38dc77e1061f4897e3de2b8469eb0992269f6fa1f173e93dbb2da738ab4e895\
-        9ffa50cd087cdfa889f3a1b8acdd62552f7c1d070100020366c2f508c9c555cacc9fb26d88e88dd54e210bb5a8\
-        bce5687f60d7e75c4cd07fc68b3c894c782b05a9c27fc6c66eb14d4e7d31de9086ab7d2129bcb0493afa020000\
-        000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\
-        000000000000000000000000000000000001020200010c020000002a00000000000000
+        let expectedString = """
+        3p2kzZ1DvquqC6LApPuxpTg5CCDVPqJFokGSnGhnBHrta4uq7S2EyehV1XNUVXp51D69GxGzQZU\
+        jikfDzbWBG2aFtG3gHT1QfLzyFKHM4HQtMQMNXqay1NAeiiYZjNhx9UvMX4uAQZ4Q6rx6m2AYfQ\
+        7aoMUrejq298q1wBFdtS9XVB5QTiStnzC7zs97FUEK2T4XapjF1519EyFBViTfHpGpnf5bfizDz\
+        sW9kYUtRDW1UC2LgHr7npgq5W9TBmHf9hSmRgM9XXucjXLqubNWE7HUMhbKjuBqkirRM
         """
 
-        XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.encoded, expectedString)
     }
 
     func testDelegateStakeSigner() throws {
@@ -67,23 +66,20 @@ class SolanaTests: XCTestCase {
 
         let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
-        let expectedHexString = """
-        01be20567f2db0b09802bf70bbaf397d819c29496c6472a70e2db5c92dff1b666f5f5a4787b07d951bf46435c8\
-        4248a974bb417c789041fbc512d0a06869fb1d0e010006080eba44e56f060007284dc037275a15094c1d6c0697\
-        ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7\
-        d517192c5c51218cc94c3d4af17f58daee089ba1fd44e3dbd98a00000000378ba8d9f9881e9be69cf1d70ee0a9\
-        3ed0378b83203f42fa29f9df5c887f1c0d06a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b21\
-        0000000006a1d817a502050b680791e6ce6db88e1e5b7150f61fc6790a4eb4d100000000000000000000000000\
-        000000000000000000000000000000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78\
-        722b68a49dc0000000000000000000000000000000000000000000000000000000000000000000000000030602\
-        00015c030000002000000000000000346a707754717431715a6f52377536753633397a32416e675946474e336e\
-        616b2a00000000000000d00700000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49d\
-        c000000000070201026c000000000eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4ba\
-        b80eba44e56f060007284dc037275a15094c1d6c0697ddb28b2be661dfb0f4bab8000000000000000000000000\
-        00000000000000000000000000000000000000000000000000000000070501030405000402000000
+        let expectedString = """
+        7gcsGMV8fPkuSDegrBk5KF4eZtmGqdixEr5Kxx7m74nErH5EWxkKcvy5LKg3kqKHLMtzqGXrM8EdVskLu5k6cQUVmz\
+        nfd6iGpuDkn4BWi8HaqSoaeL7DCx6QHLUwcyvorfqPkgSaYopY9MeB6MGKS4bKCQi1paP7eEKZj9JgAZTHnpzAuFzq\
+        E5dC98MrbThoBmHqfybw1jHssp4NZjrxsuMz4oYcHe837WmnpinE68QEVf9FzuoXKrMDwYZQYogJHUZgxghvMmJu3X\
+        VZk7hL1h7SgE9ow2SvvNfAUYfUTuz8N9m6JcXgwmNL51ZweW9F1fekmSKE3vLEAaVvvYFsDxn1gt4bXuTdAMuUDKdH\
+        33YMLQr8eEsdUDZUm33KtuE7Ddy84NEg3KbpWAy8T4vkwiLyvoyjmMdzCkMuobyXWQV1rfRk5vTJ4x6dMgznfAeKEq\
+        md6xZ2hN8JBmTenP5dsvZCCSCf4G7cUkdndKu552KALqiNHd5msgLJvJKSHmZjFhS43fDCvkG7njF8yaZzWjmAknWU\
+        BbV6YaGmD3XmcWfJgvB1zivZJhiMbzopP8Nm5wL5iDbCrSZTGq2tzEsTvje75wv2RtuAcgiicEPTuPAin9fKyMbCpf\
+        67pGgWPwH5DwYumMwd8zwoJyuakyqFsFLnBKTvp8pFCijdj7fEhyC31xuMV7crwyrN5X3y7QKCE7PZcBP637YHEPtT\
+        vt1ECp4CqBSnvPc8vRD8EMhHe5jRFSDkQriUenEPFc51dTDTJWL26xuiTivktEm6ahHq5d6MPr4NRDvcRG2cZvEgxH\
+        BLpKfuB5XL3JfQZ3Nn3B916gaK8owz9Rk2e3
         """
 
-        XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.encoded, expectedString)
     }
 
     func testDeactivateStakeSigner() throws {
@@ -98,16 +94,14 @@ class SolanaTests: XCTestCase {
 
         let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
-        let expectedHexString = """
-        014a85ccf3aa7e684b3352ed825dc4517daf3a95565d6ce0fcab0a7747bac87749c99e428e9ae7f42d38bc265b\
-        45811a03b649e5d98fc5b0ecbff60c783bfc470e010102040eba44e56f060007284dc037275a15094c1d6c0697\
-        ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7\
-        d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d8179137542a983437bdfe2a7a\
-        b2557f535c8a78722b68a49dc00000000000000000000000000000000000000000000000000000000000000000\
-        000000000103030102000406000000
+        let expectedString = """
+        AhfB77PTGTKBfbGPGuEz2khbBy8m8Kou1zqZST9dP7PLJNSeEze5NJuCh5qecPLa3S8xAQ6mTULmnAWiW81ib87nhy\
+        wFtx5nKiUvmhdXsvKCSX6NNtNXdRz5yZi3UEop4obco85SY2czS6n4SJwmtDedHLtg9urqdZVth7AUM8KAtrRsksyv\
+        ZRYXh64Z8QGyNY7ekj31ae11avGiSDNWYZZHqx7VPWRsKeatGyGk5zPmnRdL8ABMQgJ1Te7wAWwVnNn5QcoAxDuPw6\
+        uDctP8Q5S4TieRVatCnukQFj5BTJisez3E2ZJPWhVrMh4K3wEFkPHA7dR
         """
 
-        XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.encoded, expectedString)
     }
 
     func testWithdrawStakeSigner() throws {
@@ -123,17 +117,15 @@ class SolanaTests: XCTestCase {
 
         let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
-        let expectedHexString = """
-        014e808302fa771ccccfa4e82280bfd4b4ec267dc5107ff5baa8b718f6dae13aa23b888c1b7f44e8c8ea5fb750\
-        955af4e5b8187ca10d16922bf5af01b5897bfb03010003050eba44e56f060007284dc037275a15094c1d6c0697\
-        ddb28b2be661dfb0f4bab857a6b8aba83da905fff9c3e62acc748cf497bd503f11b7f9c337b7f35346df0306a7\
-        d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a7d517193584d0feed9bb3431d13\
-        206be544281b57b8566cc5375ff400000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc0\
-        000000000000000000000000000000000000000000000000000000000000000000000000010404010002030c05\
-        0000002a00000000000000
+        let expectedString = """
+        7Y1Wg1yHNs8MgWFiFSfcsRtqdMwZg8oGeQnTABYDfyDnof4VSFw63s3PuSxvUCJqqHKgYNVb8UTNcNiYHY8kng4NqT\
+        cVV5SA1KAWRzKHVGUxNWioAEXXVot5iJ1XbUWuuZUZBtsraaBjNyfmgWEDje3ESdGhiVL7vadU1uHeBuUKwM3nqB6y\
+        oeggeNyzmT34hs9utyehTFg48MAfrKEFKxaby7YZD6JbXFS1SyG1kxKWnCpoPgX3efwDwukmyDwxrKdABt9eTwmaiX\
+        KbTnK1hzBTatNfnJ9ePuWkhWFrjyDrGdx5S5KpybxET2vV9CSpExcD51BA6NPemTpjbhLYnJEzHWBGfYqfxu7p3257\
+        NHhpQQrSU56adk4dAQFjEYP
         """
 
-        XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.encoded, expectedString)
     }
 
 }
