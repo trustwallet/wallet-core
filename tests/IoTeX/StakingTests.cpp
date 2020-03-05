@@ -4,10 +4,10 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "IoTeX/Staking.h"
+#include "IoTeX/Signer.h"
 #include "Data.h"
 #include "HexCoding.h"
-#include "PrivateKey.h"
-#include "IoTeX/Signer.h"
 #include "proto/IoTeX.pb.h"
 #include "../interface/TWTestUtilities.h"
 
@@ -16,10 +16,42 @@
 using namespace TW;
 using namespace TW::IoTeX;
 
-static const char *_Nonnull IOTEX_STAKING_CONTRACT = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
-static const char * IOTEX_STAKING_TEST = "this is a test";
+static const uint64_t pyggyIndex01 = 1001;
+static std::string IOTEX_STAKING_CONTRACT = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
+static const Data IOTEX_STAKING_TEST = TW::data(std::string("this is a test"));
+static const Data candidate12 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
-TEST(TWIoTeXStaking, SignStake) {
+TEST(IoTeXStaking, Stake) {
+    Data result;
+    stakingStake(candidate12, pyggyIndex01, true, IOTEX_STAKING_TEST, result);
+    ASSERT_EQ(hex(result), "07c35fc00102030405060708090a0b0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e900000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+}
+
+TEST(IoTeXStaking, Unstake) {
+    Data result;
+    stakingUnstake(pyggyIndex01, IOTEX_STAKING_TEST, result);
+    ASSERT_EQ(hex(result), "c8fd6ed000000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+}
+
+TEST(IoTeXStaking, Withdraw) {
+    Data result;
+    stakingWithdraw(pyggyIndex01, IOTEX_STAKING_TEST, result);
+    ASSERT_EQ(hex(result), "030ba25d00000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+}
+
+TEST(IoTeXStaking, AddStake) {
+    Data result;
+    stakingAddStake(pyggyIndex01, IOTEX_STAKING_TEST, result);
+    ASSERT_EQ(hex(result), "6e7b301700000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+}
+
+TEST(IoTeXStaking, MoveStake) {
+    Data result;
+    stakingMoveStake(pyggyIndex01, candidate12, IOTEX_STAKING_TEST, result);
+    ASSERT_EQ(hex(result), "d3e41fd200000000000000000000000000000000000000000000000000000000000003e90102030405060708090a0b0c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+}
+
+TEST(IoTeXStaking, SignStake) {
     auto input = Proto::SigningInput();
     input.set_version(1);
     input.set_nonce(123);
@@ -28,18 +60,17 @@ TEST(TWIoTeXStaking, SignStake) {
     auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    auto& staking = *input.mutable_staking();
-    staking.set_amount("456");
-    staking.set_contract(IOTEX_STAKING_CONTRACT);
+    // staking is implemented using the Execution message
+    auto staking = input.mutable_call();
+    staking->set_amount("456");
+    staking->set_contract(IOTEX_STAKING_CONTRACT);
 
-    auto name = Data{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-    auto candidate = std::string(name.begin(), name.end());
-    auto& stake = *staking.mutable_stake();
-    stake.set_candidate(candidate);
-    stake.set_duration(1001);
-    stake.set_nondecay(true);
-    stake.set_data(IOTEX_STAKING_TEST);
-
+    // call staking API to generate calldata
+    // data = "this is a test" here, it could be null (user leaves data empty when signing the tx)
+    Data stake;
+    stakingStake(candidate12, pyggyIndex01, true, IOTEX_STAKING_TEST, stake);
+    staking->set_data(stake.data(), stake.size());
+    
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
     ASSERT_EQ(hex(signer.hash()), "cc3c8f7a0129455d70457c4be42a8b31d8e1df59594c99041b6b6d091b295b32");
@@ -52,7 +83,7 @@ TEST(TWIoTeXStaking, SignStake) {
     ASSERT_EQ(hex(output.hash()), "41b1f8be5f6b884c06556fba2611716e8e514b507f5a653fc02ac50ba13fbd6c");
 }
 
-TEST(TWIoTeXStaking, SignUnstake) {
+TEST(IoTeXStaking, SignUnstake) {
     auto input = Proto::SigningInput();
     input.set_version(1);
     input.set_nonce(123);
@@ -61,12 +92,15 @@ TEST(TWIoTeXStaking, SignUnstake) {
     auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    auto& staking = *input.mutable_staking();
-    staking.set_amount("456");
-    staking.set_contract(IOTEX_STAKING_CONTRACT);
+    // staking is implemented using the Execution message
+    auto staking = input.mutable_call();
+    staking->set_amount("456");
+    staking->set_contract(IOTEX_STAKING_CONTRACT);
 
-    auto& unstake = *staking.mutable_unstake();
-    unstake.set_piggy_index(1001);
+    // call staking API to generate calldata
+    Data unstake;
+    stakingUnstake(pyggyIndex01, Data{}, unstake);
+    staking->set_data(unstake.data(), unstake.size());
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
@@ -77,7 +111,7 @@ TEST(TWIoTeXStaking, SignUnstake) {
     ASSERT_EQ(hex(output.hash()), "b93a2874a72ce4eb8a41a20c209cf3fd188671ed8be8239a57960cbed887e962");
 }
 
-TEST(TWIoTeXStaking, SignWithdraw) {
+TEST(IoTeXStaking, SignWithdraw) {
     auto input = Proto::SigningInput();
     input.set_version(1);
     input.set_nonce(123);
@@ -86,12 +120,15 @@ TEST(TWIoTeXStaking, SignWithdraw) {
     auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    auto& staking = *input.mutable_staking();
-    staking.set_amount("456");
-    staking.set_contract(IOTEX_STAKING_CONTRACT);
+    // staking is implemented using the Execution message
+    auto staking = input.mutable_call();
+    staking->set_amount("456");
+    staking->set_contract(IOTEX_STAKING_CONTRACT);
 
-    auto& withdraw = *staking.mutable_withdraw();
-    withdraw.set_piggy_index(1001);
+    // call staking API to generate calldata
+    Data withdraw;
+    stakingWithdraw(pyggyIndex01, Data{}, withdraw);
+    staking->set_data(withdraw.data(), withdraw.size());
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
@@ -102,7 +139,7 @@ TEST(TWIoTeXStaking, SignWithdraw) {
     ASSERT_EQ(hex(output.hash()), "2b2657247a72cb262de214b4e793c7a01fa2139fd5d12a46d43c24f87f9e2396");
 }
 
-TEST(TWIoTeXStaking, SignAddStake) {
+TEST(IoTeXStaking, SignAddStake) {
     auto input = Proto::SigningInput();
     input.set_version(1);
     input.set_nonce(123);
@@ -111,12 +148,15 @@ TEST(TWIoTeXStaking, SignAddStake) {
     auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    auto& staking = *input.mutable_staking();
-    staking.set_amount("456");
-    staking.set_contract(IOTEX_STAKING_CONTRACT);
+    // staking is implemented using the Execution message
+    auto staking = input.mutable_call();
+    staking->set_amount("456");
+    staking->set_contract(IOTEX_STAKING_CONTRACT);
 
-    auto& add = *staking.mutable_addstake();
-    add.set_piggy_index(1001);
+    // call staking API to generate calldata
+    Data addStake;
+    stakingAddStake(pyggyIndex01, Data{}, addStake);
+    staking->set_data(addStake.data(), addStake.size());
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
@@ -127,7 +167,7 @@ TEST(TWIoTeXStaking, SignAddStake) {
     ASSERT_EQ(hex(output.hash()), "c71058812a5febe5cdcdaf9499ba0b2c895f88d1acd3203e5097b307c2a5f1d1");
 }
 
-TEST(TWIoTeXStaking, SignMoveStake) {
+TEST(IoTeXStaking, SignMoveStake) {
     auto input = Proto::SigningInput();
     input.set_version(1);
     input.set_nonce(123);
@@ -136,15 +176,15 @@ TEST(TWIoTeXStaking, SignMoveStake) {
     auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    auto& staking = *input.mutable_staking();
-    staking.set_amount("456");
-    staking.set_contract(IOTEX_STAKING_CONTRACT);
+    // staking is implemented using the Execution message
+    auto staking = input.mutable_call();
+    staking->set_amount("456");
+    staking->set_contract(IOTEX_STAKING_CONTRACT);
 
-    auto name = Data{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-    auto candidate = std::string(name.begin(), name.end());
-    auto& move = *staking.mutable_movestake();
-    move.set_candidate(candidate);
-    move.set_piggy_index(1001);
+    // call staking API to generate calldata
+    Data moveStake;
+    stakingMoveStake(pyggyIndex01, candidate12, Data{}, moveStake);
+    staking->set_data(moveStake.data(), moveStake.size());
     
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
