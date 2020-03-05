@@ -9,6 +9,7 @@
 #include "Data.h"
 
 #include "proto/IoTeX.pb.h"
+#include "Protobuf/action.pb.h"
 
 namespace TW::IoTeX {
 
@@ -19,7 +20,7 @@ class Signer {
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
   public:
     Proto::SigningInput input;
-    Proto::ActionCore action;
+    iotextypes::ActionCore action;
 
     /// Initializes a transaction signer
     Signer(const Proto::SigningInput& input) : input(input) { toActionCore(); }

@@ -1,0 +1,40 @@
+// Copyright (c) 2018 IoTeX
+// This is an alpha (internal) release and is not suitable for production. This
+// source code is provided 'as is' and no warranties are given as to title or
+// non-infringement, merchantability or fitness for purpose and, to the extent
+// permitted by law, all liability for your use of the code is disclaimed. This
+// source code is governed by Apache License 2.0 that can be found in the
+// LICENSE file.
+
+syntax = "proto3";
+package iotextypes;
+
+message Transfer {
+  // used by state-based model
+  string amount = 1;
+  string recipient = 2;
+  bytes payload = 3;
+}
+
+message Execution {
+  string amount = 1;
+  string contract = 2;
+  bytes data = 3;
+}
+
+message ActionCore {
+  uint32 version = 1;
+  uint64 nonce = 2;
+  uint64 gasLimit = 3;
+  string gasPrice = 4;
+  oneof action {
+    Transfer transfer = 10;
+    Execution execution = 12;
+  }
+}
+
+message Action {
+  ActionCore core = 1;
+  bytes senderPubKey = 2;
+  bytes signature = 3;
+}

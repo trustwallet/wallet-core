@@ -61,7 +61,7 @@ TEST(IoTeXStaking, SignStake) {
     input.set_privatekey(keyhex.data(), keyhex.size());
 
     // staking is implemented using the Execution message
-    auto staking = input.mutable_execution();
+    auto staking = input.mutable_call();
     staking->set_amount("456");
     staking->set_contract(IOTEX_STAKING_CONTRACT);
 
@@ -93,7 +93,7 @@ TEST(IoTeXStaking, SignUnstake) {
     input.set_privatekey(keyhex.data(), keyhex.size());
 
     // staking is implemented using the Execution message
-    auto staking = input.mutable_execution();
+    auto staking = input.mutable_call();
     staking->set_amount("456");
     staking->set_contract(IOTEX_STAKING_CONTRACT);
 
@@ -121,7 +121,7 @@ TEST(IoTeXStaking, SignWithdraw) {
     input.set_privatekey(keyhex.data(), keyhex.size());
 
     // staking is implemented using the Execution message
-    auto staking = input.mutable_execution();
+    auto staking = input.mutable_call();
     staking->set_amount("456");
     staking->set_contract(IOTEX_STAKING_CONTRACT);
 
@@ -149,7 +149,7 @@ TEST(IoTeXStaking, SignAddStake) {
     input.set_privatekey(keyhex.data(), keyhex.size());
 
     // staking is implemented using the Execution message
-    auto staking = input.mutable_execution();
+    auto staking = input.mutable_call();
     staking->set_amount("456");
     staking->set_contract(IOTEX_STAKING_CONTRACT);
 
@@ -177,7 +177,7 @@ TEST(IoTeXStaking, SignMoveStake) {
     input.set_privatekey(keyhex.data(), keyhex.size());
 
     // staking is implemented using the Execution message
-    auto staking = input.mutable_execution();
+    auto staking = input.mutable_call();
     staking->set_amount("456");
     staking->set_contract(IOTEX_STAKING_CONTRACT);
 
