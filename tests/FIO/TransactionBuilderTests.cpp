@@ -95,11 +95,11 @@ TEST(FIOTransactionBuilder, NewFundsRequest) {
 
     const Data iv = parse_hex("000102030405060708090a0b0c0d0e0f"); // use fixed iv for testability
     string t = TransactionBuilder::createNewFundsRequest(addr6M, privKeyBA,
-        "mario@fiotestnet", "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o", "alice@fiotestnet",
-        "5", "BNB", "Memo", "Hash", "https://trustwallet.com",
+        "mario@fiotestnet", "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o", "alice@fiotestnet", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v",
+        "5", "BTC", "Memo", "Hash", "https://trustwallet.com",
         chainParams, fee, "rewards@wallet", 1579785000, iv);
 
-    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232fd2201106d6172696f4066696f746573746e657410616c6963654066696f746573746e6574e03030303130323033303430353036303730383039306130623063306430653066376530323532643962326137396662373631373831613638633030643939306336633033306131313164366234306161633131393833323639323530386264343533396562303463633636306563363166643937636338393732376437386534613334383566653064353862613537336237613438633066326232636437636532653236333431336335626138366135386366373732303861613639363234363532386262346133326466326436363136353664343162626232383566353837005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_K8ShtXKoUsXfAnvivzZkL9dysJtSutdeohmvfxoabm3C9mhyZjzEiPKUVKNq7YqSUgo7ZaK13w2iyk2LwnFZkbZKP79WqG"]})", t);
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232fd6401106d6172696f4066696f746573746e657410616c6963654066696f746573746e6574fd2001303030313032303330343035303630373038303930613062306330643065306666653665653366393032393239303534326339306531666433383930646363643532333864323363303566383438393464346566396264653431323137393933663638366138636434373366393635663431616537353831373963313464626634393832306533343861356138376263396136326565346133396234386263383265656138633335623362323361386664346262666639383230326435666330643162666230613666396438656261396536613038623362326539646262666431366561646665663131616235313661613639346664643862663938656136656162616531666165636462626431306638306239366432613462386364393032005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_KaXYfGRrfu1Svz9fjy4BD4dWvx46xqX5LakVY7KuBLurJHXR3MaMaxSdHnkGfFprjwpFtAkHLHkJDVXfcFqExiVSc3rjAZ"]})", t);
 }
 
 TEST(FIOTransaction, ActionRegisterFioAddressInternal) {
@@ -187,42 +187,43 @@ TEST(FIOTransaction, ActionAddPubAddressInternal) {
 
 TEST(FIONewFundsContent, serialize) {
     {
-        NewFundsContent newFunds {"mario@trust", "10", "BNB", "Memo", "Hash", "https://trustwallet.com"};
+        NewFundsContent newFunds {"bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v", "10", "BTC", "Memo", "Hash", "https://trustwallet.com"};
         Data ser;
         newFunds.serialize(ser);
-        EXPECT_EQ(hex(ser), "0b6d6172696f40747275737402313003424e42044d656d6f04486173681768747470733a2f2f747275737477616c6c65742e636f6d");
+        EXPECT_EQ(hex(ser), "2a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c787770373064377602313003425443044d656d6f04486173681768747470733a2f2f747275737477616c6c65742e636f6d0000000000");
     }
     {
-        // empty struct 
+        // empty struct
         NewFundsContent newFunds {"", "", "", "", "", ""};
         Data ser;
         newFunds.serialize(ser);
-        EXPECT_EQ(hex(ser), "000000000000");
+        EXPECT_EQ(hex(ser), "0000000000000000000000");
     }
     {
         // test from https://github.com/fioprotocol/fiojs/blob/master/src/tests/encryption-fio.test.ts
         NewFundsContent newFunds {"purse.alice", "1", "fio.reqobt", "", "", ""};
         Data ser;
         newFunds.serialize(ser);
-        EXPECT_EQ(hex(ser), "0b70757273652e616c69636501310a66696f2e7265716f6274000000");
+        EXPECT_EQ(hex(ser), "0b70757273652e616c69636501310a66696f2e7265716f62740000000000000000");
     }
 }
 
 TEST(FIONewFundsContent, deserialize) {
     {
-        const Data ser = parse_hex("0b6d6172696f40747275737402313003424e42044d656d6f001768747470733a2f2f747275737477616c6c65742e636f6d");
+        const Data ser = parse_hex("2a626331717679343037347267676b647232707a773576706e6e3632656730736d7a6c787770373064377602313003425443044d656d6f04486173681768747470733a2f2f747275737477616c6c65742e636f6d0000000000");
         size_t index = 0;
         const auto newFunds = NewFundsContent::deserialize(ser, index);
-        EXPECT_EQ(newFunds.payeeFioName, "mario@trust");
+        EXPECT_EQ(newFunds.payeePublicAddress, "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v");
         EXPECT_EQ(newFunds.amount, "10");
+        EXPECT_EQ(newFunds.coinSymbol, "BTC");
         EXPECT_EQ(newFunds.offlineUrl, "https://trustwallet.com");
     }
     {
-        // incomplete inpiut
+        // incomplete input
         const Data ser = parse_hex("0b6d");
         size_t index = 0;
         const auto newFunds = NewFundsContent::deserialize(ser, index);
-        EXPECT_EQ(newFunds.payeeFioName, "");
+        EXPECT_EQ(newFunds.payeePublicAddress, "");
         EXPECT_EQ(newFunds.amount, "");
         EXPECT_EQ(newFunds.offlineUrl, "");
     }

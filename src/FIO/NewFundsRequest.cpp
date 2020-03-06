@@ -14,12 +14,17 @@ namespace TW::FIO {
 using namespace std;
 
 void NewFundsContent::serialize(Data& out) const {
-    encodeString(payeeFioName, out);
+    encodeString(payeePublicAddress, out);
     encodeString(amount, out);
     encodeString(coinSymbol, out);
     encodeString(memo, out);
     encodeString(hash, out);
     encodeString(offlineUrl, out);
+    encodeString("", out); // future_use1
+    encodeString("", out); // future_use2
+    encodeString("", out); // future_use3
+    encodeString("", out); // future_use4
+    encodeString("", out); // future_use5
 }
 
 NewFundsContent NewFundsContent::deserialize(const Data& in, size_t& indexInOut) {
@@ -27,7 +32,7 @@ NewFundsContent NewFundsContent::deserialize(const Data& in, size_t& indexInOut)
 
     auto result = decodeString(in, indexInOut);
     if (!get<0>(result)) { return newFunds; }
-    newFunds.payeeFioName = get<1>(result);
+    newFunds.payeePublicAddress = get<1>(result);
     result = decodeString(in, indexInOut);
     if (!get<0>(result)) { return newFunds; }
     newFunds.amount = get<1>(result);
