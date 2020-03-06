@@ -206,7 +206,8 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
 
     const auto apiName = "newfundsreq";
 
-    NewFundsContent newFundsContent { payeePublicAddress, amount, coinSymbol, memo, hash, offlineUrl };
+    // use coinSymbol for chainCode as well
+    NewFundsContent newFundsContent { payeePublicAddress, amount, coinSymbol, coinSymbol, memo, hash, offlineUrl };
     // serialize and encrypt
     Data serContent;
     newFundsContent.serialize(serContent);

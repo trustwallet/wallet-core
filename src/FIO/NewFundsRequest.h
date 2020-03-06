@@ -19,6 +19,8 @@ public:
     std::string payeePublicAddress;
     /// Amount requested (string)
     std::string amount;
+    /// Chain ID for the coin (on case of multiple chains)
+    std::string chainCode;
     /// Coin symbol of the amount requested (a.k.a. tokenCode)
     std::string coinSymbol;
     /// Memo free text (optional, may be empty)

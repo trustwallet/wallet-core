@@ -16,6 +16,7 @@ using namespace std;
 void NewFundsContent::serialize(Data& out) const {
     encodeString(payeePublicAddress, out);
     encodeString(amount, out);
+    encodeString(chainCode, out);
     encodeString(coinSymbol, out);
     encodeString(memo, out);
     encodeString(hash, out);
@@ -36,6 +37,9 @@ NewFundsContent NewFundsContent::deserialize(const Data& in, size_t& indexInOut)
     result = decodeString(in, indexInOut);
     if (!get<0>(result)) { return newFunds; }
     newFunds.amount = get<1>(result);
+    result = decodeString(in, indexInOut);
+    if (!get<0>(result)) { return newFunds; }
+    newFunds.chainCode = get<1>(result);
     result = decodeString(in, indexInOut);
     if (!get<0>(result)) { return newFunds; }
     newFunds.coinSymbol = get<1>(result);
