@@ -1,4 +1,4 @@
-# Sample iOS Application for [Wallet-Core](https://github.com/trustwallet/wallet-core)
+# Sample macOS Application for [Wallet-Core](https://github.com/trustwallet/wallet-core)
 
 ## Overview
 
@@ -27,11 +27,11 @@ and [Build Instructions](https://developer.trustwallet.com/wallet-core/building)
 
 ## Building and Running
 
-Go to the **samples/ios/cocoapods** folder within wallet core repo:
+Go to the **samples/osx/cocoapods** folder within wallet core repo:
 
 ```shell
 git clone https://github.com/trustwallet/wallet-core.git
-cd wallet-core/samples/ios/cocoapods
+cd wallet-core/samples/osx/cocoapods
 ```
 
 Install dependencies with CocoaPods:
@@ -40,10 +40,10 @@ Install dependencies with CocoaPods:
 pod install
 ```
 
-* Open the following workspace with Xcode: `ios/cocoapods/WalletCoreExample.xcworkspace` 
+* Open the following workspace with Xcode: `osx/cocoapods/WalletCoreExample.xcworkspace` 
 * Build and Run
 
-The relevant sample code is in the file [`WalletCoreExample/ViewController.swift`](https://github.com/trustwallet/wallet-core/blob/master/samples/ios/cocoapods/WalletCoreExample/ViewController.swift).
+The relevant sample code is in the file [`WalletCoreExample/ViewController.swift`](https://github.com/trustwallet/wallet-core/blob/master/samples/osx/cocoapods/WalletCoreExample/ViewController.swift).
 Output appears in Output window (or stdout).
 
 ```
