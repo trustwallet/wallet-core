@@ -99,7 +99,7 @@ TEST(FIOTransactionBuilder, NewFundsRequest) {
         "5", "BTC", "Memo", "Hash", "https://trustwallet.com",
         chainParams, fee, "rewards@wallet", 1579785000, iv);
 
-    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232fd6401106d6172696f4066696f746573746e657410616c6963654066696f746573746e6574fd2001303030313032303330343035303630373038303930613062306330643065306666653665653366393032393239303534326339306531666433383930646363643532333864323363303566383438393464346566396264653431323137393933663638366138636434373366393635663431616537353831373963313464626633626566613236656430356233343262336561616330373466653631653337643136646161393131653531376330373934306533613465343036646261326638636532656166616330353334343666316434313864663365383536636163386532613866393365636334363433323131343835633431366531636135386131393938646365313931653366363435313563356337323230653336303336633738005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_KApLfnwWqLfdVXXLLuHLky5ZM2CMotLezSumc3WTstYQnSnRWnAMiuY9wVL6PS3UsBJzt1hq7SxtCd9gTNePWy1C3kj1SW"]})", t);
+    EXPECT_EQ(R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232e302106d6172696f4066696f746573746e657410616c6963654066696f746573746e6574a002303030313032303330343035303630373038303930613062306330643065306666653665653366393032393239303534326339306531666433383930646363643532333864323363303566383438393464346566396264653431323137393933663638366138636434373366393635663431616537353831373963313464626633626566613236656430356233343262336561616330373466653631653337643136646161393131653531376330373934306533613465343036646261326638636532656166616330353334343666316434313864663365383536636163386532613866393365636334363433323131343835633431366531636135386131393938646365313931653366363435313563356337323230653336303336633738005ed0b200000000102b2f46fca756b20e726577617264734077616c6c657400","signatures":["SIG_K1_KUtkz6broC3BYbHbBqqYbXQRvqpvQcWq85dWrCUt4XGYZ369GNwwb2gxeJoGroYgarRdbnnBGVMisyBsTj2vfqeKYNgwAM"]})", t);
 }
 
 TEST(FIOTransaction, ActionRegisterFioAddressInternal) {
@@ -114,7 +114,6 @@ TEST(FIOTransaction, ActionRegisterFioAddressInternal) {
     Action raAction;
     raAction.account = "fio.address";
     raAction.name = "regaddress";
-    raAction.includeExtra01BeforeData = false;
     raAction.actionDataSer = ser1;
     raAction.auth.authArray.push_back(Authorization{"qdfejz2a5wpl", "active"});
     Data ser2;
@@ -157,7 +156,6 @@ TEST(FIOTransaction, ActionAddPubAddressInternal) {
     Action aaAction;
     aaAction.account = "fio.address";
     aaAction.name = "addaddress";
-    aaAction.includeExtra01BeforeData = true;
     aaAction.actionDataSer = ser1;
     aaAction.auth.authArray.push_back(Authorization{"qdfejz2a5wpl", "active"});
     Data ser2;
@@ -286,4 +284,64 @@ TEST(FIOTransactionBuilder, chainParansRange) {
     // large values truncated
     checkRefBlockPrefix(0x0000000112345678, 0x12345678);
     checkRefBlockPrefix(0xFFABCDEF12345678, 0x12345678);
+}
+
+TEST(FIOTransactionBuilder, encodeVarInt) {
+    {
+        Data data;
+        EXPECT_EQ(TW::FIO::encodeVarInt(0x11, data), 1);
+        EXPECT_EQ(hex(data), "11");
+    }
+    {
+        Data data;
+        EXPECT_EQ(TW::FIO::encodeVarInt(0x7F, data), 1);
+        EXPECT_EQ(hex(data), "7f");
+    }
+    {
+        Data data;
+        EXPECT_EQ(TW::FIO::encodeVarInt(0x80, data), 2);
+        EXPECT_EQ(hex(data), "8001");
+    }
+    {
+        Data data;
+        EXPECT_EQ(TW::FIO::encodeVarInt(0xFF, data), 2);
+        EXPECT_EQ(hex(data), "ff01");
+    }
+    {
+        Data data;
+        EXPECT_EQ(TW::FIO::encodeVarInt(0x100, data), 2);
+        EXPECT_EQ(hex(data), "8002");
+    }
+    {
+        Data data;
+        EXPECT_EQ(TW::FIO::encodeVarInt(0x3FFF, data), 2);
+        EXPECT_EQ(hex(data), "ff7f");
+    }
+    {
+        Data data;
+        EXPECT_EQ(TW::FIO::encodeVarInt(0x4000, data), 3);
+        EXPECT_EQ(hex(data), "808001");
+    }
+    {
+        Data data;
+        EXPECT_EQ(TW::FIO::encodeVarInt(0xFFFFFFFF, data), 5);
+        EXPECT_EQ(hex(data), "ffffffff0f");
+    }
+}
+
+TEST(FIOTransactionBuilder, encodeString) {
+    {
+        Data data;
+        const string text = "ABC";
+        TW::FIO::encodeString(text, data);
+        EXPECT_EQ(hex(data), "03" + hex(text));
+    }
+    {
+        Data data;
+        const string text = "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789";
+        EXPECT_EQ(text.length(), 130);
+        TW::FIO::encodeString(text, data);
+        // length on 2 bytes
+        EXPECT_EQ(hex(data), "8201" + hex(text));
+    }
 }

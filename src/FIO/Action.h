@@ -15,6 +15,13 @@
 
 namespace TW::FIO {
 
+/// Encodes a value as a variable-length integer.
+/// @returns the number of bytes written.
+uint8_t encodeVarInt(uint64_t num, Data& data);
+
+/// Encodes an ASCII string prefixed by the length (varInt)
+void encodeString(const std::string& str, std::vector<uint8_t>& data);
+
 /// Represents an authorization record (actor/permission pair)
 class Authorization {
 public:
@@ -71,7 +78,6 @@ public:
     std::string account;
     std::string name;
     AuthorizationArray auth;
-    bool includeExtra01BeforeData = false;
     Data actionDataSer;
 
     void serialize(Data& out) const;

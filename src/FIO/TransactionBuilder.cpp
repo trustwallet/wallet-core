@@ -95,7 +95,6 @@ string TransactionBuilder::createRegisterFioAddress(const Address& address, cons
     Action action;
     action.account = ContractAddress;
     action.name = apiName;
-    action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
@@ -128,7 +127,6 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     Action action;
     action.account = ContractAddress;
     action.name = apiName;
-    action.includeExtra01BeforeData = true;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
@@ -156,7 +154,6 @@ string TransactionBuilder::createTransfer(const Address& address, const PrivateK
     Action action;
     action.account = ContractToken;
     action.name = apiName;
-    action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
@@ -184,7 +181,6 @@ string TransactionBuilder::createRenewFioAddress(const Address& address, const P
     Action action;
     action.account = ContractAddress;
     action.name = apiName;
-    action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
@@ -227,7 +223,6 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
     Action action;
     action.account = ContractPayRequest;
     action.name = apiName;
-    action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
 
