@@ -21,7 +21,7 @@ uint8_t encodeVarInt(uint64_t num, Data& data) {
             num = num >> 7;
         } else {
             // < 0x80, write it out and stop
-            TW::append(data, num);
+            TW::append(data, static_cast<uint8_t>(num));
             break;
         }
     }
