@@ -79,7 +79,7 @@ void NewFundsRequestData::serialize(Data& out) const {
     encodeString(payeeFioName, out);
     encodeString(encryptedContent, out);
     encode64LE(fee, out);
-    EOS::Name(actor).serialize(out);
+    encodeString(actor, out);
     encodeString(tpid, out);
 }
 

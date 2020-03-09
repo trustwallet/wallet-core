@@ -150,7 +150,7 @@ TEST(TWFIO, NewFundsRequest) {
     // Packed transacton varies, as there is no way to control encryption IV parameter from this level.
     // Therefore full equality cannot be checked, tail is cut off.  The first N chars are checked, works in this case.
     EXPECT_EQ(
-        R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232e302106d6172696f4066696f746573746)",
+        R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed32328802106d6172696f4066696f746573746)",
         output.json().substr(0, 195)
     );
 }
