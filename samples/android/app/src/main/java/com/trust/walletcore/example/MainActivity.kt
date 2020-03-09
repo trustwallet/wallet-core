@@ -85,11 +85,15 @@ class MainActivity : AppCompatActivity() {
             this.coinType = coinBtc.value()
             this.addUtxo(utxo)
             this.addPrivateKey(ByteString.copyFrom(secretPrivateKeyBtc.data()))
-        }.build()
+        }
 
-        val output = AnySigner.sign(input, CoinType.BITCOIN, Bitcoin.SigningOutput.parser())
-        val plan = UTXOPlanner.plan(input, CoinType.BITCOIN, Bitcoin.TransactionPlan.parser())
-        print(plan)
+        // Calculate fee (plan a tranaction)
+        val plan = UTXOPlanner.plan(input.build(), CoinType.BITCOIN, Bitcoin.TransactionPlan.parser())
+
+        // Set the precomputed plan
+        input.plan = plan
+        val output = AnySigner.sign(input.build(), CoinType.BITCOIN, Bitcoin.SigningOutput.parser())
+
         assert(output.error.isEmpty())
         val signedTransaction = output.encoded?.toByteArray()
         showLog("Signed BTC transaction: \n${signedTransaction?.toHexString()}")

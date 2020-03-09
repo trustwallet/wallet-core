@@ -130,12 +130,15 @@ class TestBitcoinSigning {
 
         input.addUtxo(utxo1)
 
+        // Calculate fee (plan a transaction)
         val plan = UTXOPlanner.plan(input.build(), BITCOIN, Bitcoin.TransactionPlan.parser())
         assertEquals(55_000, plan.amount)
         assertEquals(75_000, plan.availableAmount)
         assertEquals(3740, plan.fee)
         assertEquals(16260, plan.change)
 
+        // Set the precomputed plan
+        input.plan = plan
         val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
 
         assert(output.error.isEmpty())
