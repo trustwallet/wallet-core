@@ -7,9 +7,9 @@ import com.google.protobuf.ByteString
 import kotlinx.android.synthetic.main.activity_main.*
 import wallet.core.jni.CoinType
 import wallet.core.jni.HDWallet
-import wallet.core.jni.EthereumSigner
+import wallet.core.java.AnySigner
+import wallet.core.java.UTXOPlanner
 import wallet.core.jni.proto.Ethereum
-import wallet.core.jni.BitcoinTransactionSigner
 import wallet.core.jni.BitcoinScript
 import wallet.core.jni.BitcoinSigHashType
 import wallet.core.jni.proto.Bitcoin
@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity() {
             this.amount = BigInteger("0348bca5a16000", 16).toByteString()
             this.privateKey = ByteString.copyFrom(secretPrivateKey.data())
         }.build()
-        val signerOutput = EthereumSigner.sign(signerInput)
+        val signerOutput = AnySigner.sign(signerInput, CoinType.ETHEREUM, Ethereum.SigningOutput.parser())
         showLog("Signed transaction: \n${signerOutput.encoded.toByteArray().toHexString(false)}")
 
         // Bitcoin example
@@ -85,17 +85,17 @@ class MainActivity : AppCompatActivity() {
             this.coinType = coinBtc.value()
             this.addUtxo(utxo)
             this.addPrivateKey(ByteString.copyFrom(secretPrivateKeyBtc.data()))
-        }.build()
+        }
 
-        val signer = BitcoinTransactionSigner(input)
-        val result = signer.sign()
+        // Calculate fee (plan a tranaction)
+        val plan = UTXOPlanner.plan(input.build(), CoinType.BITCOIN, Bitcoin.TransactionPlan.parser())
 
-        assert(result.success)
-        assert(result.error.isEmpty())
-        assert(result.objectsCount > 0)
+        // Set the precomputed plan
+        input.plan = plan
+        val output = AnySigner.sign(input.build(), CoinType.BITCOIN, Bitcoin.SigningOutput.parser())
 
-        val output = result.getObjects(0).unpack(Bitcoin.SigningOutput::class.java)
-        val signedTransaction = output?.encoded?.toByteArray()
+        assert(output.error.isEmpty())
+        val signedTransaction = output.encoded?.toByteArray()
         showLog("Signed BTC transaction: \n${signedTransaction?.toHexString()}")
     }
 
