@@ -10,7 +10,6 @@
 #include "NewFundsRequest.h"
 #include "Signer.h"
 
-#include "../Base64.h"
 #include "../HexCoding.h"
 
 #include <nlohmann/json.hpp>
@@ -211,12 +210,10 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
 
     Address payerAddress(payerFioAddress);
     PublicKey payerPublicKey = payerAddress.publicKey();
-    // encrypt
-    Data encryptedBinaryContent = Encryption::encryptBinaryMessage(privateKey, payerPublicKey, serContent, iv);
+    // encrypt and encode
+    const string encodedEncryptedContent = Encryption::encode(Encryption::encrypt(privateKey, payerPublicKey, serContent, iv));
 
     string actor = Actor::actor(address);
-    // encode binary encrypted data to string -- base64
-    const string encodedEncryptedContent = TW::Base64::encode(encryptedBinaryContent);
     NewFundsRequestData nfData(payerFioName, payeeFioName, encodedEncryptedContent, fee, walletTpId, actor);
     Data serData;
     nfData.serialize(serData);
