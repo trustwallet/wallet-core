@@ -9,6 +9,10 @@ require 'erb'
 require 'fileutils'
 require 'json'
 
+CurrentDir = File.dirname(__FILE__)
+$LOAD_PATH.unshift(File.join(CurrentDir, '..', 'lib'))
+require 'coin_test_gen'
+
 # Transforms a coin name to a C++ name
 def self.format_name(n)
   formatted = n
@@ -79,6 +83,7 @@ erbs = [
   {'template' => 'TWCoinTypeTests.cpp.erb', 'folder' => 'tests/interface', 'file' => 'TWCoinTypeTests.cpp'}
 ]
 
+coin_test_gen = CoinTestGen.new()
 templateFile = 'TWCoinTypeTests.cpp.erb'
 
 coins.each do |coin|

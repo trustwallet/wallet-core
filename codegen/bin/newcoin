@@ -4,12 +4,11 @@
 # 1. Add relevsant entry to coins.json (in order to minimize merge conflict, don't add at the very end)
 # 2. Invoke this script with the id of the coin, e.g.: codegen/bin/newcoin ethereum
 
-CurrentDir = File.dirname(__FILE__)
-
 require 'erb'
 require 'fileutils'
 require 'json'
 
+CurrentDir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(File.join(CurrentDir, '..', 'lib'))
 require 'entity_decl'
 require 'code_generator'
@@ -127,5 +126,7 @@ generate_file("newcoin/TWSignerTests.cpp.erb", "tests/#{name}", "TWAnySignerTest
 generate_file("newcoin/AddressTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Address.kt", coin)
 generate_file("newcoin/SignerTests.kt.erb", "android/app/src/androidTest/java/com/trustwallet/core/app/blockchains/#{format_name_lowercase(coin)}", "Test#{name}Signer.kt", coin)
 generate_file("newcoin/Tests.swift.erb", "swift/Tests/Blockchains", "#{name}Tests.swift", coin)
+
+coin_test_gen.generate_coin_test_file(coin, 'TWCoinTypeTests.cpp.erb')
 
 puts "please tools/generate-files to generate Swift/Java/Protobuf files"
