@@ -62,19 +62,6 @@ def self.explorer_sample_account(c)
   end
 end
 
-def self.generate_coin_test_file(coin, templateFile)
-  path = File.expand_path(templateFile, File.join(File.dirname(__FILE__), '..', 'lib', 'templates'))
-  template = ERB.new(File.read(path), nil, '-')
-  result = template.result(binding)
-
-  folder = 'tests/' + format_name(coin['name'])
-  file = 'TWCoinTypeTests.cpp'
-  FileUtils.mkdir_p folder
-  path = File.join(folder, file)
-  File.write(path, result)
-  puts "Generated file " + path
-end
-
 json_string = File.read('coins.json')
 coins = JSON.parse(json_string).sort_by { |x| x['name'] }
 coins_md = coins.sort_by { |x| Integer(coin_type(x['derivationPath'])) }
@@ -87,5 +74,5 @@ coin_test_gen = CoinTestGen.new()
 templateFile = 'TWCoinTypeTests.cpp.erb'
 
 coins.each do |coin|
-  generate_coin_test_file(coin, templateFile)
+  coin_test_gen.generate_coin_test_file(coin, templateFile)
 end
