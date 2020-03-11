@@ -6,7 +6,6 @@ import com.trustwallet.core.app.utils.toHexBytes
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import wallet.core.java.AnySigner
-import wallet.core.java.UTXOPlanner
 import wallet.core.jni.CoinType.BITCOIN
 import wallet.core.jni.proto.Bitcoin
 import wallet.core.jni.proto.Bitcoin.SigningOutput
@@ -131,7 +130,7 @@ class TestBitcoinSigning {
         input.addUtxo(utxo1)
 
         // Calculate fee (plan a transaction)
-        val plan = UTXOPlanner.plan(input.build(), BITCOIN, Bitcoin.TransactionPlan.parser())
+        val plan = AnySigner.plan(input.build(), BITCOIN, Bitcoin.TransactionPlan.parser())
         assertEquals(55_000, plan.amount)
         assertEquals(75_000, plan.availableAmount)
         assertEquals(3740, plan.fee)

@@ -8,7 +8,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import wallet.core.jni.CoinType
 import wallet.core.jni.HDWallet
 import wallet.core.java.AnySigner
-import wallet.core.java.UTXOPlanner
 import wallet.core.jni.proto.Ethereum
 import wallet.core.jni.BitcoinScript
 import wallet.core.jni.BitcoinSigHashType
@@ -88,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Calculate fee (plan a tranaction)
-        val plan = UTXOPlanner.plan(input.build(), CoinType.BITCOIN, Bitcoin.TransactionPlan.parser())
+        val plan = AnySigner.plan(input.build(), CoinType.BITCOIN, Bitcoin.TransactionPlan.parser())
 
         // Set the precomputed plan
         input.plan = plan
