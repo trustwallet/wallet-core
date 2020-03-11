@@ -7,7 +7,7 @@ settings:
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/src
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
     CLANG_CXX_LANGUAGE_STANDARD: gnu++17
-    SWIFT_VERSION: 5.0
+    SWIFT_VERSION: 5.1
   configs:
     release:
       SWIFT_OPTIMIZATION_LEVEL: -Owholemodule
@@ -16,14 +16,20 @@ targets:
   TrustWalletCore:
     type: framework
     platform: iOS
-    deploymentTarget: "10.0"
+    deploymentTarget: 11.0
     sources:
       - path: include
         headerVisibility: public
+        excludes:
+          - "TrustWalletCore/TW*Proto.h"
       - path: wallet-core
         headerVisibility: project
         excludes:
         - ".vscode"
+        - "proto/*.proto"
+        - "Tron/Protobuf/*.proto"
+        - "Zilliqa/Protobuf/*.proto"
+        - "TON/*.md"
       - Sources
     dependencies:
       - target: trezor-crypto
@@ -36,6 +42,10 @@ targets:
         - TrustWalletCoreTests
       gatherCoverageData: true
     settings:
+      SKIP_INSTALL: false
+      SUPPORTS_MACCATALYST: true
+      BUILD_LIBRARY_FOR_DISTRIBUTION: true
+      INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
     postCompileScripts:
       - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml

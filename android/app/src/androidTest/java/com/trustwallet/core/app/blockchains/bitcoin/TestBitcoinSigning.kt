@@ -3,12 +3,13 @@ package com.trustwallet.core.app.blockchains.bitcoin
 import com.google.protobuf.ByteString
 import com.trustwallet.core.app.utils.Numeric
 import com.trustwallet.core.app.utils.toHexBytes
-import wallet.core.java.AnySigner
-import wallet.core.jni.proto.Bitcoin
-import wallet.core.jni.proto.Bitcoin.SigningOutput
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import wallet.core.java.AnySigner
+import wallet.core.java.UTXOPlanner
 import wallet.core.jni.CoinType.BITCOIN
+import wallet.core.jni.proto.Bitcoin
+import wallet.core.jni.proto.Bitcoin.SigningOutput
 
 class TestBitcoinSigning {
 
@@ -129,6 +130,15 @@ class TestBitcoinSigning {
 
         input.addUtxo(utxo1)
 
+        // Calculate fee (plan a transaction)
+        val plan = UTXOPlanner.plan(input.build(), BITCOIN, Bitcoin.TransactionPlan.parser())
+        assertEquals(55_000, plan.amount)
+        assertEquals(75_000, plan.availableAmount)
+        assertEquals(3740, plan.fee)
+        assertEquals(16260, plan.change)
+
+        // Set the precomputed plan
+        input.plan = plan
         val output = AnySigner.sign(input.build(), BITCOIN, SigningOutput.parser())
 
         assert(output.error.isEmpty())

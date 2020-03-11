@@ -8,6 +8,7 @@ import Foundation
 import SwiftProtobuf
 
 public typealias SigningInput = Message
+public typealias SigningOutput = Message
 
 public final class AnySigner {
     public static func sign<SigningOutput: Message>(input: SigningInput, coin: CoinType) -> SigningOutput {

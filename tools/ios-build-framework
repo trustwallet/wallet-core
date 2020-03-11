@@ -1,0 +1,76 @@
+#!/bin/bash
+#
+# This script builds a xcframework for iOS devices / simulators and Mac Catalyst.
+#
+
+set -e
+
+FRAMEWORK=TrustWalletCore
+BUILD_FOLDER=build/ios-frameworks
+
+function init() {
+    echo -e "\nCleanup and init..."
+    pushd swift
+    xcodegen && pod install
+    popd
+
+    rm -rf $BUILD_FOLDER/*.xcarchive
+    rm -rf $BUILD_FOLDER/$FRAMEWORK.xcframework
+    rm -rf $BUILD_FOLDER/$FRAMEWORK.xcframework.zip
+}
+
+function build() {
+    xcodebuild archive -workspace swift/$FRAMEWORK.xcworkspace \
+                -scheme $FRAMEWORK \
+                -destination "$1" \
+                -archivePath $BUILD_FOLDER/"$2".xcarchive \
+                SKIP_INSTALL=NO clean
+}
+
+function buildDevices() {
+    echo -e "\nBuilding for iOS Device..."
+    build "generic/platform=iOS" "ios-dev"
+}
+
+function buildSimulators() {
+    echo -e "\nBuilding for iOS Simulator..."
+    build "platform=iOS Simulator,name=iPhone 11,OS=13.3" "ios-sim"
+}
+
+function buildCatalyst() {
+    echo -e "\nBuilding for Mac Catalyst..."
+    build "platform=macOS,arch=x86_64,variant=Mac Catalyst" "mac-catalyst"
+}
+
+function buildMac() {
+    echo -e "\nBuilding for Mac..."
+    git apply swift/project.yml.patch swift/Podfile.patch
+    pushd swift
+    xcodegen && pod install
+    popd
+    xcodebuild archive -workspace swift/$FRAMEWORK.xcworkspace \
+                -scheme $FRAMEWORK \
+                -archivePath $BUILD_FOLDER/mac-x64.xcarchive \
+                SKIP_INSTALL=NO clean
+    git checkout swift/project.yml swift/Podfile
+}
+
+function buildXCFramework() {
+    echo -e "\nCreateing xcframework..."
+    xcodebuild -create-xcframework -output $BUILD_FOLDER/$FRAMEWORK.xcframework \
+               -framework $BUILD_FOLDER/mac-catalyst.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
+               -framework $BUILD_FOLDER/mac-x64.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
+               -framework $BUILD_FOLDER/ios-dev.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework \
+               -framework $BUILD_FOLDER/ios-sim.xcarchive/Products/Library/Frameworks/$FRAMEWORK.framework
+}
+
+function main() {
+    init
+    buildDevices
+    buildSimulators
+    buildCatalyst
+    buildMac
+    buildXCFramework
+}
+
+main

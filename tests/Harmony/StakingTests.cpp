@@ -17,8 +17,6 @@
 
 namespace TW::Harmony {
 
-static uint256_t LOCAL_NET = 0x2;
-
 static Address TEST_ACCOUNT;
 static bool testAccountDecodeResult =
     Address::decode("one1a0x3d6xpmr6f8wsyaxd9v36pytvp48zckswvv9", TEST_ACCOUNT);

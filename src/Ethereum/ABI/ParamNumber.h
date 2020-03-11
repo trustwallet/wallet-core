@@ -7,7 +7,7 @@
 #pragma once
 
 #include "ParamBase.h"
-#include "Util.h"
+#include "ValueEncoder.h"
 
 #include "../../Data.h"
 #include "../../uint256.h"
@@ -16,20 +16,15 @@
 
 namespace TW::Ethereum::ABI {
 
-inline void encode(uint256_t value, Data& data) {
-    Data bytes = store(value);
-    append(data, Data(Util::encodedUInt256Size - bytes.size()));
-    append(data, bytes);
-}
 
 inline bool decode(const Data& encoded, uint256_t& decoded, size_t& offset_inout)
 {
     decoded = 0u;
-    if (encoded.empty() || (encoded.size() < (Util::encodedUInt256Size + offset_inout))) {
+    if (encoded.empty() || (encoded.size() < (ValueEncoder::encodedIntSize + offset_inout))) {
         return false;
     }
     decoded = loadWithOffset(encoded, offset_inout);
-    offset_inout += Util::encodedUInt256Size;
+    offset_inout += ValueEncoder::encodedIntSize;
     return true;
 }
 
@@ -43,12 +38,11 @@ public:
     void setVal(T val) { _val = val; }
     T getVal() const { return _val; }
     virtual std::string getType() const = 0;
-    virtual size_t getSize() const { return Util::encodedUInt256Size; }
+    virtual size_t getSize() const { return ValueEncoder::encodedIntSize; }
     virtual bool isDynamic() const { return false; }
     virtual void encode(Data& data) const {
         // cast up
-        uint256_t val256 = static_cast<uint256_t>(_val);
-        ABI::encode(val256, data);
+        ValueEncoder::encodeUInt256(static_cast<uint256_t>(_val), data);
     }
     static bool decodeNumber(const Data& encoded, T& decoded, size_t& offset_inout) {
         uint256_t val256;
@@ -166,9 +160,9 @@ public:
     void setVal(uint256_t val);
     uint256_t getVal() const { return _val; }
     virtual std::string getType() const { return "uint" + std::to_string(bits); }
-    virtual size_t getSize() const { return Util::encodedUInt256Size; }
+    virtual size_t getSize() const { return ValueEncoder::encodedIntSize; }
     virtual bool isDynamic() const { return false; }
-    virtual void encode(Data& data) const { ABI::encode(_val, data); }
+    virtual void encode(Data& data) const { ValueEncoder::encodeUInt256(_val, data); }
     static bool decodeNumber(const Data& encoded, uint256_t& decoded, size_t& offset_inout) {
         return ABI::decode(encoded, decoded, offset_inout);
     }
@@ -191,9 +185,9 @@ public:
     void setVal(int256_t val);
     int256_t getVal() const { return _val; }
     virtual std::string getType() const { return "int" + std::to_string(bits); }
-    virtual size_t getSize() const { return Util::encodedUInt256Size; }
+    virtual size_t getSize() const { return ValueEncoder::encodedIntSize; }
     virtual bool isDynamic() const { return false; }
-    virtual void encode(Data& data) const { ABI::encode((uint256_t)_val, data); }
+    virtual void encode(Data& data) const { ValueEncoder::encodeUInt256((uint256_t)_val, data); }
     static bool decodeNumber(const Data& encoded, int256_t& decoded, size_t& offset_inout);
     virtual bool decode(const Data& encoded, size_t& offset_inout);
 

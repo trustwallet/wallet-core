@@ -6,15 +6,15 @@
 
 #include "Bytes.h"
 #include "ParamNumber.h"
-#include "Util.h"
+#include "ValueEncoder.h"
 
 namespace TW::Ethereum::ABI {
 
 void ParamByteArray::encodeBytes(const Data& bytes, Data& data) {
-    ABI::encode(uint256_t(bytes.size()), data);
+    ValueEncoder::encodeUInt256(uint256_t(bytes.size()), data);
 
     const auto count = bytes.size();
-    const auto padding = Util::padNeeded32(count);
+    const auto padding = ValueEncoder::padNeeded32(count);
     data.insert(data.end(), bytes.begin(), bytes.begin() + count);
     append(data, Data(padding));
 }
@@ -33,13 +33,13 @@ bool ParamByteArray::decodeBytes(const Data& encoded, Data& decoded, size_t& off
     decoded = Data(encoded.begin() + offset_inout, encoded.begin() + offset_inout + len);
     offset_inout += len;
     // padding
-    offset_inout = origOffset + Util::paddedTo32(offset_inout - origOffset);
+    offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
     return true;
 }
 
 void ParamByteArrayFix::encode(Data& data) const {
     const auto count = _bytes.size();
-    const auto padding = Util::padNeeded32(count);
+    const auto padding = ValueEncoder::padNeeded32(count);
     data.insert(data.end(), _bytes.begin(), _bytes.begin() + count);
     append(data, Data(padding));
 }
@@ -54,7 +54,7 @@ bool ParamByteArrayFix::decodeBytesFix(const Data& encoded, size_t n, Data& deco
     std::copy(encoded.begin() + offset_inout, encoded.begin() + (offset_inout + n), decoded.begin());
     offset_inout += n;
     // padding
-    offset_inout = origOffset + Util::paddedTo32(offset_inout - origOffset);
+    offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
     return true;
 }
 

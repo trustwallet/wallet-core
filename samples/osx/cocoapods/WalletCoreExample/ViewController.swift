@@ -21,7 +21,7 @@ class ViewController: NSViewController {
         let address = wallet.getAddressForCoin(coin: coin)
         print("Default address: ", address)
 
-        // Signing a transaction (using EthereumSigner)
+        // Signing a transaction (using AnySigner)
         let secretPrivateKey = wallet.getKeyForCoin(coin: coin)
         let dummyReceiverAddress = "0xC37054b3b48C3317082E7ba872d7753D13da4986"
         let signerInput = EthereumSigningInput.with {
@@ -32,14 +32,8 @@ class ViewController: NSViewController {
             $0.amount = Data(hexString: "0348bca5a16000")!
             $0.privateKey = secretPrivateKey.data
         }
-        let signerOutput = EthereumSigner.sign(input: signerInput)
+        let output: EthereumSigningOutput = AnySigner.sign(input: signerInput, coin: .ethereum)
         print("Signed transaction:")
-        print(" data:   ", signerOutput.encoded.hexString)
-    }
-
-    override var representedObject: Any? {
-        didSet {
-        // Update the view, if already loaded.
-        }
+        print(" data:   ", output.encoded.hexString)
     }
 }

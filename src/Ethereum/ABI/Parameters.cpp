@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Parameters.h"
+#include "ValueEncoder.h"
 
 #include <string>
 #include <cassert>
@@ -65,7 +66,7 @@ size_t ParamSet::getSize() const {
     for(auto p: _params) {
         s += p->getSize();
     }
-    return 32 + Util::paddedTo32(s);
+    return 32 + ValueEncoder::paddedTo32(s);
 }
 
 size_t ParamSet::getHeadSize() const {
@@ -87,9 +88,9 @@ void ParamSet::encode(Data& data) const {
 
     // pass 1: small values or indices
     for(auto p: _params) {
-        if (p->isDynamic() || p->getSize() > Util::encodedUInt256Size) {
+        if (p->isDynamic() || p->getSize() > ValueEncoder::encodedIntSize) {
             // include only offset
-            ABI::encode(uint256_t(headSize + dynamicOffset), data);
+            ValueEncoder::encodeUInt256(uint256_t(headSize + dynamicOffset), data);
             dynamicOffset += p->getSize();
         } else {
             // encode small data
@@ -99,7 +100,7 @@ void ParamSet::encode(Data& data) const {
 
     // pass 2: dynamic values
     for(auto p: _params) {
-        if (p->isDynamic() || p->getSize() > Util::encodedUInt256Size) {
+        if (p->isDynamic() || p->getSize() > ValueEncoder::encodedIntSize) {
             // encode large data
             p->encode(data);
         }

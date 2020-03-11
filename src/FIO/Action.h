@@ -15,6 +15,13 @@
 
 namespace TW::FIO {
 
+/// Encodes a value as a variable-length integer.
+/// @returns the number of bytes written.
+uint8_t encodeVarInt(uint64_t num, Data& data);
+
+/// Encodes an ASCII string prefixed by the length (varInt)
+void encodeString(const std::string& str, std::vector<uint8_t>& data);
+
 /// Represents an authorization record (actor/permission pair)
 class Authorization {
 public:
@@ -41,10 +48,13 @@ public:
 /// Represents a tokentype:address pair, such as {"BTC", "bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v"}
 class PublicAddress {
 public:
-    std::string tokenCode;
+    // Coin symbol for the address (a.k.a. tokenCode)
+    std::string coinSymbol;
+    std::string chainCode;
     std::string address;
     void serialize(Data& out) const {
-        encodeString(tokenCode, out);
+        encodeString(coinSymbol, out);
+        encodeString(chainCode, out);
         encodeString(address, out);
     }
 };
@@ -53,11 +63,7 @@ public:
 class PublicAddresses {
 public:
     std::vector<PublicAddress> addressList;
-    PublicAddresses(const std::vector<std::pair<std::string, std::string>>& addresses) {
-        for (const auto& item : addresses) {
-            addressList.push_back(PublicAddress{item.first, item.second});
-        }
-    }
+    PublicAddresses(const std::vector<PublicAddress>& addresses) : addressList(addresses) {}
     void serialize(Data& out) const {
         encodeVarInt(addressList.size(), out);
         for (const auto& item : addressList) {
@@ -72,7 +78,6 @@ public:
     std::string account;
     std::string name;
     AuthorizationArray auth;
-    bool includeExtra01BeforeData = false;
     Data actionDataSer;
 
     void serialize(Data& out) const;
@@ -87,7 +92,7 @@ public:
     std::string tpid;
     std::string actor;
 
-    AddPubAddressData(const std::string& fioAddress, std::vector<std::pair<std::string, std::string>> addresses,
+    AddPubAddressData(const std::string& fioAddress, std::vector<PublicAddress> addresses,
         uint64_t fee, const std::string& tpid, const std::string& actor) :
         fioAddress(fioAddress), addresses(addresses),
         fee(fee), tpid(tpid), actor(actor) {}

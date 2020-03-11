@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Array.h"
+#include "ValueEncoder.h"
 
 #include <cassert>
 
@@ -28,7 +29,7 @@ std::string ParamArray::getFirstType() const {
 
 void ParamArray::encode(Data& data) const {
     size_t n = _params.getCount();
-    ABI::encode(uint256_t(n), data);
+    ValueEncoder::encodeUInt256(uint256_t(n), data);
 
     size_t headSize = 0;
     for (auto i = 0; i < n; ++i) {
@@ -44,7 +45,7 @@ void ParamArray::encode(Data& data) const {
     for (auto i = 0; i < n; ++i) {
         auto p = _params.getParamUnsafe(i);
         if (p->isDynamic()) {
-            ABI::encode(uint256_t(headSize + dynamicOffset), data);
+            ValueEncoder::encodeUInt256(uint256_t(headSize + dynamicOffset), data);
             dynamicOffset += p->getSize();
         } else {
             p->encode(data);
@@ -78,6 +79,6 @@ bool ParamArray::decode(const Data& encoded, size_t& offset_inout) {
         if (!_params.getParamUnsafe(i)->decode(encoded, offset_inout)) { return false; }
     }
     // padding
-    offset_inout = origOffset + Util::paddedTo32(offset_inout - origOffset);
+    offset_inout = origOffset + ValueEncoder::paddedTo32(offset_inout - origOffset);
     return true;
 }

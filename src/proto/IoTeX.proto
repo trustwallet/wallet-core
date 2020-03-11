@@ -9,27 +9,51 @@ message Transfer {
     bytes payload  = 3;
 }
 
-message Execution {
+message Staking {
+    message Stake {
+        string candidate = 1;
+        uint64 duration = 2;
+        bool nonDecay= 3;
+        bytes data = 4;
+    }
+    
+    message Unstake {
+        uint64 piggy_index = 1;
+        bytes data = 2;
+    }
+
+    message Withdraw {
+        uint64 piggy_index = 1;
+        bytes data = 2;
+    }
+
+    message AddStake {
+        uint64 piggy_index = 1;
+        bytes data = 2;
+    }
+
+    message MoveStake {
+        uint64 piggy_index = 1;
+        string candidate = 2;
+        bytes data = 3;
+    }
+
     string amount  = 1;
     string contract = 2;
-    bytes data = 3;
-}
 
-message ActionCore {
-    uint32 version = 1;
-    uint64 nonce = 2;
-    uint64 gasLimit = 3;
-    string gasPrice = 4;
-    oneof action {
-        Transfer transfer = 10;
-        Execution execution = 12;
+    oneof message {
+        Stake stake = 3;
+        Unstake unstake = 4;
+        Withdraw withdraw = 5;
+        AddStake addStake = 6;
+        MoveStake moveStake = 7;
   }
 }
 
-message Action {
-    ActionCore core = 1;
-    bytes senderPubKey = 2;
-    bytes signature = 3;
+message ContractCall {
+    string amount  = 1;
+    string contract = 2;
+    bytes data = 3;
 }
 
 // transaction signing input
@@ -41,7 +65,8 @@ message SigningInput {
     bytes privateKey = 5;
     oneof action {
         Transfer transfer = 10;
-        Execution execution = 12;
+        Staking staking = 11;
+        ContractCall call = 12;
   }
 }
 

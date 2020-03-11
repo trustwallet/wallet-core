@@ -1,0 +1,11 @@
+diff --git a/swift/Podfile b/swift/Podfile
+index 556109f..951ff51 100644
+--- a/swift/Podfile
++++ b/swift/Podfile
+@@ -1,4 +1,5 @@
+-platform :ios, '11.0'
++platform :osx, '10.12'
++
+ ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+ inhibit_all_warnings!
+ target 'TrustWalletCore' do

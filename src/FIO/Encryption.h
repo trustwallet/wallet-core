@@ -42,10 +42,16 @@ public:
     static Data getSharedSecret(const PrivateKey& privateKey1, const PublicKey& publicKey2);
 
     /// Encrypt a message.  Own private key, recipient public key, and optional initial vector (may be empty) is needed.
-    static Data encryptBinaryMessage(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv);
+    static Data encrypt(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv);
 
     /// Decrypt a message.  Own private key and sender's public key is needed.
-    static Data decryptBinaryMessage(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& encrypted);
+    static Data decrypt(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& encrypted);
+
+    /// Encode an encrypted message.  Base64 encoding is used.
+    static std::string encode(const Data& encrypted);
+
+    /// Decode an encrypted message.
+    static Data decode(const std::string& encoded);
 };
 
 } // namespace TW::FIO

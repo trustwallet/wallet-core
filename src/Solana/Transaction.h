@@ -39,8 +39,8 @@ enum SystemInstruction { CreateAccount, Assign, Transfer, CreateAccountWithSeed 
 enum StakeInstruction {
     Initialize = 0,
     DelegateStake = 2,
-    Withdraw = 5,
-    Deactivate = 6,
+    Withdraw = 4,
+    Deactivate = 5,
 };
 
 // An instruction to execute a program
@@ -68,9 +68,9 @@ struct CompiledInstruction {
         this->data = data;
     }
 
-    // This constructor creates a System CreateAccount instruction
+    // This constructor creates a System CreateAccountWithSeed instruction
     CompiledInstruction(uint8_t programIdIndex, uint64_t value, uint64_t space, Address programId,
-                        Address voteAddress, uint64_t seedLength)
+                        Address voteAddress, uint64_t seedLength, Address signer)
         : programIdIndex(programIdIndex) {
         std::vector<uint8_t> accounts = {0, 1};
         this->accounts = accounts;
@@ -80,6 +80,7 @@ struct CompiledInstruction {
         Data vecSeed(seed.begin(), seed.end());
         vecSeed.resize(static_cast<size_t>(seedLength));
         encode32LE(static_cast<uint32_t>(type), data);
+        append(data, signer.vector());
         encode64LE(static_cast<uint64_t>(seedLength), data);
         append(data, vecSeed);
         encode64LE(static_cast<uint64_t>(value), data);
@@ -97,7 +98,7 @@ struct CompiledInstruction {
         encode32LE(static_cast<uint32_t>(type), data);
         append(data, signer.vector());
         append(data, signer.vector());
-        auto lockup = Data(40);
+        auto lockup = Data(48);
         append(data, lockup);
         this->data = data;
     }
@@ -194,7 +195,7 @@ class Message {
     // This constructor creates a default single-signer Transfer message
     Message(Address from, Address to, uint64_t value, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 0, 2};
+        MessageHeader header = {1, 0, 1};
         this->header = header;
         auto programId = Address("11111111111111111111111111111111");
         std::vector<Address> accountKeys = {from, to, programId};
@@ -225,7 +226,7 @@ class Message {
         std::vector<CompiledInstruction> instructions;
         // create_account_with_seed instruction
         auto createAccountInstruction =
-            CompiledInstruction(6, value, 2000, stakeProgramId, voteAddress, 32);
+            CompiledInstruction(6, value, 2008, stakeProgramId, voteAddress, 32, signer);
         instructions.push_back(createAccountInstruction);
         // initialize instruction
         auto initializeInstruction = CompiledInstruction(7, Initialize, signer);
@@ -240,7 +241,7 @@ class Message {
     // This constructor creates a deactivate_stake message
     Message(Address signer, Address stakeAddress, StakeInstruction type, Hash recentBlockhash)
         : recentBlockhash(recentBlockhash) {
-        MessageHeader header = {1, 1, 2};
+        MessageHeader header = {1, 0, 2};
         this->header = header;
 
         auto sysvarClockId = Address("SysvarC1ock11111111111111111111111111111111");
@@ -291,7 +292,7 @@ class Transaction {
     }
 
   public:
-    std::vector<uint8_t> serialize() const;
+    std::string serialize() const;
     std::vector<uint8_t> messageData() const;
     uint8_t getAccountIndex(Address publicKey);
 
