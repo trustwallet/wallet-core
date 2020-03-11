@@ -97,6 +97,7 @@ public:
     /// @payerFioName The FIO name of the requested payer. Ex.: "alice@trust"
     /// @payerFioAddress The FIO address (not name) of the payer, owner of payerFioName.
     /// @payeeFioName Own FIO name.  Ex.: "bob@trust"
+    /// @payeePublicAddress Public addressed of the payee, on the mentioned blockchain.
     /// @amount Amount requested (as string)
     /// @coinSymbol Token code of the amount requested
     /// @memo Memo free text.  Optional, may be empty.
@@ -107,8 +108,9 @@ public:
     /// @walletTpId The FIO name of the originating wallet (project-wide constant)
     /// @expiryTime Expiry for this message, can be 0, then it is taken from current time with default expiry
     /// @iv Optional initial values for encryption, should be empty.  Can be set for testability (16 bytes).
+    /// Note: as of FIO testnet v0.9.0, this transaction is not accepted; see https://github.com/trustwallet/wallet-core/issues/850
     static std::string createNewFundsRequest(const Address& address, const PrivateKey& privateKey,
-        const std::string& payerFioName, const std::string& payerFioAddress, const std::string& payeeFioName,
+        const std::string& payerFioName, const std::string& payerFioAddress, const std::string& payeeFioName, const std::string& payeePublicAddress,
         const std::string& amount, const std::string& coinSymbol, const std::string& memo, const std::string& hash, const std::string& offlineUrl,
         const ChainParams& chainParams, uint64_t fee, const std::string& walletTpId, uint32_t expiryTime,
         const Data& iv);

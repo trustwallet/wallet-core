@@ -15,10 +15,12 @@ namespace TW::FIO {
 /// Data class, data encoded in a new funds request
 class NewFundsContent {
 public:
-    /// FIO name of the addressed payee, e.g. "mario@trust"
-    std::string payeeFioName;
+    /// Public addressed of the payee, on the mentioned blockchain.
+    std::string payeePublicAddress;
     /// Amount requested (string)
     std::string amount;
+    /// Chain ID for the coin (on case of multiple chains)
+    std::string chainCode;
     /// Coin symbol of the amount requested (a.k.a. tokenCode)
     std::string coinSymbol;
     /// Memo free text (optional, may be empty)

@@ -5,17 +5,40 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Action.h"
+#include "../Data.h"
 
 namespace TW::FIO {
+
+using namespace std;
+
+uint8_t encodeVarInt(uint64_t num, Data& data) {
+    uint8_t count = 0;
+    while (true) {
+        ++count;
+        if (num >> 7) {
+            // >= 0x80, write it out, eat up 7 bits, and continue
+            TW::append(data, 0x80 | (num & 0x7F));
+            num = num >> 7;
+        } else {
+            // < 0x80, write it out and stop
+            TW::append(data, static_cast<uint8_t>(num));
+            break;
+        }
+    }
+    return count;
+}
+
+void encodeString(const string& str, vector<uint8_t>& data) {
+    size_t size = str.size();
+    encodeVarInt(size, data);
+    data.insert(data.end(), str.data(), str.data() + size);
+}
 
 void Action::serialize(Data& out) const {
     EOS::Name(account).serialize(out);
     EOS::Name(name).serialize(out);
     auth.serialize(out);
     encodeVarInt(actionDataSer.size(), out);
-    if (includeExtra01BeforeData) {
-        append(out, 1); // 01
-    }
     append(out, actionDataSer);
     append(out, 0); // 00
 }
@@ -56,7 +79,7 @@ void NewFundsRequestData::serialize(Data& out) const {
     encodeString(payeeFioName, out);
     encodeString(encryptedContent, out);
     encode64LE(fee, out);
-    EOS::Name(actor).serialize(out);
+    encodeString(actor, out);
     encodeString(tpid, out);
 }
 

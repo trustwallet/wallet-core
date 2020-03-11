@@ -14,22 +14,23 @@ message PublicAddress {
 
 // Payload content for New Funds requests
 message NewFundsContent {
-    // Note: payee FIO name is not included here, it is present outside.
+    // Public addressed of the payee, on the mentioned blockchain.
+    string payee_public_address = 1;
 
     // Amount requested (as string)
-    string amount = 1;
+    string amount = 2;
 
     // Coin symbol of the amount requested (a.k.a. tokenCode)
-    string coin_symbol = 2;
+    string coin_symbol = 3;
 
     // Memo free text.  Optional, may be empty.
-    string memo = 3;
+    string memo = 4;
 
     // Hash.  Optional, may be empty.
-    string hash = 4;
+    string hash = 5;
 
     // Attached offline URL.  Optional, may be empty.
-    string offline_url = 5;
+    string offline_url = 6;
 }
 
 // Different Actions

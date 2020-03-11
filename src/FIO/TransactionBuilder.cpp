@@ -74,7 +74,7 @@ string TransactionBuilder::sign(Proto::SigningInput in) {
         const auto action = in.action().new_funds_request_message();
         const auto content = action.content();
         json = TransactionBuilder::createNewFundsRequest(owner, privateKey,
-            action.payer_fio_name(), action.payer_fio_address(), action.payee_fio_name(), 
+            action.payer_fio_name(), action.payer_fio_address(), action.payee_fio_name(), content.payee_public_address(),
             content.amount(), content.coin_symbol(), content.memo(), content.hash(), content.offline_url(),
             getChainParams(in), action.fee(), in.tpid(), in.expiry(), Data());
     }
@@ -95,11 +95,8 @@ string TransactionBuilder::createRegisterFioAddress(const Address& address, cons
     Action action;
     action.account = ContractAddress;
     action.name = apiName;
-    action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
-    Data serAction;
-    action.serialize(serAction);
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
@@ -130,11 +127,8 @@ string TransactionBuilder::createAddPubAddress(const Address& address, const Pri
     Action action;
     action.account = ContractAddress;
     action.name = apiName;
-    action.includeExtra01BeforeData = true;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
-    Data serAction;
-    action.serialize(serAction);
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
@@ -160,11 +154,8 @@ string TransactionBuilder::createTransfer(const Address& address, const PrivateK
     Action action;
     action.account = ContractToken;
     action.name = apiName;
-    action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
-    Data serAction;
-    action.serialize(serAction);
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
@@ -190,11 +181,8 @@ string TransactionBuilder::createRenewFioAddress(const Address& address, const P
     Action action;
     action.account = ContractAddress;
     action.name = apiName;
-    action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
-    Data serAction;
-    action.serialize(serAction);
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);
@@ -207,25 +195,25 @@ string TransactionBuilder::createRenewFioAddress(const Address& address, const P
 }
 
 string TransactionBuilder::createNewFundsRequest(const Address& address, const PrivateKey& privateKey,
-        const string& payerFioName, const string& payerFioAddress, const string& payeeFioName, 
+        const string& payerFioName, const string& payerFioAddress, const string& payeeFioName, const string& payeePublicAddress, 
         const string& amount, const string& coinSymbol, const string& memo, const string& hash, const string& offlineUrl,
         const ChainParams& chainParams, uint64_t fee, const string& walletTpId, uint32_t expiryTime,
         const Data& iv) {
 
     const auto apiName = "newfundsreq";
 
-    NewFundsContent newFundsContent { payeeFioName, amount, coinSymbol, memo, hash, offlineUrl };
+    // use coinSymbol for chainCode as well
+    NewFundsContent newFundsContent { payeePublicAddress, amount, coinSymbol, coinSymbol, memo, hash, offlineUrl };
     // serialize and encrypt
     Data serContent;
     newFundsContent.serialize(serContent);
+
     Address payerAddress(payerFioAddress);
     PublicKey payerPublicKey = payerAddress.publicKey();
-    // encrypt
-    Data encryptedBinaryContent = Encryption::encryptBinaryMessage(privateKey, payerPublicKey, serContent, iv);
+    // encrypt and encode
+    const string encodedEncryptedContent = Encryption::encode(Encryption::encrypt(privateKey, payerPublicKey, serContent, iv));
 
     string actor = Actor::actor(address);
-    // encode binary encrypted data to string -- hex format
-    const string encodedEncryptedContent = hex(encryptedBinaryContent);
     NewFundsRequestData nfData(payerFioName, payeeFioName, encodedEncryptedContent, fee, walletTpId, actor);
     Data serData;
     nfData.serialize(serData);
@@ -233,11 +221,8 @@ string TransactionBuilder::createNewFundsRequest(const Address& address, const P
     Action action;
     action.account = ContractPayRequest;
     action.name = apiName;
-    action.includeExtra01BeforeData = false;
     action.actionDataSer = serData;
     action.auth.authArray.push_back(Authorization{actor, AuthrizationActive});
-    Data serAction;
-    action.serialize(serAction);
 
     Transaction tx;
     expirySetDefaultIfNeeded(expiryTime);

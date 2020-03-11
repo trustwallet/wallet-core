@@ -17,6 +17,7 @@
 
 using namespace TW;
 using namespace TW::FIO;
+using namespace std;
 
 TEST(FIOEncryption, checkEncrypt) {
     // test derived from https://github.com/fioprotocol/fiojs/blob/master/src/tests/encryption-check.test.ts
@@ -75,7 +76,7 @@ TEST(FIOEncryption, checkDecryptMessageTooShort) {
 Data randomBuffer(size_t size) {
     Data d(size);
     for (auto i = 0; i < size; ++i) {
-        d[i] = (byte)(256.0 * rand() / RAND_MAX);
+        d[i] = (TW::byte)(256.0 * rand() / RAND_MAX);
     }
     return d;
 }
@@ -134,27 +135,31 @@ TEST(FIOEncryption, getSharedSecret) {
     }
 }
 
-TEST(FIOEncryption, encryptBinaryMessage) {
+TEST(FIOEncryption, encryptAndEncode) {
     // tests extracted from https://github.com/fioprotocol/fiojs/blob/master/src/tests/encryption-fio.test.ts
     {
         const PrivateKey privateKey(parse_hex("2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90"));
         const PublicKey publicKey(parse_hex("024edfcf9dfe6c0b5c83d1ab3f78d1b39a46ebac6798e08e19761f5ed89ec83c10"), TWPublicKeyTypeSECP256k1);
         const Data message = parse_hex("0b70757273652e616c69636501310a66696f2e7265716f6274000000");
         const Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");
-        const Data encrypted = Encryption::encryptBinaryMessage(privateKey, publicKey, message, iv);
+        const Data encrypted = Encryption::encrypt(privateKey, publicKey, message, iv);
         EXPECT_EQ(hex(encrypted), "f300888ca4f512cebdc0020ff0f7224c0db2984c4ad9afb12629f01a8c6a76328bbde17405655dc4e3cb30dad272996fb1dea8e662e640be193e25d41147a904c571b664a7381ab41ef062448ac1e205");
+        const string encoded = Encryption::encode(encrypted);
+        EXPECT_EQ(encoded, "8wCIjKT1Es69wAIP8PciTA2ymExK2a+xJinwGoxqdjKLveF0BWVdxOPLMNrScplvsd6o5mLmQL4ZPiXUEUepBMVxtmSnOBq0HvBiRIrB4gU=");
     }
     {
         const PrivateKey privateKey(parse_hex("81b637d8fcd2c6da6359e6963113a1170de795e4b725b84d1e0b4cfd9ec58ce9"));
         const PublicKey publicKey(parse_hex("039997a497d964fc1a62885b05a51166a65a90df00492c8d7cf61d6accf54803be"), TWPublicKeyTypeSECP256k1);
         const Data message = parse_hex("0b70757273652e616c69636501310a66696f2e7265716f6274000000");
         const Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");
-        const Data encrypted = Encryption::encryptBinaryMessage(privateKey, publicKey, message, iv);
+        const Data encrypted = Encryption::encrypt(privateKey, publicKey, message, iv);
         EXPECT_EQ(hex(encrypted), "f300888ca4f512cebdc0020ff0f7224c0db2984c4ad9afb12629f01a8c6a76328bbde17405655dc4e3cb30dad272996fb1dea8e662e640be193e25d41147a904c571b664a7381ab41ef062448ac1e205");
+        const string encoded = Encryption::encode(encrypted);
+        EXPECT_EQ(encoded, "8wCIjKT1Es69wAIP8PciTA2ymExK2a+xJinwGoxqdjKLveF0BWVdxOPLMNrScplvsd6o5mLmQL4ZPiXUEUepBMVxtmSnOBq0HvBiRIrB4gU=");
     }
 }
 
-TEST(FIOEncryption, encryptDecryptBinaryMessage) {
+TEST(FIOEncryption, encryptEncodeDecodeDecrypt) {
     const PrivateKey privateKeyAlice(parse_hex("2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90"));
     const PublicKey publicKeyAlice = privateKeyAlice.getPublicKey(TWPublicKeyTypeSECP256k1);
     const Address addressAlice(publicKeyAlice);
@@ -166,10 +171,14 @@ TEST(FIOEncryption, encryptDecryptBinaryMessage) {
     const Data message = parse_hex("0b70757273652e616c69636501310a66696f2e7265716f6274000000");
     const Data iv = parse_hex("f300888ca4f512cebdc0020ff0f7224c");
         
-    const Data encrypted = Encryption::encryptBinaryMessage(privateKeyAlice, publicKeyBob, message, iv);
+    const Data encrypted = Encryption::encrypt(privateKeyAlice, publicKeyBob, message, iv);
     EXPECT_EQ(hex(encrypted), "f300888ca4f512cebdc0020ff0f7224c0db2984c4ad9afb12629f01a8c6a76328bbde17405655dc4e3cb30dad272996fb1dea8e662e640be193e25d41147a904c571b664a7381ab41ef062448ac1e205");
+    const string encoded = Encryption::encode(encrypted);
+    EXPECT_EQ(encoded, "8wCIjKT1Es69wAIP8PciTA2ymExK2a+xJinwGoxqdjKLveF0BWVdxOPLMNrScplvsd6o5mLmQL4ZPiXUEUepBMVxtmSnOBq0HvBiRIrB4gU=");
 
-    const Data decrypted = Encryption::decryptBinaryMessage(privateKeyBob, publicKeyAlice, encrypted);
+    const Data decoded = Encryption::decode(encoded);
+    EXPECT_EQ(hex(decoded), "f300888ca4f512cebdc0020ff0f7224c0db2984c4ad9afb12629f01a8c6a76328bbde17405655dc4e3cb30dad272996fb1dea8e662e640be193e25d41147a904c571b664a7381ab41ef062448ac1e205");
+    const Data decrypted = Encryption::decrypt(privateKeyBob, publicKeyAlice, decoded);
     // verify that decrypted is the same as the original
     EXPECT_EQ(hex(decrypted), hex(message));
 }

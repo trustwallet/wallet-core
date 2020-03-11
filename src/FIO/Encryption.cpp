@@ -6,6 +6,7 @@
 
 #include "Encryption.h"
 
+#include "../Base64.h"
 #include "../Encrypt.h"
 #include "../Hash.h"
 #include "../HexCoding.h"
@@ -19,6 +20,8 @@
 #include <cassert>
 
 namespace TW::FIO {
+
+using namespace std;
 
 const uint8_t IvSize = 16;
 
@@ -102,15 +105,23 @@ Data Encryption::getSharedSecret(const PrivateKey& privateKey1, const PublicKey&
     return Hash::sha512(S);
 }
 
-Data Encryption::encryptBinaryMessage(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv) {
+Data Encryption::encrypt(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& message, const Data& iv) {
     const Data sharedSecret = getSharedSecret(privateKey1, publicKey2);
     Data ivCopy(iv); // writeably copy
     return checkEncrypt(sharedSecret, message, ivCopy);
 }
 
-Data Encryption::decryptBinaryMessage(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& encrypted) {
+Data Encryption::decrypt(const PrivateKey& privateKey1, const PublicKey& publicKey2, const Data& encrypted) {
     const Data sharedSecret = getSharedSecret(privateKey1, publicKey2);
     return checkDecrypt(sharedSecret, encrypted);
+}
+
+string Encryption::encode(const Data& encrypted) {
+    return TW::Base64::encode(encrypted);
+}
+
+Data Encryption::decode(const std::string& encoded) {
+    return TW::Base64::decode(encoded);
 }
 
 } // namespace TW::FIO

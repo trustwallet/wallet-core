@@ -137,8 +137,9 @@ TEST(TWFIO, NewFundsRequest) {
     input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_name("mario@fiotestnet");
     input.mutable_action()->mutable_new_funds_request_message()->set_payer_fio_address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
     input.mutable_action()->mutable_new_funds_request_message()->set_payee_fio_name("alice@fiotestnet");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_payee_public_address("bc1qvy4074rggkdr2pzw5vpnn62eg0smzlxwp70d7v");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_amount("5");
-    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_coin_symbol("BNB");
+    input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_coin_symbol("BTC");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_memo("Memo");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_hash("Hash");
     input.mutable_action()->mutable_new_funds_request_message()->mutable_content()->set_offline_url("https://trustwallet.com");
@@ -149,7 +150,7 @@ TEST(TWFIO, NewFundsRequest) {
     // Packed transacton varies, as there is no way to control encryption IV parameter from this level.
     // Therefore full equality cannot be checked, tail is cut off.  The first N chars are checked, works in this case.
     EXPECT_EQ(
-        R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed3232fd2201106d6172696f4066696f7465737)",
+        R"({"compression":"none","packed_context_free_data":"","packed_trx":"289b295ec99b904215ff000000000100403ed4aa0ba85b00acba384dbdb89a01102b2f46fca756b200000000a8ed32328802106d6172696f4066696f746573746)",
         output.json().substr(0, 195)
     );
 }
