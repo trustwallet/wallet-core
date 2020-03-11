@@ -18,3 +18,11 @@ jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativeSign(JNIEnv *env, jclas
     TWDataDelete(inputData);
     return resultData;
 }
+
+jbyteArray JNICALL Java_wallet_core_java_AnySigner_nativePlan(JNIEnv *env, jclass thisClass, jbyteArray input, jint coin) {
+    TWData *inputData = TWDataCreateWithJByteArray(env, input);
+    TWData *outputData = TWAnySignerPlan(inputData, coin);
+    jbyteArray resultData = TWDataJByteArray(outputData, env);
+    TWDataDelete(inputData);
+    return resultData;
+}

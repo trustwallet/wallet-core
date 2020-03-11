@@ -14,7 +14,6 @@
 
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWAnySigner.h>
-#include <TrustWalletCore/TWUTXOPlanner.h>
 
 #include <gtest/gtest.h>
 

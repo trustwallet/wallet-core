@@ -31,7 +31,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
         }
         input.utxo.append(utxo0)
 
-        let plan: BitcoinTransactionPlan = UTXOPlanner.plan(input: input, coin: .groestlcoin)
+        let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .groestlcoin)
 
         XCTAssertEqual(plan.amount, 2500)
         XCTAssertEqual(plan.fee, 226)
@@ -79,7 +79,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
         }
         input.utxo.append(utxo0)
 
-        let plan: BitcoinTransactionPlan = UTXOPlanner.plan(input: input, coin: .groestlcoin)
+        let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .groestlcoin)
 
         XCTAssertEqual(plan.amount, 2500)
         XCTAssertEqual(plan.fee, 226)
@@ -127,7 +127,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
         }
         input.utxo.append(utxo0)
 
-        let plan: BitcoinTransactionPlan = UTXOPlanner.plan(input: input, coin: .groestlcoin)
+        let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .groestlcoin)
 
         XCTAssertEqual(plan.amount, 5000)
         XCTAssertEqual(plan.fee, 226)
