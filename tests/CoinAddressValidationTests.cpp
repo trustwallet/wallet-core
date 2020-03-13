@@ -11,12 +11,6 @@
 
 namespace TW {
 
-TEST(Coin, CoinTypes) {
-    // Verify number of coins.  Needs to be updated if a new coin is added.
-    std::set<TWCoinType> coins = getCoinTypes();
-    EXPECT_EQ(coins.size(), 57);
-}
-
 TEST(Coin, ValidateAddressAion) {
     EXPECT_TRUE(validateAddress(TWCoinTypeAion, "0xa0d5b10ee59fb918f7c7d0ba96387e4b1539fa8c7466625c39efdac2286cdfa1"));
     EXPECT_FALSE(validateAddress(TWCoinTypeAion, "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89"));

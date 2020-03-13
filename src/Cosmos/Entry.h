@@ -22,10 +22,8 @@ public:
         };
     }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    // normalizeAddress(): not needed here
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    // plan(): not needed here
 };
 
 } // namespace TW::Cosmos

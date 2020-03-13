@@ -33,7 +33,8 @@ public:
     virtual void plan(TWCoinType coin, const Data& dataIn, Data& dataOut) const { return; }
 };
 
-// In each coin's Entry.cpp the specific types of the coin are used, this convenience template is kept nonetheless.
+// In each coin's Entry.cpp the specific types of the coin are used, this template enforces the Signer implement:
+// static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
 // Note: use output parameter to avoid unneeded copies
 template <typename Signer, typename Input>
 void signTemplate(const Data& dataIn, Data& dataOut) {
