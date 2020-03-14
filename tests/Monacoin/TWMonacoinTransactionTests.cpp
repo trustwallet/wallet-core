@@ -12,7 +12,6 @@
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <TrustWalletCore/TWAnySigner.h>
-#include <TrustWalletCore/TWUTXOPlanner.h>
 
 #include <gtest/gtest.h>
 
@@ -55,7 +54,7 @@ TEST(MonacoinTransaction, SignTransaction) {
     input.add_private_key(TWDataBytes(utxoKey0.get()), TWDataSize(utxoKey0.get()));
 
     Proto::TransactionPlan plan;
-    UTXO_PLAN(input, TWCoinTypeDigiByte);
+    ANY_PLAN(input, plan, TWCoinTypeDigiByte);
     plan.set_amount(amount);
     plan.set_fee(fee);
     plan.set_change(utxo_amount - amount - fee);

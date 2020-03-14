@@ -9,7 +9,6 @@ package com.trustwallet.core.app.blockchains.neo
 import com.trustwallet.core.app.utils.Numeric
 import org.junit.Test
 import wallet.core.java.AnySigner
-import wallet.core.java.UTXOPlanner
 import wallet.core.jni.proto.NEO
 import com.trustwallet.core.app.utils.toHexBytesInByteString
 import junit.framework.Assert.assertEquals
@@ -91,7 +90,7 @@ class TestNEOSigner {
                 .build()
         input.addOutputs(output)
 
-        val plan = UTXOPlanner.plan(input.build(), CoinType.NEO,NEO.TransactionPlan.parser())
+        val plan = AnySigner.plan(input.build(), CoinType.NEO,NEO.TransactionPlan.parser())
         input.setPlan(plan)
         val result = AnySigner.sign(input.build(), CoinType.NEO, NEO.SigningOutput.parser()).encoded.toByteArray()
         val hex = Numeric.toHexString(result, 0, result.size, false)

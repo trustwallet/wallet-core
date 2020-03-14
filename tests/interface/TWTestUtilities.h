@@ -42,12 +42,12 @@ std::string getTestTempDir(void);
             auto outputTWData = WRAPD(TWAnySignerSign(inputTWData.get(), coin));\
             output.ParseFromArray(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));\
         }
-#define UTXO_PLAN(input, coin) \
+#define ANY_PLAN(input, output, coin) \
         {\
             auto inputData = input.SerializeAsString();\
             auto inputTWData = WRAPD(TWDataCreateWithBytes((const uint8_t *)inputData.data(), inputData.size()));\
-            auto outputTWData = WRAPD(TWUTXOPlannerPlan(inputTWData.get(), coin));\
-            plan.ParseFromArray(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));\
+            auto outputTWData = WRAPD(TWAnySignerPlan(inputTWData.get(), coin));\
+            output.ParseFromArray(TWDataBytes(outputTWData.get()), TWDataSize(outputTWData.get()));\
         }
 #define DUMP_PROTO(input) \
         { \

@@ -14,7 +14,6 @@
 
 #include <TrustWalletCore/TWBitcoinScript.h>
 #include <TrustWalletCore/TWAnySigner.h>
-#include <TrustWalletCore/TWUTXOPlanner.h>
 
 #include <gtest/gtest.h>
 
@@ -106,7 +105,7 @@ TEST(TWZelcashTransaction, Signing) {
     auto branchId = Data(Zcash::SaplingBranchID.begin(), Zcash::SaplingBranchID.end());
 
     Bitcoin::Proto::TransactionPlan plan;
-    UTXO_PLAN(input, TWCoinTypeZelcash);
+    ANY_PLAN(input, plan, TWCoinTypeZelcash);
     plan.set_amount(amount);
     plan.set_fee(fee);
     plan.set_change(0);

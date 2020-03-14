@@ -89,7 +89,7 @@ class NEOTests: XCTestCase {
         }
         signingInput.outputs.append(output)
 
-        let plan: NEOTransactionPlan = UTXOPlanner.plan(input: signingInput, coin: .neo)
+        let plan: NEOTransactionPlan = AnySigner.plan(input: signingInput, coin: .neo)
         signingInput.plan = plan
         let signedTx: NEOSigningOutput = AnySigner.sign(input: signingInput, coin: .neo)
         let result = signedTx.encoded.hexString

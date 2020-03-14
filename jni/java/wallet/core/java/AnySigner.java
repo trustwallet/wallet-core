@@ -20,4 +20,13 @@ public class AnySigner {
         return output;
     }
     public static native byte[] nativeSign(byte[] data, int coin);
+
+    public static <T extends Message> T plan(Message input, CoinType coin, Parser<T> parser) throws Exception {
+        byte[] data = input.toByteArray();
+        byte[] outputData = nativePlan(data, coin.value());
+        T output = parser.parseFrom(outputData);
+        outputData = null;
+        return output;
+    }
+    public static native byte[] nativePlan(byte[] data, int coin);
 }

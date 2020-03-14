@@ -36,7 +36,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         }
         input.utxo.append(utxo0)
 
-        let plan: BitcoinTransactionPlan = UTXOPlanner.plan(input: input, coin: .bitcoin)
+        let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .bitcoin)
 
         XCTAssertEqual(plan.amount, 1000)
         XCTAssertEqual(plan.fee, 226)

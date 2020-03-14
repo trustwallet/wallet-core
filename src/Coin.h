@@ -23,6 +23,9 @@
 
 namespace TW {
 
+// Return the set of supported coin types.
+std::set<TWCoinType> getCoinTypes();
+
 /// Validates an address for a particular coin.
 bool validateAddress(TWCoinType coin, const std::string& address);
 
@@ -73,5 +76,10 @@ byte p2shPrefix(TWCoinType coin);
 
 /// Returns human readable part for a coin type.
 enum TWHRP hrp(TWCoinType coin);
+
+// Note: use output parameter to avoid unneeded copies
+void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
+
+void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 } // namespace TW

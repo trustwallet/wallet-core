@@ -27,4 +27,17 @@ public final class AnySigner {
         }
         return TWDataNSData(TWAnySignerSign(inputData, TWCoinType(rawValue: coin.rawValue)))
     }
+
+    public static func plan<TransactionPlan: Message>(input: SigningInput, coin: CoinType) -> TransactionPlan {
+        do {
+            let inputData = TWDataCreateWithNSData(try input.serializedData())
+            defer {
+                TWDataDelete(inputData)
+            }
+            let outputData = TWDataNSData(TWAnySignerPlan(inputData, TWCoinType(rawValue: coin.rawValue)))
+            return try TransactionPlan(serializedData: outputData)
+        } catch let error {
+            fatalError(error.localizedDescription)
+        }
+    }
 }

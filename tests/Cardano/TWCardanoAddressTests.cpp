@@ -5,7 +5,9 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWAnyAddress.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWData.h>
 #include "../interface/TWTestUtilities.h"
 #include "PrivateKey.h"
 
@@ -27,4 +29,10 @@ TEST(TWCardano, Address) {
     assertStringsEqual(address2String, "addr1s3tl64970vuthz2j0qkz7kd2ya5j3fxuhdnv333vu38e6c37e4dq80ek4raf7hs3adag2tzpuxz7895a2x8xde5f8jqa8lrjyuqfj5k50pm668");
 
     ASSERT_TRUE(TWAnyAddressEqual(address.get(), address2.get()));
+}
+
+TEST(TWCardano, SigningNotImplemented) {
+    // not implemented, returns empty data
+    auto result = WRAPD(TWAnySignerSign(WRAPD(TWDataCreateWithSize(0)).get(), TWCoinType::TWCoinTypeCardano));
+    EXPECT_EQ(TWDataSize(result.get()), 0);
 }
