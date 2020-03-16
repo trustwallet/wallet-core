@@ -17,6 +17,8 @@ class Signer {
   public:
     /// Signs a Proto::SigningInput transaction
     static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    /// Signs a json Proto::SigningInput with private key
+    static std::string signJSON(const std::string& json, const Data& key);
   public:
     const PrivateKey privateKey;
     const PublicKey publicKey;

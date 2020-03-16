@@ -178,6 +178,12 @@ void TW::anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     dispatcher->sign(coinType, dataIn, dataOut);
 }
 
+std::string TW::anySignJSON(TWCoinType coinType, const std::string& json, const Data& key) {
+    auto dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    return dispatcher->signJSON(coinType, json, key);
+}
+
 void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);

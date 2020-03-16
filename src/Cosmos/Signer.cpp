@@ -5,16 +5,18 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
-#include "../PrivateKey.h"
+#include "PrivateKey.h"
 #include "Serialization.h"
 
-#include "../Data.h"
-#include "../Hash.h"
+#include "Data.h"
+#include "Hash.h"
+
+#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 using namespace TW::Cosmos;
 
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     auto key = PrivateKey(input.private_key());
     auto preimage = signaturePreimage(input).dump();
     auto hash = Hash::sha256(preimage);
@@ -26,4 +28,12 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     output.set_json(txJson.dump());
     output.set_signature(signature.data(), signature.size());
     return output;
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    auto output = Signer::sign(input);
+    return output.json();
 }

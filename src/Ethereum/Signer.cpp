@@ -5,6 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "HexCoding.h"
+#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 using namespace TW::Ethereum;
@@ -31,6 +33,14 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
     output.set_s(s.data(), s.size());
 
     return output;
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    auto output = Signer::sign(input);
+    return hex(output.encoded());
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,

@@ -10,6 +10,7 @@
 #include "../HexCoding.h"
 
 #include <TrustWalletCore/TWCurve.h>
+#include <google/protobuf/util/json_util.h>
 
 #include <string>
 
@@ -24,11 +25,19 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
 
     auto signer = Signer();
     PrivateKey key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    Data signedBytes = signer.signOperationList(key, operationList);
+    Data encoded = signer.signOperationList(key, operationList);
 
     auto output = Proto::SigningOutput();
-    output.set_signed_bytes(signedBytes.data(), signedBytes.size());
+    output.set_encoded(encoded.data(), encoded.size());
     return output;
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    auto output = Signer::sign(input);
+    return hex(output.encoded());
 }
 
 Data Signer::signOperationList(const PrivateKey& privateKey, const OperationList& operationList) {
