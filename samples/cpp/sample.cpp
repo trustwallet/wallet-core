@@ -5,6 +5,7 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWAnySigner.h>
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWPrivateKey.h>
@@ -35,11 +36,13 @@ int main() {
         cout << "done." << endl;
         cout << "Secret mnemonic for new wallet: '";
         cout << TWStringUTF8Bytes(TWHDWalletMnemonic(walletNew)) << "'." << endl;
+        TWHDWalletDelete(walletNew);
 
         // Alternative: Import wallet with existing recovery phrase (mnemonic)
         cout << "Importing an HD wallet from earlier ... ";
-        auto secretMnemonic = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal";
-        walletImp = TWHDWalletCreateWithMnemonic(TWStringCreateWithUTF8Bytes(secretMnemonic), TWStringCreateWithUTF8Bytes(""));
+        auto secretMnemonic = TWStringCreateWithUTF8Bytes("ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal");
+        walletImp = TWHDWalletCreateWithMnemonic(secretMnemonic, TWStringCreateWithUTF8Bytes(""));
+        TWStringDelete(secretMnemonic);
         cout << "done." << endl;
         cout << "Secret mnemonic for imported wallet: '";
         cout << TWStringUTF8Bytes(TWHDWalletMnemonic(walletImp)) << "'." << endl;
@@ -68,8 +71,9 @@ int main() {
         cout << "Address from default key: '" << addressDefault << "'" << endl;
 
         // Alternative: Derive address using custom derivation path.  Done in 2 steps: derive private key, then address.
-        auto customDerivationPath = "m/44'/60'/1'/0/0";
-        TWPrivateKey* secretPrivateKeyCustom = TWHDWalletGetKey(walletImp, TWStringCreateWithUTF8Bytes(customDerivationPath));
+        auto customDerivationPath = TWStringCreateWithUTF8Bytes("m/44'/60'/1'/0/0");
+        TWPrivateKey* secretPrivateKeyCustom = TWHDWalletGetKey(walletImp, customDerivationPath);
+        TWStringDelete(customDerivationPath);
         string addressCustom = TWStringUTF8Bytes(TWCoinTypeDeriveAddress(coinType, secretPrivateKeyCustom));
         cout << "Custom-derived address:   '" << addressCustom << "'" << endl;
         cout << endl;
@@ -85,8 +89,33 @@ int main() {
         // Therefore some direct serialization/parsing is done in helper methods.
         cout << "SEND funds:" << endl;
         const string dummyReceiverAddress = "0xC37054b3b48C3317082E7ba872d7753D13da4986";
-        const string secretPrivKeyHex = TWStringUTF8Bytes(TWStringCreateWithHexData(TWPrivateKeyData(secretPrivateKeyDefault)));
-    }
+        auto secretPrivKey = TWPrivateKeyData(secretPrivateKeyDefault);
 
+        cout << "preparing transaction (using AnySigner) ... ";
+        string chainIdB64 = "AQ==";        // base64(parse_hex("01"))
+        string gasPriceB64 = "1pOkAA==";   // base64(parse_hex("d693a4")) decimal 3600000000
+        string gasLimitB64 = "Ugg=";       // base64(parse_hex("5208")) decimal 21000
+        string amountB64 = "A0i8paFgAA=="; // base64(parse_hex("0348bca5a160"))  924400000000000
+        string transaction = "{"
+            "\"chainId\":\"" + chainIdB64 +
+            "\",\"gasPrice\":\"" + gasPriceB64 +
+            "\",\"gasLimit\":\"" + gasLimitB64 +
+            "\",\"toAddress\":\"" + dummyReceiverAddress +
+            "\",\"amount\":\"" + amountB64 + "\"}";
+        cout << "transaction: " << transaction << endl;
+
+        cout << "signing transaction ... ";
+
+        auto json = TWStringCreateWithUTF8Bytes(transaction.c_str());
+        auto result = TWAnySignerSignJSON(json, secretPrivKey, TWCoinTypeEthereum);
+        auto signedTransaction = string(TWStringUTF8Bytes(result));
+        cout << "done" << endl;
+        cout << "Signed transaction data (to be broadcast to network):  (len " << signedTransaction.length() << ") '" << signedTransaction << "'" << endl;
+        // see e.g. https://github.com/flightwallet/decode-eth-tx for checking binary output content
+        cout << endl;
+        TWStringDelete(json);
+        TWStringDelete(result);
+    }
     cout << "Bye!" << endl;
+    TWHDWalletDelete(walletImp);
 }
