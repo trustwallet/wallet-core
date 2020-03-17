@@ -145,7 +145,7 @@ Pod::Spec.new do |s|
     ss.pod_target_xcconfig = {
       'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) /usr/local/include'
     }
-    ss.prepare_command = 'tools/install-dependencies && tools/generate-files'
     ss.dependency 'TrustWalletCore/Types'
   end
+  s.prepare_command = 'tools/install-dependencies && tools/generate-files'
 end
