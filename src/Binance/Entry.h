@@ -16,10 +16,10 @@ class Entry: public CoinEntry {
 public:
     virtual std::vector<TWCoinType> coinTypes() const { return {TWCoinTypeBinance}; }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
-    // normalizeAddress: do not override
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    // plan(): not used here
+    virtual bool supportsJSONSigning() const { return true; }
+    virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
 };
 
 } // namespace TW::Binance

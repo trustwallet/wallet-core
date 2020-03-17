@@ -21,6 +21,10 @@ public class AnySigner {
     }
     public static native byte[] nativeSign(byte[] data, int coin);
 
+    public static native String signJSON(String json, byte[] key, int coin);
+
+    public static native boolean supportsJSON(int coin);
+
     public static <T extends Message> T plan(Message input, CoinType coin, Parser<T> parser) throws Exception {
         byte[] data = input.toByteArray();
         byte[] outputData = nativePlan(data, coin.value());

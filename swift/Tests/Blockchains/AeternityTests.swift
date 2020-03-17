@@ -35,6 +35,7 @@ class AeternityTests: XCTestCase {
 
         let output: AeternitySigningOutput = AnySigner.sign(input: input, coin: .aeternity)
 
+        XCTAssertFalse(AnySigner.supportsJSON(coin: .aeternity))
         XCTAssertEqual(output.signature, "sg_VW42qDPP3MMNFAStYaumjZz7mC7BZYpbNa15E57ejqUe7JdQFWCiX65eLNUpGMpt8tSpfgCfkYzcaFppqx7W75CrcWdC8")
 
         // swiftlint:disable:next line_length

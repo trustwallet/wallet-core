@@ -29,7 +29,8 @@ public:
     virtual std::string normalizeAddress(TWCoinType coin, const std::string& address) const;
     virtual std::string deriveAddress(TWCoinType coin, const PublicKey& publicKey, TW::byte p2pkh, const char* hrp) const;
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
-    // plan(): not used here
+    virtual bool supportsJSONSigning() const { return true; }
+    virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
 };
 
 } // namespace TW::Ethereum

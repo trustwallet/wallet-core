@@ -80,6 +80,10 @@ enum TWHRP hrp(TWCoinType coin);
 // Note: use output parameter to avoid unneeded copies
 void anyCoinSign(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
+std::string anySignJSON(TWCoinType coinType, const std::string& json, const Data& key);
+
+bool supportsJSONSigning(TWCoinType coinType);
+
 void anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut);
 
 } // namespace TW

@@ -29,7 +29,7 @@ cleanup:
   # Method returns a string
   elsif should_return_string(method) -%>
     jstring result = NULL;
-    const jstring resultString = <%= call %>;
+    TWString *resultString = <%= call %>;
 <%  if method.return_type.is_nullable %>
     if (resultString == NULL) {
         goto cleanup;
