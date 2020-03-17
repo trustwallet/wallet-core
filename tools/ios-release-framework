@@ -42,7 +42,7 @@ Pod::Spec.new do |s|
   s.version          = '$VERSION'
   s.summary          = 'Trust Wallet core data structures and algorithms.'
   s.homepage         = 'https://github.com/trustwallet/wallet-core'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.license          = 'MIT'
   s.author           = { 'hewigovens' => '360470+hewigovens@users.noreply.github.com' }
   s.source           = { :git => 'https://github.com/trustwallet/wallet-core.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/wallet_core'
@@ -51,8 +51,7 @@ Pod::Spec.new do |s|
   }
   s.vendored_frameworks = 'TrustWalletCore.xcframework'
   s.ios.deployment_target = '11.0'
-  # enable osx once prepare_artifacts_script is fixed
-  # s.osx.deployment_target = '10.12'
+  s.osx.deployment_target = '10.12'
   s.swift_version = '5.1'
   s.dependency 'SwiftProtobuf'
 end
@@ -85,7 +84,7 @@ Pod::Spec.new do |s|
   s.version          = '$VERSION'
   s.summary          = 'Trust Wallet Core defines and types'
   s.homepage         = 'https://github.com/trustwallet/wallet-core'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.license          = 'MIT'
   s.author           = { 'hewigovens' => '360470+hewigovens@users.noreply.github.com' }
   s.source           = { :git => 'https://github.com/trustwallet/wallet-core.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/wallet_core'
