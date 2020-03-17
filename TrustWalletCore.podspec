@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
       'include/**/*.h',
       'swift/Sources/*.{swift,h,m,cpp}',
       'swift/Sources/Extensions/*.swift',
-      'swift/Sources/Generated/*.{swift,h}'
+      'swift/Sources/Generated/*.{swift,h}',
       'trezor-crypto/src/**/*.{c,h}',
       'trezor-crypto/include/**/*.{h}',
       "#{protobuf_source_dir}/src/google/protobuf/any.cc",
