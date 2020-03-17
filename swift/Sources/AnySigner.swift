@@ -28,6 +28,10 @@ public final class AnySigner {
         return TWDataNSData(TWAnySignerSign(inputData, TWCoinType(rawValue: coin.rawValue)))
     }
 
+    public static func supportsJSON(coin: CoinType) -> Bool {
+        return TWAnySignerSupportsJSON(TWCoinType(rawValue: coin.rawValue))
+    }
+
     public static func signJSON(_ json: String, key: Data, coin: CoinType) -> String {
         let jsonString = TWStringCreateWithNSString(json)
         let keyData = TWDataCreateWithNSData(key)

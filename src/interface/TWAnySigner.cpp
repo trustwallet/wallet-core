@@ -23,6 +23,9 @@ TWString *_Nonnull TWAnySignerSignJSON(TWString *_Nonnull json, TWData *_Nonnull
     auto result = TW::anySignJSON(coin, jsonString, keyData);
     return TWStringCreateWithUTF8Bytes(result.c_str());
 }
+extern bool TWAnySignerSupportsJSON(enum TWCoinType coin) {
+    return TW::supportsJSONSigning(coin);
+}
 
 TWData* _Nonnull TWAnySignerPlan(TWData* _Nonnull data, enum TWCoinType coin) {
     const Data& dataIn = *(reinterpret_cast<const Data*>(data));

@@ -184,6 +184,12 @@ std::string TW::anySignJSON(TWCoinType coinType, const std::string& json, const 
     return dispatcher->signJSON(coinType, json, key);
 }
 
+bool TW::supportsJSONSigning(TWCoinType coinType) {
+    auto dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    return dispatcher->supportsJSONSigning();
+}
+
 void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
