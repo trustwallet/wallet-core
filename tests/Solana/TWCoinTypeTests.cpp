@@ -21,7 +21,7 @@ TEST(TWSolanaCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 10);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 9);
     ASSERT_EQ(TWBlockchainSolana, TWCoinTypeBlockchain(TWCoinTypeSolana));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeSolana));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeSolana));
