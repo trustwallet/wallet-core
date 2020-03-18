@@ -1332,5 +1332,26 @@
             "clientPublic": "",
             "clientDocs": "https://docs.lotu.sh"
         }
+    },
+    {
+        "id": "rupaya",
+        "name": "Rupaya",
+        "symbol": "RUPX",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivationPath": "m/44'/499'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": {
+            "url": "https://scan.rupaya.io",
+            "txPath": "/txs/",
+            "accountPath": "/address/"
+        },
+        "info": {
+            "url": "https://rupaya.io",
+            "client": "https://github.com/rupayaproject/go-rupaya",
+            "clientPublic": "https://socket.rupaya.io",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     }
 ]
