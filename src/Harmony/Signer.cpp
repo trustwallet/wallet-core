@@ -8,6 +8,7 @@
 #include "../Ethereum/RLP.h"
 #include "../HexCoding.h"
 
+
 using namespace TW;
 using namespace TW::Harmony;
 
@@ -142,6 +143,10 @@ Proto::SigningOutput Signer::signCreateValidator(const Proto::SigningInput &inpu
     for (auto pk : input.staking_message().create_validator_message().slot_pub_keys()) {
         slotPubKeys.push_back(Data(pk.begin(), pk.end()));
     }
+    std::vector<Data> slotKeySigs;
+    for (auto sig : input.staking_message().create_validator_message().slot_key_sigs()) {
+        slotKeySigs.push_back(Data(sig.begin(), sig.end()));
+    }
     Address validatorAddr;
     if (!Address::decode(input.staking_message().create_validator_message().validator_address(),
                          validatorAddr)) {
@@ -157,6 +162,7 @@ Proto::SigningOutput Signer::signCreateValidator(const Proto::SigningInput &inpu
         /* MaxTotalDelegation */
         load(input.staking_message().create_validator_message().max_total_delegation()),
         /* PubKey */ slotPubKeys,
+        /* BlsSig */ slotKeySigs,
         /* Amount */ load(input.staking_message().create_validator_message().amount()));
 
     auto stakingTx = Staking<CreateValidator>(
@@ -210,9 +216,14 @@ Proto::SigningOutput Signer::signEditValidator(const Proto::SigningInput &input)
         /* SlotKeyToRemove */
         Data(input.staking_message().edit_validator_message().slot_key_to_remove().begin(),
              input.staking_message().edit_validator_message().slot_key_to_remove().end()),
-        /* SlotKeyToRemove */
+        /* SlotKeyToAdd */
         Data(input.staking_message().edit_validator_message().slot_key_to_add().begin(),
-             input.staking_message().edit_validator_message().slot_key_to_add().end()));
+             input.staking_message().edit_validator_message().slot_key_to_add().end()),
+        /* SlotKeyToAddSig */
+        Data(input.staking_message().edit_validator_message().slot_key_to_add_sig().begin(),
+             input.staking_message().edit_validator_message().slot_key_to_add_sig().end()),
+        /* Active */
+        load(input.staking_message().edit_validator_message().active()));
 
     auto stakingTx = Staking<EditValidator>(
         DirectiveEditValidator, editValidator, load(input.staking_message().nonce()),
@@ -404,6 +415,12 @@ Data Signer::rlpNoHashDirective(const Staking<CreateValidator> &transaction) con
     }
     append(encoded, RLP::encodeList(slotPubKeysEncoded));
 
+    auto slotBlsSigsEncoded = Data();
+    for (auto sig : transaction.stakeMsg.slotKeySigs) {
+        append(slotBlsSigsEncoded, RLP::encode(sig));
+    }
+    append(encoded, RLP::encodeList(slotBlsSigsEncoded));
+
     append(encoded, RLP::encode(transaction.stakeMsg.amount));
 
     return RLP::encodeList(encoded);
@@ -434,6 +451,9 @@ Data Signer::rlpNoHashDirective(const Staking<EditValidator> &transaction) const
 
     append(encoded, RLP::encode(transaction.stakeMsg.slotKeyToRemove));
     append(encoded, RLP::encode(transaction.stakeMsg.slotKeyToAdd));
+    append(encoded, RLP::encode(transaction.stakeMsg.slotKeyToAddSig));
+
+    append(encoded, RLP::encode(transaction.stakeMsg.active));
 
     return RLP::encodeList(encoded);
 }

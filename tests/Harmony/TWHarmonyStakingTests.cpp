@@ -73,6 +73,12 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
                       "2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611");
     createValidatorMsg->add_slot_pub_keys(value.data(), value.size());
 
+    value = parse_hex("4252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472f"
+                      "b77e1af7278a1c3c2e6eeba73c0581ece398613829940df129"
+                      "f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a"
+                      "5c864771cafef7b96be541cb3c521a98f01838dd94");
+    createValidatorMsg->add_slot_key_sigs(value.data(), value.size());
+
     value = store(uint256_t("100"));
     createValidatorMsg->set_amount(value.data(), value.size());
 
@@ -90,13 +96,14 @@ TEST(TWHarmonyStakingSigner, CreateValidator) {
     ANY_SIGN(input, TWCoinTypeHarmony);
 
     auto shouldBeV = "28";
-    auto shouldBeR = "476e8a0fe478e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28";
-    auto shouldBeS = "3b2be18e73b2f99d7e2691485a0e166f28e62815079c126e68f876dc97339f8f";
+    auto shouldBeR = "0d8437f81be3481b01542e9baef0445f3758cf084c5e1fba93d087ccce084cb1";
+    auto shouldBeS = "404c1a42442c2d39f84582353a1c67012451ff83ef6d3622f684041df9bf0072";
 
     ASSERT_EQ(hex(output.v()), shouldBeV);
     ASSERT_EQ(hex(output.r()), shouldBeR);
     ASSERT_EQ(hex(output.s()), shouldBeS);
 }
+
 
 TEST(TWHarmonyStakingSigner, EditValidator) {
     auto input = Proto::SigningInput();
@@ -136,6 +143,16 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
     editValidatorMsg->set_slot_key_to_remove(value.data(), value.size());
     editValidatorMsg->set_slot_key_to_add(value.data(), value.size());
 
+    value = parse_hex("4252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472f"
+                      "b77e1af7278a1c3c2e6eeba73c0581ece398613829940df129"
+                      "f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a"
+                      "5c864771cafef7b96be541cb3c521a98f01838dd94");
+    editValidatorMsg->set_slot_key_to_add_sig(value.data(), value.size());
+
+    //test active
+    value = store(uint256_t("1"));
+    editValidatorMsg->set_active(value.data(), value.size());
+
     value = store(uint256_t("0x02"));
     stakingMessage->set_nonce(value.data(), value.size());
 
@@ -149,13 +166,154 @@ TEST(TWHarmonyStakingSigner, EditValidator) {
     ANY_SIGN(input, TWCoinTypeHarmony);
 
     auto shouldBeV = "27";
-    auto shouldBeR = "5e54b55272f6bf5ffeca10d85976749d6b844cc9f30ba3285b9ab8a82d53e3e3";
-    auto shouldBeS = "3ce04d9a9f834e20b22aa918ead346c84a04b1504fe3ff9e38f21c5e5712f013";
+    auto shouldBeR = "89d6f87855619c31e933d5f00638ca58737dfffdfdf8b66a048a2e45f103e05d";
+    auto shouldBeS = "4aafc5c51a95412760c089371b411a5ab8f235b456291a9754d544b162df4eef";
 
     ASSERT_EQ(hex(output.v()), shouldBeV);
     ASSERT_EQ(hex(output.r()), shouldBeR);
     ASSERT_EQ(hex(output.s()), shouldBeS);
 }
+
+TEST(TWHarmonyStakingSigner, EditValidator2) {
+
+    auto input = Proto::SigningInput();
+    input.set_private_key(PRIVATE_KEY.bytes.data(), PRIVATE_KEY.bytes.size());
+
+    auto value = store(uint256_t("0x2"));
+    input.set_chain_id(value.data(), value.size());
+
+    auto stakingMessage = input.mutable_staking_message();
+    auto editValidatorMsg = stakingMessage->mutable_edit_validator_message();
+
+    editValidatorMsg->set_validator_address(TEST_ACCOUNT);
+
+    auto description = editValidatorMsg->mutable_description();
+    description->set_name("Alice");
+    description->set_identity("alice");
+    description->set_website("alice.harmony.one");
+    description->set_security_contact("Bob");
+    description->set_details("Don't mess with me!!!");
+
+    auto commissionRate = editValidatorMsg->mutable_commission_rate();
+
+    // (value, precision): (1, 1) represents 0.1
+    value = store(uint256_t("1"));
+    commissionRate->set_value(value.data(), value.size());
+    value = store(uint256_t("1"));
+    commissionRate->set_precision(value.data(), value.size());
+
+    value = store(uint256_t("10"));
+    editValidatorMsg->set_min_self_delegation(value.data(), value.size());
+
+    value = store(uint256_t("3000"));
+    editValidatorMsg->set_max_total_delegation(value.data(), value.size());
+
+    value = parse_hex("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df"
+                      "2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611");
+    editValidatorMsg->set_slot_key_to_remove(value.data(), value.size());
+    editValidatorMsg->set_slot_key_to_add(value.data(), value.size());
+
+    value = parse_hex("4252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472f"
+                      "b77e1af7278a1c3c2e6eeba73c0581ece398613829940df129"
+                      "f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a"
+                      "5c864771cafef7b96be541cb3c521a98f01838dd94");
+    editValidatorMsg->set_slot_key_to_add_sig(value.data(), value.size());
+
+    //test null
+    value = store(uint256_t("0"));
+    editValidatorMsg->set_active(value.data(), value.size());
+
+    value = store(uint256_t("0x02"));
+    stakingMessage->set_nonce(value.data(), value.size());
+
+    value = store(uint256_t("0x0"));
+    stakingMessage->set_gas_price(value.data(), value.size());
+
+    value = store(uint256_t("0x64"));
+    stakingMessage->set_gas_limit(value.data(), value.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeHarmony);
+
+    auto shouldBeV = "27";
+    auto shouldBeR = "2f160fbf125b614764f9d45dc20acc63da41b02f380e20135e72bc7e74ab3205";
+    auto shouldBeS = "11a1d8824a871361e2817145e87148b072c378c38d037df482214a3e4e3f2205";
+
+    ASSERT_EQ(hex(output.v()), shouldBeV);
+    ASSERT_EQ(hex(output.r()), shouldBeR);
+    ASSERT_EQ(hex(output.s()), shouldBeS);
+}
+
+TEST(TWHarmonyStakingSigner, EditValidator3) {
+
+    auto input = Proto::SigningInput();
+    input.set_private_key(PRIVATE_KEY.bytes.data(), PRIVATE_KEY.bytes.size());
+
+    auto value = store(uint256_t("0x2"));
+    input.set_chain_id(value.data(), value.size());
+
+    auto stakingMessage = input.mutable_staking_message();
+    auto editValidatorMsg = stakingMessage->mutable_edit_validator_message();
+
+    editValidatorMsg->set_validator_address(TEST_ACCOUNT);
+
+    auto description = editValidatorMsg->mutable_description();
+    description->set_name("Alice");
+    description->set_identity("alice");
+    description->set_website("alice.harmony.one");
+    description->set_security_contact("Bob");
+    description->set_details("Don't mess with me!!!");
+
+    auto commissionRate = editValidatorMsg->mutable_commission_rate();
+
+    // (value, precision): (1, 1) represents 0.1
+    value = store(uint256_t("1"));
+    commissionRate->set_value(value.data(), value.size());
+    value = store(uint256_t("1"));
+    commissionRate->set_precision(value.data(), value.size());
+
+    value = store(uint256_t("10"));
+    editValidatorMsg->set_min_self_delegation(value.data(), value.size());
+
+    value = store(uint256_t("3000"));
+    editValidatorMsg->set_max_total_delegation(value.data(), value.size());
+
+    value = parse_hex("b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df"
+                      "2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611");
+    editValidatorMsg->set_slot_key_to_remove(value.data(), value.size());
+    editValidatorMsg->set_slot_key_to_add(value.data(), value.size());
+
+    value = parse_hex("4252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472f"
+                      "b77e1af7278a1c3c2e6eeba73c0581ece398613829940df129"
+                      "f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a"
+                      "5c864771cafef7b96be541cb3c521a98f01838dd94");
+    editValidatorMsg->set_slot_key_to_add_sig(value.data(), value.size());
+
+    //test inactive
+    value = store(uint256_t("2"));
+    editValidatorMsg->set_active(value.data(), value.size());
+
+    value = store(uint256_t("0x02"));
+    stakingMessage->set_nonce(value.data(), value.size());
+
+    value = store(uint256_t("0x0"));
+    stakingMessage->set_gas_price(value.data(), value.size());
+
+    value = store(uint256_t("0x64"));
+    stakingMessage->set_gas_limit(value.data(), value.size());
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeHarmony);
+
+    auto shouldBeV = "28";
+    auto shouldBeR = "9d1212ab7f54b05a4f89506ea1fe3bebecf5126544bc990b53b27f1fccb69d52";
+    auto shouldBeS = "1d13704dce7399f154c2352d61ad1fc208880c267695cb423c57cd52b9821a79";
+
+    ASSERT_EQ(hex(output.v()), shouldBeV);
+    ASSERT_EQ(hex(output.r()), shouldBeR);
+    ASSERT_EQ(hex(output.s()), shouldBeS);
+}
+
 
 TEST(TWHarmonyStakingSigner, Delegate) {
     auto input = Proto::SigningInput();
@@ -192,6 +350,8 @@ TEST(TWHarmonyStakingSigner, Delegate) {
     ASSERT_EQ(hex(output.r()), shouldBeR);
     ASSERT_EQ(hex(output.s()), shouldBeS);
 }
+
+
 
 TEST(TWHarmonyStakingSigner, Undelegate) {
     auto input = Proto::SigningInput();
