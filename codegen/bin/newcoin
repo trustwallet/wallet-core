@@ -47,7 +47,7 @@ def self.generate_file(templateFile, folder, fileName, coin)
     puts "Generated file " + path
 end
 
-def self.insert_coint_type(coin)
+def self.insert_coin_type(coin)
     target_file = "include/TrustWalletCore/TWCoinType.h"
     target_line = "    TWCoinType#{coin['name']} = #{coin_type(coin['derivationPath'])},\n"
     if insert_target_line(target_file, target_line, "};\n")
@@ -59,23 +59,35 @@ def insert_blockchain_type(coin)
     target_file = "include/TrustWalletCore/TWBlockchain.h"
     line_number = File.readlines(target_file).count
     target_line = "    TWBlockchain#{coin['blockchain']} = #{line_number - 17},\n"
-    puts target_line
     insert_target_line(target_file, target_line, "};\n")
+end
+
+def insert_coin_entry(coin)
+    target_file = "src/Coin.cpp"
+    target_line = "#include \"#{coin['name']}/Entry.h\"\n"
+    insert_target_line(target_file, target_line, "// end_of_coin_includes_marker_do_not_modify\n")
+    target_line = "        new #{coin['name']}::Entry(),\n"
+    insert_target_line(target_file, target_line, "    }; // end_of_coin_entries_marker_do_not_modify\n")
 end
 
 def self.insert_target_line(target_file, target_line, original_line)
     lines = File.readlines(target_file)
     index = lines.index(target_line)
-    if index.nil?
-        index = lines.index(original_line)
-        lines.insert(index, target_line)
-        puts "Update #{target_file}"
-        File.open(target_file, "w+") do |f|
-            f.puts(lines)
-        end
+    if !index.nil?
+        puts "Line is already present, file: #{target_file}  line: '#{target_line}'"
         return true
     end
-    return false
+    index = lines.index(original_line)
+    if index.nil?
+        puts "WARNING: Could not find line! file: #{target_file}  line: '#{original_line}'"
+        return false
+    end
+    lines.insert(index, target_line)
+    File.open(target_file, "w+") do |f|
+        f.puts(lines)
+    end
+    puts "Updated file: #{target_file}  new line: '#{target_line}'"
+    return true
 end
 
 command_line_args = ARGV
@@ -109,7 +121,8 @@ coin = coinSelect.first
 name = format_name(coin)
 
 
-insert_coint_type(coin)
+insert_coin_type(coin)
+insert_coin_entry(coin)
 
 generate_file("newcoin/Address.h.erb", "src/#{name}", "Address.h", coin)
 generate_file("newcoin/Address.cpp.erb", "src/#{name}", "Address.cpp", coin)
