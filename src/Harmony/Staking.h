@@ -132,12 +132,12 @@ class EditValidator {
     vector<uint8_t> slotKeyToRemove;
     vector<uint8_t> slotKeyToAdd;
     vector<uint8_t> slotKeyToAddSig;
-    bool            active;
+    uint256_t        active;
 
     EditValidator(Address validatorAddress, Description description, Decimal *commissionRate,
                   uint256_t minSelfDelegation, uint256_t maxTotalDelegation,
                   vector<uint8_t> slotKeyToRemove, vector<uint8_t> slotKeyToAdd,
-                  vector<uint8_t> slotKeyToAddSig, active)
+                  vector<uint8_t> slotKeyToAddSig, uint256_t  active)
         : validatorAddress(move(validatorAddress))
         , description(move(description))
         , commissionRate(move(commissionRate))
@@ -146,7 +146,7 @@ class EditValidator {
         , slotKeyToRemove(move(slotKeyToRemove))
         , slotKeyToAdd(move(slotKeyToAdd))
         , slotKeyToAddSig(move(slotKeyToAddSig))
-        , active(active){}
+        , active(move(active)){}
 };
 
 class Delegate {

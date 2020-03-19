@@ -8,6 +8,7 @@
 #include "../Ethereum/RLP.h"
 #include "../HexCoding.h"
 
+
 using namespace TW;
 using namespace TW::Harmony;
 
@@ -215,9 +216,14 @@ Proto::SigningOutput Signer::signEditValidator(const Proto::SigningInput &input)
         /* SlotKeyToRemove */
         Data(input.staking_message().edit_validator_message().slot_key_to_remove().begin(),
              input.staking_message().edit_validator_message().slot_key_to_remove().end()),
-        /* SlotKeyToRemove */
+        /* SlotKeyToAdd */
         Data(input.staking_message().edit_validator_message().slot_key_to_add().begin(),
-             input.staking_message().edit_validator_message().slot_key_to_add().end()));
+             input.staking_message().edit_validator_message().slot_key_to_add().end()),
+        /* SlotKeyToAddSig */
+        Data(input.staking_message().edit_validator_message().slot_key_to_add_sig().begin(),
+             input.staking_message().edit_validator_message().slot_key_to_add_sig().end()),
+        /* Active */
+        load(input.staking_message().edit_validator_message().active()));
 
     auto stakingTx = Staking<EditValidator>(
         DirectiveEditValidator, editValidator, load(input.staking_message().nonce()),

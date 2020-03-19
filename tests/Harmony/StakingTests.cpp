@@ -72,6 +72,12 @@ TEST(HarmonyStaking, SignCreateValidator) {
                       "2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611");
     createValidatorMsg->add_slot_pub_keys(value.data(), value.size());
 
+    value = parse_hex("4252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472f"
+                      "b77e1af7278a1c3c2e6eeba73c0581ece398613829940df129"
+                      "f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a"
+                      "5c864771cafef7b96be541cb3c521a98f01838dd94");
+    createValidatorMsg->add_slot_key_sigs(value.data(), value.size());
+
     value = store(uint256_t("100"));
     createValidatorMsg->set_amount(value.data(), value.size());
 
@@ -87,16 +93,18 @@ TEST(HarmonyStaking, SignCreateValidator) {
     auto proto_output = Signer::sign(input);
 
     auto expectEncoded =
-        "f8ed80f8a494ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963"
-        "652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121ddc988016345"
-        "785d8a0000c9880c7d713b49da0000c887b1a2bc2ec500000a820bb8f1b0b9486167ab9087ab818dc4ce026edb"
-        "5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b622476086116402806428a0476e8a0fe478"
-        "e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28a03b2be18e73b2f99d7e2691485a0e166f28e6"
-        "2815079c126e68f876dc97339f8f";
+            "f9015280f9010894ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c696365916"
+            "16c6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121dd"
+            "c988016345785d8a0000c9880c7d713b49da0000c887b1a2bc2ec500000a820bb8f1b0b9486167ab9087ab8"
+            "18dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611f862b860"
+            "4252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472fb77e1af7278a1c3c2e6eeba73c0581ece3986"
+            "13829940df129f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a5c864771cafef7b96be541cb"
+            "3c521a98f01838dd946402806428a00d8437f81be3481b01542e9baef0445f3758cf084c5e1fba93d087ccc"
+            "e084cb1a0404c1a42442c2d39f84582353a1c67012451ff83ef6d3622f684041df9bf0072";
 
     auto v = "28";
-    auto r = "476e8a0fe478e0d03ff10222d4d590bca8cee3ec51b830f4fc4a8bee5d0e9d28";
-    auto s = "3b2be18e73b2f99d7e2691485a0e166f28e62815079c126e68f876dc97339f8f";
+    auto r = "0d8437f81be3481b01542e9baef0445f3758cf084c5e1fba93d087ccce084cb1";
+    auto s = "404c1a42442c2d39f84582353a1c67012451ff83ef6d3622f684041df9bf0072";
 
     ASSERT_EQ(hex(proto_output.encoded()), expectEncoded);
     ASSERT_EQ(hex(proto_output.v()), v);
@@ -142,6 +150,15 @@ TEST(HarmonyStaking, SignEditValidator) {
     editValidatorMsg->set_slot_key_to_remove(value.data(), value.size());
     editValidatorMsg->set_slot_key_to_add(value.data(), value.size());
 
+    value = parse_hex("4252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472f"
+                      "b77e1af7278a1c3c2e6eeba73c0581ece398613829940df129"
+                      "f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a"
+                      "5c864771cafef7b96be541cb3c521a98f01838dd94");
+    editValidatorMsg->set_slot_key_to_add_sig(value.data(), value.size());
+
+    value = store(uint256_t("1"));
+    editValidatorMsg->set_active(value.data(), value.size());
+
     value = store(uint256_t("0x02"));
     stakingMessage->set_nonce(value.data(), value.size());
 
@@ -154,16 +171,11 @@ TEST(HarmonyStaking, SignEditValidator) {
     auto proto_output = Signer::sign(input);
 
     auto expectEncoded =
-        "f9010801f8bf94ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c"
-        "6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121c9880163"
-        "45785d8a00000a820bb8b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7"
-        "d12f0e6dd5307a73b62247608611b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced"
-        "1ad181e7d12f0e6dd5307a73b6224760861102806427a05e54b55272f6bf5ffeca10d85976749d6b844cc9f30b"
-        "a3285b9ab8a82d53e3e3a03ce04d9a9f834e20b22aa918ead346c84a04b1504fe3ff9e38f21c5e5712f013";
+        "f9016c01f9012294ebcd16e8c1d8f493ba04e99a56474122d81a9c58f83885416c69636585616c69636591616c6963652e6861726d6f6e792e6f6e6583426f6295446f6e2774206d6573732077697468206d65212121c988016345785d8a00000a820bb8b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611b0b9486167ab9087ab818dc4ce026edb5bf216863364c32e42df2af03c5ced1ad181e7d12f0e6dd5307a73b62247608611b8604252b0f1210efb0d5061e8a706a7ea9d62292a7947a975472fb77e1af7278a1c3c2e6eeba73c0581ece398613829940df129f3071c9a24b4b448bb1e880dc5872a58cb07eed94294c4e01a5c864771cafef7b96be541cb3c521a98f01838dd940102806427a089d6f87855619c31e933d5f00638ca58737dfffdfdf8b66a048a2e45f103e05da04aafc5c51a95412760c089371b411a5ab8f235b456291a9754d544b162df4eef";
 
     auto v = "27";
-    auto r = "5e54b55272f6bf5ffeca10d85976749d6b844cc9f30ba3285b9ab8a82d53e3e3";
-    auto s = "3ce04d9a9f834e20b22aa918ead346c84a04b1504fe3ff9e38f21c5e5712f013";
+    auto r = "89d6f87855619c31e933d5f00638ca58737dfffdfdf8b66a048a2e45f103e05d";
+    auto s = "4aafc5c51a95412760c089371b411a5ab8f235b456291a9754d544b162df4eef";
 
     ASSERT_EQ(hex(proto_output.encoded()), expectEncoded);
     ASSERT_EQ(hex(proto_output.v()), v);
