@@ -1113,7 +1113,7 @@
         "id": "solana",
         "name": "Solana",
         "symbol": "SOL",
-        "decimals": 10,
+        "decimals": 9,
         "blockchain": "Solana",
         "derivationPath": "m/44'/501'/0'",
         "curve": "ed25519",
