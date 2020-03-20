@@ -14,36 +14,45 @@
 
 using namespace TW;
 
-struct CoinInfo {
-    const char* id;
-    const char* name;
-    TWBlockchain blockchain;
-    TWPurpose purpose;
-    TWCurve curve;
-    TWHDVersion xpubVersion;
-    TWHDVersion xprvVersion;
-    DerivationPath derivationPath;
-    TWPublicKeyType publicKeyType;
-    byte staticPrefix;
-    byte p2pkhPrefix;
-    byte p2shPrefix;
-    TWHRP hrp;
-    Hash::Hasher publicKeyHasher;
-    Hash::Hasher base58Hasher;
-    const char* symbol;
-    int decimals;
-    const char* explorerTransactionUrl;
-    const char* explorerAccountUrl;
-};
-
 /// Map with info about known coins
 static std::map<TWCoinType, CoinInfo> coins;
+
+static const CoinInfo defaultsForMissing = {
+    "?",
+    "?",
+    TWBlockchainBitcoin,
+    TWPurposeBIP44,
+    TWCurveED25519,
+    TWHDVersionNone,
+    TWHDVersionNone,
+    DerivationPath(),
+    TWPublicKeyTypeSECP256k1,
+    0,
+    0,
+    0,
+    TWHRPUnknown,
+    Hash::sha256ripemd,
+    Hash::sha256d,
+    "?",
+    2,
+    "",
+    "",
+};
+
+void fillMap(); // forward
+
+/// Get coin from map, if missing returns defaults (not to have contains-check in each accessor method)
+const CoinInfo& getCoinInfo(TWCoinType coin) {
+    if (coins.size() == 0) { fillMap(); }
+    if (coins.find(coin) == coins.end()) { return defaultsForMissing; }
+    return coins.at(coin);
+}
 
 /// Fill the map.  Simple static initializer did not work out due to nondeterministic static initialization order
 void fillMap() {
     coins = std::map<TWCoinType, CoinInfo> {
     <% coins.each do |coin| -%>
-        {
+    {
             TWCoinType<%= format_name(coin['name']) %>, {
                 "<%= coin['id'] %>",
                 <% if coin['displayName'].nil? -%>"<%= coin['name'] %>"<% else -%>"<%= coin['displayName'] %>"<% end -%>,
@@ -68,117 +77,4 @@ void fillMap() {
         },
     <% end -%>
     };
-}
-
-// Helpers
-
-static const CoinInfo defaultsForMissing = {
-    "?",
-    "?",
-    TWBlockchainBitcoin,
-    TWPurposeBIP44,
-    TWCurveED25519,
-    TWHDVersionNone,
-    TWHDVersionNone,
-    DerivationPath(),
-    TWPublicKeyTypeSECP256k1,
-    0,
-    0,
-    0,
-    TWHRPUnknown,
-    Hash::sha256ripemd,
-    Hash::sha256d,
-    "?",
-    2,
-    "",
-    "",
-};
-
-/// Get coin from map, if missing returns defaults (not to have contains-check in each accessor method)
-const CoinInfo& getCoinInfo(TWCoinType coin) {
-    if (coins.size() == 0) { fillMap(); }
-    if (coins.find(coin) == coins.end()) { return defaultsForMissing; }
-    return coins.at(coin);
-}
-
-// Accessors
-
-TWBlockchain TW::blockchain(TWCoinType coin) {
-    return getCoinInfo(coin).blockchain;
-}
-
-TWPurpose TW::purpose(TWCoinType coin) {
-    return getCoinInfo(coin).purpose;
-}
-
-TWCurve TW::curve(TWCoinType coin) {
-    return getCoinInfo(coin).curve;
-}
-
-TWHDVersion TW::xpubVersion(TWCoinType coin) {
-    return getCoinInfo(coin).xpubVersion;
-}
-
-TWHDVersion TW::xprvVersion(TWCoinType coin) {
-    return getCoinInfo(coin).xprvVersion;
-}
-
-DerivationPath TW::derivationPath(TWCoinType coin) {
-    return getCoinInfo(coin).derivationPath;
-}
-
-enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
-    return getCoinInfo(coin).publicKeyType;
-}
-
-byte TW::staticPrefix(TWCoinType coin) {
-    return getCoinInfo(coin).staticPrefix;
-}
-
-byte TW::p2pkhPrefix(TWCoinType coin) {
-    return getCoinInfo(coin).p2pkhPrefix;
-}
-
-byte TW::p2shPrefix(TWCoinType coin) {
-    return getCoinInfo(coin).p2shPrefix;
-}
-
-enum TWHRP TW::hrp(TWCoinType coin) {
-    return getCoinInfo(coin).hrp;
-}
-
-Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
-    return getCoinInfo(coin).publicKeyHasher;
-}
-
-Hash::Hasher TW::base58Hasher(TWCoinType coin) {
-    return getCoinInfo(coin).base58Hasher;
-}
-
-TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {
-    return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).symbol);
-}
-
-int TWCoinTypeConfigurationGetDecimals(enum TWCoinType coin) {
-    return getCoinInfo(coin).decimals;
-}
-
-TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType coin, TWString *_Nonnull transactionID) {
-    std::string txId = TWStringUTF8Bytes(transactionID);
-    std::string url = getCoinInfo(coin).explorerTransactionUrl + txId;
-    return TWStringCreateWithUTF8Bytes(url.c_str());
-}
-
-TWString *_Nullable TWCoinTypeConfigurationGetAccountURL(enum TWCoinType coin, TWString *_Nonnull accountID) {
-    std::string accId = TWStringUTF8Bytes(accountID);
-    std::string url = getCoinInfo(coin).explorerAccountUrl + accId;
-    return TWStringCreateWithUTF8Bytes(url.c_str());
-}
-
-TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
-    return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).id);
-}
-
-TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
-    return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).name);
 }
