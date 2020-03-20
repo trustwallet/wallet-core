@@ -15,41 +15,88 @@
 using namespace TW;
 
 struct CoinInfo {
+    const char* id;
+    const char* name;
     TWBlockchain blockchain;
     TWPurpose purpose;
     TWCurve curve;
-    TWHDVersion hdVersion;
+    TWHDVersion xpubVersion;
+    TWHDVersion xprvVersion;
+    DerivationPath derivationPath;
+    TWPublicKeyType publicKeyType;
+    byte staticPrefix;
+    byte p2pkhPrefix;
+    byte p2shPrefix;
+    TWHRP hrp;
+    Hash::Hasher publicKeyHasher;
+    Hash::Hasher base58Hasher;
+    const char* symbol;
+    int decimals;
+    const char* explorerTransactionUrl;
+    const char* explorerAccounUrl;
 };
 
+/// Map with info about known coins
+static std::map<TWCoinType, CoinInfo> coins;
+
+/// Fill the map.  Simple static initializer did not work out due to nondeterministic static initialization order
+void fillMap() {
+    coins = std::map<TWCoinType, CoinInfo> {
+    <% coins.each do |coin| -%>
+        {
+            TWCoinType<%= format_name(coin['name']) %>, {
+                "<%= coin['id'] %>",
+                <% if coin['displayName'].nil? -%>"<%= coin['name'] %>"<% else -%>"<%= coin['displayName'] %>"<% end -%>,
+                TWBlockchain<%= format_name(coin['blockchain']) %>,
+                TWPurposeBIP<%= /^m\/(\d+)'?(\/\d+'?)+$/.match(coin['derivationPath'])[1] %>,
+                TWCurve<%= format_name(coin['curve']) %>,
+                TWHDVersion<% if coin['xpub'].nil? -%>None<% else -%><%= format_name(coin['xpub']) %><% end -%>,
+                TWHDVersion<% if coin['xprv'].nil? -%>None<% else -%><%= format_name(coin['xprv']) %><% end -%>,
+                DerivationPath("<%= coin['derivationPath'] %>"),
+                TWPublicKeyType<%= format_name(coin['publicKeyType']) %>,
+                <% if coin['staticPrefix'].nil? -%>0<% else -%><%= coin['staticPrefix'] %><% end -%>,
+                <% if coin['p2pkhPrefix'].nil? -%>0<% else -%><%= coin['p2pkhPrefix'] %><% end -%>,
+                <% if coin['p2shPrefix'].nil? -%>0<% else -%><%= coin['p2shPrefix'] %><% end -%>,
+                TWHRP<% if coin['hrp'].nil? -%>Unknown<% else -%><%= format_name(coin['name']) %><% end -%>,
+                Hash::<% if coin['publicKeyHasher'].nil? -%>sha256ripemd<% else -%><%= coin['publicKeyHasher'] %><% end -%>,
+                Hash::<% if coin['base58Hasher'].nil? -%>sha256d<% else -%><%= coin['base58Hasher'] %><% end -%>,
+                "<%= coin['symbol'] %>",
+                <%= coin['decimals'] %>,
+                "<%= explorer_tx_url(coin) %>",
+                "<%= explorer_account_url(coin) %>",
+            }
+        },
+    <% end -%>
+    };
+}
+
+// Helpers
+
 static const CoinInfo defaultsForMissing = {
+    "?",
+    "?",
     TWBlockchainBitcoin,
     TWPurposeBIP44,
     TWCurveED25519,
     TWHDVersionNone,
+    TWHDVersionNone,
+    DerivationPath(),
+    TWPublicKeyTypeSECP256k1,
+    0,
+    0,
+    0,
+    TWHRPUnknown,
+    Hash::sha256ripemd,
+    Hash::sha256d,
+    "?",
+    2,
+    "",
+    "",
 };
-
-/// Map with info about known coins
-static const std::map<TWCoinType, CoinInfo> coins = {
-<% coins.each do |coin| -%>
-    {
-        TWCoinType<%= format_name(coin['name']) %>, {
-            TWBlockchain<%= format_name(coin['blockchain']) %>,
-            TWPurposeBIP<%= /^m\/(\d+)'?(\/\d+'?)+$/.match(coin['derivationPath'])[1] %>,
-            TWCurve<%= format_name(coin['curve']) %>,
-        <% if coin['xpub'].nil? -%>
-            TWHDVersionNone,
-        <% else -%>
-            TWHDVersion<%= format_name(coin['xpub']) %>,
-        <% end -%>
-        }
-    },
-<% end -%>
-};
-
-// Helpers
 
 /// Get coin from map, if missing returns defaults (not to have contains-check in each accessor method)
 const CoinInfo& getCoinInfo(TWCoinType coin) {
+    if (coins.size() == 0) { fillMap(); }
     if (coins.find(coin) == coins.end()) { return defaultsForMissing; }
     return coins.at(coin);
 }
@@ -69,32 +116,19 @@ TWCurve TW::curve(TWCoinType coin) {
 }
 
 TWHDVersion TW::xpubVersion(TWCoinType coin) {
-    return getCoinInfo(coin).hdVersion;
+    return getCoinInfo(coin).xpubVersion;
 }
 
-
-
 TWHDVersion TW::xprvVersion(TWCoinType coin) {
-    switch (coin) {
-<% coins.each do |coin| -%>
-    case TWCoinType<%= format_name(coin['name']) %>:
-<% if coin['xprv'].nil? -%>
-        return TWHDVersionNone;
-<% else -%>
-        return TWHDVersion<%= format_name(coin['xprv']) %>;
-<% end -%>
-<% end -%>
-    }
+    return getCoinInfo(coin).xprvVersion;
 }
 
 DerivationPath TW::derivationPath(TWCoinType coin) {
-    switch (coin) {
-<% coins.each do |coin| -%>
-    case TWCoinType<%= format_name(coin['name']) %>:
-        return DerivationPath("<%= coin['derivationPath'] %>");
-<% end -%>
-    }
+    return getCoinInfo(coin).derivationPath;
 }
+
+
+
 
 enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
     switch (coin) {
