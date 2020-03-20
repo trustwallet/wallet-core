@@ -10,64 +10,86 @@
 #include "Coin.h"
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 
+#include <map>
+
 using namespace TW;
 
-TWBlockchain TW::blockchain(TWCoinType coin) {
-    switch (coin) {
+struct CoinInfo {
+    TWBlockchain blockchain;
+    TWPurpose purpose;
+    TWCurve curve;
+    TWHDVersion hdVersion;
+};
+
+static const CoinInfo defaultsForMissing = {
+    TWBlockchainBitcoin,
+    TWPurposeBIP44,
+    TWCurveED25519,
+    TWHDVersionNone,
+};
+
+/// Map with info about known coins
+static const std::map<TWCoinType, CoinInfo> coins = {
 <% coins.each do |coin| -%>
-    case TWCoinType<%= format_name(coin['name']) %>:
-        return TWBlockchain<%= format_name(coin['blockchain']) %>;
+    {
+        TWCoinType<%= format_name(coin['name']) %>, {
+            TWBlockchain<%= format_name(coin['blockchain']) %>,
+            TWPurposeBIP<%= /^m\/(\d+)'?(\/\d+'?)+$/.match(coin['derivationPath'])[1] %>,
+            TWCurve<%= format_name(coin['curve']) %>,
+        <% if coin['xpub'].nil? -%>
+            TWHDVersionNone,
+        <% else -%>
+            TWHDVersion<%= format_name(coin['xpub']) %>,
+        <% end -%>
+        }
+    },
 <% end -%>
-    }
+};
+
+// Helpers
+
+/// Get coin from map, if missing returns defaults (not to have contains-check in each accessor method)
+const CoinInfo& getCoinInfo(TWCoinType coin) {
+    if (coins.find(coin) == coins.end()) { return defaultsForMissing; }
+    return coins.at(coin);
+}
+
+// Accessors
+
+TWBlockchain TW::blockchain(TWCoinType coin) {
+    return getCoinInfo(coin).blockchain;
 }
 
 TWPurpose TW::purpose(TWCoinType coin) {
-    switch (coin) {
-<% coins.each do |coin| -%>
-    case TWCoinType<%= format_name(coin['name']) %>:
-        return TWPurposeBIP<%= /^m\/(\d+)'?(\/\d+'?)+$/.match(coin['derivationPath'])[1] %>;
-<% end -%>
-    }
+    return getCoinInfo(coin).purpose;
 }
 
 TWCurve TW::curve(TWCoinType coin) {
-    switch (coin) {
-<% coins.each do |coin| -%>
-    case TWCoinType<%= format_name(coin['name']) %>:
-        return TWCurve<%= format_name(coin['curve']) %>;
-<% end -%>
-    }
+    return getCoinInfo(coin).curve;
 }
 
 TWHDVersion TW::xpubVersion(TWCoinType coin) {
-    switch (coin) {
-<% coins.each do |coin| -%>
-    case TWCoinType<%= format_name(coin['name']) %>:
-<%   if coin['xpub'].nil? -%>
-        return TWHDVersionNone;
-<%   else -%>
-        return TWHDVersion<%= format_name(coin['xpub']) %>;
-<%   end -%>
-<% end -%>
-    }
+    return getCoinInfo(coin).hdVersion;
 }
+
+
 
 TWHDVersion TW::xprvVersion(TWCoinType coin) {
     switch (coin) {
 <% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-<%   if coin['xprv'].nil? -%>
+<% if coin['xprv'].nil? -%>
         return TWHDVersionNone;
-<%   else -%>
+<% else -%>
         return TWHDVersion<%= format_name(coin['xprv']) %>;
-<%   end -%>
+<% end -%>
 <% end -%>
     }
 }
 
 DerivationPath TW::derivationPath(TWCoinType coin) {
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return DerivationPath("<%= coin['derivationPath'] %>");
 <% end -%>
@@ -76,7 +98,7 @@ DerivationPath TW::derivationPath(TWCoinType coin) {
 
 enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return TWPublicKeyType<%= format_name(coin['publicKeyType']) %>;
 <% end -%>
@@ -85,7 +107,7 @@ enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
 
 byte TW::staticPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.select{ |coin| coin.has_key?('staticPrefix') }.each do |coin| -%>
+<% coins.select{ |coin| coin.has_key?('staticPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['staticPrefix'] %>;
 <% end -%>
@@ -95,7 +117,7 @@ byte TW::staticPrefix(TWCoinType coin) {
 
 byte TW::p2pkhPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.select{ |coin| coin.has_key?('p2pkhPrefix') }.each do |coin| -%>
+<% coins.select{ |coin| coin.has_key?('p2pkhPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['p2pkhPrefix'] %>;
 <% end -%>
@@ -105,7 +127,7 @@ byte TW::p2pkhPrefix(TWCoinType coin) {
 
 byte TW::p2shPrefix(TWCoinType coin) {
     switch (coin) {
-<%  coins.select{ |coin| coin.has_key?('p2shPrefix') }.each do |coin| -%>
+<% coins.select{ |coin| coin.has_key?('p2shPrefix') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['p2shPrefix'] %>;
 <% end -%>
@@ -115,7 +137,7 @@ byte TW::p2shPrefix(TWCoinType coin) {
 
 enum TWHRP TW::hrp(TWCoinType coin) {
     switch (coin) {
-<%  coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
+<% coins.select{ |coin| coin.has_key?('hrp') }.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return TWHRP<%= format_name(coin['name']) %>;
 <% end -%>
@@ -125,26 +147,26 @@ enum TWHRP TW::hrp(TWCoinType coin) {
 
 Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-<%   if coin['publicKeyHasher'].nil? -%>
+<% if coin['publicKeyHasher'].nil? -%>
         return Hash::sha256ripemd;
-<%   else -%>
+<% else -%>
         return Hash::<%= coin['publicKeyHasher'] %>;
-<%   end -%>
+<% end -%>
 <% end -%>
     }
 }
 
 Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-<%   if coin['base58Hasher'].nil? -%>
+<% if coin['base58Hasher'].nil? -%>
         return Hash::sha256d;
-<%   else -%>
+<% else -%>
         return Hash::<%= coin['base58Hasher'] %>;
-<%   end -%>
+<% end -%>
 <% end -%>
     }
 }
@@ -152,7 +174,7 @@ Hash::Hasher TW::base58Hasher(TWCoinType coin) {
 TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {
     std::string string;
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         string = "<%= coin['symbol'] %>";
         break;
@@ -163,7 +185,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {
 
 int TWCoinTypeConfigurationGetDecimals(enum TWCoinType coin) {
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         return <%= coin['decimals'] %>;
 <% end -%>
@@ -174,7 +196,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType coi
     std::string url;
     std::string txId = TWStringUTF8Bytes(transactionID);
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         url = "<%= explorer_tx_url(coin) %>" + txId;
         break;
@@ -187,7 +209,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetAccountURL(enum TWCoinType coin, T
     std::string url;
     std::string accId = TWStringUTF8Bytes(accountID);
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         url = "<%= explorer_account_url(coin) %>" + accId;
         break;
@@ -199,7 +221,7 @@ TWString *_Nullable TWCoinTypeConfigurationGetAccountURL(enum TWCoinType coin, T
 TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
     std::string string;
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
         string = "<%= coin['id'] %>";
         break;
@@ -211,13 +233,13 @@ TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
 TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
     std::string string;
     switch (coin) {
-<%  coins.each do |coin| -%>
+<% coins.each do |coin| -%>
     case TWCoinType<%= format_name(coin['name']) %>:
-<%  if coin['displayName'].nil? -%>
+<% if coin['displayName'].nil? -%>
     string = "<%= coin['name'] %>";
-<%  else -%>
+<% else -%>
     string = "<%= coin['displayName'] %>";
-<%  end -%>
+<% end -%>
         break;
 <% end -%>
     }
