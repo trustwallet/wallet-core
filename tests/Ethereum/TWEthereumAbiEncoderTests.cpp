@@ -230,4 +230,35 @@ TEST(TWEthereumAbi, DecodeOutputFuncCase1) {
     TWEthereumAbiEncoderDeleteFunction(func);
 }
 
+TEST(TWEthereumAbi, GetParamWrongType) {
+    TWEthereumAbiFunction* func = TWEthereumAbiEncoderBuildFunction(TWStringCreateWithUTF8Bytes("func"));
+    ASSERT_TRUE(func != nullptr);
+    // add parameters
+    EXPECT_EQ(0, TWEthereumAbiFunctionAddParamUInt8(func, 1, true));
+    EXPECT_EQ(1, TWEthereumAbiFunctionAddParamUInt64(func, 2, true));
+
+    // GetParameter with correct types
+    EXPECT_EQ(1, TWEthereumAbiFunctionGetParamUInt8(func, 0, true));
+    EXPECT_EQ(2, TWEthereumAbiFunctionGetParamUInt64(func, 1, true));
+
+    // GetParameter with wrong type, default value (0) is returned
+    EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt8(func, 1, true));
+    EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt64(func, 0, true));
+    EXPECT_EQ("00", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamUInt256(func, 0, true)))));
+    EXPECT_EQ(false, TWEthereumAbiFunctionGetParamBool(func, 0, true));
+    EXPECT_EQ("", std::string(TWStringUTF8Bytes(TWEthereumAbiFunctionGetParamString(func, 0, true))));
+    EXPECT_EQ("", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamAddress(func, 0, true)))));
+
+    // GetParameter with wrong index, default value (0) is returned
+    EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt8(func, 99, true));
+    EXPECT_EQ(0, TWEthereumAbiFunctionGetParamUInt64(func, 99, true));
+    EXPECT_EQ("00", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamUInt256(func, 99, true)))));
+    EXPECT_EQ(false, TWEthereumAbiFunctionGetParamBool(func, 99, true));
+    EXPECT_EQ("", std::string(TWStringUTF8Bytes(TWEthereumAbiFunctionGetParamString(func, 99, true))));
+    EXPECT_EQ("", hex(*(static_cast<const Data*>(TWEthereumAbiFunctionGetParamAddress(func, 99, true)))));
+
+    // delete
+    TWEthereumAbiEncoderDeleteFunction(func);
+}
+
 } // namespace TW::Ethereum

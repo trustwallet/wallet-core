@@ -9,7 +9,7 @@
 #include "Data.h"
 #include "HexCoding.h"
 #include "uint256.h"
-#include "TWTestUtilities.h"
+#include "../interface/TWTestUtilities.h"
 #include <gtest/gtest.h>
 
 using namespace TW;

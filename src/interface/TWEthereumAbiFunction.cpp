@@ -221,7 +221,11 @@ uint8_t TWEthereumAbiFunctionGetParamUInt8(struct TWEthereumAbiFunction *_Nonnul
     if (!function.getParam(idx, param, isOutput)) {
         return 0;
     }
-    return (std::dynamic_pointer_cast<ParamUInt8>(param))->getVal();
+    auto param2 = std::dynamic_pointer_cast<ParamUInt8>(param);
+    if (param2 == nullptr) {
+        return 0;
+    }
+    return param2->getVal();
 }
 
 uint64_t TWEthereumAbiFunctionGetParamUInt64(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput) {
@@ -232,21 +236,31 @@ uint64_t TWEthereumAbiFunctionGetParamUInt64(struct TWEthereumAbiFunction *_Nonn
     if (!function.getParam(idx, param, isOutput)) {
         return 0;
     }
-    return (std::dynamic_pointer_cast<ParamUInt64>(param))->getVal();
+    auto param2 = std::dynamic_pointer_cast<ParamUInt64>(param);
+    if (param2 == nullptr) {
+        return 0;
+    }
+    return param2->getVal();
 }
 
 TWData *_Nonnull TWEthereumAbiFunctionGetParamUInt256(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput) {
     assert(func_in != nullptr);
     Function& function = func_in->impl;
 
-    TW::Data valDat;
+    uint256_t val256 = 0;
     std::shared_ptr<ParamBase> param;
     if (!function.getParam(idx, param, isOutput)) {
-        return TWDataCreateWithData(&valDat);
+        TW::Data valData = TW::store(val256);
+        return TWDataCreateWithData(&valData);
     }
-    uint256_t val256 = (std::dynamic_pointer_cast<ParamUInt256>(param))->getVal();
-    valDat = TW::store(val256);
-    return TWDataCreateWithData(&valDat);
+    auto param2 = std::dynamic_pointer_cast<ParamUInt256>(param);
+    if (param2 == nullptr) {
+        TW::Data valData = TW::store(val256);
+        return TWDataCreateWithData(&valData);
+    }
+    val256 = param2->getVal();
+    TW::Data valData = TW::store(val256);
+    return TWDataCreateWithData(&valData);
 }
 
 bool TWEthereumAbiFunctionGetParamBool(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput) {
@@ -257,7 +271,11 @@ bool TWEthereumAbiFunctionGetParamBool(struct TWEthereumAbiFunction *_Nonnull fu
     if (!function.getParam(idx, param, isOutput)) {
         return false;
     }
-    return (std::dynamic_pointer_cast<ParamBool>(param))->getVal();
+    auto param2 = std::dynamic_pointer_cast<ParamBool>(param);
+    if (param2 == nullptr) {
+        return false;
+    }
+    return param2->getVal();
 }
 
 TWString *_Nonnull TWEthereumAbiFunctionGetParamString(struct TWEthereumAbiFunction *_Nonnull func_in, int idx, bool isOutput) {
@@ -269,7 +287,11 @@ TWString *_Nonnull TWEthereumAbiFunctionGetParamString(struct TWEthereumAbiFunct
     if (!function.getParam(idx, param, isOutput)) {
         return TWStringCreateWithUTF8Bytes(valStr.c_str());
     }
-    valStr = (std::dynamic_pointer_cast<ParamString>(param))->getVal();
+    auto param2 = std::dynamic_pointer_cast<ParamString>(param);
+    if (param2 == nullptr) {
+        return TWStringCreateWithUTF8Bytes(valStr.c_str());
+    }
+    valStr = param2->getVal();
     return TWStringCreateWithUTF8Bytes(valStr.c_str());
 }
 
@@ -280,10 +302,14 @@ TWData *_Nonnull TWEthereumAbiFunctionGetParamAddress(struct TWEthereumAbiFuncti
     Data valData;
     std::shared_ptr<ParamBase> param;
     if (!function.getParam(idx, param, isOutput)) {
-        return TWDataCreateWithBytes(valData.data(), valData.size());
+        return TWDataCreateWithData(&valData);
     }
-    valData = (std::dynamic_pointer_cast<ParamAddress>(param))->getData();
-    return TWDataCreateWithBytes(valData.data(), valData.size());
+    auto param2 = std::dynamic_pointer_cast<ParamAddress>(param);
+    if (param2 == nullptr) {
+        return TWDataCreateWithData(&valData);
+    }
+    valData = param2->getData();
+    return TWDataCreateWithData(&valData);
 }
 
 ///// AddInArrayParam
@@ -294,6 +320,9 @@ int addInArrayParam(Function& function, int arrayIdx, const std::shared_ptr<Para
         return -1;
     }
     std::shared_ptr<ParamArray> paramArr = std::dynamic_pointer_cast<ParamArray>(param);
+    if (paramArr == nullptr) {
+        return -1; // not an array
+    }
     return paramArr->addParam(childParam);
 }
 
