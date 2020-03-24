@@ -15,30 +15,6 @@
 
 using namespace TW;
 
-
-// {
-//   "address": "btg1qtesn92ddy8m5yvypgsdtft3zj5qldj9g2u52sk",
-//   "scriptPubKey": "00145e6132a9ad21f7423081441ab4ae229501f6c8a8",
-//   "ismine": true,
-//   "iswatchonly": false,
-//   "isscript": false,
-//   "iswitness": true,
-//   "witness_version": 0,
-//   "witness_program": "5e6132a9ad21f7423081441ab4ae229501f6c8a8",
-//   "pubkey": "02f74712b5d765a73b52a14c1e113f2ef3f9502d09d5987ee40f53828cfe68b9a6",
-//   "label": "",
-//   "timestamp": 1520169519,
-//   "hdkeypath": "m/0'/0'/7'",
-//   "hdseedid": "78087f46f7ca96b35bd3a5ab2331f7c96780166d",
-//   "hdmasterkeyid": "78087f46f7ca96b35bd3a5ab2331f7c96780166d",
-//   "labels": [
-//     {
-//       "name": "",
-//       "purpose": "receive"
-//     }
-//   ]
-// }
-
 TEST(TWBitcoinGoldSegwitAddress, Valid) {
     ASSERT_TRUE(BitcoinGold::SegwitAddress::isValid("btg1qtesn92ddy8m5yvypgsdtft3zj5qldj9g2u52sk"));
     ASSERT_FALSE(BitcoinGold::SegwitAddress::isValid("btg1qtesn92ddy8m5yvypgsdtft3zj5qldj9g2u52sl"));
