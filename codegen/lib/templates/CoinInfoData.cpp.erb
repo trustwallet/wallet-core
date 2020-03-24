@@ -1,0 +1,80 @@
+// Copyright © 2017-2020 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+//
+// This is a GENERATED FILE, changes made here WILL BE LOST.
+//
+
+#include "Coin.h"
+#include <TrustWalletCore/TWCoinTypeConfiguration.h>
+
+#include <map>
+
+using namespace TW;
+
+/// Map with info about known coins
+static std::map<TWCoinType, CoinInfo> coins;
+
+static const CoinInfo defaultsForMissing = {
+    "?",
+    "?",
+    TWBlockchainBitcoin,
+    TWPurposeBIP44,
+    TWCurveED25519,
+    TWHDVersionNone,
+    TWHDVersionNone,
+    DerivationPath(),
+    TWPublicKeyTypeSECP256k1,
+    0,
+    0,
+    0,
+    TWHRPUnknown,
+    Hash::sha256ripemd,
+    Hash::sha256d,
+    "?",
+    2,
+    "",
+    "",
+};
+
+void fillMap(); // forward
+
+/// Get coin from map, if missing returns defaults (not to have contains-check in each accessor method)
+const CoinInfo& getCoinInfo(TWCoinType coin) {
+    if (coins.size() == 0) { fillMap(); }
+    if (coins.find(coin) == coins.end()) { return defaultsForMissing; }
+    return coins.at(coin);
+}
+
+/// Fill the map.  Simple static initializer did not work out due to nondeterministic static initialization order
+void fillMap() {
+    coins = std::map<TWCoinType, CoinInfo> {
+    <% coins.each do |coin| -%>
+    {
+            TWCoinType<%= format_name(coin['name']) %>, {
+                "<%= coin['id'] %>",
+                <% if coin['displayName'].nil? -%>"<%= coin['name'] %>"<% else -%>"<%= coin['displayName'] %>"<% end -%>,
+                TWBlockchain<%= format_name(coin['blockchain']) %>,
+                TWPurposeBIP<%= /^m\/(\d+)'?(\/\d+'?)+$/.match(coin['derivationPath'])[1] %>,
+                TWCurve<%= format_name(coin['curve']) %>,
+                TWHDVersion<% if coin['xpub'].nil? -%>None<% else -%><%= format_name(coin['xpub']) %><% end -%>,
+                TWHDVersion<% if coin['xprv'].nil? -%>None<% else -%><%= format_name(coin['xprv']) %><% end -%>,
+                DerivationPath("<%= coin['derivationPath'] %>"),
+                TWPublicKeyType<%= format_name(coin['publicKeyType']) %>,
+                <% if coin['staticPrefix'].nil? -%>0<% else -%><%= coin['staticPrefix'] %><% end -%>,
+                <% if coin['p2pkhPrefix'].nil? -%>0<% else -%><%= coin['p2pkhPrefix'] %><% end -%>,
+                <% if coin['p2shPrefix'].nil? -%>0<% else -%><%= coin['p2shPrefix'] %><% end -%>,
+                TWHRP<% if coin['hrp'].nil? -%>Unknown<% else -%><%= format_name(coin['name']) %><% end -%>,
+                Hash::<% if coin['publicKeyHasher'].nil? -%>sha256ripemd<% else -%><%= coin['publicKeyHasher'] %><% end -%>,
+                Hash::<% if coin['base58Hasher'].nil? -%>sha256d<% else -%><%= coin['base58Hasher'] %><% end -%>,
+                "<%= coin['symbol'] %>",
+                <%= coin['decimals'] %>,
+                "<%= explorer_tx_url(coin) %>",
+                "<%= explorer_account_url(coin) %>",
+            }
+        },
+    <% end -%>
+    };
+}

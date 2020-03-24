@@ -7,6 +7,7 @@
 #include "Coin.h"
 
 #include "CoinEntry.h"
+#include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <TrustWalletCore/TWHRP.h>
 
 #include <map>
@@ -195,4 +196,88 @@ void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
     auto dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     dispatcher->plan(coinType, dataIn, dataOut);
+}
+
+// Coin info accessors
+
+extern const CoinInfo& getCoinInfo(TWCoinType coin); // in generated CoinInfoData.cpp file
+
+TWBlockchain TW::blockchain(TWCoinType coin) {
+    return getCoinInfo(coin).blockchain;
+}
+
+TWPurpose TW::purpose(TWCoinType coin) {
+    return getCoinInfo(coin).purpose;
+}
+
+TWCurve TW::curve(TWCoinType coin) {
+    return getCoinInfo(coin).curve;
+}
+
+TWHDVersion TW::xpubVersion(TWCoinType coin) {
+    return getCoinInfo(coin).xpubVersion;
+}
+
+TWHDVersion TW::xprvVersion(TWCoinType coin) {
+    return getCoinInfo(coin).xprvVersion;
+}
+
+DerivationPath TW::derivationPath(TWCoinType coin) {
+    return getCoinInfo(coin).derivationPath;
+}
+
+enum TWPublicKeyType TW::publicKeyType(TWCoinType coin) {
+    return getCoinInfo(coin).publicKeyType;
+}
+
+TW::byte TW::staticPrefix(TWCoinType coin) {
+    return getCoinInfo(coin).staticPrefix;
+}
+
+TW::byte TW::p2pkhPrefix(TWCoinType coin) {
+    return getCoinInfo(coin).p2pkhPrefix;
+}
+
+TW::byte TW::p2shPrefix(TWCoinType coin) {
+    return getCoinInfo(coin).p2shPrefix;
+}
+
+enum TWHRP TW::hrp(TWCoinType coin) {
+    return getCoinInfo(coin).hrp;
+}
+
+Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
+    return getCoinInfo(coin).publicKeyHasher;
+}
+
+Hash::Hasher TW::base58Hasher(TWCoinType coin) {
+    return getCoinInfo(coin).base58Hasher;
+}
+
+TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {
+    return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).symbol);
+}
+
+int TWCoinTypeConfigurationGetDecimals(enum TWCoinType coin) {
+    return getCoinInfo(coin).decimals;
+}
+
+TWString *_Nullable TWCoinTypeConfigurationGetTransactionURL(enum TWCoinType coin, TWString *_Nonnull transactionID) {
+    std::string txId = TWStringUTF8Bytes(transactionID);
+    std::string url = getCoinInfo(coin).explorerTransactionUrl + txId;
+    return TWStringCreateWithUTF8Bytes(url.c_str());
+}
+
+TWString *_Nullable TWCoinTypeConfigurationGetAccountURL(enum TWCoinType coin, TWString *_Nonnull accountID) {
+    std::string accId = TWStringUTF8Bytes(accountID);
+    std::string url = getCoinInfo(coin).explorerAccountUrl + accId;
+    return TWStringCreateWithUTF8Bytes(url.c_str());
+}
+
+TWString *_Nonnull TWCoinTypeConfigurationGetID(enum TWCoinType coin) {
+    return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).id);
+}
+
+TWString *_Nonnull TWCoinTypeConfigurationGetName(enum TWCoinType coin) {
+    return TWStringCreateWithUTF8Bytes(getCoinInfo(coin).name);
 }

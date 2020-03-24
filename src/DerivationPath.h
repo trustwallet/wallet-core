@@ -45,25 +45,55 @@ struct DerivationPathIndex {
 struct DerivationPath {
     std::vector<DerivationPathIndex> indices;
 
-    TWPurpose purpose() const { return static_cast<TWPurpose>(indices[0].value); }
+    TWPurpose purpose() const {
+        if (indices.size() == 0) { return TWPurposeBIP44; }
+        return static_cast<TWPurpose>(indices[0].value);
+    }
 
-    void setPurpose(TWPurpose v) { indices[0] = DerivationPathIndex(v, /* hardened: */ true); }
+    void setPurpose(TWPurpose v) {
+        if (indices.size() == 0) { return; }
+        indices[0] = DerivationPathIndex(v, /* hardened: */ true);
+    }
 
-    TWCoinType coin() const { return static_cast<TWCoinType>(indices[1].value); }
+    TWCoinType coin() const {
+        if (indices.size() <= 1) { return TWCoinTypeBitcoin; }
+        return static_cast<TWCoinType>(indices[1].value);
+    }
 
-    void setCoin(TWCoinType v) { indices[1] = DerivationPathIndex(v, /* hardened: */ true); }
+    void setCoin(TWCoinType v) {
+        if (indices.size() <= 1) { return; }
+        indices[1] = DerivationPathIndex(v, /* hardened: */ true);
+    }
 
-    uint32_t account() const { return indices[2].value; }
+    uint32_t account() const {
+        if (indices.size() <= 2) { return 0; }
+        return indices[2].value;
+    }
 
-    void setAccount(uint32_t v) { indices[2] = DerivationPathIndex(v, /* hardened: */ true); }
+    void setAccount(uint32_t v) {
+        if (indices.size() <= 2) { return; }
+        indices[2] = DerivationPathIndex(v, /* hardened: */ true);
+    }
 
-    uint32_t change() const { return indices[3].value; }
+    uint32_t change() const {
+        if (indices.size() <= 3) { return 0; }
+        return indices[3].value;
+    }
 
-    void setChange(uint32_t v) { indices[3] = DerivationPathIndex(v, /* hardened: */ false); }
+    void setChange(uint32_t v) {
+        if (indices.size() <= 3) { return; }
+        indices[3] = DerivationPathIndex(v, /* hardened: */ false);
+    }
 
-    uint32_t address() const { return indices[4].value; }
+    uint32_t address() const {
+        if (indices.size() <= 4) { return 0; }
+        return indices[4].value;
+    }
 
-    void setAddress(uint32_t v) { indices[4] = DerivationPathIndex(v, /* hardened: */ false); }
+    void setAddress(uint32_t v) {
+        if (indices.size() <= 4) { return; }
+        indices[4] = DerivationPathIndex(v, /* hardened: */ false);
+    }
 
     DerivationPath() = default;
     explicit DerivationPath(std::initializer_list<DerivationPathIndex> l) : indices(l) {}

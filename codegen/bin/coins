@@ -33,7 +33,7 @@ coins = JSON.parse(json_string).sort_by { |x| x['name'] }
 coins_md = coins.sort_by { |x| Integer(coin_type(x['derivationPath'])) }
 
 erbs = [
-  {'template' => 'coins.cpp.erb', 'folder' => 'src/Generated', 'file' => 'Coins.cpp'},
+  {'template' => 'CoinInfoData.cpp.erb', 'folder' => 'src/Generated', 'file' => 'CoinInfoData.cpp'},
   {'template' => 'coins.md.erb', 'folder' => 'docs', 'file' => 'coins.md'},
   {'template' => 'hrp.cpp.erb', 'folder' => 'src/Generated', 'file' => 'TWHRP.cpp'},
   {'template' => 'hrp.h.erb', 'folder' => 'include/TrustWalletCore', 'file' => 'TWHRP.h'}

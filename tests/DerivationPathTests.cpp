@@ -41,6 +41,24 @@ TEST(DerivationPath, InitInvalid) {
     ASSERT_THROW(DerivationPath("m/44'/60''/"), std::invalid_argument);
 }
 
+TEST(DerivationPath, IndexOutOfBounds) {
+    DerivationPath path;
+
+    EXPECT_EQ(path.indices.size(), 0);
+
+    EXPECT_EQ(path.purpose(), TWPurposeBIP44);
+    EXPECT_EQ(path.coin(), TWCoinTypeBitcoin);
+    EXPECT_EQ(path.account(), 0);
+    EXPECT_EQ(path.change(), 0);
+    EXPECT_EQ(path.address(), 0);
+
+    ASSERT_NO_THROW(path.setPurpose(TWPurposeBIP44));
+    ASSERT_NO_THROW(path.setCoin(TWCoinTypeBitcoin));
+    ASSERT_NO_THROW(path.setAccount(0));
+    ASSERT_NO_THROW(path.setChange(0));
+    ASSERT_NO_THROW(path.setAddress(0));
+}
+
 TEST(DerivationPath, String) {
     const auto path = DerivationPath("m/44'/60'/0'/0/0");
     ASSERT_EQ(path.string(), "m/44'/60'/0'/0/0");
