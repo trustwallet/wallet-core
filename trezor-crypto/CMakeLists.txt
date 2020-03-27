@@ -60,6 +60,6 @@ target_include_directories(TrezorCrypto
         src
 )
 
-if(NOT ANDROID AND NOT IOS_PLATFORM)
+if(NOT ANDROID AND NOT IOS_PLATFORM AND NOT WASM)
     add_subdirectory(tests)
 endif()

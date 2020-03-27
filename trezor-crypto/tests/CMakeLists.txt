@@ -1,10 +1,10 @@
 enable_testing()
 
-find_library(check PATH ${CMAKE_SOURCE_DIR}/build/local/lib/pkgconfig NO_DEFAULT_PATH)
+find_library(check PATH ${CMAKE_SOURCE_DIR}/wallet-core/build/local/lib/pkgconfig NO_DEFAULT_PATH)
 
 # Test executable
 add_executable(TrezorCryptoTests test_check.c)
 target_link_libraries(TrezorCryptoTests TrezorCrypto check)
-target_include_directories(TrezorCryptoTests PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_include_directories(TrezorCryptoTests PRIVATE ${CMAKE_SOURCE_DIR}/wallet-core/src)
 
 add_test(NAME test_check COMMAND TrezorCryptoTests)
