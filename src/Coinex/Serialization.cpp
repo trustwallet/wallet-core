@@ -33,12 +33,14 @@ const std::string COINEX_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
 const std::string COINEX_PREFIX_PROPOSAL_VOTE_MESSAGE = "cosmos-sdk/MsgVote";
 
+const std::string COINEX_PREFIX_SET_REFEREE_MESSAGE = "authx/MsgSetReferee";
+
 
 json coinexHigherWrapperJSON(json& jsonObj) {
     json jsonMsgWrapper;
 
     jsonMsgWrapper["tx"] = jsonObj;
-    jsonMsgWrapper["mode"] = "block";
+    jsonMsgWrapper["mode"] = "sync";
 
     return jsonMsgWrapper;
 }
@@ -319,6 +321,64 @@ json coinexProposalVoteMessageJSON(const ProposalVoteMessage& message) {
     return coinexProposalVoteMessageJSON(message.voter(), message.proposal_id(),message.option(), message.type_prefix());
 }
 
+// dex and set referee
+json coinexCreateOrderAndSetRefereeMessageJSON(
+        std::string sender,
+                std::int64_t identify,
+                std::string trading_pair,
+                std::int64_t order_type,
+                std::int64_t price_precision,
+                std::string price,
+                std::string quantity,
+                std::int64_t side,
+                std::string time_in_force,
+                std::string exist_blocks,
+                std::string referee,
+                std::string type_prefix_1,
+                std::string type_prefix_2) {
+
+    json msgArray = json::array();
+
+    json setRefereeMsg;
+    setRefereeMsg["sender"] = sender;
+    setRefereeMsg["referee"] = referee;
+    msgArray.push_back(coinexWrapperJSON(type_prefix_1, setRefereeMsg));
+
+    json createOrderMsg;
+    createOrderMsg["sender"] = sender;
+    createOrderMsg["identify"] = identify;
+    createOrderMsg["trading_pair"] = trading_pair;
+    createOrderMsg["order_type"] = order_type;
+    createOrderMsg["price_precision"] = price_precision;
+    createOrderMsg["price"] = price;
+    createOrderMsg["quantity"] = quantity;
+    createOrderMsg["side"] = side;
+    createOrderMsg["time_in_force"] = time_in_force;
+    createOrderMsg["exist_blocks"] = exist_blocks;
+    msgArray.push_back(coinexWrapperJSON(type_prefix_2, createOrderMsg));
+
+    return msgArray;
+}
+
+json coinexCreateOrderAndSetRefereeMessageJSON(const CreateOrderAndSetRefereeMessage& message) {
+
+    return coinexCreateOrderAndSetRefereeMessageJSON(
+            message.sender(),
+            message.identify(),
+            message.trading_pair(),
+            message.order_type(),
+            message.price_precision(),
+            message.price(),
+            message.quantity(),
+            message.side(),
+            message.time_in_force(),
+            message.exist_blocks(),
+            message.referee(),
+            message.type_prefix_1(),
+            message.type_prefix_2());
+}
+
+
 
 //
 json coinexMessageJSON(const Coinex::Proto::SigningInput& input) {
@@ -342,7 +402,9 @@ json coinexMessageJSON(const Coinex::Proto::SigningInput& input) {
     } else if (input.has_cancel_order_message()) {
         return json::array({coinexCancelOrderMessageJSON(input.cancel_order_message())});
     } else if (input.has_proposal_vote_message()) {
-             return json::array({coinexProposalVoteMessageJSON(input.proposal_vote_message())});
+        return json::array({coinexProposalVoteMessageJSON(input.proposal_vote_message())});
+    } else if (input.has_create_order_and_set_referee_message()) {
+        return coinexCreateOrderAndSetRefereeMessageJSON(input.create_order_and_set_referee_message());
     }
 
 
@@ -370,7 +432,9 @@ json coinexMessageJSON(const Coinex::Proto::Transaction& transaction) {
     } else if (transaction.has_cancel_order_message()) {
         return json::array({coinexCancelOrderMessageJSON(transaction.cancel_order_message())});
     } else if (transaction.has_proposal_vote_message()) {
-             return json::array({coinexProposalVoteMessageJSON(transaction.proposal_vote_message())});
+        return json::array({coinexProposalVoteMessageJSON(transaction.proposal_vote_message())});
+    } else if (transaction.has_create_order_and_set_referee_message()) {
+        return coinexCreateOrderAndSetRefereeMessageJSON(transaction.create_order_and_set_referee_message());
     }
 
     return json::array({nullptr});

@@ -210,7 +210,7 @@ Data TransactionSigner<Transaction>::createSignature(const Transaction& transact
     auto sighash = transaction.getSignatureHash(script, index, static_cast<TWFreeCashSigHashType>(input.hash_type()), amount, static_cast<TWFreeCashSignatureVersion>(version));
     auto pk = PrivateKey(key);
 
-    auto sig = pk.signBchSchnorr(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
+    auto sig = pk.signSchnorr(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
     if (sig.empty()) {
         return {};
     }

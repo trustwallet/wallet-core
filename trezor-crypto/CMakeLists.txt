@@ -60,20 +60,6 @@ target_compile_options(TrezorCrypto
         -Werror
 )
 
-# Source files
-if(${ANDROID})
-    target_link_libraries(TrezorCrypto 
-        PUBLIC
-            "/usr/local/lib/android/libsecp256k1.a"
-            "/usr/local/lib/android/libsecp256k1.so"
-        )
-else()
-    target_link_libraries(TrezorCrypto 
-        PUBLIC
-            "/usr/local/lib/libsecp256k1.dylib"
-        )
-endif()
-
 target_include_directories(TrezorCrypto
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
