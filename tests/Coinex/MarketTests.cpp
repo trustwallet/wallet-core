@@ -156,17 +156,17 @@ TEST(CoinexMarket, ProposalVote) {
 
 TEST(CoinexMarket, CreateOrderAndSetReferee) {
     auto input = Proto::SigningInput();
-    input.set_account_number(24);
-    input.set_chain_id("coinexdex-test3400");
+    input.set_account_number(126);
+    input.set_chain_id("coinexdex2");
     input.set_memo("ifwallet");
     input.set_sequence(1);
 
     auto& message = *input.mutable_create_order_and_set_referee_message();
-    message.set_sender("cettest178w9m7yzkagpq090t593r6gqe5gkfkvjl76znl");
+    message.set_sender("coinex178w9m7yzkagpq090t593r6gqe5gkfkvjqjdxsw");
     message.set_identify(1);
     message.set_trading_pair("ift/cet");
     message.set_order_type(2);
-    message.set_price_precision(2);
+    message.set_price_precision(8);
     message.set_price("100000");
     message.set_quantity("10000");
     message.set_side(2); // 1-buy, 2-sell
