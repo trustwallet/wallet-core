@@ -34,7 +34,6 @@ add_library(TrezorCrypto
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -lsecp256k1")
 
 include_directories(/usr/local/include)
-link_directories(/usr/local/lib/android)
 link_directories(/usr/local/lib)
 # --------------end--------------------
 
@@ -64,8 +63,7 @@ target_compile_options(TrezorCrypto
 if(${ANDROID})
     target_link_libraries(TrezorCrypto
         PUBLIC
-            "/usr/local/lib/android/libsecp256k1.a"
-            "/usr/local/lib/android/libsecp256k1.so"
+            "/usr/local/lib/libsecp256k1.a"
         )
 else()
     target_link_libraries(TrezorCrypto
