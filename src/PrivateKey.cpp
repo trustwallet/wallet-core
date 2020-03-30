@@ -203,4 +203,25 @@ Data PrivateKey::signSchnorr(const Data& message, TWCurve curve) const {
     return sig;
 }
 
+Data PrivateKey::signBchSchnorr(const Data& message, TWCurve curve) const {
+    bool success = false;
+    Data sig(64);
+    switch (curve) {
+    case TWCurveSECP256k1: {
+        success = bch_schnorr_sign(bytes.data(), message.data(), sig.data()) == 0;
+    } break;
+
+    case TWCurveNIST256p1:
+    case TWCurveED25519:
+    case TWCurveED25519Blake2bNano:
+    case TWCurveCurve25519: {
+        // not support
+    } break;
+    }
+    if (!success) {
+        return {};
+    }
+    return sig;
+}
+
 
