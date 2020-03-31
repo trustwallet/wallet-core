@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# This script builds the sample applications.
+
+set -e
+
+pushd samples/cpp
+cmake . -DWALLET_CORE=../../
+make
+popd
