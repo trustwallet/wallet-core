@@ -8,3 +8,7 @@ pushd samples/cpp
 cmake . -DWALLET_CORE=../../
 make
 popd
+
+pushd samples/go
+go build -o main
+popd
