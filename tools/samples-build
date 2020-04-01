@@ -4,28 +4,54 @@
 
 set -e
 
-pushd samples/cpp
-echo "Building CPP sample app:"`pwd`
-cmake . -DWALLET_CORE=../../
-make
-echo "Building CPP sample app: done"
-popd
+if [ -z $1 ] 
+then 
+    echo "No platform argument given, use all|linux|ios|android"
+    set $1 'linux'
+fi
 
-pushd samples/osx/cocoapods
-echo "Building OSX sample app:"`pwd`
-pod repo update
-pod install
-echo "Building OSX sample app: done"
-popd
+if [ ! "$1" = "linux" ] && [ ! "$1" = "ios" ] && [ ! "$1" = "android" ]
+then
+    echo "Wrong platform argument given, use all|linux|ios|android"
+    set $1 'linux'
+fi
 
-pushd samples/android
-echo "Building Android sample app:"`pwd`
-./gradlew assembleDebug
-echo "Building Android sample app: done"
-popd
+echo "Platform argument: "$1
 
-pushd samples/go
-echo "Building GO sample app:"`pwd`
-go build -o main
-echo "Building GO sample app: done"
-popd
+if [ "$1" = "linux" ] || [ "$1" = "all" ]
+then
+    pushd samples/cpp
+    echo "Building CPP sample app:"`pwd`
+    cmake . -DWALLET_CORE=../../
+    make
+    echo "Building CPP sample app: done"
+    popd
+fi
+
+if [ "$1" = "ios" ] || [ "$1" = "all" ]
+then
+    pushd samples/osx/cocoapods
+    echo "Building OSX sample app:"`pwd`
+    pod repo update
+    pod install
+    echo "Building OSX sample app: done"
+    popd
+fi
+
+if [ "$1" = "android" ] || [ "$1" = "all" ]
+then
+    pushd samples/android
+    echo "Building Android sample app:"`pwd`
+    ./gradlew assembleDebug
+    echo "Building Android sample app: done"
+    popd
+fi
+
+if [ "$1" = "linux" ] || [ "$1" = "all" ]
+then
+    pushd samples/go
+    echo "Building GO sample app:"`pwd`
+    go build -o main
+    echo "Building GO sample app: done"
+    popd
+fi
