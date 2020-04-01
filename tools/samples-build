@@ -11,17 +11,18 @@ make
 echo "Building CPP sample app: done"
 popd
 
-#pushd samples/osx/cocoapods
-#echo "Building iOS sample app:"`pwd`
-#pod install
-#echo "Building iOS sample app: done"
-#popd
+pushd samples/osx/cocoapods
+echo "Building OSX sample app:"`pwd`
+pod repo update
+pod install
+echo "Building OSX sample app: done"
+popd
 
-#pushd samples/android
-#echo "Building Android sample app:"`pwd`
-#
-#echo "Building Android sample app: done"
-#popd
+pushd samples/android
+echo "Building Android sample app:"`pwd`
+./gradlew assembleDebug
+echo "Building Android sample app: done"
+popd
 
 pushd samples/go
 echo "Building GO sample app:"`pwd`
