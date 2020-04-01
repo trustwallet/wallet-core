@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# This script builds the sample applications.
+
+set -e
+
+pushd samples/cpp
+echo "Building CPP sample app:"`pwd`
+cmake . -DWALLET_CORE=../../
+make
+echo "Building CPP sample app: done"
+popd
+
+pushd samples/osx/cocoapods
+echo "Building OSX sample app:"`pwd`
+pod repo update
+pod install
+echo "Building OSX sample app: done"
+popd
+
+pushd samples/android
+echo "Building Android sample app:"`pwd`
+./gradlew assembleDebug
+echo "Building Android sample app: done"
+popd
+
+pushd samples/go
+echo "Building GO sample app:"`pwd`
+go build -o main
+echo "Building GO sample app: done"
+popd
