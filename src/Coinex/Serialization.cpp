@@ -378,6 +378,20 @@ json coinexCreateOrderAndSetRefereeMessageJSON(const CreateOrderAndSetRefereeMes
             message.type_prefix_2());
 }
 
+//set referee
+json coinexSetRefereeMessageJSON(std::string sender, std::string referee, std::string type_prefix) {
+    json jsonMsg;
+
+    jsonMsg["sender"] = sender;
+    jsonMsg["referee"] = referee;
+
+    return coinexWrapperJSON(type_prefix, jsonMsg);
+}
+
+json coinexSetRefereeMessageJSON(const SetRefereeMessage& message) {
+    return coinexSetRefereeMessageJSON(message.sender(), message.referee(), message.type_prefix());
+}
+
 
 
 //
@@ -405,6 +419,8 @@ json coinexMessageJSON(const Coinex::Proto::SigningInput& input) {
         return json::array({coinexProposalVoteMessageJSON(input.proposal_vote_message())});
     } else if (input.has_create_order_and_set_referee_message()) {
         return coinexCreateOrderAndSetRefereeMessageJSON(input.create_order_and_set_referee_message());
+    } else if (input.has_set_referee_message()) {
+        return json::array({coinexSetRefereeMessageJSON(input.set_referee_message())});
     }
 
 
@@ -435,7 +451,10 @@ json coinexMessageJSON(const Coinex::Proto::Transaction& transaction) {
         return json::array({coinexProposalVoteMessageJSON(transaction.proposal_vote_message())});
     } else if (transaction.has_create_order_and_set_referee_message()) {
         return coinexCreateOrderAndSetRefereeMessageJSON(transaction.create_order_and_set_referee_message());
+    } else if (transaction.has_set_referee_message()) {
+        return json::array({coinexSetRefereeMessageJSON(transaction.set_referee_message())});
     }
+
 
     return json::array({nullptr});
 }

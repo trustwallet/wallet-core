@@ -127,6 +127,13 @@ message CreateOrderAndSetRefereeMessage {
 
 }
 
+// Message for set referee
+message SetRefereeMessage {
+    string sender = 1;
+    string referee = 2;
+
+    string type_prefix = 3;//set referee
+}
 
 // Transaction
 message Transaction {
@@ -146,6 +153,7 @@ message Transaction {
         CancelOrderMessage cancel_order_message = 12;
         ProposalVoteMessage proposal_vote_message = 13;
         CreateOrderAndSetRefereeMessage create_order_and_set_referee_message = 14;
+        SetRefereeMessage set_referee_message = 15;
     }
 }
 
@@ -171,10 +179,11 @@ message SigningInput {
         CancelOrderMessage cancel_order_message = 15;
         ProposalVoteMessage proposal_vote_message = 16;
         CreateOrderAndSetRefereeMessage create_order_and_set_referee_message = 17;
+        SetRefereeMessage set_referee_message = 18;
 
     }
     // default is cosmos-sdk/MsgSend
-    string type_prefix = 18;
+    string type_prefix = 19;
 }
 
 // Transaction signing output.

@@ -193,5 +193,36 @@ TEST(CoinexMarket, CreateOrderAndSetReferee) {
 
 }
 
+TEST(CoinexMarket, SetReferee) {
+    auto input = Proto::SigningInput();
+    input.set_account_number(15830);
+    input.set_chain_id("coinexdex2");
+    input.set_memo("ifwallet");
+    input.set_sequence(0);
+
+    auto& message = *input.mutable_set_referee_message();
+    message.set_sender("coinex1cp9v52yf5j2yf7kpmxm0mqw0vsxmals2qc6klh");
+    message.set_referee("coinex1xh88wlkpxtm7m3ynqc6eru0yq6p93qage8jax9");
+
+    auto &fee = *input.mutable_fee();
+    fee.set_gas(200000);
+    auto amountOfFee = fee.add_amounts();
+    amountOfFee->set_denom("cet");
+    amountOfFee->set_amount(4000000);
+
+    auto privateKey = parse_hex("e3b1409b585e8eb53ec06294b8339375a071f6a779f2717fe4eb1fc1a9e43211");
+    input.set_private_key(privateKey.data(), privateKey.size());
+
+    auto signer = Coinex::Signer(std::move(input));
+    auto signature = signer.sign();
+    auto signatureInBase64 = Base64::encode(signature);
+
+    auto output = signer.build();
+
+    ASSERT_EQ("{\"mode\":\"block\",\"tx\":{\"fee\":{\"amount\":[{\"amount\":\"2000000\",\"denom\":\"cet\"}],\"gas\":\"100000\"},\"memo\":\"ifwallet\",\"msg\":[{\"type\":\"market/MsgCreateOrder\",\"value\":{\"exist_blocks\":\"10000\",\"identify\":1,\"order_type\":2,\"price\":\"100000\",\"price_precision\":2,\"quantity\":\"10000\",\"sender\":\"cettest1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0dsez0j\",\"side\":2,\"time_in_force\":\"3\",\"trading_pair\":\"ift/cet\"}}],\"signatures\":[{\"pub_key\":{\"type\":\"tendermint/PubKeySecp256k1\",\"value\":\"AkvCoxJlFT8H5w4LqwhyTmuF4hf4zWKM62KXQke7STOC\"},\"signature\":\"Ut24BNxDG7XQ3GyEx7lwn1Oh9QUVDTE4tXAiq86+4C0YDFxQqFOVn7sM7qp6lxY45EB71Q1WoxHX7sN7PR2xlg==\"}],\"type\":\"bankx/MsgSend\"}}", output.json());
+
+}
+
+
 
 }
