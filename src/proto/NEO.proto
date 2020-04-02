@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package TW.NEO.Proto;
+option java_package = "wallet.core.jni.proto";
+
+message TransactionInput {
+    bytes prev_hash = 1;
+    fixed32 prev_index = 2;
+
+    // unspent value of UTXO
+    int64 value = 3;
+
+    string asset_id = 4;
+}
+
+message TransactionOutput {
+    string asset_id = 1;
+    sint64 amount = 2;
+    string to_address = 3;
+    string change_address = 4;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    repeated TransactionInput inputs = 1;
+    repeated TransactionOutput outputs = 2;
+    bytes private_key = 3;
+    int64 fee = 4;
+    string gas_asset_id = 5;
+    string gas_change_address = 6;
+    TransactionPlan plan = 7;
+}
+
+// Transaction signing output.
+message SigningOutput {
+    // Signed and encoded transaction bytes.
+    bytes encoded = 1;
+
+    // Error message in case of error
+    string error = 2;
+}
+
+// Describes a preliminary transaction output plan.
+message TransactionOutputPlan {
+    // Amount to be received at the other end.
+    int64 amount = 1;
+
+    // Maximum available amount.
+    int64 available_amount = 2;
+
+    int64 change = 3;
+    string asset_id = 4;
+    string to_address = 5;
+    string change_address = 6;
+};
+
+// Describes a preliminary transaction plan.
+message TransactionPlan {
+    // Used assets
+    repeated TransactionOutputPlan outputs = 1;
+
+    // Selected unspent transaction outputs.
+    repeated TransactionInput inputs = 2;
+
+    // GAS used
+    int64 fee = 3;
+
+    // Error message in case of error
+    string error = 4;
+};
