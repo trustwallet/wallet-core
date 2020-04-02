@@ -9,4 +9,3 @@ syntax = "proto3";
 package TW.BitcoinGold.Proto;
 option java_package = "wallet.core.jni.proto";
 
-import "Bitcoin.proto";
