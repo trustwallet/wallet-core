@@ -15,9 +15,9 @@
 
 TEST(TWStellarCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeStellar));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
+    auto txId = TWStringCreateWithUTF8Bytes("d9aeabfa9d24df8c5755125f8af243b74cd3ff878656cfa72c566a8824bf6e84");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeStellar, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accId = TWStringCreateWithUTF8Bytes("GCILJZQ3CKBKBUJWW4TAM6Q37LJA5MQX6GMSFSQN75BPLWIZ33OPRG52");
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeStellar, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeStellar));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeStellar));
@@ -27,8 +27,8 @@ TEST(TWStellarCoinType, TWCoinType) {
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeStellar));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeStellar));
     assertStringsEqual(symbol, "XLM");
-    assertStringsEqual(txUrl, "https://stellarscan.io/transaction/t123");
-    assertStringsEqual(accUrl, "https://stellarscan.io/account/a12");
+    assertStringsEqual(txUrl, "https://blockchair.com/stellar/transaction/d9aeabfa9d24df8c5755125f8af243b74cd3ff878656cfa72c566a8824bf6e84");
+    assertStringsEqual(accUrl, "https://blockchair.com/stellar/account/GCILJZQ3CKBKBUJWW4TAM6Q37LJA5MQX6GMSFSQN75BPLWIZ33OPRG52");
     assertStringsEqual(id, "stellar");
     assertStringsEqual(name, "Stellar");
 }

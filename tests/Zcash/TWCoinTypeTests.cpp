@@ -15,9 +15,9 @@
 
 TEST(TWZcashCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeZcash));
-    auto txId = TWStringCreateWithUTF8Bytes("t123");
+    auto txId = TWStringCreateWithUTF8Bytes("f2438a93039faf08d39bd3df1f7b5f19a2c29ffe8753127e2956ab4461adab35");
     auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeZcash, txId));
-    auto accId = TWStringCreateWithUTF8Bytes("a12");
+    auto accId = TWStringCreateWithUTF8Bytes("t1Yfrf1dssDLmaMBsq2LFKWPbS5vH3nGpa2");
     auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeZcash, accId));
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeZcash));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeZcash));
@@ -27,8 +27,8 @@ TEST(TWZcashCoinType, TWCoinType) {
     ASSERT_EQ(0xbd, TWCoinTypeP2shPrefix(TWCoinTypeZcash));
     ASSERT_EQ(0x1c, TWCoinTypeStaticPrefix(TWCoinTypeZcash));
     assertStringsEqual(symbol, "ZEC");
-    assertStringsEqual(txUrl, "https://sochain.com/tx/ZEC/t123");
-    assertStringsEqual(accUrl, "https://sochain.com/address/ZEC/a12");
+    assertStringsEqual(txUrl, "https://blockchair.com/zcash/transaction/f2438a93039faf08d39bd3df1f7b5f19a2c29ffe8753127e2956ab4461adab35");
+    assertStringsEqual(accUrl, "https://blockchair.com/zcash/address/t1Yfrf1dssDLmaMBsq2LFKWPbS5vH3nGpa2");
     assertStringsEqual(id, "zcash");
     assertStringsEqual(name, "Zcash");
 }
