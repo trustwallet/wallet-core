@@ -571,9 +571,9 @@
         "xpub": "xpub",
         "xprv": "xprv",
         "explorer": {
-            "url": "https://sochain.com",
-            "txPath": "/tx/ZEC/",
-            "accountPath": "/address/ZEC/"
+            "url": "https://blockchair.com/zcash",
+            "txPath": "/transaction/",
+            "accountPath": "/address/"
         },
         "info": {
             "url": "https://z.cash",
@@ -682,7 +682,7 @@
         "curve": "ed25519",
         "publicKeyType": "ed25519",
         "explorer": {
-            "url": "https://stellarscan.io",
+            "url": "https://blockchair.com/stellar",
             "txPath": "/transaction/",
             "accountPath": "/account/"
         },
