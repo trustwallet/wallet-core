@@ -573,7 +573,7 @@
         "explorer": {
             "url": "https://blockchair.com/zcash",
             "txPath": "/transaction/",
-            "accountPath": "/account/"
+            "accountPath": "/address/"
         },
         "info": {
             "url": "https://z.cash",
