@@ -75,7 +75,7 @@ public final class KeyStore {
 
     /// Creates a new wallet. HD default by default
     public func createWallet(name: String, password: String, coins: [CoinType]) throws -> Wallet {
-        let key = StoredKey(name: name, password: password)
+        let key = StoredKey(name: name, password: Data(password.utf8))
         return try saveCreatedWallet(for: key, password: password, coins: coins)
     }
 
@@ -101,7 +101,7 @@ public final class KeyStore {
 
     /// Remove accounts from a wallet.
     public func removeAccounts(wallet: Wallet, coins: [CoinType], password: String) throws -> Wallet {
-        guard wallet.key.decryptPrivateKey(password: password) != nil else {
+        guard wallet.key.decryptPrivateKey(password: Data(password.utf8)) != nil else {
             throw Error.invalidPassword
         }
 
@@ -130,7 +130,7 @@ public final class KeyStore {
         guard let key = StoredKey.importJSON(json: json) else {
             throw Error.invalidKey
         }
-        guard let data = key.decryptPrivateKey(password: password) else {
+        guard let data = key.decryptPrivateKey(password: Data(password.utf8)) else {
             throw Error.invalidPassword
         }
 
@@ -159,7 +159,7 @@ public final class KeyStore {
     ///   - coin: coin to use for this wallet
     /// - Returns: new wallet
     public func `import`(privateKey: PrivateKey, name: String, password: String, coin: CoinType) throws -> Wallet {
-        guard let newKey = StoredKey.importPrivateKey(privateKey: privateKey.data, name: name, password: password, coin: coin) else {
+        guard let newKey = StoredKey.importPrivateKey(privateKey: privateKey.data, name: name, password: Data(password.utf8), coin: coin) else {
             throw Error.invalidKey
         }
         let url = makeAccountURL()
@@ -180,7 +180,7 @@ public final class KeyStore {
     ///   - coins: coins to add
     /// - Returns: new account
     public func `import`(mnemonic: String, name: String, encryptPassword: String, coins: [CoinType]) throws -> Wallet {
-        guard let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: name, password: encryptPassword, coin: coins.first ?? .ethereum) else {
+        guard let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: name, password: Data(encryptPassword.utf8), coin: coins.first ?? .ethereum) else {
             throw Error.invalidMnemonic
         }
         let url = makeAccountURL()
@@ -211,12 +211,12 @@ public final class KeyStore {
             throw Error.accountNotFound
         }
 
-        if let mnemonic = checkMnemonic(privateKeyData), let newKey = StoredKey.importHDWallet(mnemonic: mnemonic, name: "", password: newPassword, coin: coin) {
+        if let mnemonic = checkMnemonic(privateKeyData), let newKey = StoredKey.importHDWallet(mnemonic: mnemonic, name: "", password: Data(newPassword.utf8), coin: coin) {
             guard let json = newKey.exportJSON() else {
                 throw Error.invalidKey
             }
             return json
-        } else if let newKey = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "", password: newPassword, coin: coin) {
+        } else if let newKey = StoredKey.importPrivateKey(privateKey: privateKeyData, name: "", password: Data(newPassword.utf8), coin: coin) {
             guard let json = newKey.exportJSON() else {
                 throw Error.invalidKey
             }
@@ -233,7 +233,7 @@ public final class KeyStore {
     ///   - password: account password
     /// - Returns: private key data for encrypted keys or menmonic phrase for HD wallets
     public func exportPrivateKey(wallet: Wallet, password: String) throws -> Data {
-        guard let key = wallet.key.decryptPrivateKey(password: password) else {
+        guard let key = wallet.key.decryptPrivateKey(password: Data(password.utf8)) else {
             throw Error.invalidPassword
         }
         return key
@@ -247,7 +247,7 @@ public final class KeyStore {
     /// - Returns: mnemonic phrase
     /// - Throws: `EncryptError.invalidMnemonic` if the account is not an HD wallet.
     public func exportMnemonic(wallet: Wallet, password: String) throws -> String {
-        guard let mnemonic = wallet.key.decryptMnemonic(password: password) else {
+        guard let mnemonic = wallet.key.decryptMnemonic(password: Data(password.utf8)) else {
             throw Error.invalidPassword
         }
         return mnemonic
@@ -278,7 +278,7 @@ public final class KeyStore {
             fatalError("Missing wallet")
         }
 
-        guard var privateKeyData = wallet.key.decryptPrivateKey(password: password) else {
+        guard var privateKeyData = wallet.key.decryptPrivateKey(password: Data(password.utf8)) else {
             throw Error.invalidPassword
         }
         defer {
@@ -291,10 +291,10 @@ public final class KeyStore {
         }
 
         if let mnemonic = checkMnemonic(privateKeyData),
-            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: newName, password: newPassword, coin: coins[0]) {
+            let key = StoredKey.importHDWallet(mnemonic: mnemonic, name: newName, password: Data(newPassword.utf8), coin: coins[0]) {
             wallets[index].key = key
         } else if let key = StoredKey.importPrivateKey(
-                privateKey: privateKeyData, name: newName, password: newPassword, coin: coins[0]) {
+                privateKey: privateKeyData, name: newName, password: Data(newPassword.utf8), coin: coins[0]) {
             wallets[index].key = key
         } else {
             throw Error.invalidKey
@@ -310,7 +310,7 @@ public final class KeyStore {
             fatalError("Missing wallet")
         }
 
-        guard var privateKey = wallet.key.decryptPrivateKey(password: password) else {
+        guard var privateKey = wallet.key.decryptPrivateKey(password: Data(password.utf8)) else {
             throw KeyStore.Error.invalidKey
         }
         defer {

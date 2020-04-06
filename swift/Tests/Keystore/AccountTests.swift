@@ -9,7 +9,7 @@ import XCTest
 
 class AccountTests: XCTestCase {
     let words = "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn fatal"
-    let password = "password"
+    let password = Data("password".utf8)
 
     func testSignHash() throws {
         let privateKeyData = Data(hexString: "D30519BCAE8D180DBFCC94FE0B8383DC310185B0BE97B4365083EBCECCD75759")!
@@ -42,9 +42,10 @@ class AccountTests: XCTestCase {
     func testExtendedPubkey() throws {
         let key = StoredKey.importHDWallet(mnemonic: words, name: "name", password: password, coin: .ethereum)!
         let wallet = Wallet(keyURL: URL(fileURLWithPath: "/"), key: key)
-        _ = try wallet.getAccount(password: password, coin: .bitcoin)
-        _ = try wallet.getAccount(password: password, coin: .bitcoinCash)
-        _ = try wallet.getAccount(password: password, coin: .ethereumClassic)
+        let stringPass = String(data: password, encoding: .utf8)!
+        _ = try wallet.getAccount(password: stringPass, coin: .bitcoin)
+        _ = try wallet.getAccount(password: stringPass, coin: .bitcoinCash)
+        _ = try wallet.getAccount(password: stringPass, coin: .ethereumClassic)
 
         XCTAssertEqual(wallet.accounts[0].extendedPublicKey, "")
         XCTAssertEqual(wallet.accounts[1].extendedPublicKey, "zpub6rNUNtxSa9Gxvm4Bdxf1MPMwrvkzwDx6vP96Hkzw3jiQKdg3fhXBStxjn12YixQB8h88B3RMSRscRstf9AEVaYr3MAqVBEWBDuEJU4PGaT9")

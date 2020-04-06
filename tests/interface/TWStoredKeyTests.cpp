@@ -10,7 +10,7 @@
 #include <TrustWalletCore/TWCoinType.h>
 #include <TrustWalletCore/TWPrivateKey.h>
 #include <TrustWalletCore/TWStoredKey.h>
-
+#include <TrustWalletCore/TWData.h>
 #include "../src/HexCoding.h"
 
 #include <gtest/gtest.h>
@@ -24,17 +24,19 @@ using namespace std;
 
 
 /// Return a StoredKey instance that can be used for further tests.  Needs to be deleted at the end.
-struct TWStoredKey *_Nonnull createAStoredKey(TWCoinType coin, const string& password) {
+struct TWStoredKey *_Nonnull createAStoredKey(TWCoinType coin, TWData* password) {
     const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
-    const auto password2 = WRAPS(TWStringCreateWithUTF8Bytes(password.c_str()));
-    const auto key = TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password2.get(), coin);
+    const auto key = TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password, coin);
     return key;
 }
 
 /// Return a StoredKey instance that can be used for further tests.  Needs to be deleted at the end.
 struct TWStoredKey *_Nonnull createDefaultStoredKey() {
-    return createAStoredKey(TWCoinTypeBitcoin, "password");
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    
+    return createAStoredKey(TWCoinTypeBitcoin, password.get());
 }
 
 TEST(TWStoredKey, loadPBKDF2Key) {
@@ -52,7 +54,8 @@ TEST(TWStoredKey, loadNonexistent) {
 
 TEST(TWStoredKey, createWallet) {
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
-    const auto password = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
     const auto key = TWStoredKeyCreate(name.get(), password.get());
     const auto name2 = WRAPS(TWStoredKeyName(key));
     EXPECT_EQ(string(TWStringUTF8Bytes(name2.get())), "name");
@@ -66,7 +69,8 @@ TEST(TWStoredKey, importPrivateKey) {
     const auto privateKeyHex = "3a1076bf45ab87712ad64ccb3b10217737f7faacbf2872e88fdd9a537d8fe266";
     const auto privateKey = WRAPD(TWDataCreateWithHexString(TWStringCreateWithUTF8Bytes(privateKeyHex)));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
-    const auto password = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
     const auto coin = TWCoinTypeBitcoin;
     const auto key = TWStoredKeyImportPrivateKey(privateKey.get(), name.get(), password.get(), coin);
     const auto privateKey2 = WRAPD(TWStoredKeyDecryptPrivateKey(key, password.get()));
@@ -83,7 +87,8 @@ TEST(TWStoredKey, importPrivateKey) {
 TEST(TWStoredKey, importHDWallet) {
     const auto mnemonic = WRAPS(TWStringCreateWithUTF8Bytes("team engine square letter hero song dizzy scrub tornado fabric divert saddle"));
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
-    const auto password = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
     const auto coin = TWCoinTypeBitcoin;
     const auto key = TWStoredKeyImportHDWallet(mnemonic.get(), name.get(), password.get(), coin);
     EXPECT_TRUE(TWStoredKeyIsMnemonic(key));
@@ -96,11 +101,13 @@ TEST(TWStoredKey, importHDWallet) {
 }
 
 TEST(TWStoredKey, addressAddRemove) {
-    const auto password = "password";
-    const auto coin = TWCoinTypeBitcoin;
-    const auto key = createAStoredKey(coin, password);
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
 
-    const auto wallet = TWStoredKeyWallet(key, WRAPS(TWStringCreateWithUTF8Bytes(password)).get());
+    const auto coin = TWCoinTypeBitcoin;
+    const auto key = createAStoredKey(coin, password.get());
+
+    const auto wallet = TWStoredKeyWallet(key, password.get());
     const auto accountCoin = TWStoredKeyAccountForCoin(key, coin, wallet);
     const auto accountAddress = WRAPS(TWAccountAddress(accountCoin));
     EXPECT_EQ(string(TWStringUTF8Bytes(accountAddress.get())), "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
@@ -171,9 +178,11 @@ TEST(TWStoredKey, importJsonInvalid) {
 }
 
 TEST(TWStoredKey, fixAddresses) {
-    const auto password = "password";
-    const auto key = createAStoredKey(TWCoinTypeBitcoin, password);
-    EXPECT_TRUE(TWStoredKeyFixAddresses(key, WRAPS(TWStringCreateWithUTF8Bytes(password)).get()));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    
+    const auto key = createAStoredKey(TWCoinTypeBitcoin, password.get());
+    EXPECT_TRUE(TWStoredKeyFixAddresses(key, password.get()));
     TWStoredKeyDelete(key);
 }
 
@@ -181,10 +190,11 @@ TEST(TWStoredKey, importInvalidKey) {
     auto bytes = TW::parse_hex("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
     auto data = WRAPD(TWDataCreateWithBytes(bytes.data(), bytes.size()));
     auto name = WRAPS(TWStringCreateWithUTF8Bytes("test"));
+    auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(name.get())), TWStringSize(name.get())));
 
-    auto eth = TWStoredKeyImportPrivateKey(data.get(), name.get(), name.get(), TWCoinTypeEthereum);
-    auto ont = TWStoredKeyImportPrivateKey(data.get(), name.get(), name.get(), TWCoinTypeOntology);
-    auto tezos = TWStoredKeyImportPrivateKey(data.get(), name.get(), name.get(), TWCoinTypeTezos);
+    auto eth = TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeEthereum);
+    auto ont = TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeOntology);
+    auto tezos = TWStoredKeyImportPrivateKey(data.get(), name.get(), password.get(), TWCoinTypeTezos);
 
     ASSERT_EQ(eth, nullptr);
     ASSERT_EQ(ont, nullptr);
@@ -192,9 +202,11 @@ TEST(TWStoredKey, importInvalidKey) {
 }
 
 TEST(TWStoredKey, removeAccountForCoin) {
-    auto password = "password";
-    auto key = TWStoredKeyCreate("Test KeyStore", password);
-    auto wallet = TWStoredKeyWallet(key, password);
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    
+    auto key = TWStoredKeyCreate("Test KeyStore", password.get());
+    auto wallet = TWStoredKeyWallet(key, password.get());
     
     ASSERT_NE(TWStoredKeyAccountForCoin(key, TWCoinTypeEthereum, wallet), nullptr);
     ASSERT_NE(TWStoredKeyAccountForCoin(key, TWCoinTypeBitcoin, wallet), nullptr);
@@ -211,8 +223,12 @@ TEST(TWStoredKey, removeAccountForCoin) {
 
 TEST(TWStoredKey, getWalletPasswordInvalid) {
     const auto name = WRAPS(TWStringCreateWithUTF8Bytes("name"));
-    const auto password = WRAPS(TWStringCreateWithUTF8Bytes("password"));
-    const auto passwordInvalid = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_INVALID_PASSWORD_"));
+    const auto passwordString = WRAPS(TWStringCreateWithUTF8Bytes("password"));
+    const auto password = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(passwordString.get())), TWStringSize(passwordString.get())));
+    
+    const auto invalidString = WRAPS(TWStringCreateWithUTF8Bytes("_THIS_IS_INVALID_PASSWORD_"));
+    const auto passwordInvalid = WRAPD(TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(TWStringUTF8Bytes(invalidString.get())), TWStringSize(invalidString.get())));
+    
     auto key = TWStoredKeyCreate (name.get(), password.get());
     ASSERT_NE(TWStoredKeyWallet(key, password.get()), nullptr);
     ASSERT_EQ(TWStoredKeyWallet(key, passwordInvalid.get()), nullptr);
