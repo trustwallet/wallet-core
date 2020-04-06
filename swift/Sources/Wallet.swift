@@ -36,7 +36,7 @@ public final class Wallet: Hashable, Equatable {
     /// - Returns: the account
     /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
     public func getAccount(password: String, coin: CoinType) throws -> Account {
-        let wallet = key.wallet(password: password)
+        let wallet = key.wallet(password: Data(password.utf8))
         guard let account = key.accountForCoin(coin: coin, wallet: wallet) else {
             throw KeyStore.Error.invalidPassword
         }
@@ -51,7 +51,7 @@ public final class Wallet: Hashable, Equatable {
     /// - Returns: the added accounts
     /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
     public func getAccounts(password: String, coins: [CoinType]) throws -> [Account] {
-        guard let wallet = key.wallet(password: password) else {
+        guard let wallet = key.wallet(password: Data(password.utf8)) else {
             throw KeyStore.Error.invalidPassword
         }
         return coins.compactMap({ key.accountForCoin(coin: $0, wallet: wallet) })
@@ -65,7 +65,7 @@ public final class Wallet: Hashable, Equatable {
     /// - Returns: the private key
     /// - Throws: `KeyStore.Error.invalidPassword` if the password is incorrect.
     public func privateKey(password: String, coin: CoinType) throws -> PrivateKey {
-        guard let pk = key.privateKey(coin: coin, password: password) else {
+        guard let pk = key.privateKey(coin: coin, password: Data(password.utf8)) else {
             throw KeyStore.Error.invalidPassword
         }
         return pk

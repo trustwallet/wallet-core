@@ -28,7 +28,7 @@ static Data computeMAC(Iter begin, Iter end, Data key) {
     return Hash::keccak256(data);
 }
 
-EncryptionParameters::EncryptionParameters(const std::string& password, Data data) : mac() {
+EncryptionParameters::EncryptionParameters(const Data& password, Data data) : mac() {
     auto scryptParams = boost::get<ScryptParameters>(kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
@@ -50,21 +50,21 @@ EncryptionParameters::~EncryptionParameters() {
     std::fill(encrypted.begin(), encrypted.end(), 0);
 }
 
-Data EncryptionParameters::decrypt(const std::string& password) const {
+Data EncryptionParameters::decrypt(const Data& password) const {
     auto derivedKey = Data();
     auto mac = Data();
 
     if (kdfParams.which() == 0) {
         auto scryptParams = boost::get<ScryptParameters>(kdfParams);
         derivedKey.resize(scryptParams.defaultDesiredKeyLength);
-        scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
+        scrypt(password.data(), password.size(), scryptParams.salt.data(),
             scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
             scryptParams.defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
     } else if (kdfParams.which() == 1) {
         auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
         derivedKey.resize(pbkdf2Params.defaultDesiredKeyLength);
-        pbkdf2_hmac_sha256(reinterpret_cast<const byte*>(password.data()), password.size(), pbkdf2Params.salt.data(),
+        pbkdf2_hmac_sha256(password.data(), password.size(), pbkdf2Params.salt.data(),
             pbkdf2Params.salt.size(), pbkdf2Params.iterations, derivedKey.data(),
             pbkdf2Params.defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
