@@ -7,22 +7,38 @@
 #pragma once
 
 #include "Data.h"
-
+#include "proto/IoTeX.pb.h"
 namespace TW::IoTeX {
 
-/// Function to generate Stake message
-void stakingStake(const Data& candidate, uint64_t stakeDuration, bool nonDecay, const Data& dataIn, Data& dataOut);
+/// Function to generate Create message
+const Data& stakingCreate(const Data& candidate, const Data& amount, uint32_t duration,
+                          bool autoStake, const Data& payload);
+
+/// Function to generate AddDeposit message
+const Data& stakingAddDeposit(uint64_t index, const Data& amount, const Data& payload);
 
 /// Function to generate Unstake message
-void stakingUnstake(uint64_t pyggIndex, const Data& dataIn, Data& dataOut);
+const Data& stakingUnstake(uint64_t index, const Data& payload);
 
 /// Function to generate Withdraw message
-void stakingWithdraw(uint64_t pyggIndex, const Data& dataIn, Data& dataOut);
+const Data& stakingWithdraw(uint64_t index, const Data& payload);
 
-/// Function to generate AddStake message
-void stakingAddStake(uint64_t pyggIndex, const Data& dataIn, Data& dataOut);
+/// Function to generate Restake message
+const Data& stakingRestake(uint64_t index, uint32_t duration, bool autoStake, const Data& payload);
 
-/// Function to generate MoveStake message
-void stakingMoveStake(uint64_t pyggIndex, const Data& candidate, const Data& dataIn, Data& dataOut);
+/// Function to generate ChangeCandidate message
+const Data& stakingChangeCandidate(uint64_t index, const Data& candidate, const Data& payload);
+
+/// Function to generate Transfer message
+const Data& stakingTransfer(uint64_t index, const Data& voterAddress, const Data& payload);
+
+/// Function to generate candidate register message
+const Data& candidateRegister(const Data& name, const Data& operatorAddress,
+                              const Data& rewardAddress, const Data& amount, uint32_t duration,
+                              bool autoStake, const Data& ownerAddress, const Data& payload);
+
+/// Function to generate candidate update message
+const Data& candidateUpdate(const Data& name, const Data& operatorAddress,
+                            const Data& rewardAddress);
 
 } // namespace TW::IoTeX

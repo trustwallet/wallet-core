@@ -4,193 +4,466 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
-#include "IoTeX/Staking.h"
-#include "IoTeX/Signer.h"
 #include "Data.h"
 #include "HexCoding.h"
+#include "IoTeX/Signer.h"
+#include "IoTeX/Staking.h"
+#include "PrivateKey.h"
 #include "proto/IoTeX.pb.h"
 #include "../interface/TWTestUtilities.h"
-
 #include <gtest/gtest.h>
 
 using namespace TW;
 using namespace TW::IoTeX;
 
-static const uint64_t pyggyIndex01 = 1001;
-static std::string IOTEX_STAKING_CONTRACT = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
-static const Data IOTEX_STAKING_TEST = TW::data(std::string("this is a test"));
-static const Data candidate12 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+TEST(TWIoTeXStaking, Create) {
+    std::string IOTEX_STAKING_CANDIDATE = "io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj";
+    std::string IOTEX_STAKING_PAYLOAD = "payload";
+    std::string IOTEX_STAKING_AMOUNT = "100";
+    Data candidate(IOTEX_STAKING_CANDIDATE.begin(), IOTEX_STAKING_CANDIDATE.end());
+    Data payload(IOTEX_STAKING_PAYLOAD.begin(), IOTEX_STAKING_PAYLOAD.end());
+    Data amount(IOTEX_STAKING_AMOUNT.begin(), IOTEX_STAKING_AMOUNT.end());
 
-TEST(IoTeXStaking, Stake) {
-    Data result;
-    stakingStake(candidate12, pyggyIndex01, true, IOTEX_STAKING_TEST, result);
-    ASSERT_EQ(hex(result), "07c35fc00102030405060708090a0b0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e900000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+    auto stake = stakingCreate(candidate, amount, 10000, true, payload);
+    ASSERT_EQ(hex(stake), "0a29696f313964307033616834673877773964376b63786671383779786537666e723872"
+                          "7074683573686a120331303018904e20012a077061796c6f6164");
 }
 
-TEST(IoTeXStaking, Unstake) {
-    Data result;
-    stakingUnstake(pyggyIndex01, IOTEX_STAKING_TEST, result);
-    ASSERT_EQ(hex(result), "c8fd6ed000000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+TEST(TWIoTeXStaking, AddDeposit) {
+    std::string IOTEX_STAKING_PAYLOAD = "payload";
+    std::string IOTEX_STAKING_AMOUNT = "10";
+    Data payload(IOTEX_STAKING_PAYLOAD.begin(), IOTEX_STAKING_PAYLOAD.end());
+    Data amount(IOTEX_STAKING_AMOUNT.begin(), IOTEX_STAKING_AMOUNT.end());
+
+    auto stake = stakingAddDeposit(10, amount, payload);
+
+    ASSERT_EQ(hex(stake), "080a120231301a077061796c6f6164");
 }
 
-TEST(IoTeXStaking, Withdraw) {
-    Data result;
-    stakingWithdraw(pyggyIndex01, IOTEX_STAKING_TEST, result);
-    ASSERT_EQ(hex(result), "030ba25d00000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+TEST(TWIoTeXStaking, Unstake) {
+    std::string IOTEX_STAKING_PAYLOAD = "payload";
+    Data payload(IOTEX_STAKING_PAYLOAD.begin(), IOTEX_STAKING_PAYLOAD.end());
+
+    auto stake = stakingUnstake(10, payload);
+
+    ASSERT_EQ(hex(stake), "080a12077061796c6f6164");
 }
 
-TEST(IoTeXStaking, AddStake) {
-    Data result;
-    stakingAddStake(pyggyIndex01, IOTEX_STAKING_TEST, result);
-    ASSERT_EQ(hex(result), "6e7b301700000000000000000000000000000000000000000000000000000000000003e90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+TEST(TWIoTeXStaking, Withdraw) {
+    std::string IOTEX_STAKING_PAYLOAD = "payload";
+    Data payload(IOTEX_STAKING_PAYLOAD.begin(), IOTEX_STAKING_PAYLOAD.end());
+
+    auto stake = stakingWithdraw(10, payload);
+
+    ASSERT_EQ(hex(stake), "080a12077061796c6f6164");
 }
 
-TEST(IoTeXStaking, MoveStake) {
-    Data result;
-    stakingMoveStake(pyggyIndex01, candidate12, IOTEX_STAKING_TEST, result);
-    ASSERT_EQ(hex(result), "d3e41fd200000000000000000000000000000000000000000000000000000000000003e90102030405060708090a0b0c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000e7468697320697320612074657374000000000000000000000000000000000000");
+TEST(TWIoTeXStaking, Restake) {
+    std::string IOTEX_STAKING_PAYLOAD = "payload";
+    Data payload(IOTEX_STAKING_PAYLOAD.begin(), IOTEX_STAKING_PAYLOAD.end());
+
+    auto stake = stakingRestake(10, 1000, true, payload);
+
+    ASSERT_EQ(hex(stake), "080a10e807180122077061796c6f6164");
 }
 
-TEST(IoTeXStaking, SignStake) {
+TEST(TWIoTeXStaking, ChangeCandidate) {
+    std::string IOTEX_STAKING_CANDIDATE = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
+    std::string IOTEX_STAKING_PAYLOAD = "payload";
+    Data candidate(IOTEX_STAKING_CANDIDATE.begin(), IOTEX_STAKING_CANDIDATE.end());
+    Data payload(IOTEX_STAKING_PAYLOAD.begin(), IOTEX_STAKING_PAYLOAD.end());
+
+    auto stake = stakingChangeCandidate(10, candidate, payload);
+
+    ASSERT_EQ(hex(stake), "080a1229696f3178707136326177383575717a72636367397935686e727976386c"
+                          "64326e6b7079636333677a611a077061796c6f6164");
+}
+
+TEST(TWIoTeXStaking, Transfer) {
+    std::string IOTEX_STAKING_CANDIDATE = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
+    std::string IOTEX_STAKING_PAYLOAD = "payload";
+    Data candidate(IOTEX_STAKING_CANDIDATE.begin(), IOTEX_STAKING_CANDIDATE.end());
+    Data payload(IOTEX_STAKING_PAYLOAD.begin(), IOTEX_STAKING_PAYLOAD.end());
+
+    auto stake = stakingTransfer(10, candidate, payload);
+
+    ASSERT_EQ(hex(stake), "080a1229696f3178707136326177383575717a72636367397935686e727976386c6432"
+                          "6e6b7079636333677a611a077061796c6f6164");
+}
+
+TEST(TWIoTeXStaking, CandidateRegister) {
+    std::string IOTEX_STAKING_NAME = "test";
+    std::string IOTEX_STAKING_OPERATOR = "io10a298zmzvrt4guq79a9f4x7qedj59y7ery84he";
+    std::string IOTEX_STAKING_REWARD = "io13sj9mzpewn25ymheukte4v39hvjdtrfp00mlyv";
+    std::string IOTEX_STAKING_OWNER = "io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj";
+    std::string IOTEX_STAKING_AMOUNT = "100";
+    std::string IOTEX_STAKING_PAYLOAD = "payload";
+    Data name(IOTEX_STAKING_NAME.begin(), IOTEX_STAKING_NAME.end());
+    Data operatorAddress(IOTEX_STAKING_OPERATOR.begin(), IOTEX_STAKING_OPERATOR.end());
+    Data reward(IOTEX_STAKING_REWARD.begin(), IOTEX_STAKING_REWARD.end());
+    Data amount(IOTEX_STAKING_AMOUNT.begin(), IOTEX_STAKING_AMOUNT.end());
+    Data owner(IOTEX_STAKING_OWNER.begin(), IOTEX_STAKING_OWNER.end());
+    Data payload(IOTEX_STAKING_PAYLOAD.begin(), IOTEX_STAKING_PAYLOAD.end());
+
+    auto stake =
+        candidateRegister(name, operatorAddress, reward, amount, 10000, false, owner, payload);
+
+    ASSERT_EQ(hex(stake),
+              "0a5c0a04746573741229696f3130613239387a6d7a7672743467757137396139663478377165646a3539"
+              "7937657279383468651a29696f3133736a396d7a7065776e3235796d6865756b74653476333968766a64"
+              "7472667030306d6c7976120331303018904e2a29696f313964307033616834673877773964376b637866"
+              "71383779786537666e7238727074683573686a32077061796c6f6164");
+}
+
+TEST(TWIoTeXStaking, CandidateUpdate) {
+    std::string IOTEX_STAKING_NAME = "test";
+    std::string IOTEX_STAKING_OPERATOR = "io1cl6rl2ev5dfa988qmgzg2x4hfazmp9vn2g66ng";
+    std::string IOTEX_STAKING_REWARD = "io1juvx5g063eu4ts832nukp4vgcwk2gnc5cu9ayd";
+    Data name(IOTEX_STAKING_NAME.begin(), IOTEX_STAKING_NAME.end());
+    Data operatorAddress(IOTEX_STAKING_OPERATOR.begin(), IOTEX_STAKING_OPERATOR.end());
+    Data reward(IOTEX_STAKING_REWARD.begin(), IOTEX_STAKING_REWARD.end());
+
+    auto stake = candidateUpdate(name, operatorAddress, reward);
+
+    ASSERT_EQ(hex(stake), "0a04746573741229696f31636c36726c32657635646661393838716d677a6732783468"
+                          "66617a6d7039766e326736366e671a29696f316a757678356730363365753474733833"
+                          "326e756b7034766763776b32676e6335637539617964");
+}
+
+TEST(TWIoTeXStaking, SignCreate) {
     auto input = Proto::SigningInput();
     input.set_version(1);
-    input.set_nonce(123);
-    input.set_gaslimit(888);
-    input.set_gasprice("999");
-    auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    // staking is implemented using the Execution message
-    auto staking = input.mutable_call();
-    staking->set_amount("456");
-    staking->set_contract(IOTEX_STAKING_CONTRACT);
+    std::string candidate = "io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj";
+    std::string payload = "payload";
+    std::string amount = "100";
 
-    // call staking API to generate calldata
-    // data = "this is a test" here, it could be null (user leaves data empty when signing the tx)
-    Data stake;
-    stakingStake(candidate12, pyggyIndex01, true, IOTEX_STAKING_TEST, stake);
-    staking->set_data(stake.data(), stake.size());
-    
+    auto action = input.mutable_stakecreate();
+    action->set_candidatename(candidate.c_str());
+    action->set_stakedamount(amount.c_str());
+    action->set_stakedduration(10000);
+    action->set_autostake(true);
+    action->set_payload(payload.c_str());
+
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
-    ASSERT_EQ(hex(signer.hash()), "cc3c8f7a0129455d70457c4be42a8b31d8e1df59594c99041b6b6d091b295b32");
+    ASSERT_EQ(hex(signer.hash()),
+              "18d76ff9f3cfed0fe84f3fd4831f11379edc5b3d689d646187520b3fe74ab44c");
     // build() signs the tx
     auto output = signer.build();
     // signed action's serialized bytes
     auto encoded = output.encoded();
-    ASSERT_EQ(hex(encoded.begin(), encoded.end()), "0a86020801107b18f806220339393962f7010a033435361229696f3178707136326177383575717a72636367397935686e727976386c64326e6b7079636333677a611ac40107c35fc00102030405060708090a0b0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e900000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000e74686973206973206120746573740000000000000000000000000000000000001241044e18306ae9ef4ec9d07bf6e705442d4d1a75e6cdf750330ca2d880f2cc54607c9c33deb9eae9c06e06e04fe9ce3d43962cc67d5aa34fbeb71270d4bad3d648d91a41a558bc9a4bfba920242ccd4d5c5da363ec534d4dd5eb67f88e9db7aaad5c50ad62dfe298c0e54e311ebba045f48cea1136e42a123a8e6b03d3e6ed82d4ec2b9401");
+    ASSERT_EQ(
+        hex(encoded.begin(), encoded.end()),
+        "0a4b080118c0843d22023130c2023e0a29696f313964307033616834673877773964376b637866713837797865"
+        "37666e7238727074683573686a120331303018904e20012a077061796c6f6164124104755ce6d8903f6b3793bd"
+        "db4ea5d3589d637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b583c0bc76ef30d"
+        "d6a1038ed9da8daf331a412e8bac421bab88dcd99c26ac8ffbf27f11ee57a41e7d2537891bfed5aed8e2e026d4"
+        "6e55d1b856787bc1cd7c1216a6e2534c5b5d1097c3afe8e657aa27cbbb0801");
     // signed action's hash
-    ASSERT_EQ(hex(output.hash()), "41b1f8be5f6b884c06556fba2611716e8e514b507f5a653fc02ac50ba13fbd6c");
+    ASSERT_EQ(hex(output.hash()),
+              "f1785e47b4200c752bb6518bd18097a41e075438b8c18c9cb00e1ae2f38ce767");
 }
 
-TEST(IoTeXStaking, SignUnstake) {
+TEST(TWIoTeXStaking, SignAddDeposit) {
     auto input = Proto::SigningInput();
     input.set_version(1);
-    input.set_nonce(123);
-    input.set_gaslimit(888);
-    input.set_gasprice("999");
-    auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    // staking is implemented using the Execution message
-    auto staking = input.mutable_call();
-    staking->set_amount("456");
-    staking->set_contract(IOTEX_STAKING_CONTRACT);
+    std::string amount = "10";
+    std::string payload = "payload";
 
-    // call staking API to generate calldata
-    Data unstake;
-    stakingUnstake(pyggyIndex01, Data{}, unstake);
-    staking->set_data(unstake.data(), unstake.size());
-    
+    auto action = input.mutable_stakeadddeposit();
+    action->set_bucketindex(10);
+    action->set_amount(amount);
+    action->set_payload(payload);
+
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
-    ASSERT_EQ(hex(signer.hash()), "784f3d71246dfe897c1cb02da94e8ef1ac2381ac7f25ecfee80eaa78237db95b");
+    ASSERT_EQ(hex(signer.hash()),
+              "9089e7eb1afed64fcdbd3c7ee29a6cedab9aa59cf3f7881dfaa3d19f99f09338");
     // build() signs the tx
     auto output = signer.build();
+    // signed action's serialized bytes
+    auto encoded = output.encoded();
+    ASSERT_EQ(hex(encoded.begin(), encoded.end()),
+              "0a1c080118c0843d22023130da020f080a120231301a077061796c6f6164124104755ce6d8903f6b3793"
+              "bddb4ea5d3589d637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b583c0b"
+              "c76ef30dd6a1038ed9da8daf331a41a48ab1feba8181d760de946aefed7d815a89fd9b1ab503d2392bb5"
+              "5e1bb75eec42dddc8bd642f89accc3a37b3cf15a103a95d66695fdf0647b202869fdd66bcb01");
     // signed action's hash
-    ASSERT_EQ(hex(output.hash()), "b93a2874a72ce4eb8a41a20c209cf3fd188671ed8be8239a57960cbed887e962");
+    ASSERT_EQ(hex(output.hash()),
+              "ca8937d6f224a4e4bf93cb5605581de2d26fb0481e1dfc1eef384ee7ccf94b73");
 }
 
-TEST(IoTeXStaking, SignWithdraw) {
+TEST(TWIoTeXStaking, SignUnstake) {
     auto input = Proto::SigningInput();
     input.set_version(1);
-    input.set_nonce(123);
-    input.set_gaslimit(888);
-    input.set_gasprice("999");
-    auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    // staking is implemented using the Execution message
-    auto staking = input.mutable_call();
-    staking->set_amount("456");
-    staking->set_contract(IOTEX_STAKING_CONTRACT);
+    std::string payload = "payload";
 
-    // call staking API to generate calldata
-    Data withdraw;
-    stakingWithdraw(pyggyIndex01, Data{}, withdraw);
-    staking->set_data(withdraw.data(), withdraw.size());
-    
+    auto action = input.mutable_stakeunstake();
+    action->set_bucketindex(10);
+    action->set_payload(payload.c_str());
+
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
-    ASSERT_EQ(hex(signer.hash()), "ff55882624b2a1d6ae2d9fdec5f8a0f13b2f23c8b28c8ba91773b63f49b97fcc");
+    ASSERT_EQ(hex(signer.hash()),
+              "9c806c793d5e452ecf944aa18b07fb8ee0b07fa37807b6480d1208bd591c5c92");
     // build() signs the tx
     auto output = signer.build();
+    // signed action's serialized bytes
+    auto encoded = output.encoded();
+    ASSERT_EQ(hex(encoded.begin(), encoded.end()),
+              "0a18080118c0843d22023130ca020b080a12077061796c6f6164124104755ce6d8903f6b3793bddb4ea5"
+              "d3589d637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b583c0bc76ef30d"
+              "d6a1038ed9da8daf331a4100adee39b48e1d3dbbd65298a57c7889709fc4df39987130da306f6997374a"
+              "184b7e7c232a42f21e89b06e6e7ceab81303c6b7483152d08d19ac829b22eb81e601");
     // signed action's hash
-    ASSERT_EQ(hex(output.hash()), "2b2657247a72cb262de214b4e793c7a01fa2139fd5d12a46d43c24f87f9e2396");
+    ASSERT_EQ(hex(output.hash()),
+              "bed58b64a6c4e959eca60a86f0b2149ce0e1dd527ac5fd26aef725ebf7c22a7d");
 }
 
-TEST(IoTeXStaking, SignAddStake) {
+TEST(TWIoTeXStaking, SignWithdraw) {
     auto input = Proto::SigningInput();
     input.set_version(1);
-    input.set_nonce(123);
-    input.set_gaslimit(888);
-    input.set_gasprice("999");
-    auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    // staking is implemented using the Execution message
-    auto staking = input.mutable_call();
-    staking->set_amount("456");
-    staking->set_contract(IOTEX_STAKING_CONTRACT);
+    std::string payload = "payload";
 
-    // call staking API to generate calldata
-    Data addStake;
-    stakingAddStake(pyggyIndex01, Data{}, addStake);
-    staking->set_data(addStake.data(), addStake.size());
-    
+    auto action = input.mutable_stakewithdraw();
+    action->set_bucketindex(10);
+    action->set_payload(payload.c_str());
+
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
-    ASSERT_EQ(hex(signer.hash()), "7581e7f779429aa502879581fdc29f87917acfe638069255b6f033c45d7f24fe");
+    ASSERT_EQ(hex(signer.hash()),
+              "9f7845013c46a387a0b8832d757a9f21aab054fa73c045ad3a66b52f2cad3627");
     // build() signs the tx
     auto output = signer.build();
+    // signed action's serialized bytes
+    auto encoded = output.encoded();
+    ASSERT_EQ(hex(encoded.begin(), encoded.end()),
+              "0a18080118c0843d22023130d2020b080a12077061796c6f6164124104755ce6d8903f6b3793bddb4ea5"
+              "d3589d637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b583c0bc76ef30d"
+              "d6a1038ed9da8daf331a4152644d102186be6640d46b517331f3402e24424b0d85129595421d28503d75"
+              "340b2922f5a0d4f667bbd6f576d9816770286b2ce032ba22eaec3952e24da4756b00");
     // signed action's hash
-    ASSERT_EQ(hex(output.hash()), "c71058812a5febe5cdcdaf9499ba0b2c895f88d1acd3203e5097b307c2a5f1d1");
+    ASSERT_EQ(hex(output.hash()),
+              "28049348cf34f1aa927caa250e7a1b08778c44efaf73b565b6fa9abe843871b4");
 }
 
-TEST(IoTeXStaking, SignMoveStake) {
+TEST(TWIoTeXStaking, SignRestake) {
     auto input = Proto::SigningInput();
     input.set_version(1);
-    input.set_nonce(123);
-    input.set_gaslimit(888);
-    input.set_gasprice("999");
-    auto keyhex = parse_hex("0806c458b262edd333a191e92f561aff338211ee3e18ab315a074a2d82aa343f");
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
     input.set_privatekey(keyhex.data(), keyhex.size());
 
-    // staking is implemented using the Execution message
-    auto staking = input.mutable_call();
-    staking->set_amount("456");
-    staking->set_contract(IOTEX_STAKING_CONTRACT);
+    std::string payload = "payload";
 
-    // call staking API to generate calldata
-    Data moveStake;
-    stakingMoveStake(pyggyIndex01, candidate12, Data{}, moveStake);
-    staking->set_data(moveStake.data(), moveStake.size());
-    
+    auto action = input.mutable_stakerestake();
+    action->set_bucketindex(10);
+    action->set_stakedduration(1000);
+    action->set_autostake(true);
+    action->set_payload(payload);
+
     auto signer = IoTeX::Signer(std::move(input));
     // raw action's hash
-    ASSERT_EQ(hex(signer.hash()), "818637b9708ec9e075c7a17f23757cb6895eae6dd3331f7e44129efae6ca9a21");
+    ASSERT_EQ(hex(signer.hash()),
+              "f3e36f74dfe53c39c66a827244fc20f44b8f22db23e84776c4b1d2123a72c63a");
     // build() signs the tx
     auto output = signer.build();
+    // signed action's serialized bytes
+    auto encoded = output.encoded();
+    ASSERT_EQ(hex(encoded.begin(), encoded.end()),
+              "0a1d080118c0843d22023130e20210080a10e807180122077061796c6f6164124104755ce6d8903f6b37"
+              "93bddb4ea5d3589d637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b583c"
+              "0bc76ef30dd6a1038ed9da8daf331a41e2e763aed5b1fd1a8601de0f0ae34eb05162e34b0389ae3418ee"
+              "dbf762f64959634a968313a6516dba3a97b34efba4753bbed3a33d409ecbd45ac75007cd8e9101");
     // signed action's hash
-    ASSERT_EQ(hex(output.hash()), "33290ded342efaebf795855be73d34cbac149a2415ff9558de10303e6126f30d");
+    ASSERT_EQ(hex(output.hash()),
+              "8816e8f784a1fce40b54d1cd172bb6976fd9552f1570c73d1d9fcdc5635424a9");
+}
+
+TEST(TWIoTeXStaking, SignChangeCandidate) {
+    auto input = Proto::SigningInput();
+    input.set_version(1);
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
+    input.set_privatekey(keyhex.data(), keyhex.size());
+
+    std::string candidate = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
+    std::string payload = "payload";
+
+    auto action = input.mutable_stakechangecandidate();
+    action->set_bucketindex(10);
+    action->set_candidatename(candidate);
+    action->set_payload(payload);
+
+    auto signer = IoTeX::Signer(std::move(input));
+    // raw action's hash
+    ASSERT_EQ(hex(signer.hash()),
+              "4fe20be23e3de2fd81cacdebb04d4b69b0f80404fd0193a92d6478ae38602d9f");
+    // build() signs the tx
+    auto output = signer.build();
+    // signed action's serialized bytes
+    auto encoded = output.encoded();
+    ASSERT_EQ(hex(encoded.begin(), encoded.end()),
+              "0a43080118c0843d22023130ea0236080a1229696f3178707136326177383575717a7263636739793568"
+              "6e727976386c64326e6b7079636333677a611a077061796c6f6164124104755ce6d8903f6b3793bddb4e"
+              "a5d3589d637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b583c0bc76ef3"
+              "0dd6a1038ed9da8daf331a41d519eb3747163b945b862989b7e82a7f8468001e9683757cb88d5ddd95f8"
+              "1895047429e858bd48f7d59a88bfec92de231d216293aeba1e4fbe11461d9c9fc99801");
+    // signed action's hash
+    ASSERT_EQ(hex(output.hash()),
+              "186526b5b9fe74e25beb52c83c41780a69108160bef2ddaf3bffb9f1f1e5e73a");
+}
+
+TEST(TWIoTeXStaking, SignTransfer) {
+    auto input = Proto::SigningInput();
+    input.set_version(1);
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
+    input.set_privatekey(keyhex.data(), keyhex.size());
+
+    std::string voteraddress = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza";
+    std::string payload = "payload";
+
+    auto action = input.mutable_staketransferownership();
+    action->set_bucketindex(10);
+    action->set_voteraddress(voteraddress);
+    action->set_payload(payload);
+
+    auto signer = IoTeX::Signer(std::move(input));
+    // raw action's hash
+    ASSERT_EQ(hex(signer.hash()),
+              "d22b4b3e630e1d494951e9041a983608232cf64629262296b6ef1f57fa748fd2");
+    // build() signs the tx
+    auto output = signer.build();
+    // signed action's serialized bytes
+    auto encoded = output.encoded();
+    ASSERT_EQ(hex(encoded.begin(), encoded.end()),
+              "0a43080118c0843d22023130f20236080a1229696f3178707136326177383575717a7263636739793568"
+              "6e727976386c64326e6b7079636333677a611a077061796c6f6164124104755ce6d8903f6b3793bddb4e"
+              "a5d3589d637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b583c0bc76ef3"
+              "0dd6a1038ed9da8daf331a41fa26db427ab87a56a129196c1604f2e22c4dd2a1f99b2217bc916260757d"
+              "00093d9e6dccdf53e3b0b64e41a69d71c238fbf9281625164694a74dfbeba075d0ce01");
+    // signed action's hash
+    ASSERT_EQ(hex(output.hash()),
+              "74b2e1d6a09ba5d1298fa422d5850991ae516865077282196295a38f93c78b85");
+}
+
+TEST(TWIoTeXStaking, SignCandidateRegister) {
+    auto input = Proto::SigningInput();
+    input.set_version(1);
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("1000");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
+    input.set_privatekey(keyhex.data(), keyhex.size());
+
+    std::string name = "test";
+    std::string operatoraddress = "io10a298zmzvrt4guq79a9f4x7qedj59y7ery84he";
+    std::string reward = "io13sj9mzpewn25ymheukte4v39hvjdtrfp00mlyv";
+    std::string owner = "io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj";
+    std::string amount = "100";
+    std::string payload = "payload";
+    auto cbi = input.mutable_candidateregister()->mutable_candidate();
+    cbi->set_name(name);
+    cbi->set_operatoraddress(operatoraddress);
+    cbi->set_rewardaddress(reward);
+
+    auto action = input.mutable_candidateregister();
+    // action->set_allocated_candidate(cbi);
+    action->set_stakedamount(amount);
+    action->set_stakedduration(10000);
+    action->set_autostake(false);
+    action->set_owneraddress(owner);
+    action->set_payload(payload);
+
+    // auto staking = input.mutable_staking();
+    // staking->set_allocated_candidateregister(action);
+
+    auto signer = IoTeX::Signer(std::move(input));
+    // raw action's hash
+    ASSERT_EQ(hex(signer.hash()),
+              "769725930ed38023058bb4f01c220feef2e3e40febb36856dfb780c4f7b1ea9b");
+    // build() signs the tx
+    auto output = signer.build();
+    // signed action's serialized bytes
+    auto encoded = output.encoded();
+    ASSERT_EQ(
+        hex(encoded.begin(), encoded.end()),
+        "0aaa01080118c0843d220431303030fa029a010a5c0a04746573741229696f3130613239387a6d7a7672743467"
+        "757137396139663478377165646a35397937657279383468651a29696f3133736a396d7a7065776e3235796d68"
+        "65756b74653476333968766a647472667030306d6c7976120331303018904e2a29696f31396430703361683467"
+        "3877773964376b63786671383779786537666e7238727074683573686a32077061796c6f6164124104755ce6d8"
+        "903f6b3793bddb4ea5d3589d637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b58"
+        "3c0bc76ef30dd6a1038ed9da8daf331a417819b5bcb635e3577acc8ca757f2c3d6afa451c2b6ff8a9179b141ac"
+        "68e2c50305679e5d09d288da6f0fb52876a86c74deab6a5247edc6d371de5c2f121e159400");
+    // signed action's hash
+    ASSERT_EQ(hex(output.hash()),
+              "35f53a536e014b32b85df50483ef04849b80ad60635b3b1979c5ba1096b65237");
+}
+
+TEST(TWIoTeXStaking, SignCandidateUpdate) {
+    auto input = Proto::SigningInput();
+    input.set_version(1);
+    input.set_nonce(0);
+    input.set_gaslimit(1000000);
+    input.set_gasprice("10");
+    auto keyhex = parse_hex("cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1");
+    input.set_privatekey(keyhex.data(), keyhex.size());
+
+    std::string name = "test";
+    std::string operatoraddress = "io1cl6rl2ev5dfa988qmgzg2x4hfazmp9vn2g66ng";
+    std::string reward = "io1juvx5g063eu4ts832nukp4vgcwk2gnc5cu9ayd";
+    auto action = input.mutable_candidateupdate();
+    action->set_name(name);
+    action->set_operatoraddress(operatoraddress);
+    action->set_rewardaddress(reward);
+
+    auto signer = IoTeX::Signer(std::move(input));
+    // raw action's hash
+    ASSERT_EQ(hex(signer.hash()),
+              "46209470b666b5fdb7fcc91444316c186e700006cb5a660abe8533f12e0db004");
+    // build() signs the tx
+    auto output = signer.build();
+    // signed action's serialized bytes
+    auto encoded = output.encoded();
+    ASSERT_EQ(hex(encoded.begin(), encoded.end()),
+              "0a69080118c0843d2202313082035c0a04746573741229696f31636c36726c3265763564666139383871"
+              "6d677a673278346866617a6d7039766e326736366e671a29696f316a7576783567303633657534747338"
+              "33326e756b7034766763776b32676e6335637539617964124104755ce6d8903f6b3793bddb4ea5d3589d"
+              "637de2d209ae0ea930815c82db564ee8cc448886f639e8a0c7e94e99a5c1335b583c0bc76ef30dd6a103"
+              "8ed9da8daf331a4101885c9c6684a4a8f2f5bf11f8326f27be48658f292e8f55ec8a11a604bb0c563a11"
+              "ebf12d995ca1c152e00f8e0f0edf288db711aa10dbdfd5b7d73b4a28e1f701");
+    // signed action's hash
+    ASSERT_EQ(hex(output.hash()),
+              "ca1a28f0e9a58ffc67037cc75066dbdd8e024aa2b2e416e4d6ce16c3d86282e5");
 }
