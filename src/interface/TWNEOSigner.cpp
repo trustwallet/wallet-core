@@ -58,17 +58,17 @@ TWData *_Nonnull TWNEOSignerMessage(TW_NEO_Proto_SigningInput data) {
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
 }
 
-TWData *_Nonnull TWNeoSignerTransaction(TW_NEO_Proto_SigningInput data, TWData *_Nonnull publicKey, TWData *_Nonnull signature) {
+TWData *_Nonnull TWNEOSignerTransaction(TW_NEO_Proto_SigningInput data, TWData *_Nonnull publicKey, TWData *_Nonnull signature) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
+
+    std::vector<uint8_t> pkVec;
+    auto rawPk = TWDataBytes(publicKey);
+    pkVec.assign(rawPk, rawPk + static_cast<int>(TWDataSize(publicKey)));
 
     std::vector<uint8_t> signVec;
     auto rawSign = TWDataBytes(signature);
     signVec.assign(rawSign, rawSign + static_cast<int>(TWDataSize(signature)));
-
-    std::vector<uint8_t> pkVec;
-    auto rawPk = TWDataBytes(publicKey);
-    signVec.assign(rawPk, rawPk + static_cast<int>(TWDataSize(publicKey)));
 
     auto encoded = Signer::encodeTransaction(input, pkVec, signVec);
 
