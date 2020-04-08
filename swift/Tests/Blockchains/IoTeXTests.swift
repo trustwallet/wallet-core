@@ -36,7 +36,7 @@ class IoTeXTests: XCTestCase {
             $0.gasPrice = "10"
             $0.privateKey = Data(hexString: "cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1")!
         }
-        input.stakeCreate = IoTeXStaking.StakeCreate.with {
+        input.stakeCreate = IoTeXStaking.Create.with {
             $0.candidateName = "io19d0p3ah4g8ww9d7kcxfq87yxe7fnr8rpth5shj"
             $0.stakedAmount = "100"
             $0.stakedDuration = 10000
@@ -57,7 +57,7 @@ class IoTeXTests: XCTestCase {
             $0.gasPrice = "10"
             $0.privateKey = Data(hexString: "cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1")!
         }
-        input.stakeAddDeposit = IoTeXStaking.StakeAddDeposit.with {
+        input.stakeAddDeposit = IoTeXStaking.AddDeposit.with {
             $0.bucketIndex = 10
             $0.amount = "10"
             $0.payload = "payload".data(using: .utf8)!
@@ -76,7 +76,7 @@ class IoTeXTests: XCTestCase {
             $0.gasPrice = "10"
             $0.privateKey = Data(hexString: "cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1")!
         }
-        input.stakeUnstake = IoTeXStaking.StakeReclaim.with {
+        input.stakeUnstake = IoTeXStaking.Reclaim.with {
             $0.bucketIndex = 10
             $0.payload = "payload".data(using: .utf8)!
         }
@@ -94,7 +94,7 @@ class IoTeXTests: XCTestCase {
             $0.gasPrice = "10"
             $0.privateKey = Data(hexString: "cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1")!
         }
-        input.stakeWithdraw = IoTeXStaking.StakeReclaim.with {
+        input.stakeWithdraw = IoTeXStaking.Reclaim.with {
             $0.bucketIndex = 10
             $0.payload = "payload".data(using: .utf8)!
         }
@@ -112,7 +112,7 @@ class IoTeXTests: XCTestCase {
             $0.gasPrice = "10"
             $0.privateKey = Data(hexString: "cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1")!
         }
-        input.stakeRestake = IoTeXStaking.StakeRestake.with {
+        input.stakeRestake = IoTeXStaking.Restake.with {
             $0.bucketIndex = 10
             $0.stakedDuration = 1000
             $0.autoStake = true
@@ -132,7 +132,7 @@ class IoTeXTests: XCTestCase {
             $0.gasPrice = "10"
             $0.privateKey = Data(hexString: "cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1")!
         }
-        input.stakeChangeCandidate = IoTeXStaking.StakeChangeCandidate.with {
+        input.stakeChangeCandidate = IoTeXStaking.ChangeCandidate.with {
             $0.bucketIndex = 10    
             $0.candidateName = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza"
             $0.payload = "payload".data(using: .utf8)!
@@ -151,7 +151,7 @@ class IoTeXTests: XCTestCase {
             $0.gasPrice = "10"
             $0.privateKey = Data(hexString: "cfa6ef757dee2e50351620dca002d32b9c090cfda55fb81f37f1d26b273743f1")!
         }
-        input.stakeTransferOwnership = IoTeXStaking.StakeTransferOwnership.with {
+        input.stakeTransferOwnership = IoTeXStaking.TransferOwnership.with {
             $0.bucketIndex = 10    
             $0.voterAddress = "io1xpq62aw85uqzrccg9y5hnryv8ld2nkpycc3gza"
             $0.payload = "payload".data(using: .utf8)!

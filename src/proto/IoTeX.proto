@@ -33,7 +33,7 @@ message Staking {
   }
 
   // restake the duration and autoStake flag of bucket
-  message StakeRestake {
+  message Restake {
     uint64 bucketIndex = 1;
     uint32 stakedDuration = 2;
     bool autoStake = 3;
@@ -41,13 +41,13 @@ message Staking {
   }
 
   // move the bucket to vote for another candidate or transfer the ownership of bucket to another voters
-  message StakeChangeCandidate {
+  message ChangeCandidate {
     uint64 bucketIndex = 1;
     string candidateName = 2;
     bytes payload = 3;
   }
 
-  message StakeTransferOwnership {
+  message TransferOwnership {
     uint64 bucketIndex = 1;
     string voterAddress = 2;
     bytes payload = 3;
@@ -68,13 +68,13 @@ message Staking {
     bytes payload = 6;
   }
   oneof message {
-    StakeCreate stakeCreate = 1;
-    StakeReclaim stakeUnstake = 2;
-    StakeReclaim stakeWithdraw = 3;
-    StakeAddDeposit stakeAddDeposit = 4;
-    StakeRestake stakeRestake = 5;
-    StakeChangeCandidate stakeChangeCandidate = 6;
-    StakeTransferOwnership stakeTransferOwnership = 7;
+    Create stakeCreate = 1;
+    Reclaim stakeUnstake = 2;
+    Reclaim stakeWithdraw = 3;
+    AddDeposit stakeAddDeposit = 4;
+    Restake stakeRestake = 5;
+    ChangeCandidate stakeChangeCandidate = 6;
+    TransferOwnership stakeTransferOwnership = 7;
     CandidateRegister candidateRegister = 8;
     CandidateBasicInfo candidateUpdate = 9;
   }
@@ -97,13 +97,13 @@ message SigningInput {
         Transfer transfer = 10;
         ContractCall call = 12;
         // Native staking
-        Staking.StakeCreate stakeCreate = 40;
-        Staking.StakeReclaim stakeUnstake = 41;
-        Staking.StakeReclaim stakeWithdraw = 42;
-        Staking.StakeAddDeposit stakeAddDeposit = 43;
-        Staking.StakeRestake stakeRestake = 44;
-        Staking.StakeChangeCandidate stakeChangeCandidate = 45;
-        Staking.StakeTransferOwnership stakeTransferOwnership = 46;
+        Staking.Create stakeCreate = 40;
+        Staking.Reclaim stakeUnstake = 41;
+        Staking.Reclaim stakeWithdraw = 42;
+        Staking.AddDeposit stakeAddDeposit = 43;
+        Staking.Restake stakeRestake = 44;
+        Staking.ChangeCandidate stakeChangeCandidate = 45;
+        Staking.TransferOwnership stakeTransferOwnership = 46;
         Staking.CandidateRegister candidateRegister = 47;
         Staking.CandidateBasicInfo candidateUpdate = 48;
   }
@@ -127,13 +127,13 @@ message ActionCore {
     Transfer transfer = 10;
     ContractCall execution = 12;
     // Native staking
-    Staking.StakeCreate stakeCreate = 40;
-    Staking.StakeReclaim stakeUnstake = 41;
-    Staking.StakeReclaim stakeWithdraw = 42;
-    Staking.StakeAddDeposit stakeAddDeposit = 43;
-    Staking.StakeRestake stakeRestake = 44;
-    Staking.StakeChangeCandidate stakeChangeCandidate = 45;
-    Staking.StakeTransferOwnership stakeTransferOwnership = 46;
+    Staking.Create stakeCreate = 40;
+    Staking.Reclaim stakeUnstake = 41;
+    Staking.Reclaim stakeWithdraw = 42;
+    Staking.AddDeposit stakeAddDeposit = 43;
+    Staking.Restake stakeRestake = 44;
+    Staking.ChangeCandidate stakeChangeCandidate = 45;
+    Staking.TransferOwnership stakeTransferOwnership = 46;
     Staking.CandidateRegister candidateRegister = 47;
     Staking.CandidateBasicInfo candidateUpdate = 48;
   }
