@@ -35,7 +35,7 @@ TWData *_Nonnull TWEthereumSignerMessage(TW_Ethereum_Proto_SigningInput data) {
 }
 
 TWData *_Nonnull TWEthereumSignerTransaction(TW_Ethereum_Proto_SigningInput data, TWData *_Nonnull signature) {
-Proto::SigningInput input;
+    Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
     auto chainId = load(input.chain_id());
