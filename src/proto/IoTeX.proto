@@ -11,7 +11,7 @@ message Transfer {
 
 message Staking {
   // create stake
-  message StakeCreate {
+  message Create {
     string candidateName = 1;
     string stakedAmount = 2;
     uint32 stakedDuration = 3;
