@@ -20,7 +20,7 @@ message Staking {
   }
 
   // unstake or withdraw
-  message StakeReclaim {
+  message Reclaim {
     uint64 bucketIndex = 1;
     bytes payload = 2;
   }
