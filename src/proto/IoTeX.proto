@@ -26,7 +26,7 @@ message Staking {
   }
 
   // add the amount of bucket
-  message StakeAddDeposit {
+  message AddDeposit {
     uint64 bucketIndex = 1;
     string amount = 2;
     bytes payload = 3;
