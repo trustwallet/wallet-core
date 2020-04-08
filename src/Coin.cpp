@@ -40,6 +40,7 @@
 #include "Waves/Address.h"
 #include "Zcash/TAddress.h"
 #include "Zilliqa/Address.h"
+#include "NEO/Address.h"
 
 #include <TrustWalletCore/TWHRP.h>
 
@@ -173,7 +174,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
 
     case TWCoinTypeAlgorand:
         return Algorand::Address::isValid(string);
-    }
+
+    case TWCoinTypeNEO:
+        return NEO::Address::isValid(string);
+    }        
 }
 
 std::string TW::deriveAddress(TWCoinType coin, const PrivateKey &privateKey) {
@@ -301,6 +305,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
 
     case TWCoinTypeAlgorand:
         return Algorand::Address(publicKey).string();
+
+    case TWCoinTypeNEO:
+        return NEO::Address(publicKey).string();
     }
 }
 

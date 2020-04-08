@@ -99,6 +99,8 @@ public extension CoinType {
             return AlgorandAddress(string: string)
         case .ton:
             return TONAddress(string: string)
+        case .neo:
+            return NEOAddress(string: string)
         }
     }
 }
