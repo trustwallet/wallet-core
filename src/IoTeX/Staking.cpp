@@ -7,7 +7,6 @@
 #include "Staking.h"
 #include "Data.h"
 #include "HexCoding.h"
-#include <TrustWalletCore/TWString.h>
 using namespace TW;
 
 namespace TW::IoTeX {
