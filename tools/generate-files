@@ -59,7 +59,6 @@ fi
 # Generate internal message protocol Protobuf files -- not every time
 "$PROTOC" -I=$PREFIX/include -I=src/Tron/Protobuf --cpp_out=src/Tron/Protobuf src/Tron/Protobuf/*.proto
 "$PROTOC" -I=$PREFIX/include -I=src/Zilliqa/Protobuf --cpp_out=src/Zilliqa/Protobuf src/Zilliqa/Protobuf/*.proto
-"$PROTOC" -I=$PREFIX/include -I=src/IoTeX/Protobuf --cpp_out=src/IoTeX/Protobuf src/IoTeX/Protobuf/*.proto
 
 # Generate Proto interface file
 "$PROTOC" -I=$PREFIX/include -I=src/proto --plugin=$PREFIX/bin/protoc-gen-c-typedef --c-typedef_out include/TrustWalletCore src/proto/*.proto
