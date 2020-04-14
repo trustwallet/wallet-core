@@ -79,6 +79,7 @@ bool Util::fileR(const string& fileName, string& res) {
         char* buffer = new char[length];
         if (!infile.read(buffer, length)) {
             _out << "Could not read file '" << fileName << "'" << endl;
+            delete[] buffer;
             return false;
         }
         int red = infile.gcount();
