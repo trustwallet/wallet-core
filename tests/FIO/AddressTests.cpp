@@ -35,10 +35,9 @@ TEST(FIOAddress, ValidateData) {
 }
 
 TEST(FIOAddress, FromString) {
-    ASSERT_EQ(
-        Address("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o").string(),
-        "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
-    );
+    Address addr("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+    ASSERT_EQ(addr.string(), "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+    ASSERT_EQ(hex(addr.bytes), "0271195c66ec2799e436757a70cd8431d4b17733a097b18a5f7f1b6b085978ff0f343fc54e");
 }
 
 TEST(FIOAddress, FromStringInvalid) {
