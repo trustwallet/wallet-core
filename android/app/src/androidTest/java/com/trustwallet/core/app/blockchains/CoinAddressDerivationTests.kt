@@ -29,6 +29,7 @@ class CoinAddressDerivationTests {
         BINANCE -> assertEquals("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", address)
         BITCOIN -> assertEquals("bc1quvuarfksewfeuevuc6tn0kfyptgjvwsvrprk9d", address)
         BITCOINCASH -> assertEquals("bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70", address)
+        BITCOINGOLD -> assertEquals("btg1qwz9sed0k4neu6ycrudzkca6cnqe3zweq35hvtg", address)
         CALLISTO -> assertEquals("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
         DIGIBYTE -> assertEquals("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu", address)
