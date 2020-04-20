@@ -34,7 +34,7 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .bitcoinCash:
                     let expectedResult = "bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
-                case .bitcoingold:
+                case .bitcoinGold:
                     let expectedResult = "btg1qwz9sed0k4neu6ycrudzkca6cnqe3zweq35hvtg"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
                 case .callisto:
