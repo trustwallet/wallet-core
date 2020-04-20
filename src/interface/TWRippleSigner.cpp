@@ -40,7 +40,7 @@ TW_Ripple_Proto_SigningOutput TWRippleSignerSign(TW_Ripple_Proto_SigningInput da
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(serialized.data()), serialized.size());
 }
 
-TWData *_Nonnull TWRippleSignerMessage(TW_Ripple_Proto_SigningInput data, TWData *_Nonnull pubKey) {
+TWData *_Nonnull TWRippleSignerMessage(TW_Ripple_Proto_SigningInput data) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
@@ -55,11 +55,7 @@ TWData *_Nonnull TWRippleSignerMessage(TW_Ripple_Proto_SigningInput data, TWData
             /* destination_tag*/input.destination_tag()
     );
 
-    std::vector<uint8_t> pkVec;
-    auto rawPk = TWDataBytes(pubKey);
-    pkVec.assign(rawPk, rawPk + static_cast<int>(TWDataSize(pubKey)));
-    auto publicKey = PublicKey(pkVec, TWPublicKeyTypeSECP256k1);
-
+    auto publicKey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeSECP256k1);
     transaction.pub_key = publicKey.bytes;
 
     auto encoded = transaction.getPreImage();
@@ -67,7 +63,7 @@ TWData *_Nonnull TWRippleSignerMessage(TW_Ripple_Proto_SigningInput data, TWData
     return TWDataCreateWithBytes(reinterpret_cast<const uint8_t *>(encoded.data()), encoded.size());
 }
 
-TWData *_Nonnull TWRippleSignerTransaction(TW_Ripple_Proto_SigningInput data, TWData *_Nonnull pubKey, TWData *_Nonnull signature) {
+TWData *_Nonnull TWRippleSignerTransaction(TW_Ripple_Proto_SigningInput data, TWData *_Nonnull signature) {
     Proto::SigningInput input;
     input.ParseFromArray(TWDataBytes(data), static_cast<int>(TWDataSize(data)));
 
@@ -90,10 +86,7 @@ TWData *_Nonnull TWRippleSignerTransaction(TW_Ripple_Proto_SigningInput data, TW
     auto sig = Data{};
     std::copy(sigBytes.begin(), sigBytes.begin() + size, std::back_inserter(sig));
 
-    std::vector<uint8_t> pkVec;
-    auto rawPk = TWDataBytes(pubKey);
-    pkVec.assign(rawPk, rawPk + static_cast<int>(TWDataSize(pubKey)));
-    auto publicKey = PublicKey(pkVec, TWPublicKeyTypeSECP256k1);
+    auto publicKey = PublicKey(Data(input.public_key().begin(), input.public_key().end()), TWPublicKeyTypeSECP256k1);
 
     transaction.pub_key = publicKey.bytes;
     transaction.signature = sig;

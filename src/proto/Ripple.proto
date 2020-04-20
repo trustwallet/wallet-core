@@ -22,6 +22,8 @@ message SigningInput {
     int64 flags = 8;
 
     bytes private_key = 9;
+
+    bytes public_key = 10;  // only used by tss chain-integration
 }
 
 // Transaction signing output.
