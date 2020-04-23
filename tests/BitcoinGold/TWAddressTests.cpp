@@ -6,7 +6,7 @@
 //
 
 #include "../interface/TWTestUtilities.h"
-#include "BitcoinGold/Address.h"
+#include "Bitcoin/Address.h"
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "HexCoding.h"
@@ -21,8 +21,8 @@ const char *ADDRESS = "GSGUyooxtCUVBonYV8AANp7FvKy3WTvpMR";
 const char *FAKEADDRESS =  "GSGUyooxtCUVBonYV9AANp7FvKy3WTvpMR";
 
 TEST(TWBitcoinGoldAddress, Valid) {
-    ASSERT_TRUE(BitcoinGold::Address::isValid(std::string(ADDRESS)));
-    ASSERT_FALSE(BitcoinGold::Address::isValid(std::string(FAKEADDRESS)));
+    ASSERT_TRUE(Bitcoin::Address::isValid(std::string(ADDRESS)));
+    ASSERT_FALSE(Bitcoin::Address::isValid(std::string(FAKEADDRESS)));
 }
 
 TEST(TWBitcoinGoldAddress, PubkeyToAddress) {
@@ -30,6 +30,6 @@ TEST(TWBitcoinGoldAddress, PubkeyToAddress) {
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     /// construct with public key
-    auto address = BitcoinGold::Address(PublicKey(publicKey), p2pkhPrefix(TWCoinTypeBitcoinGold));
+    auto address = Bitcoin::Address(PublicKey(publicKey), p2pkhPrefix(TWCoinTypeBitcoinGold));
     ASSERT_EQ(address.string(), ADDRESS);
 }

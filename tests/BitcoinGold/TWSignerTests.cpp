@@ -9,7 +9,7 @@
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include <gtest/gtest.h>
 
-#include "BitcoinGold/SegwitAddress.h"
+#include "Bitcoin/SegwitAddress.h"
 #include "proto/Bitcoin.pb.h"
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
