@@ -20,6 +20,7 @@
 #include "../Cardano/AddressV3.h"
 #include "../NEO/Address.h"
 #include "../Nano/Address.h"
+#include "../Elrond/Address.h"
 
 #include "../Coin.h"
 #include "../HexCoding.h"
@@ -184,6 +185,16 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
         data = Data(addr.bytes.begin(), addr.bytes.end());
         break;
     }
+
+    case TWCoinTypeElrond: {
+        Elrond::Address addr;
+        if (Elrond::Address::decode(string, addr)) {
+            data = addr.getKeyHash();
+        }
+        
+        break;
+    }
+
     default: break;
     }
     return TWDataCreateWithBytes(data.data(), data.size());
