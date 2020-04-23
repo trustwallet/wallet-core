@@ -10,6 +10,7 @@
 #include "PrivateKey.h"
 #include "PublicKey.h"
 #include "HexCoding.h"
+#include "Coin.h"
 #include <gtest/gtest.h>
 #include <TrustWalletCore/TWAnyAddress.h>
 
@@ -29,6 +30,6 @@ TEST(TWBitcoinGoldAddress, PubkeyToAddress) {
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
 
     /// construct with public key
-    auto address = BitcoinGold::Address(PublicKey(publicKey), 38);
+    auto address = BitcoinGold::Address(PublicKey(publicKey), p2pkhPrefix(TWCoinTypeBitcoinGold));
     ASSERT_EQ(address.string(), ADDRESS);
 }
