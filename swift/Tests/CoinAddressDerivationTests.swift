@@ -193,6 +193,8 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .filecoin:
                     let expectedResult = "f1zzykebxldfcakj5wdb5n3n7priul522fnmjzori"
                     AssetCoinDerivation(coin, expectedResult, derivedAddress, address)
+                @unknown default:
+                    fatalError()
                 }
             }
         }
