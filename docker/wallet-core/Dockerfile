@@ -27,6 +27,7 @@ RUN apt-get update \
         ninja-build \
         pkg-config \
         ruby-full \
+        default-jdk \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Install clang
@@ -59,7 +60,7 @@ RUN cmake --version
 # Clone repo
 ENV CC=/usr/bin/clang
 ENV CXX=/usr/bin/clang++
-RUN git clone https://github.com/TrustWallet/wallet-core.git
+RUN git clone https://github.com/blockchain/wallet-core.git
 
 # Prepare dependencies
 RUN cd /wallet-core \
