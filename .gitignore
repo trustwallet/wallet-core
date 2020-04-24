@@ -29,6 +29,14 @@ swift/wallet-core/
 src/Generated
 include/TrustWalletCore/TWHRP.h
 include/TrustWalletCore/TW*Proto.h
+tests/googletest-build/googlemock/gtest/generated
+Makefile
+**Makefile
+**.cmake
+**.a
+**.so
+tests/tests
+trezor-crypto/tests/TrezorCryptoTests
 
 # Code coverage files
 coverage.info
@@ -48,3 +56,5 @@ samples/cpp/Makefile
 samples/cpp/*.cmake
 # built binary
 samples/cpp/sample
+compile_commands.json
+walletconsole/walletconsole
