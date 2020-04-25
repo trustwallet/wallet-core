@@ -64,7 +64,9 @@ if(${ANDROID})
     target_link_libraries(TrezorCrypto
         PUBLIC
             "/usr/local/lib/libsecp256k1.a"
+            "/usr/local/lib/libsecp256k1.so"
         )
+
 else()
     target_link_libraries(TrezorCrypto
         PUBLIC
