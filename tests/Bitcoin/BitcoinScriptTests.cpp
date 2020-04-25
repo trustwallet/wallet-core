@@ -44,10 +44,10 @@ TEST(BitcoinScript, PayToPubKeyHash) {
     EXPECT_EQ(PayToPubKeySecp256k1Extended.matchPayToPubkey(res), true);
     EXPECT_EQ(hex(res), "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
 
-    EXPECT_EQ(PayToScriptHash.matchPayToPubkey(res), false);
-    EXPECT_EQ(PayToWitnessScriptHash22.matchPayToPubkey(res), false);
-    EXPECT_EQ(PayToWitnessScriptHash34.matchPayToPubkey(res), false);
-    EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToPubkey(res), false);
+    EXPECT_EQ(PayToScriptHash.matchPayToPubkeyHash(res), false);
+    EXPECT_EQ(PayToWitnessScriptHash22.matchPayToPubkeyHash(res), false);
+    EXPECT_EQ(PayToWitnessScriptHash34.matchPayToPubkeyHash(res), false);
+    EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToPubkeyHash(res), false);
 }
 
 TEST(BitcoinScript, PayToScriptHash) {
@@ -120,6 +120,72 @@ TEST(BitcoinScript, DecodeNumber) {
     EXPECT_EQ(Script::decodeNumber(OP_1), 1);
     EXPECT_EQ(Script::decodeNumber(OP_3), 3);
     EXPECT_EQ(Script::decodeNumber(OP_9), 9);
+}
+
+TEST(BitcoinScript, GetScriptOp) {
+    {
+        size_t index = 5; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("")).getScriptOp(index, opcode, operand), false);
+    }
+    {
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4f")).getScriptOp(index, opcode, operand), true);
+        EXPECT_EQ(index, 1);
+        EXPECT_EQ(opcode, 0x4f);
+        EXPECT_EQ(hex(operand), "");
+    }
+    {
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("05" "0102030405")).getScriptOp(index, opcode, operand), true);
+        EXPECT_EQ(index, 6);
+        EXPECT_EQ(opcode, 0x05);
+        EXPECT_EQ(hex(operand), "0102030405");
+    }
+    {   // OP_PUSHDATA1
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4c" "05" "0102030405")).getScriptOp(index, opcode, operand), true);
+        EXPECT_EQ(index, 7);
+        EXPECT_EQ(opcode, 0x4c);
+        EXPECT_EQ(hex(operand), "0102030405");
+    }
+    {   // OP_PUSHDATA1 too short
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4c")).getScriptOp(index, opcode, operand), false);
+    }
+    {   // OP_PUSHDATA1 too short
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4c" "05" "010203")).getScriptOp(index, opcode, operand), false);
+    }
+    {   // OP_PUSHDATA2
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4d" "0500" "0102030405")).getScriptOp(index, opcode, operand), true);
+        EXPECT_EQ(index, 8);
+        EXPECT_EQ(opcode, 0x4d);
+        EXPECT_EQ(hex(operand), "0102030405");
+    }
+    {   // OP_PUSHDATA2 too short
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4d" "05")).getScriptOp(index, opcode, operand), false);
+    }
+    {   // OP_PUSHDATA2 too short
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4d" "0500" "010203")).getScriptOp(index, opcode, operand), false);
+    }
+    {   // OP_PUSHDATA4
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4e" "05000000" "0102030405")).getScriptOp(index, opcode, operand), true);
+        EXPECT_EQ(index, 10);
+        EXPECT_EQ(opcode, 0x4e);
+        EXPECT_EQ(hex(operand), "0102030405");
+    }
+    {   // OP_PUSHDATA4 too short
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4e" "0500")).getScriptOp(index, opcode, operand), false);
+    }
+    {   // OP_PUSHDATA4 too short
+        size_t index = 0; uint8_t opcode; Data operand;
+        EXPECT_EQ(Script(parse_hex("4e" "05000000" "010203")).getScriptOp(index, opcode, operand), false);
+    }
 }
 
 TEST(BitcoinScript, MatchMultiSig) {

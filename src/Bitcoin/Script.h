@@ -105,8 +105,8 @@ class Script {
         return static_cast<int>(opcode) - static_cast<int>(OP_1 - 1);
     }
 
-  private:
     /// Extracts a single opcode at the given index including its operand.
+    /// Public for testability.
     ///
     /// \param index [in/out] index where the operation starts, on return the
     /// index of the next operation. \param opcode [out] the opcode. \param
