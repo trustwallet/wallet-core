@@ -63,8 +63,16 @@ target_compile_options(TrezorCrypto
 if(${ANDROID})
     target_link_libraries(TrezorCrypto
         PUBLIC
-            "/usr/local/lib/libsecp256k1.a"
-            "/usr/local/lib/libsecp256k1.so"
+            #"/usr/local/lib/libsecp256k1.a"
+            #"/usr/local/lib/libsecp256k1.so"
+            #"/Users/zl/secp256k1/DEVICE_x86_64/lib/libsecp256k1.a"
+            #"/Users/zl/secp256k1/DEVICE_i686/lib/libsecp256k1.a"
+            #"/Users/zl/secp256k1/DEVICE_armv7a/lib/libsecp256k1.a"
+            #"/Users/zl/secp256k1/DEVICE_aarch64/lib/libsecp256k1.a"
+            #"/Users/zl/secp256k1/DEVICE_x86_64/lib/libsecp256k1.so"
+            #"/Users/zl/secp256k1/DEVICE_i686/lib/libsecp256k1.so"
+            #"/Users/zl/secp256k1/DEVICE_armv7a/lib/libsecp256k1.so"
+            #"/Users/zl/secp256k1/DEVICE_aarch64/lib/libsecp256k1.so"
         )
 
 else()
