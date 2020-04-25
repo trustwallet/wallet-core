@@ -88,12 +88,21 @@ class Script {
     void encode(Data& data) const;
 
     /// Encodes a small integer
-    static uint8_t encodeNumber(int n) {
+    static inline uint8_t encodeNumber(int n) {
         assert(n >= 0 && n <= 16);
         if (n == 0) {
             return OP_0;
         }
         return OP_1 + uint8_t(n - 1);
+    }
+
+    /// Decodes a small integer
+    static inline int decodeNumber(uint8_t opcode) {
+        if (opcode == OP_0) {
+            return 0;
+        }
+        assert(opcode >= OP_1 && opcode <= OP_16);
+        return static_cast<int>(opcode) - static_cast<int>(OP_1 - 1);
     }
 
   private:

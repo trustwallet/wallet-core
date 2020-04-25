@@ -48,7 +48,7 @@ bool Script::isPayToWitnessScriptHash() const {
 bool Script::isWitnessProgram() const {
     if (bytes.size() < 4 || bytes.size() > 42) {
         return false;
-    }
+        }
     if (bytes[0] != OP_0 && (bytes[0] < OP_1 || bytes[0] > OP_16)) {
         return false;
     }
@@ -108,15 +108,6 @@ bool Script::matchPayToWitnessScriptHash(Data& result) const {
         return true;
     }
     return false;
-}
-
-/// Decodes a small integer
-static inline int decodeNumber(uint8_t opcode) {
-    if (opcode == OP_0) {
-        return 0;
-    }
-    assert(opcode >= OP_1 && opcode <= OP_16);
-    return static_cast<int>(opcode) - static_cast<int>(OP_1 - 1);
 }
 
 bool Script::matchMultisig(std::vector<Data>& keys, int& required) const {
@@ -185,7 +176,7 @@ bool Script::getScriptOp(size_t& index, uint8_t& opcode, Data& operand) const {
         if (bytes.size() - index < 1) {
             return false;
         }
-        size = index;
+        size = bytes[index];
         index += 1;
     } else if (opcode == OP_PUSHDATA2) {
         if (bytes.size() - index < 2) {

@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(BitcoinScript, ScriptHash) {
+TEST(TWBitcoinScript, ScriptHash) {
     auto pkData = DATA("cf5007e19af3641199f21f3fa54dff2fa2627471");
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKeyHash(pkData.get()));
 
@@ -26,7 +26,7 @@ TEST(BitcoinScript, ScriptHash) {
     ASSERT_STREQ(TWStringUTF8Bytes(hexData.get()), "c470d22e69a2a967f2cec0cd5a5aebb955cdd395");
 }
 
-TEST(BitcoinScript, RedeemScript) {
+TEST(TWBitcoinScript, RedeemScript) {
     auto pkData = DATA("cf5007e19af3641199f21f3fa54dff2fa2627471");
     auto embeddedScript = WRAP(TWBitcoinScript, TWBitcoinScriptBuildPayToPublicKeyHash(pkData.get()));
 
@@ -40,7 +40,7 @@ TEST(BitcoinScript, RedeemScript) {
     ASSERT_STREQ(TWStringUTF8Bytes(hexData.get()), "a914c470d22e69a2a967f2cec0cd5a5aebb955cdd39587");
 }
 
-TEST(BitcoinScript, LockScriptForP2PKHAddress) {
+TEST(TWBitcoinScript, LockScriptForP2PKHAddress) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("1Cu32FVupVCgHkMMRJdYJugxwo2Aprgk7H").get(), TWCoinTypeBitcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac");
@@ -50,7 +50,7 @@ TEST(BitcoinScript, LockScriptForP2PKHAddress) {
     assertHexEqual(scriptPub2Data, "76a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac");
 }
 
-TEST(BitcoinScript, LockScriptForP2SHAddress) {
+TEST(TWBitcoinScript, LockScriptForP2SHAddress) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("37rHiL4DN2wkt8pgCAUfYJRxhir98ZGN1y").get(), TWCoinTypeBitcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "a9144391adbec172cad6a9fc3eebca36aeec6640abda87");
@@ -60,7 +60,7 @@ TEST(BitcoinScript, LockScriptForP2SHAddress) {
     assertHexEqual(scriptPub2Data, "a914ad40768af6419a20bdb94d83c06b6c8c94721dc087");
 }
 
-TEST(BitcoinScript, LockScriptForP2WPKHAddress) {
+TEST(TWBitcoinScript, LockScriptForP2WPKHAddress) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("bc1q6hppaw7uld68amnnu5vpp5dd5u7k92c2vtdtkq").get(), TWCoinTypeBitcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "0014d5c21ebbdcfb747eee73e51810d1ada73d62ab0a");
@@ -70,13 +70,13 @@ TEST(BitcoinScript, LockScriptForP2WPKHAddress) {
     assertHexEqual(scriptPub2Data, "0014039f2ffd2b28703f0e9c73ccf3ce564adebbb5e8");
 }
 
-TEST(BitcoinScript, LockScriptForP2WSHAddress) {
+TEST(TWBitcoinScript, LockScriptForP2WSHAddress) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("bc1qcuqamesrt803xld4l2j2vxx8rxmrx7aq82mkw7xwxh643wzqjlnqutkcv2").get(), TWCoinTypeBitcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "0020c701dde60359df137db5faa4a618c719b6337ba03ab76778ce35f558b84097e6");
 }
 
-TEST(BitcoinScript, LockScriptForCashAddress) {
+TEST(TWBitcoinScript, LockScriptForCashAddress) {
     auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("bitcoincash:pzclklsyx9f068hd00a0vene45akeyrg7vv0053uqf").get(), TWCoinTypeBitcoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "a914b1fb7e043152fd1eed7bfaf66679ad3b6c9068f387");
