@@ -15,10 +15,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        apt-get install autoconf ninja-build pkg-config xz-utils lcov
+        sudo apt-get install autoconf ninja-build pkg-config xz-utils lcov
     - name: Install internal dependencies
       run: |
-        tools/install-dependencies
+        sudo tools/install-dependencies
         tools/generate-files
       env:
         CC: /usr/bin/clang
@@ -35,5 +35,5 @@ jobs:
         PREFIX: /usr/local
     - name: Gather code coverage
       run: |
-        rm -rf coverage.info
+        sudo rm -rf coverage.info
         tools/coverage
