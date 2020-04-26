@@ -1,0 +1,28 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: [macos]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install system dependencies
+      run: |
+        brew install boost ninja xcodegen
+        # install old lcov
+        brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/d157af1bff443641194e1186cbe49c341c04eb35/Formula/lcov.rb
+    - name: Install internal dependencies
+      run: |
+        tools/install-dependencies
+        tools/generate-files
+    - name: Run codegen tests
+      run: tools/codegen-test
+    - name: Run iOS tests
+      run: tools/ios-test
