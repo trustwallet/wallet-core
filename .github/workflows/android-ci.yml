@@ -1,0 +1,29 @@
+name: Android CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: [macos]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install system dependencies
+      run: brew install boost ninja
+    - name: Install Android Dependencies
+      run: |
+        $ANDROID_HOME/tools/bin/sdkmanager --verbose "cmake;3.10.2.4988404" "ndk-bundle"
+        $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-26;google_apis;x86"
+    - name: Accept Licenses
+      run: echo -e "y\ny\ny\ny\ny\n" | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+    - name: Install internal dependencies
+      run: |
+        tools/install-dependencies
+        tools/generate-files
+    - name: Run test
+      run: tools/android-test
