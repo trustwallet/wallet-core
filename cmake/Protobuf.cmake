@@ -1,5 +1,5 @@
-set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/protobuf/staging/protobuf-3.9.0)
-set(protobuf_source_dir ${CMAKE_SOURCE_DIR}/build/protobuf/staging/protobuf-3.9.0)
+set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.9.0)
+set(protobuf_source_dir ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.9.0)
 
 # Updated from https://github.com/protocolbuffers/protobuf/blob/master/cmake/libprotopuf.cmake
 
