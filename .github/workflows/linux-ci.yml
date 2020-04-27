@@ -14,7 +14,7 @@ jobs:
     - name: Install system dependencies
       run: |
         # build-essential libboost-all-dev clang-9 ruby-full cmake
-        sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm-runtime
+        sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov llvm
         tools/coverage
     - name: Cache internal dependencies
       id: internal_cache
