@@ -59,6 +59,10 @@ bool TWBitcoinScriptIsPayToWitnessScriptHash(const struct TWBitcoinScript *scrip
     return script->impl.isPayToWitnessScriptHash();
 }
 
+bool TWBitcoinScriptIsPayToWitnessPublicKeyHash(const struct TWBitcoinScript *script) {
+    return script->impl.isPayToWitnessPublicKeyHash();
+}
+
 bool TWBitcoinScriptIsWitnessProgram(const struct TWBitcoinScript *script) {
     return script->impl.isWitnessProgram();
 }
