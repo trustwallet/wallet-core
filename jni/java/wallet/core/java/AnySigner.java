@@ -25,14 +25,25 @@ public class AnySigner {
     private static boolean isInitialized = false;
 
     public static void initialize() {
-        // Load the static library from the resource path somehow...
-        try {
-            tempDirWithPrefix = Files.createTempDirectory(tempFolderPrefix);
-            String resourceName = getResourceName();
-            String resourcePath = writeResourceToFile(resourceName);
-            System.load(resourcePath);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(isInitialized) {
+            return;
+        }
+
+        synchronized (tempFolderPrefix) {
+            if(isInitialized) {
+                return;
+            }
+
+            // Load the static library from the resource path somehow...
+            try {
+                tempDirWithPrefix = Files.createTempDirectory(tempFolderPrefix);
+                String resourceName = getResourceName();
+                String resourcePath = writeResourceToFile(resourceName);
+                System.load(resourcePath);
+            } catch (Exception e) {
+                System.out.println("Unable to load static library, " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
