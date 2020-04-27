@@ -22,8 +22,11 @@ lib/protobuf
 .project
 
 # Generated files
+CMakeFiles
 jni/cpp/generated
 jni/java/wallet/core/jni
+jni/.gradle
+jni/*.iml
 swift/Sources/Generated
 swift/wallet-core/
 src/Generated
@@ -58,3 +61,4 @@ samples/cpp/*.cmake
 samples/cpp/sample
 compile_commands.json
 walletconsole/walletconsole
+CMakeCache.txt
