@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Core' do |ss|
-    protobuf_source_dir = 'build/protobuf/staging/protobuf-3.9.0'
+    protobuf_source_dir = 'build/local/src/protobuf/protobuf-3.9.0'
     include_dir = 'build/local/include'
     ss.source_files =
       'src/**/*.{c,cc,cpp,h}',

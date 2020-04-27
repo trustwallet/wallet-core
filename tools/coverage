@@ -4,7 +4,23 @@
 
 set -e
 
-lcov --capture --directory . --output-file coverage.info
+function install_llvm_gcov() {
+    cat << EOF > /tmp/llvm-gcov.sh
+#!/bin/bash
+exec /usr/bin/llvm-cov gcov "\$@"
+EOF
+    sudo chmod 755 /tmp/llvm-gcov.sh
+}
+
+if [[ `uname` == "Darwin" ]]; then
+    echo "gcov is llvm-cov on macOS"
+    lcov --capture --directory . --output-file coverage.info
+else
+    echo "call llvm-cov on Linux"
+    install_llvm_gcov
+    lcov --gcov-tool /tmp/llvm-gcov.sh --capture --directory . --output-file coverage.info
+fi
+
 lcov --remove coverage.info '/usr/*' --output-file coverage.info
 lcov --remove coverage.info '/Applications/*' --output-file coverage.info
 lcov --remove coverage.info '*/build/*' --output-file coverage.info

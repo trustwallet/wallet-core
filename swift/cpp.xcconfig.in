@@ -5,4 +5,4 @@
 // file LICENSE at the root of the source code distribution tree.
 
 HEADER_SEARCH_PATHS = $(SRCROOT)/../src @Boost_INCLUDE_DIRS@
-SYSTEM_HEADER_SEARCH_PATHS = $(SRCROOT)/../src/build/local/include $(SRCROOT)/../build/protobuf/staging/protobuf-3.9.0/src
+SYSTEM_HEADER_SEARCH_PATHS = $(SRCROOT)/../src/build/local/include $(SRCROOT)/../build/local/src/protobuf/protobuf-3.9.0/src

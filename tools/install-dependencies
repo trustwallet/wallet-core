@@ -16,7 +16,7 @@ export LD_RUN_PATH="$PREFIX/lib"
 
 # Download Google Test
 export GTEST_VERSION=1.8.1
-GTEST_DIR="$ROOT/build/gtest/staging"
+GTEST_DIR="$ROOT/build/local/src/gtest"
 mkdir -p "$GTEST_DIR"
 cd "$GTEST_DIR"
 if [ ! -f release-$GTEST_VERSION.tar.gz ]; then
@@ -32,7 +32,7 @@ make install
 
 # Download Check
 export CHECK_VERSION=0.12.0
-CHECK_DIR="$ROOT/build/check/staging"
+CHECK_DIR="$ROOT/build/local/src/check"
 mkdir -p "$CHECK_DIR"
 cd "$CHECK_DIR"
 if [ ! -f check-$CHECK_VERSION.tar.gz ]; then
@@ -48,7 +48,7 @@ make install
 
 # Download Nlohmann JSON
 export JSON_VERSION=3.5.0
-JSON_DIR="$ROOT/build/json/staging"
+JSON_DIR="$ROOT/build/local/json"
 mkdir -p "$JSON_DIR"
 cd "$JSON_DIR"
 if [ ! -f include.zip ]; then
@@ -58,7 +58,7 @@ unzip -d "$PREFIX" -o include.zip
 
 # Download Protobuf sources
 export PROTOBUF_VERSION=3.9.0
-PROTOBUF_DIR="$ROOT/build/protobuf/staging"
+PROTOBUF_DIR="$ROOT/build/local/src/protobuf"
 mkdir -p "$PROTOBUF_DIR"
 cd "$PROTOBUF_DIR"
 if [ ! -f protobuf-java-$PROTOBUF_VERSION.tar.gz ]; then
@@ -75,10 +75,10 @@ make install
 make clean
 "$PREFIX/bin/protoc" --version
 
-if [ -x "$(command -v swift)" ]; then
+if [[ -x "$(command -v swift)" && `uname` == "Darwin" ]]; then
     # Download Swift Protobuf sources
     export SWIFT_PROTOBUF_VERSION=1.7.0
-    SWIFT_PROTOBUF_DIR="$ROOT/build/swift-protobuf/staging"
+    SWIFT_PROTOBUF_DIR="$ROOT/build/local/src/swift-protobuf"
     mkdir -p "$SWIFT_PROTOBUF_DIR"
     cd "$SWIFT_PROTOBUF_DIR"
     if [ ! -f $SWIFT_PROTOBUF_VERSION.tar.gz ]; then
