@@ -15,12 +15,19 @@ jobs:
       run: |
         # build-essential libboost-all-dev clang-9 ruby-full cmake
         sudo apt-get install libc++-dev libc++abi-dev ninja-build lcov
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+      if: steps.internal_cache.outputs.cache-hit != 'true'
     - name: Build and test
       run: |
         tools/generate-files
