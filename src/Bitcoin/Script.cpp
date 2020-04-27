@@ -42,6 +42,11 @@ bool Script::isPayToScriptHash() const {
 
 bool Script::isPayToWitnessScriptHash() const {
     // Extra-fast test for pay-to-witness-script-hash
+    return bytes.size() == 34 && bytes[0] == OP_0 && bytes[1] == 0x20;
+}
+
+bool Script::isPayToWitnessPublicKeyHash() const {
+    // Extra-fast test for pay-to-witness-public-key-hash
     return bytes.size() == 22 && bytes[0] == OP_0 && bytes[1] == 0x14;
 }
 
@@ -93,21 +98,21 @@ bool Script::matchPayToScriptHash(Data& result) const {
 }
 
 bool Script::matchPayToWitnessPublicKeyHash(Data& result) const {
-    if (bytes.size() == 22 && bytes[0] == OP_0 && bytes[1] == 0x14) {
-        result.clear();
-        std::copy(std::begin(bytes) + 2, std::end(bytes), std::back_inserter(result));
-        return true;
+    if (!isPayToWitnessPublicKeyHash()) {
+        return false;
     }
-    return false;
+    result.clear();
+    std::copy(std::begin(bytes) + 2, std::end(bytes), std::back_inserter(result));
+    return true;
 }
 
 bool Script::matchPayToWitnessScriptHash(Data& result) const {
-    if (bytes.size() == 34 && bytes[0] == OP_0 && bytes[1] == 0x20) {
-        result.clear();
-        std::copy(std::begin(bytes) + 2, std::end(bytes), std::back_inserter(result));
-        return true;
+    if (!isPayToWitnessScriptHash()) {
+        return false;
     }
-    return false;
+    result.clear();
+    std::copy(std::begin(bytes) + 2, std::end(bytes), std::back_inserter(result));
+    return true;
 }
 
 bool Script::matchMultisig(std::vector<Data>& keys, int& required) const {
@@ -232,10 +237,12 @@ Script Script::buildPayToWitnessProgram(const Data& program) {
 }
 
 Script Script::buildPayToWitnessPubkeyHash(const Data& hash) {
+    assert(hash.size() == 20);
     return Script::buildPayToWitnessProgram(hash);
 }
 
 Script Script::buildPayToWitnessScriptHash(const Data& scriptHash) {
+    assert(scriptHash.size() == 32);
     return Script::buildPayToWitnessProgram(scriptHash);
 }
 

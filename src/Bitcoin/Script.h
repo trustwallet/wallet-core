@@ -43,6 +43,9 @@ class Script {
     /// Determines whether this is a pay-to-witness-script-hash (P2WSH) script.
     bool isPayToWitnessScriptHash() const;
 
+    /// Determines whether this is a pay-to-witness-public-key-hash (P2WPKH) script.
+    bool isPayToWitnessPublicKeyHash() const;
+
     /// Determines whether this is a witness programm script.
     bool isWitnessProgram() const;
 
@@ -58,7 +61,7 @@ class Script {
     /// Matches the script to a pay-to-witness-public-key-hash (P2WPKH).
     bool matchPayToWitnessPublicKeyHash(Data& keyHash) const;
 
-    /// Matches the script to a pay-to-witness-script-hash (P2WSH).
+    /// Matches the script to a pay-to-witness-script-hash (P2WSH).  Returns the script hash, a SHA256 of the witness script.
     bool matchPayToWitnessScriptHash(Data& scriptHash) const;
 
     /// Matches the script to a multisig script.
