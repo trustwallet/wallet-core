@@ -169,7 +169,7 @@ Result<std::vector<Data>> TransactionSigner<Transaction, TransactionBuilder>::si
         }
         results.resize(required + 1);
         return Result<std::vector<Data>>::success(std::move(results));
-    } else if (script.matchPayToPubkey(data)) {
+    } else if (script.matchPayToPublicKey(data)) {
         auto keyHash = TW::Hash::ripemd(TW::Hash::sha256(data));
         auto key = keyForPublicKeyHash(keyHash);
         if (key.empty()) {
@@ -183,7 +183,7 @@ Result<std::vector<Data>> TransactionSigner<Transaction, TransactionBuilder>::si
             return Result<std::vector<Data>>::failure("Failed to sign.");
         }
         return Result<std::vector<Data>>::success({signature});
-    } else if (script.matchPayToPubkeyHash(data)) {
+    } else if (script.matchPayToPublicKeyHash(data)) {
         auto key = keyForPublicKeyHash(data);
         if (key.empty()) {
             // Error: Missing keyxs

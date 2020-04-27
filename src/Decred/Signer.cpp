@@ -108,7 +108,7 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
     std::vector<Data> keys;
     int required;
 
-    if (script.matchPayToPubkey(data)) {
+    if (script.matchPayToPublicKey(data)) {
         auto keyHash = TW::Hash::ripemd(TW::Hash::blake256(data));
         auto key = keyForPublicKeyHash(keyHash);
         if (key.empty()) {
@@ -121,7 +121,7 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
             return Result<std::vector<Data>>::failure("Failed to sign.");
         }
         return Result<std::vector<Data>>::success({signature});
-    } else if (script.matchPayToPubkeyHash(data)) {
+    } else if (script.matchPayToPublicKeyHash(data)) {
         auto key = keyForPublicKeyHash(data);
         if (key.empty()) {
             // Error: Missing keyxs

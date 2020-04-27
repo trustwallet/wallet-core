@@ -43,14 +43,17 @@ class Script {
     /// Determines whether this is a pay-to-witness-script-hash (P2WSH) script.
     bool isPayToWitnessScriptHash() const;
 
+    /// Determines whether this is a pay-to-witness-public-key-hash (P2WPKH) script.
+    bool isPayToWitnessPublicKeyHash() const;
+
     /// Determines whether this is a witness programm script.
     bool isWitnessProgram() const;
 
     /// Matches the script to a pay-to-public-key (P2PK) script.
-    bool matchPayToPubkey(Data& publicKey) const;
+    bool matchPayToPublicKey(Data& publicKey) const;
 
     /// Matches the script to a pay-to-public-key-hash (P2PKH).
-    bool matchPayToPubkeyHash(Data& keyHash) const;
+    bool matchPayToPublicKeyHash(Data& keyHash) const;
 
     /// Matches the script to a pay-to-script-hash (P2SH).
     bool matchPayToScriptHash(Data& scriptHash) const;
@@ -58,7 +61,7 @@ class Script {
     /// Matches the script to a pay-to-witness-public-key-hash (P2WPKH).
     bool matchPayToWitnessPublicKeyHash(Data& keyHash) const;
 
-    /// Matches the script to a pay-to-witness-script-hash (P2WSH).
+    /// Matches the script to a pay-to-witness-script-hash (P2WSH).  Returns the script hash, a SHA256 of the witness script.
     bool matchPayToWitnessScriptHash(Data& scriptHash) const;
 
     /// Matches the script to a multisig script.
@@ -75,7 +78,7 @@ class Script {
 
     /// Builds a pay-to-witness-public-key-hash (P2WPKH) script from a public
     /// key hash.
-    static Script buildPayToWitnessPubkeyHash(const Data& hash);
+    static Script buildPayToWitnessPublicKeyHash(const Data& hash);
 
     /// Builds a pay-to-witness-script-hash (P2WSH) script from a script hash.
     static Script buildPayToWitnessScriptHash(const Data& scriptHash);
@@ -88,7 +91,7 @@ class Script {
     void encode(Data& data) const;
 
     /// Encodes a small integer
-    static uint8_t encodeNumber(int n) {
+    static inline uint8_t encodeNumber(int n) {
         assert(n >= 0 && n <= 16);
         if (n == 0) {
             return OP_0;
@@ -96,8 +99,17 @@ class Script {
         return OP_1 + uint8_t(n - 1);
     }
 
-  private:
+    /// Decodes a small integer
+    static inline int decodeNumber(uint8_t opcode) {
+        if (opcode == OP_0) {
+            return 0;
+        }
+        assert(opcode >= OP_1 && opcode <= OP_16);
+        return static_cast<int>(opcode) - static_cast<int>(OP_1 - 1);
+    }
+
     /// Extracts a single opcode at the given index including its operand.
+    /// Public for testability.
     ///
     /// \param index [in/out] index where the operation starts, on return the
     /// index of the next operation. \param opcode [out] the opcode. \param

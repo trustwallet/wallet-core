@@ -249,7 +249,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     ASSERT_EQ(hex(utxoPubkeyHash.begin(), utxoPubkeyHash.end()), "79091972186c449eb1ded22b78e40d009bdf0089");
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
 
-    auto redeemScript = Script::buildPayToWitnessPubkeyHash(utxoPubkeyHash);
+    auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
     auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
     ASSERT_EQ(hex(scriptHash.begin(), scriptHash.end()), "4733f37cf4db86fbc2efed2500b4f4e49f312023");
     auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());

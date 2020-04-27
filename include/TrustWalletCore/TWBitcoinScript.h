@@ -49,6 +49,10 @@ bool TWBitcoinScriptIsPayToScriptHash(const struct TWBitcoinScript *_Nonnull scr
 TW_EXPORT_PROPERTY
 bool TWBitcoinScriptIsPayToWitnessScriptHash(const struct TWBitcoinScript *_Nonnull script);
 
+/// Determines whether this is a pay-to-witness-public-key-hash (P2WPKH) script.
+TW_EXPORT_PROPERTY
+bool TWBitcoinScriptIsPayToWitnessPublicKeyHash(const struct TWBitcoinScript *_Nonnull script);
+
 /// Determines whether this is a witness programm script.
 TW_EXPORT_PROPERTY
 bool TWBitcoinScriptIsWitnessProgram(const struct TWBitcoinScript *_Nonnull script);

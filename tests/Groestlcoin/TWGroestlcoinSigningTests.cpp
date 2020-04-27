@@ -91,7 +91,7 @@ TEST(GroestlcoinSigning, SignP2SH_P2WPKH) {
     EXPECT_EQ(hex(utxoPubkeyHash.begin(), utxoPubkeyHash.end()), "2fc7d70acef142d1f7b5ef2f20b1a9b759797674");
     input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
 
-    auto redeemScript = Script::buildPayToWitnessPubkeyHash(utxoPubkeyHash);
+    auto redeemScript = Script::buildPayToWitnessPublicKeyHash(utxoPubkeyHash);
     auto scriptHash = Hash::ripemd(Hash::sha256(redeemScript.bytes));
     ASSERT_EQ(hex(scriptHash.begin(), scriptHash.end()), "0055b0c94df477ee6b9f75185dfc9aa8ce2e52e4");
     auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
