@@ -632,11 +632,11 @@ int hdnode_sign(HDNode *node, const uint8_t *msg, uint32_t msg_len, HasherType h
 		} else if (node->curve == &ed25519_keccak_info) {
 			ed25519_sign_keccak(msg, msg_len, node->private_key, node->public_key + 1, sig);
                 } else if (node->curve == &curve25519_info) {
-                    uint8_t ed25519_public_key[32];
-                    memset(ed25519_public_key, 0, 32);
-                    curve25519_pk_to_ed25519(ed25519_public_key, node->public_key + 1);
-                    ed25519_sign(msg, msg_len, node->private_key, ed25519_public_key, sig);
-                    const uint8_t sign_bit = ed25519_public_key[31] & 0x80;
+                    uint8_t public_key[32];
+                    memset(public_key, 0, 32);
+                    curve25519_pk_to_ed25519(public_key, node->public_key + 1);
+                    ed25519_sign(msg, msg_len, node->private_key, public_key, sig);
+                    const uint8_t sign_bit = public_key[31] & 0x80;
                     sig[63] = sig[63] & 127;
                     sig[63] |= sign_bit;
                 }
