@@ -8,7 +8,6 @@ package wallet.core.java;
 
 import com.google.protobuf.Message;
 import com.google.protobuf.Parser;
-
 import wallet.core.jni.CoinType;
 
 import java.io.File;
@@ -16,9 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -27,6 +23,7 @@ public class AnySigner {
     private static Path tempDirWithPrefix;
 
     private static boolean isInitialized = false;
+
     public static void initialize() {
         // Load the static library from the resource path somehow...
         try {
@@ -41,10 +38,10 @@ public class AnySigner {
 
     private static String getResourceName() {
         String os = System.getProperty("os.name").toLowerCase();
-        if(os.contains("mac")) {
-            return "libTrustWalletCore.so";
+        if (os.contains("mac")) {
+            return "libTrustWalletCore-osx.so";
         } else {
-            return "libTrustWalletCore.a";
+            return "libTrustWalletCore-linux.so";
         }
     }
 
@@ -63,6 +60,7 @@ public class AnySigner {
         outputData = null;
         return output;
     }
+
     public static native byte[] nativeSign(byte[] data, int coin);
 
     public static native String signJSON(String json, byte[] key, int coin);
@@ -76,5 +74,6 @@ public class AnySigner {
         outputData = null;
         return output;
     }
+
     public static native byte[] nativePlan(byte[] data, int coin);
 }
