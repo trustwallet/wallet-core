@@ -5,6 +5,8 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <jni.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 
 static JavaVM* cachedJVM;
@@ -26,8 +28,10 @@ uint32_t random32() {
 }
 
 void random_buffer(uint8_t *buf, size_t len) {
-    JNIEnv *env;
-    cachedJVM->AttachCurrentThread(&env, NULL);
+    void *env_ptr;
+    cachedJVM->AttachCurrentThread(&env_ptr, NULL);
+
+    JNIEnv *env = (JNIEnv *) env_ptr;
 
     // SecureRandom random = new SecureRandom();
     jclass secureRandomClass = env->FindClass("java/security/SecureRandom");
