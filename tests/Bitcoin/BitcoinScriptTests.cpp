@@ -16,35 +16,35 @@ using namespace TW::Bitcoin;
 const Script PayToScriptHash(parse_hex("a914" "4733f37cf4db86fbc2efed2500b4f4e49f312023" "87"));
 const Script PayToWitnessScriptHash(parse_hex("0020" "ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db"));
 const Script PayToWitnessPublicKeyHash(parse_hex("0014" "79091972186c449eb1ded22b78e40d009bdf0089"));
-const Script PayToPubKeySecp256k1(parse_hex("21" "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ac"));
-const Script PayToPubKeySecp256k1Extended(parse_hex("41" "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1" "66b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91ac"));
-const Script PayToPubKeyHash(parse_hex("76a914" "79091972186c449eb1ded22b78e40d009bdf0089" "88ac"));
+const Script PayToPublicKeySecp256k1(parse_hex("21" "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ac"));
+const Script PayToPublicKeySecp256k1Extended(parse_hex("41" "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1" "66b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91ac"));
+const Script PayToPublicKeyHash(parse_hex("76a914" "79091972186c449eb1ded22b78e40d009bdf0089" "88ac"));
 
-TEST(BitcoinScript, PayToPubKey) {
+TEST(BitcoinScript, PayToPublicKey) {
     Data res;
-    EXPECT_EQ(PayToPubKeySecp256k1.matchPayToPubkey(res), true);
+    EXPECT_EQ(PayToPublicKeySecp256k1.matchPayToPublicKey(res), true);
     EXPECT_EQ(hex(res), "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432");
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.matchPayToPubkey(res), true);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.matchPayToPublicKey(res), true);
     EXPECT_EQ(hex(res), "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
 
-    EXPECT_EQ(PayToScriptHash.matchPayToPubkey(res), false);
-    EXPECT_EQ(PayToWitnessScriptHash.matchPayToPubkey(res), false);
-    EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToPubkey(res), false);
-    EXPECT_EQ(PayToPubKeyHash.matchPayToPubkey(res), false);
+    EXPECT_EQ(PayToScriptHash.matchPayToPublicKey(res), false);
+    EXPECT_EQ(PayToWitnessScriptHash.matchPayToPublicKey(res), false);
+    EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToPublicKey(res), false);
+    EXPECT_EQ(PayToPublicKeyHash.matchPayToPublicKey(res), false);
 }
 
-TEST(BitcoinScript, PayToPubKeyHash) {
+TEST(BitcoinScript, PayToPublicKeyHash) {
     Data res;
-    EXPECT_EQ(PayToPubKeyHash.matchPayToPubkeyHash(res), true);
+    EXPECT_EQ(PayToPublicKeyHash.matchPayToPublicKeyHash(res), true);
     EXPECT_EQ(hex(res), "79091972186c449eb1ded22b78e40d009bdf0089");
-    EXPECT_EQ(PayToPubKeySecp256k1.matchPayToPubkey(res), true);
+    EXPECT_EQ(PayToPublicKeySecp256k1.matchPayToPublicKey(res), true);
     EXPECT_EQ(hex(res), "03c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432");
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.matchPayToPubkey(res), true);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.matchPayToPublicKey(res), true);
     EXPECT_EQ(hex(res), "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1");
 
-    EXPECT_EQ(PayToScriptHash.matchPayToPubkeyHash(res), false);
-    EXPECT_EQ(PayToWitnessScriptHash.matchPayToPubkeyHash(res), false);
-    EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToPubkeyHash(res), false);
+    EXPECT_EQ(PayToScriptHash.matchPayToPublicKeyHash(res), false);
+    EXPECT_EQ(PayToWitnessScriptHash.matchPayToPublicKeyHash(res), false);
+    EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToPublicKeyHash(res), false);
 }
 
 TEST(BitcoinScript, PayToScriptHash) {
@@ -53,9 +53,9 @@ TEST(BitcoinScript, PayToScriptHash) {
 
     EXPECT_EQ(PayToWitnessScriptHash.isPayToScriptHash(), false);
     EXPECT_EQ(PayToWitnessPublicKeyHash.isPayToScriptHash(), false);
-    EXPECT_EQ(PayToPubKeySecp256k1.isPayToScriptHash(), false);
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.isPayToScriptHash(), false);
-    EXPECT_EQ(PayToPubKeyHash.isPayToScriptHash(), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1.isPayToScriptHash(), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.isPayToScriptHash(), false);
+    EXPECT_EQ(PayToPublicKeyHash.isPayToScriptHash(), false);
 
     Data res;
     EXPECT_EQ(PayToScriptHash.matchPayToScriptHash(res), true);
@@ -63,9 +63,9 @@ TEST(BitcoinScript, PayToScriptHash) {
 
     EXPECT_EQ(PayToWitnessScriptHash.matchPayToScriptHash(res), false);
     EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToScriptHash(res), false);
-    EXPECT_EQ(PayToPubKeySecp256k1.matchPayToScriptHash(res), false);
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.matchPayToScriptHash(res), false);
-    EXPECT_EQ(PayToPubKeyHash.matchPayToScriptHash(res), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1.matchPayToScriptHash(res), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.matchPayToScriptHash(res), false);
+    EXPECT_EQ(PayToPublicKeyHash.matchPayToScriptHash(res), false);
 }
 
 TEST(BitcoinScript, PayToWitnessScriptHash) {
@@ -74,9 +74,9 @@ TEST(BitcoinScript, PayToWitnessScriptHash) {
 
     EXPECT_EQ(PayToScriptHash.isPayToWitnessScriptHash(), false);
     EXPECT_EQ(PayToWitnessPublicKeyHash.isPayToWitnessScriptHash(), false);
-    EXPECT_EQ(PayToPubKeySecp256k1.isPayToWitnessScriptHash(), false);
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.isPayToWitnessScriptHash(), false);
-    EXPECT_EQ(PayToPubKeyHash.isPayToWitnessScriptHash(), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1.isPayToWitnessScriptHash(), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.isPayToWitnessScriptHash(), false);
+    EXPECT_EQ(PayToPublicKeyHash.isPayToWitnessScriptHash(), false);
 
     Data res;
     EXPECT_EQ(PayToWitnessScriptHash.matchPayToWitnessScriptHash(res), true);
@@ -84,9 +84,9 @@ TEST(BitcoinScript, PayToWitnessScriptHash) {
 
     EXPECT_EQ(PayToScriptHash.matchPayToWitnessScriptHash(res), false);
     EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToWitnessScriptHash(res), false);
-    EXPECT_EQ(PayToPubKeySecp256k1.matchPayToWitnessScriptHash(res), false);
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.matchPayToWitnessScriptHash(res), false);
-    EXPECT_EQ(PayToPubKeyHash.matchPayToWitnessScriptHash(res), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1.matchPayToWitnessScriptHash(res), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.matchPayToWitnessScriptHash(res), false);
+    EXPECT_EQ(PayToPublicKeyHash.matchPayToWitnessScriptHash(res), false);
 }
 
 TEST(BitcoinScript, PayToWitnessPublicKeyHash) {
@@ -95,9 +95,9 @@ TEST(BitcoinScript, PayToWitnessPublicKeyHash) {
 
     EXPECT_EQ(PayToScriptHash.isPayToWitnessPublicKeyHash(), false);
     EXPECT_EQ(PayToWitnessScriptHash.isPayToWitnessPublicKeyHash(), false);
-    EXPECT_EQ(PayToPubKeySecp256k1.isPayToWitnessPublicKeyHash(), false);
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.isPayToWitnessPublicKeyHash(), false);
-    EXPECT_EQ(PayToPubKeyHash.isPayToWitnessPublicKeyHash(), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1.isPayToWitnessPublicKeyHash(), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.isPayToWitnessPublicKeyHash(), false);
+    EXPECT_EQ(PayToPublicKeyHash.isPayToWitnessPublicKeyHash(), false);
 
     Data res;
     EXPECT_EQ(PayToWitnessPublicKeyHash.matchPayToWitnessPublicKeyHash(res), true);
@@ -105,9 +105,9 @@ TEST(BitcoinScript, PayToWitnessPublicKeyHash) {
 
     EXPECT_EQ(PayToScriptHash.matchPayToWitnessPublicKeyHash(res), false);
     EXPECT_EQ(PayToWitnessScriptHash.matchPayToWitnessPublicKeyHash(res), false);
-    EXPECT_EQ(PayToPubKeySecp256k1.matchPayToWitnessPublicKeyHash(res), false);
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.matchPayToWitnessPublicKeyHash(res), false);
-    EXPECT_EQ(PayToPubKeyHash.matchPayToWitnessPublicKeyHash(res), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1.matchPayToWitnessPublicKeyHash(res), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.matchPayToWitnessPublicKeyHash(res), false);
+    EXPECT_EQ(PayToPublicKeyHash.matchPayToWitnessPublicKeyHash(res), false);
 }
 
 TEST(BitcoinScript, WitnessProgram) {
@@ -115,9 +115,9 @@ TEST(BitcoinScript, WitnessProgram) {
     EXPECT_EQ(PayToWitnessPublicKeyHash.isWitnessProgram(), true);
 
     EXPECT_EQ(PayToScriptHash.isWitnessProgram(), false);
-    EXPECT_EQ(PayToPubKeySecp256k1.isWitnessProgram(), false);
-    EXPECT_EQ(PayToPubKeySecp256k1Extended.isWitnessProgram(), false);
-    EXPECT_EQ(PayToPubKeyHash.isWitnessProgram(), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1.isWitnessProgram(), false);
+    EXPECT_EQ(PayToPublicKeySecp256k1Extended.isWitnessProgram(), false);
+    EXPECT_EQ(PayToPublicKeyHash.isWitnessProgram(), false);
 }
 
 TEST(BitcoinScript, EncodeNumber) {

@@ -69,7 +69,7 @@ bool TWBitcoinScriptEqual(const struct TWBitcoinScript *_Nonnull lhs, const stru
 
 TWData *TWBitcoinScriptMatchPayToPubkey(const struct TWBitcoinScript *script) {
     std::vector<uint8_t> data;
-    if (script->impl.matchPayToPubkey(data)) {
+    if (script->impl.matchPayToPublicKey(data)) {
         return TWDataCreateWithBytes(data.data(), data.size());
     }
     return nullptr;
@@ -77,7 +77,7 @@ TWData *TWBitcoinScriptMatchPayToPubkey(const struct TWBitcoinScript *script) {
 
 TWData *TWBitcoinScriptMatchPayToPubkeyHash(const struct TWBitcoinScript *script) {
     std::vector<uint8_t> data;
-    if (script->impl.matchPayToPubkeyHash(data)) {
+    if (script->impl.matchPayToPublicKeyHash(data)) {
         return TWDataCreateWithBytes(data.data(), data.size());
     }
     return nullptr;
@@ -127,7 +127,7 @@ struct TWBitcoinScript *TWBitcoinScriptBuildPayToScriptHash(TWData *scriptHash) 
 
 struct TWBitcoinScript *TWBitcoinScriptBuildPayToWitnessPubkeyHash(TWData *hash) {
     auto v = reinterpret_cast<const std::vector<uint8_t>*>(hash);
-    auto script = Script::buildPayToWitnessPubkeyHash(*v);
+    auto script = Script::buildPayToWitnessPublicKeyHash(*v);
     return new TWBitcoinScript{ .impl = script };
 }
 

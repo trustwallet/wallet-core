@@ -60,7 +60,7 @@ bool Script::isWitnessProgram() const {
     return bytes[1] + 2 == bytes.size();
 }
 
-bool Script::matchPayToPubkey(Data& result) const {
+bool Script::matchPayToPublicKey(Data& result) const {
     if (bytes.size() == PublicKey::secp256k1ExtendedSize + 2 &&
         bytes[0] == PublicKey::secp256k1ExtendedSize && bytes.back() == OP_CHECKSIG) {
         result.clear();
@@ -78,7 +78,7 @@ bool Script::matchPayToPubkey(Data& result) const {
     return false;
 }
 
-bool Script::matchPayToPubkeyHash(Data& result) const {
+bool Script::matchPayToPublicKeyHash(Data& result) const {
     if (bytes.size() == 25 && bytes[0] == OP_DUP && bytes[1] == OP_HASH160 && bytes[2] == 20 &&
         bytes[23] == OP_EQUALVERIFY && bytes[24] == OP_CHECKSIG) {
         result.clear();
@@ -236,7 +236,7 @@ Script Script::buildPayToWitnessProgram(const Data& program) {
     return script;
 }
 
-Script Script::buildPayToWitnessPubkeyHash(const Data& hash) {
+Script Script::buildPayToWitnessPublicKeyHash(const Data& hash) {
     assert(hash.size() == 20);
     return Script::buildPayToWitnessProgram(hash);
 }

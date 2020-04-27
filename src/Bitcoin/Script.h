@@ -50,10 +50,10 @@ class Script {
     bool isWitnessProgram() const;
 
     /// Matches the script to a pay-to-public-key (P2PK) script.
-    bool matchPayToPubkey(Data& publicKey) const;
+    bool matchPayToPublicKey(Data& publicKey) const;
 
     /// Matches the script to a pay-to-public-key-hash (P2PKH).
-    bool matchPayToPubkeyHash(Data& keyHash) const;
+    bool matchPayToPublicKeyHash(Data& keyHash) const;
 
     /// Matches the script to a pay-to-script-hash (P2SH).
     bool matchPayToScriptHash(Data& scriptHash) const;
@@ -78,7 +78,7 @@ class Script {
 
     /// Builds a pay-to-witness-public-key-hash (P2WPKH) script from a public
     /// key hash.
-    static Script buildPayToWitnessPubkeyHash(const Data& hash);
+    static Script buildPayToWitnessPublicKeyHash(const Data& hash);
 
     /// Builds a pay-to-witness-script-hash (P2WSH) script from a script hash.
     static Script buildPayToWitnessScriptHash(const Data& scriptHash);
