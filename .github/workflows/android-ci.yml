@@ -21,9 +21,17 @@ jobs:
         $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-26;google_apis;x86"
     - name: Accept Licenses
       run: echo -e "y\ny\ny\ny\ny\n" | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+    - name: Cache internal dependencies
+      id: internal_cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: build/local
+        key: ${{ runner.os }}-internal-${{ hashFiles('tools/install-dependencies') }}
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
-        tools/generate-files
+      if: steps.internal_cache.outputs.cache-hit != 'true'
     - name: Run test
-      run: tools/android-test
+      run: |
+        tools/generate-files
+        tools/android-test
