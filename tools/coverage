@@ -5,11 +5,11 @@
 set -e
 
 function install_llvm_gcov() {
-    sudo cat << EOF > /usr/local/bin/llvm-gcov.sh
+    cat << EOF > /tmp/llvm-gcov.sh
 #!/bin/bash
 exec llvm-cov gcov "\$@"
 EOF
-    sudo chmod 755 /usr/local/bin/llvm-gcov.sh
+    sudo chmod 755 /tmp/llvm-gcov.sh
 }
 
 if [[ `uname` == "Darwin" ]]; then
@@ -18,7 +18,7 @@ if [[ `uname` == "Darwin" ]]; then
 else
     echo "call llvm-cov on Linux"
     install_llvm_gcov
-    lcov --gcov-tool llvm-gcov.sh --capture --directory . --output-file coverage.info
+    lcov --gcov-tool /tmp/llvm-gcov.sh --capture --directory . --output-file coverage.info
 fi
 
 lcov --remove coverage.info '/usr/*' --output-file coverage.info
