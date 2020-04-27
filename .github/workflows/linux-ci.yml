@@ -18,12 +18,11 @@ jobs:
         sudo apt-get install autoconf ninja-build pkg-config xz-utils lcov
     - name: Install internal dependencies
       run: |
-        sudo tools/install-dependencies
+        tools/install-dependencies
         tools/generate-files
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-        PREFIX: /usr/local
     - name: Build and test
       run: |
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
@@ -32,7 +31,6 @@ jobs:
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
-        PREFIX: /usr/local
     - name: Gather code coverage
       run: |
         sudo rm -rf coverage.info

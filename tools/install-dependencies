@@ -75,7 +75,7 @@ make install
 make clean
 "$PREFIX/bin/protoc" --version
 
-if [ -x "$(command -v swift)" ]; then
+if [[ -x "$(command -v swift)" && `uname` -eq "Darwin" ]]; then
     # Download Swift Protobuf sources
     export SWIFT_PROTOBUF_VERSION=1.7.0
     SWIFT_PROTOBUF_DIR="$ROOT/build/swift-protobuf/staging"
