@@ -7,15 +7,20 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  boost:
     runs-on: [ubuntu-18.04]
-
+    steps:
+      - name: Check boost
+        run: |
+          ls -lR ${BOOST_ROOT_1_72_0}
+          cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DBOOST_ROOT=${BOOST_ROOT_1_72_0}
+  build:
+    runs-on: [ubuntu-18.04]
     steps:
     - uses: actions/checkout@v2
     - name: Install system dependencies
       run: |
-        sudo apt-get install autoconf ninja-build pkg-config xz-utils lcov
+        sudo apt-get install ninja-build lcov
     - name: Install internal dependencies
       run: |
         tools/install-dependencies
@@ -25,7 +30,7 @@ jobs:
         CXX: /usr/bin/clang++
     - name: Build and test
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DBOOST_ROOT=${BOOST_ROOT_1_72_0}
         make -Cbuild
         build/tests/tests tests --gtest_output=xml
       env:
