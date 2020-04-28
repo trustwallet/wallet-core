@@ -36,8 +36,3 @@ class Address : public Bech32Address {
 };
 
 } // namespace TW::Elrond
-
-/// Wrapper for C interface.
-struct TWElrondAddress {
-    TW::Elrond::Address impl;
-};

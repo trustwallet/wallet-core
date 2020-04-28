@@ -26,8 +26,3 @@ public:
 };
 
 } // namespace TW::Elrond
-
-/// Wrapper for C interface.
-struct TWElrondSigner {
-    TW::Elrond::Signer impl;
-};

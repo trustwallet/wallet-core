@@ -15,7 +15,6 @@
 using namespace TW;
 using namespace TW::Elrond;
 
-
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto privateKey = PrivateKey(input.private_key());
     auto signableAsString = serializeTransactionToSignableString(input.transaction());

@@ -34,7 +34,7 @@ template<class Key, class T, class Compare, class Allocator>
 using sorted_map = std::map<Key, T, FieldsSorter, Allocator>;
 using sorted_json = nlohmann::basic_json<sorted_map>;
 
-string TW::Elrond::serializeTransactionToSignableString(const Proto::TransactionMessage& message) {
+string serializeTransaction(const Proto::TransactionMessage& message) {
     sorted_json payload {
         {"nonce", json(message.nonce())},
         {"value", json(message.value())},
@@ -45,13 +45,13 @@ string TW::Elrond::serializeTransactionToSignableString(const Proto::Transaction
     };
 
     if (!message.data().empty()) {
-        payload["data"] = json(TW::Base64::encode(TW::data(message.data())));
+        payload["data"] = json(Base64::encode(TW::data(message.data())));
     }
 
     return payload.dump();
 }
 
-string TW::Elrond::serializeSignedTransaction(const Proto::TransactionMessage& message, string signature) {
+string serializeSignedTransaction(const Proto::TransactionMessage& message, string signature) {
     sorted_json payload {
         {"nonce", json(message.nonce())},
         {"value", json(message.value())},

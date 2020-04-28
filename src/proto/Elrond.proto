@@ -31,6 +31,6 @@ message SigningInput {
 
 // Transaction signing output.
 message SigningOutput {
-    string signed_transaction = 1;
+    string encoded = 1;
     string signature = 2;
 }
