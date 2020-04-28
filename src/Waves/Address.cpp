@@ -57,7 +57,7 @@ Address::Address(const std::string &string) {
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
-Address::Address(const Data& data) {
+Address::Address(const Data &data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }

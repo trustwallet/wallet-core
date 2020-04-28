@@ -29,7 +29,7 @@ bool TWBitcoinAddressIsValidString(TWString *_Nonnull string) {
 }
 
 struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithString(TWString *_Nonnull string) {
-    const auto& s = *reinterpret_cast<const std::string*>(string);
+    auto& s = *reinterpret_cast<const std::string*>(string);
     try {
         return new TWBitcoinAddress{ Address(s) };
     } catch (...) {
