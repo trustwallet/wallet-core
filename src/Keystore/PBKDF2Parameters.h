@@ -35,7 +35,7 @@ struct PBKDF2Parameters {
     PBKDF2Parameters();
 
     /// Initializes `PBKDF2Parameters` with all values.
-    PBKDF2Parameters(Data salt, uint32_t iterations, std::size_t desiredKeyLength)
+    PBKDF2Parameters(const Data& salt, uint32_t iterations, std::size_t desiredKeyLength)
         : salt(std::move(salt)), desiredKeyLength(desiredKeyLength), iterations(iterations) {}
 
     /// Initializes `PBKDF2Parameters` with a JSON object.

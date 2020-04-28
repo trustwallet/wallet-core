@@ -18,12 +18,12 @@ public:
 
     static const std::string hrp; // HRP_IOTEX
 
-    static bool isValid(const std::string addr) { return Bech32Address::isValid(addr, hrp); }
+    static bool isValid(const std::string& addr) { return Bech32Address::isValid(addr, hrp); }
 
     Address() : Bech32Address(hrp) {}
 
     /// Initializes an address with a key hash.
-    Address(Data keyHash) : Bech32Address(hrp, keyHash) {
+    Address(const Data& keyHash) : Bech32Address(hrp, keyHash) {
         if (getKeyHash().size() != Address::size) {
             throw std::invalid_argument("invalid address data");
         }

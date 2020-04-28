@@ -52,23 +52,23 @@ class Signer {
     explicit Signer(uint256_t chainID) : chainID(std::move(chainID)) {}
 
     template <typename T>
-    static Proto::SigningOutput prepareOutput(const Data &encoded, const T &transaction) noexcept;
+    static Proto::SigningOutput prepareOutput(const Data& encoded, const T &transaction) noexcept;
 
     /// Signs the given transaction.
     template <typename T>
-    void sign(const PrivateKey &privateKey, const Data &hash, T &transaction) const noexcept;
+    void sign(const PrivateKey &privateKey, const Data& hash, T &transaction) const noexcept;
 
     /// Signs a hash with the given private key for the given chain identifier.
     ///
     /// @returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t>
-    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept;
+    sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept;
 
     /// R, S, and V values for the given chain identifier and signature.
     ///
     /// @returns the r, s, and v values of the transaction signature
     static std::tuple<uint256_t, uint256_t, uint256_t> values(const uint256_t &chainID,
-                                                              const Data &signature) noexcept;
+                                                              const Data& signature) noexcept;
 
     std::string txnAsRLPHex(Transaction &transaction) const noexcept;
 

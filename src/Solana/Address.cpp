@@ -41,8 +41,8 @@ Data Address::vector() const {
     return vec;
 }
 
-Address addressFromValidatorSeed(Address& fromAddress, Address& validatorAddress,
-                                 Address& programId) {
+Address addressFromValidatorSeed(const Address& fromAddress, const Address& validatorAddress,
+                                 const Address& programId) {
     Data extended = fromAddress.vector();
     std::string seed = validatorAddress.string();
     Data vecSeed(seed.begin(), seed.end());

@@ -101,8 +101,8 @@ struct DerivationPath {
 
     /// Creates a `DerivationPath` by BIP44 components.
     DerivationPath(TWPurpose purpose, TWCoinType coin, uint32_t account, uint32_t change,
-                   uint32_t address) {
-        indices = std::vector<DerivationPathIndex>(5);
+                   uint32_t address) 
+    : indices(std::vector<DerivationPathIndex>(5)) {
         setPurpose(purpose);
         setCoin(coin);
         setAccount(account);

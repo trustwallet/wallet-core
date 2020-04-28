@@ -41,7 +41,7 @@ Slice Slice::createFromHex(std::string const& dataStr) {
 }
 
 Slice Slice::createFromBits(const Data& data, size_t sizeBits) {
-    if (sizeBits <= 0) {
+    if (sizeBits == 0) {
         throw std::runtime_error("empty data");
     }
     Slice s;

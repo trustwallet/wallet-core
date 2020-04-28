@@ -48,7 +48,7 @@ public:
     Bech32Address(const std::string& hrp, HasherType hasher, const PublicKey& publicKey);
 
     void setHrp(const std::string& hrp_in) { hrp = std::move(hrp_in); }
-    void setKey(Data keyHash_in) { keyHash = std::move(keyHash_in); }
+    void setKey(const Data& keyHash_in) { keyHash = std::move(keyHash_in); }
 
     inline const std::string& getHrp() const { return hrp; }
 

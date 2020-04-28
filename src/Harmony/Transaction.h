@@ -32,7 +32,7 @@ class Transaction {
     uint256_t s = uint256_t();
 
     Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, uint256_t fromShardID,
-                uint256_t toShardID, Address to, uint256_t amount, Data payload)
+                uint256_t toShardID, Address to, uint256_t amount, const Data& payload)
         : nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))

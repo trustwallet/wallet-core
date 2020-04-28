@@ -44,7 +44,7 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
-                                                           const Data &signature) noexcept {
+                                                           const Data& signature) noexcept {
     boost::multiprecision::uint256_t r, s, v;
     import_bits(r, signature.begin(), signature.begin() + 32);
     import_bits(s, signature.begin() + 32, signature.begin() + 64);
@@ -62,7 +62,7 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept {
+Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }

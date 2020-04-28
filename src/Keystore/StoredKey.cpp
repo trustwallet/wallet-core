@@ -78,7 +78,7 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
     return key;
 }
 
-StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, Data data)
+StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data)
     : type(type), id(), name(std::move(name)), payload(password, data), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());

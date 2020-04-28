@@ -11,8 +11,8 @@ namespace TW::NEO {
 
 class Script {
   public:
-    static Data CreateSignatureRedeemScript(Data publicKey);
-    static Data CreateInvocationScript(Data signature);
+    static Data CreateSignatureRedeemScript(const Data& publicKey);
+    static Data CreateInvocationScript(const Data& signature);
 };
 
 } // namespace TW::NEO

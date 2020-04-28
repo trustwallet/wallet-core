@@ -118,7 +118,7 @@ private:
     /// Skip ahead: form other Decode data with offset
     Decode skipClone(uint32_t offset) const;
     /// Get the Nth byte
-    inline TW::byte byte(uint32_t idx) const {
+    inline TW::byte getByte(uint32_t idx) const {
         if (subStart + idx >= data->origData.size()) { throw std::invalid_argument("CBOR data too short"); }
         return data->origData[subStart + idx];
     }

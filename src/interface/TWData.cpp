@@ -70,8 +70,7 @@ void TWDataAppendByte(TWData *_Nonnull data, uint8_t byte) {
 void TWDataAppendData(TWData *_Nonnull data, TWData *_Nonnull append) {
     auto v = const_cast<std::vector<uint8_t>*>(reinterpret_cast<const std::vector<uint8_t>*>(data));
     auto av = reinterpret_cast<const std::vector<uint8_t>*>(append);
-    for (auto& b : *av)
-        v->push_back(b);
+    std::copy(av->begin(), av->end(), std::back_inserter(*v));
 }
 
 void TWDataReverse(TWData *_Nonnull data) {

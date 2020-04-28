@@ -12,11 +12,11 @@
 
 using namespace TW::EOS;
 
-static const int64_t precision = 1000;
-static const uint8_t maxDecimals = 18;
+static const int64_t Precision = 1000;
+static const uint8_t MaxDecimals = 18;
 
 Asset::Asset(int64_t amount, uint8_t decimals, const std::string& symbol) {
-    if (decimals > maxDecimals) {
+    if (decimals > MaxDecimals) {
         throw std::invalid_argument("Too many decimals!");
     }
     this->symbol |= decimals;
@@ -112,7 +112,7 @@ std::string Asset::string() const {
 
     int charsWritten = snprintf(buffer, maxBufferSize, "%.*f %s", 
                             decimals, 
-                            static_cast<double>(amount) / precision,
+                            static_cast<double>(amount) / Precision,
                             getSymbol().c_str());
 
     if (charsWritten < 0 || charsWritten > maxBufferSize) {

@@ -33,6 +33,7 @@ public:
     state[1] = seed + Prime2;
     state[2] = seed;
     state[3] = seed - Prime1;
+    buffer[0] = 0;
     bufferSize  = 0;
     totalLength = 0;
   }

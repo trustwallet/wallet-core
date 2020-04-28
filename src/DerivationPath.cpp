@@ -24,7 +24,7 @@ DerivationPath::DerivationPath(const std::string& string) {
 
     while (it != end) {
         uint32_t value;
-        if (std::sscanf(it, "%d", &value) != 1) {
+        if (std::sscanf(it, "%ud", &value) != 1) {
             throw std::invalid_argument("Invalid component");
         }
         while (it != end && isdigit(*it)) {

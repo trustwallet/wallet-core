@@ -39,7 +39,7 @@ Address::Address(const std::string &string) {
     std::copy(data.begin(), data.end(), bytes.begin());
 }
 
-Address::Address(const Data &data) {
+Address::Address(const Data& data) {
     if (!Base58Address::isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }

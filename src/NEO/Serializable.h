@@ -44,12 +44,9 @@ class Serializable : public ISerializable {
     }
 
     template<class T>
-    static inline int deserialize(std::vector <T> &resp, const Data &data, int initial_pos = 0) {
+    static inline int deserialize(std::vector <T> &resp, const Data& data, int initial_pos = 0) {
         uint64_t size = readVar<uint64_t>(data, initial_pos, INT_MAX);
-        if (size < 0) {
-            throw std::invalid_argument("Serializable::deserialize ArgumentOutOfRangeException");
-        }
-
+        // assert(size >= 0);
         initial_pos += varIntSize(size);
         for (uint64_t i = 0; i < size; ++i) {
             T value;

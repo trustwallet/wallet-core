@@ -20,7 +20,7 @@ public:
     Address() : Bech32Address("") {}
 
     /// Initializes an address with a key hash.
-    Address(const std::string& hrp, Data keyHash) : Bech32Address(hrp, keyHash) {}
+    Address(const std::string& hrp, const Data& keyHash) : Bech32Address(hrp, keyHash) {}
 
     /// Initializes an address with a public key.
     Address(const std::string& hrp, const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}

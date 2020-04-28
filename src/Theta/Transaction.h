@@ -24,7 +24,7 @@ class TxInput {
 
     TxInput(Ethereum::Address address, Coins coins, uint64_t sequence)
         : address(std::move(address)), coins(std::move(coins)), sequence(sequence) {}
-    TxInput(Ethereum::Address address, Coins coins, uint64_t sequence, Data signature)
+    TxInput(Ethereum::Address address, Coins coins, uint64_t sequence, const Data& signature)
         : address(std::move(address)), coins(std::move(coins)), sequence(sequence), signature(std::move(signature)) {}
 };
 

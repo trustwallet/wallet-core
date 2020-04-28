@@ -71,7 +71,7 @@ Data Transaction::serialize() const {
     return data;
 }
 
-Data Transaction::serialize(Data &signature) const {
+Data Transaction::serialize(Data& signature) const {
     /* Algorand transaction and signature are encoded with msgpack:
     {
         "sig": <signature bytes>

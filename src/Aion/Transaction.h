@@ -28,7 +28,7 @@ class Transaction {
     std::vector<uint8_t> signature;
 
     Transaction(uint128_t nonce, uint128_t gasPrice, uint128_t gasLimit, Address to,
-                uint128_t amount, Data payload)
+                uint128_t amount, const Data& payload)
         : nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))
         , gasLimit(std::move(gasLimit))

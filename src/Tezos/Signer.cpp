@@ -45,7 +45,7 @@ Data Signer::signOperationList(const PrivateKey& privateKey, const OperationList
     return signData(privateKey, forged);
 }
 
-Data Signer::signData(const PrivateKey& privateKey, Data data) {
+Data Signer::signData(const PrivateKey& privateKey, const Data& data) {
     Data watermarkedData = Data();
     watermarkedData.push_back(0x03);
     append(watermarkedData, data);

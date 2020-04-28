@@ -8,7 +8,7 @@
 
 namespace TW::NEO {
 
-Data Script::CreateSignatureRedeemScript(Data publicKey) {
+Data Script::CreateSignatureRedeemScript(const Data& publicKey) {
     Data result;
     result.push_back((byte)PUSHBYTES21);
     result.insert(result.end(), publicKey.begin(), publicKey.end());
@@ -16,7 +16,7 @@ Data Script::CreateSignatureRedeemScript(Data publicKey) {
     return result;
 }
 
-Data Script::CreateInvocationScript(Data signature) {
+Data Script::CreateInvocationScript(const Data& signature) {
     Data result;
     result.push_back((byte)PUSHBYTES40);
     result.insert(result.end(), signature.begin(), signature.end());

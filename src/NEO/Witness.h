@@ -23,7 +23,7 @@ class Witness : public Serializable {
         return invocationScript.size() + verificationScript.size();
     }
 
-    void deserialize(const Data &data, int initial_pos = 0) override {
+    void deserialize(const Data& data, int initial_pos = 0) override {
         uint32_t size;
         invocationScript = readVarBytes(data, initial_pos, &size);
         verificationScript = readVarBytes(data, initial_pos + size);

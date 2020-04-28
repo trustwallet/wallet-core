@@ -26,7 +26,7 @@ Data Transaction::encode() {
     append(encoded, encodeSafeZero(nonce));
     append(encoded, Ethereum::RLP::encode(payload));
 
-    const Data &raw = Ethereum::RLP::encodeList(encoded);
+    const Data& raw = Ethereum::RLP::encodeList(encoded);
     return raw;
 }
 

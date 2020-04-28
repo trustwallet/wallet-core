@@ -22,7 +22,7 @@ Data Address::secureHash(const T &data) {
     return Hash::keccak256(Hash::blake2b(data, 32));
 }
 
-bool Address::isValid(const Data &decoded) {
+bool Address::isValid(const Data& decoded) {
     if (decoded.size() != Address::size) {
         return false;
     }
@@ -57,7 +57,7 @@ Address::Address(const std::string &string) {
     std::copy(decoded.begin(), decoded.end(), bytes.begin());
 }
 
-Address::Address(const Data &data) {
+Address::Address(const Data& data) {
     if (!isValid(data)) {
         throw std::invalid_argument("Invalid address data");
     }
