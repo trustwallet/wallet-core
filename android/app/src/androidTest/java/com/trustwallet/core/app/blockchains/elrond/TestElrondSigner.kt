@@ -52,6 +52,6 @@ class TestElrondSigner {
         val expectedSignature = "b88ad2fe98a7316ea432a0a76c18cd87200fe75f27a8f053ea6532b40317dbec5136c5463aef132ae951b7e60d45d921caaa5903e70821dcda98f237d4ec4308"
 
         assertEquals(expectedSignature, output.signature)
-        assertEquals("""{"nonce":0,"value":"0","receiver":"$bobBech32","sender":"$aliceBech32","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"$expectedSignature"}""", output.signedTransaction)
+        assertEquals("""{"nonce":0,"value":"0","receiver":"$bobBech32","sender":"$aliceBech32","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"$expectedSignature"}""", output.encoded)
     }
 }

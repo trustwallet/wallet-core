@@ -34,22 +34,22 @@ TEST(TWAnySignerElrond, Sign) {
     ANY_SIGN(input, TWCoinTypeElrond);
 
     auto signature = output.signature();
-    auto signedTransaction = output.signed_transaction();
+    auto encoded = output.encoded();
     auto expectedSignature = "b88ad2fe98a7316ea432a0a76c18cd87200fe75f27a8f053ea6532b40317dbec5136c5463aef132ae951b7e60d45d921caaa5903e70821dcda98f237d4ec4308";
-    auto expectedSignedTransaction = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_EQ(expectedSignature, signature);
-    ASSERT_EQ(expectedSignedTransaction, signedTransaction);
+    ASSERT_EQ(expectedEncoded, encoded);
 }
 
 TEST(TWAnySignerElrond, SignJSON) {
     // Shuffle some fields, assume arbitrary order in the input
     auto input = STRING((boost::format(R"({"transaction" : {"data":"foo","value":"0","nonce":0,"receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000}})") % BOB_BECH32 % ALICE_BECH32).str().c_str());
     auto privateKey = DATA(ALICE_SEED_HEX);
-    auto signedTransaction = WRAPS(TWAnySignerSignJSON(input.get(), privateKey.get(), TWCoinTypeElrond));
+    auto encoded = WRAPS(TWAnySignerSignJSON(input.get(), privateKey.get(), TWCoinTypeElrond));
     auto expectedSignature = "b88ad2fe98a7316ea432a0a76c18cd87200fe75f27a8f053ea6532b40317dbec5136c5463aef132ae951b7e60d45d921caaa5903e70821dcda98f237d4ec4308";
-    auto expectedSignedTransaction = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
+    auto expectedEncoded = (boost::format(R"({"nonce":0,"value":"0","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"foo","signature":"%3%"})") % BOB_BECH32 % ALICE_BECH32 % expectedSignature).str();
 
     ASSERT_TRUE(TWAnySignerSupportsJSON(TWCoinTypeElrond));
-    assertStringsEqual(signedTransaction, expectedSignedTransaction.c_str());
+    assertStringsEqual(encoded, expectedEncoded.c_str());
 }

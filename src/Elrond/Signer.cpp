@@ -21,11 +21,11 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto signableAsData = TW::data(signableAsString);
     auto signature = privateKey.sign(signableAsData, TWCurveED25519);
     auto encodedSignature = hex(signature);
-    auto serializedTransaction = serializeSignedTransaction(input.transaction(), encodedSignature);
+    auto encoded = serializeSignedTransaction(input.transaction(), encodedSignature);
 
     auto protoOutput = Proto::SigningOutput();
     protoOutput.set_signature(encodedSignature);
-    protoOutput.set_signed_transaction(serializedTransaction);
+    protoOutput.set_encoded(encoded);
     return protoOutput;
 }
 
@@ -34,5 +34,5 @@ std::string Signer::signJSON(const std::string& json, const Data& key) {
     google::protobuf::util::JsonStringToMessage(json, &input);
     input.set_private_key(key.data(), key.size());
     auto output = sign(input);
-    return output.signed_transaction();
+    return output.encoded();
 }
