@@ -23,7 +23,7 @@ TEST(ElrondSerialization, SignableString) {
     message.set_receiver("bob");
     message.set_data("foobar");
 
-    string jsonString = serializeTransactionToSignableString(message);
+    string jsonString = serializeTransaction(message);
     ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"bob","sender":"alice","gasPrice":0,"gasLimit":0,"data":"Zm9vYmFy"})", jsonString);
 }
 
@@ -38,7 +38,7 @@ TEST(ElrondSerialization, SignableStringWithRealData) {
     message.set_data("for dinner");
 
     string expected = (boost::format(R"({"nonce":15,"value":"100","receiver":"%1%","sender":"%2%","gasPrice":200000000000000,"gasLimit":500000000,"data":"Zm9yIGRpbm5lcg=="})") % BOB_BECH32 % ALICE_BECH32).str();
-    string actual = serializeTransactionToSignableString(message);
+    string actual = serializeTransaction(message);
     ASSERT_EQ(expected, actual);
 }
 
@@ -49,6 +49,6 @@ TEST(ElrondSerialization, SignableStringWithoutData) {
     message.set_sender("feed");
     message.set_receiver("abba");
 
-    string jsonString = serializeTransactionToSignableString(message);
+    string jsonString = serializeTransaction(message);
     ASSERT_EQ(R"({"nonce":42,"value":"43","receiver":"abba","sender":"feed","gasPrice":0,"gasLimit":0})", jsonString);
 }

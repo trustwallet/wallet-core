@@ -17,7 +17,7 @@ using namespace TW::Elrond;
 
 Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     auto privateKey = PrivateKey(input.private_key());
-    auto signableAsString = serializeTransactionToSignableString(input.transaction());
+    auto signableAsString = serializeTransaction(input.transaction());
     auto signableAsData = TW::data(signableAsString);
     auto signature = privateKey.sign(signableAsData, TWCurveED25519);
     auto encodedSignature = hex(signature);

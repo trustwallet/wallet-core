@@ -11,7 +11,7 @@
 #include "Base64.h"
 #include "PrivateKey.h"
 
-using namespace TW::Elrond;
+using namespace TW;
 
 std::map<string, int> fields_order {
     {"nonce", 1},
@@ -34,7 +34,7 @@ template<class Key, class T, class Compare, class Allocator>
 using sorted_map = std::map<Key, T, FieldsSorter, Allocator>;
 using sorted_json = nlohmann::basic_json<sorted_map>;
 
-string serializeTransaction(const Proto::TransactionMessage& message) {
+string Elrond::serializeTransaction(const Proto::TransactionMessage& message) {
     sorted_json payload {
         {"nonce", json(message.nonce())},
         {"value", json(message.value())},
@@ -45,13 +45,13 @@ string serializeTransaction(const Proto::TransactionMessage& message) {
     };
 
     if (!message.data().empty()) {
-        payload["data"] = json(Base64::encode(TW::data(message.data())));
+        payload["data"] = json(TW::Base64::encode(TW::data(message.data())));
     }
 
     return payload.dump();
 }
 
-string serializeSignedTransaction(const Proto::TransactionMessage& message, string signature) {
+string Elrond::serializeSignedTransaction(const Proto::TransactionMessage& message, string signature) {
     sorted_json payload {
         {"nonce", json(message.nonce())},
         {"value", json(message.value())},
