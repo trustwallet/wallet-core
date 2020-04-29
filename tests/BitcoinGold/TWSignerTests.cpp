@@ -67,6 +67,7 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    // BitcoinGold Mainnet: https://btg2.trezor.io/tx/3e818ad25d73123b6c1c8099ed462aa5413a4ef57d66d9d260306c012753ba43
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
