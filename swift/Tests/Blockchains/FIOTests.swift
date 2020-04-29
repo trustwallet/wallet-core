@@ -139,4 +139,20 @@ class FIOTests: XCTestCase {
 
         XCTAssertEqual(out.json, expectedJson)
     }
+
+    func testAccountNames() {
+        XCTAssertEqual(
+            FIOAccount(string: "FIO7uMZoeei5HtXAD24C4yCkpWWbf24bjYtrRNjWdmGCXHZccwuiE")!.description, "hhq2g4qgycfb"
+        )
+        XCTAssertEqual(
+            FIOAccount(string: "hhq2g4qgycfb")!.description, "hhq2g4qgycfb"
+        )
+
+        XCTAssertEqual(
+            FIOAccount(string: "rewards@wallet")!.description, "rewards@wallet"
+        )
+
+        XCTAssertNil(FIOAccount(string: "asdf19s"))
+        XCTAssertNil(FIOAccount(string: "0x320196ef1b137786be51aa391e78e0a2c756f46b"))
+    }
 }

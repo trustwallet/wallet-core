@@ -6,6 +6,7 @@
 
 #include "TransactionBuilder.h"
 
+#include "Actor.h"
 #include "Encryption.h"
 #include "NewFundsRequest.h"
 #include "Signer.h"
