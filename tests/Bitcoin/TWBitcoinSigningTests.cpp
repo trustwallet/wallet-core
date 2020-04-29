@@ -57,22 +57,8 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
 }
 
 TEST(BitcoinSigning, SignP2WPKH) {
-    // Build transaction
-    auto unsignedTx = Transaction(1, 0x11);
-
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
-    auto outpoint0 = OutPoint(hash0, 0);
-    unsignedTx.inputs.emplace_back(outpoint0, Script(), 0xffffffee);
-
     auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
-    auto outpoint1 = OutPoint(hash1, 1);
-    unsignedTx.inputs.emplace_back(outpoint1, Script(), UINT32_MAX);
-
-    auto outScript0 = Script(parse_hex("76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"));
-    unsignedTx.outputs.emplace_back(112'340'000, outScript0);
-
-    auto outScript1 = Script(parse_hex("76a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac"));
-    unsignedTx.outputs.emplace_back(223'450'000, outScript1);
 
     // Setup input
     Proto::SigningInput input;
@@ -138,22 +124,8 @@ TEST(BitcoinSigning, SignP2WPKH) {
 }
 
 TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
-    // Build transaction
-    auto unsignedTx = Transaction(1, 0x11);
-
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
-    auto outpoint0 = OutPoint(hash0, 0);
-    unsignedTx.inputs.emplace_back(outpoint0, Script(), 0xffffffee);
-
     auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
-    auto outpoint1 = OutPoint(hash1, 1);
-    unsignedTx.inputs.emplace_back(outpoint1, Script(), UINT32_MAX);
-
-    auto outScript0 = Script(parse_hex("76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"));
-    unsignedTx.outputs.emplace_back(112'340'000, outScript0);
-
-    auto outScript1 = Script(parse_hex("76a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac"));
-    unsignedTx.outputs.emplace_back(223'450'000, outScript1);
 
     // Setup input
     Proto::SigningInput input;
@@ -200,9 +172,6 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
 
     ASSERT_TRUE(result) << result.error();;
     auto signedTx = result.payload();
-
-    // txid = "03b30d55430f08365d19a62d3bd32e459ab50984fbcf22921ecc85f1e09dc6ed"
-    // witid = "20bc58d07d91a3bae9e6f4d617d8f6271723d1a7673e486cc0ecaf9e758e2c22"
 
     Data serialized;
     signedTx.encode(true, serialized);
