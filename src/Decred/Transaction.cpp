@@ -6,6 +6,7 @@
 
 #include "Transaction.h"
 
+#include "../Bitcoin/SigHashType.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 
@@ -35,7 +36,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
                                        enum TWBitcoinSigHashType hashType) const {
     assert(index < inputs.size());
 
-    if (TWBitcoinSigHashTypeIsSingle(hashType) && index >= outputs.size()) {
+    if (Bitcoin::hashTypeIsSingle(hashType) && index >= outputs.size()) {
         throw std::invalid_argument("attempt to sign single input at index "
                                     "larger than the number of outputs");
     }
@@ -93,7 +94,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
         input.previousOutput.encode(preimage);
 
         auto sequence = input.sequence;
-        if ((TWBitcoinSigHashTypeIsNone(hashType) || TWBitcoinSigHashTypeIsSingle(hashType)) &&
+        if ((Bitcoin::hashTypeIsNone(hashType) || Bitcoin::hashTypeIsSingle(hashType)) &&
             i != signIndex) {
             sequence = 0;
         }
@@ -106,7 +107,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
         auto& output = outputsToSign[i];
         auto value = output.value;
         auto pkScript = output.script;
-        if (TWBitcoinSigHashTypeIsSingle(hashType) && i != index) {
+        if (Bitcoin::hashTypeIsSingle(hashType) && i != index) {
             value = -1;
             pkScript = {};
         }

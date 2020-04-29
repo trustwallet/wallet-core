@@ -6,6 +6,7 @@
 
 #include "SegwitAddress.h"
 #include "Transaction.h"
+#include "SigHashType.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 
@@ -34,7 +35,7 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t i
 
     // Input nSequence (none/all, depending on flags)
     if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) == 0 &&
-        !TWBitcoinSigHashTypeIsSingle(hashType) && !TWBitcoinSigHashTypeIsNone(hashType)) {
+        !hashTypeIsSingle(hashType) && !hashTypeIsNone(hashType)) {
         auto hashSequence = getSequenceHash();
         std::copy(std::begin(hashSequence), std::end(hashSequence), std::back_inserter(data));
     } else {
@@ -51,10 +52,10 @@ std::vector<uint8_t> Transaction::getPreImage(const Script& scriptCode, size_t i
     encode32LE(inputs[index].sequence, data);
 
     // Outputs (none/one/all, depending on flags)
-    if (!TWBitcoinSigHashTypeIsSingle(hashType) && !TWBitcoinSigHashTypeIsNone(hashType)) {
+    if (!hashTypeIsSingle(hashType) && !hashTypeIsNone(hashType)) {
         auto hashOutputs = getOutputsHash();
         copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
-    } else if (TWBitcoinSigHashTypeIsSingle(hashType) && index < outputs.size()) {
+    } else if (hashTypeIsSingle(hashType) && index < outputs.size()) {
         auto outputData = std::vector<uint8_t>{};
         outputs[index].encode(outputData);
         auto hashOutputs = TW::Hash::hash(hasher, outputData);

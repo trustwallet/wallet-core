@@ -4,13 +4,14 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#pragma once
+
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
-#include "../Bitcoin/SigHashType.h"
 
-bool TWBitcoinSigHashTypeIsSingle(enum TWBitcoinSigHashType type) {
-    return TW::Bitcoin::hashTypeIsSingle(type);
-}
+namespace TW::Bitcoin {
 
-bool TWBitcoinSigHashTypeIsNone(enum TWBitcoinSigHashType type) {
-    return TW::Bitcoin::hashTypeIsNone(type);
-}
+inline bool hashTypeIsSingle(enum TWBitcoinSigHashType type) { return (type & 0x1f) == TWBitcoinSigHashTypeSingle; }
+
+inline bool hashTypeIsNone(enum TWBitcoinSigHashType type) { return (type & 0x1f) == TWBitcoinSigHashTypeNone; }
+
+} // namespace TW::Bitcoin
