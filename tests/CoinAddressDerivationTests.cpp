@@ -71,6 +71,7 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeFilecoin, privateKey), "f1qsx7qwiojh5duxbxhbqgnlyx5hmpcf7mcz5oxsy");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEAR, privateKey), "NEAR2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5HYrdGj");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeSolana, privateKey), "H4JcMPicKkHcxxDjkyyrLoQj7Kcibd9t815ak4UvTr9M");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeElrond, privateKey), "erd1a6f6fan035ttsxdmn04ellxdlnwpgyhg0lhx5vjv92v6rc8xw9yq83344f");
 }
 
 } // namespace TW

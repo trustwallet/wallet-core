@@ -1,0 +1,36 @@
+// Copyright © 2017-2020 Trust Wallet.
+//
+// This file is part of Trust. The full Trust copyright notice, including
+// terms governing use, modification, and redistribution, is contained in the
+// file LICENSE at the root of the source code distribution tree.
+
+syntax = "proto3";
+
+package TW.Elrond.Proto;
+option java_package = "wallet.core.jni.proto";
+
+// A transaction, typical balance transfer
+message TransactionMessage {
+    uint64      nonce = 1;
+    string      value = 2;
+    string      receiver = 3;
+    string      sender = 4;
+    uint64      gas_price = 5;
+    uint64      gas_limit = 6;
+    string      data = 7;
+}
+
+// Input data necessary to create a signed transaction.
+message SigningInput {
+    bytes private_key = 1;
+
+    oneof message_oneof {
+        TransactionMessage transaction = 2;
+    }
+}
+
+// Transaction signing output.
+message SigningOutput {
+    string encoded = 1;
+    string signature = 2;
+}

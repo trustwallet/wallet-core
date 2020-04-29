@@ -27,6 +27,10 @@ TEST(Bech32Address, Valid) {
     ASSERT_TRUE(Bech32Address::isValid("io187wzp08vnhjjpkydnr97qlh8kh0dpkkytfam8j", "io"));
 
     ASSERT_TRUE(Bech32Address::isValid("zil1fwh4ltdguhde9s7nysnp33d5wye6uqpugufkz7", "zil"));
+
+    ASSERT_TRUE(Bech32Address::isValid("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz", "erd"));
+    ASSERT_TRUE(Bech32Address::isValid("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r", "erd"));
+    ASSERT_TRUE(Bech32Address::isValid("erd19nu5t7hszckwah5nlcadmk5rlchtugzplznskffpwecygcu0520s9tnyy0", "erd"));
 }
 
 TEST(Bech32Address, Invalid) {
@@ -48,6 +52,10 @@ TEST(Bech32Address, Invalid) {
     ASSERT_FALSE(Bech32Address::isValid(""));
     ASSERT_FALSE(Bech32Address::isValid("0x"));
     ASSERT_FALSE(Bech32Address::isValid("91cddcebe846ce4d47712287eee53cf17c2cfb7"));
+
+    ASSERT_FALSE(Bech32Address::isValid("", "erd"));
+    ASSERT_FALSE(Bech32Address::isValid("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35!", "erd"));
+    ASSERT_FALSE(Bech32Address::isValid("xerd19nu5t7hszckwah5nlcadmk5rlchtugzplznskffpwecygcu0520s9tnyy0", "erd"));
 }
 
 TEST(Bech32Address, InvalidWrongPrefix) {

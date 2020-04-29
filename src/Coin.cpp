@@ -51,6 +51,7 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
+#include "Elrond/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -100,6 +101,7 @@ void setupDispatchers() {
         new Waves::Entry(),
         new Zcash::Entry(),
         new Zilliqa::Entry(),
+        new Elrond::Entry(),
     }; // end_of_coin_entries_marker_do_not_modify
 
     dispatchMap.clear();

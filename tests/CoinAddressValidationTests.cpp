@@ -373,4 +373,10 @@ TEST(Coin, ValidateAddressVeChain) {
     EXPECT_EQ(normalizeAddress(TWCoinTypeVeChain, "0x9d8a62f656a8d1615c1294fd71e9cfb3e4855a4f"), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
 }
 
+TEST(Coin, ValidateAddressElrond) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeElrond, "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeElrond, "xerd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"));
+}
+
+
 } // namespace TW
