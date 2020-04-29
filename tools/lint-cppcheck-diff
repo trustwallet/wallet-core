@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+#
+# This script lints the files modified in the current branch with cppcheck.
+
+merge_base = `git merge-base HEAD origin/master`.strip
+changed_files = `git diff --name-only HEAD #{merge_base}`.strip.split(/\s/)
+files = changed_files.select { |f| File.extname(f) == '.cpp' || File.extname(f) == '.h' }
+if files.empty?
+  puts 'No files to lint'
+  exit 0
+end
+
+puts "Linting #{files.count} files"
+system "cppcheck --quiet --force --enable=all #{files.join(' ')}"
+exit $?.exitstatus
