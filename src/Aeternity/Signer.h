@@ -25,10 +25,10 @@ class Signer {
 
     static Data buildMessageToSign(Data& txRaw);
 
-    static Proto::SigningOutput createProtoOutput(std::string &signature, const std::string &signedTx);
+    static Proto::SigningOutput createProtoOutput(std::string& signature, const std::string& signedTx);
 
     /// Encode a byte array into base64 with prefix and a checksum
-    static std::string encodeBase64WithChecksum(const std::string &prefix, const TW::Data& rawTx);
+    static std::string encodeBase64WithChecksum(const std::string& prefix, const TW::Data& rawTx);
 };
 
 } // namespace TW::Aeternity

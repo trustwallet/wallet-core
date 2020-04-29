@@ -11,7 +11,7 @@
 
 using namespace TW::Nebulas;
 
-bool Address::isValid(const std::string &string) {
+bool Address::isValid(const std::string& string) {
     auto data = Base58::bitcoin.decode(string);
     if (data.size() != (size_t)Address::size) {
         return false;
@@ -30,7 +30,7 @@ bool Address::isValid(const std::string &string) {
     return ::memcmp(dataSha3.data(), checksum.data(), 4) == 0;
 }
 
-Address::Address(const std::string &string) {
+Address::Address(const std::string& string) {
     if (!isValid(string)) {
         throw std::invalid_argument("Invalid address string");
     }

@@ -27,12 +27,12 @@ class Address : public Base58Address<26> {
     static Data secureHash(const T &data);
 
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string &string);
+    static bool isValid(const std::string& string);
 
     static bool isValid(const Data& data);
 
     /// Initializes a  address with a string representation.
-    explicit Address(const std::string &string);
+    explicit Address(const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
     explicit Address(const Data& data);

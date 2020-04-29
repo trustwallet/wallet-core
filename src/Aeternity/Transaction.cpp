@@ -30,7 +30,7 @@ Data Transaction::encode() {
     return raw;
 }
 
-TW::Data Transaction::buildTag(const std::string &address) {
+TW::Data Transaction::buildTag(const std::string& address) {
     auto payload = address.substr(Identifiers::prefixTransaction.size(), address.size());
 
     auto data = Data();

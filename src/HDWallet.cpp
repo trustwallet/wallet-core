@@ -139,7 +139,7 @@ std::string HDWallet::getExtendedPublicKey(TWPurpose purpose, TWCoinType coin, T
     return serialize(&node, fingerprintValue, version, true, base58Hasher(coin));
 }
 
-std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string &extended, const DerivationPath& path) {
+std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string& extended, const DerivationPath& path) {
     const auto coin = path.coin();
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);
@@ -173,7 +173,7 @@ std::optional<PublicKey> HDWallet::getPublicKeyFromExtended(const std::string &e
     }
 }
 
-std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string &extended, const DerivationPath& path) {
+std::optional<PrivateKey> HDWallet::getPrivateKeyFromExtended(const std::string& extended, const DerivationPath& path) {
     const auto coin = path.coin();
     const auto curve = TW::curve(coin);
     const auto hasher = TW::base58Hasher(coin);

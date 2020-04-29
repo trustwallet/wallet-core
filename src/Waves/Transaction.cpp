@@ -79,7 +79,7 @@ Data serializeCancelLease(const Data& leaseId, int64_t fee, int64_t timestamp, c
     return data;
 }
 
-json jsonTransfer(const Data& signature, int64_t amount, const std::string &asset, int64_t fee, const std::string &fee_asset, Address to, const Data& attachment, int64_t timestamp, const Data& pub_key) {
+json jsonTransfer(const Data& signature, int64_t amount, const std::string& asset, int64_t fee, const std::string& fee_asset, Address to, const Data& attachment, int64_t timestamp, const Data& pub_key) {
     json jsonTx;
     
     jsonTx["type"] = TransactionType::transfer;

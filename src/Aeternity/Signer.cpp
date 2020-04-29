@@ -69,7 +69,7 @@ Data Signer::buildMessageToSign(Data& txRaw) {
     return data;
 }
 
-Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std::string &signedTx) {
+Proto::SigningOutput Signer::createProtoOutput(std::string& signature, const std::string& signedTx) {
     auto output = Proto::SigningOutput();
 
     output.set_signature(signature);
@@ -77,7 +77,7 @@ Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std
     return output;
 }
 
-std::string Signer::encodeBase64WithChecksum(const std::string &prefix, const TW::Data& rawTx) {
+std::string Signer::encodeBase64WithChecksum(const std::string& prefix, const TW::Data& rawTx) {
     auto checksum = Hash::sha256(Hash::sha256(rawTx));
     std::vector<unsigned char> checksumPart(checksum.begin(), checksum.begin() + checkSumSize);
 
