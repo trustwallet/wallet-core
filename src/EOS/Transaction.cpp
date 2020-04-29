@@ -18,7 +18,7 @@ using namespace TW;
 using namespace TW::EOS;
 using json = nlohmann::json;
 
-Signature::Signature(Data sig, Type type) : data(sig), type(type) {
+Signature::Signature(const Data& sig, Type type) : data(sig), type(type) {
     if (sig.size() != DataSize) {
         throw std::invalid_argument("Invalid signature size!");
     }

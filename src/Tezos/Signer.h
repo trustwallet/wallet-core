@@ -25,7 +25,7 @@ class Signer {
   public:
     /// Signs the given transaction.
     Data signOperationList(const PrivateKey& privateKey, const OperationList& operationList);
-    Data signData(const PrivateKey& privateKey, Data data);
+    Data signData(const PrivateKey& privateKey, const Data& data);
 };
 
 } // namespace TW::Tezos

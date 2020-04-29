@@ -38,7 +38,7 @@ struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithString(TWString *_N
 }
 
 struct TWBitcoinAddress *_Nullable TWBitcoinAddressCreateWithData(TWData *_Nonnull data) {
-    auto& d = *reinterpret_cast<const TW::Data*>(data);
+    const auto& d = *reinterpret_cast<const TW::Data*>(data);
     try {
         return new TWBitcoinAddress{ Address(d) };
     } catch (...) {

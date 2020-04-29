@@ -29,7 +29,7 @@ class CoinReference : public Serializable {
         return Hash::sha256Size + prevIndexSize;
     }
 
-    void deserialize(const Data &data, int initial_pos = 0) override {
+    void deserialize(const Data& data, int initial_pos = 0) override {
         prevHash = load(readBytes(data, Hash::sha256Size, initial_pos));
         prevIndex = decode16LE(data.data() + initial_pos + Hash::sha256Size);
     }

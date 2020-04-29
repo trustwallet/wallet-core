@@ -26,11 +26,11 @@ Data Transaction::encode() {
     append(encoded, encodeSafeZero(nonce));
     append(encoded, Ethereum::RLP::encode(payload));
 
-    const Data &raw = Ethereum::RLP::encodeList(encoded);
+    const Data& raw = Ethereum::RLP::encodeList(encoded);
     return raw;
 }
 
-TW::Data Transaction::buildTag(const std::string &address) {
+TW::Data Transaction::buildTag(const std::string& address) {
     auto payload = address.substr(Identifiers::prefixTransaction.size(), address.size());
 
     auto data = Data();

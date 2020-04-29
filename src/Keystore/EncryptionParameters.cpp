@@ -20,7 +20,7 @@ using namespace TW;
 using namespace TW::Keystore;
 
 template <typename Iter>
-static Data computeMAC(Iter begin, Iter end, Data key) {
+static Data computeMAC(Iter begin, Iter end, const Data& key) {
     auto data = Data();
     data.reserve((end - begin) + key.size());
     data.insert(data.end(), begin, end);
@@ -28,7 +28,7 @@ static Data computeMAC(Iter begin, Iter end, Data key) {
     return Hash::keccak256(data);
 }
 
-EncryptionParameters::EncryptionParameters(const Data& password, Data data) : mac() {
+EncryptionParameters::EncryptionParameters(const Data& password, const Data& data) : mac() {
     auto scryptParams = boost::get<ScryptParameters>(kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),

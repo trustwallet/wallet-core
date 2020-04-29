@@ -29,7 +29,7 @@ class Transaction {
 
   public:
     Data serializeToSign() const;
-    nlohmann::json buildJson(Data signature) const;
+    nlohmann::json buildJson(const Data& signature) const;
 };
 
 } // namespace TW::Waves

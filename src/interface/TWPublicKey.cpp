@@ -49,14 +49,14 @@ struct TWPublicKey *_Nonnull TWPublicKeyUncompressed(struct TWPublicKey *_Nonnul
 }
 
 bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *signature, TWData *message) {
-    auto& s = *reinterpret_cast<const TW::Data *>(signature);
-    auto& m = *reinterpret_cast<const TW::Data *>(message);
+    const auto& s = *reinterpret_cast<const TW::Data *>(signature);
+    const auto& m = *reinterpret_cast<const TW::Data *>(message);
     return pk->impl.verify(s, m);
 }
 
 bool TWPublicKeyVerifySchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message) {
-    auto& s = *reinterpret_cast<const TW::Data *>(signature);
-    auto& m = *reinterpret_cast<const TW::Data *>(message);
+    const auto& s = *reinterpret_cast<const TW::Data *>(signature);
+    const auto& m = *reinterpret_cast<const TW::Data *>(message);
     return pk->impl.verifySchnorr(s, m);
 }
 

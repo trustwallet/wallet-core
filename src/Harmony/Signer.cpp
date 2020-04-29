@@ -13,7 +13,7 @@ using namespace TW;
 using namespace TW::Harmony;
 
 std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
-                                                           const Data &signature) noexcept {
+                                                           const Data& signature) noexcept {
     auto r = load(Data(signature.begin(), signature.begin() + 32));
     auto s = load(Data(signature.begin() + 32, signature.begin() + 64));
     auto v = load(Data(signature.begin() + 64, signature.begin() + 65));
@@ -22,13 +22,13 @@ std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chai
 }
 
 std::tuple<uint256_t, uint256_t, uint256_t>
-Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data &hash) noexcept {
+Signer::sign(const uint256_t &chainID, const PrivateKey &privateKey, const Data& hash) noexcept {
     auto signature = privateKey.sign(hash, TWCurveSECP256k1);
     return values(chainID, signature);
 }
 
 template <typename T>
-Proto::SigningOutput Signer::prepareOutput(const Data &encoded, const T &transaction) noexcept {
+Proto::SigningOutput Signer::prepareOutput(const Data& encoded, const T &transaction) noexcept {
     auto protoOutput = Proto::SigningOutput();
 
     auto v = store(transaction.v);
@@ -322,7 +322,7 @@ Proto::SigningOutput Signer::signCollectRewards(const Proto::SigningInput &input
 }
 
 template <typename T>
-void Signer::sign(const PrivateKey &privateKey, const Data &hash, T &transaction) const noexcept {
+void Signer::sign(const PrivateKey &privateKey, const Data& hash, T &transaction) const noexcept {
     auto tuple = sign(chainID, privateKey, hash);
     transaction.r = std::get<0>(tuple);
     transaction.s = std::get<1>(tuple);

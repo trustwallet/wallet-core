@@ -54,7 +54,7 @@ struct CompiledInstruction {
     // The program input data
     Data data;
 
-    CompiledInstruction(uint8_t programIdIndex, Data accounts, Data data)
+    CompiledInstruction(uint8_t programIdIndex, const Data& accounts, const Data& data)
         : programIdIndex(programIdIndex), accounts(accounts), data(data) {}
 
     // This constructor creates a default System Transfer instruction

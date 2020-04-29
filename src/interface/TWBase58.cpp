@@ -13,7 +13,7 @@
 using namespace TW;
 
 TWString *_Nonnull TWBase58Encode(TWData *_Nonnull data) {
-    auto& d = *reinterpret_cast<const Data*>(data);
+    const auto& d = *reinterpret_cast<const Data*>(data);
     const auto str = Base58::bitcoin.encodeCheck(d);
     return TWStringCreateWithUTF8Bytes(str.c_str());
 }

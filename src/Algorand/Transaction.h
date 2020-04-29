@@ -27,7 +27,7 @@ class Transaction {
     Data genesisHash;
 
     Transaction(Address &from, Address &to, uint64_t fee, uint64_t amount, uint64_t firstRound,
-                uint64_t lastRound, Data &note, std::string type, std::string &genesisIdg, Data &genesisHash)
+                uint64_t lastRound, Data& note, std::string type, std::string& genesisIdg, Data& genesisHash)
         : from(from) , to(to)
         , fee(fee), amount(amount)
         , firstRound(firstRound), lastRound(lastRound)
@@ -36,7 +36,7 @@ class Transaction {
 
   public:
     Data serialize() const;
-    Data serialize(Data &signature) const;
+    Data serialize(Data& signature) const;
 };
 
 } // namespace TW::Algorand

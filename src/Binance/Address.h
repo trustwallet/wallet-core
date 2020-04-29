@@ -17,12 +17,12 @@ class Address: public Bech32Address {
 public:
     static const std::string hrp; // HRP_BINANCE
 
-    static bool isValid(const std::string addr) { return Bech32Address::isValid(addr, hrp); }
+    static bool isValid(const std::string& addr) { return Bech32Address::isValid(addr, hrp); }
 
     Address() : Bech32Address(hrp) {}
 
     /// Initializes an address with a key hash.
-    Address(Data keyHash) : Bech32Address(hrp, keyHash) {}
+    Address(const Data& keyHash) : Bech32Address(hrp, keyHash) {}
 
     /// Initializes an address with a public key.
     Address(const PublicKey& publicKey) : Bech32Address(hrp, HASHER_SHA2_RIPEMD, publicKey) {}

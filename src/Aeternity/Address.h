@@ -15,10 +15,10 @@ class Address {
     Data bytes;
 
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string &string);
+    static bool isValid(const std::string& string);
 
     /// Initializes an address from a string representation.
-    explicit Address(const std::string &string);
+    explicit Address(const std::string& string);
 
     /// Initializes an address from a public key.
     explicit Address(const PublicKey &publicKey);
@@ -28,8 +28,8 @@ class Address {
 
   private:
 
-    static bool checkType(const std::string &type);
-    static bool checkPayload(const std::string &payload);
+    static bool checkType(const std::string& type);
+    static bool checkPayload(const std::string& payload);
 };
 
 inline bool operator==(const Address& lhs, const Address& rhs) {

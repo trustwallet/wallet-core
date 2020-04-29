@@ -48,7 +48,7 @@ Proto::SigningOutput Signer::sign(const TW::PrivateKey &privateKey, Transaction 
     return createProtoOutput(signature, signedEncodedTx);
 }
 
-Data Signer::buildRlpTxRaw(Data &txRaw, Data &sigRaw) {
+Data Signer::buildRlpTxRaw(Data& txRaw, Data& sigRaw) {
     auto rlpTxRaw = Data();
     auto signaturesList = Data();
     append(signaturesList, Ethereum::RLP::encode(sigRaw));
@@ -61,7 +61,7 @@ Data Signer::buildRlpTxRaw(Data &txRaw, Data &sigRaw) {
     return Ethereum::RLP::encodeList(rlpTxRaw);
 }
 
-Data Signer::buildMessageToSign(Data &txRaw) {
+Data Signer::buildMessageToSign(Data& txRaw) {
     auto data = Data();
     Data bytes(Identifiers::networkId.begin(), Identifiers::networkId.end());
     append(data, bytes);
@@ -69,7 +69,7 @@ Data Signer::buildMessageToSign(Data &txRaw) {
     return data;
 }
 
-Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std::string &signedTx) {
+Proto::SigningOutput Signer::createProtoOutput(std::string& signature, const std::string& signedTx) {
     auto output = Proto::SigningOutput();
 
     output.set_signature(signature);
@@ -77,7 +77,7 @@ Proto::SigningOutput Signer::createProtoOutput(std::string &signature, const std
     return output;
 }
 
-std::string Signer::encodeBase64WithChecksum(const std::string &prefix, const TW::Data &rawTx) {
+std::string Signer::encodeBase64WithChecksum(const std::string& prefix, const TW::Data& rawTx) {
     auto checksum = Hash::sha256(Hash::sha256(rawTx));
     std::vector<unsigned char> checksumPart(checksum.begin(), checksum.begin() + checkSumSize);
 

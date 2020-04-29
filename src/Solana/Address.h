@@ -40,6 +40,6 @@ class Address : public Base58Address<32> {
 
 } // namespace TW::Solana
 
-TW::Solana::Address addressFromValidatorSeed(TW::Solana::Address& fromAddress,
-                                             TW::Solana::Address& validatorAddress,
-                                             TW::Solana::Address& programId);
+TW::Solana::Address addressFromValidatorSeed(const TW::Solana::Address& fromAddress,
+                                             const TW::Solana::Address& validatorAddress,
+                                             const TW::Solana::Address& programId);

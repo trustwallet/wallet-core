@@ -17,7 +17,7 @@ using json = nlohmann::json;
 
 const std::string Transaction::WAVES = "WAVES";
 
-Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::string fee_asset, Address to, Data attachment, int64_t timestamp, Data pub_key) {
+Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::string fee_asset, Address to, const Data& attachment, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     if (asset.empty()) {
       asset = Transaction::WAVES;
@@ -50,7 +50,7 @@ Data serializeTransfer(int64_t amount, std::string asset, int64_t fee, std::stri
     return data;
 }
 
-Data serializeLease(int64_t amount, int64_t fee, Address to, int64_t timestamp, Data pub_key) {
+Data serializeLease(int64_t amount, int64_t fee, Address to, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     data.resize(2);
     data[0] = static_cast<byte>(TransactionType::lease);
@@ -65,7 +65,7 @@ Data serializeLease(int64_t amount, int64_t fee, Address to, int64_t timestamp, 
     return data;
 }
 
-Data serializeCancelLease(Data leaseId, int64_t fee, int64_t timestamp, Data pub_key) {
+Data serializeCancelLease(const Data& leaseId, int64_t fee, int64_t timestamp, const Data& pub_key) {
     auto data = Data();
     data.resize(2);
     data[0] = static_cast<byte>(TransactionType::cancelLease);
@@ -79,7 +79,7 @@ Data serializeCancelLease(Data leaseId, int64_t fee, int64_t timestamp, Data pub
     return data;
 }
 
-json jsonTransfer(Data signature, int64_t amount, const std::string &asset, int64_t fee, const std::string &fee_asset, Address to, Data attachment, int64_t timestamp, Data pub_key) {
+json jsonTransfer(const Data& signature, int64_t amount, const std::string& asset, int64_t fee, const std::string& fee_asset, Address to, const Data& attachment, int64_t timestamp, const Data& pub_key) {
     json jsonTx;
     
     jsonTx["type"] = TransactionType::transfer;
@@ -101,7 +101,7 @@ json jsonTransfer(Data signature, int64_t amount, const std::string &asset, int6
     return jsonTx;
 }
 
-json jsonLease(Data signature, int64_t amount, int64_t fee, Address to, int64_t timestamp, Data pub_key) {
+json jsonLease(const Data& signature, int64_t amount, int64_t fee, Address to, int64_t timestamp, const Data& pub_key) {
     json jsonTx;
     
     jsonTx["type"] = TransactionType::lease;
@@ -116,7 +116,7 @@ json jsonLease(Data signature, int64_t amount, int64_t fee, Address to, int64_t 
     return jsonTx;
 }
 
-json jsonCancelLease(Data signature, Data leaseId, int64_t fee, int64_t timestamp, Data pub_key) {
+json jsonCancelLease(const Data& signature, const Data& leaseId, int64_t fee, int64_t timestamp, const Data& pub_key) {
     json jsonTx;
     
     jsonTx["type"] = TransactionType::cancelLease;
@@ -162,7 +162,7 @@ Data Transaction::serializeToSign() const {
 
 
 
-json Transaction::buildJson(Data signature) const {
+json Transaction::buildJson(const Data& signature) const {
     if (input.has_transfer_message()) {
         auto message = input.transfer_message();
         auto attachment = Data(message.attachment().begin(), message.attachment().end());

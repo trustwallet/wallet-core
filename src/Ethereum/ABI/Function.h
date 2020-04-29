@@ -26,7 +26,7 @@ public:
     ParamSet _outParams;
 
     Function(std::string name) : name(std::move(name)) {}
-    Function(std::string name, std::vector<std::shared_ptr<ParamBase>> inParams)
+    Function(std::string name, const std::vector<std::shared_ptr<ParamBase>>& inParams)
         : name(std::move(name)), _inParams(ParamSet(inParams)) {}
     virtual ~Function() {}
     /// Add an input parameter. Returns the index of the parameter.

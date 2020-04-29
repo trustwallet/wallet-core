@@ -162,8 +162,8 @@ Decode Decode::skipClone(uint32_t offset) const {
 Decode::TypeDesc Decode::getTypeDesc() const {
     TypeDesc typeDesc;
     typeDesc.isIndefiniteValue = false;
-    typeDesc.majorType = (MajorType)(byte(0) >> 5);
-    auto minorType = (TW::byte)((uint8_t)byte(0) & 0x1F);
+    typeDesc.majorType = (MajorType)(getByte(0) >> 5);
+    auto minorType = (TW::byte)((uint8_t)getByte(0) & 0x1F);
     if (minorType < 24) {
         // direct value
         typeDesc.byteCount = 1;
@@ -172,31 +172,31 @@ Decode::TypeDesc Decode::getTypeDesc() const {
     }
     if (minorType == 24) {
         typeDesc.byteCount = 1 + 1;
-        typeDesc.value = byte(1);
+        typeDesc.value = getByte(1);
         return typeDesc;
     }
     if (minorType == 25) {
         typeDesc.byteCount = 1 + 2;
-        typeDesc.value = (uint16_t)(((uint16_t)byte(1) << 8) + (uint16_t)byte(2));
+        typeDesc.value = (uint16_t)(((uint16_t)getByte(1) << 8) + (uint16_t)getByte(2));
         return typeDesc;
     }
     if (minorType == 26) {
         typeDesc.byteCount = 1 + 4;
-        typeDesc.value = (uint32_t)(((uint32_t)byte(1) << 24) + ((uint32_t)byte(2) << 16) + ((uint32_t)byte(3) << 8) + (uint32_t)byte(4));
+        typeDesc.value = (uint32_t)(((uint32_t)getByte(1) << 24) + ((uint32_t)getByte(2) << 16) + ((uint32_t)getByte(3) << 8) + (uint32_t)getByte(4));
         return typeDesc;
     }
     if (minorType == 27) {
         typeDesc.byteCount = 1 + 8;
         typeDesc.value =
             (uint64_t)(
-                ((uint64_t)byte(1) << 56) +
-                ((uint64_t)byte(2) << 48) +
-                ((uint64_t)byte(3) << 40) +
-                ((uint64_t)byte(4) << 32) +
-                ((uint64_t)byte(5) << 24) +
-                ((uint64_t)byte(6) << 16) +
-                ((uint64_t)byte(7) << 8) +
-                ((uint64_t)byte(8)));
+                ((uint64_t)getByte(1) << 56) +
+                ((uint64_t)getByte(2) << 48) +
+                ((uint64_t)getByte(3) << 40) +
+                ((uint64_t)getByte(4) << 32) +
+                ((uint64_t)getByte(5) << 24) +
+                ((uint64_t)getByte(6) << 16) +
+                ((uint64_t)getByte(7) << 8) +
+                ((uint64_t)getByte(8)));
         return typeDesc;
     }
     if (minorType >= 28 && minorType <= 30) {

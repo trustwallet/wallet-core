@@ -19,7 +19,7 @@ class Clause {
     uint256_t value;
     Data data;
 
-    Clause(Ethereum::Address to, uint256_t value, Data data = {})
+    Clause(Ethereum::Address to, uint256_t value, const Data& data = {})
         : to(std::move(to)), value(std::move(value)), data(std::move(data)) {}
 
     /// Decodes from a proto representation.

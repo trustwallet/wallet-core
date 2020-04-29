@@ -26,7 +26,7 @@ class Transaction {
     uint256_t r = uint256_t();
     uint256_t s = uint256_t();
 
-    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, Data to, uint256_t amount,
+    Transaction(uint256_t nonce, uint256_t gasPrice, uint256_t gasLimit, const Data& to, uint256_t amount,
                 Data payload)
         : nonce(std::move(nonce))
         , gasPrice(std::move(gasPrice))

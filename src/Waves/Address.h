@@ -17,9 +17,6 @@ namespace TW::Waves {
 
 class Address : public Base58Address<26> {
   public:
-    /// Number of bytes in an address.
-    static const size_t size = 26;
-
     /// Address version.
     static const signed char v1 = 0x01;
 
@@ -29,20 +26,16 @@ class Address : public Base58Address<26> {
     template <typename T>
     static Data secureHash(const T &data);
 
-    /// Address data consisting of a version and network bytes followed by the public key
-    /// hash and the checksum.
-    std::array<byte, size> bytes;
-
     /// Determines whether a string makes a valid address.
-    static bool isValid(const std::string &string);
+    static bool isValid(const std::string& string);
 
-    static bool isValid(const Data &data);
+    static bool isValid(const Data& data);
 
     /// Initializes a  address with a string representation.
-    explicit Address(const std::string &string);
+    explicit Address(const std::string& string);
 
     /// Initializes a  address with a collection of bytes.
-    explicit Address(const Data &data);
+    explicit Address(const Data& data);
 
     /// Initializes a  address with a public key and a prefix.
     explicit Address(const PublicKey &publicKey);

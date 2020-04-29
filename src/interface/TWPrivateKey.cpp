@@ -90,7 +90,7 @@ struct TWPublicKey *_Nonnull TWPrivateKeyGetPublicKeyCurve25519(struct TWPrivate
 }
 
 TWData *TWPrivateKeySign(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull digest, enum TWCurve curve) {
-    auto& d = *reinterpret_cast<const Data*>(digest);
+    const auto& d = *reinterpret_cast<const Data*>(digest);
     auto result = pk->impl.sign(d, curve);
     if (result.empty()) {
         return nullptr;
@@ -110,7 +110,7 @@ TWData *TWPrivateKeySignAsDER(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull
 }
 
 TWData *TWPrivateKeySignSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnull message, enum TWCurve curve) {
-    auto& msg = *reinterpret_cast<const Data*>(message);
+    const auto& msg = *reinterpret_cast<const Data*>(message);
     auto result = pk->impl.signSchnorr(msg, curve);
 
     if (result.empty()) {

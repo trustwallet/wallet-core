@@ -64,7 +64,7 @@ private:
 public:
     ParamString() = default;
     ParamString(std::string val): ParamCollection() { setVal(val); }
-    void setVal(std::string& val) { _str = val; }
+    void setVal(const std::string& val) { _str = val; }
     const std::string& getVal() const { return _str; }
     virtual std::string getType() const { return "string"; };
     virtual size_t getSize() const { return 32 + ValueEncoder::paddedTo32(_str.size()); }

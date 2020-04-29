@@ -147,7 +147,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
 }
 
-std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
+std::string TW::normalizeAddress(TWCoinType coin, const std::string& address) {
     if (!TW::validateAddress(coin, address)) {
         // invalid address, not normalizing
         return "";
