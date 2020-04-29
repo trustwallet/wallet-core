@@ -24,10 +24,6 @@ static const uint32_t sigHashSerializePrefix = 1;
 // Indicates the serialization only contains witness data.
 static const uint32_t sigHashSerializeWitness = 3;
 
-// Defines the number of bits of the hash type which is used to identify which
-// outputs are signed.
-static const byte sigHashMask = 0x1f;
-
 std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs,
                                const Bitcoin::Script& signScript);
 } // namespace
@@ -49,7 +45,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
     }
 
     auto outputsToSign = outputs;
-    switch (hashType & sigHashMask) {
+    switch (hashType & Bitcoin::SigHashMask) {
     case TWBitcoinSigHashTypeNone:
         outputsToSign = {};
         break;

@@ -8,6 +8,7 @@
 
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
+#include "../Bitcoin/SigHashType.h"
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"
@@ -49,8 +50,7 @@ Result<Transaction> Signer::sign() {
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
 
-    const bool hashSingle =
-        ((input.hash_type() & ~TWBitcoinSigHashTypeAnyoneCanPay) == TWBitcoinSigHashTypeSingle);
+    const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
         auto& utxo = txPlan.utxos[i];
 

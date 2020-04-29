@@ -165,8 +165,8 @@ std::vector<uint8_t> Transaction::getSignatureHashBase(const Script& scriptCode,
         serializeInput(subindex, scriptCode, index, hashType, data);
     }
 
-    auto hashNone = (hashType & 0x1f) == TWBitcoinSigHashTypeNone;
-    auto hashSingle = (hashType & 0x1f) == TWBitcoinSigHashTypeSingle;
+    auto hashNone = hashTypeIsNone(hashType);
+    auto hashSingle = hashTypeIsSingle(hashType);
     auto serializedOutputCount = hashNone ? 0 : (hashSingle ? index + 1 : outputs.size());
     encodeVarInt(serializedOutputCount, data);
     for (auto subindex = 0; subindex < serializedOutputCount; subindex += 1) {
@@ -206,8 +206,8 @@ void Transaction::serializeInput(size_t subindex, const Script& scriptCode, size
     }
 
     // Serialize the nSequence
-    auto hashNone = (hashType & 0x1f) == TWBitcoinSigHashTypeNone;
-    auto hashSingle = (hashType & 0x1f) == TWBitcoinSigHashTypeSingle;
+    auto hashNone = hashTypeIsNone(hashType);
+    auto hashSingle = hashTypeIsSingle(hashType);
     if (subindex != index && (hashSingle || hashNone)) {
         encode32LE(0, data);
     } else {
