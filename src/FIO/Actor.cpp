@@ -6,8 +6,9 @@
 
 #include "Actor.h"
 
-namespace TW::FIO {
+#include <regex>
 
+using namespace TW::FIO;
 using namespace std;
 
 string Actor::actor(const Address& addr)
@@ -16,6 +17,12 @@ string Actor::actor(const Address& addr)
     string name13 = name(shortenedKey);
     // trim to 12 chracters
     return name13.substr(0, 12);
+}
+
+bool Actor::validate(const std::string& addr) {
+    regex pattern(R"(\b([a-z1-5]{3,})[.@]?\b)");
+    smatch match;
+    return regex_search(addr, match, pattern);
 }
 
 uint64_t Actor::shortenKey(const array<byte, Address::size>& addrKey)
@@ -51,4 +58,3 @@ string Actor::name(uint64_t shortKey) {
 
     return str;
 }
-} // namespace TW::FIO

@@ -11,7 +11,7 @@
 
 TW_EXTERN_C_BEGIN
 
-/// Account for a particular coin within a wallet.
+/// Represents a FIO Account name
 TW_EXPORT_CLASS
 struct TWFIOAccount;
 

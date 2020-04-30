@@ -16,6 +16,9 @@ class Actor {
     /// Generate the actor name of the address
     static std::string actor(const Address& addr);
 
+    /// Check if the address is valid
+    static bool validate(const std::string& addr);
+
     /// Used internally, derive shortened uint64 key from adddr bytes
     static uint64_t shortenKey(const std::array<byte, Address::size>& addrKey);
     /// Used internally, derive name from uint64 shortened key

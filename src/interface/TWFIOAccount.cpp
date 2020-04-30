@@ -10,7 +10,6 @@
 #include "FIO/Address.h"
 
 #include <string>
-#include <regex>
 
 using namespace TW;
 using namespace TW::FIO;
@@ -25,9 +24,7 @@ struct TWFIOAccount *_Nullable TWFIOAccountCreateWithString(TWString *_Nonnull s
         const auto addr = Address(account);
         return new TWFIOAccount{Actor::actor(addr)};
     }
-    std::regex pattern(R"(\b([a-z1-5]{3,})[.@]?\b)");
-    std::smatch match;
-    if (std::regex_search(account, match, pattern)) {
+    if (Actor::validate(account)) {
         return new TWFIOAccount{account};
     }
     return nullptr;
