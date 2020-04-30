@@ -38,16 +38,4 @@ class Signer {
     static int isCanonical(uint8_t by, uint8_t sig[64]);
 };
 
-/// Helper class for Actor name generation from address
-class Actor {
-  public:
-    /// Generate the actor name of the address
-    static std::string actor(const Address& addr);
-
-    /// Used internally, derive shortened uint64 key from adddr bytes
-    static uint64_t shortenKey(const std::array<byte, Address::size>& addrKey);
-    /// Used internally, derive name from uint64 shortened key
-    static std::string name(uint64_t shortKey);
-};
-
 } // namespace TW::FIO

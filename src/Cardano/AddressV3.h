@@ -86,7 +86,7 @@ class AddressV3 {
     Data data() const;
 
 private:
-    AddressV3() : legacyAddressV2(nullptr), discrimination(Discrim_Production), kind(Kind_Single) {}
+    AddressV3() : discrimination(Discrim_Production), kind(Kind_Single), legacyAddressV2(nullptr) {}
 };
 
 inline bool operator==(const AddressV3& lhs, const AddressV3& rhs) {

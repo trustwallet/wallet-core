@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '28.0.3'
+    ndkVersion '21.1.6352462'
     defaultConfig {
         applicationId "com.trustwallet.core.app"
         minSdkVersion 23
