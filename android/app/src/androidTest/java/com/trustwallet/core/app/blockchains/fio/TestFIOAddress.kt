@@ -36,7 +36,14 @@ class TestFIOAddress {
         assertEquals(FIOAccount("hhq2g4qgycfb").description(), "hhq2g4qgycfb")
         assertEquals(FIOAccount("rewards@wallet").description(), "rewards@wallet")
 
-        assertNull(FIOAccount("asdf19s"))
-        assertNull(FIOAccount("0x320196ef1b137786be51aa391e78e0a2c756f46b"))
+        var account: FIOAccount? = null
+        var account2: FIOAccount? = null
+        try {
+            account = FIOAccount("asdf19s")
+            account2 = FIOAccount("0x320196ef1b137786be51aa391e78e0a2c756f46b")
+        } catch (ex: Exception) {}
+
+        assertNull(account)
+        assertNull(account2)
     }
 }
