@@ -41,7 +41,9 @@ class TestFIOAddress {
         try {
             account = FIOAccount("asdf19s")
             account2 = FIOAccount("0x320196ef1b137786be51aa391e78e0a2c756f46b")
-        } catch (ex: Exception) {}
+        } catch (ex: Exception) {
+            print(ex)
+        }
 
         assertNull(account)
         assertNull(account2)

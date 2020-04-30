@@ -21,6 +21,7 @@ struct TWFIOAccount *_Nullable TWFIOAccountCreateWithString(TWString *_Nonnull s
 TW_EXPORT_METHOD
 void TWFIOAccountDelete(struct TWFIOAccount *_Nonnull account);
 
+/// Returns the short account string representation.
 TW_EXPORT_PROPERTY
 TWString *_Nonnull TWFIOAccountDescription(struct TWFIOAccount *_Nonnull account);
 
