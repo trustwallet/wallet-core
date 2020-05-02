@@ -6,6 +6,7 @@
 
 #include "Transaction.h"
 
+#include "../Bitcoin/SigHashType.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 
@@ -23,10 +24,6 @@ static const uint32_t sigHashSerializePrefix = 1;
 // Indicates the serialization only contains witness data.
 static const uint32_t sigHashSerializeWitness = 3;
 
-// Defines the number of bits of the hash type which is used to identify which
-// outputs are signed.
-static const byte sigHashMask = 0x1f;
-
 std::size_t sigHashWitnessSize(const std::vector<TransactionInput>& inputs,
                                const Bitcoin::Script& signScript);
 } // namespace
@@ -35,7 +32,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
                                        enum TWBitcoinSigHashType hashType) const {
     assert(index < inputs.size());
 
-    if (TWBitcoinSigHashTypeIsSingle(hashType) && index >= outputs.size()) {
+    if (Bitcoin::hashTypeIsSingle(hashType) && index >= outputs.size()) {
         throw std::invalid_argument("attempt to sign single input at index "
                                     "larger than the number of outputs");
     }
@@ -48,7 +45,7 @@ Data Transaction::computeSignatureHash(const Bitcoin::Script& prevOutScript, siz
     }
 
     auto outputsToSign = outputs;
-    switch (hashType & sigHashMask) {
+    switch (hashType & Bitcoin::SigHashMask) {
     case TWBitcoinSigHashTypeNone:
         outputsToSign = {};
         break;
@@ -93,7 +90,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
         input.previousOutput.encode(preimage);
 
         auto sequence = input.sequence;
-        if ((TWBitcoinSigHashTypeIsNone(hashType) || TWBitcoinSigHashTypeIsSingle(hashType)) &&
+        if ((Bitcoin::hashTypeIsNone(hashType) || Bitcoin::hashTypeIsSingle(hashType)) &&
             i != signIndex) {
             sequence = 0;
         }
@@ -106,7 +103,7 @@ Data Transaction::computePrefixHash(const std::vector<TransactionInput>& inputsT
         auto& output = outputsToSign[i];
         auto value = output.value;
         auto pkScript = output.script;
-        if (TWBitcoinSigHashTypeIsSingle(hashType) && i != index) {
+        if (Bitcoin::hashTypeIsSingle(hashType) && i != index) {
             value = -1;
             pkScript = {};
         }

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <TrustWalletCore/TWBitcoinSigHashType.h>
 #include "Script.h"
 #include "TransactionInput.h"
 #include "TransactionOutput.h"

@@ -5,11 +5,12 @@
 // file LICENSE at the root of the source code distribution tree.
 
 #include <TrustWalletCore/TWBitcoinSigHashType.h>
+#include "../Bitcoin/SigHashType.h"
 
 bool TWBitcoinSigHashTypeIsSingle(enum TWBitcoinSigHashType type) {
-    return (type & 0x1f) == TWBitcoinSigHashTypeSingle;
+    return TW::Bitcoin::hashTypeIsSingle(type);
 }
 
 bool TWBitcoinSigHashTypeIsNone(enum TWBitcoinSigHashType type) {
-    return (type & 0x1f) == TWBitcoinSigHashTypeNone;
+    return TW::Bitcoin::hashTypeIsNone(type);
 }
