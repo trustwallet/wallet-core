@@ -1352,5 +1352,27 @@
             "clientPublic": "https://api.elrond.com",
             "clientDocs": "https://docs.elrond.com"
         }
+    },
+    {
+        "id": "xdc",
+        "name": "XinFin",
+        "symbol": "XDC",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivationPath": "m/44'/50'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": {
+            "url": "https://explorer.xinfin.network",
+            "txPath": "/tx/",
+            "accountPath": "/addr/"
+        },
+        "info": {
+            "url": "https://xinfin.org",
+            "client": "https://github.com/XinFinOrg/XDPoSChain",
+            "clientPublic": "https://rpc.xinfin.network",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     }
 ]
+
