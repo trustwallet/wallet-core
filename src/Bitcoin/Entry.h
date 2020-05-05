@@ -18,6 +18,7 @@ public:
         return {
             TWCoinTypeBitcoin,
             TWCoinTypeBitcoinCash,
+            TWCoinTypeBitcoinGold,
             TWCoinTypeDash,
             TWCoinTypeDigiByte,
             TWCoinTypeDogecoin,
