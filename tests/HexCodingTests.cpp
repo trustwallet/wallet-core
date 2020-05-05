@@ -7,7 +7,6 @@
 #include "HexCoding.h"
 #include "Data.h"
 #include <gtest/gtest.h>
-#include <vector>
 
 namespace TW {
 
