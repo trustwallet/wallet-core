@@ -32,7 +32,7 @@ jobs:
       run: |
         tools/generate-files
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DBOOST_ROOT=${BOOST_ROOT_1_72_0}
-        make -Cbuild
+        make -Cbuild -j12
         build/tests/tests tests --gtest_output=xml
       env:
         CC: /usr/bin/clang

@@ -14,6 +14,11 @@ class EthereumTests: XCTestCase {
 
         XCTAssertEqual(anyAddress?.description, "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1")
         XCTAssertEqual(anyAddress?.coin, .ethereum)
+
+        let invalid = "0xMQqpqMQgCBuiPkoXfgZZsJvuzCeI1zc00z6vHJj4"
+        XCTAssertNil(Data(hexString: invalid))
+        XCTAssertNil(AnyAddress(string: invalid, coin: .ethereum))
+        XCTAssertFalse(AnyAddress.isValid(string: invalid, coin: .ethereum))
     }
 
     func testSigner() {

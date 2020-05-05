@@ -8,6 +8,8 @@
 
 #include "Data.h"
 
+#include <boost/algorithm/hex.hpp>
+
 #include <array>
 #include <string>
 #include <tuple>
@@ -61,32 +63,13 @@ inline Data parse_hex(const Iter begin, const Iter end) {
     if (end - begin >= 2 && *begin == '0' && *(begin + 1) == 'x') {
         it += 2;
     }
-
-    Data result;
-    result.reserve(((end - begin) + 1) / 2);
-
-    while (it != end) {
-        auto high = value(*it);
-        if (!std::get<1>(high)) {
-            return {};
-        }
-        it += 1;
-
-        if (it == end) {
-            result.push_back(std::get<0>(high));
-            break;
-        }
-
-        auto low = value(*it);
-        if (!std::get<1>(low)) {
-            return {};
-        }
-        it += 1;
-
-        result.push_back(static_cast<uint8_t>((std::get<0>(high) << 4) | std::get<0>(low)));
+    try {
+        std::string temp;
+        boost::algorithm::unhex(it, end, std::back_inserter(temp));
+        return Data(temp.begin(), temp.end());
+    } catch (...) {
+        return {};
     }
-
-    return result;
 }
 
 /// Parses a string of hexadecimal values.
