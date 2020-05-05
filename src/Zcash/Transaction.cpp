@@ -6,7 +6,6 @@
 
 #include "Transaction.h"
 
-#include "../Bitcoin/SigHashType.h"
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 #include  "../HexCoding.h"
@@ -51,7 +50,7 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, e
 
     // Input nSequence (none/all, depending on flags)
     if ((hashType & TWBitcoinSigHashTypeAnyoneCanPay) == 0 &&
-        !Bitcoin::hashTypeIsSingle(hashType) && !Bitcoin::hashTypeIsNone(hashType)) {
+        !TWBitcoinSigHashTypeIsSingle(hashType) && !TWBitcoinSigHashTypeIsNone(hashType)) {
         auto hashSequence = getSequenceHash();
         std::copy(std::begin(hashSequence), std::end(hashSequence), std::back_inserter(data));
     } else {
@@ -59,10 +58,10 @@ Data Transaction::getPreImage(const Bitcoin::Script& scriptCode, size_t index, e
     }
 
     // Outputs (none/one/all, depending on flags)
-    if (!Bitcoin::hashTypeIsSingle(hashType) && !Bitcoin::hashTypeIsNone(hashType)) {
+    if (!TWBitcoinSigHashTypeIsSingle(hashType) && !TWBitcoinSigHashTypeIsNone(hashType)) {
         auto hashOutputs = getOutputsHash();
         copy(begin(hashOutputs), end(hashOutputs), back_inserter(data));
-    } else if (Bitcoin::hashTypeIsSingle(hashType) && index < outputs.size()) {
+    } else if (TWBitcoinSigHashTypeIsSingle(hashType) && index < outputs.size()) {
         auto outputData = Data{};
         outputs[index].encode(outputData);
         auto hashOutputs =

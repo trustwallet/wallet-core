@@ -9,7 +9,6 @@
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
 #include "UnspentSelector.h"
-#include "SigHashType.h"
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"
@@ -26,7 +25,8 @@ Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
 
-    const auto hashSingle = hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
+    const bool hashSingle =
+        ((input.hash_type() & ~TWBitcoinSigHashTypeAnyoneCanPay) == TWBitcoinSigHashTypeSingle);
     for (auto i = 0; i < plan.utxos.size(); i += 1) {
         auto& utxo = plan.utxos[i];
 
