@@ -11,7 +11,7 @@ tools/generate-files
 
 echo "#### Building... ####"
 cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug
-make -Cbuild tests TrezorCryptoTests
+make -Cbuild -j12 tests TrezorCryptoTests
 
 if [ -x "$(command -v clang-tidy)" ]; then
     echo "#### Linting... ####"
