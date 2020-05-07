@@ -7,5 +7,5 @@ set -e
 pushd swift
 xcodegen
 pod install
-xcrun xcodebuild -workspace TrustWalletCore.xcworkspace -scheme TrustWalletCore -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' test
+xcrun xcodebuild -workspace TrustWalletCore.xcworkspace -scheme TrustWalletCore -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' test | xcpretty
 popd
