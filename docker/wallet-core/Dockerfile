@@ -80,6 +80,6 @@ RUN ruby --version \
 RUN cd /wallet-core \
     && ./tools/generate-files \
     && cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug \
-    && make -Cbuild
+    && make -Cbuild -j12
 
 CMD ["/bin/bash"]

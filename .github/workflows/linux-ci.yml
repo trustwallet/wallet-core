@@ -32,11 +32,14 @@ jobs:
       run: |
         tools/generate-files
         cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DCODE_COVERAGE=ON -DBOOST_ROOT=${BOOST_ROOT_1_72_0}
-        make -Cbuild -j12
+        make -Cbuild -j12 tests TrezorCryptoTests
+
+        build/trezor-crypto/tests/TrezorCryptoTests
         build/tests/tests tests --gtest_output=xml
       env:
         CC: /usr/bin/clang
         CXX: /usr/bin/clang++
+        CK_TIMEOUT_MULTIPLIER: 4
     - name: Gather code coverage
       run: |
         sudo rm -rf coverage.info

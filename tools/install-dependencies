@@ -96,7 +96,7 @@ fi
 # Protobuf plugins
 cd "$ROOT/protobuf-plugin"
 cmake -H. -Bbuild -DCMAKE_INSTALL_PREFIX=$PREFIX
-make -Cbuild
+make -Cbuild -j12
 make -Cbuild install
 
 cd "$ROOT"
