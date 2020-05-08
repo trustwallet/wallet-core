@@ -25,6 +25,67 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
+TEST(BitcoinSigning, SignP2PKH) {
+    auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
+    auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
+
+    // Setup input
+    Proto::SigningInput input;
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(335'790'000);
+    input.set_byte_fee(1);
+    input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
+    input.set_change_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU");
+
+    auto utxoKey0 = PrivateKey(parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866"));
+    auto pubKey0 = utxoKey0.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey0.bytes));
+    ASSERT_EQ(hex(utxoPubkeyHash.begin(), utxoPubkeyHash.end()), "b7cd046b6d522a3d61dbcb5235c0e9cc97265457");
+    input.add_private_key(utxoKey0.bytes.data(), utxoKey0.bytes.size());
+
+    auto utxoKey1 = parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9");
+    input.add_private_key(utxoKey1.data(), utxoKey1.size());
+
+    auto utxo0Script = Script::buildPayToPublicKeyHash(utxoPubkeyHash);
+    Data scriptHash;
+    utxo0Script.matchPayToPublicKeyHash(scriptHash);
+    ASSERT_EQ(hex(scriptHash), "b7cd046b6d522a3d61dbcb5235c0e9cc97265457");
+
+    auto utxo0 = input.add_utxo();
+    utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo0->set_amount(625'000'000);
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
+    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    auto utxo1 = input.add_utxo();
+    auto utxo1Script = parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+    utxo1->set_script(utxo1Script.data(), utxo1Script.size());
+    utxo1->set_amount(600'000'000);
+    utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
+    utxo1->mutable_out_point()->set_index(1);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+
+    ASSERT_TRUE(result) << result.error();
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signedTx.encode(true, serialized);
+    ASSERT_EQ(hex(serialized),
+        "01000000"
+        "0001"
+        "01"
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "6a47304402202819d70d4bec472113a1392cadc0860a7a1b34ea0869abb4bdce3290c3aba086022023eff75f410ad19cdbe6c6a017362bd554ce5fb906c13534ddc306be117ad30a012103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ffffffff"
+        "02"
+            "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "aefd3c1100000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        "0000000000"
+    );
+}
+
 TEST(BitcoinSigning, EncodeP2WPKH) {
     auto unsignedTx = Transaction(1, 0x11);
 
