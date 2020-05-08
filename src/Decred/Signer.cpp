@@ -46,6 +46,10 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noe
 }
 
 Result<Transaction> Signer::sign() {
+    if (txPlan.utxos.size() == 0 || transaction.inputs.size() == 0) {
+        return Result<Transaction>::failure("Missing inputs or UTXOs");
+    }
+
     signedInputs.clear();
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
@@ -59,11 +63,13 @@ Result<Transaction> Signer::sign() {
             continue;
         }
         auto script = Bitcoin::Script(utxo.script().begin(), utxo.script().end());
-        auto result = sign(script, i);
-        if (!result) {
-            return Result<Transaction>::failure(result.error());
+        if (i < transaction.inputs.size()) {
+            auto result = sign(script, i);
+            if (!result) {
+                return Result<Transaction>::failure(result.error());
+            }
+            signedInputs[i].script = result.payload();
         }
-        signedInputs[i].script = result.payload();
     }
 
     Transaction tx(transaction);
@@ -73,6 +79,8 @@ Result<Transaction> Signer::sign() {
 }
 
 Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
+    assert(index < transaction.inputs.size());
+
     Bitcoin::Script redeemScript;
     std::vector<Data> results;
 
