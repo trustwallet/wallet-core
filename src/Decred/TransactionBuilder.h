@@ -48,7 +48,6 @@ struct TransactionBuilder {
             auto input = TransactionInput();
             input.previousOutput = utxo.out_point();
             input.sequence = utxo.out_point().sequence();
-            input.sequence = utxo.out_point().sequence();
             tx.inputs.push_back(std::move(input));
         }
 

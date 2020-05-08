@@ -26,7 +26,6 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 TEST(BitcoinSigning, EncodeP2WPKH) {
-    auto emptyScript = WRAP(TWBitcoinScript, TWBitcoinScriptCreate());
     auto unsignedTx = Transaction(1, 0x11);
 
     auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
@@ -98,7 +97,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
     utxo1->set_amount(600'000'000);
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
-    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
 
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
@@ -165,7 +164,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     utxo1->set_amount(210'000'000);
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
-    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
 
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
@@ -230,7 +229,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     utxo1->set_amount(210'000'000);
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
-    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
 
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
@@ -296,8 +295,8 @@ Proto::SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType) {
     auto p2wsh = Script::buildPayToWitnessScriptHash(parse_hex("ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db"));
     utxo0->set_script(p2wsh.bytes.data(), p2wsh.bytes.size());
     utxo0->set_amount(1226);
-    auto hash0 = DATA("0001000000000000000000000000000000000000000000000000000000000000");
-    utxo0->mutable_out_point()->set_hash(TWDataBytes(hash0.get()), TWDataSize(hash0.get()));
+    auto hash0 = parse_hex("0001000000000000000000000000000000000000000000000000000000000000");
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
     utxo0->mutable_out_point()->set_index(0);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
     return input;
