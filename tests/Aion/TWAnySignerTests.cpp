@@ -25,7 +25,7 @@ TEST(TWAnySignerAion, Sign) {
     auto gasPrice = store(uint256_t(20000000000));
     input.set_gas_price(gasPrice.data(), gasPrice.size());
     auto gasLimit = store(uint256_t(21000));
-    input.set_gas_limit(gasLimit.data(), gasLimit.size());;
+    input.set_gas_limit(gasLimit.data(), gasLimit.size());
     auto nonce = store(uint256_t(9));
     input.set_nonce(nonce.data(), nonce.size());
     input.set_private_key(privateKey.data(), privateKey.size());

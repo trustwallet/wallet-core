@@ -102,7 +102,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     // txid = "03b30d55430f08365d19a62d3bd32e459ab50984fbcf22921ecc85f1e09dc6ed"
@@ -169,7 +169,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
@@ -234,7 +234,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
@@ -309,7 +309,7 @@ TEST(BitcoinSigning, SignP2WSH) {
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     // txid = "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd"
@@ -337,7 +337,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     // txid = "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd"
@@ -365,7 +365,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     // txid = "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd"
@@ -393,7 +393,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     // txid = "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd"
@@ -568,7 +568,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     signer.transaction = unsignedTx;
     signer.plan.utxos = {*utxo};
     auto result = signer.sign();
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     auto expected = ""
