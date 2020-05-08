@@ -50,6 +50,9 @@ Result<Transaction> Signer::sign() {
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
 
+    if (txPlan.utxos.size() == 0) {
+        return Result<Transaction>::failure("Plan without UTXOs");
+    }
     const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
         auto& utxo = txPlan.utxos[i];
