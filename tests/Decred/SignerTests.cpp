@@ -366,3 +366,53 @@ TEST(DecredSigner, SignP2PKH_Noplan) {
     result.payload().encode(encoded);
     EXPECT_EQ(hex(encoded), expectedEncoded);
 }
+
+TEST(DecredSigning, SignP2WPKH_NegativeAddressWrongType) {
+    auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
+    auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
+
+    // Setup input
+    Bitcoin::Proto::SigningInput input;
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(335'790'000);
+    input.set_byte_fee(1);
+    input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
+    input.set_change_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU");
+
+    auto utxoKey0 = parse_hex("bbc27228ddcb9209d7fd6f36b02f7dfa6252af40bb2f1cbc7a557da8027ff866");
+    input.add_private_key(utxoKey0.data(), utxoKey0.size());
+
+    auto utxoKey1 = parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9");
+    input.add_private_key(utxoKey1.data(), utxoKey1.size());
+
+    auto scriptPub1 = Bitcoin::Script(parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
+    auto scriptHash = std::vector<uint8_t>();
+    scriptPub1.matchPayToWitnessPublicKeyHash(scriptHash);
+    auto scriptHashHex = hex(scriptHash.begin(), scriptHash.end());
+    ASSERT_EQ(scriptHashHex, "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+
+    auto redeemScript = Bitcoin::Script::buildPayToPublicKeyHash(scriptHash);
+    auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
+    (*input.mutable_scripts())[scriptHashHex] = scriptString;
+
+    auto utxo0 = input.add_utxo();
+    auto utxo0Script = parse_hex("2103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432ac");
+    utxo0->set_script(utxo0Script.data(), utxo0Script.size());
+    utxo0->set_amount(625'000'000);
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
+    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    auto utxo1 = input.add_utxo();
+    auto utxo1Script = parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+    utxo1->set_script(utxo1Script.data(), utxo1Script.size());
+    utxo1->set_amount(600'000'000);
+    utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
+    utxo1->mutable_out_point()->set_index(1);
+    utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    // Sign
+    auto result = Signer(std::move(input)).sign();
+
+    ASSERT_FALSE(result) << result.error();
+}
