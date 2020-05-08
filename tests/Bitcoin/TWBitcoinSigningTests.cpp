@@ -601,3 +601,32 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     signedTx.encode(true, serialized);
     ASSERT_EQ(hex(serialized.begin(), serialized.end()), expected);
 }
+
+TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
+    auto hash0 = parse_hex("fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f");
+    auto hash1 = parse_hex("ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a");
+
+    // Setup input
+    Proto::SigningInput input;
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(335'790'000);
+    input.set_byte_fee(1);
+    input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
+    input.set_change_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU");
+
+    auto scriptPub1 = Script(parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1"));
+    auto scriptHash = std::vector<uint8_t>();
+    scriptPub1.matchPayToWitnessPublicKeyHash(scriptHash);
+    auto scriptHashHex = hex(scriptHash.begin(), scriptHash.end());
+    ASSERT_EQ(scriptHashHex, "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+
+    auto redeemScript = Script::buildPayToPublicKeyHash(scriptHash);
+    auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
+    (*input.mutable_scripts())[scriptHashHex] = scriptString;
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+
+    // Fails as there are 0 utxos
+    ASSERT_FALSE(result) << result.error();
+}
