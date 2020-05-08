@@ -154,7 +154,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
 
     auto utxo1 = input.add_utxo();
     auto utxo1Script = parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
-    utxo1->set_script(utxo0Script.data(), utxo0Script.size());
+    utxo1->set_script(utxo1Script.data(), utxo1Script.size());
     utxo1->set_amount(600'000'000);
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
@@ -221,7 +221,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
 
     auto utxo1 = input.add_utxo();
     auto utxo1Script = parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
-    utxo1->set_script(utxo0Script.data(), utxo0Script.size());
+    utxo1->set_script(utxo1Script.data(), utxo1Script.size());
     utxo1->set_amount(210'000'000);
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
@@ -240,11 +240,13 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
         "0001"
         "02"
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "49483045022100fd8591c3611a07b55f509ec850534c7a9c49713c9b8fa0e844ea06c2e65e19d702205e3806676192e790bc93dd4c28e937c4bf97b15f189158ba1a30d7ecff5ee75503" "ffffffff"
-            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a" "01000000" "49483045022100984a256ab50b6064d6060f9932a7270f3b4c80c578c1ae2ee76b009473b652ab0220584e7154d6e852a8dfd6d66706c5881fa348562d54f1a514c0992ea24e954c8403" "ffffffff"
+            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a" "0100000000" "ffffffff"
         "02"
             "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
             "daef040500000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
-        "000000000000"
+        "0002"
+            "47304402206b91d2c69022a54652731b4302eabe59c87949cf62f4c5674c7d4c0d1fbf898102200cee8eeb6ef9542426788c06ed51004799b730083ae3d4daf3c3d5fdc2275d1d0321025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
+        "00000000"
     );
 }
 
@@ -286,7 +288,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
 
     auto utxo1 = input.add_utxo();
     auto utxo1Script = parse_hex("00141d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
-    utxo1->set_script(utxo0Script.data(), utxo0Script.size());
+    utxo1->set_script(utxo1Script.data(), utxo1Script.size());
     utxo1->set_amount(210'000'000);
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
@@ -305,11 +307,13 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
         "0001"
         "02"
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "4847304402206ed3e388d440cb845eef2fce0740b83bdd77764ad0e7dd815a20760718291a5302203f78d743350d80aa2508e90d5a984636c5503d02c1e8656442f0f0275db95baa80" "ffffffff"
-            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a" "01000000" "494830450221009bfe77e813db8615f91c62de3ded034c14279e2ceed8c450661975b49cd305fa022041af137d24749b71d0e8aaaeaffeef2045cd86bb706ec833afb26413747f287b80" "ffffffff"
+            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a" "01000000" "00" "ffffffff"
         "02"
             "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
             "daef040500000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac" 
-        "000000000000"
+        "0002"
+            "483045022100a5eedab7da09317141e35730256ef9b76da0c2442995a1c2b5458ee7d8834ba302201dc10b47cd4e2e53c7253770cd6907c94c828317d217e3065db009345acf41ac8021025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
+        "00000000"
     );
 }
 
