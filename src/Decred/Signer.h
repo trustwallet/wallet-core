@@ -76,7 +76,6 @@ class Signer {
     Result<std::vector<Data>> signStep(Bitcoin::Script script, size_t index);
     Data createSignature(const Transaction& transaction, const Bitcoin::Script& script,
                          const Data& key, size_t index);
-    Data pushAll(const std::vector<Data>& results);
 
     /// Returns the private key for the given public key hash.
     Data keyForPublicKeyHash(const Data& hash) const;
