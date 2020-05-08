@@ -103,7 +103,7 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     txSinger.transaction.lockTime = 0x00098971;
     auto result = txSinger.sign();
 
-    ASSERT_TRUE(result) << result.error();;
+    ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;

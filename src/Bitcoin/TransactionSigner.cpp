@@ -26,6 +26,9 @@ Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
 
+    if (plan.utxos.size() == 0) {
+        return Result<Transaction>::failure("Plan without UTXOs");
+    }
     const auto hashSingle = hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < plan.utxos.size(); i += 1) {
         auto& utxo = plan.utxos[i];

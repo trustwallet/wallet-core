@@ -9,6 +9,7 @@
 #include "TransactionInput.h"
 #include "TransactionOutput.h"
 #include "../Bitcoin/SigHashType.h"
+#include "../Bitcoin/TransactionSigner.h"
 
 #include "../BinaryCoding.h"
 #include "../Hash.h"
@@ -50,6 +51,9 @@ Result<Transaction> Signer::sign() {
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
 
+    if (txPlan.utxos.size() == 0) {
+        return Result<Transaction>::failure("Plan without UTXOs");
+    }
     const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
         auto& utxo = txPlan.utxos[i];
@@ -96,7 +100,7 @@ Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
         results.push_back(redeemScript.bytes);
     }
 
-    return Result<Bitcoin::Script>::success(Bitcoin::Script(pushAll(results)));
+    return Result<Bitcoin::Script>::success(Bitcoin::Script(Bitcoin::TransactionSigner<Bitcoin::Transaction, Bitcoin::TransactionBuilder>::pushAll(results)));
 }
 
 Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index) {
@@ -180,30 +184,6 @@ Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Scri
     signature.push_back(static_cast<uint8_t>(input.hash_type()));
 
     return signature;
-}
-
-Data Signer::pushAll(const std::vector<Data>& results) {
-    auto data = Data{};
-    for (auto& result : results) {
-        if (result.empty()) {
-            data.push_back(OP_0);
-        } else if (result.size() == 1 && result[0] >= 1 && result[0] <= 16) {
-            data.push_back(Bitcoin::Script::encodeNumber(result[0]));
-        } else if (result.size() < OP_PUSHDATA1) {
-            data.push_back(static_cast<uint8_t>(result.size()));
-        } else if (result.size() <= 0xff) {
-            data.push_back(OP_PUSHDATA1);
-            data.push_back(static_cast<uint8_t>(result.size()));
-        } else if (result.size() <= 0xffff) {
-            data.push_back(OP_PUSHDATA2);
-            encode16LE(static_cast<uint16_t>(result.size()), data);
-        } else {
-            data.push_back(OP_PUSHDATA4);
-            encode32LE(static_cast<uint32_t>(result.size()), data);
-        }
-        std::copy(begin(result), end(result), back_inserter(data));
-    }
-    return data;
 }
 
 Data Signer::keyForPublicKeyHash(const Data& hash) const {
