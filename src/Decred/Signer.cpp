@@ -49,7 +49,6 @@ Result<Transaction> Signer::sign() {
     signedInputs.clear();
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
-    std::cerr << "sign() signedInputs " << signedInputs.size() << "tIn " << transaction.inputs.size() << "\n";
 
     const auto hashSingle = Bitcoin::hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < txPlan.utxos.size(); i += 1) {
@@ -81,7 +80,6 @@ Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
     if (result) {
         results = result.payload();
     } else {
-        std::cerr << "S::sign signStep FAIL " << result.error() << "\n";
         return Result<Bitcoin::Script>::failure(result.error());
     }
     auto txin = transaction.inputs[index];
@@ -90,7 +88,6 @@ Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
         script = Bitcoin::Script(results.front().begin(), results.front().end());
         auto result = signStep(script, index);
         if (!result) {
-            std::cerr << "S::sign signStep FAIL 2 " << "\n";
             return Result<Bitcoin::Script>::failure(result.error());
         }
         results = result.payload();
@@ -107,7 +104,6 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
     transactionToSign.inputs = signedInputs;
     transactionToSign.outputs = transaction.outputs;
 
-    std::cerr << "signStep sInp " << signedInputs.size() << " ti " << transactionToSign.inputs.size() << "\n";
     Data data;
     std::vector<Data> keys;
     int required;
@@ -175,7 +171,6 @@ Result<std::vector<Data>> Signer::signStep(Bitcoin::Script script, size_t index)
 
 Data Signer::createSignature(const Transaction& transaction, const Bitcoin::Script& script,
                              const Data& key, size_t index) {
-    std::cerr << "createSignature index " << index << "\n";
     auto sighash = transaction.computeSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()));
     auto pk = PrivateKey(key);
     auto signature = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
@@ -224,7 +219,6 @@ Data Signer::keyForPublicKeyHash(const Data& hash) const {
 
 Data Signer::scriptForScriptHash(const Data& hash) const {
     auto hashString = hex(hash.begin(), hash.end());
-    std::cerr << "scriptForScriptHash inp.scripts() " << input.scripts().size() << "\n";
     auto it = input.scripts().find(hashString);
     if (it == input.scripts().end()) {
         // Error: Missing redeem script
