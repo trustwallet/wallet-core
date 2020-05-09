@@ -337,7 +337,7 @@ TEST(BitcoinSigning, EncodeP2WSH) {
         "00000000");
 }
 
-Proto::SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType) {
+Proto::SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript = false) {
     Proto::SigningInput input;
     input.set_hash_type(hashType);
     input.set_amount(1000);
@@ -351,10 +351,12 @@ Proto::SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType) {
     auto utxoKey1 = parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9");
     input.add_private_key(utxoKey1.data(), utxoKey1.size());
 
-    auto redeemScript = Script(parse_hex("2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"));
-    auto scriptHash = "593128f9f90e38b706c18623151e37d2da05c229";
-    auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
-    (*input.mutable_scripts())[scriptHash] = scriptString;
+    if (!omitScript) {
+        auto redeemScript = Script(parse_hex("2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"));
+        auto scriptHash = "593128f9f90e38b706c18623151e37d2da05c229";
+        auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
+        (*input.mutable_scripts())[scriptHash] = scriptString;
+    }
 
     auto utxo0 = input.add_utxo();
     auto p2wsh = Script::buildPayToWitnessScriptHash(parse_hex("ff25429251b5a84f452230a3c75fd886b7fc5a7865ce4a7bb7a9d7c5be6da3db"));
@@ -405,9 +407,6 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
-    // txid = "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd"
-    // witid = "16a17dd8f6e507220010c56c07a8479e3f909f87791683577d4e6aad61ab113a"
-
     Data serialized;
     signedTx.encode(true, serialized);
     ASSERT_EQ(hex(serialized), "01000000"
@@ -432,9 +431,6 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
-
-    // txid = "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd"
-    // witid = "16a17dd8f6e507220010c56c07a8479e3f909f87791683577d4e6aad61ab113a"
 
     Data serialized;
     signedTx.encode(true, serialized);
@@ -461,9 +457,6 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
-    // txid = "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd"
-    // witid = "16a17dd8f6e507220010c56c07a8479e3f909f87791683577d4e6aad61ab113a"
-
     Data serialized;
     signedTx.encode(true, serialized);
     ASSERT_EQ(hex(serialized), "01000000"
@@ -477,6 +470,16 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
             "19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
         "00000000"
     );
+}
+
+TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
+    // Setup input
+    const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll, true);
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+
+    ASSERT_FALSE(result) << result.error();
 }
 
 TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
