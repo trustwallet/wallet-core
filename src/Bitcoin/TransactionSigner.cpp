@@ -42,9 +42,11 @@ Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
             continue;
         }
         auto script = Script(utxo.script().begin(), utxo.script().end());
-        auto result = sign(script, i, utxo);
-        if (!result) {
-            return Result<Transaction>::failure(result.error());
+        if (i < transaction.inputs.size()) {
+            auto result = sign(script, i, utxo);
+            if (!result) {
+                return Result<Transaction>::failure(result.error());
+            }
         }
     }
 

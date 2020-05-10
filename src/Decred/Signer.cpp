@@ -67,13 +67,11 @@ Result<Transaction> Signer::sign() {
             continue;
         }
         auto script = Bitcoin::Script(utxo.script().begin(), utxo.script().end());
-        if (i < transaction.inputs.size()) {
-            auto result = sign(script, i);
-            if (!result) {
-                return Result<Transaction>::failure(result.error());
-            }
-            signedInputs[i].script = result.payload();
+        auto result = sign(script, i);
+        if (!result) {
+            return Result<Transaction>::failure(result.error());
         }
+        signedInputs[i].script = result.payload();
     }
 
     Transaction tx(transaction);
