@@ -473,7 +473,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
-    // Setup input
+    // Setup input, with omitted script
     const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll, true);
 
     // Sign
