@@ -1380,5 +1380,26 @@
             "clientPublic": "https://api.elrond.com",
             "clientDocs": "https://docs.elrond.com"
         }
+    },
+    {
+        "id": "ropsten",
+        "name": "Ropsten Ethereum",
+        "symbol": "ETH",
+        "decimals": 18,
+        "blockchain": "Ethereum",
+        "derivationPath": "m/44'/1'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1Extended",
+        "explorer": {
+            "url": "https://ropsten.etherscan.io/",
+            "txPath": "/tx/",
+            "accountPath": "/address/"
+        },
+        "info": {
+            "url": "https://ethereum.org",
+            "client": "https://github.com/ethereum/go-ethereum",
+            "clientPublic": "https://ropsten.infura.io",
+            "clientDocs": "https://github.com/ethereum/wiki/wiki/JSON-RPC"
+        }
     }
 ]
