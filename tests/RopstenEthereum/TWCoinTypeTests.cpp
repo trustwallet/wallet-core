@@ -13,19 +13,19 @@
 #include <gtest/gtest.h>
 
 
-TEST(TWRopstenCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeRopsten));
+TEST(TWRopstenEthereumCoinType, TWCoinType) {
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeRopstenEthereum));
     auto txId = TWStringCreateWithUTF8Bytes("0xdfe52ecc714b313df82f7fafc49085f8241e0633473009826f5e55afd258b371");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeRopsten, txId));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeRopstenEthereum, txId));
     auto accId = TWStringCreateWithUTF8Bytes("0x81b7e08f65bdf5648606c89998a9cc8164397647");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeRopsten, accId));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRopsten));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRopsten));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeRopstenEthereum, accId));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRopstenEthereum));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRopstenEthereum));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRopsten), 18);
-    ASSERT_EQ(TWBlockchainRopsten, TWCoinTypeBlockchain(TWCoinTypeRopsten));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeRopsten));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeRopsten));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRopstenEthereum), 18);
+    ASSERT_EQ(TWBlockchainEthereum, TWCoinTypeBlockchain(TWCoinTypeRopstenEthereum));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeRopstenEthereum));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeRopstenEthereum));
     assertStringsEqual(symbol, "ETH");
     assertStringsEqual(txUrl, "https://ropsten.etherscan.io/tx/0xdfe52ecc714b313df82f7fafc49085f8241e0633473009826f5e55afd258b371");
     assertStringsEqual(accUrl, "https://ropsten.etherscan.io/address/0x81b7e08f65bdf5648606c89998a9cc8164397647");
