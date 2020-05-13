@@ -22,6 +22,10 @@ using namespace TW::Bitcoin;
 
 template <typename Transaction, typename TransactionBuilder>
 Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
+    if (transaction.inputs.size() == 0 || plan.utxos.size() == 0) {
+        return Result<Transaction>::failure("Missing inputs or UTXOs");
+    }
+
     signedInputs.clear();
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
@@ -38,9 +42,11 @@ Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
             continue;
         }
         auto script = Script(utxo.script().begin(), utxo.script().end());
-        auto result = sign(script, i, utxo);
-        if (!result) {
-            return Result<Transaction>::failure(result.error());
+        if (i < transaction.inputs.size()) {
+            auto result = sign(script, i, utxo);
+            if (!result) {
+                return Result<Transaction>::failure(result.error());
+            }
         }
     }
 
@@ -53,6 +59,8 @@ Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
 template <typename Transaction, typename TransactionBuilder>
 Result<void> TransactionSigner<Transaction, TransactionBuilder>::sign(Script script, size_t index,
                                                   const Bitcoin::Proto::UnspentTransaction& utxo) {
+    assert(index < transaction.inputs.size());
+
     Script redeemScript;
     std::vector<Data> results;
     std::vector<Data> witnessStack;

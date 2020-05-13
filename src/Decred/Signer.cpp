@@ -47,6 +47,10 @@ Proto::SigningOutput Signer::sign(const Bitcoin::Proto::SigningInput& input) noe
 }
 
 Result<Transaction> Signer::sign() {
+    if (txPlan.utxos.size() == 0 || transaction.inputs.size() == 0) {
+        return Result<Transaction>::failure("Missing inputs or UTXOs");
+    }
+
     signedInputs.clear();
     std::copy(std::begin(transaction.inputs), std::end(transaction.inputs),
               std::back_inserter(signedInputs));
@@ -77,6 +81,8 @@ Result<Transaction> Signer::sign() {
 }
 
 Result<Bitcoin::Script> Signer::sign(Bitcoin::Script script, size_t index) {
+    assert(index < transaction.inputs.size());
+
     Bitcoin::Script redeemScript;
     std::vector<Data> results;
 
