@@ -12,6 +12,10 @@ using namespace TW::Filecoin;
 // encodeVaruint encodes a 256-bit number into a big endian encoding, omitting leading zeros.
 static Data encodeVaruint(const uint256_t& value) {
     Data data;
+	if(value == uint256_t(0)) {
+		return data;
+	}
+	
     encode256BE(data, value, 256);
     size_t i = 0;
     for (i = 0; i < data.size(); ++i) {
