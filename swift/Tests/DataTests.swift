@@ -15,4 +15,10 @@ class DataTests: XCTestCase {
 
         XCTAssertEqual(Array(data), bytes)
     }
+
+    func testOddLength() {
+        XCTAssertNil(Data(hexString: "0x0"))
+        XCTAssertNil(Data(hexString: "0x28fa6ae00"))
+        XCTAssertNil(Data(hexString: "28fa6ae00"))
+    }
 }
