@@ -12,12 +12,12 @@ class HarmonyTests: XCTestCase {
 
     func testSigner() {
         let transaction = HarmonyTransactionMessage.with {
-            $0.nonce = Data(hexString: "0x9")!
-            $0.gasPrice = Data(hexString: "0x")!
+            $0.nonce = Data(hexString: "0x09")!
+            $0.gasPrice = Data()
             $0.gasLimit = Data(hexString: "0x5208")!
-            $0.fromShardID = Data(hexString: "0x1")!
-            $0.toShardID = Data(hexString: "0x0")!
-            $0.payload = Data(hexString: "0x")!
+            $0.fromShardID = Data(hexString: "0x01")!
+            $0.toShardID = Data()
+            $0.payload = Data()
             $0.toAddress = "one1d2rngmem4x2c6zxsjjz29dlah0jzkr0k2n88wc"
             $0.amount = Data(hexString: "0x4c53ecdc18a60000")!
         }
@@ -49,16 +49,16 @@ class HarmonyTests: XCTestCase {
             $0.details = "Don't mess with me!!!"
         }
         let rate = HarmonyDecimal.with {
-            $0.value = Data(hexString: "0x1")!
-            $0.precision = Data(hexString: "0x1")!
+            $0.value = Data(hexString: "0x01")!
+            $0.precision = Data(hexString: "0x01")!
         }
         let maxRate = HarmonyDecimal.with {
-            $0.value = Data(hexString: "0x9")!
-            $0.precision = Data(hexString: "0x1")!
+            $0.value = Data(hexString: "0x09")!
+            $0.precision = Data(hexString: "0x01")!
         }
         let maxChangeRate = HarmonyDecimal.with {
-            $0.value = Data(hexString: "0x5")!
-            $0.precision = Data(hexString: "0x2")!
+            $0.value = Data(hexString: "0x05")!
+            $0.precision = Data(hexString: "0x02")!
         }
         let commission = HarmonyCommissionRate.with {
             $0.rate = rate
@@ -71,7 +71,7 @@ class HarmonyTests: XCTestCase {
             $0.validatorAddress = oneAddress
             $0.description_p = description
             $0.commissionRates = commission
-            $0.minSelfDelegation = Data(hexString: "0xa")!
+            $0.minSelfDelegation = Data(hexString: "0x0a")!
             $0.maxTotalDelegation = Data(hexString: "0x0bb8")!
             $0.slotPubKeys = [pubKey]
             $0.slotKeySigs = [blsSig]
@@ -79,8 +79,8 @@ class HarmonyTests: XCTestCase {
         }
         let staking = HarmonyStakingMessage.with {
             $0.createValidatorMessage = createValidator
-            $0.nonce = Data(hexString: "0x2")!
-            $0.gasPrice = Data(hexString: "0x0")!
+            $0.nonce = Data(hexString: "0x02")!
+            $0.gasPrice = Data(hexString: "0x00")!
             $0.gasLimit = Data(hexString: "0x64")!
         }
         let input = HarmonySigningInput.with {
@@ -107,24 +107,24 @@ class HarmonyTests: XCTestCase {
             $0.details = "Don't mess with me!!!"
         }
         let commissionRate = HarmonyDecimal.with {
-            $0.value = Data(hexString: "0x1")!
-            $0.precision = Data(hexString: "0x1")!
+            $0.value = Data(hexString: "0x01")!
+            $0.precision = Data(hexString: "0x01")!
         }
         let editValidator = HarmonyDirectiveEditValidator.with {
             $0.validatorAddress = oneAddress
             $0.description_p = desc
             $0.commissionRate = commissionRate
-            $0.minSelfDelegation = Data(hexString: "0xa")!
+            $0.minSelfDelegation = Data(hexString: "0x0a")!
             $0.maxTotalDelegation = Data(hexString: "0x0bb8")!
             $0.slotKeyToRemove = pubKeyData
             $0.slotKeyToAdd = pubKeyData
             $0.slotKeyToAddSig = blsSigData
-            $0.active = Data(hexString: "0x1")!
+            $0.active = Data(hexString: "0x01")!
         }
         let staking = HarmonyStakingMessage.with {
             $0.editValidatorMessage = editValidator
-            $0.nonce = Data(hexString: "0x2")!
-            $0.gasPrice = Data(hexString: "0x")!
+            $0.nonce = Data(hexString: "0x02")!
+            $0.gasPrice = Data()
             $0.gasLimit = Data(hexString: "0x64")!
         }
         let input = HarmonySigningInput.with {
@@ -151,24 +151,24 @@ class HarmonyTests: XCTestCase {
             $0.details = "Don't mess with me!!!"
         }
         let commissionRate = HarmonyDecimal.with {
-            $0.value = Data(hexString: "0x1")!
-            $0.precision = Data(hexString: "0x1")!
+            $0.value = Data(hexString: "0x01")!
+            $0.precision = Data(hexString: "0x01")!
         }
         let editValidator = HarmonyDirectiveEditValidator.with {
             $0.validatorAddress = oneAddress
             $0.description_p = desc
             $0.commissionRate = commissionRate
-            $0.minSelfDelegation = Data(hexString: "0xa")!
+            $0.minSelfDelegation = Data(hexString: "0x0a")!
             $0.maxTotalDelegation = Data(hexString: "0x0bb8")!
             $0.slotKeyToRemove = pubKeyData
             $0.slotKeyToAdd = pubKeyData
             $0.slotKeyToAddSig = blsSigData
-            $0.active = Data(hexString: "0x2")!
+            $0.active = Data(hexString: "0x02")!
         }
         let staking = HarmonyStakingMessage.with {
             $0.editValidatorMessage = editValidator
-            $0.nonce = Data(hexString: "0x2")!
-            $0.gasPrice = Data(hexString: "0x")!
+            $0.nonce = Data(hexString: "0x02")!
+            $0.gasPrice = Data()
             $0.gasLimit = Data(hexString: "0x64")!
         }
         let input = HarmonySigningInput.with {
@@ -194,24 +194,24 @@ class HarmonyTests: XCTestCase {
             $0.details = "Don't mess with me!!!"
         }
         let commissionRate = HarmonyDecimal.with {
-            $0.value = Data(hexString: "0x1")!
-            $0.precision = Data(hexString: "0x1")!
+            $0.value = Data(hexString: "0x01")!
+            $0.precision = Data(hexString: "0x01")!
         }
         let editValidator = HarmonyDirectiveEditValidator.with {
             $0.validatorAddress = oneAddress
             $0.description_p = desc
             $0.commissionRate = commissionRate
-            $0.minSelfDelegation = Data(hexString: "0xa")!
+            $0.minSelfDelegation = Data(hexString: "0x0a")!
             $0.maxTotalDelegation = Data(hexString: "0x0bb8")!
             $0.slotKeyToRemove = pubKeyData
             $0.slotKeyToAdd = pubKeyData
             $0.slotKeyToAddSig = blsSigData
-            $0.active = Data(hexString: "0x0")!
+            $0.active = Data()
         }
         let staking = HarmonyStakingMessage.with {
             $0.editValidatorMessage = editValidator
-            $0.nonce = Data(hexString: "0x2")!
-            $0.gasPrice = Data(hexString: "0x")!
+            $0.nonce = Data(hexString: "0x02")!
+            $0.gasPrice = Data()
             $0.gasLimit = Data(hexString: "0x64")!
         }
         let input = HarmonySigningInput.with {
@@ -233,12 +233,12 @@ class HarmonyTests: XCTestCase {
         let delegate = HarmonyDirectiveDelegate.with {
             $0.delegatorAddress = oneAddress
             $0.validatorAddress = oneAddress
-            $0.amount = Data(hexString: "0xa")!
+            $0.amount = Data(hexString: "0x0a")!
         }
         let staking = HarmonyStakingMessage.with {
             $0.delegateMessage = delegate
-            $0.nonce = Data(hexString: "0x2")!
-            $0.gasPrice = Data(hexString: "0x")!
+            $0.nonce = Data(hexString: "0x02")!
+            $0.gasPrice = Data()
             $0.gasLimit = Data(hexString: "0x64")!
         }
         let input = HarmonySigningInput.with {
@@ -262,12 +262,12 @@ class HarmonyTests: XCTestCase {
         let undelegate = HarmonyDirectiveUndelegate.with {
             $0.delegatorAddress = oneAddress
             $0.validatorAddress = oneAddress
-            $0.amount = Data(hexString: "0xa")!
+            $0.amount = Data(hexString: "0x0a")!
         }
         let staking = HarmonyStakingMessage.with {
             $0.undelegateMessage = undelegate
-            $0.nonce = Data(hexString: "0x2")!
-            $0.gasPrice = Data(hexString: "0x")!
+            $0.nonce = Data(hexString: "0x02")!
+            $0.gasPrice = Data()
             $0.gasLimit = Data(hexString: "0x64")!
         }
         let input = HarmonySigningInput.with {
@@ -293,8 +293,8 @@ class HarmonyTests: XCTestCase {
         }
         let staking = HarmonyStakingMessage.with {
             $0.collectRewards = collectRewards
-            $0.nonce = Data(hexString: "0x2")!
-            $0.gasPrice = Data(hexString: "0x")!
+            $0.nonce = Data(hexString: "0x02")!
+            $0.gasPrice = Data()
             $0.gasLimit = Data(hexString: "0x64")!
         }
         let input = HarmonySigningInput.with {

@@ -19,4 +19,12 @@ TEST(HexCoding, validation) {
     ASSERT_TRUE(bytes.empty());
     ASSERT_EQ("0x" + hex(bytes2), valid);
 }
+
+TEST(HexCoding, OddLength) {
+    const std::string invalid = "28fa6ae00";
+    const auto bytes = parse_hex(invalid);
+
+    ASSERT_TRUE(bytes.empty());
+}
+
 }

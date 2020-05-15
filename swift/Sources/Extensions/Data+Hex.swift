@@ -16,6 +16,11 @@ extension Data {
             string = hexString
         }
 
+        // Check odd length hex string
+        if string.count % 2 != 0 {
+            return nil
+        }
+
         // Convert the string to bytes for better performance
         guard let stringData = string.data(using: .ascii, allowLossyConversion: true) else {
             return nil
