@@ -166,7 +166,7 @@ TEST(UnspentSelector, SelectOneInsufficient) {
     ASSERT_TRUE(verifySelected(selected, {}));
 }
 
-TEST(UnspentSelector, SelectOneInsufficientExact) {
+TEST(UnspentSelector, SelectOneInsufficientEqual) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {100'000});
 
@@ -191,17 +191,17 @@ TEST(UnspentSelector, SelectOneFitsExactly) {
     buildUTXOs(utxos, {100'000});
 
     auto selector = UnspentSelector();
-    auto selected = selector.select(utxos, 100'000 - 226, 1);
+    auto selected = selector.select(utxos, 100'000 - 192, 1); // shuold be 226
 
     ASSERT_TRUE(verifySelected(selected, {100'000}));
 
-    auto fee = selector.calculator.calculate(1, 2, 1);
-    ASSERT_EQ(fee, 226);
+    ASSERT_EQ(selector.calculator.calculate(1, 2, 1), 226);
+    ASSERT_EQ(selector.calculator.calculate(1, 1, 1), 192);
 
     // 1 sat more and does not fit any more
-    selected = selector.select(utxos, 100'000 - 226 + 1, 1);
+    selected = selector.select(utxos, 100'000 - 192 + 1, 1);
 
-    ASSERT_TRUE(verifySelected(selected, {100'000}));
+    ASSERT_TRUE(verifySelected(selected, {}));
 }
 
 TEST(UnspentSelector, SelectThreeNoDust) {
@@ -261,6 +261,34 @@ TEST(UnspentSelector, SelectTwoFirstEnoughButSecond) {
     auto selected = selector.select(utxos, 18'000, 1);
 
     ASSERT_TRUE(verifySelected(selected, {22'000}));
+}
+
+TEST(UnspentSelector, SelectTenThree) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    buildUTXOs(utxos, {1'000, 2'000, 100'000, 3'000, 4'000, 5,000, 125'000, 6'000, 150'000, 7'000});
+
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 300'000, 1);
+
+    ASSERT_TRUE(verifySelected(selected, {100'000, 125'000, 150'000}));
+}
+
+TEST(UnspentSelector, SelectTenThreeExact) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    buildUTXOs(utxos, {1'000, 2'000, 100'000, 3'000, 4'000, 5,000, 125'000, 6'000, 150'000, 7'000});
+
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 375'000 - 522 - 546, 1);
+
+    ASSERT_TRUE(verifySelected(selected, {100'000, 125'000, 150'000}));
+
+    auto fee = selector.calculator.calculate(3, 2, 1);
+    ASSERT_EQ(fee, 522);
+
+    // one more, and it's too much
+    selected = selector.select(utxos, 375'000 - 522 - 546 + 1, 1);
+
+    ASSERT_TRUE(verifySelected(selected, {7'000, 100'000, 125'000, 150'000}));
 }
 
 TEST(UnspentSelector, SelectMaxCase) {

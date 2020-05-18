@@ -88,6 +88,7 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
     //    (3) and does not produce dust change.
     for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
         const auto fee = calculator.calculate(numInputs, numOutputs, byteFee);
+        std::cerr << "FEE " << fee << " " << numInputs << " " << numOutputs << "\n";
         const auto targetWithFeeAndDust = targetValue + fee + dustThreshold;
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(std::remove_if(slices.begin(), slices.end(),
@@ -110,6 +111,7 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
     numOutputs = 1;
     for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
         const auto fee = calculator.calculate(numInputs, numOutputs, byteFee);
+        std::cerr << "FEE " << fee << " " << numInputs << " " << numOutputs << "\n";
         const auto targetWithFee = targetValue + fee;
         auto slices = slice(sortedUtxos, static_cast<size_t>(numInputs));
         slices.erase(
