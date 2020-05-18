@@ -204,6 +204,25 @@ TEST(UnspentSelector, SelectOneFitsExactly) {
     ASSERT_TRUE(verifySelected(selected, {100'000}));
 }
 
+TEST(UnspentSelector, SelectThreeNoDust) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    buildUTXOs(utxos, {100'000, 70'000, 75'000});
+
+    auto selector = UnspentSelector();
+    auto selected = selector.select(utxos, 100'000 - 226 - 10, 1);
+
+    // 100'000 would fit with dust; instead two UTXOs are selected not to leave dust
+    ASSERT_TRUE(verifySelected(selected, {75'000, 100'000}));
+    
+    // Now 100'000 fits with no dust; 546 is the dust limit
+    selected = selector.select(utxos, 100'000 - 226 - 546, 1);
+    ASSERT_TRUE(verifySelected(selected, {100'000}));
+
+    // One more and we are over dust limit
+    selected = selector.select(utxos, 100'000 - 226 - 546 + 1, 1);
+    ASSERT_TRUE(verifySelected(selected, {75'000, 100'000}));
+}
+
 TEST(UnspentSelector, SelectTwoFirstEnough) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {20'000, 80'000});
