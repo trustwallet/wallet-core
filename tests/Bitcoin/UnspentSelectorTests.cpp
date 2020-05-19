@@ -192,7 +192,7 @@ TEST(BitcoinUnspentSelector, SelectOneFitsExactly) {
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = UnspentSelector(feeCalculator);
-    auto selected = selector.select(utxos, 100'000 - 192, 1); // shuold be 226
+    auto selected = selector.select(utxos, 100'000 - 226, 1);
 
     ASSERT_TRUE(verifySelected(selected, {100'000}));
 
@@ -200,7 +200,7 @@ TEST(BitcoinUnspentSelector, SelectOneFitsExactly) {
     ASSERT_EQ(feeCalculator.calculate(1, 1, 1), 192);
 
     // 1 sat more and does not fit any more
-    selected = selector.select(utxos, 100'000 - 192 + 1, 1);
+    selected = selector.select(utxos, 100'000 - 226 + 1, 1);
 
     ASSERT_TRUE(verifySelected(selected, {}));
 }
@@ -212,7 +212,7 @@ TEST(BitcoinUnspentSelector, SelectOneFitsExactlyHighfee) {
     const auto byteFee = 10;
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     auto selector = UnspentSelector(feeCalculator);
-    auto selected = selector.select(utxos, 100'000 - 1920, byteFee); // shuold be 2260
+    auto selected = selector.select(utxos, 100'000 - 2260, byteFee);
 
     ASSERT_TRUE(verifySelected(selected, {100'000}));
 
@@ -220,7 +220,7 @@ TEST(BitcoinUnspentSelector, SelectOneFitsExactlyHighfee) {
     ASSERT_EQ(feeCalculator.calculate(1, 1, byteFee), 1920);
 
     // 1 sat more and does not fit any more
-    selected = selector.select(utxos, 100'000 - 1920 + 1, byteFee);
+    selected = selector.select(utxos, 100'000 - 2260 + 1, byteFee);
 
     ASSERT_TRUE(verifySelected(selected, {}));
 }

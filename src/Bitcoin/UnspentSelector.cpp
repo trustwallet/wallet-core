@@ -108,8 +108,7 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
         }
     }
 
-    // 2. If not, find a combination of outputs that may produce dust change.
-    numOutputs = 1;
+    // 2. If not, find a valid combination of outputs even if they produce dust change.
     for (int64_t numInputs = 1; numInputs <= sortedUtxos.size(); numInputs += 1) {
         const auto fee = feeCalculator.calculate(numInputs, numOutputs, byteFee);
         const auto targetWithFee = targetValue + fee;
