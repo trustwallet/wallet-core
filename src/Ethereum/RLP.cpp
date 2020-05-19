@@ -141,12 +141,12 @@ Data RLP::putint(uint64_t i) noexcept {
     // clang-format on
 }
 
-Data RLP::decodeRawTx(const Data& data) {
+Data RLP::decodeRawTransaction(const Data& data) {
     auto decoded = decode(data).decoded;
     if (decoded.size() < 9) {
         return {};
     }
-    json result = {
+    auto result = json {
         {"nonce", hexEncoded(decoded[0])},
         {"gasPrice", hexEncoded(decoded[1])},
         {"gas", hexEncoded(decoded[2])},
@@ -156,11 +156,33 @@ Data RLP::decodeRawTx(const Data& data) {
         {"v", hexEncoded(decoded[6])},
         {"r", hexEncoded(decoded[7])},
         {"s", hexEncoded(decoded[8])},
-    };
-    auto dumped = result.dump();
-    return Data(dumped.begin(), dumped.end());
+    }.dump();
+    return Data(result.begin(), result.end());
 }
 
+static RLP::DecodedItem decodeList(const Data& input) {
+    RLP::DecodedItem item;
+    auto remainder = input;
+    while(true) {
+        auto listItem = RLP::decode(remainder);
+        item.decoded.push_back(listItem.decoded[0]);
+        if (listItem.remainder.size() == 0) {
+            break;
+        } else {
+            remainder = listItem.remainder;
+        }
+    }
+    return item;
+}
+
+static uint64_t decodeLength(const Data& data) {
+    size_t index = 0;
+    auto decodedLen = decodeVarInt(data, index);
+    if (!std::get<0>(decodedLen)) {
+        throw std::invalid_argument("can't decode length of string/list length");
+    }
+    return std::get<1>(decodedLen);
+}
 
 RLP::DecodedItem RLP::decode(const Data& input) {
     if (input.size() == 0) {
@@ -174,7 +196,8 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         item.decoded.push_back(Data{input[0]});
         item.remainder = Data(input.begin() + 1, input.end());
         return item;
-    } else if (prefix <= 0xb7) {
+    }
+    if (prefix <= 0xb7) {
         // short string
         // string is 0-55 bytes long. A single byte with value 0x80 plus the length of the string followed by the string
         // The range of the first byte is [0x80, 0xb7]
@@ -195,19 +218,20 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         item.remainder = Data(input.begin() + 1 + strLen, input.end());
 
         return item;
-    } else if (prefix <= 0xbf) {
+    } 
+    if (prefix <= 0xbf) {
         // long string
         auto lenOfStrLen = prefix - 0xb7;
-        auto strLen = decode32LE(subData(input, 1, lenOfStrLen).data());
+        auto strLen = decodeLength(subData(input, 1, lenOfStrLen));
         if (inputLen < lenOfStrLen || inputLen < lenOfStrLen + strLen) {
             throw std::invalid_argument("Invalid rlp encoding length");
         }
-
         auto data = subData(input, 1 + lenOfStrLen, strLen);
         item.decoded.push_back(data);
         item.remainder = Data(input.begin() + 1 + lenOfStrLen + strLen, input.end());
         return item;
-    } else if (prefix <= 0xf7) {
+    } 
+    if (prefix <= 0xf7) {
         // a list between  0-55 bytes long
         auto listLen = prefix - 0xc0;
         if (inputLen < listLen) {
@@ -227,9 +251,10 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         }
         item.remainder = Data(input.begin() + 1 + listLen, input.end());
         return item;
-    } else if (prefix <= 0xff) {
+    } 
+    if (prefix <= 0xff) {
         auto lenOfListLen = prefix - 0xf7;
-        auto listLen = decode32LE(subData(input, 1, lenOfListLen).data());
+        auto listLen = decodeLength(subData(input, 1, lenOfListLen));
         if (inputLen < lenOfListLen || inputLen < lenOfListLen + listLen) {
             throw std::invalid_argument("Invalid rlp list length");
         }
@@ -248,19 +273,4 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         return item;
     }
     throw std::invalid_argument("input don't conform RLP encoding form");
-}
-
-RLP::DecodedItem RLP::decodeList(const Data& input) {
-    RLP::DecodedItem item;
-    auto remainder = input;
-    while(true) {
-        auto listItem = decode(remainder);
-        item.decoded.push_back(listItem.decoded[0]);
-        if (listItem.remainder.size() == 0) {
-            break;
-        } else {
-            remainder = listItem.remainder;
-        }
-    }
-    return item;
 }

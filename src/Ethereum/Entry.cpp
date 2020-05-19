@@ -39,6 +39,10 @@ void Entry::encodeRawTx(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataO
 }
 
 void Entry::decodeRawTx(TWCoinType coin, const TW::Data& dataIn, TW::Data& dataOut) const {
-    auto data = RLP::decodeRawTx(dataIn);
-    dataOut.insert(dataOut.end(), data.begin(), data.end());
+    try {
+        auto data = RLP::decodeRawTransaction(dataIn);
+        dataOut.insert(dataOut.end(), data.begin(), data.end());
+    } catch(...) {
+        return;
+    }
 }

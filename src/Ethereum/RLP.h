@@ -101,13 +101,10 @@ struct RLP {
     };
 
     /// Decodes raw transaction to json data
-    static Data decodeRawTx(const Data& data);
+    static Data decodeRawTransaction(const Data& data);
 
     /// Decodes data, remainder from RLP encoded data
     static DecodedItem decode(const Data& data);
-
-    /// Decodes list
-    static DecodedItem decodeList(const Data& data);
 };
 
 } // namespace TW::Ethereum
