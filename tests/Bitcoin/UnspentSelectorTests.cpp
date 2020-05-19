@@ -190,13 +190,14 @@ TEST(UnspentSelector, SelectOneFitsExactly) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {100'000});
 
-    auto selector = UnspentSelector();
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    auto selector = UnspentSelector(feeCalculator);
     auto selected = selector.select(utxos, 100'000 - 192, 1); // shuold be 226
 
     ASSERT_TRUE(verifySelected(selected, {100'000}));
 
-    ASSERT_EQ(selector.calculator.calculate(1, 2, 1), 226);
-    ASSERT_EQ(selector.calculator.calculate(1, 1, 1), 192);
+    ASSERT_EQ(feeCalculator.calculate(1, 2, 1), 226);
+    ASSERT_EQ(feeCalculator.calculate(1, 1, 1), 192);
 
     // 1 sat more and does not fit any more
     selected = selector.select(utxos, 100'000 - 192 + 1, 1);
@@ -277,13 +278,13 @@ TEST(UnspentSelector, SelectTenThreeExact) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {1'000, 2'000, 100'000, 3'000, 4'000, 5,000, 125'000, 6'000, 150'000, 7'000});
 
-    auto selector = UnspentSelector();
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    auto selector = UnspentSelector(feeCalculator);
     auto selected = selector.select(utxos, 375'000 - 522 - 546, 1);
 
     ASSERT_TRUE(verifySelected(selected, {100'000, 125'000, 150'000}));
 
-    auto fee = selector.calculator.calculate(3, 2, 1);
-    ASSERT_EQ(fee, 522);
+    ASSERT_EQ(feeCalculator.calculate(3, 2, 1), 522);
 
     // one more, and it's too much
     selected = selector.select(utxos, 375'000 - 522 - 546 + 1, 1);
@@ -295,21 +296,20 @@ TEST(UnspentSelector, SelectMaxCase) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {10189534});
 
-    auto selector = UnspentSelector();
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    auto selector = UnspentSelector(feeCalculator);
     auto selected = selector.select(utxos, 10189534 - 226, 1);
 
     ASSERT_TRUE(verifySelected(selected, {10189534}));
 
-    auto fee = selector.calculator.calculate(1, 2, 1);
-    ASSERT_EQ(fee, 226);
+    ASSERT_EQ(feeCalculator.calculate(1, 2, 1), 226);
 }
 
 TEST(UnspentSelector, SelectZcashUnpsents) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {100000, 2592, 73774});
 
-    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
-    auto selector = UnspentSelector(calculator);
+    auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.select(utxos, 10000, 1);
 
     ASSERT_EQ(sum(selected), 73774);
@@ -320,8 +320,7 @@ TEST(UnspentSelector, SelectGroestlUnpsents) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {499971976});
 
-    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeGroestlcoin);
-    auto selector = UnspentSelector(calculator);
+    auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.select(utxos, 499951976, 1, 1);
 
     ASSERT_EQ(sum(selected), 499971976);
@@ -332,8 +331,7 @@ TEST(UnspentSelector, SelectZcashMaxUnpsents) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {100000, 2592, 73774});
 
-    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
-    auto selector = UnspentSelector(calculator);
+    auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.select(utxos, 166366, 1);
 
     ASSERT_EQ(sum(selected), 176366);
@@ -344,8 +342,7 @@ TEST(UnspentSelector, SelectZcashMaxUnpsents2) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {100000, 2592, 73774});
 
-    auto calculator = UnspentCalculator::getCalculator(TWCoinTypeZcash);
-    auto selector = UnspentSelector(calculator);
+    auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.select(utxos, 176360, 1);
 
     ASSERT_EQ(sum(selected), 0);

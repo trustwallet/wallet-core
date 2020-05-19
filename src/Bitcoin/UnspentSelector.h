@@ -9,7 +9,8 @@
 #include <numeric>
 #include <vector>
 
-#include "UnspentCalculator.h"
+#include "FeeCalculator.h"
+#include <TrustWalletCore/TWCoinType.h>
 #include "../proto/Bitcoin.pb.h"
 
 namespace TW::Bitcoin {
@@ -27,10 +28,9 @@ class UnspentSelector {
     std::vector<Proto::UnspentTransaction> select(const T& utxos, int64_t targetValue,
                                                   int64_t byteFee, int64_t numOutputs = 2);
 
-    UnspentCalculator calculator;
-
-    UnspentSelector() : calculator(UnspentCalculator()) {}
-    explicit UnspentSelector(UnspentCalculator calculator) : calculator(std::move(calculator)) {}
+    /// Construct, using provided feeCalculator (see getFeeCalculator()).
+    explicit UnspentSelector(FeeCalculator& feeCalculator) : feeCalculator(feeCalculator) {}
+    UnspentSelector() : UnspentSelector(getFeeCalculator(TWCoinTypeBitcoin)) {}
 
   public:
     template <typename T>
@@ -42,6 +42,7 @@ class UnspentSelector {
     }
 
   private:
+    FeeCalculator& feeCalculator;
     std::vector<Proto::UnspentTransaction>
     filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee);
 };

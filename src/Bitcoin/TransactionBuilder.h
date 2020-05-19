@@ -24,9 +24,8 @@ public:
         plan.amount = input.amount();
 
         auto output_size = 2;
-        auto calculator =
-            UnspentCalculator::getCalculator(static_cast<TWCoinType>(input.coin_type()));
-        auto unspentSelector = UnspentSelector(calculator);
+        auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
+        auto unspentSelector = UnspentSelector(feeCalculator);
         if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
             output_size = 1;
             Amount newAmount = 0;
@@ -34,21 +33,20 @@ public:
 
             for (auto utxo : input.utxo()) {
                 if (utxo.amount() >
-                    unspentSelector.calculator.calculateSingleInput(input.byte_fee())) {
+                    feeCalculator.calculateSingleInput(input.byte_fee())) {
                     input_size++;
                     newAmount += utxo.amount();
                 }
             }
 
-            plan.amount = newAmount - unspentSelector.calculator.calculate(input_size, output_size,
-                                                                           input.byte_fee());
+            plan.amount = newAmount - feeCalculator.calculate(input_size, output_size, input.byte_fee());
             plan.amount = std::max(Amount(0), plan.amount);
         }
 
         plan.utxos =
             unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(), output_size);
         plan.fee =
-            unspentSelector.calculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
+            feeCalculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
 
         plan.availableAmount = UnspentSelector::sum(plan.utxos);
 
