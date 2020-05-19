@@ -43,11 +43,17 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
             feeCalculator.calculate(plan.utxos.size(), output_size, input.byte_fee()));
         assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
 
-        if (plan.amount > plan.availableAmount - plan.fee) {
+        if (input.use_max_amount()) {
+            // max_amount case
             plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
+            assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
+            plan.change = 0;
+        } else {
+            // reduce amount if needed
+            plan.amount = std::max(Amount(0), std::min(plan.amount, plan.availableAmount - plan.fee));
+            assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
+            plan.change = plan.availableAmount - plan.amount - plan.fee;
         }
-
-        plan.change = plan.availableAmount - plan.amount - plan.fee;
         assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
 
         return plan;
