@@ -205,6 +205,26 @@ TEST(UnspentSelector, SelectOneFitsExactly) {
     ASSERT_TRUE(verifySelected(selected, {}));
 }
 
+TEST(UnspentSelector, SelectOneFitsExactlyHighfee) {
+    auto utxos = std::vector<Proto::UnspentTransaction>();
+    buildUTXOs(utxos, {100'000});
+
+    const auto byteFee = 10;
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    auto selector = UnspentSelector(feeCalculator);
+    auto selected = selector.select(utxos, 100'000 - 1920, byteFee); // shuold be 2260
+
+    ASSERT_TRUE(verifySelected(selected, {100'000}));
+
+    ASSERT_EQ(feeCalculator.calculate(1, 2, byteFee), 2260);
+    ASSERT_EQ(feeCalculator.calculate(1, 1, byteFee), 1920);
+
+    // 1 sat more and does not fit any more
+    selected = selector.select(utxos, 100'000 - 1920 + 1, byteFee);
+
+    ASSERT_TRUE(verifySelected(selected, {}));
+}
+
 TEST(UnspentSelector, SelectThreeNoDust) {
     auto utxos = std::vector<Proto::UnspentTransaction>();
     buildUTXOs(utxos, {100'000, 70'000, 75'000});
