@@ -7,6 +7,7 @@
 #include "UnspentSelector.h"
 
 #include <algorithm>
+#include <cassert>
 
 using namespace TW;
 using namespace TW::Bitcoin;
@@ -53,15 +54,16 @@ static inline auto slice(const T& elements, size_t sliceSize) {
 template <typename T>
 std::vector<Proto::UnspentTransaction>
 UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs) {
-    // if target value is zero, fee is zero
+    // if target value is zero, no UTXOs are needed
     if (targetValue == 0) {
         return {};
     }
 
     // total values of utxos should be greater than targetValue
-    if (sum(utxos) < targetValue || utxos.empty()) {
+    if (utxos.empty() || sum(utxos) < targetValue) {
         return {};
     }
+    assert(utxos.size() >= 1);
 
     // definitions for the following caluculation
     const auto doubleTargetValue = targetValue * 2;

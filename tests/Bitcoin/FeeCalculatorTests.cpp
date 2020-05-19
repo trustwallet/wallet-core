@@ -43,6 +43,7 @@ TEST(ZCashFeeCalculator, calculate) {
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 10000);
     EXPECT_EQ(feeCalculator.calculate(0, 0, 1), 10000);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 10), 10000);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(1), 0);
 }
 
 TEST(GroestlcoinFeeCalculator, calculate) {

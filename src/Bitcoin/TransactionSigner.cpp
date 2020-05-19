@@ -35,12 +35,11 @@ Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
     }
     const auto hashSingle = hashTypeIsSingle(static_cast<enum TWBitcoinSigHashType>(input.hash_type()));
     for (auto i = 0; i < plan.utxos.size(); i += 1) {
-        auto& utxo = plan.utxos[i];
-
         // Only sign TWBitcoinSigHashTypeSingle if there's a corresponding output
         if (hashSingle && i >= transaction.outputs.size()) {
             continue;
         }
+        auto& utxo = plan.utxos[i];
         auto script = Script(utxo.script().begin(), utxo.script().end());
         if (i < transaction.inputs.size()) {
             auto result = sign(script, i, utxo);
@@ -129,7 +128,7 @@ Result<void> TransactionSigner<Transaction, TransactionBuilder>::sign(Script scr
 
 template <typename Transaction, typename TransactionBuilder>
 Result<std::vector<Data>> TransactionSigner<Transaction, TransactionBuilder>::signStep(
-    Script script, size_t index, const Bitcoin::Proto::UnspentTransaction& utxo, uint32_t version) {
+    Script script, size_t index, const Bitcoin::Proto::UnspentTransaction& utxo, uint32_t version) const {
     Transaction transactionToSign(transaction);
     transactionToSign.inputs = signedInputs;
     transactionToSign.outputs = transaction.outputs;
@@ -197,7 +196,7 @@ Result<std::vector<Data>> TransactionSigner<Transaction, TransactionBuilder>::si
     } else if (script.matchPayToPublicKeyHash(data)) {
         auto key = keyForPublicKeyHash(data);
         if (key.empty()) {
-            // Error: Missing keyxs
+            // Error: Missing keys
             return Result<std::vector<Data>>::failure("Missing private key.");
         }
 
@@ -219,7 +218,7 @@ template <typename Transaction, typename TransactionBuilder>
 Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(const Transaction& transaction,
                                                      const Script& script, const Data& key,
                                                      size_t index, Amount amount,
-                                                     uint32_t version) {
+                                                     uint32_t version) const {
     auto sighash = transaction.getSignatureHash(script, index, static_cast<TWBitcoinSigHashType>(input.hash_type()), amount,
                                                 static_cast<SignatureVersion>(version));
     auto pk = PrivateKey(key);

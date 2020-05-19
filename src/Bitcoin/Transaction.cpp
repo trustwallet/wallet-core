@@ -106,15 +106,17 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
 
     if (witness) {
         // Use extended format in case witnesses are to be serialized.
-        data.push_back(0);
-        data.push_back(1);
+        data.push_back(0); // marker
+        data.push_back(1); // flag
     }
 
+    // txins
     encodeVarInt(inputs.size(), data);
     for (auto& input : inputs) {
         input.encode(data);
     }
 
+    // txouts
     encodeVarInt(outputs.size(), data);
     for (auto& output : outputs) {
         output.encode(data);
@@ -126,7 +128,7 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
         }
     }
 
-    encode32LE(lockTime, data);
+    encode32LE(lockTime, data); //nLockTime
 }
 
 std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, size_t index,
