@@ -23,6 +23,12 @@ extern TWString *_Nonnull TWAnySignerSignJSON(TWString *_Nonnull json, TWData *_
 
 extern bool TWAnySignerSupportsJSON(enum TWCoinType coin);
 
+/// Encodes a broadcastable transaction to raw bytes
+extern TWData *_Nonnull TWAnySignerEncode(TWData *_Nonnull input, enum TWCoinType coin);
+
+/// Decodes raw transaction bytes to representable format
+extern TWData *_Nonnull TWAnySignerDecode(TWData *_Nonnull input, enum TWCoinType coin);
+
 /// Plan a transaction (for UTXO chains).
 extern TWData *_Nonnull TWAnySignerPlan(TWData *_Nonnull input, enum TWCoinType coin);
 

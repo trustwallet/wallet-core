@@ -44,6 +44,12 @@ inline std::string hex(const T& collection) {
     return hex(std::begin(collection), std::end(collection));
 }
 
+/// same as hex, with 0x prefix
+template <typename T>
+inline std::string hexEncoded(const T& collection) {
+    return hex(std::begin(collection), std::end(collection)).insert(0, "0x");
+}
+
 /// Converts a `uint64_t` value to a hexadecimal string.
 inline std::string hex(uint64_t value) {
     auto bytes = reinterpret_cast<const uint8_t*>(&value);
