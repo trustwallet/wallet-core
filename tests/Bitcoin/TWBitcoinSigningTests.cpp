@@ -81,6 +81,7 @@ TEST(BitcoinSigning, SignP2PKH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 228);
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -184,6 +185,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 195);
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -254,6 +256,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 343);
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -327,6 +330,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 343);
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -399,11 +403,9 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
-    // txid = "03b30d55430f08365d19a62d3bd32e459ab50984fbcf22921ecc85f1e09dc6ed"
-    // witid = "20bc58d07d91a3bae9e6f4d617d8f6271723d1a7673e486cc0ecaf9e758e2c22"
-
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 309);
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -491,6 +493,7 @@ TEST(BitcoinSigning, SignP2WSH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 196);
     ASSERT_EQ(hex(serialized), "01000000"
         "0001"
         "01"
@@ -522,6 +525,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 197);
     ASSERT_EQ(hex(serialized), "01000000"
         "0001"
         "01"
@@ -553,6 +557,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 196);
     ASSERT_EQ(hex(serialized), "01000000"
         "0001"
         "01"
@@ -584,6 +589,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 196);
     ASSERT_EQ(hex(serialized), "01000000"
         "0001"
         "01"
@@ -696,6 +702,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(serialized.size(), 251);
     ASSERT_EQ(hex(serialized), "01000000000101db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477010000001716001479091972186c449eb1ded22b78e40d009bdf0089ffffffff0200c2eb0b000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac1e07af2f000000001976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac02473044022009195d870ecc40f54130008e392904e77d32b738c1add19d1d8ebba4edf812e602204f49de6dc60d9a3c3703e1e642942f8834f3a2cd81a6562a34b293942ce42f40012103ad1d8e89212f0b92c74d23bb710c00662ad1470198ac48c43f7d6f93a2a2687300000000");
 }
 
