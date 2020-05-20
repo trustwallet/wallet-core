@@ -33,7 +33,6 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
                     newAmount += utxo.amount();
                 }
             }
-            std::cerr << "TransactionBuilder::plan " << newAmount << " " << UnspentSelector::sum(input.utxo()) << "\n";
 
             plan.amount = newAmount - feeCalculator.calculate(input_size, output_size, input.byte_fee());
             plan.amount = std::max(Amount(0), plan.amount);
