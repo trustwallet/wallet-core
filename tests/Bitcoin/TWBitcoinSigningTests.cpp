@@ -613,6 +613,18 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
     ASSERT_FALSE(result) << result.error();
 }
 
+TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
+    // Setup input
+    auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll);
+    auto plan = Bitcoin::TransactionPlan();
+    input.mutable_plan()->clear_utxos();
+
+    // Sign
+    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+
+    ASSERT_FALSE(result) << result.error();
+}
+
 TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
     auto unsignedTx = Transaction(1, 0x492);
 
