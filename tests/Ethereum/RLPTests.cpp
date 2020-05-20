@@ -165,10 +165,10 @@ TEST(RLP, DecodeList) {
 TEST(RLP, DecodeInvalid) {
 
     // invalid raw tx
-    // EXPECT_EQ(RLP::decodeRawTransaction(parse_hex("0xc0")).size(), 0);
+    EXPECT_EQ(RLP::decodeRawTransaction(parse_hex("0xc0")).size(), 0);
 
     // decode empty data
-    // EXPECT_THROW(RLP::decode(Data()), std::invalid_argument);
+    EXPECT_THROW(RLP::decode(Data()), std::invalid_argument);
 
     // incorrect length
     EXPECT_THROW(RLP::decode(parse_hex("0x81636174")), std::invalid_argument);
