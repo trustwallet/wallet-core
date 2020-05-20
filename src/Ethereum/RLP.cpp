@@ -151,7 +151,7 @@ Data RLP::decodeRawTransaction(const Data& data) {
         {"gasPrice", hexEncoded(decoded[1])},
         {"gas", hexEncoded(decoded[2])},
         {"to", hexEncoded(decoded[3])},
-        {"amount", hexEncoded(decoded[4])},
+        {"value", hexEncoded(decoded[4])},
         {"input", hexEncoded(decoded[5])},
         {"v", hexEncoded(decoded[6])},
         {"r", hexEncoded(decoded[7])},

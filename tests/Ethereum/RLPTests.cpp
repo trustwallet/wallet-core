@@ -84,15 +84,13 @@ TEST(RLP, Invalid) {
 TEST(RLP, Decode) {
     {
         // empty string
-        auto encoded = parse_hex("0x80");
-        auto decoded = RLP::decode(encoded).decoded[0];
+        auto decoded = RLP::decode(parse_hex("0x80")).decoded[0];
         ASSERT_EQ(std::string(decoded.begin(), decoded.end()), "");
     }
 
     {
         // short string
-        auto encoded = parse_hex("0x83636174");
-        auto decoded = RLP::decode(encoded).decoded[0];
+        auto decoded = RLP::decode(parse_hex("0x83636174")).decoded[0];
         ASSERT_EQ(std::string(decoded.begin(), decoded.end()), "cat");
     }
 
@@ -105,8 +103,7 @@ TEST(RLP, Decode) {
 
     {
         // empty list
-        auto encoded = parse_hex("0xc0");
-        auto decoded = RLP::decode(encoded).decoded;
+        auto decoded = RLP::decode(parse_hex("0xc0")).decoded;
         ASSERT_EQ(decoded.size(), 0);
     }
 
@@ -163,4 +160,32 @@ TEST(RLP, DecodeList) {
             EXPECT_EQ(hexEncoded(decoded.decoded[i]), expected[i]);
         }
     }
+}
+
+TEST(RLP, DecodeInvalid) {
+
+    // invalid raw tx
+    // EXPECT_EQ(RLP::decodeRawTransaction(parse_hex("0xc0")).size(), 0);
+
+    // decode empty data
+    // EXPECT_THROW(RLP::decode(Data()), std::invalid_argument);
+
+    // incorrect length
+    EXPECT_THROW(RLP::decode(parse_hex("0x81636174")), std::invalid_argument);
+    EXPECT_THROW(RLP::decode(parse_hex("0xb9ffff")), std::invalid_argument);
+    EXPECT_THROW(RLP::decode(parse_hex("0xc883636174")), std::invalid_argument);
+
+    // some tests are from https://github.com/ethereum/tests/blob/develop/RLPTests/invalidRLPTest.json
+    // int32 overflow
+    EXPECT_THROW(RLP::decode(parse_hex("0xbf0f000000000000021111")), std::invalid_argument);
+
+    // wrong size list
+    EXPECT_THROW(RLP::decode(parse_hex("0xf80180")), std::invalid_argument);
+
+    // bytes should be single byte
+    EXPECT_THROW(RLP::decode(parse_hex("0x8100")), std::invalid_argument);
+
+    // leading zeros in long length list
+    EXPECT_THROW(RLP::decode(parse_hex("fb00000040000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f")), std::invalid_argument);
+    EXPECT_THROW(RLP::decode(parse_hex("f800")), std::invalid_argument);
 }
