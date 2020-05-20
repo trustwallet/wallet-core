@@ -62,7 +62,6 @@ Result<void> TransactionSigner<Transaction, TransactionBuilder>::sign(Script scr
 
     Script redeemScript;
     std::vector<Data> results;
-    std::vector<Data> witnessStack;
 
     uint32_t signatureVersion = [this]() {
         if ((input.hash_type() & TWBitcoinSigHashTypeFork) != 0) {
@@ -90,14 +89,13 @@ Result<void> TransactionSigner<Transaction, TransactionBuilder>::sign(Script scr
         redeemScript = script;
     }
 
+    std::vector<Data> witnessStack;
     Data data;
     if (script.matchPayToWitnessPublicKeyHash(data)) {
         auto witnessScript = Script::buildPayToPublicKeyHash(results[0]);
         auto result = signStep(witnessScript, index, utxo, WITNESS_V0);
         if (result) {
             witnessStack = result.payload();
-        } else {
-            witnessStack.clear();
         }
         results.clear();
     } else if (script.matchPayToWitnessScriptHash(data)) {
@@ -105,8 +103,6 @@ Result<void> TransactionSigner<Transaction, TransactionBuilder>::sign(Script scr
         auto result = signStep(witnessScript, index, utxo, WITNESS_V0);
         if (result) {
             witnessStack = result.payload();
-        } else {
-            witnessStack.clear();
         }
         witnessStack.push_back(move(witnessScript.bytes));
 
@@ -223,10 +219,9 @@ Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(const T
                                                 static_cast<SignatureVersion>(version));
     auto pk = PrivateKey(key);
     auto sig = pk.signAsDER(Data(begin(sighash), end(sighash)), TWCurveSECP256k1);
-    if (sig.empty()) {
-        return {};
+    if (!sig.empty()) {
+        sig.push_back(static_cast<uint8_t>(input.hash_type()));
     }
-    sig.push_back(static_cast<uint8_t>(input.hash_type()));
     return sig;
 }
 
