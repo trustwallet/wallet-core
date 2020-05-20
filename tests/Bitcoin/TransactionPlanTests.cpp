@@ -4,6 +4,7 @@
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
+#include "TxComparisonHelper.h"
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
 #include "Bitcoin/TransactionPlan.h"
@@ -17,101 +18,45 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-auto const txOutPoint = OutPoint(std::vector<uint8_t>(32), 0);
-
-inline auto sum(const std::vector<Proto::UnspentTransaction>& utxos) {
-    int64_t s = 0u;
-    for (auto& utxo : utxos) {
-        s += utxo.amount();
-    }
-    return s;
-}
-
-inline auto buildUTXO(const OutPoint& outPoint, Amount amount) {
-    Proto::UnspentTransaction utxo;
-    utxo.set_amount(amount);
-    utxo.mutable_out_point()->set_hash(outPoint.hash.data(), outPoint.hash.size());
-    utxo.mutable_out_point()->set_index(outPoint.index);
-    return utxo;
-}
-
-inline auto buildSigningInput(Amount amount, int byteFee, const std::vector<Proto::UnspentTransaction>& utxos, bool useMaxAmount, enum TWCoinType coin) {
-    Proto::SigningInput input;
-    input.set_amount(amount);
-    input.set_byte_fee(byteFee);
-    input.set_use_max_amount(useMaxAmount);
-    input.set_coin_type(coin);
-    *input.mutable_utxo() = { utxos.begin(), utxos.end() };
-    return input;
-}
-
 TEST(TransactionPlan, NonMaxAmount) {
-    auto utxos = std::vector<Proto::UnspentTransaction>();
-    utxos.push_back(buildUTXO(txOutPoint, 4000));
-    utxos.push_back(buildUTXO(txOutPoint, 2000));
-    utxos.push_back(buildUTXO(txOutPoint, 6000));
-    utxos.push_back(buildUTXO(txOutPoint, 1000));
-    utxos.push_back(buildUTXO(txOutPoint, 50000));
-    utxos.push_back(buildUTXO(txOutPoint, 120000));
-
+    auto utxos = buildTestUTXOs({4000, 2000, 6000, 1000, 50000, 120000});
     auto sigingInput = buildSigningInput(10000, 1, utxos, false, TWCoinTypeBitcoin);
+
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    ASSERT_EQ(txPlan.amount, 10000);
-    ASSERT_EQ(txPlan.change, 39774);
+    EXPECT_EQ(verifyPlan(txPlan, {50000}, 10000, 226), "");
 }
 
 TEST(TransactionPlan, MaxAmount) {
-    auto utxos = std::vector<Proto::UnspentTransaction>();
-    utxos.push_back(buildUTXO(txOutPoint, 4000));
-    utxos.push_back(buildUTXO(txOutPoint, 2000));
-    utxos.push_back(buildUTXO(txOutPoint, 15000));
-    utxos.push_back(buildUTXO(txOutPoint, 15000));
-    utxos.push_back(buildUTXO(txOutPoint, 3000));
-    utxos.push_back(buildUTXO(txOutPoint, 200));
-
-    ASSERT_EQ(sum(utxos), 39200);
-
+    auto utxos = buildTestUTXOs({4000, 2000, 15000, 15000, 3000, 200});
+    ASSERT_EQ(sumUTXOs(utxos), 39200);
     auto byteFee = 32;
+    auto sigingInput = buildSigningInput(39200, byteFee, utxos, true, TWCoinTypeBitcoin);
+
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 4736);
 
     // UTXOs smaller than singleInputFee are not included
-    auto sigingInput = buildSigningInput(39200, byteFee, utxos, true, TWCoinTypeBitcoin);
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    ASSERT_EQ(txPlan.availableAmount, 30000);
-    ASSERT_EQ(txPlan.amount, 19120);
-    ASSERT_EQ(txPlan.change, 0);
-    ASSERT_EQ(txPlan.fee, 10880);
+    EXPECT_EQ(verifyPlan(txPlan, {15000, 15000}, 19120, 10880), "");
 }
 
 TEST(TransactionPlan, MaxAmountDoge) {
-    auto utxos = std::vector<Proto::UnspentTransaction>();
-    utxos.push_back(buildUTXO(txOutPoint, Amount(100000000)));
-    utxos.push_back(buildUTXO(txOutPoint, Amount(2000000000)));
-    utxos.push_back(buildUTXO(txOutPoint, Amount(200000000)));
-
-    ASSERT_EQ(sum(utxos), Amount(2300000000));
-
+    auto utxos = buildTestUTXOs({Amount(100000000), Amount(2000000000), Amount(200000000)});
+    ASSERT_EQ(sumUTXOs(utxos), Amount(2300000000));
     auto sigingInput = buildSigningInput(Amount(2300000000), 100, utxos, true, TWCoinTypeDogecoin);
+
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    ASSERT_EQ(txPlan.availableAmount, Amount(2300000000));
-    ASSERT_EQ(txPlan.amount, Amount(2299951200));
-    ASSERT_EQ(txPlan.change, 0);
-    ASSERT_EQ(txPlan.fee, 48800);
+    EXPECT_EQ(verifyPlan(txPlan, {100000000, 200000000, 2000000000}, 2299951200, 48800), "");
 }
 
 TEST(TransactionPlan, AmountDecred) {
-    auto utxos = std::vector<Proto::UnspentTransaction>();
-    utxos.push_back(buildUTXO(txOutPoint, Amount(39900000)));
-
+    auto utxos = buildTestUTXOs({Amount(39900000)});
     auto sigingInput = buildSigningInput(Amount(10000000), 10, utxos, false, TWCoinTypeDecred);
+
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    ASSERT_EQ(txPlan.availableAmount, Amount(39900000));
-    ASSERT_EQ(txPlan.amount, Amount(10000000));
-    ASSERT_EQ(txPlan.change, 29897460);
-    ASSERT_EQ(txPlan.fee, 2540);
+    EXPECT_EQ(verifyPlan(txPlan, {39900000}, 10000000, 2540), "");
 }
