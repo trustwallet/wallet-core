@@ -42,6 +42,21 @@ TEST(TransactionPlan, MaxAmount) {
     EXPECT_EQ(verifyPlan(txPlan, {15000, 15000}, 19120, 10880), "");
 }
 
+TEST(TransactionPlan, MaxAmountLowerRequested) {
+    auto utxos = buildTestUTXOs({4000, 2000, 15000, 15000, 3000, 200});
+    ASSERT_EQ(sumUTXOs(utxos), 39200);
+    auto byteFee = 32;
+    auto sigingInput = buildSigningInput(10, byteFee, utxos, true, TWCoinTypeBitcoin);
+
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 4736);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto txPlan = TransactionBuilder::plan(sigingInput);
+
+    EXPECT_EQ(verifyPlan(txPlan, {15000, 15000}, 19120, 10880), "");
+}
+
 TEST(TransactionPlan, MaxAmountDoge) {
     auto utxos = buildTestUTXOs({Amount(100000000), Amount(2000000000), Amount(200000000)});
     ASSERT_EQ(sumUTXOs(utxos), Amount(2300000000));

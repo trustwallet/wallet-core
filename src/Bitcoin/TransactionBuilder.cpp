@@ -19,8 +19,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
         auto output_size = 2; // output + change
         auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
         auto unspentSelector = UnspentSelector(feeCalculator);
-        if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
-        //if (input.use_max_amount()) {
+        if (input.use_max_amount()) {
             output_size = 1; // no change
             Amount newAmount = 0;
             auto input_size = 0;
