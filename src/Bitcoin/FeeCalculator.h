@@ -7,7 +7,6 @@
 #pragma once
 
 #include <TrustWalletCore/TWCoinType.h>
-#include <functional>
 
 namespace TW::Bitcoin {
 
