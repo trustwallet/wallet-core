@@ -28,23 +28,27 @@ class UnspentSelector {
     std::vector<Proto::UnspentTransaction> select(const T& utxos, int64_t targetValue,
                                                   int64_t byteFee, int64_t numOutputs = 2);
 
+    /// Selects UTXOs for max amount; select all except those which would reduce output (dust).
+    /// One output and no change is assumed.
+    template <typename T>
+    std::vector<Proto::UnspentTransaction> selectMaxAmount(const T& utxos, int64_t byteFee);
+
     /// Construct, using provided feeCalculator (see getFeeCalculator()).
     explicit UnspentSelector(FeeCalculator& feeCalculator) : feeCalculator(feeCalculator) {}
     UnspentSelector() : UnspentSelector(getFeeCalculator(TWCoinTypeBitcoin)) {}
 
-  public:
     template <typename T>
     static inline int64_t sum(const T& utxos) {
         int64_t sum = 0;
-        for (auto& utxo : utxos)
+        for (auto& utxo : utxos) {
             sum += utxo.amount();
+        }
         return sum;
     }
 
   private:
     FeeCalculator& feeCalculator;
-    std::vector<Proto::UnspentTransaction>
-    filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos, int64_t byteFee);
+    template <typename T> std::vector<Proto::UnspentTransaction> filterDustInput(const T& selectedUtxos, int64_t byteFee);
 };
 
 } // namespace TW::Bitcoin

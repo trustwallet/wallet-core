@@ -21,12 +21,13 @@ struct Selection {
 };
 
 // Filters utxos that are dust
+template <typename T>
 std::vector<Proto::UnspentTransaction>
-UnspentSelector::filterDustInput(std::vector<Proto::UnspentTransaction> selectedUtxos,
-                                 int64_t byteFee) {
+UnspentSelector::filterDustInput(const T& selectedUtxos, int64_t byteFee) {
+    auto inputFeeLimit = feeCalculator.calculateSingleInput(byteFee);
     std::vector<Proto::UnspentTransaction> filteredUtxos;
-    for (auto utxo : selectedUtxos) {
-        if (utxo.amount() > feeCalculator.calculateSingleInput(byteFee)) {
+    for (auto utxo: selectedUtxos) {
+        if (utxo.amount() > inputFeeLimit) {
             filteredUtxos.push_back(utxo);
         }
     }
@@ -127,9 +128,13 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
     return {};
 }
 
-template std::vector<Proto::UnspentTransaction> UnspentSelector::select(
-    const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos,
-    int64_t targetValue, int64_t byteFee, int64_t numOutputs);
-template std::vector<Proto::UnspentTransaction>
-UnspentSelector::select(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue,
-                        int64_t byteFee, int64_t numOutputs);
+template <typename T>
+std::vector<Proto::UnspentTransaction>
+UnspentSelector::selectMaxAmount(const T& utxos, int64_t byteFee) {
+    return filterDustInput(utxos, byteFee);
+}
+
+template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);
+template std::vector<Proto::UnspentTransaction> UnspentSelector::select(const std::vector<Proto::UnspentTransaction>& utxos, int64_t targetValue, int64_t byteFee, int64_t numOutputs);
+template std::vector<Proto::UnspentTransaction> UnspentSelector::selectMaxAmount(const ::google::protobuf::RepeatedPtrField<Proto::UnspentTransaction>& utxos, int64_t byteFee);
+template std::vector<Proto::UnspentTransaction> UnspentSelector::selectMaxAmount(const std::vector<Proto::UnspentTransaction>& utxos, int64_t byteFee);

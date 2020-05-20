@@ -16,45 +16,40 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
         auto plan = TransactionPlan();
         plan.amount = input.amount();
 
-        auto output_size = 2; // output + change
+        auto output_size = 2;
         auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
         auto unspentSelector = UnspentSelector(feeCalculator);
-        if (input.use_max_amount()) {
+
+        // select UTXOs
+        if (!input.use_max_amount()) {
+            output_size = 2; // output + change
+            plan.utxos = unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(), output_size);
+        } else {
             output_size = 1; // no change
-            Amount newAmount = 0;
-            auto input_size = 0;
-
-            // take sum of all UTXOs, except dust ones, as target amount
-            for (auto utxo : input.utxo()) {
-                if (utxo.amount() >
-                    feeCalculator.calculateSingleInput(input.byte_fee())) {
-                    input_size++;
-                    newAmount += utxo.amount();
-                }
-            }
-
-            plan.amount = newAmount - feeCalculator.calculate(input_size, output_size, input.byte_fee());
-            plan.amount = std::max(Amount(0), plan.amount);
+            plan.utxos = unspentSelector.selectMaxAmount(input.utxo(), input.byte_fee());
         }
-
-        plan.utxos = unspentSelector.select(input.utxo(), plan.amount, input.byte_fee(), output_size);
+        // Note: if utxos.size() == 0, all fields will be computed to 0
         plan.availableAmount = UnspentSelector::sum(plan.utxos);
 
-        plan.fee = std::min(plan.availableAmount,
-            feeCalculator.calculate(plan.utxos.size(), output_size, input.byte_fee()));
+        // Compute fee.  If larger then availableAmount, we reduce it (and hope it will go through)
+        plan.fee = std::min(plan.availableAmount, feeCalculator.calculate(plan.utxos.size(), output_size, input.byte_fee()));
         assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
-
-        if (input.use_max_amount()) {
-            // max_amount case
-            plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
-            assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
-            plan.change = 0;
-        } else {
+        
+        // adjust/compute amount
+        if (!input.use_max_amount()) {
             // reduce amount if needed
             plan.amount = std::max(Amount(0), std::min(plan.amount, plan.availableAmount - plan.fee));
-            assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
-            plan.change = plan.availableAmount - plan.amount - plan.fee;
+        } else {
+            // max available amount
+            plan.amount = std::max(Amount(0), plan.availableAmount - plan.fee);
         }
+        assert(plan.amount >= 0 && plan.amount <= plan.availableAmount);
+
+        // compute change
+        plan.change = plan.availableAmount - plan.amount - plan.fee;
+        assert(plan.change >= 0 && plan.change <= plan.availableAmount);
+        assert(!input.use_max_amount() || plan.change == 0); // change is 0 in max amount case
+
         assert(plan.amount + plan.change + plan.fee == plan.availableAmount);
 
         return plan;

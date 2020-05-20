@@ -80,6 +80,9 @@ std::string verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& 
     for (auto i = 0; i < utxoAmounts.size(); ++i) {
         sumExpectedUTXOs += utxoAmounts[i];
     }
+    if (plan.availableAmount != sumExpectedUTXOs) {
+        ss << "Mismatch in availableAmount, act " << plan.availableAmount << ", exp " << sumExpectedUTXOs << "\n";
+    }
     int64_t expectedChange = sumExpectedUTXOs - outputAmount - fee;
     if (plan.change != expectedChange) {
         ss << "Mismatch in change, act " << plan.change << ", exp " << expectedChange << "\n";
