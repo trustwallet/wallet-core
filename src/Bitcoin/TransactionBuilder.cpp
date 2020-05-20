@@ -20,10 +20,12 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
         auto& feeCalculator = getFeeCalculator(static_cast<TWCoinType>(input.coin_type()));
         auto unspentSelector = UnspentSelector(feeCalculator);
         if (input.use_max_amount() && UnspentSelector::sum(input.utxo()) == plan.amount) {
+        //if (input.use_max_amount()) {
             output_size = 1; // no change
             Amount newAmount = 0;
             auto input_size = 0;
 
+            // take sum of all UTXOs, except dust ones, as target amount
             for (auto utxo : input.utxo()) {
                 if (utxo.amount() >
                     feeCalculator.calculateSingleInput(input.byte_fee())) {
@@ -31,6 +33,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
                     newAmount += utxo.amount();
                 }
             }
+            std::cerr << "TransactionBuilder::plan " << newAmount << " " << UnspentSelector::sum(input.utxo()) << "\n";
 
             plan.amount = newAmount - feeCalculator.calculate(input_size, output_size, input.byte_fee());
             plan.amount = std::max(Amount(0), plan.amount);

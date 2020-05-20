@@ -6,9 +6,9 @@
 
 #include "Bitcoin/OutPoint.h"
 #include "Bitcoin/Script.h"
-#include "Bitcoin/UnspentSelector.h"
 #include "Bitcoin/TransactionPlan.h"
 #include "Bitcoin/TransactionBuilder.h"
+#include "Bitcoin/FeeCalculator.h"
 #include "proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
 
@@ -72,7 +72,12 @@ TEST(TransactionPlan, MaxAmount) {
 
     ASSERT_EQ(sum(utxos), 39200);
 
-    auto sigingInput = buildSigningInput(39200, 32, utxos, true, TWCoinTypeBitcoin);
+    auto byteFee = 32;
+    auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
+    EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 4736);
+
+    // UTXOs smaller than singleInputFee are not included
+    auto sigingInput = buildSigningInput(39200, byteFee, utxos, true, TWCoinTypeBitcoin);
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     ASSERT_EQ(txPlan.availableAmount, 30000);

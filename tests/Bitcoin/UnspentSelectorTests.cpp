@@ -18,14 +18,6 @@ using namespace TW::Bitcoin;
 
 auto transactionOutPoint = OutPoint(std::vector<uint8_t>(32), 0);
 
-inline auto sum(const std::vector<Proto::UnspentTransaction>& utxos) {
-    int64_t s = 0u;
-    for (auto& utxo : utxos) {
-        s += utxo.amount();
-    }
-    return s;
-}
-
 inline auto buildUTXO(int64_t amount) {
     Proto::UnspentTransaction utxo;
     utxo.set_amount(amount);
@@ -93,7 +85,7 @@ TEST(BitcoinUnspentSelector, SelectUnpsents4) {
     auto selector = UnspentSelector();
     auto selected = selector.select(utxos, 50000, 1);
 
-    ASSERT_EQ(sum(selected), 70000);
+    ASSERT_TRUE(verifySelected(selected, {30000, 40000}));
 }
 
 TEST(BitcoinUnspentSelector, SelectUnpsents5) {
@@ -103,7 +95,7 @@ TEST(BitcoinUnspentSelector, SelectUnpsents5) {
     auto selector = UnspentSelector();
     auto selected = selector.select(utxos, 28000, 1);
 
-    ASSERT_EQ(sum(selected), 30000);
+    ASSERT_TRUE(verifySelected(selected, {6000, 7000, 8000, 9000}));
 }
 
 TEST(BitcoinUnspentSelector, SelectUnpsentsInsufficient) {
@@ -113,7 +105,7 @@ TEST(BitcoinUnspentSelector, SelectUnpsentsInsufficient) {
     auto selector = UnspentSelector();
     auto selected = selector.select(utxos, 15000, 1);
 
-    ASSERT_TRUE(selected.empty());
+    ASSERT_TRUE(verifySelected(selected, {}));
 }
 
 TEST(BitcoinUnspentSelector, SelectCustomCase) {
@@ -123,7 +115,7 @@ TEST(BitcoinUnspentSelector, SelectCustomCase) {
     auto selector = UnspentSelector();
     auto selected = selector.select(utxos, 2287189, 61);
 
-    ASSERT_EQ(sum(selected), 3083478);
+    ASSERT_TRUE(verifySelected(selected, {794121, 2289357}));
 }
 
 TEST(BitcoinUnspentSelector, SelectNegativeNoUtxo) {
@@ -332,8 +324,7 @@ TEST(BitcoinUnspentSelector, SelectZcashUnpsents) {
     auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.select(utxos, 10000, 1);
 
-    ASSERT_EQ(sum(selected), 73774);
-    ASSERT_TRUE(selected.size() > 0);
+    ASSERT_TRUE(verifySelected(selected, {73774}));
 }
 
 TEST(BitcoinUnspentSelector, SelectGroestlUnpsents) {
@@ -343,8 +334,7 @@ TEST(BitcoinUnspentSelector, SelectGroestlUnpsents) {
     auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.select(utxos, 499951976, 1, 1);
 
-    ASSERT_EQ(sum(selected), 499971976);
-    ASSERT_TRUE(selected.size() > 0);
+    ASSERT_TRUE(verifySelected(selected, {499971976}));
 }
 
 TEST(BitcoinUnspentSelector, SelectZcashMaxUnpsents) {
@@ -354,8 +344,7 @@ TEST(BitcoinUnspentSelector, SelectZcashMaxUnpsents) {
     auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.select(utxos, 166366, 1);
 
-    ASSERT_EQ(sum(selected), 176366);
-    ASSERT_TRUE(selected.size() > 0);
+    ASSERT_TRUE(verifySelected(selected, {2592, 73774, 100000}));
 }
 
 TEST(BitcoinUnspentSelector, SelectZcashMaxUnpsents2) {
@@ -365,6 +354,5 @@ TEST(BitcoinUnspentSelector, SelectZcashMaxUnpsents2) {
     auto selector = UnspentSelector(getFeeCalculator(TWCoinTypeZcash));
     auto selected = selector.select(utxos, 176360, 1);
 
-    ASSERT_EQ(sum(selected), 0);
-    ASSERT_TRUE(selected.size() == 0);
+    ASSERT_TRUE(verifySelected(selected, {}));
 }

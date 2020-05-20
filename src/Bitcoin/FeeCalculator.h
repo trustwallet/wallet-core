@@ -14,7 +14,7 @@ namespace TW::Bitcoin {
 class FeeCalculator {
 public:
     virtual int64_t calculate(int64_t inputs, int64_t outputs = 2, int64_t byteFee = 1) const = 0;
-    virtual int64_t calculateSingleInput(int64_t byteFee) const { return calculate(1, 0, byteFee); }
+    virtual int64_t calculateSingleInput(int64_t byteFee) const = 0;
 };
 
 /// Default Bitcoin transaction fee calculator, non-segwit.
