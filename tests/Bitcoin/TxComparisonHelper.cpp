@@ -10,6 +10,7 @@
 
 #include "Bitcoin/OutPoint.h"
 #include "proto/Bitcoin.pb.h"
+#include "Data.h"
 
 #include <gtest/gtest.h>
 #include <sstream>
@@ -17,7 +18,7 @@
 using namespace TW;
 using namespace TW::Bitcoin;
 
-auto emptyTxOutPoint = OutPoint(std::vector<uint8_t>(32), 0);
+auto emptyTxOutPoint = OutPoint(Data(32), 0);
 
 Proto::UnspentTransaction buildTestUTXO(int64_t amount) {
     Proto::UnspentTransaction utxo;
