@@ -226,6 +226,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
     EXPECT_EQ(serialized.size(), 195);
     ASSERT_EQ(hex(serialized),
         "01000000"
@@ -242,6 +243,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
         // Non-segwit encoded, for comparison
         Data serialized;
         signedTx.encode(false, serialized);
+        EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
         EXPECT_EQ(serialized.size(), 192);
         ASSERT_EQ(hex(serialized),
             "01000000"
@@ -756,6 +758,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{800, 154, 316}));
     ASSERT_EQ(hex(serialized), expected);
 }
 

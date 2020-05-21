@@ -32,7 +32,8 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
         plan.availableAmount = UnspentSelector::sum(plan.utxos);
 
         // Compute fee.  If larger then availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
-        plan.fee = std::min(plan.availableAmount, feeCalculator.calculate(plan.utxos.size(), output_size, input.byte_fee()));
+        plan.fee = feeCalculator.calculate(plan.utxos.size(), output_size, input.byte_fee());
+        plan.fee = std::min(plan.availableAmount, plan.fee);
         assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
         
         // adjust/compute amount
