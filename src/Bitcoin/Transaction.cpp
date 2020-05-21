@@ -124,12 +124,16 @@ void Transaction::encode(bool witness, Data& data) const {
     }
 
     if (witness) {
-        for (auto& input : inputs) {
-            input.encodeWitness(data);
-        }
+        encodeWitness(data);
     }
 
-    encode32LE(lockTime, data); //nLockTime
+    encode32LE(lockTime, data); // nLockTime
+}
+
+void Transaction::encodeWitness(Data& data) const {
+    for (auto& input : inputs) {
+        input.encodeWitness(data);
+    }
 }
 
 Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,

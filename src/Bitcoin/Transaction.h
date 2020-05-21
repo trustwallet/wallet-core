@@ -59,6 +59,9 @@ struct Transaction {
     /// Encodes the transaction into the provided buffer.
     void encode(bool witness, Data& data) const;
 
+    /// Encodes the witness part of the transaction into the provided buffer.
+    void encodeWitness(Data& data) const;
+
     /// Generates the signature hash for this transaction.
     Data getSignatureHash(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                           uint64_t amount, enum SignatureVersion version) const;

@@ -14,6 +14,7 @@
 
 #include <gtest/gtest.h>
 #include <sstream>
+#include <cassert>
 
 using namespace TW;
 using namespace TW::Bitcoin;
@@ -89,4 +90,36 @@ std::string verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& 
         ss << "Mismatch in change, act " << plan.change << ", exp " << expectedChange << "\n";
     }
     return ss.str();
+}
+
+bool operator==(const EncodedTxSize& s1, const EncodedTxSize& s2) {
+    return s1.virtualBytes == s2.virtualBytes && s1.segwit == s2.segwit && s1.nonSegwit == s2.nonSegwit;
+}
+
+EncodedTxSize getEncodedTxSize(const Transaction& tx) {
+    EncodedTxSize size;
+    { // full segwit size
+        Data data;
+        tx.encode(true, data);
+        size.segwit = data.size();
+    }
+    { // witness part only
+        Data data;
+        tx.encode(false, data);
+        size.nonSegwit = data.size();
+    }
+    int64_t witnessSize = 0;
+    { // double check witness part: witness plus 2 bytes is the difference between segwit and non-segwit size
+        Data data;
+        tx.encodeWitness(data);
+        witnessSize = data.size();
+        assert(size.segwit - size.nonSegwit == 2 + witnessSize);
+    }
+    // compute virtual size: 3/4 of (smaller) non-segwit + 1/4 of segwit size
+    uint64_t sum = size.nonSegwit * 3 + size.segwit; 
+    size.virtualBytes = sum / 4 + (sum % 4 != 0);
+    // alternative computation: (smaller) non-segwit + 1/4 of the diff (witness-only)
+    uint64_t vSize2 = size.nonSegwit + (witnessSize + 2)/ 4 + ((witnessSize + 2) % 4 != 0);
+    assert(size.virtualBytes == vSize2);
+    return size;
 }

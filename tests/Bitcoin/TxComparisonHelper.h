@@ -7,6 +7,7 @@
 #pragma once
 
 #include "Bitcoin/Amount.h"
+#include "Bitcoin/Transaction.h"
 #include "Bitcoin/TransactionPlan.h"
 #include "proto/Bitcoin.pb.h"
 #include <TrustWalletCore/TWCoinType.h>
@@ -36,3 +37,13 @@ std::string verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& se
 std::string verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee);
 
 int64_t sumUTXOs(const std::vector<Proto::UnspentTransaction>& utxos);
+
+struct EncodedTxSize {
+    uint64_t segwit;
+    uint64_t nonSegwit;
+    uint64_t virtualBytes;
+};
+bool operator==(const EncodedTxSize& s1, const EncodedTxSize& s2);
+
+/// Return the encoded size of the transaction, virtual and non-segwit, etc.
+EncodedTxSize getEncodedTxSize(const Transaction& tx);

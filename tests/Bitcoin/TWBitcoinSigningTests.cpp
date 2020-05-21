@@ -94,7 +94,7 @@ TEST(BitcoinSigning, SignP2PKH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 228);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{228, 225, 226}));
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -141,7 +141,8 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
 
     Data unsignedData;
     unsignedTx.encode(false, unsignedData);
-    ASSERT_EQ(hex(unsignedData), ""
+    ASSERT_EQ(unsignedData.size(), 160);
+    ASSERT_EQ(hex(unsignedData),
         "01000000"
         "02"
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f0000000000eeffffff"
@@ -236,6 +237,22 @@ TEST(BitcoinSigning, SignP2WPKH) {
             "aefd3c1100000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
         "0000000000"
     );
+
+    {
+        // Non-segwit encoded, for comparison
+        Data serialized;
+        signedTx.encode(false, serialized);
+        EXPECT_EQ(serialized.size(), 192);
+        ASSERT_EQ(hex(serialized),
+            "01000000"
+            "01"
+                "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "49483045022100b6006eb0fe2da8cbbd204f702b1ffdb1e29c49f3de51c4983d420bf9f9125635022032a195b153ccb2c4978333b4aad72aaa7e6a0b334a14621d5d817a42489cb0d301" "ffffffff"
+            "02"
+                "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+                "aefd3c1100000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+            "00000000"
+        );
+    }
 }
 
 TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
@@ -255,7 +272,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 343);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -288,7 +305,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 343);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 232, 260}));
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -321,7 +338,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 309);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{309, 199, 227}));
     ASSERT_EQ(hex(serialized),
         "01000000"
         "0001"
@@ -409,7 +426,7 @@ TEST(BitcoinSigning, SignP2WSH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 196);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{196, 85, 113}));
     ASSERT_EQ(hex(serialized), "01000000"
         "0001"
         "01"
@@ -441,7 +458,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 197);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{197, 85, 113}));
     ASSERT_EQ(hex(serialized), "01000000"
         "0001"
         "01"
@@ -473,7 +490,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 196);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{196, 85, 113}));
     ASSERT_EQ(hex(serialized), "01000000"
         "0001"
         "01"
@@ -506,6 +523,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(serialized.size(), 196);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{196, 85, 113}));
     ASSERT_EQ(hex(serialized), "01000000"
         "0001"
         "01"
@@ -617,7 +635,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 251);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{251, 142, 170}));
     ASSERT_EQ(hex(serialized), "01000000000101db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477010000001716001479091972186c449eb1ded22b78e40d009bdf0089ffffffff0200c2eb0b000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac1e07af2f000000001976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac02473044022009195d870ecc40f54130008e392904e77d32b738c1add19d1d8ebba4edf812e602204f49de6dc60d9a3c3703e1e642942f8834f3a2cd81a6562a34b293942ce42f40012103ad1d8e89212f0b92c74d23bb710c00662ad1470198ac48c43f7d6f93a2a2687300000000");
 }
 
