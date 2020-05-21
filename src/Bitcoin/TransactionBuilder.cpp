@@ -31,7 +31,7 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
         // Note: if utxos.size() == 0, all fields will be computed to 0
         plan.availableAmount = UnspentSelector::sum(plan.utxos);
 
-        // Compute fee.  If larger then availableAmount, we reduce it (and hope it will go through)
+        // Compute fee.  If larger then availableAmount (can happen in special maxAmount case), we reduce it (and hope it will go through)
         plan.fee = std::min(plan.availableAmount, feeCalculator.calculate(plan.utxos.size(), output_size, input.byte_fee()));
         assert(plan.fee >= 0 && plan.fee <= plan.availableAmount);
         

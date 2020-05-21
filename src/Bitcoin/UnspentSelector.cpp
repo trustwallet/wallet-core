@@ -85,7 +85,7 @@ UnspentSelector::select(const T& utxos, int64_t targetValue, int64_t byteFee, in
             return doubleTargetValue - val;
     };
 
-    // 1. Find a combination of the fewest outputs that is
+    // 1. Find a combination of the fewest inputs that is
     //    (1) bigger than what we need
     //    (2) closer to 2x the amount,
     //    (3) and does not produce dust change.
