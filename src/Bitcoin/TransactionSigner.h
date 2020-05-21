@@ -25,6 +25,8 @@
 
 namespace TW::Bitcoin {
 
+typedef std::vector<Data> DataVector;
+
 /// Helper class that performs Bitcoin transaction signing.
 template <typename Transaction, typename TransactionBuilder>
 class TransactionSigner {
@@ -62,11 +64,11 @@ class TransactionSigner {
     Result<Transaction> sign();
 
     // internal, public for testability and Decred
-    static Data pushAll(const std::vector<Data>& results);
+    static Data pushAll(const DataVector& results);
 
   private:
     Result<void> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
-    Result<std::vector<Data>> signStep(Script script, size_t index,
+    Result<DataVector> signStep(Script script, size_t index,
                                        const Proto::UnspentTransaction& utxo, uint32_t version) const;
     Data createSignature(const Transaction& transaction, const Script& script, const Data& key,
                          size_t index, Amount amount, uint32_t version) const;

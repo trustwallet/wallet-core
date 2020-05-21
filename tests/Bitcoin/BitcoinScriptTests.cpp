@@ -202,7 +202,7 @@ TEST(BitcoinScript, GetScriptOp) {
 }
 
 TEST(BitcoinScript, MatchMultiSig) {
-    std::vector<Data> keys;
+    DataVector keys;
     int required;
     EXPECT_EQ(Script(parse_hex("")).matchMultisig(keys, required), false);
     EXPECT_EQ(Script(parse_hex("20")).matchMultisig(keys, required), false);
@@ -287,27 +287,27 @@ TEST(BitcoinScript, MatchMultiSig) {
 
 TEST(BitcoinTransactionSigner, PushAllEmpty) {
     {
-        std::vector<Data> input = {};
+        DataVector input = {};
         Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
         EXPECT_EQ(hex(res), "");
     }
     {
-        std::vector<Data> input = {parse_hex("")};
+        DataVector input = {parse_hex("")};
         Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
         EXPECT_EQ(hex(res), "00");
     }
     {
-        std::vector<Data> input = {parse_hex("09")};
+        DataVector input = {parse_hex("09")};
         Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
         EXPECT_EQ(hex(res), "59" "09");
     }
     {
-        std::vector<Data> input = {parse_hex("00010203040506070809")};
+        DataVector input = {parse_hex("00010203040506070809")};
         Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
         EXPECT_EQ(hex(res), "0a" "00010203040506070809");
     }
     {
-        std::vector<Data> input = {parse_hex("0001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809")};
+        DataVector input = {parse_hex("0001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809")};
         Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
         EXPECT_EQ(hex(res), "4c50" "0001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809000102030405060708090001020304050607080900010203040506070809");
     }
@@ -316,7 +316,7 @@ TEST(BitcoinTransactionSigner, PushAllEmpty) {
         Data in1 = Data(256 + 10);
         Data expected = parse_hex("4d" "0a01");
         TW::append(expected, in1);
-        std::vector<Data> input = {in1};
+        DataVector input = {in1};
         Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
         EXPECT_EQ(hex(res), hex(expected));
     }
@@ -325,7 +325,7 @@ TEST(BitcoinTransactionSigner, PushAllEmpty) {
         Data in1 = Data(65536 + 256 + 10);
         Data expected = parse_hex("4e" "0a010100");
         TW::append(expected, in1);
-        std::vector<Data> input = {in1};
+        DataVector input = {in1};
         Data res = TransactionSigner<Transaction, TransactionBuilder>::pushAll(input);
         EXPECT_EQ(hex(res), hex(expected));
     }

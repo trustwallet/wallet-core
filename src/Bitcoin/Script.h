@@ -29,7 +29,7 @@ class Script {
     Script(It begin, It end) : bytes(begin, end) {}
 
     /// Initializaes a script with a collection of raw bytes by moving.
-    explicit Script(Data&& bytes) : bytes(bytes) {}
+    explicit Script(const Data& bytes) : bytes(bytes) {}
 
     /// Whether the script is empty.
     bool empty() const { return bytes.empty(); }
