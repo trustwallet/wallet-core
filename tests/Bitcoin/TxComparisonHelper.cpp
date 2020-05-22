@@ -123,3 +123,20 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx) {
     assert(size.virtualBytes == vSize2);
     return size;
 }
+
+std::string validateEstimatedSize(const Transaction& tx, int smallerTolerance, int biggerTolerance) {
+    if (tx.previousEstimatedVirtualSize == 0) {
+        // no estimated size, do nothing
+        return "";
+    }
+    auto estSize = tx.previousEstimatedVirtualSize;
+    uint64_t vsize = getEncodedTxSize(tx).virtualBytes;
+    int64_t diff = estSize - vsize;
+    if (diff < smallerTolerance) {
+        return "Estimated size too small! " + std::to_string(estSize) + " vs. " + std::to_string(vsize) + "\n";
+    }
+    if (diff > biggerTolerance) {
+        return "Estimated size too big! " + std::to_string(estSize) + " vs. " + std::to_string(vsize) + "\n";
+    }
+    return "";
+}

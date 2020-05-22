@@ -19,6 +19,7 @@
 namespace TW::Bitcoin {
 
 struct Transaction {
+public:
     /// Transaction data format version (note, this is signed)
     int32_t version = 1;
 
@@ -42,6 +43,10 @@ struct Transaction {
 
     TW::Hash::Hasher hasher = TW::Hash::sha256d;
 
+    /// Used for diagnostics; store previously estimated virtual size (if any; size in bytes)
+    int previousEstimatedVirtualSize = 0;
+
+public:
     Transaction() = default;
 
     Transaction(int32_t version, uint32_t lockTime, TW::Hash::Hasher hasher = TW::Hash::sha256d)
@@ -71,7 +76,7 @@ struct Transaction {
     /// Converts to Protobuf model
     Proto::Transaction proto() const;
 
-  private:
+private:
     /// Generates the signature hash for Witness version 0 scripts.
     Data getSignatureHashWitnessV0(const Script& scriptCode, size_t index,
                                    enum TWBitcoinSigHashType hashType, uint64_t amount) const;

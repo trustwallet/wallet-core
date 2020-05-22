@@ -47,3 +47,8 @@ bool operator==(const EncodedTxSize& s1, const EncodedTxSize& s2);
 
 /// Return the encoded size of the transaction, virtual and non-segwit, etc.
 EncodedTxSize getEncodedTxSize(const Transaction& tx);
+
+/// Validate the previously estimated transaction size (if available) with the actual transaction size.
+/// Uses segwit byte size (virtual size).  Tolerance is estiamte-smaller and estimate-larger, like -1 and 20.
+/// Returns "" on match, mismatch description on mismatch.
+std::string validateEstimatedSize(const Transaction& tx, int smallerTolerance = -1, int biggerTolerance = 20);

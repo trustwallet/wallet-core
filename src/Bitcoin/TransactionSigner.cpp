@@ -49,6 +49,11 @@ Result<Transaction> TransactionSigner<Transaction, TransactionBuilder>::sign() {
     Transaction tx(transaction);
     tx.inputs = move(signedInputs);
     tx.outputs = transaction.outputs;
+    // save estimated size
+    if ((input.byte_fee()) > 0 && (plan.fee > 0)) {
+        tx.previousEstimatedVirtualSize = plan.fee / input.byte_fee();
+    }
+
     return Result<Transaction>::success(std::move(tx));
 }
 
