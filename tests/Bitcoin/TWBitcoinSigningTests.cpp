@@ -83,7 +83,7 @@ TEST(BitcoinSigning, SignP2PKH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {625'000'000}, 335'790'000, 227), "");
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 227));
     }
 
     // Sign
@@ -95,7 +95,7 @@ TEST(BitcoinSigning, SignP2PKH) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{228, 225, 226}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -216,7 +216,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {625'000'000}, 335'790'000, 193), "");
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 193));
     }
 
     // Sign
@@ -229,7 +229,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
     EXPECT_EQ(serialized.size(), 195);
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -269,7 +269,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {210'000'000, 210'000'000}, 335'790'000, 261), "");
+        EXPECT_TRUE(verifyPlan(plan, {210'000'000, 210'000'000}, 335'790'000, 261));
     }
 
     // Sign
@@ -281,7 +281,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -305,7 +305,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {210'000'000, 210'000'000}, 335'790'000, 261), "");
+        EXPECT_TRUE(verifyPlan(plan, {210'000'000, 210'000'000}, 335'790'000, 261));
     }
 
     // Sign
@@ -317,7 +317,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{344, 233, 261}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -341,7 +341,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {625'000'000, 600'000'000}, 1224999773, 227), "");
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000, 600'000'000}, 1224999773, 227));
     }
 
     // Sign
@@ -353,7 +353,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{310, 199, 227}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -431,7 +431,7 @@ TEST(BitcoinSigning, SignP2WSH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 147), "");
+        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 147));
     }
 
     // Sign
@@ -443,7 +443,7 @@ TEST(BitcoinSigning, SignP2WSH) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -466,7 +466,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 147), "");
+        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 147));
     }
 
     // Sign
@@ -478,7 +478,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -501,7 +501,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 147), "");
+        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 147));
     }
 
     // Sign
@@ -513,7 +513,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{230, 119, 147}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -536,7 +536,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 147), "");
+        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 147));
     }
 
     // Sign
@@ -549,7 +549,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(serialized.size(), 231);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -645,7 +645,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'000'000'000}, 200'000'000, 170), "");
+        EXPECT_TRUE(verifyPlan(plan, {1'000'000'000}, 200'000'000, 170));
     }
 
     // Sign
@@ -657,7 +657,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{251, 142, 170}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
         "01000000" // version
@@ -780,7 +780,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{800, 154, 316}));
-    EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
     //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized), expected);
 }
@@ -810,7 +810,7 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
     {
         // plan returns empty, as there are 0 utxos
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {}, 0, 0), "");
+        EXPECT_TRUE(verifyPlan(plan, {}, 0, 0));
     }
 
     // Sign

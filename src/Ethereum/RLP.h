@@ -94,6 +94,17 @@ struct RLP {
     /// Returns the representation of an integer using the least number of bytes
     /// needed.
     static Data putint(uint64_t i) noexcept;
+
+    struct DecodedItem {
+        std::vector<Data> decoded;
+        Data remainder;
+    };
+
+    /// Decodes raw transaction to json data
+    static Data decodeRawTransaction(const Data& data);
+
+    /// Decodes data, remainder from RLP encoded data
+    static DecodedItem decode(const Data& data);
 };
 
 } // namespace TW::Ethereum
