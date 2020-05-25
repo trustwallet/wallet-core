@@ -13,7 +13,7 @@
 #include "Data.h"
 
 #include <gtest/gtest.h>
-#include <sstream>
+#include <iostream>
 #include <cassert>
 
 using namespace TW;
@@ -56,40 +56,48 @@ int64_t sumUTXOs(const std::vector<Proto::UnspentTransaction>& utxos) {
     return s;
 }
 
-std::string verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts) {
-    std::stringstream ss;
+bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts) {
+    bool ret = true;
     if (selected.size() != expectedAmounts.size()) {
-        ss << "Wrong number of selected UTXOs, " << selected.size() << " vs. " << expectedAmounts.size() << std::endl;
+        ret = false;
+        std::cerr << "Wrong number of selected UTXOs, " << selected.size() << " vs. " << expectedAmounts.size() << std::endl;
     }
     for (auto i = 0; i < selected.size() && i < expectedAmounts.size(); ++i) {
         if (expectedAmounts[i] != selected[i].amount()) {
-            ss << "Wrong UTXOs amount, pos " << i << " amount " << selected[i].amount() << " expected " << expectedAmounts[i] << std::endl;
+            ret = false;
+            std::cerr << "Wrong UTXOs amount, pos " << i << " amount " << selected[i].amount() << " expected " << expectedAmounts[i] << std::endl;
         }
     }
-    return ss.str();
+    return ret;
 }
 
-std::string verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee) {
-    std::stringstream ss;
-    ss << verifySelectedUTXOs(plan.utxos, utxoAmounts);
+bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee) {
+    bool ret = true;
+    if (!verifySelectedUTXOs(plan.utxos, utxoAmounts)) {
+        ret = false;
+    }
     if (plan.amount != outputAmount) {
-        ss << "Mismatch in amount, act " << plan.amount << ", exp " << outputAmount << "\n";
+        ret = false;
+        std::cerr << "Mismatch in amount, act " << plan.amount << ", exp " << outputAmount << std::endl;
     }
     if (plan.fee != fee) {
-        ss << "Mismatch in fee, act " << plan.fee << ", exp " << fee << "\n";
+        ret = false;
+        std::cerr << "Mismatch in fee, act " << plan.fee << ", exp " << fee << std::endl;
     }
     int64_t sumExpectedUTXOs = 0;
     for (auto i = 0; i < utxoAmounts.size(); ++i) {
         sumExpectedUTXOs += utxoAmounts[i];
     }
     if (plan.availableAmount != sumExpectedUTXOs) {
-        ss << "Mismatch in availableAmount, act " << plan.availableAmount << ", exp " << sumExpectedUTXOs << "\n";
+        ret = false;
+        std::cerr << "Mismatch in availableAmount, act " << plan.availableAmount << ", exp " << sumExpectedUTXOs << std::endl;
     }
     int64_t expectedChange = sumExpectedUTXOs - outputAmount - fee;
     if (plan.change != expectedChange) {
-        ss << "Mismatch in change, act " << plan.change << ", exp " << expectedChange << "\n";
+        ret = false;
+        std::cerr << "Mismatch in change, act " << plan.change << ", exp " << expectedChange << std::endl;
     }
-    return ss.str();
+    return ret;
 }
 
 bool operator==(const EncodedTxSize& s1, const EncodedTxSize& s2) {
@@ -124,19 +132,22 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx) {
     return size;
 }
 
-std::string validateEstimatedSize(const Transaction& tx, int smallerTolerance, int biggerTolerance) {
+bool validateEstimatedSize(const Transaction& tx, int smallerTolerance, int biggerTolerance) {
     if (tx.previousEstimatedVirtualSize == 0) {
         // no estimated size, do nothing
-        return "";
+        return true;
     }
+    bool ret = true;
     auto estSize = tx.previousEstimatedVirtualSize;
     uint64_t vsize = getEncodedTxSize(tx).virtualBytes;
     int64_t diff = estSize - vsize;
     if (diff < smallerTolerance) {
-        return "Estimated size too small! " + std::to_string(estSize) + " vs. " + std::to_string(vsize) + "\n";
+        ret = false;
+        std::cerr << "Estimated size too small! " << std::to_string(estSize) << " vs. " << std::to_string(vsize) << std::endl;
     }
     if (diff > biggerTolerance) {
-        return "Estimated size too big! " + std::to_string(estSize) + " vs. " + std::to_string(vsize) + "\n";
+        ret = false;
+        std::cerr << "Estimated size too big! " << std::to_string(estSize) << " vs. " << std::to_string(vsize) << std::endl;
     }
-    return "";
+    return ret;
 }

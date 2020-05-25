@@ -29,12 +29,12 @@ Proto::SigningInput buildSigningInput(Amount amount, int byteFee, const std::vec
     bool useMaxAmount = false, enum TWCoinType coin = TWCoinTypeBitcoin);
 
 /// Compare a set of selected UTXOs to the expected set of amounts.
-/// Returns "" on match, mismatch description on mismatch.
-std::string verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts);
+/// Returns false on mismatch, and error is printed (stderr).
+bool verifySelectedUTXOs(const std::vector<Proto::UnspentTransaction>& selected, const std::vector<int64_t>& expectedAmounts);
 
 /// Compare a transaction plan against expected values (UTXO amounts, amount, fee, change is implicit).
-/// Returns "" on match, mismatch description on mismatch.
-std::string verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee);
+/// Returns false on mismatch, and error is printed (stderr).
+bool verifyPlan(const TransactionPlan& plan, const std::vector<int64_t>& utxoAmounts, int64_t outputAmount, int64_t fee);
 
 int64_t sumUTXOs(const std::vector<Proto::UnspentTransaction>& utxos);
 
@@ -50,5 +50,5 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx);
 
 /// Validate the previously estimated transaction size (if available) with the actual transaction size.
 /// Uses segwit byte size (virtual size).  Tolerance is estiamte-smaller and estimate-larger, like -1 and 20.
-/// Returns "" on match, mismatch description on mismatch.
-std::string validateEstimatedSize(const Transaction& tx, int smallerTolerance = -1, int biggerTolerance = 20);
+/// Returns false on mismatch, and error is printed (stderr).
+bool validateEstimatedSize(const Transaction& tx, int smallerTolerance = -1, int biggerTolerance = 20);
