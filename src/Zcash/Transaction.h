@@ -33,6 +33,9 @@ struct Transaction {
     std::vector<Bitcoin::TransactionOutput> outputs;
     std::array<byte, 4> branchId;
 
+    /// Used for diagnostics; store previously estimated virtual size (if any; size in bytes)
+    int previousEstimatedVirtualSize = 0;
+
     Transaction() = default;
 
     Transaction(uint32_t version, uint32_t versionGroupId, uint32_t lockTime, uint32_t expiryHeight,

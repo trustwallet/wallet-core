@@ -233,6 +233,7 @@ Script Script::buildPayToWitnessProgram(const Data& program) {
     script.bytes.push_back(OP_0);
     script.bytes.push_back(static_cast<byte>(program.size()));
     script.bytes.insert(script.bytes.end(), program.begin(), program.end());
+    assert(script.bytes.size() == 22 || script.bytes.size() == 34);
     return script;
 }
 

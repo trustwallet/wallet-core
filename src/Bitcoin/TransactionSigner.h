@@ -67,9 +67,9 @@ class TransactionSigner {
   private:
     Result<void> sign(Script script, size_t index, const Proto::UnspentTransaction& utxo);
     Result<std::vector<Data>> signStep(Script script, size_t index,
-                                       const Proto::UnspentTransaction& utxo, uint32_t version);
+                                       const Proto::UnspentTransaction& utxo, uint32_t version) const;
     Data createSignature(const Transaction& transaction, const Script& script, const Data& key,
-                         size_t index, Amount amount, uint32_t version);
+                         size_t index, Amount amount, uint32_t version) const;
 
     /// Returns the private key for the given public key hash.
     Data keyForPublicKeyHash(const Data& hash) const;
