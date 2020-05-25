@@ -9,17 +9,22 @@
 #include <TrustWalletCore/TWCoinType.h>
 
 #include "Bitcoin/OutPoint.h"
+#include "Bitcoin/Script.h"
 #include "proto/Bitcoin.pb.h"
 #include "Data.h"
+#include "PrivateKey.h"
+#include "HexCoding.h"
+#include "BinaryCoding.h"
 
 #include <gtest/gtest.h>
+#include <iostream>
 #include <sstream>
 #include <cassert>
 
 using namespace TW;
 using namespace TW::Bitcoin;
 
-auto emptyTxOutPoint = OutPoint(Data(32), 0);
+auto emptyTxOutPoint = OutPoint(parse_hex("1d0f172a0ecb48aee1be1f2687d2963ae33f71a1"), 0);
 
 Proto::UnspentTransaction buildTestUTXO(int64_t amount) {
     Proto::UnspentTransaction utxo;
@@ -27,6 +32,9 @@ Proto::UnspentTransaction buildTestUTXO(int64_t amount) {
     const auto& outPoint = emptyTxOutPoint;
     utxo.mutable_out_point()->set_hash(outPoint.hash.data(), outPoint.hash.size());
     utxo.mutable_out_point()->set_index(outPoint.index);
+    utxo.mutable_out_point()->set_sequence(UINT32_MAX);
+    auto utxo1Script = parse_hex("0014" "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+    utxo.set_script(utxo1Script.data(), utxo1Script.size());
     return utxo;
 }
 
@@ -44,7 +52,16 @@ Proto::SigningInput buildSigningInput(Amount amount, int byteFee, const std::vec
     input.set_byte_fee(byteFee);
     input.set_use_max_amount(useMaxAmount);
     input.set_coin_type(coin);
+    
+    auto utxoKey = PrivateKey(parse_hex("619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9"));
+    auto pubKey = utxoKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    auto utxoPubkeyHash = Hash::ripemd(Hash::sha256(pubKey.bytes));
+    assert(hex(utxoPubkeyHash) == "1d0f172a0ecb48aee1be1f2687d2963ae33f71a1");
+    input.add_private_key(utxoKey.bytes.data(), utxoKey.bytes.size());
+
     *input.mutable_utxo() = { utxos.begin(), utxos.end() };
+    input.set_to_address("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx");
+    input.set_change_address("1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU");
     return input;
 }
 
@@ -139,4 +156,70 @@ std::string validateEstimatedSize(const Transaction& tx, int smallerTolerance, i
         return "Estimated size too big! " + std::to_string(estSize) + " vs. " + std::to_string(vsize) + "\n";
     }
     return "";
+}
+
+void prettyPrintScript(const Script& script) {
+    Data data;
+    encodeVarInt(script.bytes.size(), data);
+    std::cout << "  \"" << hex(data) << "\"";
+    std::cout << "  \"" << hex(script.bytes) << "\"";
+}
+
+void prettyPrintTransaction(const Transaction& tx, bool witness) {
+    Data data;
+    encode32LE(tx.version, data);
+    std::cout << "        \"" << hex(data) << "\" // version\n";
+
+    if (witness) {
+        std::cout << "        \"0001\" // marker & flag\n";
+    }
+
+    // txins
+    data.clear();
+    encodeVarInt(tx.inputs.size(), data);
+    std::cout << "        \"" << hex(data) << "\" // inputs\n";
+    for (auto& input: tx.inputs) {
+        auto& outpoint = reinterpret_cast<const TW::Bitcoin::OutPoint&>(input.previousOutput);
+        std::cout << "            \"" << hex(outpoint.hash) << "\"";
+        data.clear();
+        encode32LE(outpoint.index, data);
+        std::cout << "  \"" << hex(data) << "\"";
+        prettyPrintScript(input.script);
+        data.clear();
+        encode32LE(input.sequence, data);
+        std::cout << "  \"" << hex(data) << "\"\n";
+    }
+
+    // txouts
+    data.clear();
+    encodeVarInt(tx.outputs.size(), data);
+    std::cout << "        \"" << hex(data) << "\" // outputs\n";
+    for (auto& output: tx.outputs) {
+        data.clear();
+        encode64LE(output.value, data);
+        std::cout << "            \"" << hex(data) << "\"";
+        prettyPrintScript(output.script);
+        std::cout << "\n";
+    }
+
+    if (witness) {
+        std::cout << "        // witness\n";
+        for (auto& input: tx.inputs) {
+            data.clear();
+            encodeVarInt(input.scriptWitness.size(), data);
+            std::cout << "            \"" << hex(data) << "\"";
+            for (auto& item: input.scriptWitness) {
+                data.clear();
+                encodeVarInt(item.size(), data);
+                std::cout << "  \"" << hex(data) << "\"";
+                std::cout << "  \"" << hex(item) << "\"";
+            }
+            std::cout << "\n";
+        }
+    }
+
+    data.clear();
+    encode32LE(tx.lockTime, data); // nLockTime
+    std::cout << "        \"" << hex(data) << "\" // nLockTime\n";
+    std::cout << "\n";
 }

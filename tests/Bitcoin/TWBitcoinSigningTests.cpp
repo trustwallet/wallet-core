@@ -83,7 +83,7 @@ TEST(BitcoinSigning, SignP2PKH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {625'000'000}, 335'790'000, 226), "");
+        EXPECT_EQ(verifyPlan(plan, {625'000'000}, 335'790'000, 227), "");
     }
 
     // Sign
@@ -96,26 +96,23 @@ TEST(BitcoinSigning, SignP2PKH) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{228, 225, 226}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
-        "01000000"
-        "0001"
-        "01"
-            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "6a47304402202819d70d4bec472113a1392cadc0860a7a1b34ea0869abb4bdce3290c3aba086022023eff75f410ad19cdbe6c6a017362bd554ce5fb906c13534ddc306be117ad30a012103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432" "ffffffff"
-        "02"
-            "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-            "aefd3c1100000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
-        "0000000000"
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "6a"  "47304402206d58dfed623a041055ef2aaaf34494dcaa26e5d6f612cfcf3d010d96b118a541022055344b5f95253c6d4f320bae717285be85d2ad799a2c8e1021692499ac67a3d9012103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432"  "ffffffff"
+        "02" // outputs
+            "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "adfd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "00"
+        "00000000" // nLockTime
     );
 }
 
 TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     auto input = buildInputP2PKH(true);
-
-    {
-        // test plan (but do not reuse plan result)
-        auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {625'000'000}, 335'790'000, 226), "");
-    }
 
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
@@ -141,17 +138,23 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
     unsignedTx.outputs.emplace_back(223450000, outScript1);
 
     Data unsignedData;
-    unsignedTx.encode(false, unsignedData);
-    ASSERT_EQ(unsignedData.size(), 160);
+    unsignedTx.encode(true, unsignedData);
+    ASSERT_EQ(unsignedData.size(), 164);
+    //prettyPrintTransaction(unsignedTx, true);
     ASSERT_EQ(hex(unsignedData),
-        "01000000"
-        "02"
-            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f0000000000eeffffff"
-            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a0100000000ffffffff"
-        "02"
-            "202cb206000000001976a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"
-            "9093510d000000001976a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac"
-        "11000000");
+        "01000000" // version
+        "0001" // marker & flag
+        "02" // inputs
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "00"  ""  "eeffffff"
+            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "202cb20600000000"  "19"  "76a9148280b37df378db99f66f85c95a783a76ac7a6d5988ac"
+            "9093510d00000000"  "19"  "76a9143bde42dbee7e4dbe6a21b2d50ce2f0167faa815988ac"
+        // witness
+            "00"
+            "00"
+        "11000000" // nLockTime
+    );
 }
 
 Proto::SigningInput buildInputP2WPKH(int64_t amount, TWBitcoinSigHashType hashType, int64_t utxo0Amount, int64_t utxo1Amount, bool useMaxAmount = false) {
@@ -213,7 +216,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {625'000'000}, 335'790'000, 226), "");
+        EXPECT_EQ(verifyPlan(plan, {625'000'000}, 335'790'000, 193), "");
     }
 
     // Sign
@@ -222,23 +225,23 @@ TEST(BitcoinSigning, SignP2WPKH) {
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
-    // txid = "03b30d55430f08365d19a62d3bd32e459ab50984fbcf22921ecc85f1e09dc6ed"
-    // witid = "20bc58d07d91a3bae9e6f4d617d8f6271723d1a7673e486cc0ecaf9e758e2c22"
-
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
     EXPECT_EQ(serialized.size(), 195);
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
-        "01000000"
-        "0001"
-        "01"
-            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "49483045022100b6006eb0fe2da8cbbd204f702b1ffdb1e29c49f3de51c4983d420bf9f9125635022032a195b153ccb2c4978333b4aad72aaa7e6a0b334a14621d5d817a42489cb0d301" "ffffffff"
-        "02"
-            "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-            "aefd3c1100000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
-        "0000000000"
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100f3d21f2d75fc7e49c7d97a3207e8492f28ca84ee7f2188944b40dc1eca8c847d02207a14223dee5e55557b74af58c5fe5d97acacd8078ff702a2ef99705606b0f7c501"  "ffffffff"
+        "02" // outputs
+            "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "cffd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "00"
+        "00000000" // nLockTime
     );
 
     {
@@ -247,14 +250,15 @@ TEST(BitcoinSigning, SignP2WPKH) {
         signedTx.encode(false, serialized);
         EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
         EXPECT_EQ(serialized.size(), 192);
+        //prettyPrintTransaction(signedTx, false);
         ASSERT_EQ(hex(serialized),
-            "01000000"
-            "01"
-                "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "49483045022100b6006eb0fe2da8cbbd204f702b1ffdb1e29c49f3de51c4983d420bf9f9125635022032a195b153ccb2c4978333b4aad72aaa7e6a0b334a14621d5d817a42489cb0d301" "ffffffff"
-            "02"
-                "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-                "aefd3c1100000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
-            "00000000"
+            "01000000" // version
+            "01" // inputs
+                "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100f3d21f2d75fc7e49c7d97a3207e8492f28ca84ee7f2188944b40dc1eca8c847d02207a14223dee5e55557b74af58c5fe5d97acacd8078ff702a2ef99705606b0f7c501"  "ffffffff"
+            "02" // outputs
+                "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+                "cffd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+            "00000000" // nLockTime
         );
     }
 }
@@ -265,7 +269,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {210'000'000, 210'000'000}, 335'790'000, 374), "");
+        EXPECT_EQ(verifyPlan(plan, {210'000'000, 210'000'000}, 335'790'000, 261), "");
     }
 
     // Sign
@@ -278,18 +282,20 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
-        "01000000"
-        "0001"
-        "02"
-            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "49483045022100fd8591c3611a07b55f509ec850534c7a9c49713c9b8fa0e844ea06c2e65e19d702205e3806676192e790bc93dd4c28e937c4bf97b15f189158ba1a30d7ecff5ee75503" "ffffffff"
-            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a" "0100000000" "ffffffff"
-        "02"
-            "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-            "daef040500000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
-        "0002"
-            "47304402206b91d2c69022a54652731b4302eabe59c87949cf62f4c5674c7d4c0d1fbf898102200cee8eeb6ef9542426788c06ed51004799b730083ae3d4daf3c3d5fdc2275d1d0321025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
-        "00000000"
+        "01000000" // version
+        "0001" // marker & flag
+        "02" // inputs
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100fd8591c3611a07b55f509ec850534c7a9c49713c9b8fa0e844ea06c2e65e19d702205e3806676192e790bc93dd4c28e937c4bf97b15f189158ba1a30d7ecff5ee75503"  "ffffffff"
+            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "4bf0040500000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "00"
+            "02"  "47"  "30440220096d20c7e92f991c2bf38dc28118feb34019ae74ec1c17179b28cb041de7517402204594f46a911f24bdc7109ca192e6860ebf2f3a0087579b3c128d5ce0cd5ed46803"  "21"  "025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
+        "00000000" // nLockTime
     );
 }
 
@@ -299,7 +305,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {210'000'000, 210'000'000}, 335'790'000, 374), "");
+        EXPECT_EQ(verifyPlan(plan, {210'000'000, 210'000'000}, 335'790'000, 261), "");
     }
 
     // Sign
@@ -310,20 +316,22 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 232, 260}));
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{344, 233, 261}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
-        "01000000"
-        "0001"
-        "02"
-            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "4847304402206ed3e388d440cb845eef2fce0740b83bdd77764ad0e7dd815a20760718291a5302203f78d743350d80aa2508e90d5a984636c5503d02c1e8656442f0f0275db95baa80" "ffffffff"
-            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a" "01000000" "00" "ffffffff"
-        "02"
-            "b0bf031400000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-            "daef040500000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac" 
-        "0002"
-            "483045022100a5eedab7da09317141e35730256ef9b76da0c2442995a1c2b5458ee7d8834ba302201dc10b47cd4e2e53c7253770cd6907c94c828317d217e3065db009345acf41ac8021025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
-        "00000000"
+        "01000000" // version
+        "0001" // marker & flag
+        "02" // inputs
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100e21fb2f1cfd59bdb3703fd45db38fd680d0c06e5d0be86fb7dc233c07ee7ab2f02207367220a73e43df4352a6831f6f31d8dc172c83c9f613a9caf679f0f15621c5e80"  "ffffffff"
+            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "4bf0040500000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "00"
+            "02"  "48"  "304502210095f9cc913d2f0892b953f2380112533e8930b67c53e00a7bbd7a01d547156adc022026efe3a684aa7432a00a919dbf81b63e635fb92d3149453e95b4a7ccea59f7c480"  "21"  "025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
+        "00000000" // nLockTime
     );
 }
 
@@ -333,7 +341,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {625'000'000, 600'000'000}, 1224999660, 340), "");
+        EXPECT_EQ(verifyPlan(plan, {625'000'000, 600'000'000}, 1224999773, 227), "");
     }
 
     // Sign
@@ -344,19 +352,21 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{309, 199, 227}));
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{310, 199, 227}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized),
-        "01000000"
-        "0001"
-        "02"
-            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f" "00000000" "49483045022100d173cb8d2f2c42824c49c316f2079e10c8a68cb434178ffa9d03f0081ab582ac02201a5e3874292f5452981f6914a7e8d8bb123b4af016eab91e4f25e38e8c9bdad001" "ffffffff"
-            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a01" "00000000" "ffffffff"
-        "01"
-            "ec02044900000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-        "0002"
-            "473044022058491ed1bee5072a3a4c8cc29a63eccf691de79df47fda7b768834c74a8ea19b022073ef4e72ceeec190133703a3f9eb9a15716ad0e489574469d5dab1a4ae360b010121025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
-        "00000000"
+        "01000000" // version
+        "0001" // marker & flag
+        "02" // inputs
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100a8b3c1619e985923994e80efdc0be0eac12f2419e11ce5e4286a0a5ac27c775d02205d6feee85ffe19ae0835cba1562beb3beb172107cd02ac4caf24a8be3749811f01"  "ffffffff"
+            "ef51e1b804cc89d182d279655c3aa89e815b1b309fe287d9b2b55d57b90ec68a"  "01000000"  "00"  ""  "ffffffff"
+        "01" // outputs
+            "5d03044900000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+        // witness
+            "00"
+            "02"  "48"  "3045022100db1199de92f6fb638a0ba706d13ec686bb01138a254dec2c397616cd74bad30e02200d7286d6d2d4e00d145955bf3d3b848b03c0d1eef8899e4645687a3035d7def401"  "21"  "025476c2e83188368da1ff3e292e7acafcdb3566bb0ad253f62fc70f07aeee6357"
+        "00000000" // nLockTime
     );
 }
 
@@ -371,13 +381,15 @@ TEST(BitcoinSigning, EncodeP2WSH) {
 
     Data unsignedData;
     unsignedTx.encode(false, unsignedData);
-    ASSERT_EQ(hex(unsignedData), ""
-        "01000000"
-        "01"
-            "00010000000000000000000000000000000000000000000000000000000000000000000000ffffffff"
-        "01"
-            "e8030000000000001976a9144c9c3dfac4207d5d8cb89df5722cb3d712385e3f88ac"
-        "00000000");
+    //prettyPrintTransaction(unsignedTx, false);
+    ASSERT_EQ(hex(unsignedData),
+        "01000000" // version
+        "01" // inputs
+            "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
+        "01" // outputs
+            "e803000000000000"  "19"  "76a9144c9c3dfac4207d5d8cb89df5722cb3d712385e3f88ac"
+        "00000000" // nLockTime
+    );
 }
 
 Proto::SigningInput buildInputP2WSH(enum TWBitcoinSigHashType hashType, bool omitScript = false) {
@@ -419,7 +431,7 @@ TEST(BitcoinSigning, SignP2WSH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 226), "");
+        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 147), "");
     }
 
     // Sign
@@ -428,23 +440,22 @@ TEST(BitcoinSigning, SignP2WSH) {
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
-    // txid = "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd"
-    // witid = "16a17dd8f6e507220010c56c07a8479e3f909f87791683577d4e6aad61ab113a"
-
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{196, 85, 113}));
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
-    ASSERT_EQ(hex(serialized), "01000000"
-        "0001"
-        "01"
-            "0001000000000000000000000000000000000000000000000000000000000000" "00000000" "00" "ffffffff"
-        "01"
-            "e803000000000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-        "02"
-            "4730440220252e92b8757f1e5577c54ce5deb8072914c1f03333128777dee96ebceeb6a99b02202b7298789316779d0aa7595abeedc03054405c42ab9859e67d9253d2c9a0cdfa01232103596d3451025c"
-            "19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
-        "00000000"
+    //prettyPrintTransaction(signedTx, true);
+    ASSERT_EQ(hex(serialized),
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "e803000000000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "4f00000000000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "02"  "48"  "30450221009eefc1befe96158f82b74e6804f1f713768c6172636ca11fcc975c316ea86f75022057914c48bc24f717498b851a47a2926f96242e3943ebdf08d5a97a499efc8b9001"  "23"  "2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
+        "00000000" // nLockTime
     );
 }
 
@@ -455,7 +466,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 226), "");
+        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 147), "");
     }
 
     // Sign
@@ -466,18 +477,20 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{197, 85, 113}));
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
-    ASSERT_EQ(hex(serialized), "01000000"
-        "0001"
-        "01"
-            "0001000000000000000000000000000000000000000000000000000000000000" "00000000" "00" "ffffffff"
-        "01"
-            "e803000000000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-        "02"
-            "483045022100caa585732cfc50226a90834a306d23d5d2ab1e94af2c66136a637e3d9bad3688022069028750908e53a663bb1f434fd655bcc0cf8d394c6fa1fd5a4983790135722e02232103596d3451025c"
-            "19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
-        "00000000"
+    //prettyPrintTransaction(signedTx, true);
+    ASSERT_EQ(hex(serialized),
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "e803000000000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "4f00000000000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "02"  "48"  "3045022100caa585732cfc50226a90834a306d23d5d2ab1e94af2c66136a637e3d9bad3688022069028750908e53a663bb1f434fd655bcc0cf8d394c6fa1fd5a4983790135722e02"  "23"  "2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
+        "00000000" // nLockTime
     );
 }
 
@@ -488,7 +501,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 226), "");
+        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 147), "");
     }
 
     // Sign
@@ -499,18 +512,20 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{196, 85, 113}));
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{230, 119, 147}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
-    ASSERT_EQ(hex(serialized), "01000000"
-        "0001"
-        "01"
-            "0001000000000000000000000000000000000000000000000000000000000000" "00000000" "00" "ffffffff"
-        "01"
-            "e803000000000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-        "02"
-            "47304402201ba80b2c48fe82915297dc9782ae2141e40263001fafd21b02c04a092503f01e0220666d6c63475c6c52abd09371c200ac319bcf4a7c72eb3782e95790f5c847f0b903232103596d3451025c"
-            "19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
-        "00000000"
+    //prettyPrintTransaction(signedTx, true);
+    ASSERT_EQ(hex(serialized),
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "e803000000000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "4f00000000000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "02"  "47"  "304402201ba80b2c48fe82915297dc9782ae2141e40263001fafd21b02c04a092503f01e0220666d6c63475c6c52abd09371c200ac319bcf4a7c72eb3782e95790f5c847f0b903"  "23"  "2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
+        "00000000" // nLockTime
     );
 }
 
@@ -521,7 +536,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 226), "");
+        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 147), "");
     }
 
     // Sign
@@ -532,30 +547,26 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    EXPECT_EQ(serialized.size(), 196);
-    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{196, 85, 113}));
+    EXPECT_EQ(serialized.size(), 231);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
-    ASSERT_EQ(hex(serialized), "01000000"
-        "0001"
-        "01"
-            "0001000000000000000000000000000000000000000000000000000000000000" "00000000" "00" "ffffffff"
-        "01"
-            "e803000000000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-        "02"
-            "47304402206fc6f499c9b0080dd444b410ca0599b59321e7891fc8e59ab215f6d2995b2e5f0220182466b434e91d14c9d247d3726d3c7f22a2a1cbf6c172314e1155b307f467b080232103596d3451025c"
-            "19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
-        "00000000"
+    //prettyPrintTransaction(signedTx, true);
+    ASSERT_EQ(hex(serialized),
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "0001000000000000000000000000000000000000000000000000000000000000"  "00000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "e803000000000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "4f00000000000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "02"  "48"  "3045022100d14699fc9b7337768bcd1430098d279cfaf05f6abfa75dd542da2dc038ae1700022063f0751c08796c086ac23b39c25f4320f432092e0c11bec46af0723cc4f55a3980"  "23"  "2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac"
+        "00000000" // nLockTime
     );
 }
 
 TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
     const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll, true);
-
-    {
-        // test plan (but do not reuse plan result)
-        auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'226}, 1'000, 226), "");
-    }
 
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
@@ -589,14 +600,16 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
 
     Data unsignedData;
     unsignedTx.encode(false, unsignedData);
-    ASSERT_EQ(hex(unsignedData), ""
-        "01000000"
-        "01"
-            "db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a54770100000000feffffff"
-        "02"
-            "b8b4eb0b000000001976a914a457b684d7f0d539a46a45bbc043f35b59d0d96388ac"
-            "0008af2f000000001976a914fd270b1ee6abcaea97fea7ad0402e8bd8ad6d77c88ac"
-        "92040000");
+    //prettyPrintTransaction(unsignedTx, false);
+    ASSERT_EQ(hex(unsignedData),
+        "01000000" // version
+        "01" // inputs
+            "db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"  "01000000"  "00"  ""  "feffffff"
+        "02" // outputs
+            "b8b4eb0b00000000"  "19"  "76a914a457b684d7f0d539a46a45bbc043f35b59d0d96388ac"
+            "0008af2f00000000"  "19"  "76a914fd270b1ee6abcaea97fea7ad0402e8bd8ad6d77c88ac"
+        "92040000" // nLockTime
+    );
 }
 
 TEST(BitcoinSigning, SignP2SH_P2WPKH) {
@@ -632,7 +645,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {1'000'000'000}, 200'000'000, 226), "");
+        EXPECT_EQ(verifyPlan(plan, {1'000'000'000}, 200'000'000, 170), "");
     }
 
     // Sign
@@ -641,14 +654,23 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
-    // txid = "060046204220fd00b81fd6426e391acb9670d1e61e8f0224f37276cc34f49e8c"
-    // witid = "3911b16643972437d27a759b5647a552c7a2e433364b531374f3761967bf8fd7"
-
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{251, 142, 170}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
-    ASSERT_EQ(hex(serialized), "01000000000101db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477010000001716001479091972186c449eb1ded22b78e40d009bdf0089ffffffff0200c2eb0b000000001976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac1e07af2f000000001976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac02473044022009195d870ecc40f54130008e392904e77d32b738c1add19d1d8ebba4edf812e602204f49de6dc60d9a3c3703e1e642942f8834f3a2cd81a6562a34b293942ce42f40012103ad1d8e89212f0b92c74d23bb710c00662ad1470198ac48c43f7d6f93a2a2687300000000");
+    //prettyPrintTransaction(signedTx, true);
+    ASSERT_EQ(hex(serialized),
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "db6b1b20aa0fd7b23880be2ecbd4a98130974cf4748fb66092ac4d3ceb1a5477"  "01000000"  "17"  "16001479091972186c449eb1ded22b78e40d009bdf0089"  "ffffffff"
+        "02" // outputs
+            "00c2eb0b00000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
+            "5607af2f00000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+        // witness
+            "02"  "47"  "3044022062b408cc7f92c8add622f3297b8992d68403849c6421ef58274ed6fc077102f30220250696eacc0aad022f55882d742dda7178bea780c03705bf9cdbee9f812f785301"  "21"  "03ad1d8e89212f0b92c74d23bb710c00662ad1470198ac48c43f7d6f93a2a26873"
+        "00000000" // nLockTime
+    );
 }
 
 TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
@@ -666,14 +688,16 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
 
     Data unsignedData;
     unsignedTx.encode(false, unsignedData);
-    ASSERT_EQ(hex(unsignedData), ""
-        "01000000"
-        "01"
-            "36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e0100000000ffffffff"
-        "02"
-            "00e9a435000000001976a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"
-            "c0832f05000000001976a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"
-        "00000000");
+    //prettyPrintTransaction(unsignedTx, false);
+    ASSERT_EQ(hex(unsignedData),
+        "01000000" // version
+        "01" // inputs
+            "36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"  "01000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "00e9a43500000000"  "19"  "76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"
+            "c0832f0500000000"  "19"  "76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"
+        "00000000" // nLockTime
+    );
 }
 
 TEST(BitcoinSigning, SignP2SH_P2WSH) {
@@ -740,36 +764,24 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
-    auto expected = ""
-            "01000000"
-            "0001"
-            "01"
-                "36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e0100000023220020a16b5755f7f6f96dbd65f5f0d6ab9418b89af4b1f14a1bb8a09062c35f0dcb54ffffffff"
-            "02"
-                "00e9a43500000000" "1976a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"
-                "c0832f0500000000" "1976a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"
-            "08"
-                "00"
-                "47304402201992f5426ae0bab04cf206d7640b7e00410297bfe5487637f6c2427ee8496be002204ad4e64dc2d269f593cc4820db1fc1e8dc34774f602945115ce485940e05c64200"
-                "47304402201e412363fa554b994528fd44149f3985b18bb901289ef6b71105b27c7d0e336c0220595e4a1e67154337757562ed5869127533e3e5084c3c2e128518f5f0b85b721800"
-                "473044022003b0a20ccf545b3f12c5ade10db8717e97b44da2e800387adfd82c95caf529d902206aee3a2395530d52f476d0ddd9d20ba062820ae6f4e1be4921c3630395743ad900"
-                "483045022100ed7a0eeaf72b84351bceac474b0c0510f67065b1b334f77e6843ed102f968afe022004d97d0cfc4bf5651e46487d6f87bd4af6aef894459f9778f2293b0b2c5b7bc700"
-                "483045022100934a0c364820588154aed2d519cbcc61969d837b91960f4abbf0e374f03aa39d022036b5c58b754bd44cb5c7d34806c89d9778ea1a1c900618a841e9fbfbe805ff9b00"
-                "473044022044e3b59b06931d46f857c82fa1d53d89b116a40a581527eac35c5eb5b7f0785302207d0f8b5d063ffc6749fb4e133db7916162b540c70dee40ec0b21e142d8843b3a00"
-            "cf56"
-                "210307b8ae49ac90a048e9b53357a2354b3334e9c8bee813ecb98e99a7e07e8c3ba3"
-                "2103b28f0c28bfab54554ae8c658ac5c3e0ce6e79ad336331f78c428dd43eea8449b"
-                "21034b8113d703413d57761b8b9781957b8c0ac1dfe69f492580ca4195f50376ba4a"
-                "21033400f6afecb833092a9a21cfdf1ed1376e58c5d1f47de74683123987e967a8f4"
-                "2103a6d48b1131e94ba04d9737d61acdaa1322008af9602b3b14862c07a1789aac16"
-                "2102d8b661b0b3302ee2f162b09e07a55ad5dfbe673a9f01d9f0c19617681024306b"
-            "56ae"
-            "00000000";
+    auto expected =
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "36641869ca081e70f394c6948e8af409e18b619df2ed74aa106c1ca29787b96e"  "01000000"  "23"  "220020a16b5755f7f6f96dbd65f5f0d6ab9418b89af4b1f14a1bb8a09062c35f0dcb54"  "ffffffff"
+        "02" // outputs
+            "00e9a43500000000"  "19"  "76a914389ffce9cd9ae88dcc0631e88a821ffdbe9bfe2688ac"
+            "c0832f0500000000"  "19"  "76a9147480a33f950689af511e6e84c138dbbd3c3ee41588ac"
+        // witness
+            "08"  "00"  ""  "47"  "304402201992f5426ae0bab04cf206d7640b7e00410297bfe5487637f6c2427ee8496be002204ad4e64dc2d269f593cc4820db1fc1e8dc34774f602945115ce485940e05c64200"  "47"  "304402201e412363fa554b994528fd44149f3985b18bb901289ef6b71105b27c7d0e336c0220595e4a1e67154337757562ed5869127533e3e5084c3c2e128518f5f0b85b721800"  "47"  "3044022003b0a20ccf545b3f12c5ade10db8717e97b44da2e800387adfd82c95caf529d902206aee3a2395530d52f476d0ddd9d20ba062820ae6f4e1be4921c3630395743ad900"  "48"  "3045022100ed7a0eeaf72b84351bceac474b0c0510f67065b1b334f77e6843ed102f968afe022004d97d0cfc4bf5651e46487d6f87bd4af6aef894459f9778f2293b0b2c5b7bc700"  "48"  "3045022100934a0c364820588154aed2d519cbcc61969d837b91960f4abbf0e374f03aa39d022036b5c58b754bd44cb5c7d34806c89d9778ea1a1c900618a841e9fbfbe805ff9b00"  "47"  "3044022044e3b59b06931d46f857c82fa1d53d89b116a40a581527eac35c5eb5b7f0785302207d0f8b5d063ffc6749fb4e133db7916162b540c70dee40ec0b21e142d8843b3a00"  "cf"  "56210307b8ae49ac90a048e9b53357a2354b3334e9c8bee813ecb98e99a7e07e8c3ba32103b28f0c28bfab54554ae8c658ac5c3e0ce6e79ad336331f78c428dd43eea8449b21034b8113d703413d57761b8b9781957b8c0ac1dfe69f492580ca4195f50376ba4a21033400f6afecb833092a9a21cfdf1ed1376e58c5d1f47de74683123987e967a8f42103a6d48b1131e94ba04d9737d61acdaa1322008af9602b3b14862c07a1789aac162102d8b661b0b3302ee2f162b09e07a55ad5dfbe673a9f01d9f0c19617681024306b56ae"
+        "00000000" // nLockTime
+    ;
 
     Data serialized;
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{800, 154, 316}));
     EXPECT_EQ(validateEstimatedSize(signedTx, -1, 130), "");
+    //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized), expected);
 }
 
@@ -851,12 +863,6 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
     utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
-
-    {
-        // test plan (but do not reuse plan result)
-        auto plan = TransactionBuilder::plan(input);
-        EXPECT_EQ(verifyPlan(plan, {625'000'000}, 335'790'000, 226), "");
-    }
 
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
