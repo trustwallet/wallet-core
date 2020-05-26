@@ -113,6 +113,12 @@ TEST(BitcoinSigning, SignP2PKH) {
 TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     auto input = buildInputP2PKH(true);
 
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 226));
+    }
+
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
@@ -556,6 +562,12 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
 TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
     const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll, true);
 
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 226));
+    }
+
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
 
@@ -847,6 +859,12 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     utxo1->mutable_out_point()->set_hash(hash1.data(), hash1.size());
     utxo1->mutable_out_point()->set_index(1);
     utxo1->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 226));
+    }
 
     // Sign
     auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();

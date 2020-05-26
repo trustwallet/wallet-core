@@ -282,7 +282,7 @@ TEST(TransactionPlan, MaxAmountDoge) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {100000000, 2000000000, 200000000}, 2300000000, 0));
+    EXPECT_TRUE(verifyPlan(txPlan, {100000000, 2000000000, 200000000}, 2299951200, 48800));
 }
 
 TEST(TransactionPlan, AmountDecred) {
@@ -291,5 +291,5 @@ TEST(TransactionPlan, AmountDecred) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {39900000}, 10000000, 0));
+    EXPECT_TRUE(verifyPlan(txPlan, {39900000}, 10000000, 2540));
 }

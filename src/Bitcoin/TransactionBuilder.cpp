@@ -21,7 +21,8 @@ int64_t estimateSegwitFee(FeeCalculator& feeCalculator, const TransactionPlan& p
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(inputWithPlan), true);
     auto result = signer.sign();
     if (!result) {
-        return 0;
+        // signing failed; return default estimate
+        return feeCalculator.calculate(plan.utxos.size(), outputSize, input.byte_fee());
     }
 
     // Obtain the encoded size
