@@ -93,19 +93,16 @@ TEST(BitcoinSigning, SignP2PKH) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{228, 225, 226}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
-        "0001" // marker & flag
         "01" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "6a"  "47304402202819d70d4bec472113a1392cadc0860a7a1b34ea0869abb4bdce3290c3aba086022023eff75f410ad19cdbe6c6a017362bd554ce5fb906c13534ddc306be117ad30a012103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432"  "ffffffff"
         "02" // outputs
             "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
             "aefd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
-        // witness
-            "00"
         "00000000" // nLockTime
     );
 }
@@ -230,20 +227,17 @@ TEST(BitcoinSigning, SignP2WPKH) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
-    EXPECT_EQ(serialized.size(), 195);
+    EXPECT_EQ(serialized.size(), 192);
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
-        "0001" // marker & flag
         "01" // inputs
             "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100c327babdd370f0fc5b24cf920736446bf7d9c5660e4a5f7df432386fd652fe280220269c4fc3690c1c248e50c8bf2435c20b4ef00f308b403575f4437f862a91c53a01"  "ffffffff"
         "02" // outputs
             "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
             "d0fd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
-        // witness
-            "00"
         "00000000" // nLockTime
     );
 
@@ -281,7 +275,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -316,7 +310,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{344, 233, 261}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -351,7 +345,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{310, 199, 227}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -439,7 +433,7 @@ TEST(BitcoinSigning, SignP2WSH) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -473,7 +467,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -507,7 +501,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{230, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -541,7 +535,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(serialized.size(), 231);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
@@ -654,7 +648,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{251, 142, 170}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -775,7 +769,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     ;
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{800, 154, 316}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), expected);

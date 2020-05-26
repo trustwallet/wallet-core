@@ -66,7 +66,7 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::Segwit);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
