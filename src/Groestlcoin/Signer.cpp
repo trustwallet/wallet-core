@@ -34,7 +34,7 @@ SigningOutput Signer::sign(const SigningInput& input) noexcept {
     *output.mutable_transaction() = tx.proto();
 
     Data encoded;
-    auto hasWitness = std::any_of(tx.inputs.begin(), tx.inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });
+    auto hasWitness = tx.hasWitness();
     tx.encode(hasWitness, encoded);
     output.set_encoded(encoded.data(), encoded.size());
 

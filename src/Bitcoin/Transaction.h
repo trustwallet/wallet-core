@@ -67,6 +67,8 @@ public:
     /// Encodes the witness part of the transaction into the provided buffer.
     void encodeWitness(Data& data) const;
 
+    bool hasWitness() const;
+
     /// Generates the signature hash for this transaction.
     Data getSignatureHash(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,
                           uint64_t amount, enum SignatureVersion version) const;
