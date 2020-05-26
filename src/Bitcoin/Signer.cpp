@@ -32,7 +32,7 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) noexcept {
     *output.mutable_transaction() = tx.proto();
 
     Data encoded;
-    tx.encode(encoded, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(tx, encoded);
     output.set_encoded(encoded.data(), encoded.size());
 
     Data txHashData = encoded;

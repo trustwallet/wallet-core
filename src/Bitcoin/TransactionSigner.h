@@ -65,6 +65,9 @@ class TransactionSigner {
     /// \returns the signed transaction or an error.
     Result<Transaction> sign();
 
+    // helper, return binary encoded transaction (used right after sign())
+    static void encodeTx(const Transaction& tx, Data& outData) { tx.encode(outData); }
+
     // internal, public for testability and Decred
     static Data pushAll(const std::vector<Data>& results);
 
