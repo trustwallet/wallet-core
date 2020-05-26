@@ -70,6 +70,7 @@ public:
     /// Encodes the transaction into the provided buffer.
     void encode(Data& data, enum SegwitFormatMode segwitFormat) const;
 
+    /// Default one-parameter version, needed for templated usage.
     void encode(Data& data) const { encode(data, SegwitFormatMode::IfHasWitness); }
 
     /// Encodes the witness part of the transaction into the provided buffer.

@@ -87,13 +87,14 @@ TEST(BitcoinSigning, SignP2PKH) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{228, 225, 226}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -117,7 +118,8 @@ TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_FALSE(result);
 }
@@ -220,14 +222,15 @@ TEST(BitcoinSigning, SignP2WPKH) {
         EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 192));
     }
 
-    // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    // Signs
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
     EXPECT_EQ(serialized.size(), 192);
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
@@ -269,13 +272,14 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -304,13 +308,14 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{344, 233, 261}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -339,13 +344,14 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{310, 199, 227}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -427,13 +433,14 @@ TEST(BitcoinSigning, SignP2WSH) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -461,13 +468,14 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -495,13 +503,14 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{230, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -529,13 +538,14 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(serialized.size(), 231);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
@@ -563,7 +573,8 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingScript) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_FALSE(result);
 }
@@ -575,7 +586,8 @@ TEST(BitcoinSigning, SignP2WSH_NegativePlanWithNoUTXOs) {
     input.mutable_plan()->clear_utxos();
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_FALSE(result);
 }
@@ -642,13 +654,14 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{251, 142, 170}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
@@ -769,7 +782,7 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     ;
 
     Data serialized;
-    signedTx.encode(serialized, Transaction::SegwitFormatMode::IfHasWitness);
+    signer.encodeTx(signedTx, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{800, 154, 316}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
     ASSERT_EQ(hex(serialized), expected);
@@ -804,7 +817,8 @@ TEST(BitcoinSigning, Sign_NegativeNoUtxos) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     // Fails as there are 0 utxos
     ASSERT_FALSE(result);
@@ -861,7 +875,8 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     }
 
     // Sign
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
 
     ASSERT_FALSE(result);
 }
