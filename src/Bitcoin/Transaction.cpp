@@ -102,7 +102,14 @@ Data Transaction::getOutputsHash() const {
     return hash;
 }
 
-void Transaction::encode(bool useWitnessFormat, Data& data) const {
+void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
+    bool useWitnessFormat = true;
+    switch (segwitFormat) {
+        case NonSegwit: useWitnessFormat = false; break;
+        case IfHasWitness: useWitnessFormat = hasWitness(); break;
+        case Segwit: useWitnessFormat = true; break;
+    }
+
     encode32LE(version, data);
 
     if (useWitnessFormat) {

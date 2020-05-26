@@ -34,14 +34,13 @@ SigningOutput Signer::sign(const SigningInput& input) noexcept {
     *output.mutable_transaction() = tx.proto();
 
     Data encoded;
-    auto hasWitness = tx.hasWitness();
-    tx.encode(hasWitness, encoded);
+    tx.encode(encoded, Transaction::SegwitFormatMode::IfHasWitness);
     output.set_encoded(encoded.data(), encoded.size());
 
     Data txHashData = encoded;
-    if (hasWitness) {
+    if (tx.hasWitness()) {
         txHashData.clear();
-        tx.encode(false, txHashData);
+        tx.encode(txHashData, Transaction::SegwitFormatMode::NonSegwit);
     }
     auto txHash = Hash::sha256(txHashData.data(), txHashData.size());
     std::reverse(txHash.begin(), txHash.end());

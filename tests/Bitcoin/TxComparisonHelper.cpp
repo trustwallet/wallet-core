@@ -124,12 +124,12 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx) {
     EncodedTxSize size;
     { // full segwit size
         Data data;
-        tx.encode(true, data);
+        tx.encode(data, Transaction::SegwitFormatMode::Segwit);
         size.segwit = data.size();
     }
-    { // witness part only
+    { // non-segwit
         Data data;
-        tx.encode(false, data);
+        tx.encode(data, Transaction::SegwitFormatMode::NonSegwit);
         size.nonSegwit = data.size();
     }
     int64_t witnessSize = 0;

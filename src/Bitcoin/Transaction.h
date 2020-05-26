@@ -61,8 +61,14 @@ public:
     Data getSequenceHash() const;
     Data getOutputsHash() const;
 
+    enum SegwitFormatMode {
+        NonSegwit,
+        IfHasWitness,
+        Segwit
+    };
+
     /// Encodes the transaction into the provided buffer.
-    void encode(bool useWitnessFormat, Data& data) const;
+    void encode(Data& data, enum SegwitFormatMode segwitFormat) const;
 
     /// Encodes the witness part of the transaction into the provided buffer.
     void encodeWitness(Data& data) const;

@@ -28,7 +28,7 @@ int64_t estimateSegwitFee(FeeCalculator& feeCalculator, const TransactionPlan& p
     // Obtain the encoded size
     auto transaction = result.payload();
     Data dataNonSegwit;
-    transaction.encode(false, dataNonSegwit);
+    transaction.encode(dataNonSegwit, Transaction::SegwitFormatMode::NonSegwit);
     int64_t sizeNonSegwit = dataNonSegwit.size();
     Data dataWitness;
     transaction.encodeWitness(dataWitness);
