@@ -43,13 +43,13 @@ class TransactionSigner {
     /// List of signed inputs.
     std::vector<TransactionInput> signedInputs;
 
-    bool forSizeOnly = false;
+    bool estimationMode = false;
 
   public:
     /// Initializes a transaction signer with signing input.
-    /// forSizeOnly: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
-    TransactionSigner(const Bitcoin::Proto::SigningInput& input, bool forSizeOnly = false) :
-    input(input), forSizeOnly(forSizeOnly) {
+    /// estimationMode: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
+    TransactionSigner(const Bitcoin::Proto::SigningInput& input, bool estimationMode = false) :
+    input(input), estimationMode(estimationMode) {
       if (input.has_plan()) {
         plan = TransactionPlan(input.plan());
       } else {

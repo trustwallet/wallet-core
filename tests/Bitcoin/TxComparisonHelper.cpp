@@ -175,12 +175,12 @@ void prettyPrintScript(const Script& script) {
     std::cout << "  \"" << hex(script.bytes) << "\"";
 }
 
-void prettyPrintTransaction(const Transaction& tx, bool witness) {
+void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
     Data data;
     encode32LE(tx.version, data);
     std::cout << "        \"" << hex(data) << "\" // version\n";
 
-    if (witness) {
+    if (useWitnessFormat) {
         std::cout << "        \"0001\" // marker & flag\n";
     }
 
@@ -212,7 +212,7 @@ void prettyPrintTransaction(const Transaction& tx, bool witness) {
         std::cout << "\n";
     }
 
-    if (witness) {
+    if (useWitnessFormat) {
         std::cout << "        // witness\n";
         for (auto& input: tx.inputs) {
             data.clear();

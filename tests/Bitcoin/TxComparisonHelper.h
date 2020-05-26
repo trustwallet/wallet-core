@@ -54,4 +54,4 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx);
 bool validateEstimatedSize(const Transaction& tx, int smallerTolerance = -1, int biggerTolerance = 20);
 
 /// Print out a transaction in a nice format, as structured hex strings.
-void prettyPrintTransaction(const Transaction& tx, bool witness = true);
+void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat = true);

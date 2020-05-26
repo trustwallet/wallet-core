@@ -96,8 +96,7 @@ TEST(BitcoinSigning, SignP2PKH) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{228, 225, 226}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
@@ -140,7 +139,6 @@ TEST(BitcoinSigning, EncodeP2WPKH) {
     Data unsignedData;
     unsignedTx.encode(true, unsignedData);
     ASSERT_EQ(unsignedData.size(), 164);
-    //prettyPrintTransaction(unsignedTx, true);
     ASSERT_EQ(hex(unsignedData),
         "01000000" // version
         "0001" // marker & flag
@@ -230,8 +228,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
     EXPECT_EQ(serialized.size(), 195);
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
@@ -250,8 +247,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
         signedTx.encode(false, serialized);
         EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{195, 192, 193}));
         EXPECT_EQ(serialized.size(), 192);
-        //prettyPrintTransaction(signedTx, false);
-        ASSERT_EQ(hex(serialized),
+        ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
             "01000000" // version
             "01" // inputs
                 "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100f3d21f2d75fc7e49c7d97a3207e8492f28ca84ee7f2188944b40dc1eca8c847d02207a14223dee5e55557b74af58c5fe5d97acacd8078ff702a2ef99705606b0f7c501"  "ffffffff"
@@ -282,8 +278,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashSingle_TwoInput) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{343, 233, 261}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "02" // inputs
@@ -318,8 +313,7 @@ TEST(BitcoinSigning, SignP2WPKH_HashAnyoneCanPay_TwoInput) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{344, 233, 261}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "02" // inputs
@@ -354,8 +348,7 @@ TEST(BitcoinSigning, SignP2WPKH_MaxAmount) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{310, 199, 227}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "02" // inputs
@@ -381,7 +374,6 @@ TEST(BitcoinSigning, EncodeP2WSH) {
 
     Data unsignedData;
     unsignedTx.encode(false, unsignedData);
-    //prettyPrintTransaction(unsignedTx, false);
     ASSERT_EQ(hex(unsignedData),
         "01000000" // version
         "01" // inputs
@@ -444,8 +436,7 @@ TEST(BitcoinSigning, SignP2WSH) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
@@ -479,8 +470,7 @@ TEST(BitcoinSigning, SignP2WSH_HashNone) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
@@ -514,8 +504,7 @@ TEST(BitcoinSigning, SignP2WSH_HashSingle) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{230, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
@@ -550,8 +539,7 @@ TEST(BitcoinSigning, SignP2WSH_HashAnyoneCanPay) {
     EXPECT_EQ(serialized.size(), 231);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{231, 119, 147}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
@@ -600,7 +588,6 @@ TEST(BitcoinSigning, EncodeP2SH_P2WPKH) {
 
     Data unsignedData;
     unsignedTx.encode(false, unsignedData);
-    //prettyPrintTransaction(unsignedTx, false);
     ASSERT_EQ(hex(unsignedData),
         "01000000" // version
         "01" // inputs
@@ -658,8 +645,7 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{251, 142, 170}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
@@ -688,7 +674,6 @@ TEST(BitcoinSigning, EncodeP2SH_P2WSH) {
 
     Data unsignedData;
     unsignedTx.encode(false, unsignedData);
-    //prettyPrintTransaction(unsignedTx, false);
     ASSERT_EQ(hex(unsignedData),
         "01000000" // version
         "01" // inputs
@@ -781,7 +766,6 @@ TEST(BitcoinSigning, SignP2SH_P2WSH) {
     signedTx.encode(true, serialized);
     EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{800, 154, 316}));
     EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 130));
-    //prettyPrintTransaction(signedTx, true);
     ASSERT_EQ(hex(serialized), expected);
 }
 

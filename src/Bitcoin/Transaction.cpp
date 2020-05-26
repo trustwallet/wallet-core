@@ -102,10 +102,10 @@ Data Transaction::getOutputsHash() const {
     return hash;
 }
 
-void Transaction::encode(bool witness, Data& data) const {
+void Transaction::encode(bool useWitnessFormat, Data& data) const {
     encode32LE(version, data);
 
-    if (witness) {
+    if (useWitnessFormat) {
         // Use extended format in case witnesses are to be serialized.
         data.push_back(0); // marker
         data.push_back(1); // flag
@@ -123,7 +123,7 @@ void Transaction::encode(bool witness, Data& data) const {
         output.encode(data);
     }
 
-    if (witness) {
+    if (useWitnessFormat) {
         encodeWitness(data);
     }
 

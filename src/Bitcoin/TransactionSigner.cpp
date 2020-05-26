@@ -221,7 +221,7 @@ Data TransactionSigner<Transaction, TransactionBuilder>::createSignature(const T
                                                      const Script& script, const Data& key,
                                                      size_t index, Amount amount,
                                                      uint32_t version) const {
-    if (forSizeOnly) {
+    if (estimationMode) {
         // Don't sign, only estimate signature size. It is 71-72 bytes.  Return placeholder.
         return Data(72);
     }

@@ -62,7 +62,7 @@ public:
     Data getOutputsHash() const;
 
     /// Encodes the transaction into the provided buffer.
-    void encode(bool witness, Data& data) const;
+    void encode(bool useWitnessFormat, Data& data) const;
 
     /// Encodes the witness part of the transaction into the provided buffer.
     void encodeWitness(Data& data) const;

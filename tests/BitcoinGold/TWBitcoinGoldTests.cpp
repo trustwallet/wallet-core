@@ -108,8 +108,7 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
 
     Data serialized;
     signedTx.encode(true, serialized);
-    //prettyPrintTransaction(signedTx, true);
-    ASSERT_EQ(hex(serialized),
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
