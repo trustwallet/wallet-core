@@ -83,7 +83,7 @@ TEST(BitcoinSigning, SignP2PKH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 227));
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 226));
     }
 
     // Sign
@@ -100,10 +100,10 @@ TEST(BitcoinSigning, SignP2PKH) {
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
-            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "6a"  "47304402206d58dfed623a041055ef2aaaf34494dcaa26e5d6f612cfcf3d010d96b118a541022055344b5f95253c6d4f320bae717285be85d2ad799a2c8e1021692499ac67a3d9012103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432"  "ffffffff"
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "6a"  "47304402202819d70d4bec472113a1392cadc0860a7a1b34ea0869abb4bdce3290c3aba086022023eff75f410ad19cdbe6c6a017362bd554ce5fb906c13534ddc306be117ad30a012103c9f4836b9a4f77fc0d81f7bcb01b7f1b35916864b9476c241ce9fc198bd25432"  "ffffffff"
         "02" // outputs
             "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-            "adfd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+            "aefd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
         // witness
             "00"
         "00000000" // nLockTime
@@ -220,7 +220,7 @@ TEST(BitcoinSigning, SignP2WPKH) {
     {
         // test plan (but do not reuse plan result)
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 193));
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 192));
     }
 
     // Sign
@@ -238,10 +238,10 @@ TEST(BitcoinSigning, SignP2WPKH) {
         "01000000" // version
         "0001" // marker & flag
         "01" // inputs
-            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100f3d21f2d75fc7e49c7d97a3207e8492f28ca84ee7f2188944b40dc1eca8c847d02207a14223dee5e55557b74af58c5fe5d97acacd8078ff702a2ef99705606b0f7c501"  "ffffffff"
+            "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100c327babdd370f0fc5b24cf920736446bf7d9c5660e4a5f7df432386fd652fe280220269c4fc3690c1c248e50c8bf2435c20b4ef00f308b403575f4437f862a91c53a01"  "ffffffff"
         "02" // outputs
             "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-            "cffd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+            "d0fd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
         // witness
             "00"
         "00000000" // nLockTime
@@ -256,10 +256,10 @@ TEST(BitcoinSigning, SignP2WPKH) {
         ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
             "01000000" // version
             "01" // inputs
-                "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100f3d21f2d75fc7e49c7d97a3207e8492f28ca84ee7f2188944b40dc1eca8c847d02207a14223dee5e55557b74af58c5fe5d97acacd8078ff702a2ef99705606b0f7c501"  "ffffffff"
+                "fff7f7881a8099afa6940d42d1e7f6362bec38171ea3edf433541db4e4ad969f"  "00000000"  "49"  "483045022100c327babdd370f0fc5b24cf920736446bf7d9c5660e4a5f7df432386fd652fe280220269c4fc3690c1c248e50c8bf2435c20b4ef00f308b403575f4437f862a91c53a01"  "ffffffff"
             "02" // outputs
                 "b0bf031400000000"  "19"  "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-                "cffd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
+                "d0fd3c1100000000"  "19"  "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
             "00000000" // nLockTime
         );
     }
