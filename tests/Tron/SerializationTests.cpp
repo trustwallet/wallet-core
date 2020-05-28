@@ -147,7 +147,7 @@ namespace TW::Tron {
 
     TEST(TronSerialization, SignTransferTrc20Contract) {
         Data amount; 
-        encode64LE(1000, amount);
+        encode64BE(1000, amount);
         auto input = Proto::SigningInput();
         auto& transaction = *input.mutable_transaction();
         auto& transfer_contract = *transaction.mutable_transfer_trc20_contract();
