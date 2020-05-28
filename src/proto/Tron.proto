@@ -39,7 +39,7 @@ message TransferTRC20Contract {
     string to_address = 3;
 
     // Amount to send.
-    int64 amount = 4;
+    bytes amount = 4;
 }
 
 message FreezeBalanceContract {

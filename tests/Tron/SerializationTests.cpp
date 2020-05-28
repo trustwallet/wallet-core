@@ -8,6 +8,7 @@
 #include "Tron/Signer.h"
 #include "PrivateKey.h"
 #include "HexCoding.h"
+#include "BinaryCoding.h"
 
 #include <gtest/gtest.h>
 
@@ -145,13 +146,15 @@ namespace TW::Tron {
     }
 
     TEST(TronSerialization, SignTransferTrc20Contract) {
+        Data amount; 
+        encode64LE(1000, amount);
         auto input = Proto::SigningInput();
         auto& transaction = *input.mutable_transaction();
         auto& transfer_contract = *transaction.mutable_transfer_trc20_contract();
         transfer_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
         transfer_contract.set_contract_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
         transfer_contract.set_to_address("TW1dU4L3eNm7Lw8WvieLKEHpXWAussRG9Z");
-        transfer_contract.set_amount(1000);
+        transfer_contract.set_amount(amount.data(), amount.size());
 
         transaction.set_timestamp(1539295479000);
 
