@@ -880,3 +880,145 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
 
     ASSERT_FALSE(result);
 }
+
+TEST(BitcoinSigning, SignLitecoinReal_a85f) {    
+    auto coin = TWCoinTypeLitecoin;
+    auto ownAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00";
+    auto ownPrivateKey = "b820f41f96c8b7442f3260acd23b3897e1450b8c7c6580136a3c2d3a14e34674";
+
+    // Setup input
+    Proto::SigningInput input;
+    input.set_coin_type(coin);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(3'899'774);
+    input.set_use_max_amount(true);
+    input.set_byte_fee(1);
+    input.set_to_address("ltc1q0dvup9kzplv6yulzgzzxkge8d35axkq4n45hum");
+    input.set_change_address(ownAddress);
+
+    auto privKey = parse_hex(ownPrivateKey);
+    input.add_private_key(privKey.data(), privKey.size());
+
+    auto utxo0Script = Script::buildForAddress(ownAddress, coin);
+    Data keyHash0;
+    EXPECT_TRUE(utxo0Script.matchPayToWitnessPublicKeyHash(keyHash0));
+    EXPECT_EQ(hex(keyHash0), "5c74be45eb45a3459050667529022d9df8a1ecff");
+
+    auto redeemScript = Script::buildPayToPublicKeyHash(keyHash0);
+    auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
+    (*input.mutable_scripts())[std::string(keyHash0.begin(), keyHash0.end())] = scriptString;
+
+    auto utxo0 = input.add_utxo();
+    utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo0->set_amount(3'900'000);
+    auto hash0 = parse_hex("7051cd18189401a844abf0f9c67e791315c4c154393870453f8ad98a818efdb5");
+    std::reverse(hash0.begin(), hash0.end());
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
+    utxo0->mutable_out_point()->set_index(9);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX - 1);
+
+    // set plan, to match real tx
+    input.mutable_plan()->set_available_amount(3'900'000);
+    input.mutable_plan()->set_amount(3'899'774);
+    input.mutable_plan()->set_fee(226);
+    input.mutable_plan()->set_change(0);
+    input.mutable_plan()->add_utxos();
+    *input.mutable_plan()->mutable_utxos(0) = input.utxo(0);
+    EXPECT_TRUE(verifyPlan(input.plan(), {3'900'000}, 3'899'774, 226));
+
+    // Sign
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
+
+    ASSERT_TRUE(result) << result.error();
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signer.encodeTx(signedTx, serialized);
+
+    // https://blockchair.com/litecoin/transaction/a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "b5fd8e818ad98a3f4570383954c1c41513797ec6f9f0ab44a801941818cd5170"  "09000000"  "00"  ""  "feffffff"
+        "01" // outputs
+            "7e813b0000000000"  "16"  "00147b59c096c20fd9a273e240846b23276c69d35815"
+        // witness
+            "02"
+                "47"  "3044022029153096af176f9cca0ba9b827e947689a8bb8d11dda570c880f9108bc590b3002202410c78b666722ade1ef4547ad85a128ddcbd4695c40f942457bea3d043b9bb301"
+                "21"  "036739829f2cfec79cfe6aaf1c22ecb7d4867dfd8ab4deb7121b36a00ab646caed"
+        "00000000" // nLockTime
+    );
+}
+
+TEST(BitcoinSigning, SignLitecoinReal_8435) {
+    auto coin = TWCoinTypeLitecoin;
+    auto ownAddress = "ltc1q0dvup9kzplv6yulzgzzxkge8d35axkq4n45hum";
+    auto ownPrivateKey = "690b34763f34e0226ad2a4d47098269322e0402f847c97166e8f39959fcaff5a";
+
+    // Setup input
+    Proto::SigningInput input;
+    input.set_coin_type(coin);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_amount(1'200'000);
+    input.set_use_max_amount(false);
+    input.set_byte_fee(1);
+    input.set_to_address("ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00");
+    input.set_change_address(ownAddress);
+
+    auto privKey = parse_hex(ownPrivateKey);
+    input.add_private_key(privKey.data(), privKey.size());
+
+    auto utxo0Script = Script::buildForAddress(ownAddress, coin);
+    Data keyHash0;
+    EXPECT_TRUE(utxo0Script.matchPayToWitnessPublicKeyHash(keyHash0));
+    EXPECT_EQ(hex(keyHash0), "7b59c096c20fd9a273e240846b23276c69d35815");
+
+    auto redeemScript = Script::buildPayToPublicKeyHash(keyHash0);
+    auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
+    (*input.mutable_scripts())[std::string(keyHash0.begin(), keyHash0.end())] = scriptString;
+
+    auto utxo0 = input.add_utxo();
+    utxo0->set_script(utxo0Script.bytes.data(), utxo0Script.bytes.size());
+    utxo0->set_amount(3'899'774);
+    auto hash0 = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
+    std::reverse(hash0.begin(), hash0.end());
+    utxo0->mutable_out_point()->set_hash(hash0.data(), hash0.size());
+    utxo0->mutable_out_point()->set_index(0);
+    utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
+
+    {
+        // test plan (but do not reuse plan result)
+        auto plan = TransactionBuilder::plan(input);
+        EXPECT_TRUE(verifyPlan(plan, {3'899'774}, 1'200'000, 141));
+    }
+
+    // Sign
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)); 
+    auto result = signer.sign();
+
+    ASSERT_TRUE(result) << result.error();
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signer.encodeTx(signedTx, serialized);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{222, 113, 141}));
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
+
+    // https://blockchair.com/litecoin/transaction/8435d205614ee70066060734adf03af4194d0c3bc66dd01bb124ab7fd25e2ef8
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8"  "00000000"  "00"  ""  "ffffffff"
+        "02" // outputs
+            "804f120000000000"  "16"  "00145c74be45eb45a3459050667529022d9df8a1ecff"
+            "7131290000000000"  "16"  "00147b59c096c20fd9a273e240846b23276c69d35815"
+        // witness
+            "02"
+                "47"  "304402204139b82927dd80445f27a5d2c29fa4881dbd2911714452a4a706145bc43cc4bf022016fbdf4b09bc5a9c43e79edb1c1061759779a20c35535082bdc469a61ed0771f01"
+                "21"  "02499e327a05cc8bb4b3c34c8347ecfcb152517c9927c092fa273be5379fde3226"
+        "00000000" // nLockTime
+    );
+}

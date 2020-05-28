@@ -217,14 +217,13 @@ void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat) {
         for (auto& input: tx.inputs) {
             data.clear();
             encodeVarInt(input.scriptWitness.size(), data);
-            std::cout << "            \"" << hex(data) << "\"";
+            std::cout << "            \"" << hex(data) << "\"\n";
             for (auto& item: input.scriptWitness) {
                 data.clear();
                 encodeVarInt(item.size(), data);
-                std::cout << "  \"" << hex(data) << "\"";
-                std::cout << "  \"" << hex(item) << "\"";
+                std::cout << "                \"" << hex(data) << "\"";
+                std::cout << "  \"" << hex(item) << "\"\n";
             }
-            std::cout << "\n";
         }
     }
 
