@@ -7,6 +7,7 @@
 #include "Bitcoin/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
+#include "uint256.h"
 #include "proto/Tron.pb.h"
 #include "Tron/Signer.h"
 
@@ -315,7 +316,8 @@ TEST(TronSigner, SignTransferTrc20Contract) {
     transfer_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
     transfer_contract.set_contract_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
     transfer_contract.set_to_address("TW1dU4L3eNm7Lw8WvieLKEHpXWAussRG9Z");
-    transfer_contract.set_amount(1000);
+    Data amount = store(uint256_t(1000));
+    transfer_contract.set_amount(std::string(amount.begin(), amount.end()));
 
     transaction.set_timestamp(1539295479000);
 
