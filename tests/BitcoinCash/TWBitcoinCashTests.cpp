@@ -129,15 +129,16 @@ TEST(BitcoinCash, SignTransaction) {
     Proto::SigningOutput output;
     ANY_SIGN(input, TWCoinTypeBitcoinCash);
 
-    ASSERT_EQ(output.encoded().length(), 226);
+    EXPECT_EQ(output.transaction().outputs_size(), 2);
+    EXPECT_EQ(output.transaction().outputs(0).value(), amount);
+    EXPECT_EQ(output.transaction().outputs(1).value(), 4325);
+    EXPECT_EQ(output.encoded().length(), 226);
     ASSERT_EQ(hex(output.encoded()),
         "01000000"
         "01"
             "e28c2b955293159898e34c6840d99bf4d390e2ee1c6f606939f18ee1e2000d05" "02000000" "6b483045022100b70d158b43cbcded60e6977e93f9a84966bc0cec6f2dfd1463d1223a90563f0d02207548d081069de570a494d0967ba388ff02641d91cadb060587ead95a98d4e3534121038eab72ec78e639d02758e7860cdec018b49498c307791f785aa3019622f4ea5b" "ffffffff"
         "02"
-            // amount 600
             "5802000000000000" "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac"
-            // change 4325; available 5151; fee 226
             "e510000000000000" "1976a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac"
         "00000000");
 }

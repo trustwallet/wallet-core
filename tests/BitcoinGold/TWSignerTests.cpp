@@ -18,6 +18,7 @@
 #include "Bitcoin/TransactionSigner.h"
 #include "HexCoding.h"
 #include "../interface/TWTestUtilities.h"
+#include "../Bitcoin/TxComparisonHelper.h"
 
 using namespace TW;
 using namespace TW::Bitcoin;
@@ -57,6 +58,19 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
     utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(0xfffffffd);
 
+
+    Proto::TransactionPlan plan;
+    {
+        // try plan first
+        ANY_PLAN(input, plan, TWCoinTypeGroestlcoin);
+        EXPECT_TRUE(verifyPlan(plan, {99'000}, amount, 141));
+    }
+
+    // Supply plan for signing, to match fee of previously-created real TX
+    *input.mutable_plan() = plan;
+    input.mutable_plan()->set_fee(149);
+    input.mutable_plan()->set_change(88851);
+
     // Sign
     auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
     txSigner.transaction.lockTime = 0x00098971;
@@ -67,17 +81,20 @@ TEST(TWBitcoinGoldSigner, SignTransaction) {
 
     Data serialized;
     txSigner.encodeTx(signedTx, serialized);
-    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
-        "01000000" // version
-        "0001" // marker & flag
-        "01" // inputs
-            "1d4653041a1915b3a52d47aeaa119c8f79ed7634a93692a6e811173067464f03"  "01000000"  "00"  ""  "fdffffff"
-        "02" // outputs
-            "1027000000000000"  "16"  "0014db746a75d9aae8995d135b1e19a04d7765242a8f"
-            "1b5b010000000000"  "16"  "0014ebae10950c8a35a506e0e265b928305233e802ab"
-        // witness
-            "02"  "48"  "3045022100f5f214c170b50323541da95e7b20451b42b6b7b55831b7a0c06451d37ff9390202204e85a186ec03615eba395e833d4773d83b066de0346218fbb69916868eec79e941"  "21"  "03e00b5dec8078d526fba090247bd92db6b67a4dd1953b788cea9b52de9471b8cf"
-        "71890900" // nLockTime
-    );
+    // BitcoinGold Mainnet: https://btg2.trezor.io/tx/db26faec66d070045df0da56140349beb5a12bd14bca12b162fded8f84d18afa
+    EXPECT_EQ(serialized.size(), 222);
+    ASSERT_EQ(hex(serialized),
+        "01000000"
+        "0001"
+        "01"
+            "1d4653041a1915b3a52d47aeaa119c8f79ed7634a93692a6e811173067464f03" "01000000" "00" "fdffffff"
+        "02"
+            "1027000000000000" "160014db746a75d9aae8995d135b1e19a04d7765242a8f"
+            "135b010000000000" "160014ebae10950c8a35a506e0e265b928305233e802ab"
+        "02"
+            "4730440220325c56363b17e1b1329efeb400c0933a3d9adfb304f29889b3ef01084aef19e302202a69d9be9ef668b5a5517fbfa42e1fc26b3f8b582c721bd1eabd721322bc2b6c41"
+            "2103e00b5dec8078d526fba090247bd92db6b67a4dd1953b788cea9b52de9471b8cf"
+        "71890900"
+   );
 }
             
