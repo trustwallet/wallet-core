@@ -157,8 +157,8 @@ protocol::TriggerSmartContract to_internal(const Proto::TriggerSmartContract& tr
 
 protocol::TriggerSmartContract to_internal(const Proto::TransferTRC20Contract& transferTrc20Contract) {
     auto toAddress = Base58::bitcoin.decodeCheck(transferTrc20Contract.to_address());
-    Data amount;
-    encode64BE(transferTrc20Contract.amount(), amount);
+    // amount is 256 bits, big endian
+    Data amount = data(transferTrc20Contract.amount());
 
     // Encode smart contract call parameters
     auto contract_params = parse_hex(TRANSFER_TOKEN_FUNCTION);

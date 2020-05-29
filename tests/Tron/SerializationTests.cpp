@@ -8,6 +8,7 @@
 #include "Tron/Signer.h"
 #include "PrivateKey.h"
 #include "HexCoding.h"
+#include "uint256.h"
 
 #include <gtest/gtest.h>
 
@@ -151,7 +152,8 @@ namespace TW::Tron {
         transfer_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
         transfer_contract.set_contract_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
         transfer_contract.set_to_address("TW1dU4L3eNm7Lw8WvieLKEHpXWAussRG9Z");
-        transfer_contract.set_amount(1000);
+        Data amount = store(uint256_t(1000));
+        transfer_contract.set_amount(std::string(amount.begin(), amount.end()));
 
         transaction.set_timestamp(1539295479000);
 
@@ -172,5 +174,36 @@ namespace TW::Tron {
         const auto output = Signer::sign(input);
 
         ASSERT_EQ(output.json(), R"({"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.TriggerSmartContract","value":{"contract_address":"41521ea197907927725ef36d70f25f850d1659c7c7","data":"a9059cbb000000000000000000000041dbd7c53729b3310e1843083000fa84abad99696100000000000000000000000000000000000000000000000000000000000003e8","owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db"}},"type":"TriggerSmartContract"}],"expiration":1539331479000,"ref_block_bytes":"7b3b","ref_block_hash":"b21ace8d6ac20e7e","timestamp":1539295479000},"signature":["bec790877b3a008640781e3948b070740b1f6023c29ecb3f7b5835433c13fc5835e5cad3bd44360ff2ddad5ed7dc9d7dee6878f90e86a40355b7697f5954b88c01"],"txID":"0d644290e3cf554f6219c7747f5287589b6e7e30e1b02793b48ba362da6a5058"})");
+    }
+
+    TEST(TronSerialization, SignTransferTrc20Contract_LargeAmount) {
+        auto input = Proto::SigningInput();
+        auto& transaction = *input.mutable_transaction();
+        auto& transfer_contract = *transaction.mutable_transfer_trc20_contract();
+        transfer_contract.set_owner_address("TJRyWwFs9wTFGZg3JbrVriFbNfCug5tDeC");
+        transfer_contract.set_contract_address("THTR75o8xXAgCTQqpiot2AFRAjvW1tSbVV");
+        transfer_contract.set_to_address("TW1dU4L3eNm7Lw8WvieLKEHpXWAussRG9Z");
+        Data amount = store(uint256_t("10000000000000000000000")); // over 64 bits, corresponds to 10000 in case of 18 decimals
+        transfer_contract.set_amount(std::string(amount.begin(), amount.end()));
+
+        transaction.set_timestamp(1539295479000);
+
+        auto& blockHeader = *transaction.mutable_block_header();
+        blockHeader.set_timestamp(1539295479000);
+        const auto txTrieRoot = parse_hex("64288c2db0641316762a99dbb02ef7c90f968b60f9f2e410835980614332f86d");
+        blockHeader.set_tx_trie_root(txTrieRoot.data(), txTrieRoot.size());
+        const auto parentHash = parse_hex("00000000002f7b3af4f5f8b9e23a30c530f719f165b742e7358536b280eead2d");
+        blockHeader.set_parent_hash(parentHash.data(), parentHash.size());
+        blockHeader.set_number(3111739);
+        const auto witnessAddress = parse_hex("415863f6091b8e71766da808b1dd3159790f61de7d");
+        blockHeader.set_witness_address(witnessAddress.data(), witnessAddress.size());
+        blockHeader.set_version(3);
+
+        const auto privateKey = PrivateKey(parse_hex("2d8f68944bdbfbc0769542fba8fc2d2a3de67393334471624364c7006da2aa54"));
+        input.set_private_key(privateKey.bytes.data(), privateKey.bytes.size());
+
+        const auto output = Signer::sign(input);
+
+        ASSERT_EQ(output.json(), R"({"raw_data":{"contract":[{"parameter":{"type_url":"type.googleapis.com/protocol.TriggerSmartContract","value":{"contract_address":"41521ea197907927725ef36d70f25f850d1659c7c7","data":"a9059cbb000000000000000000000041dbd7c53729b3310e1843083000fa84abad99696100000000000000000000000000000000000000000000021e19e0c9bab2400000","owner_address":"415cd0fb0ab3ce40f3051414c604b27756e69e43db"}},"type":"TriggerSmartContract"}],"expiration":1539331479000,"ref_block_bytes":"7b3b","ref_block_hash":"b21ace8d6ac20e7e","timestamp":1539295479000},"signature":["8207cbae6aff799cfefa1ab4d8a0c52b6a59be43491bd25b4f03754f0e8115b006b5f1393a3934ec3489f5d3c272a7af42658bdc165dc632b36114bd3180da2e00"],"txID":"774422d8d205760876496f22b7d4395cfceda03f139b8362a3693f1f405f0c36"})");
     }
 }
