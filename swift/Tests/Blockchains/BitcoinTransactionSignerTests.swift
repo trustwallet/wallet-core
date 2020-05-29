@@ -39,7 +39,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .bitcoin)
 
         XCTAssertEqual(plan.amount, 1000)
-        XCTAssertEqual(plan.fee, 226)
+        XCTAssertEqual(plan.fee, 147)
         XCTAssertEqual(plan.change, 0)
 
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)

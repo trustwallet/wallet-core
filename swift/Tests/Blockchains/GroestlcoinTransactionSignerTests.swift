@@ -34,7 +34,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
         let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .groestlcoin)
 
         XCTAssertEqual(plan.amount, 2500)
-        XCTAssertEqual(plan.fee, 226)
+        XCTAssertEqual(plan.fee, 145)
         XCTAssertEqual(plan.change, 2048)
 
         // https://blockbook.groestlcoin.org/tx/40b539c578934c9863a93c966e278fbeb3e67b0da4eb9e3030092c1b717e7a64
@@ -82,7 +82,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
         let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .groestlcoin)
 
         XCTAssertEqual(plan.amount, 2500)
-        XCTAssertEqual(plan.fee, 226)
+        XCTAssertEqual(plan.fee, 221)
         XCTAssertEqual(plan.change, 2274)
 
         // https://blockbook.groestlcoin.org/tx/74a0dd12bc178cfcc1e0982a2a5b2c01a50e41abbb63beb031bcd21b3e28eac0
@@ -130,7 +130,7 @@ class GroestlcoinTransactionSignerTests: XCTestCase {
         let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .groestlcoin)
 
         XCTAssertEqual(plan.amount, 5000)
-        XCTAssertEqual(plan.fee, 226)
+        XCTAssertEqual(plan.fee, 167)
         XCTAssertEqual(plan.change, 4774)
 
         // https://blockbook.groestlcoin.org/tx/8f4ecc7844e19aa1d3183e47eee89d795f9e7c875a55ec0203946d6c9eb06895
