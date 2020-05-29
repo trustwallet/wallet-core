@@ -34,6 +34,7 @@ include/TrustWalletCore/TW*Proto.h
 # Code coverage files
 coverage.info
 coverage/
+swift/test_output/
 
 # Sourcetrail
 *.srctrldb
