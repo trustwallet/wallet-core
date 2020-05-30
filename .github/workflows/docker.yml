@@ -15,10 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build and push Docker images
+    - name: Build Docker images
       uses: docker/build-push-action@v1.1.0
       with:
-        # Docker repository to tag the image with
         repository: trustwallet
         tags: latest
         push: false
