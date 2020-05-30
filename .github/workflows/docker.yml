@@ -1,0 +1,24 @@
+name: Docker
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - Dockerfile
+  pull_request:
+    branches: [ master ]
+    paths: 
+      - Dockerfile
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v1.1.0
+      with:
+        # Docker repository to tag the image with
+        repository: trustwallet
+        tags: latest
+        push: false
