@@ -54,6 +54,35 @@ TEST(SolanaSigner, SingleSignTransaction) {
     }
 }
 
+TEST(SolanaSigner, SignTransactionToSelf) {
+    const auto privateKey =
+        PrivateKey(Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746"));
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+    ASSERT_EQ(Data(publicKey.bytes.begin(), publicKey.bytes.end()),
+              Base58::bitcoin.decode("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu"));
+
+    const auto from = Address(publicKey);
+    auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    auto transaction = Transaction(from, to, 42, recentBlockhash);
+
+    std::vector<PrivateKey> signerKeys;
+    signerKeys.push_back(privateKey);
+    Signer::sign(signerKeys, transaction);
+
+    std::vector<Signature> expectedSignatures;
+    Signature expectedSignature(
+        "3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
+    expectedSignatures.push_back(expectedSignature);
+    ASSERT_EQ(transaction.signatures, expectedSignatures);
+
+    auto expectedString =
+        "EKUmihvvUPKVN4GSCFwZRtz8WiyAuPvthW69Smo19SCjcPLQ6T7EVZd1HU71WAoe1bfgmPNS5JhU7ZLA9XKG3qbZqe"
+        "EFJ1xmRwW9ZKw8SKMAL6VRWxp87oLu7PSmf5b8R34vCaww3XLKtZkoP49a7TUK31DqPN5xJCceMB3BZJyaojQaKU8n"
+        "UkzSGf89LY6abZXp9krKAebvc6bSMzTP8SHSvbmZbf3VtejmpQeN9X6e7WVDn6oDa2bGT";
+    ASSERT_EQ(transaction.serialize(), expectedString);
+}
+
 TEST(SolanaSigner, MultipleSignTransaction) {
     const auto privateKey0 =
         PrivateKey(Base58::bitcoin.decode("96PKHuMPtniu1T74RvUNkbDPXPPRZ8Mg1zXwciCAyaDq"));

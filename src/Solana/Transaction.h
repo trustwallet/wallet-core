@@ -58,9 +58,9 @@ struct CompiledInstruction {
         : programIdIndex(programIdIndex), accounts(accounts), data(data) {}
 
     // This constructor creates a default System Transfer instruction
-    CompiledInstruction(uint8_t programIdIndex, uint64_t value) : programIdIndex(programIdIndex) {
-        std::vector<uint8_t> accounts = {0, 1};
-        this->accounts = accounts;
+    CompiledInstruction(uint8_t programIdIndex, Data accountIndexes, uint64_t value)
+        : programIdIndex(programIdIndex) {
+        this->accounts = accountIndexes;
         SystemInstruction type = Transfer;
         auto data = Data();
         encode32LE(static_cast<uint32_t>(type), data);
@@ -198,10 +198,21 @@ class Message {
         MessageHeader header = {1, 0, 1};
         this->header = header;
         auto programId = Address("11111111111111111111111111111111");
-        std::vector<Address> accountKeys = {from, to, programId};
+        std::vector<Address> accountKeys;
+        Data accountIndexes;
+        uint8_t programIdIndex;
+        if (from.vector() != to.vector()) {
+            accountKeys = {from, to, programId};
+            accountIndexes = {0, 1};
+            programIdIndex = 2;
+        } else {
+            accountKeys = {from, programId};
+            accountIndexes = {0, 0};
+            programIdIndex = 1;
+        }
         this->accountKeys = accountKeys;
         std::vector<CompiledInstruction> instructions;
-        auto instruction = CompiledInstruction(2, value);
+        auto instruction = CompiledInstruction(programIdIndex, accountIndexes, value);
         instructions.push_back(instruction);
         this->instructions = instructions;
     }

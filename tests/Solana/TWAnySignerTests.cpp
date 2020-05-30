@@ -36,6 +36,26 @@ TEST(TWAnySignerSolana, SignTransfer) {
     ASSERT_EQ(output.encoded(), expectedString);
 }
 
+TEST(TWAnySignerSolana, SignTransferToSelf) {
+    auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
+    auto input = Proto::SigningInput();
+
+    auto& message = *input.mutable_transfer_transaction();
+    message.set_recipient("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    message.set_value((uint64_t)42L);
+    input.set_private_key(privateKey.data(), privateKey.size());
+    input.set_recent_blockhash("11111111111111111111111111111111");
+
+    Proto::SigningOutput output;
+    ANY_SIGN(input, TWCoinTypeSolana);
+
+    auto expectedString =
+        "EKUmihvvUPKVN4GSCFwZRtz8WiyAuPvthW69Smo19SCjcPLQ6T7EVZd1HU71WAoe1bfgmPNS5JhU7ZLA9XKG3qbZqe"
+        "EFJ1xmRwW9ZKw8SKMAL6VRWxp87oLu7PSmf5b8R34vCaww3XLKtZkoP49a7TUK31DqPN5xJCceMB3BZJyaojQaKU8n"
+        "UkzSGf89LY6abZXp9krKAebvc6bSMzTP8SHSvbmZbf3VtejmpQeN9X6e7WVDn6oDa2bGT";
+    ASSERT_EQ(output.encoded(), expectedString);
+}
+
 TEST(TWAnySignerSolana, SignDelegateStakeTransaction) {
     auto privateKey = Base58::bitcoin.decode("AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746");
     auto input = Solana::Proto::SigningInput();
