@@ -48,6 +48,23 @@ TEST(SolanaTransaction, TransferSerializeTransaction) {
     ASSERT_EQ(transaction.serialize(), expectedString);
 }
 
+TEST(SolanaTransaction, TransferTransactionPayToSelf) {
+    auto from = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    auto to = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    Solana::Hash recentBlockhash("11111111111111111111111111111111");
+    auto transaction = Transaction(from, to, 42, recentBlockhash);
+    Signature signature(
+        "3CFWDEK51noPJP4v2t8JZ3qj7kC7kLKyws9akfHMyuJnQ35EtzBptHqvaHfeswiLsvUSxzMVNoj4CuRxWtDD9zB1");
+    transaction.signatures.clear();
+    transaction.signatures.push_back(signature);
+
+    auto expectedString =
+        "EKUmihvvUPKVN4GSCFwZRtz8WiyAuPvthW69Smo19SCjcPLQ6T7EVZd1HU71WAoe1bfgmPNS5JhU7ZLA9XKG3qbZqe"
+        "EFJ1xmRwW9ZKw8SKMAL6VRWxp87oLu7PSmf5b8R34vCaww3XLKtZkoP49a7TUK31DqPN5xJCceMB3BZJyaojQaKU8n"
+        "UkzSGf89LY6abZXp9krKAebvc6bSMzTP8SHSvbmZbf3VtejmpQeN9X6e7WVDn6oDa2bGT";
+    ASSERT_EQ(transaction.serialize(), expectedString);
+}
+
 TEST(SolanaTransaction, StakeSerializeTransaction) {
     auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
     auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
