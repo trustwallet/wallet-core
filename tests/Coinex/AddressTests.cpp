@@ -15,7 +15,7 @@
 namespace TW::Cosmos {
 
 TEST(Address, CoinexValid) {
-    ASSERT_TRUE(Address::isValid("cettest1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
+    ASSERT_TRUE(Address::isValid("coinex1pxf3sgcxpu99e4havmeus7gmmt8u3j9j6ra6me"));
 }
 
 TEST(Address, CoinexInvalid) {

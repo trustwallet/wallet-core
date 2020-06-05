@@ -89,6 +89,21 @@ Signer::Signer(Proto::SigningInput&& input) {
             message.set_type_prefix(COINEX_PREFIX_PROPOSAL_VOTE_MESSAGE);
         }
         *input.mutable_proposal_vote_message() = message;
+    } else if(input.has_create_order_and_set_referee_message()) {
+        auto message = input.create_order_and_set_referee_message();
+        if (message.type_prefix_1().empty()) {
+            message.set_type_prefix_1(COINEX_PREFIX_SET_REFEREE_MESSAGE);
+        }
+        if (message.type_prefix_2().empty()) {
+            message.set_type_prefix_2(COINEX_PREFIX_CREATE_ORDER_MESSAGE);
+        }
+        *input.mutable_create_order_and_set_referee_message() = message;
+    } else if(input.has_set_referee_message()) {
+         auto message = input.set_referee_message();
+         if (message.type_prefix().empty()) {
+             message.set_type_prefix(COINEX_PREFIX_SET_REFEREE_MESSAGE);
+         }
+         *input.mutable_set_referee_message() = message;
     }
     this->input = input;
 }
@@ -135,6 +150,10 @@ json Signer::buildTransactionJSON(const Data& signature) const {
         *transaction.mutable_cancel_order_message() = input.cancel_order_message();
     } else if (input.has_proposal_vote_message()) {
         *transaction.mutable_proposal_vote_message() = input.proposal_vote_message();
+    } else if (input.has_create_order_and_set_referee_message()) {
+        *transaction.mutable_create_order_and_set_referee_message() = input.create_order_and_set_referee_message();
+    } else if (input.has_set_referee_message()) {
+        *transaction.mutable_set_referee_message() = input.set_referee_message();
     }
 
     *transaction.mutable_signature() = sig;

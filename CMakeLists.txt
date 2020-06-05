@@ -21,6 +21,11 @@ endif()
 include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)
 
+# ----add config for libsecp256k1------
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+# --------------end--------------------
+
 add_subdirectory(trezor-crypto)
 
 macro(find_host_package)
@@ -53,13 +58,13 @@ if(${ANDROID})
     add_library(TrustWalletCore SHARED ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
     find_library(log-lib log)
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf ${log-lib} Boost::boost)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf secp256k1 ${log-lib} Boost::boost)
 else()
     message("Configuring standalone")
     file(GLOB_RECURSE sources src/*.c src/*.cc src/*.cpp src/*.h)
     add_library(TrustWalletCore ${sources} ${PROTO_SRCS} ${PROTO_HDRS})
 
-    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf Boost::boost)
+    target_link_libraries(TrustWalletCore PRIVATE TrezorCrypto protobuf secp256k1 Boost::boost)
 endif()
 target_compile_options(TrustWalletCore PRIVATE "-Wall")
 
@@ -80,6 +85,7 @@ target_include_directories(TrustWalletCore
         ${CMAKE_CURRENT_SOURCE_DIR}/jni/cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/build/local/include
 )
+
 
 if(NOT ANDROID AND NOT IOS_PLATFORM)
     add_subdirectory(tests)

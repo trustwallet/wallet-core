@@ -81,6 +81,9 @@ class PrivateKey {
 
     /// Signs a digest using given ECDSA curve, returns schnorr signature
     Data signSchnorr(const Data& message, TWCurve curve) const;
+
+    /// Signs a digest using given ECDSA curve, returns schnorr signature
+    Data signBchSchnorr(const Data& message, TWCurve curve) const;
 };
 
 inline bool operator==(const PrivateKey& lhs, const PrivateKey& rhs) {

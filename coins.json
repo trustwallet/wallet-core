@@ -1147,6 +1147,28 @@
             "clientPublic": "",
             "clientDocs": "https://www.seele.pro/"
         }
+    },
+    {
+        "id": "freecash",
+        "name": "Free Cash",
+        "symbol": "FCH",
+        "decimals": 8,
+        "blockchain": "Bitcoin",
+        "derivationPath": "m/44'/485'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "p2pkhPrefix": 35,
+        "p2shPrefix": 5,
+        "hrp": "freecash",
+        "publicKeyHasher": "sha256ripemd",
+        "base58Hasher": "sha256d",
+        "xpub": "xpub",
+        "xprv": "xprv",
+        "explorer": "https://ifblock.io/fch/tx/",
+        "info": {
+            "url": "https://ifblock.io/fch"
+        }
     }
+
 
 ]

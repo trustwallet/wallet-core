@@ -30,6 +30,13 @@ add_library(TrezorCrypto
     src/schnorr.c
 )
 
+# ----add config for libsecp256k1------
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -lsecp256k1")
+
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+# --------------end--------------------
+
 target_compile_options(TrezorCrypto
     PRIVATE
         -W
@@ -52,6 +59,29 @@ target_compile_options(TrezorCrypto
         -Werror
 )
 
+# Source files
+if(${ANDROID})
+    target_link_libraries(TrezorCrypto
+        PUBLIC
+            #"/usr/local/lib/libsecp256k1.a"
+            #"/usr/local/lib/libsecp256k1.so"
+            #"/Users/zl/secp256k1/DEVICE_x86_64/lib/libsecp256k1.a"
+            #"/Users/zl/secp256k1/DEVICE_i686/lib/libsecp256k1.a"
+            #"/Users/zl/secp256k1/DEVICE_armv7a/lib/libsecp256k1.a"
+            #"/Users/zl/secp256k1/DEVICE_aarch64/lib/libsecp256k1.a"
+            #"/Users/zl/secp256k1/DEVICE_x86_64/lib/libsecp256k1.so"
+            #"/Users/zl/secp256k1/DEVICE_i686/lib/libsecp256k1.so"
+            #"/Users/zl/secp256k1/DEVICE_armv7a/lib/libsecp256k1.so"
+            #"/Users/zl/secp256k1/DEVICE_aarch64/lib/libsecp256k1.so"
+        )
+
+else()
+    target_link_libraries(TrezorCrypto
+        PUBLIC
+            "/usr/local/lib/libsecp256k1.dylib"
+        )
+endif()
+
 target_include_directories(TrezorCrypto
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -63,3 +93,4 @@ target_include_directories(TrezorCrypto
 if(NOT ANDROID AND NOT IOS_PLATFORM)
     add_subdirectory(tests)
 endif()
+

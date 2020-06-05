@@ -93,6 +93,10 @@ public extension CoinType {
             return WavesAddress(string: string)
         case .aeternity:
             return AeternityAddress(string: string)
+        case .seele:
+            return SeeleAddress(string: string)
+        case .freeCash:
+            return FreeCashAddress(string: string)
         }
     }
 }

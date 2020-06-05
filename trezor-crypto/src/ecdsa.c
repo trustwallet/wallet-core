@@ -27,6 +27,10 @@
 #include <string.h>
 #include <assert.h>
 
+// bch secp256k1 lib
+#include <secp256k1.h>
+#include <secp256k1_schnorr.h>
+
 #include "options.h"
 
 #include <TrezorCrypto/address.h>
@@ -1195,9 +1199,25 @@ int zil_schnorr_sign(const ecdsa_curve *curve, const uint8_t *priv_key, const ui
 int zil_schnorr_verify(const ecdsa_curve *curve, const uint8_t *pub_key, const uint8_t *sig, const uint8_t *msg, const uint32_t msg_len)
 {
 	schnorr_sign_pair sign;
-	
+
 	memcpy(sign.r, sig, 32);
 	memcpy(sign.s, sig + 32, 32);
 
 	return schnorr_verify(curve, pub_key, msg, msg_len, &sign);
 }
+
+int bch_schnorr_sign(const uint8_t *priv_key, const uint8_t *msg, uint8_t *sig)
+{
+    secp256k1_context *ctx = secp256k1_context_create(SECP256K1_CONTEXT_SIGN);
+    for (int i = 0; i < 20000; i++) {
+	    int success = secp256k1_schnorr_sign(ctx, (unsigned char*)sig, (unsigned char*)msg, (unsigned char*)priv_key, NULL, NULL);
+        if (success == 1) {
+            sig = (uint8_t *)sig;
+            break;
+        }
+        return -1;
+    }
+    return 0;
+}
+
+

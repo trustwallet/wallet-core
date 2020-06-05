@@ -20,6 +20,13 @@ android {
             minifyEnabled false
         }
     }
+
+    sourceSets {
+        main {
+            jni.srcDirs = []
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }
 
 dependencies {

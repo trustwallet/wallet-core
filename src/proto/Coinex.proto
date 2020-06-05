@@ -108,6 +108,32 @@ message ProposalVoteMessage {
     string type_prefix = 4;
 }
 
+// Message for DEX create order and set referee
+message CreateOrderAndSetRefereeMessage {
+    string sender = 1;
+    int64 identify = 2;
+    string trading_pair = 3;
+    int64 order_type = 4;
+    int64 price_precision = 5;
+    string price = 6;
+    string quantity = 7;
+    int64 side = 8;
+    string time_in_force = 9;
+    string exist_blocks = 10;
+    string referee = 11;
+
+    string type_prefix_1 = 12;//set referee
+    string type_prefix_2 = 13;//dex
+
+}
+
+// Message for set referee
+message SetRefereeMessage {
+    string sender = 1;
+    string referee = 2;
+
+    string type_prefix = 3;//set referee
+}
 
 // Transaction
 message Transaction {
@@ -126,6 +152,8 @@ message Transaction {
         CreateOrderMessage create_order_message = 11;
         CancelOrderMessage cancel_order_message = 12;
         ProposalVoteMessage proposal_vote_message = 13;
+        CreateOrderAndSetRefereeMessage create_order_and_set_referee_message = 14;
+        SetRefereeMessage set_referee_message = 15;
     }
 }
 
@@ -150,10 +178,12 @@ message SigningInput {
         CreateOrderMessage create_order_message = 14;
         CancelOrderMessage cancel_order_message = 15;
         ProposalVoteMessage proposal_vote_message = 16;
+        CreateOrderAndSetRefereeMessage create_order_and_set_referee_message = 17;
+        SetRefereeMessage set_referee_message = 18;
 
     }
     // default is cosmos-sdk/MsgSend
-    string type_prefix = 17;
+    string type_prefix = 19;
 }
 
 // Transaction signing output.

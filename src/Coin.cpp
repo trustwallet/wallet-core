@@ -6,6 +6,9 @@
 
 #include "Coin.h"
 
+#include "FreeCash/Address.h"
+#include "FreeCash/SegwitAddress.h"
+#include "FreeCash/CashAddress.h"
 #include "Aeternity/Address.h"
 #include "Aion/Address.h"
 #include "Bitcoin/Address.h"
@@ -38,6 +41,8 @@
 #include "Nebulas/Address.h"
 #include "FIO/Address.h"
 #include "Seele/Address.h"
+
+
 
 
 #include <TrustWalletCore/TWHRP.h>
@@ -174,6 +179,10 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
 
     case TWCoinTypeSeele:
         return Seele::Address::isValid(string);
+
+    case TWCoinTypeFreeCash:
+        return FreeCash::SegwitAddress::isValid(string, hrp) ||
+               FreeCash::Address::isValid(string, {{p2pkh}, {p2sh}});
     }
 }
 
@@ -310,6 +319,9 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey& publicKey) {
 
     case TWCoinTypeSeele:
         return Seele::Address(publicKey).string();
+
+    case TWCoinTypeFreeCash:
+        return FreeCash::Address(publicKey, p2pkh).string();
     }
 }
 

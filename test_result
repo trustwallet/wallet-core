@@ -1,0 +1,1206 @@
+[==========] Running 557 tests from 140 test cases.
+[----------] Global test environment set-up.
+[----------] 3 tests from ARKAddress
+[ RUN      ] ARKAddress.fromPrivateKey
+[       OK ] ARKAddress.fromPrivateKey (1 ms)
+[ RUN      ] ARKAddress.fromString
+[       OK ] ARKAddress.fromString (0 ms)
+[ RUN      ] ARKAddress.validation
+[       OK ] ARKAddress.validation (0 ms)
+[----------] 3 tests from ARKAddress (1 ms total)
+
+[----------] 1 test from ARKSigner
+[ RUN      ] ARKSigner.sign
+[       OK ] ARKSigner.sign (3 ms)
+[----------] 1 test from ARKSigner (4 ms total)
+
+[----------] 2 tests from AeternityAddress
+[ RUN      ] AeternityAddress.FromPublicKey
+[       OK ] AeternityAddress.FromPublicKey (0 ms)
+[ RUN      ] AeternityAddress.FromString
+[       OK ] AeternityAddress.FromString (0 ms)
+[----------] 2 tests from AeternityAddress (0 ms total)
+
+[----------] 4 tests from AeternitySigner
+[ RUN      ] AeternitySigner.Sign
+[       OK ] AeternitySigner.Sign (1 ms)
+[ RUN      ] AeternitySigner.SignTxWithZeroTtl
+[       OK ] AeternitySigner.SignTxWithZeroTtl (1 ms)
+[ RUN      ] AeternitySigner.SignTxWithZeroAmount
+[       OK ] AeternitySigner.SignTxWithZeroAmount (0 ms)
+[ RUN      ] AeternitySigner.SignTxWithZeroNonce
+[       OK ] AeternitySigner.SignTxWithZeroNonce (1 ms)
+[----------] 4 tests from AeternitySigner (3 ms total)
+
+[----------] 3 tests from AeternityTransaction
+[ RUN      ] AeternityTransaction.EncodeRlp
+[       OK ] AeternityTransaction.EncodeRlp (0 ms)
+[ RUN      ] AeternityTransaction.EncodeRlpWithZeroAmount
+[       OK ] AeternityTransaction.EncodeRlpWithZeroAmount (0 ms)
+[ RUN      ] AeternityTransaction.EncodeRlpWithZeroTtl
+[       OK ] AeternityTransaction.EncodeRlpWithZeroTtl (0 ms)
+[----------] 3 tests from AeternityTransaction (0 ms total)
+
+[----------] 3 tests from AionAddress
+[ RUN      ] AionAddress.FromPublicKey
+[       OK ] AionAddress.FromPublicKey (0 ms)
+[ RUN      ] AionAddress.FromString
+[       OK ] AionAddress.FromString (0 ms)
+[ RUN      ] AionAddress.isValid
+[       OK ] AionAddress.isValid (0 ms)
+[----------] 3 tests from AionAddress (0 ms total)
+
+[----------] 1 test from AionRLP
+[ RUN      ] AionRLP.EncodeLong
+[       OK ] AionRLP.EncodeLong (0 ms)
+[----------] 1 test from AionRLP (0 ms total)
+
+[----------] 2 tests from AionSigner
+[ RUN      ] AionSigner.Sign
+[       OK ] AionSigner.Sign (0 ms)
+[ RUN      ] AionSigner.SignWithData
+[       OK ] AionSigner.SignWithData (1 ms)
+[----------] 2 tests from AionSigner (1 ms total)
+
+[----------] 2 tests from AionTransaction
+[ RUN      ] AionTransaction.Encode
+[       OK ] AionTransaction.Encode (0 ms)
+[ RUN      ] AionTransaction.EncodeWithSignature
+[       OK ] AionTransaction.EncodeWithSignature (0 ms)
+[----------] 2 tests from AionTransaction (0 ms total)
+
+[----------] 10 tests from Signer
+[ RUN      ] Signer.CosmosTransactionSign
+[       OK ] Signer.CosmosTransactionSign (5 ms)
+[ RUN      ] Signer.BinanceTransactionSign
+[       OK ] Signer.BinanceTransactionSign (5 ms)
+[ RUN      ] Signer.EthereumTransactionSign
+[       OK ] Signer.EthereumTransactionSign (2 ms)
+[ RUN      ] Signer.NetworkNotSupported
+[       OK ] Signer.NetworkNotSupported (0 ms)
+[ RUN      ] Signer.InvalidJsonFormat
+[       OK ] Signer.InvalidJsonFormat (0 ms)
+[ RUN      ] Signer.Hash
+[       OK ] Signer.Hash (0 ms)
+[ RUN      ] Signer.Sign
+[       OK ] Signer.Sign (1 ms)
+[ RUN      ] Signer.Sign
+[       OK ] Signer.Sign (2 ms)
+[ RUN      ] Signer.Sign
+[       OK ] Signer.Sign (2 ms)
+[ RUN      ] Signer.Sign
+[       OK ] Signer.Sign (1 ms)
+[----------] 10 tests from Signer (18 ms total)
+
+[----------] 4 tests from BinanceSigner
+[ RUN      ] BinanceSigner.Sign
+[       OK ] BinanceSigner.Sign (1 ms)
+[ RUN      ] BinanceSigner.Build
+[       OK ] BinanceSigner.Build (3 ms)
+[ RUN      ] BinanceSigner.BuildSend
+[       OK ] BinanceSigner.BuildSend (3 ms)
+[ RUN      ] BinanceSigner.BuildSend2
+[       OK ] BinanceSigner.BuildSend2 (17 ms)
+[----------] 4 tests from BinanceSigner (24 ms total)
+
+[----------] 6 tests from SegwitAddress
+[ RUN      ] SegwitAddress.ValidChecksum
+[       OK ] SegwitAddress.ValidChecksum (0 ms)
+[ RUN      ] SegwitAddress.InvalidChecksum
+[       OK ] SegwitAddress.InvalidChecksum (0 ms)
+[ RUN      ] SegwitAddress.ValidAddress
+[       OK ] SegwitAddress.ValidAddress (0 ms)
+[ RUN      ] SegwitAddress.InvalidAddress
+[       OK ] SegwitAddress.InvalidAddress (0 ms)
+[ RUN      ] SegwitAddress.InvalidAddressEncoding
+[       OK ] SegwitAddress.InvalidAddressEncoding (1 ms)
+[ RUN      ] SegwitAddress.LegacyAddress
+[       OK ] SegwitAddress.LegacyAddress (0 ms)
+[----------] 6 tests from SegwitAddress (1 ms total)
+
+[----------] 4 tests from TransactionPlan
+[ RUN      ] TransactionPlan.NonMaxAmount
+[       OK ] TransactionPlan.NonMaxAmount (0 ms)
+[ RUN      ] TransactionPlan.MaxAmount
+[       OK ] TransactionPlan.MaxAmount (0 ms)
+[ RUN      ] TransactionPlan.MaxAmountDoge
+[       OK ] TransactionPlan.MaxAmountDoge (0 ms)
+[ RUN      ] TransactionPlan.AmountDecred
+[       OK ] TransactionPlan.AmountDecred (0 ms)
+[----------] 4 tests from TransactionPlan (0 ms total)
+
+[----------] 12 tests from UnspentSelector
+[ RUN      ] UnspentSelector.SelectUnpsents1
+[       OK ] UnspentSelector.SelectUnpsents1 (0 ms)
+[ RUN      ] UnspentSelector.SelectUnpsents2
+[       OK ] UnspentSelector.SelectUnpsents2 (0 ms)
+[ RUN      ] UnspentSelector.SelectUnpsents3
+[       OK ] UnspentSelector.SelectUnpsents3 (0 ms)
+[ RUN      ] UnspentSelector.SelectUnpsents4
+[       OK ] UnspentSelector.SelectUnpsents4 (0 ms)
+[ RUN      ] UnspentSelector.SelectUnpsents5
+[       OK ] UnspentSelector.SelectUnpsents5 (0 ms)
+[ RUN      ] UnspentSelector.SelectUnpsentsInsufficient
+[       OK ] UnspentSelector.SelectUnpsentsInsufficient (0 ms)
+[ RUN      ] UnspentSelector.SelectCustomCase
+[       OK ] UnspentSelector.SelectCustomCase (0 ms)
+[ RUN      ] UnspentSelector.SelectMaxCase
+[       OK ] UnspentSelector.SelectMaxCase (0 ms)
+[ RUN      ] UnspentSelector.SelectZcashUnpsents
+[       OK ] UnspentSelector.SelectZcashUnpsents (0 ms)
+[ RUN      ] UnspentSelector.SelectGroestlUnpsents
+[       OK ] UnspentSelector.SelectGroestlUnpsents (0 ms)
+[ RUN      ] UnspentSelector.SelectZcashMaxUnpsents
+[       OK ] UnspentSelector.SelectZcashMaxUnpsents (1 ms)
+[ RUN      ] UnspentSelector.SelectZcashMaxUnpsents2
+[       OK ] UnspentSelector.SelectZcashMaxUnpsents2 (0 ms)
+[----------] 12 tests from UnspentSelector (1 ms total)
+
+[----------] 4 tests from BravoAddress
+[ RUN      ] BravoAddress.Invalid
+[       OK ] BravoAddress.Invalid (0 ms)
+[ RUN      ] BravoAddress.Base58
+[       OK ] BravoAddress.Base58 (0 ms)
+[ RUN      ] BravoAddress.FromPrivateKey
+[       OK ] BravoAddress.FromPrivateKey (3 ms)
+[ RUN      ] BravoAddress.IsValid
+[       OK ] BravoAddress.IsValid (0 ms)
+[----------] 4 tests from BravoAddress (3 ms total)
+
+[----------] 1 test from BravoAsset
+[ RUN      ] BravoAsset.Serialization
+[       OK ] BravoAsset.Serialization (0 ms)
+[----------] 1 test from BravoAsset (0 ms total)
+
+[----------] 2 tests from BravoOperation
+[ RUN      ] BravoOperation.Validation
+[       OK ] BravoOperation.Validation (0 ms)
+[ RUN      ] BravoOperation.Serialization
+[       OK ] BravoOperation.Serialization (0 ms)
+[----------] 2 tests from BravoOperation (0 ms total)
+
+[----------] 3 tests from BravoTransaction
+[ RUN      ] BravoTransaction.Serialization
+[       OK ] BravoTransaction.Serialization (20 ms)
+[ RUN      ] BravoTransaction.Signature
+[       OK ] BravoTransaction.Signature (0 ms)
+[ RUN      ] BravoTransaction.GrapheneSigning
+[       OK ] BravoTransaction.GrapheneSigning (3 ms)
+[----------] 3 tests from BravoTransaction (23 ms total)
+
+[----------] 43 tests from Coin
+[ RUN      ] Coin.DeriveAddress
+unknown file: Failure
+C++ exception with description "Ethereum::Address needs an extended SECP256k1 public key." thrown in the test body.
+[  FAILED  ] Coin.DeriveAddress (0 ms)
+[ RUN      ] Coin.ValidateAddressAion
+[       OK ] Coin.ValidateAddressAion (0 ms)
+[ RUN      ] Coin.ValidateAddressZilliqa
+[       OK ] Coin.ValidateAddressZilliqa (0 ms)
+[ RUN      ] Coin.ValidateAddressEthereum
+[       OK ] Coin.ValidateAddressEthereum (0 ms)
+[ RUN      ] Coin.validateAddressBitcoin
+[       OK ] Coin.validateAddressBitcoin (0 ms)
+[ RUN      ] Coin.ValidateAddressBinance
+[       OK ] Coin.ValidateAddressBinance (0 ms)
+[ RUN      ] Coin.ValidateAddressCoinex
+[       OK ] Coin.ValidateAddressCoinex (0 ms)
+[ RUN      ] Coin.ValidateAddressLitecoin
+[       OK ] Coin.ValidateAddressLitecoin (0 ms)
+[ RUN      ] Coin.ValidateAddressViacoin
+[       OK ] Coin.ValidateAddressViacoin (0 ms)
+[ RUN      ] Coin.ValidateAddressBitcoinCash
+[       OK ] Coin.ValidateAddressBitcoinCash (1 ms)
+[ RUN      ] Coin.ValidateAddressBitcoinSV
+[       OK ] Coin.ValidateAddressBitcoinSV (0 ms)
+[ RUN      ] Coin.ValidateAddressDogecoin
+[       OK ] Coin.ValidateAddressDogecoin (0 ms)
+[ RUN      ] Coin.ValidateAddressDecred
+[       OK ] Coin.ValidateAddressDecred (0 ms)
+[ RUN      ] Coin.ValidateAddressTezos
+[       OK ] Coin.ValidateAddressTezos (0 ms)
+[ RUN      ] Coin.validateAddressZcash
+[       OK ] Coin.validateAddressZcash (0 ms)
+[ RUN      ] Coin.validateAddressOntology
+[       OK ] Coin.validateAddressOntology (0 ms)
+[ RUN      ] Coin.validateAddressIOST
+[       OK ] Coin.validateAddressIOST (0 ms)
+[ RUN      ] Coin.ValidateAddressIoTeX
+[       OK ] Coin.ValidateAddressIoTeX (0 ms)
+[ RUN      ] Coin.validateAddressGroestlcoin
+[       OK ] Coin.validateAddressGroestlcoin (1 ms)
+[ RUN      ] Coin.validateAddressQtum
+[       OK ] Coin.validateAddressQtum (0 ms)
+[ RUN      ] Coin.ValidateAddressBravo
+[       OK ] Coin.ValidateAddressBravo (0 ms)
+[ RUN      ] Coin.ValidateAddressSteem
+[       OK ] Coin.ValidateAddressSteem (0 ms)
+[ RUN      ] Coin.ValidateAddressEOS
+[       OK ] Coin.ValidateAddressEOS (0 ms)
+[ RUN      ] Coin.ValidateAddressNano
+[       OK ] Coin.ValidateAddressNano (0 ms)
+[ RUN      ] Coin.ValidateAddressSemux
+[       OK ] Coin.ValidateAddressSemux (0 ms)
+[ RUN      ] Coin.ValidateAddressARK
+[       OK ] Coin.ValidateAddressARK (0 ms)
+[ RUN      ] Coin.ValidateAddressDGB
+[       OK ] Coin.ValidateAddressDGB (1 ms)
+[ RUN      ] Coin.validateAddressWanchain
+[       OK ] Coin.validateAddressWanchain (0 ms)
+[ RUN      ] Coin.validateAddressICON
+[       OK ] Coin.validateAddressICON (0 ms)
+[ RUN      ] Coin.validateAddressNimiq
+[       OK ] Coin.validateAddressNimiq (0 ms)
+[ RUN      ] Coin.validateAddressXRP
+[       OK ] Coin.validateAddressXRP (0 ms)
+[ RUN      ] Coin.validateAddressKin
+[       OK ] Coin.validateAddressKin (0 ms)
+[ RUN      ] Coin.validateAddressTron
+[       OK ] Coin.validateAddressTron (0 ms)
+[ RUN      ] Coin.validateAddressZcoin
+[       OK ] Coin.validateAddressZcoin (0 ms)
+[ RUN      ] Coin.validateAddressLitecoin
+[       OK ] Coin.validateAddressLitecoin (0 ms)
+[ RUN      ] Coin.validateAddressCosmos
+[       OK ] Coin.validateAddressCosmos (0 ms)
+[ RUN      ] Coin.validateAddressRavencoin
+[       OK ] Coin.validateAddressRavencoin (0 ms)
+[ RUN      ] Coin.ValidateAddressWaves
+[       OK ] Coin.ValidateAddressWaves (0 ms)
+[ RUN      ] Coin.ValidateAddressAeternity
+[       OK ] Coin.ValidateAddressAeternity (1 ms)
+[ RUN      ] Coin.ValidateAddressTerra
+[       OK ] Coin.ValidateAddressTerra (0 ms)
+[ RUN      ] Coin.ValidateAddressNebulas
+[       OK ] Coin.ValidateAddressNebulas (0 ms)
+[ RUN      ] Coin.validateAddressMonacoin
+[       OK ] Coin.validateAddressMonacoin (0 ms)
+[ RUN      ] Coin.validateAddressFIO
+[       OK ] Coin.validateAddressFIO (0 ms)
+[----------] 43 tests from Coin (4 ms total)
+
+[----------] 9 tests from Address
+[ RUN      ] Address.CoinexValid
+[       OK ] Address.CoinexValid (0 ms)
+[ RUN      ] Address.CoinexInvalid
+[       OK ] Address.CoinexInvalid (0 ms)
+[ RUN      ] Address.CoinexFromKeyHash
+[       OK ] Address.CoinexFromKeyHash (1 ms)
+[ RUN      ] Address.Valid
+[       OK ] Address.Valid (0 ms)
+[ RUN      ] Address.Invalid
+[       OK ] Address.Invalid (0 ms)
+[ RUN      ] Address.FromKeyHash
+[       OK ] Address.FromKeyHash (1 ms)
+[ RUN      ] Address.Cosmos_FromKeyHash
+[       OK ] Address.Cosmos_FromKeyHash (1 ms)
+[ RUN      ] Address.Cosmos_Valid
+[       OK ] Address.Cosmos_Valid (0 ms)
+[ RUN      ] Address.Cosmos_Invalid
+[       OK ] Address.Cosmos_Invalid (0 ms)
+[----------] 9 tests from Address (3 ms total)
+
+[----------] 1 test from CoinexAlias
+[ RUN      ] CoinexAlias.SetAlias
+[       OK ] CoinexAlias.SetAlias (4 ms)
+[----------] 1 test from CoinexAlias (4 ms total)
+
+[----------] 4 tests from CoinexMarket
+[ RUN      ] CoinexMarket.CreateSellOrder
+[       OK ] CoinexMarket.CreateSellOrder (3 ms)
+[ RUN      ] CoinexMarket.CreateBuyOrder
+[       OK ] CoinexMarket.CreateBuyOrder (3 ms)
+[ RUN      ] CoinexMarket.CancelOrder
+[       OK ] CoinexMarket.CancelOrder (4 ms)
+[ RUN      ] CoinexMarket.ProposalVote
+[       OK ] CoinexMarket.ProposalVote (4 ms)
+[----------] 4 tests from CoinexMarket (14 ms total)
+
+[----------] 2 tests from CoinexSigner
+[ RUN      ] CoinexSigner.SignTx
+[       OK ] CoinexSigner.SignTx (3 ms)
+[ RUN      ] CoinexSigner.SignTokenTx
+[       OK ] CoinexSigner.SignTokenTx (4 ms)
+[----------] 2 tests from CoinexSigner (7 ms total)
+
+[----------] 5 tests from CoinexStaking
+[ RUN      ] CoinexStaking.Staking
+[       OK ] CoinexStaking.Staking (3 ms)
+[ RUN      ] CoinexStaking.WithdrawStaking
+[       OK ] CoinexStaking.WithdrawStaking (4 ms)
+[ RUN      ] CoinexStaking.UnStaking
+[       OK ] CoinexStaking.UnStaking (3 ms)
+[ RUN      ] CoinexStaking.Redelegate
+[       OK ] CoinexStaking.Redelegate (4 ms)
+[ RUN      ] CoinexStaking.WithdrawStakeRewardAndRestake
+[       OK ] CoinexStaking.WithdrawStakeRewardAndRestake (4 ms)
+[----------] 5 tests from CoinexStaking (18 ms total)
+
+[----------] 1 test from CosmosSigner
+[ RUN      ] CosmosSigner.SignTx
+[       OK ] CosmosSigner.SignTx (4 ms)
+[----------] 1 test from CosmosSigner (4 ms total)
+
+[----------] 3 tests from CosmosStaking
+[ RUN      ] CosmosStaking.Staking
+[       OK ] CosmosStaking.Staking (4 ms)
+[ RUN      ] CosmosStaking.Unstaking
+[       OK ] CosmosStaking.Unstaking (4 ms)
+[ RUN      ] CosmosStaking.Withdraw
+[       OK ] CosmosStaking.Withdraw (4 ms)
+[----------] 3 tests from CosmosStaking (12 ms total)
+
+[----------] 5 tests from DecredAddress
+[ RUN      ] DecredAddress.FromPublicKey
+[       OK ] DecredAddress.FromPublicKey (0 ms)
+[ RUN      ] DecredAddress.Valid
+[       OK ] DecredAddress.Valid (0 ms)
+[ RUN      ] DecredAddress.Invalid
+[       OK ] DecredAddress.Invalid (0 ms)
+[ RUN      ] DecredAddress.FromString
+[       OK ] DecredAddress.FromString (0 ms)
+[ RUN      ] DecredAddress.Derive
+[       OK ] DecredAddress.Derive (28 ms)
+[----------] 5 tests from DecredAddress (28 ms total)
+
+[----------] 1 test from DecredSigner
+[ RUN      ] DecredSigner.Sign
+[       OK ] DecredSigner.Sign (18 ms)
+[----------] 1 test from DecredSigner (18 ms total)
+
+[----------] 5 tests from DerivationPath
+[ RUN      ] DerivationPath.InitWithIndices
+[       OK ] DerivationPath.InitWithIndices (0 ms)
+[ RUN      ] DerivationPath.InitWithString
+[       OK ] DerivationPath.InitWithString (0 ms)
+[ RUN      ] DerivationPath.InitInvalid
+[       OK ] DerivationPath.InitInvalid (0 ms)
+[ RUN      ] DerivationPath.String
+[       OK ] DerivationPath.String (0 ms)
+[ RUN      ] DerivationPath.Equal
+[       OK ] DerivationPath.Equal (0 ms)
+[----------] 5 tests from DerivationPath (0 ms total)
+
+[----------] 4 tests from EOSAddress
+[ RUN      ] EOSAddress.Invalid
+[       OK ] EOSAddress.Invalid (0 ms)
+[ RUN      ] EOSAddress.Base58
+[       OK ] EOSAddress.Base58 (1 ms)
+[ RUN      ] EOSAddress.FromPrivateKey
+[       OK ] EOSAddress.FromPrivateKey (16 ms)
+[ RUN      ] EOSAddress.IsValid
+[       OK ] EOSAddress.IsValid (0 ms)
+[----------] 4 tests from EOSAddress (17 ms total)
+
+[----------] 2 tests from EOSName
+[ RUN      ] EOSName.Invalid
+[       OK ] EOSName.Invalid (0 ms)
+[ RUN      ] EOSName.Valid
+[       OK ] EOSName.Valid (0 ms)
+[----------] 2 tests from EOSName (0 ms total)
+
+[----------] 1 test from EOSSignature
+[ RUN      ] EOSSignature.Serialization
+[       OK ] EOSSignature.Serialization (1 ms)
+[----------] 1 test from EOSSignature (1 ms total)
+
+[----------] 1 test from EOSTransaction
+[ RUN      ] EOSTransaction.Serialization
+[       OK ] EOSTransaction.Serialization (40 ms)
+[----------] 1 test from EOSTransaction (40 ms total)
+
+[----------] 9 tests from ABI
+[ RUN      ] ABI.EncodeTrue
+[       OK ] ABI.EncodeTrue (0 ms)
+[ RUN      ] ABI.EncodeFalse
+[       OK ] ABI.EncodeFalse (0 ms)
+[ RUN      ] ABI.EncodeUInt
+[       OK ] ABI.EncodeUInt (0 ms)
+[ RUN      ] ABI.EncodeNegativeInt
+[       OK ] ABI.EncodeNegativeInt (0 ms)
+[ RUN      ] ABI.EncodeBigUInt
+[       OK ] ABI.EncodeBigUInt (0 ms)
+[ RUN      ] ABI.EncodeNegativeBigInt
+[       OK ] ABI.EncodeNegativeBigInt (0 ms)
+[ RUN      ] ABI.Signature
+[       OK ] ABI.Signature (0 ms)
+[ RUN      ] ABI.FunctionWithDynamicArgumentsCase1
+[       OK ] ABI.FunctionWithDynamicArgumentsCase1 (0 ms)
+[ RUN      ] ABI.FunctionWithDynamicArgumentsCase2
+[       OK ] ABI.FunctionWithDynamicArgumentsCase2 (2 ms)
+[----------] 9 tests from ABI (3 ms total)
+
+[----------] 5 tests from EthereumAddress
+[ RUN      ] EthereumAddress.Invalid
+[       OK ] EthereumAddress.Invalid (3 ms)
+[ RUN      ] EthereumAddress.EIP55
+[       OK ] EthereumAddress.EIP55 (0 ms)
+[ RUN      ] EthereumAddress.String
+[       OK ] EthereumAddress.String (0 ms)
+[ RUN      ] EthereumAddress.FromPrivateKey
+[       OK ] EthereumAddress.FromPrivateKey (6 ms)
+[ RUN      ] EthereumAddress.IsValid
+[       OK ] EthereumAddress.IsValid (0 ms)
+[----------] 5 tests from EthereumAddress (9 ms total)
+
+[----------] 5 tests from RLP
+[ RUN      ] RLP.Strings
+[       OK ] RLP.Strings (0 ms)
+[ RUN      ] RLP.Integers
+[       OK ] RLP.Integers (0 ms)
+[ RUN      ] RLP.uint256_t
+[       OK ] RLP.uint256_t (0 ms)
+[ RUN      ] RLP.Lists
+[       OK ] RLP.Lists (1 ms)
+[ RUN      ] RLP.Invalid
+[       OK ] RLP.Invalid (0 ms)
+[----------] 5 tests from RLP (1 ms total)
+
+[----------] 3 tests from FIOAddress
+[ RUN      ] FIOAddress.Validation
+[       OK ] FIOAddress.Validation (0 ms)
+[ RUN      ] FIOAddress.FromString
+[       OK ] FIOAddress.FromString (0 ms)
+[ RUN      ] FIOAddress.FromPrivateKey
+[       OK ] FIOAddress.FromPrivateKey (1 ms)
+[----------] 3 tests from FIOAddress (1 ms total)
+
+[----------] 2 tests from FreeCashAddress
+[ RUN      ] FreeCashAddress.Invalid
+[       OK ] FreeCashAddress.Invalid (0 ms)
+[ RUN      ] FreeCashAddress.FromPrivateKey
+[       OK ] FreeCashAddress.FromPrivateKey (1 ms)
+[----------] 2 tests from FreeCashAddress (1 ms total)
+
+[----------] 2 tests from FreeCashTransaction
+[ RUN      ] FreeCashTransaction.NonMaxAmount
+[       OK ] FreeCashTransaction.NonMaxAmount (0 ms)
+[ RUN      ] FreeCashTransaction.Signing
+[       OK ] FreeCashTransaction.Signing (0 ms)
+[----------] 2 tests from FreeCashTransaction (0 ms total)
+
+[----------] 3 tests from FreeCashTransactionPlan
+[ RUN      ] FreeCashTransactionPlan.MaxAmount
+/Users/bibodeng/Programming/wallet-core/tests/FreeCash/TransactionSignTests.cpp:69: Failure
+Expected equality of these values:
+  txPlan.availableAmount
+    Which is: 1000000000
+  30000
+[  FAILED  ] FreeCashTransactionPlan.MaxAmount (0 ms)
+[ RUN      ] FreeCashTransactionPlan.MaxAmountDoge
+[       OK ] FreeCashTransactionPlan.MaxAmountDoge (0 ms)
+[ RUN      ] FreeCashTransactionPlan.AmountDecred
+[       OK ] FreeCashTransactionPlan.AmountDecred (0 ms)
+[----------] 3 tests from FreeCashTransactionPlan (0 ms total)
+
+[----------] 5 tests from GroestlcoinAddress
+[ RUN      ] GroestlcoinAddress.FromPublicKey
+[       OK ] GroestlcoinAddress.FromPublicKey (0 ms)
+[ RUN      ] GroestlcoinAddress.Valid
+[       OK ] GroestlcoinAddress.Valid (0 ms)
+[ RUN      ] GroestlcoinAddress.Invalid
+[       OK ] GroestlcoinAddress.Invalid (1 ms)
+[ RUN      ] GroestlcoinAddress.FromString
+[       OK ] GroestlcoinAddress.FromString (0 ms)
+[ RUN      ] GroestlcoinAddress.Derive
+[       OK ] GroestlcoinAddress.Derive (6 ms)
+[----------] 5 tests from GroestlcoinAddress (7 ms total)
+
+[----------] 28 tests from HDWallet
+[ RUN      ] HDWallet.privateKeyFromXPRV
+[       OK ] HDWallet.privateKeyFromXPRV (3 ms)
+[ RUN      ] HDWallet.privateKeyFromMptv
+[       OK ] HDWallet.privateKeyFromMptv (3 ms)
+[ RUN      ] HDWallet.privateKeyFromZprv
+[       OK ] HDWallet.privateKeyFromZprv (2 ms)
+[ RUN      ] HDWallet.privateKeyFromDGRV
+[       OK ] HDWallet.privateKeyFromDGRV (3 ms)
+[ RUN      ] HDWallet.privateKeyFromXPRVForDGB
+[       OK ] HDWallet.privateKeyFromXPRVForDGB (3 ms)
+[ RUN      ] HDWallet.Seed
+[       OK ] HDWallet.Seed (4 ms)
+[ RUN      ] HDWallet.IsValid
+[       OK ] HDWallet.IsValid (0 ms)
+[ RUN      ] HDWallet.InvalidWord
+[       OK ] HDWallet.InvalidWord (0 ms)
+[ RUN      ] HDWallet.InvalidWord1
+[       OK ] HDWallet.InvalidWord1 (0 ms)
+[ RUN      ] HDWallet.InvalidChecksum
+[       OK ] HDWallet.InvalidChecksum (0 ms)
+[ RUN      ] HDWallet.InvalidWordCount
+[       OK ] HDWallet.InvalidWordCount (0 ms)
+[ RUN      ] HDWallet.SeedWithExtraSpaces
+[       OK ] HDWallet.SeedWithExtraSpaces (3 ms)
+[ RUN      ] HDWallet.SeedNoPassword
+[       OK ] HDWallet.SeedNoPassword (4 ms)
+[ RUN      ] HDWallet.Derive
+[       OK ] HDWallet.Derive (6 ms)
+[ RUN      ] HDWallet.DeriveBitcoin
+[       OK ] HDWallet.DeriveBitcoin (8 ms)
+[ RUN      ] HDWallet.DeriveEthereum
+[       OK ] HDWallet.DeriveEthereum (7 ms)
+[ RUN      ] HDWallet.DeriveCosmos
+[       OK ] HDWallet.DeriveCosmos (6 ms)
+[ RUN      ] HDWallet.DeriveNimiq
+[       OK ] HDWallet.DeriveNimiq (3 ms)
+[ RUN      ] HDWallet.DeriveTezos
+[       OK ] HDWallet.DeriveTezos (4 ms)
+[ RUN      ] HDWallet.DeriveDoge
+[       OK ] HDWallet.DeriveDoge (9 ms)
+[ RUN      ] HDWallet.DeriveZilliqa
+[       OK ] HDWallet.DeriveZilliqa (20 ms)
+[ RUN      ] HDWallet.DeriveAionPrivateKey
+[       OK ] HDWallet.DeriveAionPrivateKey (4 ms)
+[ RUN      ] HDWallet.DeriveFIO
+[       OK ] HDWallet.DeriveFIO (5 ms)
+[ RUN      ] HDWallet.ExtendedKeys
+[       OK ] HDWallet.ExtendedKeys (12 ms)
+[ RUN      ] HDWallet.PublicKeyFromX
+[       OK ] HDWallet.PublicKeyFromX (6 ms)
+[ RUN      ] HDWallet.PublicKeyFromY
+[       OK ] HDWallet.PublicKeyFromY (6 ms)
+[ RUN      ] HDWallet.PublicKeyFromZ
+[       OK ] HDWallet.PublicKeyFromZ (6 ms)
+[ RUN      ] HDWallet.MultipleThreads
+[       OK ] HDWallet.MultipleThreads (71 ms)
+[----------] 28 tests from HDWallet (198 ms total)
+
+[----------] 1 test from IOSTAddress
+[ RUN      ] IOSTAddress.ValidateAccount
+[       OK ] IOSTAddress.ValidateAccount (0 ms)
+[----------] 1 test from IOSTAddress (0 ms total)
+
+[----------] 1 test from IOSTSigner
+[ RUN      ] IOSTSigner.Sign
+[       OK ] IOSTSigner.Sign (1 ms)
+[----------] 1 test from IOSTSigner (1 ms total)
+
+[----------] 3 tests from IconAddress
+[ RUN      ] IconAddress.Validation
+[       OK ] IconAddress.Validation (0 ms)
+[ RUN      ] IconAddress.String
+[       OK ] IconAddress.String (0 ms)
+[ RUN      ] IconAddress.FromPrivateKey
+[       OK ] IconAddress.FromPrivateKey (1 ms)
+[----------] 3 tests from IconAddress (1 ms total)
+
+[----------] 5 tests from IoTeXAddress
+[ RUN      ] IoTeXAddress.Invalid
+[       OK ] IoTeXAddress.Invalid (0 ms)
+[ RUN      ] IoTeXAddress.Valid
+[       OK ] IoTeXAddress.Valid (0 ms)
+[ RUN      ] IoTeXAddress.FromString
+[       OK ] IoTeXAddress.FromString (0 ms)
+[ RUN      ] IoTeXAddress.FromPrivateKey
+[       OK ] IoTeXAddress.FromPrivateKey (2 ms)
+[ RUN      ] IoTeXAddress.FromKeyHash
+[       OK ] IoTeXAddress.FromKeyHash (0 ms)
+[----------] 5 tests from IoTeXAddress (2 ms total)
+
+[----------] 2 tests from IoTeXSigner
+[ RUN      ] IoTeXSigner.Sign
+[       OK ] IoTeXSigner.Sign (1 ms)
+[ RUN      ] IoTeXSigner.Build
+[       OK ] IoTeXSigner.Build (3 ms)
+[----------] 2 tests from IoTeXSigner (4 ms total)
+
+[----------] 17 tests from StoredKey
+[ RUN      ] StoredKey.LoadNonexistent
+[       OK ] StoredKey.LoadNonexistent (0 ms)
+[ RUN      ] StoredKey.LoadLegacyPrivateKey
+[       OK ] StoredKey.LoadLegacyPrivateKey (2905 ms)
+[ RUN      ] StoredKey.LoadLivepeerKey
+[       OK ] StoredKey.LoadLivepeerKey (2565 ms)
+[ RUN      ] StoredKey.LoadPBKDF2Key
+[       OK ] StoredKey.LoadPBKDF2Key (422 ms)
+[ RUN      ] StoredKey.LoadLegacyMnemonic
+[       OK ] StoredKey.LoadLegacyMnemonic (224 ms)
+[ RUN      ] StoredKey.ReadWallet
+[       OK ] StoredKey.ReadWallet (2 ms)
+[ RUN      ] StoredKey.ReadMyEtherWallet
+[       OK ] StoredKey.ReadMyEtherWallet (1 ms)
+[ RUN      ] StoredKey.InvalidPassword
+[       OK ] StoredKey.InvalidPassword (3623 ms)
+[ RUN      ] StoredKey.EmptyAccounts
+[       OK ] StoredKey.EmptyAccounts (3183 ms)
+[ RUN      ] StoredKey.Decrypt
+[       OK ] StoredKey.Decrypt (2874 ms)
+[ RUN      ] StoredKey.CreateWallet
+[       OK ] StoredKey.CreateWallet (445 ms)
+[ RUN      ] StoredKey.CreateAccounts
+[       OK ] StoredKey.CreateAccounts (451 ms)
+[ RUN      ] StoredKey.DecodingEthereumAddress
+[       OK ] StoredKey.DecodingEthereumAddress (0 ms)
+[ RUN      ] StoredKey.DecodingBitcoinAddress
+[       OK ] StoredKey.DecodingBitcoinAddress (1 ms)
+[ RUN      ] StoredKey.RemoveAccount
+[       OK ] StoredKey.RemoveAccount (1 ms)
+[ RUN      ] StoredKey.MissingAddress
+[       OK ] StoredKey.MissingAddress (223 ms)
+[ RUN      ] StoredKey.EtherWalletAddressNo0x
+[       OK ] StoredKey.EtherWalletAddressNo0x (233 ms)
+[----------] 17 tests from StoredKey (17153 ms total)
+
+[----------] 3 tests from NEOAddress
+[ RUN      ] NEOAddress.FromPublicKey
+[       OK ] NEOAddress.FromPublicKey (0 ms)
+[ RUN      ] NEOAddress.FromString
+[       OK ] NEOAddress.FromString (0 ms)
+[ RUN      ] NEOAddress.isValid
+[       OK ] NEOAddress.isValid (0 ms)
+[----------] 3 tests from NEOAddress (0 ms total)
+
+[----------] 3 tests from NanoAddress
+[ RUN      ] NanoAddress.FromPublicKey
+[       OK ] NanoAddress.FromPublicKey (3 ms)
+[ RUN      ] NanoAddress.FromString
+[       OK ] NanoAddress.FromString (0 ms)
+[ RUN      ] NanoAddress.isValid
+[       OK ] NanoAddress.isValid (0 ms)
+[----------] 3 tests from NanoAddress (3 ms total)
+
+[----------] 11 tests from NanoSigner
+[ RUN      ] NanoSigner.sign1
+[       OK ] NanoSigner.sign1 (0 ms)
+[ RUN      ] NanoSigner.sign2
+[       OK ] NanoSigner.sign2 (1 ms)
+[ RUN      ] NanoSigner.sign3
+[       OK ] NanoSigner.sign3 (0 ms)
+[ RUN      ] NanoSigner.sign4
+[       OK ] NanoSigner.sign4 (1 ms)
+[ RUN      ] NanoSigner.signInvalid1
+[       OK ] NanoSigner.signInvalid1 (0 ms)
+[ RUN      ] NanoSigner.signInvalid2
+[       OK ] NanoSigner.signInvalid2 (0 ms)
+[ RUN      ] NanoSigner.signInvalid3
+[       OK ] NanoSigner.signInvalid3 (0 ms)
+[ RUN      ] NanoSigner.signInvalid4
+[       OK ] NanoSigner.signInvalid4 (0 ms)
+[ RUN      ] NanoSigner.signInvalid5
+[       OK ] NanoSigner.signInvalid5 (0 ms)
+[ RUN      ] NanoSigner.signInvalid6
+[       OK ] NanoSigner.signInvalid6 (0 ms)
+[ RUN      ] NanoSigner.signInvalid7
+[       OK ] NanoSigner.signInvalid7 (0 ms)
+[----------] 11 tests from NanoSigner (3 ms total)
+
+[----------] 4 tests from NebulasAddress
+[ RUN      ] NebulasAddress.Invalid
+[       OK ] NebulasAddress.Invalid (0 ms)
+[ RUN      ] NebulasAddress.String
+[       OK ] NebulasAddress.String (0 ms)
+[ RUN      ] NebulasAddress.Data
+[       OK ] NebulasAddress.Data (1 ms)
+[ RUN      ] NebulasAddress.FromPrivateKey
+[       OK ] NebulasAddress.FromPrivateKey (1 ms)
+[----------] 4 tests from NebulasAddress (2 ms total)
+
+[----------] 3 tests from NebulasSigner
+[ RUN      ] NebulasSigner.EmptyData
+[       OK ] NebulasSigner.EmptyData (0 ms)
+[ RUN      ] NebulasSigner.Hash
+[       OK ] NebulasSigner.Hash (0 ms)
+[ RUN      ] NebulasSigner.Sign
+[       OK ] NebulasSigner.Sign (1 ms)
+[----------] 3 tests from NebulasSigner (2 ms total)
+
+[----------] 4 tests from NebulasTransaction
+[ RUN      ] NebulasTransaction.serialize
+[       OK ] NebulasTransaction.serialize (2 ms)
+[ RUN      ] NebulasTransaction.binaryPayload
+[       OK ] NebulasTransaction.binaryPayload (2 ms)
+[ RUN      ] NebulasTransaction.htmlescape
+[       OK ] NebulasTransaction.htmlescape (0 ms)
+[ RUN      ] NebulasTransaction.serializeUnsigned
+[       OK ] NebulasTransaction.serializeUnsigned (0 ms)
+[----------] 4 tests from NebulasTransaction (4 ms total)
+
+[----------] 3 tests from NimiqAddress
+[ RUN      ] NimiqAddress.IsValid
+[       OK ] NimiqAddress.IsValid (0 ms)
+[ RUN      ] NimiqAddress.String
+[       OK ] NimiqAddress.String (0 ms)
+[ RUN      ] NimiqAddress.FromPublicKey
+[       OK ] NimiqAddress.FromPublicKey (0 ms)
+[----------] 3 tests from NimiqAddress (0 ms total)
+
+[----------] 2 tests from NimiqSigner
+[ RUN      ] NimiqSigner.DerivePublicKey
+[       OK ] NimiqSigner.DerivePublicKey (0 ms)
+[ RUN      ] NimiqSigner.Sign
+[       OK ] NimiqSigner.Sign (0 ms)
+[----------] 2 tests from NimiqSigner (1 ms total)
+
+[----------] 2 tests from NimiqTransaction
+[ RUN      ] NimiqTransaction.PreImage
+[       OK ] NimiqTransaction.PreImage (0 ms)
+[ RUN      ] NimiqTransaction.Serialize
+[       OK ] NimiqTransaction.Serialize (0 ms)
+[----------] 2 tests from NimiqTransaction (0 ms total)
+
+[----------] 1 test from OntologyAccount
+[ RUN      ] OntologyAccount.validity
+[       OK ] OntologyAccount.validity (1 ms)
+[----------] 1 test from OntologyAccount (1 ms total)
+
+[----------] 4 tests from OntologyAddress
+[ RUN      ] OntologyAddress.validation
+[       OK ] OntologyAddress.validation (0 ms)
+[ RUN      ] OntologyAddress.fromPubKey
+[       OK ] OntologyAddress.fromPubKey (0 ms)
+[ RUN      ] OntologyAddress.fromString
+[       OK ] OntologyAddress.fromString (1 ms)
+[ RUN      ] OntologyAddress.fromMultiPubKeys
+[       OK ] OntologyAddress.fromMultiPubKeys (4 ms)
+[----------] 4 tests from OntologyAddress (5 ms total)
+
+[----------] 4 tests from OntologyOng
+[ RUN      ] OntologyOng.decimals
+[       OK ] OntologyOng.decimals (0 ms)
+[ RUN      ] OntologyOng.balanceOf
+[       OK ] OntologyOng.balanceOf (0 ms)
+[ RUN      ] OntologyOng.transfer
+[       OK ] OntologyOng.transfer (5 ms)
+[ RUN      ] OntologyOng.withdraw
+[       OK ] OntologyOng.withdraw (4 ms)
+[----------] 4 tests from OntologyOng (9 ms total)
+
+[----------] 3 tests from OntologyOnt
+[ RUN      ] OntologyOnt.decimals
+[       OK ] OntologyOnt.decimals (0 ms)
+[ RUN      ] OntologyOnt.queryBalance
+[       OK ] OntologyOnt.queryBalance (0 ms)
+[ RUN      ] OntologyOnt.transfer
+[       OK ] OntologyOnt.transfer (4 ms)
+[----------] 3 tests from OntologyOnt (4 ms total)
+
+[----------] 3 tests from ParamsBuilder
+[ RUN      ] ParamsBuilder.pushInt
+[       OK ] ParamsBuilder.pushInt (0 ms)
+[ RUN      ] ParamsBuilder.balanceInvokeCode
+[       OK ] ParamsBuilder.balanceInvokeCode (0 ms)
+[ RUN      ] ParamsBuilder.transferInvokeCode
+[       OK ] ParamsBuilder.transferInvokeCode (1 ms)
+[----------] 3 tests from ParamsBuilder (1 ms total)
+
+[----------] 1 test from OntologyTransaction
+[ RUN      ] OntologyTransaction.validity
+[       OK ] OntologyTransaction.validity (4 ms)
+[----------] 1 test from OntologyTransaction (4 ms total)
+
+[----------] 3 tests from RippleAddress
+[ RUN      ] RippleAddress.FromPublicKey
+[       OK ] RippleAddress.FromPublicKey (0 ms)
+[ RUN      ] RippleAddress.FromString
+[       OK ] RippleAddress.FromString (0 ms)
+[ RUN      ] RippleAddress.isValid
+[       OK ] RippleAddress.isValid (0 ms)
+[----------] 3 tests from RippleAddress (0 ms total)
+
+[----------] 3 tests from RippleTransaction
+[ RUN      ] RippleTransaction.serializeAmount
+[       OK ] RippleTransaction.serializeAmount (0 ms)
+[ RUN      ] RippleTransaction.serialize
+[       OK ] RippleTransaction.serialize (0 ms)
+[ RUN      ] RippleTransaction.preImage
+[       OK ] RippleTransaction.preImage (0 ms)
+[----------] 3 tests from RippleTransaction (0 ms total)
+
+[----------] 3 tests from SeeleAddress
+[ RUN      ] SeeleAddress.Invalid
+[       OK ] SeeleAddress.Invalid (1 ms)
+[ RUN      ] SeeleAddress.FromPrivateKey
+[       OK ] SeeleAddress.FromPrivateKey (0 ms)
+[ RUN      ] SeeleAddress.IsValid
+[       OK ] SeeleAddress.IsValid (0 ms)
+[----------] 3 tests from SeeleAddress (1 ms total)
+
+[----------] 1 test from SeeleSigner
+[ RUN      ] SeeleSigner.Sign
+[       OK ] SeeleSigner.Sign (4 ms)
+[----------] 1 test from SeeleSigner (4 ms total)
+
+[----------] 6 tests from SemuxAddress
+[ RUN      ] SemuxAddress.FromPublicKey
+[       OK ] SemuxAddress.FromPublicKey (0 ms)
+[ RUN      ] SemuxAddress.FromString
+[       OK ] SemuxAddress.FromString (0 ms)
+[ RUN      ] SemuxAddress.FromBadPubKey
+[       OK ] SemuxAddress.FromBadPubKey (1 ms)
+[ RUN      ] SemuxAddress.FromBadString
+[       OK ] SemuxAddress.FromBadString (0 ms)
+[ RUN      ] SemuxAddress.IsValid
+[       OK ] SemuxAddress.IsValid (0 ms)
+[ RUN      ] SemuxAddress.FromPrivateKey
+[       OK ] SemuxAddress.FromPrivateKey (0 ms)
+[----------] 6 tests from SemuxAddress (1 ms total)
+
+[----------] 2 tests from SemuxTransaction
+[ RUN      ] SemuxTransaction.GetPreImage
+[       OK ] SemuxTransaction.GetPreImage (0 ms)
+[ RUN      ] SemuxTransaction.Serialize
+[       OK ] SemuxTransaction.Serialize (0 ms)
+[----------] 2 tests from SemuxTransaction (1 ms total)
+
+[----------] 2 tests from SteemAddress
+[ RUN      ] SteemAddress.Base58
+[       OK ] SteemAddress.Base58 (0 ms)
+[ RUN      ] SteemAddress.IsValid
+[       OK ] SteemAddress.IsValid (0 ms)
+[----------] 2 tests from SteemAddress (0 ms total)
+
+[----------] 1 test from SteemOperation
+[ RUN      ] SteemOperation.Serialization
+[       OK ] SteemOperation.Serialization (0 ms)
+[----------] 1 test from SteemOperation (0 ms total)
+
+[----------] 1 test from SteemTransaction
+[ RUN      ] SteemTransaction.Serialization
+[       OK ] SteemTransaction.Serialization (6 ms)
+[----------] 1 test from SteemTransaction (6 ms total)
+
+[----------] 3 tests from StellarAddress
+[ RUN      ] StellarAddress.FromPublicKey
+[       OK ] StellarAddress.FromPublicKey (0 ms)
+[ RUN      ] StellarAddress.FromString
+[       OK ] StellarAddress.FromString (0 ms)
+[ RUN      ] StellarAddress.isValid
+[       OK ] StellarAddress.isValid (0 ms)
+[----------] 3 tests from StellarAddress (0 ms total)
+
+[----------] 6 tests from StellarTransaction
+[ RUN      ] StellarTransaction.sign
+[       OK ] StellarTransaction.sign (4 ms)
+[ RUN      ] StellarTransaction.signWithMemoText
+[       OK ] StellarTransaction.signWithMemoText (1 ms)
+[ RUN      ] StellarTransaction.signWithMemoHash
+[       OK ] StellarTransaction.signWithMemoHash (1 ms)
+[ RUN      ] StellarTransaction.signWithMemoReturn
+[       OK ] StellarTransaction.signWithMemoReturn (0 ms)
+[ RUN      ] StellarTransaction.signWithMemoID
+[       OK ] StellarTransaction.signWithMemoID (1 ms)
+[ RUN      ] StellarTransaction.signAcreateAccount
+[       OK ] StellarTransaction.signAcreateAccount (0 ms)
+[----------] 6 tests from StellarTransaction (7 ms total)
+
+[----------] 9 tests from TezosAddress
+[ RUN      ] TezosAddress.forge_tz1
+[       OK ] TezosAddress.forge_tz1 (0 ms)
+[ RUN      ] TezosAddress.forge_tz2
+[       OK ] TezosAddress.forge_tz2 (0 ms)
+[ RUN      ] TezosAddress.forge_tz3
+[       OK ] TezosAddress.forge_tz3 (0 ms)
+[ RUN      ] TezosAddress.forge_KT1
+[       OK ] TezosAddress.forge_KT1 (1 ms)
+[ RUN      ] TezosAddress.isInvalid
+[       OK ] TezosAddress.isInvalid (0 ms)
+[ RUN      ] TezosAddress.isValid
+[       OK ] TezosAddress.isValid (0 ms)
+[ RUN      ] TezosAddress.string
+[       OK ] TezosAddress.string (0 ms)
+[ RUN      ] TezosAddress.deriveOriginatedAddress
+[       OK ] TezosAddress.deriveOriginatedAddress (0 ms)
+[ RUN      ] TezosAddress.PublicKeyInit
+[       OK ] TezosAddress.PublicKeyInit (0 ms)
+[----------] 9 tests from TezosAddress (1 ms total)
+
+[----------] 11 tests from Forging
+[ RUN      ] Forging.ForgeBoolTrue
+[       OK ] Forging.ForgeBoolTrue (0 ms)
+[ RUN      ] Forging.ForgeBoolFalse
+[       OK ] Forging.ForgeBoolFalse (0 ms)
+[ RUN      ] Forging.ForgeZarithZero
+[       OK ] Forging.ForgeZarithZero (0 ms)
+[ RUN      ] Forging.ForgeZarithTen
+[       OK ] Forging.ForgeZarithTen (0 ms)
+[ RUN      ] Forging.ForgeZarithTwenty
+[       OK ] Forging.ForgeZarithTwenty (0 ms)
+[ RUN      ] Forging.ForgeZarithOneHundredFifty
+[       OK ] Forging.ForgeZarithOneHundredFifty (0 ms)
+[ RUN      ] Forging.ForgeZarithLarge
+[       OK ] Forging.ForgeZarithLarge (0 ms)
+[ RUN      ] Forging.forge_tz1
+[       OK ] Forging.forge_tz1 (0 ms)
+[ RUN      ] Forging.forge_tz2
+[       OK ] Forging.forge_tz2 (0 ms)
+[ RUN      ] Forging.forge_tz3
+[       OK ] Forging.forge_tz3 (0 ms)
+[ RUN      ] Forging.ForgePublicKey
+[       OK ] Forging.ForgePublicKey (1 ms)
+[----------] 11 tests from Forging (1 ms total)
+
+[----------] 2 tests from TezosTransaction
+[ RUN      ] TezosTransaction.forgeTransaction
+[       OK ] TezosTransaction.forgeTransaction (0 ms)
+[ RUN      ] TezosTransaction.forgeReveal
+[       OK ] TezosTransaction.forgeReveal (1 ms)
+[----------] 2 tests from TezosTransaction (1 ms total)
+
+[----------] 7 tests from TezosOperationList
+[ RUN      ] TezosOperationList.ForgeBranch
+[       OK ] TezosOperationList.ForgeBranch (0 ms)
+[ RUN      ] TezosOperationList.ForgeOperationList_TransactionOnly
+[       OK ] TezosOperationList.ForgeOperationList_TransactionOnly (1 ms)
+[ RUN      ] TezosOperationList.ForgeOperationList_RevealOnly
+[       OK ] TezosOperationList.ForgeOperationList_RevealOnly (1 ms)
+[ RUN      ] TezosOperationList.ForgeOperationList_OriginationOnly
+[       OK ] TezosOperationList.ForgeOperationList_OriginationOnly (0 ms)
+[ RUN      ] TezosOperationList.ForgeOperationList_Delegation_ClearDelegate
+[       OK ] TezosOperationList.ForgeOperationList_Delegation_ClearDelegate (0 ms)
+[ RUN      ] TezosOperationList.ForgeOperationList_Delegation_AddDelegate
+[       OK ] TezosOperationList.ForgeOperationList_Delegation_AddDelegate (1 ms)
+[ RUN      ] TezosOperationList.ForgeOperationList_TransactionAndReveal
+[       OK ] TezosOperationList.ForgeOperationList_TransactionAndReveal (0 ms)
+[----------] 7 tests from TezosOperationList (3 ms total)
+
+[----------] 2 tests from TezosPublicKey
+[ RUN      ] TezosPublicKey.forge
+[       OK ] TezosPublicKey.forge (1 ms)
+[ RUN      ] TezosPublicKey.parse
+[       OK ] TezosPublicKey.parse (0 ms)
+[----------] 2 tests from TezosPublicKey (1 ms total)
+
+[----------] 2 tests from TezosSigner
+[ RUN      ] TezosSigner.SignString
+[       OK ] TezosSigner.SignString (0 ms)
+[ RUN      ] TezosSigner.SignOperationList
+[       OK ] TezosSigner.SignOperationList (2 ms)
+[----------] 2 tests from TezosSigner (2 ms total)
+
+[----------] 2 tests from ThetaTransaction
+[ RUN      ] ThetaTransaction.Encode
+[       OK ] ThetaTransaction.Encode (0 ms)
+[ RUN      ] ThetaTransaction.EncodeWithSignature
+[       OK ] ThetaTransaction.EncodeWithSignature (0 ms)
+[----------] 2 tests from ThetaTransaction (0 ms total)
+
+[----------] 4 tests from TronAddress
+[ RUN      ] TronAddress.FromPrivateKey
+[       OK ] TronAddress.FromPrivateKey (1 ms)
+[ RUN      ] TronAddress.FromPublicKey
+[       OK ] TronAddress.FromPublicKey (0 ms)
+[ RUN      ] TronAddress.Invalid
+[       OK ] TronAddress.Invalid (0 ms)
+[ RUN      ] TronAddress.InitWithString
+[       OK ] TronAddress.InitWithString (1 ms)
+[----------] 4 tests from TronAddress (3 ms total)
+
+[----------] 2 tests from TronSigner
+[ RUN      ] TronSigner.SignTransferAsset
+[       OK ] TronSigner.SignTransferAsset (4 ms)
+[ RUN      ] TronSigner.SignTransfer
+[       OK ] TronSigner.SignTransfer (1 ms)
+[----------] 2 tests from TronSigner (5 ms total)
+
+[----------] 1 test from WanchainAddress
+[ RUN      ] WanchainAddress.String
+[       OK ] WanchainAddress.String (0 ms)
+[----------] 1 test from WanchainAddress (0 ms total)
+
+[----------] 8 tests from WavesAddress
+[ RUN      ] WavesAddress.SecureHash
+[       OK ] WavesAddress.SecureHash (0 ms)
+[ RUN      ] WavesAddress.FromPrivateKey
+[       OK ] WavesAddress.FromPrivateKey (1 ms)
+[ RUN      ] WavesAddress.FromPublicKey
+[       OK ] WavesAddress.FromPublicKey (0 ms)
+[ RUN      ] WavesAddress.Invalid
+[       OK ] WavesAddress.Invalid (0 ms)
+[ RUN      ] WavesAddress.Valid
+[       OK ] WavesAddress.Valid (0 ms)
+[ RUN      ] WavesAddress.InitWithString
+[       OK ] WavesAddress.InitWithString (1 ms)
+[ RUN      ] WavesAddress.InitWithInvalidString
+[       OK ] WavesAddress.InitWithInvalidString (0 ms)
+[ RUN      ] WavesAddress.Derive
+[       OK ] WavesAddress.Derive (4 ms)
+[----------] 8 tests from WavesAddress (6 ms total)
+
+[----------] 2 tests from WavesSigner
+[ RUN      ] WavesSigner.SignTransaction
+[       OK ] WavesSigner.SignTransaction (0 ms)
+[ RUN      ] WavesSigner.curve25519_pk_to_ed25519
+[       OK ] WavesSigner.curve25519_pk_to_ed25519 (0 ms)
+[----------] 2 tests from WavesSigner (1 ms total)
+
+[----------] 3 tests from WavesTransaction
+[ RUN      ] WavesTransaction.serialize
+[       OK ] WavesTransaction.serialize (0 ms)
+[ RUN      ] WavesTransaction.failedSerialize
+[       OK ] WavesTransaction.failedSerialize (0 ms)
+[ RUN      ] WavesTransaction.jsonSerialize
+[       OK ] WavesTransaction.jsonSerialize (1 ms)
+[----------] 3 tests from WavesTransaction (1 ms total)
+
+[----------] 4 tests from ZilliqaAddress
+[ RUN      ] ZilliqaAddress.FromPrivateKey
+[       OK ] ZilliqaAddress.FromPrivateKey (1 ms)
+[ RUN      ] ZilliqaAddress.FromKeyhash
+[       OK ] ZilliqaAddress.FromKeyhash (0 ms)
+[ RUN      ] ZilliqaAddress.Validation
+[       OK ] ZilliqaAddress.Validation (0 ms)
+[ RUN      ] ZilliqaAddress.Checksum
+[       OK ] ZilliqaAddress.Checksum (0 ms)
+[----------] 4 tests from ZilliqaAddress (1 ms total)
+
+[----------] 2 tests from ZilliqaSigner
+[ RUN      ] ZilliqaSigner.PreImage
+[       OK ] ZilliqaSigner.PreImage (18 ms)
+[ RUN      ] ZilliqaSigner.Signing
+[       OK ] ZilliqaSigner.Signing (6 ms)
+[----------] 2 tests from ZilliqaSigner (25 ms total)
+
+[----------] 8 tests from TWAES
+[ RUN      ] TWAES.CBCEncrypt
+[       OK ] TWAES.CBCEncrypt (0 ms)
+[ RUN      ] TWAES.CBCDecrypt
+[       OK ] TWAES.CBCDecrypt (1 ms)
+[ RUN      ] TWAES.CTREncrypt
+[       OK ] TWAES.CTREncrypt (0 ms)
+[ RUN      ] TWAES.CTRDecrypt
+[       OK ] TWAES.CTRDecrypt (0 ms)
+[ RUN      ] TWAES.CBCEncryptMultipleBlocks
+[       OK ] TWAES.CBCEncryptMultipleBlocks (0 ms)
+[ RUN      ] TWAES.CBCDecryptMultipleBlocks
+[       OK ] TWAES.CBCDecryptMultipleBlocks (0 ms)
+[ RUN      ] TWAES.CTRDecryptMultipleBlocks
+[       OK ] TWAES.CTRDecryptMultipleBlocks (0 ms)
+[ RUN      ] TWAES.CTREncryptMultipleBlocks
+[       OK ] TWAES.CTREncryptMultipleBlocks (0 ms)
+[----------] 8 tests from TWAES (1 ms total)
+
+[----------] 1 test from TWAeternityAddress
+[ RUN      ] TWAeternityAddress.HDWallet
+[       OK ] TWAeternityAddress.HDWallet (10 ms)
+[----------] 1 test from TWAeternityAddress (10 ms total)
+
+[----------] 7 tests from BitcoinCash
+[ RUN      ] BitcoinCash.Address
+[       OK ] BitcoinCash.Address (0 ms)
+[ RUN      ] BitcoinCash.LegacyToCashAddr
+[       OK ] BitcoinCash.LegacyToCashAddr (4 ms)
+[ RUN      ] BitcoinCash.LockScript
+[       OK ] BitcoinCash.LockScript (0 ms)
+[ RUN      ] BitcoinCash.ExtendedKeys
+[       OK ] BitcoinCash.ExtendedKeys (14 ms)
+[ RUN      ] BitcoinCash.DeriveFromXPub
+[       OK ] BitcoinCash.DeriveFromXPub (9 ms)
+[ RUN      ] BitcoinCash.SignTransaction
+[       OK ] BitcoinCash.SignTransaction (9 ms)
+[ RUN      ] BitcoinCash.ValidAddress
+[       OK ] BitcoinCash.ValidAddress (1 ms)
+[----------] 7 tests from BitcoinCash (37 ms total)
+
+[----------] 4 tests from BitcoinSV
+[ RUN      ] BitcoinSV.Address
+[       OK ] BitcoinSV.Address (0 ms)
+[ RUN      ] BitcoinSV.ExtendedKeys
+[       OK ] BitcoinSV.ExtendedKeys (19 ms)
+[ RUN      ] BitcoinSV.DeriveFromXPub
+[       OK ] BitcoinSV.DeriveFromXPub (14 ms)
+[ RUN      ] BitcoinSV.SignTransaction
+[       OK ] BitcoinSV.SignTransaction (3 ms)
+[----------] 4 tests from BitcoinSV (36 ms total)
+
+[----------] 6 tests from BitcoinScript
+[ RUN      ] BitcoinScript.ScriptHash
+[       OK ] BitcoinScript.ScriptHash (0 ms)
+[ RUN      ] BitcoinScript.RedeemScript
+[       OK ] BitcoinScript.RedeemScript (0 ms)
+[ RUN      ] BitcoinScript.LockScriptForP2PKHAddress
+[       OK ] BitcoinScript.LockScriptForP2PKHAddress (0 ms)
+[ RUN      ] BitcoinScript.LockScriptForP2SHAddress
+[       OK ] BitcoinScript.LockScriptForP2SHAddress (0 ms)
+[ RUN      ] BitcoinScript.LockScriptForP2WPKHAddress
+[       OK ] BitcoinScript.LockScriptForP2WPKHAddress (1 ms)
+[ RUN      ] BitcoinScript.LockScriptForCashAddress
+[       OK ] BitcoinScript.LockScriptForCashAddress (0 ms)
+[----------] 6 tests from BitcoinScript (1 ms total)
+
+[----------] 8 tests from BitcoinSigning
+[ RUN      ] BitcoinSigning.EncodeP2WPKH
+[       OK ] BitcoinSigning.EncodeP2WPKH (0 ms)
+[ RUN      ] BitcoinSigning.SignP2WPKH
+[       OK ] BitcoinSigning.SignP2WPKH (3 ms)
+[ RUN      ] BitcoinSigning.EncodeP2WSH
+[       OK ] BitcoinSigning.EncodeP2WSH (0 ms)
+[ RUN      ] BitcoinSigning.SignP2WSH
+[       OK ] BitcoinSigning.SignP2WSH (3 ms)
+[ RUN      ] BitcoinSigning.EncodeP2SH_P2WPKH
+[       OK ] BitcoinSigning.EncodeP2SH_P2WPKH (1 ms)
+[ RUN      ] BitcoinSigning.SignP2SH_P2WPKH
+[       OK ] BitcoinSigning.SignP2SH_P2WPKH (6 ms)
+[ RUN      ] BitcoinSigning.EncodeP2SH_P2WSH
+[       OK ] BitcoinSigning.EncodeP2SH_P2WSH (0 ms)
+[ RUN      ] BitcoinSigning.SignP2SH_P2WSH
+[       OK ] BitcoinSigning.SignP2SH_P2WSH (31 ms)
+[----------] 8 tests from BitcoinSigning (44 ms total)
+
+[----------] 1 test from BitcoinTransaction
+[ RUN      ] BitcoinTransaction.Encode
+[       OK ] BitcoinTransaction.Encode (0 ms)
+[----------] 1 test from BitcoinTransaction (0 ms total)
+
+[----------] 8 tests from TWCoinTypeConfiguration
+[ RUN      ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetSymbol
+[       OK ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetSymbol (0 ms)
+[ RUN      ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetDecimals
+[       OK ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetDecimals (0 ms)
+[ RUN      ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetTransactionURL
+[       OK ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetTransactionURL (0 ms)
+[ RUN      ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetID
+[       OK ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetID (0 ms)
+[ RUN      ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetName
+[       OK ] TWCoinTypeConfiguration.TWCoinTypeConfigurationGetName (0 ms)
+[ RUN      ] TWCoinTypeConfiguration.TWCoinTypeBlockchain
+[       OK ] TWCoinTypeConfiguration.TWCoinTypeBlockchain (0 ms)
+[ RUN      ] TWCoinTypeConfiguration.P2SHPrefix
+[       OK ] TWCoinTypeConfiguration.P2SHPrefix (0 ms)
+[ RUN      ] TWCoinTypeConfiguration.StaticPrefix
+[       OK ] TWCoinTypeConfiguration.StaticPrefix (0 ms)
+[----------] 8 tests from TWCoinTypeConfiguration (0 ms total)
+
+[----------] 1 test from Dash
+[ RUN      ] Dash.LockScripts
+[       OK ] Dash.LockScripts (0 ms)
+[----------] 1 test from Dash (0 ms total)
+
+[----------] 2 tests from DataTests
+[ RUN      ] DataTests.ParseHex
+[       OK ] DataTests.ParseHex (0 ms)
+[ RUN      ] DataTests.Equal
+[       OK ] DataTests.Equal (0 ms)
+[----------] 2 tests from DataTests (0 ms total)
+
+[----------] 3 tests from Decred
+[ RUN      ] Decred.ExtendedKeys
+[       OK ] Decred.ExtendedKeys (8 ms)
+[ RUN      ] Decred.DerivePubkeyFromDpub
+[       OK ] Decred.DerivePubkeyFromDpub (3 ms)
+[ RUN      ] Decred.Lockscripts
+[       OK ] Decred.Lockscripts (0 ms)
+[----------] 3 tests from Decred (12 ms total)
+
+[----------] 3 tests from DigiByteTransaction
+[ RUN      ] DigiByteTransaction.SignTransaction
+[       OK ] DigiByteTransaction.SignTransaction (3 ms)
+[ RUN      ] DigiByteTransaction.SignP2WPKH
+[       OK ] DigiByteTransaction.SignP2WPKH (4 ms)
+[ RUN      ] DigiByteTransaction.LockScripts
+[       OK ] DigiByteTransaction.LockScripts (1 ms)
+[----------] 3 tests from DigiByteTransaction (8 ms total)
+
+[----------] 1 test from Doge
+[ RUN      ] Doge.LockScripts
+[       OK ] Doge.LockScripts (0 ms)
+[----------] 1 test from Doge (0 ms total)
+
+[----------] 2 tests from TWEthereumSigner
+[ RUN      ] TWEthereumSigner.EmptyValue
+[       OK ] TWEthereumSigner.EmptyValue (0 ms)
+[ RUN      ] TWEthereumSigner.BigInt
+[       OK ] TWEthereumSigner.BigInt (0 ms)
+[----------] 2 tests from TWEthereumSigner (0 ms total)
+
+[----------] 1 test from FreeCash
+[ RUN      ] FreeCash.SignTransaction

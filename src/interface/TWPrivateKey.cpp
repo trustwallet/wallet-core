@@ -126,3 +126,4 @@ TWData *TWPrivateKeySignSchnorr(struct TWPrivateKey *_Nonnull pk, TWData *_Nonnu
         return TWDataCreateWithBytes(result.data(), result.size());
     }
 }
+

@@ -14,6 +14,13 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/build/gtest/staging/googletest-release-1.8.
 find_library(Protobuf REQUIRED PATH ${CMAKE_SOURCE_DIR}/build/local/lib/pkgconfig NO_DEFAULT_PATH)
 include_directories(${Protobuf_INCLUDE_DIRS})
 
+# ----add config for libsecp256k1------
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+
+include_directories(/usr/local/include)
+link_directories(/usr/local/lib)
+# --------------end--------------------
+
 # Test executable
 file(GLOB_RECURSE test_sources *.cpp **/*.cpp)
 add_executable(tests ${test_sources})
