@@ -20,14 +20,13 @@ class TestBandChainAddress {
 
     @Test
     fun testAddress() {
-        // TODO: Check and finalize implementation
 
-        val key = PrivateKey("__PRIVATE_KEY_DATA__".toHexByteArray())
+        val key = PrivateKey("1037f828ca313f4c9e120316e8e9ff25e17f07fe66ba557d5bc5e2eeb7cba8f6".toHexByteArray())
         val pubkey = key.publicKeyEd25519
         val address = AnyAddress(pubkey, CoinType.BANDCHAIN)
-        val expected = AnyAddress("__EXPECTED_RESULT_ADDRESS__", CoinType.BANDCHAIN)
+        val expected = AnyAddress("band1s403gyl5z04hnvvrsanzln9shmhxte0vhde3t7", CoinType.BANDCHAIN)
 
-        assertEquals(pubkey.data().toHex(), "0x__EXPECTED_PUBKEY_DATA__")
+        assertEquals(pubkey.data().toHex(), "0x381207e7f7fa7c44564534b0f47dfef3fc942e42defc10b2bf614e4dfa773e5a")
         assertEquals(address.description(), expected.description())
     }
 }

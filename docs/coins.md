@@ -42,6 +42,7 @@ This list is generated from [./coins.json](../coins.json)
 | 457     | Aeternity        | AE     | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aeternity/info/logo.png" width="32" />    | <https://aeternity.com>       |
 | 459     | Kava             | KAVA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/kava/info/logo.png" width="32" />         | <https://kava.io>             |
 | 461     | Filecoin         | FIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/filecoin/info/logo.png" width="32" />     | <https://filecoin.io/>        |
+| 494     | BandChain        | BAND   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/band/info/logo.png" width="32" />         | <https://bandprotocol.com/>   |
 | 500     | Theta            | THETA  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/theta/info/logo.png" width="32" />        | <https://www.thetatoken.org>  |
 | 501     | Solana           | SOL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/solana/info/logo.png" width="32" />       | <https://solana.com>          |
 | 508     | Elrond           | ERD    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/elrond/info/logo.png" width="32" />       | <https://elrond.com/>         |
