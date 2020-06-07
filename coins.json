@@ -1380,5 +1380,29 @@
             "clientPublic": "https://api.elrond.com",
             "clientDocs": "https://docs.elrond.com"
         }
+    },
+    {
+        "id": "band",
+        "name": "BandChain",
+        "symbol": "BAND",
+        "decimals": 6,
+        "blockchain": "Cosmos",
+        "derivationPath": "m/44'/494'/0'/0/0",
+        "curve": "secp256k1",
+        "publicKeyType": "secp256k1",
+        "hrp": "band",
+        "explorer": {
+            "url": "https://scan-wenchang-testnet2.bandchain.org/",
+            "txPath": "/tx/",
+            "accountPath": "/account/",
+            "sampleTx": "473264551D3063A9EC64EC251C61BE92DDDFCF6CC46D026D1E574D83D5447173",
+            "sampleAccount": "band12nmsm9khdsv0tywge43q3zwj8kkj3hvup9rltp"
+        },
+        "info": {
+            "url": "https://bandprotocol.com/",
+            "client": "https://github.com/bandprotocol/bandchain",
+            "clientPublic": "https://api-wt2-lb.bandchain.org",
+            "clientDocs": "https://docs.bandchain.org/"
+        }
     }
 ]
