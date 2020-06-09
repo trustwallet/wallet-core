@@ -43,9 +43,13 @@ class TransactionSigner {
     /// List of signed inputs.
     std::vector<TransactionInput> signedInputs;
 
+    bool estimationMode = false;
+
   public:
     /// Initializes a transaction signer with signing input.
-    TransactionSigner(const Bitcoin::Proto::SigningInput& input) : input(input) {
+    /// estimationMode: is set, no real signing is performed, only as much as needed to get the almost-exact signed size 
+    TransactionSigner(const Bitcoin::Proto::SigningInput& input, bool estimationMode = false) :
+    input(input), estimationMode(estimationMode) {
       if (input.has_plan()) {
         plan = TransactionPlan(input.plan());
       } else {
@@ -60,6 +64,9 @@ class TransactionSigner {
     ///
     /// \returns the signed transaction or an error.
     Result<Transaction> sign();
+
+    // helper, return binary encoded transaction (used right after sign())
+    static void encodeTx(const Transaction& tx, Data& outData) { tx.encode(outData); }
 
     // internal, public for testability and Decred
     static Data pushAll(const std::vector<Data>& results);

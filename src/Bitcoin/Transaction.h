@@ -61,11 +61,22 @@ public:
     Data getSequenceHash() const;
     Data getOutputsHash() const;
 
+    enum SegwitFormatMode {
+        NonSegwit,
+        IfHasWitness,
+        Segwit
+    };
+
     /// Encodes the transaction into the provided buffer.
-    void encode(bool witness, Data& data) const;
+    void encode(Data& data, enum SegwitFormatMode segwitFormat) const;
+
+    /// Default one-parameter version, needed for templated usage.
+    void encode(Data& data) const { encode(data, SegwitFormatMode::IfHasWitness); }
 
     /// Encodes the witness part of the transaction into the provided buffer.
     void encodeWitness(Data& data) const;
+
+    bool hasWitness() const;
 
     /// Generates the signature hash for this transaction.
     Data getSignatureHash(const Script& scriptCode, size_t index, enum TWBitcoinSigHashType hashType,

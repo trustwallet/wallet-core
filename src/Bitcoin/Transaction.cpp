@@ -102,10 +102,17 @@ Data Transaction::getOutputsHash() const {
     return hash;
 }
 
-void Transaction::encode(bool witness, Data& data) const {
+void Transaction::encode(Data& data, enum SegwitFormatMode segwitFormat) const {
+    bool useWitnessFormat = true;
+    switch (segwitFormat) {
+        case NonSegwit: useWitnessFormat = false; break;
+        case IfHasWitness: useWitnessFormat = hasWitness(); break;
+        case Segwit: useWitnessFormat = true; break;
+    }
+
     encode32LE(version, data);
 
-    if (witness) {
+    if (useWitnessFormat) {
         // Use extended format in case witnesses are to be serialized.
         data.push_back(0); // marker
         data.push_back(1); // flag
@@ -123,7 +130,7 @@ void Transaction::encode(bool witness, Data& data) const {
         output.encode(data);
     }
 
-    if (witness) {
+    if (useWitnessFormat) {
         encodeWitness(data);
     }
 
@@ -134,6 +141,10 @@ void Transaction::encodeWitness(Data& data) const {
     for (auto& input : inputs) {
         input.encodeWitness(data);
     }
+}
+
+bool Transaction::hasWitness() const {
+    return std::any_of(inputs.begin(), inputs.end(), [](auto& input) { return !input.scriptWitness.empty(); });    
 }
 
 Data Transaction::getSignatureHash(const Script& scriptCode, size_t index,

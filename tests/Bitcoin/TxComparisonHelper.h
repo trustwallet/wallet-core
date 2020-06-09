@@ -52,3 +52,6 @@ EncodedTxSize getEncodedTxSize(const Transaction& tx);
 /// Uses segwit byte size (virtual size).  Tolerance is estiamte-smaller and estimate-larger, like -1 and 20.
 /// Returns false on mismatch, and error is printed (stderr).
 bool validateEstimatedSize(const Transaction& tx, int smallerTolerance = -1, int biggerTolerance = 20);
+
+/// Print out a transaction in a nice format, as structured hex strings.
+void prettyPrintTransaction(const Transaction& tx, bool useWitnessFormat = true);

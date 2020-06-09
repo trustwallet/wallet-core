@@ -73,7 +73,7 @@ TEST(RavencoinTransaction, SignTransaction) {
     ASSERT_EQ(fee, signer.plan.fee);
 
     Data serialized;
-    signedTx.encode(false, serialized);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::NonSegwit);
     ASSERT_EQ(
         hex(serialized),
         "0100000001445560237d8093da3487eb90bc7ff826fab43cdbe213c034d671ec4eb4827e0c000000006b483045022100d790bdaa3c44eb5e3a422365ca5fc009c4512625222e3378f2f16e7e6ef1732a0220688c1bb995b7ff2f12729e101d7c24b6314430317e7717911fdc35c0d84f2f0d012102138724e702d25b0fdce73372ccea9734f9349442d5a9681a5f4d831036cd9429ffffffff0280f0fa02000000001976a9149451f4546e09fc2e49ef9b5303924712ec2b038e88ac006cdc02000000001976a9145d6e33f3a108bbcc586cbbe90994d5baf5a9cce488ac00000000"

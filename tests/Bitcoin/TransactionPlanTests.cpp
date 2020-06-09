@@ -25,7 +25,7 @@ TEST(TransactionPlan, OneTypical) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 50'000, 226));
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 50'000, 147));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 226);
@@ -61,29 +61,29 @@ TEST(TransactionPlan, OneInsufficientHigher) {
 TEST(TransactionPlan, OneFitsExactly) {
     auto utxos = buildTestUTXOs({100'000});
     auto byteFee = 1;
-    auto expectedFee = 226;
-    auto sigingInput = buildSigningInput(100'000 - expectedFee, byteFee, utxos);
+    auto expectedFee = 147;
+    auto sigingInput = buildSigningInput(100'000 - 226, byteFee, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - expectedFee, expectedFee));
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 226, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), expectedFee);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 226);
 }
 
 TEST(TransactionPlan, OneFitsExactlyHighFee) {
     auto utxos = buildTestUTXOs({100'000});
     auto byteFee = 10;
-    auto expectedFee = 2260;
-    auto sigingInput = buildSigningInput(100'000 - expectedFee, byteFee, utxos);
+    auto expectedFee = 1470;
+    auto sigingInput = buildSigningInput(100'000 - 2260, byteFee, utxos);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - expectedFee, expectedFee));
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 2260, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), expectedFee);
+    EXPECT_EQ(feeCalculator.calculate(1, 2, byteFee), 2260);
 }
 
 TEST(TransactionPlan, TwoFirstEnough) {
@@ -92,7 +92,7 @@ TEST(TransactionPlan, TwoFirstEnough) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {20'000}, 15'000, 226));
+    EXPECT_TRUE(verifyPlan(txPlan, {20'000}, 15'000, 147));
 }
 
 TEST(TransactionPlan, TwoSecondEnough) {
@@ -101,7 +101,7 @@ TEST(TransactionPlan, TwoSecondEnough) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {80'000}, 70'000, 226));
+    EXPECT_TRUE(verifyPlan(txPlan, {80'000}, 70'000, 147));
 }
 
 TEST(TransactionPlan, TwoBoth) {
@@ -110,7 +110,7 @@ TEST(TransactionPlan, TwoBoth) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {20'000, 80'000}, 90'000, 374));
+    EXPECT_TRUE(verifyPlan(txPlan, {20'000, 80'000}, 90'000, 215));
 }
 
 TEST(TransactionPlan, TwoFirstEnoughButSecond) {
@@ -119,7 +119,7 @@ TEST(TransactionPlan, TwoFirstEnoughButSecond) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {22'000}, 18'000, 226));
+    EXPECT_TRUE(verifyPlan(txPlan, {22'000}, 18'000, 147));
 }
 
 TEST(TransactionPlan, ThreeNoDust) {
@@ -129,7 +129,7 @@ TEST(TransactionPlan, ThreeNoDust) {
     // 100'000 would fit with dust; instead two UTXOs are selected not to leave dust
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {75'000, 100'000}, 100'000 - 226 - 10, 374));
+    EXPECT_TRUE(verifyPlan(txPlan, {75'000, 100'000}, 100'000 - 226 - 10, 215));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculate(1, 2, 1), 226);
@@ -138,12 +138,12 @@ TEST(TransactionPlan, ThreeNoDust) {
     // Now 100'000 fits with no dust; 546 is the dust limit
     sigingInput = buildSigningInput(100'000 - 226 - 546, 1, utxos);
     txPlan = TransactionBuilder::plan(sigingInput);
-    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 226 - 546, 226));
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000}, 100'000 - 226 - 546, 147));
 
     // One more and we are over dust limit
     sigingInput = buildSigningInput(100'000 - 226 - 546 + 1, 1, utxos);
     txPlan = TransactionBuilder::plan(sigingInput);
-    EXPECT_TRUE(verifyPlan(txPlan, {75'000, 100'000}, 100'000 - 226 - 546 + 1, 374));
+    EXPECT_TRUE(verifyPlan(txPlan, {75'000, 100'000}, 100'000 - 226 - 546 + 1, 215));
 }
 
 TEST(TransactionPlan, TenThree) {
@@ -152,7 +152,7 @@ TEST(TransactionPlan, TenThree) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {100'000, 125'000, 150'000}, 300'000, 522));
+    EXPECT_TRUE(verifyPlan(txPlan, {100'000, 125'000, 150'000}, 300'000, 283));
 }
 
 TEST(TransactionPlan, NonMaxAmount) {
@@ -161,7 +161,7 @@ TEST(TransactionPlan, NonMaxAmount) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {50000}, 10000, 226));
+    EXPECT_TRUE(verifyPlan(txPlan, {50000}, 10000, 147));
 }
 
 TEST(TransactionPlan, UnpsentsInsufficient) {
@@ -189,7 +189,7 @@ TEST(TransactionPlan, CustomCase) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {794121, 2289357}, 2287189, 22814));
+    EXPECT_TRUE(verifyPlan(txPlan, {794121, 2289357}, 2287189, 13115));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculate(2, 2, byteFee), 22814);
@@ -216,7 +216,7 @@ TEST(TransactionPlan, MaxAmount) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 19120, 10880));
+    EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 30000 - 5792, 5792));
 }
 
 TEST(TransactionPlan, MaxAmountOne) {
@@ -225,7 +225,7 @@ TEST(TransactionPlan, MaxAmountOne) {
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    auto expectedFee = 192;
+    auto expectedFee = 113;
     EXPECT_TRUE(verifyPlan(txPlan, {10189534}, 10189534 - expectedFee, expectedFee));
 }
 
@@ -241,7 +241,7 @@ TEST(TransactionPlan, MaxAmountLowerRequested) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 19120, 10880));
+    EXPECT_TRUE(verifyPlan(txPlan, {15000, 15000}, 30000 - 5792, 5792));
 }
 
 TEST(TransactionPlan, MaxAmount4of5) {
@@ -252,27 +252,27 @@ TEST(TransactionPlan, MaxAmount4of5) {
     // UTXOs smaller than singleInputFee are not included
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
-    auto expectedFee = 1908;
+    auto expectedFee = 951;
     EXPECT_TRUE(verifyPlan(txPlan, {500, 600, 800, 1000}, 2'900 - expectedFee, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
     EXPECT_EQ(feeCalculator.calculateSingleInput(byteFee), 444);
-    EXPECT_EQ(feeCalculator.calculate(4, 1, byteFee), expectedFee);
+    EXPECT_EQ(feeCalculator.calculate(4, 1, byteFee), 1908);
 }
 
 TEST(TransactionPlan, One_MaxAmount_FeeMoreThanAvailable) {
     auto utxos = buildTestUTXOs({170});
     auto byteFee = 1;
-    auto expectedFee = 192;
+    auto expectedFee = 113;
     auto sigingInput = buildSigningInput(300, byteFee, utxos, true);
 
     auto txPlan = TransactionBuilder::plan(sigingInput);
 
     // Fee is reduced to availableAmount
-    EXPECT_TRUE(verifyPlan(txPlan, {170}, 0, 170));
+    EXPECT_TRUE(verifyPlan(txPlan, {170}, 170 - expectedFee, expectedFee));
 
     auto& feeCalculator = getFeeCalculator(TWCoinTypeBitcoin);
-    EXPECT_EQ(feeCalculator.calculate(1, 1, byteFee), expectedFee);
+    EXPECT_EQ(feeCalculator.calculate(1, 1, byteFee), 192);
 }
 
 TEST(TransactionPlan, MaxAmountDoge) {

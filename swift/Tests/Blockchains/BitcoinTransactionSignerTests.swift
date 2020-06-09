@@ -39,8 +39,8 @@ class BitcoinTransactionSignerTests: XCTestCase {
         let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .bitcoin)
 
         XCTAssertEqual(plan.amount, 1000)
-        XCTAssertEqual(plan.fee, 226)
-        XCTAssertEqual(plan.change, 0)
+        XCTAssertEqual(plan.fee, 147)
+        XCTAssertEqual(plan.change, 79)
 
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
         XCTAssertTrue(output.error.isEmpty)
@@ -49,27 +49,31 @@ class BitcoinTransactionSignerTests: XCTestCase {
         XCTAssertEqual(signedTx.version, 1)
 
         let txId = output.transactionID
-        XCTAssertEqual(txId, "b588f910d7ff03d5fbc3da91f62e48bab47153229c8d1b114b43cb31b9c4d0dd")
+        XCTAssertEqual(txId, "dc60991ff61a6061f55854ce6fb3203b7c8291ed7b2ce799040114c608391583")
 
         XCTAssertEqual(signedTx.inputs.count, 1)  // Only one UTXO available
         XCTAssertEqual(signedTx.inputs[0].script.hexString, "")
 
-        XCTAssertEqual(signedTx.outputs.count, 1) // Exact amount
+        XCTAssertEqual(signedTx.outputs.count, 2) // Exact amount
         XCTAssertEqual(signedTx.outputs[0].value, 1000)
+        XCTAssertEqual(signedTx.outputs[1].value, 79)
 
         let encoded = output.encoded
         let witnessHash = Data(Hash.sha256SHA256(data: encoded).reversed())
-        XCTAssertEqual(witnessHash.hexString, "16a17dd8f6e507220010c56c07a8479e3f909f87791683577d4e6aad61ab113a")
-        XCTAssertEqual(encoded.hexString, "01000000" +
-            "0001" +
-            "01" +
+        XCTAssertEqual(witnessHash.hexString, "ec57de0d46eb45e8019b82e388e458e72fb834dba971e3a45ff8fa7bb7bdb799")
+        XCTAssertEqual(encoded.hexString,
+            "01000000" + // version
+            "0001" + // marker & flag
+            "01" + // inputs
                 "0001000000000000000000000000000000000000000000000000000000000000" + "00000000" + "00" + "ffffffff" +
-            "01" +
-                "e803000000000000" + "1976a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac" +
-            "02" +
-                "4730440220252e92b8757f1e5577c54ce5deb8072914c1f03333128777dee96ebceeb6a99b02202b7298789316779d0aa7595abeedc03054405c42ab9859e67d9253d2c9a0cdfa01232103596d3451025c" +
-                "19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac" +
-            "00000000"
+            "02" + // outputs
+                "e803000000000000" + "19" + "76a914769bdff96a02f9135a1d19b749db6a78fe07dc9088ac" +
+                "4f00000000000000" + "19" + "76a9149e089b6889e032d46e3b915a3392edfd616fb1c488ac" +
+            // witness
+                "02" +
+                    "48" + "30450221009eefc1befe96158f82b74e6804f1f713768c6172636ca11fcc975c316ea86f75022057914c48bc24f717498b851a47a2926f96242e3943ebdf08d5a97a499efc8b9001" +
+                    "23" + "2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac" +
+            "00000000" // nLockTime
         )
     }
 }

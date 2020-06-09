@@ -69,7 +69,7 @@ TEST(DigiByteTransaction, SignTransaction) {
     ASSERT_EQ(fee, signer.plan.fee);
 
     Data serialized;
-    signedTx.encode(false, serialized);
+    signedTx.encode(serialized, Transaction::SegwitFormatMode::NonSegwit);
     ASSERT_EQ(
         hex(serialized),
         "01000000"
@@ -119,13 +119,14 @@ TEST(DigiByteTransaction, SignP2WPKH) {
     utxo0->mutable_out_point()->set_index(1);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
 
-    auto result = TransactionSigner<Transaction, TransactionBuilder>(std::move(input)).sign();
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto result = signer.sign();
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(true, serialized);
-    ASSERT_EQ(hex(serialized), "0100000000010180a16412a880d13b0c88929397a50341018da2e78b70b313062b4a496fea59400100000000ffffffff0280841e00000000001600145c91bc8d2073529224e8be0764128ac22f0005647e351e00000000001600144b62694cfdd7bdac59cbed211288ccd5c0dabd02024730440220346eed84d79a2e45f0f291c9af91bc71d6217cff3488047b35c492a3690cd2ce02204724529e4689060532f9286532c87e3b6efb877008e8e44218c1fced7edf949a012102ac2e56f40d38530fcbf21f1eba0c3c668aa839cda8f2c615e99df44b6447772600000000");
+    signer.encodeTx(signedTx, serialized);
+    ASSERT_EQ(hex(serialized), "0100000000010180a16412a880d13b0c88929397a50341018da2e78b70b313062b4a496fea59400100000000ffffffff0280841e00000000001600145c91bc8d2073529224e8be0764128ac22f000564d3351e00000000001600144b62694cfdd7bdac59cbed211288ccd5c0dabd0202473044022057b876880b6c98511d9e5baab00428c50bf96868bdf4dc50bd61c2477ed8438b0220312ff89a078ab5a38b7b909ceb58310d93a5b4e2d637b37b77c4d7baf35a1815012102ac2e56f40d38530fcbf21f1eba0c3c668aa839cda8f2c615e99df44b6447772600000000");
 }
 
 TEST(DigiByteTransaction, LockScripts) {

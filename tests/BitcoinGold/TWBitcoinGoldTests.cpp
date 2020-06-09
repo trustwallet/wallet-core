@@ -99,27 +99,26 @@ TEST(TWBitcoinGoldTxGeneration, TxGeneration) {
     utxo0->mutable_out_point()->set_sequence(0xfffffffd);
 
     // Sign
-    auto txSinger = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
-    txSinger.transaction.lockTime = 0x00098971;
-    auto result = txSinger.sign();
+    auto txSigner = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    txSigner.transaction.lockTime = 0x00098971;
+    auto result = txSigner.sign();
 
     ASSERT_TRUE(result) << result.error();
     auto signedTx = result.payload();
 
     Data serialized;
-    signedTx.encode(true, serialized);
-    ASSERT_EQ(hex(serialized),
-        "01000000"
-        "0001"
-        "01"
-            "5727794fa2b94aa22a226e206130524201ede9b50e032526e713c848493a890f" "00000000" "00" "fdffffff"
-        "02"
-            "8813000000000000" "160014db746a75d9aae8995d135b1e19a04d7765242a8f"
-            "a612000000000000" "160014ebae10950c8a35a506e0e265b928305233e802ab"
-        "02"
-            "483045022100bf1dcc37c2d3794e216b0b1cfcb04c7f49ef360ae941e46dc9b168f54f5447fe02205a0912bf3a3c0ac0e490c665bcde5239f553c013b2447a6fb5df6387ac029c8c41"
-            "2103e00b5dec8078d526fba090247bd92db6b67a4dd1953b788cea9b52de9471b8cf"
-        "71890900"
+    txSigner.encodeTx(signedTx, serialized);
+    ASSERT_EQ(hex(serialized), // printed using prettyPrintTransaction
+        "01000000" // version
+        "0001" // marker & flag
+        "01" // inputs
+            "5727794fa2b94aa22a226e206130524201ede9b50e032526e713c848493a890f"  "00000000"  "00"  ""  "fdffffff"
+        "02" // outputs
+            "8813000000000000"  "16"  "0014db746a75d9aae8995d135b1e19a04d7765242a8f"
+            "fb12000000000000"  "16"  "0014ebae10950c8a35a506e0e265b928305233e802ab"
+        // witness
+            "02"  "47"  "304402202b371b7cae885463c06357d1fc6ca95ab155613f212711bc7fb115500654946d0220430af77cbbb30afe7d7dcaccb72a55da802ee0a2bfea790dfe7c4e1a4c53fd7d41"  "21"  "03e00b5dec8078d526fba090247bd92db6b67a4dd1953b788cea9b52de9471b8cf"
+        "71890900" // nLockTime
     );
 }
             
