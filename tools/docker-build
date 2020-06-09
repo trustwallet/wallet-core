@@ -1,6 +1,0 @@
-#!/bin/bash
-#
-# This script builds the Docker image(s)
-
-docker build -t trustwallet/wallet-core:latest ./docker/wallet-core
-#docker push trustwallet/wallet-core:latest

@@ -66,6 +66,7 @@ pod 'TrustWalletCore'
 - [coinpaprika](https://coinpaprika.com/)
 - [IFWallet](https://www.ifwallet.com/)
 - [Alice](https://www.alicedapp.com/)
+- [FrontierWallet](https://frontierwallet.com/)
 
 # Contributing
 
