@@ -163,6 +163,7 @@ Decode::TypeDesc Decode::getTypeDesc() const {
     TypeDesc typeDesc;
     typeDesc.isIndefiniteValue = false;
     typeDesc.majorType = (MajorType)(getByte(0) >> 5);
+    assert((int)typeDesc.majorType >= 0 && (int)typeDesc.majorType <= 7);
     auto minorType = (TW::byte)((uint8_t)getByte(0) & 0x1F);
     if (minorType < 24) {
         // direct value
@@ -225,13 +226,12 @@ uint32_t Decode::getTotalLen() const {
             return getCompoundLength(1);
         case MT_map:
             return getCompoundLength(2);
+        default:
         case MT_tag:
             {
                 uint32_t dataLen = skipClone(typeDesc.byteCount).getTotalLen();
                 return typeDesc.byteCount + dataLen;
             }
-        default:
-            throw std::invalid_argument("CBOR length type not supported");
     }
 }
 
@@ -373,11 +373,9 @@ bool Decode::isValid() const {
                     return true;
                 }
 
+            default:
             case MT_tag:
                 return skipClone(typeDesc.byteCount).isValid();
-
-            default:
-                return false;
         }
     } catch (exception& ex) {
         return false;
@@ -440,6 +438,7 @@ string Decode::dumpToStringInternal() const {
             s << "tag " << typeDesc.value << " " << getTagElement().dumpToStringInternal();
             break;
 
+        default:
         case MT_special: // float or simple
             if (typeDesc.isIndefiniteValue) {
                 // skip break command
@@ -447,9 +446,6 @@ string Decode::dumpToStringInternal() const {
                 s << "spec " << typeDesc.value;
             }
             break;
-
-        default:
-            throw std::invalid_argument("CBOR dump: type not supported");
     }
     return s.str();
 }

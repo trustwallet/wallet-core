@@ -95,7 +95,12 @@ TEST(Cbor, EncString) {
 }
 
 TEST(Cbor, EncTag) {
-    EXPECT_EQ("c506", hex(Encode::tag(5, Encode::uint(6)).encoded()));
+    {
+        Data cbor = Encode::tag(5, Encode::uint(6)).encoded();
+        EXPECT_EQ("c506", hex(cbor));
+        EXPECT_TRUE(Decode(cbor).isValid());
+        EXPECT_EQ("tag 5 6", Decode(cbor).dumpToString());
+    }
     EXPECT_EQ("d94321191234", hex(Encode::tag(0x4321, Encode::uint(0x1234)).encoded()));
 }
 
@@ -146,7 +151,7 @@ TEST(Cbor, DecInt) {
     EXPECT_EQ(0xffffffffffffffff, Decode(parse_hex("1bffffffffffffffff")).getValue());
 }
 
-TEST(Cbor, DecMinortypeInvlalid) {
+TEST(Cbor, DecMinortypeInvalid) {
     EXPECT_FALSE(Decode(parse_hex("1c")).isValid()); // 28 unused
     EXPECT_FALSE(Decode(parse_hex("1d")).isValid()); // 29 unused
     EXPECT_FALSE(Decode(parse_hex("1e")).isValid()); // 30 unused
@@ -195,11 +200,11 @@ TEST(Cbor, DecMemoryref) {
     delete dummy;
 }
 
-TEST(Cbor, getValue) {
+TEST(Cbor, GetValue) {
    EXPECT_EQ(5, Decode(parse_hex("05")).getValue());
 }
 
-TEST(Cbor, getValueInvalid) {
+TEST(Cbor, GetValueInvalid) {
     try {
         Decode(parse_hex("83010203")).getValue(); // array
     } catch (exception& ex) {
@@ -208,12 +213,32 @@ TEST(Cbor, getValueInvalid) {
     FAIL() << "Expected exception";
 }
 
-TEST(Cbor, getString) {
+TEST(Cbor, GetString) {
     // bytes/string and getString/getBytes work in all combinations
     EXPECT_EQ("abcde", Decode(parse_hex("656162636465")).getString());
     EXPECT_EQ("abcde", Decode(parse_hex("456162636465")).getString());
     EXPECT_EQ("6162636465", hex(Decode(parse_hex("656162636465")).getBytes()));
     EXPECT_EQ("6162636465", hex(Decode(parse_hex("456162636465")).getBytes()));
+}
+
+TEST(Cbor, GetStringInvalidType) {
+    try {
+        Decode cbor = Decode(Encode::uint(5).encoded());
+        cbor.getBytes();
+    } catch (exception& ex) {
+        return;
+    }
+    FAIL() << "Expected exception";
+}
+
+TEST(Cbor, GetStringInvalidTooShort) {
+    try {
+        Decode cbor = Decode(parse_hex("65616263")); // too short
+        cbor.getBytes();
+    } catch (exception& ex) {
+        return;
+    }
+    FAIL() << "Expected exception";
 }
 
 TEST(Cbor, ArrayEmpty) {
@@ -364,6 +389,21 @@ TEST(Cbor, MapNested) {
     EXPECT_EQ("c", decode.getMapElements()[0].second.getMapElements()[0].second.getString());
 }
 
+TEST(Cbor, MapIsValidInvalidTooShort) {
+    Decode cbor = Decode(parse_hex("a301020304")); // too short
+    EXPECT_FALSE(cbor.isValid());
+}
+
+TEST(Cbor, MapGetInvalidTooShort) {
+    try {
+        Decode cbor = Decode(parse_hex("a301020304")); // too short
+        auto elems = cbor.getMapElements();
+    } catch (exception& ex) {
+        return;
+    }
+    FAIL() << "Expected exception";
+}
+
 TEST(Cbor, ArrayIndef) {
     Data cbor = Encode::indefArray()
         .addIndefArrayElem(Encode::uint(1))
@@ -417,4 +457,24 @@ TEST(Cbor, ArrayInfefErrorNoBreak) {
     EXPECT_TRUE(Decode(parse_hex("9f0102ff")).isValid());
     // without break it's invalid
     EXPECT_FALSE(Decode(parse_hex("9f0102")).isValid());
+}
+
+TEST(Cbor, GetTagValueNotTag) {
+    try {
+        Decode cbor = Decode(Encode::string("abc").encoded());
+        cbor.getTagValue();
+    } catch (exception& ex) {
+        return;
+    }
+    FAIL() << "Expected exception";
+}
+
+TEST(Cbor, GetTagElementNotTag) {
+    try {
+        Decode cbor = Decode(Encode::string("abc").encoded());
+        Decode tagElement = cbor.getTagElement();
+    } catch (exception& ex) {
+        return;
+    }
+    FAIL() << "Expected exception";
 }
