@@ -1,4 +1,4 @@
-name: iOS CI
+name: iOS Release
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  release:
+  build:
     runs-on: macos-10.15
     steps:
     - uses: actions/checkout@v2
@@ -29,4 +29,7 @@ jobs:
     - name: Build and release
       run: |
         tools/generate-files
-        tools/ios-test
+        tools/ios-release
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.WC_GITHUB_TOKEN }}
