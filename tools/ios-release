@@ -9,13 +9,12 @@ require 'json'
 
 version = ARGV[0] || `git describe --long --tags | cut -f 1 -d "-"`.strip
 
-puts 'Processing version: #{version}'
+puts "Processing version: #{version}"
 
 # Get release by tag
 release = `curl https://api.github.com/repos/trustwallet/wallet-core/releases/tags/#{version}`
 puts release
 release_hash = JSON.parse(release)
-puts release_hash
 upload_url = release_hash['upload_url']
 upload_url.slice!('{?name,label}')
 
@@ -43,8 +42,9 @@ end
 # Upload archive
 puts 'Uploading...'
 upload_url = "#{upload_url}?name=#{file_name}"
-puts 'target url: #{upload_url}'
+puts "target url: #{upload_url}"
 upload_output = `curl -u trust-bot:#{ENV['GITHUB_TOKEN']} -X POST -H 'Content-Type: application/octet-stream' --data-binary @#{file_name} #{upload_url}`
+puts upload_output
 download_url = JSON.parse(upload_output)['browser_download_url']
 
 # Upload to Cocoapod
@@ -63,7 +63,7 @@ Pod::Spec.new do |s|
   s.swift_version = '5.1'
 
   s.source = {
-    http: "https://s3.amazonaws.com/wallet-core/TrustWalletCore-iOS-#{version}.zip"
+    http: "#{download_url}"
   }
   s.default_subspec = 'Core'
 
