@@ -80,6 +80,8 @@ TEST(Cbor, EncNegInt) {
     EXPECT_EQ("3b0000000100000000", hex(Encode::negInt(0x0000000100000001).encoded()));
     EXPECT_EQ("3b876543210fedcba9", hex(Encode::negInt(0x876543210fedcbaa).encoded()));
     EXPECT_EQ("3bfffffffffffffffe", hex(Encode::negInt(0xffffffffffffffff).encoded()));
+
+    EXPECT_EQ("-9", Decode(Encode::negInt(9).encoded()).dumpToString());
 }
 
 
@@ -92,6 +94,9 @@ TEST(Cbor, EncString) {
         "590102000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", 
         hex(Encode::bytes(long258).encoded())
     );
+
+    EXPECT_EQ("\"abcde\"", Decode(Encode::string("abcde").encoded()).dumpToString());
+    EXPECT_EQ("h\"6162636465\"", Decode(Encode::bytes(parse_hex("6162636465")).encoded()).dumpToString());
 }
 
 TEST(Cbor, EncTag) {
@@ -389,14 +394,38 @@ TEST(Cbor, MapNested) {
     EXPECT_EQ("c", decode.getMapElements()[0].second.getMapElements()[0].second.getString());
 }
 
-TEST(Cbor, MapIsValidInvalidTooShort) {
-    Decode cbor = Decode(parse_hex("a301020304")); // too short
-    EXPECT_FALSE(cbor.isValid());
+TEST(Cbor, MapIndef) {
+    Decode cbor = Decode(parse_hex("bf01020304ff"));
+    EXPECT_EQ("{_ 1: 2, 3: 4}", cbor.dumpToString());
+    EXPECT_EQ(2, cbor.getMapElements().size());
+    EXPECT_EQ(1, cbor.getMapElements()[0].first.getValue());
+    EXPECT_EQ(2, cbor.getMapElements()[0].second.getValue());
 }
 
-TEST(Cbor, MapGetInvalidTooShort) {
+TEST(Cbor, MapIsValidInvalidTooShort) {
+    {
+        Decode cbor = Decode(parse_hex("a301020304")); // too short
+        EXPECT_FALSE(cbor.isValid());
+    }
+    {
+        Decode cbor = Decode(parse_hex("a3010203")); // too short, partial element
+        EXPECT_FALSE(cbor.isValid());
+    }
+}
+
+TEST(Cbor, MapGetInvalidTooShort1) {
     try {
         Decode cbor = Decode(parse_hex("a301020304")); // too short
+        auto elems = cbor.getMapElements();
+    } catch (exception& ex) {
+        return;
+    }
+    FAIL() << "Expected exception";
+}
+
+TEST(Cbor, MapGetInvalidTooShort2) {
+    try {
+        Decode cbor = Decode(parse_hex("a3010203")); // too short, partial element
         auto elems = cbor.getMapElements();
     } catch (exception& ex) {
         return;
@@ -420,6 +449,10 @@ TEST(Cbor, ArrayIndef) {
     EXPECT_EQ(2, decode.getArrayElements().size());
     EXPECT_EQ(1, decode.getArrayElements()[0].getValue());
     EXPECT_EQ(2, decode.getArrayElements()[1].getValue());
+
+    EXPECT_EQ("[_ 1, 2]", Decode(parse_hex("9f0102ff")).dumpToString());
+    EXPECT_EQ("", Decode(parse_hex("ff")).dumpToString());
+    EXPECT_EQ("spec 1", Decode(parse_hex("e1")).dumpToString());
 }
 
 TEST(Cbor, ArrayInfefErrorAddNostart) {
