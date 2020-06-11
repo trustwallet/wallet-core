@@ -40,7 +40,7 @@ end
 puts 'Uploading...'
 upload_url = "#{upload_url}?name=#{file_name}"
 puts 'target url: #{upload_url}'
-upload_output = `curl -u hewigovens:#{ENV['GITHUB_TOKEN']} -X POST -H 'Content-Type: application/octet-stream' --data-binary @#{file_name} #{upload_url}`
+upload_output = `curl -u trust-bot:#{ENV['GITHUB_TOKEN']} -X POST -H 'Content-Type: application/octet-stream' --data-binary @#{file_name} #{upload_url}`
 download_url = JSON.parse(upload_output)['browser_download_url']
 
 # Upload to Cocoapod
