@@ -9,7 +9,7 @@ on:
       - '*'
 
 jobs:
-  build:
+  release:
     runs-on: macos-10.15
     steps:
     - uses: actions/checkout@v2
@@ -26,11 +26,10 @@ jobs:
       run: |
         tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
-    - name: Run codegen tests
-      run: tools/codegen-test
+    - name: Generate files
+      run: tools/generate-files
     - name: Build and release
       run: |
-        tools/generate-files
         tools/ios-release
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
