@@ -12,7 +12,7 @@ version = ARGV[0] || `git describe --long --tags | cut -f 1 -d "-"`.strip
 puts "Processing version: #{version}"
 
 # Get release by tag
-release = `curl https://api.github.com/repos/trustwallet/wallet-core/releases/tags/#{version}`
+release = `curl -u trust-bot:#{ENV['GITHUB_TOKEN']} https://api.github.com/repos/trustwallet/wallet-core/releases/tags/#{version}`
 puts release
 release_hash = JSON.parse(release)
 upload_url = release_hash['upload_url']
@@ -106,4 +106,6 @@ file.close
 
 puts "Done. running 'pod trunk push --allow-warnings #{file.path}'"
 
-system("pod trunk push --allow-warnings #{file.path}")
+if system("pod trunk push --allow-warnings #{file.path}") != nil
+  exit 2
+end
