@@ -12,7 +12,7 @@ version = ARGV[0] || `git describe --long --tags | cut -f 1 -d "-"`.strip
 puts "Processing version: #{version}"
 
 # Get release by tag
-release = `curl -u trust-bot:#{ENV['GITHUB_TOKEN']} https://api.github.com/repos/trustwallet/wallet-core/releases/tags/#{version}`
+release = `curl -u #{ENV['GITHUB_USER']}:#{ENV['GITHUB_TOKEN']} https://api.github.com/repos/trustwallet/wallet-core/releases/tags/#{version}`
 release_hash = JSON.parse(release)
 upload_url = release_hash['upload_url']
 puts "asset upload url: #{upload_url}"
@@ -43,7 +43,7 @@ end
 puts 'Uploading...'
 upload_url = "#{upload_url}?name=#{file_name}"
 puts "asset upload url: #{upload_url}"
-upload_output = `curl -u trust-bot:#{ENV['GITHUB_TOKEN']} -X POST -H 'Content-Type: application/octet-stream' --data-binary @#{file_name} #{upload_url}`
+upload_output = `curl -u #{ENV['GITHUB_USER']}:#{ENV['GITHUB_TOKEN']} -X POST -H 'Content-Type: application/octet-stream' --data-binary @#{file_name} #{upload_url}`
 download_url = JSON.parse(upload_output)['browser_download_url']
 puts "final download url: #{download_url}"
 

@@ -31,9 +31,10 @@ jobs:
       run: |
         tools/install-dependencies
       if: steps.internal_cache.outputs.cache-hit != 'true'
+    - name: Generate files
+      run: tools/generate-files
     - name: Upload to maven
       run: |
-        tools/generate-files
         tools/maven-android-upload
       env:
         BINTRAY_KEY: ${{ secrets.BINTRAY_API_KEY }}

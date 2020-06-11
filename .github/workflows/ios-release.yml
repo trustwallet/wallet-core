@@ -34,3 +34,4 @@ jobs:
       env:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.WC_GITHUB_TOKEN }}
+        GITHUB_USER: ${{ secrets.WC_GITHUB_USER }}
