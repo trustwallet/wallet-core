@@ -68,11 +68,8 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type) : type(type) {
         break;
     case TWPublicKeyTypeED25519Blake2b:
         bytes.reserve(ed25519Size);
-        if (data.size() == ed25519Size + 1) {
-            std::copy(std::begin(data) + 1, std::end(data), std::back_inserter(bytes));
-        } else {
-            std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
-        }
+        assert(data.size() == ed25519Size); // ensured by isValid() above
+        std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
         break;
     case TWPublicKeyTypeED25519Extended:
         bytes.reserve(ed25519ExtendedSize);
