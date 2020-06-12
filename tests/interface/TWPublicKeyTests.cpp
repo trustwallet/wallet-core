@@ -18,6 +18,14 @@
 
 using namespace TW;
 
+TEST(TWPublicKeyTests, Create) {
+    const auto publicKeyHex = "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1";
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA(publicKeyHex).get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_TRUE(publicKey != nullptr);
+    const auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
+    EXPECT_EQ(hex(*((Data*)(publicKeyData.get()))), publicKeyHex);
+}
+
 TEST(TWPublicKeyTests, CreateFromPrivateSecp256k1) {
     const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
@@ -31,6 +39,11 @@ TEST(TWPublicKeyTests, CreateFromPrivateSecp256k1) {
     EXPECT_TRUE(TWPublicKeyIsCompressed(publicKey));
 
     TWPublicKeyDelete(publicKey);
+}
+
+TEST(TWPublicKeyTests, CreateInvalid) {
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA("deadbeef").get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_EQ(publicKey, nullptr);
 }
 
 TEST(TWPublicKeyTests, CompressedExtended) {
@@ -86,4 +99,13 @@ TEST(TWPublicKeyTests, VerifyEd25519) {
 
     ASSERT_TRUE(TWPublicKeyVerify(publicKey, signature.get(), digest.get()));
     ASSERT_TRUE(TWPublicKeyVerify(publicKey2, signature2.get(), digest.get()));
+}
+
+TEST(TWPublicKeyTests, Recover) {
+    const auto message = DATA("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
+    const auto signature = DATA("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef");
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyRecover(signature.get(), message.get()));
+    EXPECT_EQ(TWPublicKeyKeyType(publicKey.get()), TWPublicKeyTypeSECP256k1Extended);
+    const auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
+    EXPECT_EQ(hex(*((Data*)(publicKeyData.get()))), "043fc5bf5fec35b6ffe6fd246226d312742a8c296bfa57dd22da509a2e348529b7ddb9faf8afe1ecda3c05e7b2bda47ee1f5a87e952742b22afca560b29d972fcf");
 }
