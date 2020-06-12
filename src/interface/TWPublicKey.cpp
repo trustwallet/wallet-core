@@ -70,6 +70,9 @@ TWString *_Nonnull TWPublicKeyDescription(struct TWPublicKey *_Nonnull publicKey
 }
 
 struct TWPublicKey *_Nullable TWPublicKeyRecover(TWData *_Nonnull signature, TWData *_Nonnull message) {
+    if (TWDataSize(signature) < 65) {
+        return nullptr;
+    }
     auto signatureBytes = TWDataBytes(signature);
     auto v = signatureBytes[64];
     if (v >= 27) {
