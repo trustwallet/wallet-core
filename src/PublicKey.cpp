@@ -83,18 +83,16 @@ PublicKey PublicKey::compressed() const {
     }
 
     Data newBytes(secp256k1Size);
+    assert(bytes.size() >= 65);
     newBytes[0] = 0x02 | (bytes[64] & 0x01);
 
-    switch (type) {
-    case TWPublicKeyTypeSECP256k1Extended:
+    if (type == TWPublicKeyTypeSECP256k1Extended) {
         std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
         return PublicKey(newBytes, TWPublicKeyTypeSECP256k1);
-    case TWPublicKeyTypeNIST256p1Extended:
-        std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
-        return PublicKey(newBytes, TWPublicKeyTypeNIST256p1);
-    default:
-        return *this;
     }
+    assert(type == TWPublicKeyTypeNIST256p1Extended);
+    std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
+    return PublicKey(newBytes, TWPublicKeyTypeNIST256p1);
 }
 
 PublicKey PublicKey::extended() const {
