@@ -31,7 +31,7 @@ puts 'Archiving...'
 includes = Dir.glob('include/**/*.h') + Dir.glob('lib/**/*.{h,hpp}')
 sources = Dir.glob('swift/Sources/**/*.{swift,h,m}')
 libs = Dir.glob('build/ios/*.a')
-files = includes + sources + libs
+files = includes + sources + libs + ['LICENSE']
 file_name = "TrustWalletCore-iOS-#{version}.zip"
 _, stderr, status = Open3.capture3('zip', file_name, *files)
 if status != 0
