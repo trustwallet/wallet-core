@@ -89,7 +89,7 @@ PrivateKey::PrivateKey(const Data& data) {
 }
 
 PrivateKey::PrivateKey(const Data& data, const Data& ext, const Data& chainCode) {
-    if (!isValid(data) || !isValid(data) || !isValid(chainCode)) {
+    if (!isValid(data) || !isValid(ext) || !isValid(chainCode)) {
         throw std::invalid_argument("Invalid private key or extended key data");
     }
     bytes = data;
