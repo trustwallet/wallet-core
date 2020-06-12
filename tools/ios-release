@@ -5,8 +5,18 @@
 
 require 'open3'
 require 'tempfile'
+require 'json'
 
 version = ARGV[0] || `git describe --long --tags | cut -f 1 -d "-"`.strip
+
+puts "Processing version: #{version}"
+
+# Get release by tag
+release = `curl -u #{ENV['GITHUB_USER']}:#{ENV['GITHUB_TOKEN']} https://api.github.com/repos/trustwallet/wallet-core/releases/tags/#{version}`
+release_hash = JSON.parse(release)
+upload_url = release_hash['upload_url']
+puts "asset upload url: #{upload_url}"
+upload_url.slice!('{?name,label}')
 
 # First build
 puts 'Building...'
@@ -30,16 +40,21 @@ if status != 0
 end
 
 # Upload archive
-system("aws s3 cp #{file_name} s3://wallet-core/ --acl public-read")
+puts 'Uploading...'
+upload_url = "#{upload_url}?name=#{file_name}"
+puts "asset upload url: #{upload_url}"
+upload_output = `curl -u #{ENV['GITHUB_USER']}:#{ENV['GITHUB_TOKEN']} -X POST -H 'Content-Type: application/octet-stream' --data-binary @#{file_name} #{upload_url}`
+download_url = JSON.parse(upload_output)['browser_download_url']
+puts "final download url: #{download_url}"
 
-# Upload Cocoapod
+# Upload to Cocoapod
 puts 'Publishing...'
 podspec = <<-PODSPEC
 Pod::Spec.new do |s|
   s.name         = 'TrustWalletCore'
   s.version      = '#{version}'
   s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/TrustWallet/wallet-core'
+  s.homepage     = 'https://github.com/trustwallet/wallet-core'
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
 
@@ -48,7 +63,7 @@ Pod::Spec.new do |s|
   s.swift_version = '5.1'
 
   s.source = {
-    http: "https://s3.amazonaws.com/wallet-core/TrustWalletCore-iOS-#{version}.zip"
+    http: "#{download_url}"
   }
   s.default_subspec = 'Core'
 

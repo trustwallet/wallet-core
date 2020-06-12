@@ -1,11 +1,11 @@
-name: Android Release
+name: iOS Release
 
 on:
   push:
-    tags: 
+    tags:
       - '*'
   pull_request:
-    tags: 
+    tags:
       - '*'
 
 jobs:
@@ -14,13 +14,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install system dependencies
-      run: brew install boost ninja
-    - name: Install Android Dependencies
       run: |
-        $ANDROID_HOME/tools/bin/sdkmanager --verbose "cmake;3.10.2.4988404" "ndk;21.2.6472646"
-        $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-26;google_apis;x86"
-    - name: Accept Licenses
-      run: echo -e "y\ny\ny\ny\ny\n" | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+        brew install boost ninja xcodegen
     - name: Cache internal dependencies
       id: internal_cache
       uses: actions/cache@v1.1.2
@@ -33,9 +28,10 @@ jobs:
       if: steps.internal_cache.outputs.cache-hit != 'true'
     - name: Generate files
       run: tools/generate-files
-    - name: Upload to maven
+    - name: Build and release
       run: |
-        tools/maven-android-upload
+        tools/ios-release
       env:
-        BINTRAY_KEY: ${{ secrets.BINTRAY_API_KEY }}
-        BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.WC_GITHUB_TOKEN }}
+        GITHUB_USER: ${{ secrets.WC_GITHUB_USER }}
