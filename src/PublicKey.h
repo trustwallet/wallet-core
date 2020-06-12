@@ -69,6 +69,9 @@ class PublicKey {
     /// The public key hash is computed by applying the hasher to the public key
     /// bytes and then prepending the prefix.
     Data hash(const Data& prefix, Hash::Hasher hasher = Hash::sha256ripemd, bool skipTypeByte = false) const;
+
+    /// Recover public key from signature (SECP256k1Extended)
+    static PublicKey recover(const Data& signature, const Data& message);
 };
 
 inline bool operator==(const PublicKey& lhs, const PublicKey& rhs) {

@@ -229,3 +229,12 @@ TEST(PublicKeyTests, VerifySchnorrWrongType) {
     const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
     EXPECT_FALSE(publicKey.verifySchnorr(signature, digest));
 }
+
+TEST(PublicKeyTests, Recover) {
+    const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
+    const auto signature = parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef00");
+    const auto publicKey = PublicKey::recover(signature, message);
+    EXPECT_EQ(publicKey.type, TWPublicKeyTypeSECP256k1Extended);
+    EXPECT_EQ(hex(publicKey.bytes), 
+        "043fc5bf5fec35b6ffe6fd246226d312742a8c296bfa57dd22da509a2e348529b7ddb9faf8afe1ecda3c05e7b2bda47ee1f5a87e952742b22afca560b29d972fcf");
+}

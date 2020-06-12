@@ -108,5 +108,12 @@ TEST(TWPublicKeyTests, Recover) {
     EXPECT_TRUE(publicKey.get() != nullptr);
     EXPECT_EQ(TWPublicKeyKeyType(publicKey.get()), TWPublicKeyTypeSECP256k1Extended);
     const auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
-    EXPECT_EQ(hex(*((Data*)(publicKeyData.get()))), "043fc5bf5fec35b6ffe6fd246226d312742a8c296bfa57dd22da509a2e348529b7ddb9faf8afe1ecda3c05e7b2bda47ee1f5a87e952742b22afca560b29d972fcf");
+    EXPECT_EQ(hex(*((Data*)(publicKeyData.get()))), 
+        "043fc5bf5fec35b6ffe6fd246226d312742a8c296bfa57dd22da509a2e348529b7ddb9faf8afe1ecda3c05e7b2bda47ee1f5a87e952742b22afca560b29d972fcf");
+}
+
+TEST(TWPublicKeyTests, RecoverInvalid) {
+    const auto deadbeef = DATA("deadbeef");
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyRecover(deadbeef.get(), deadbeef.get()));
+    EXPECT_EQ(publicKey.get(), nullptr);
 }

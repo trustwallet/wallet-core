@@ -177,4 +177,19 @@ Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte)
     return result;
 }
 
+PublicKey PublicKey::recover(const Data& signature, const Data& message) {
+    if (signature.size() < 65) {
+        throw std::invalid_argument("signature too short");
+    }
+    auto v = signature[64];
+    if (v >= 27) {
+        v -= 27;
+    }
+    TW::Data result(65);
+    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(), v) != 0) {
+        throw std::invalid_argument("recover failed");
+    }
+    return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
+}
+
 } // namespace TW
