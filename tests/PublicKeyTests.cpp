@@ -41,6 +41,20 @@ TEST(PublicKeyTests, CreateInvalid) {
     FAIL() << "Missing expected exception";
 }
 
+TEST(PublicKeyTests, CreateBlake) {
+    const auto privateKeyHex = "afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5";
+    const auto publicKeyKeyHex = "b689ab808542e13f3d2ec56fe1efe43a1660dcadc73ce489fde7df98dd8ce5d9";
+    {
+        auto publicKey = PrivateKey(parse_hex(privateKeyHex)).getPublicKey(TWPublicKeyTypeED25519Blake2b);
+        EXPECT_EQ(hex(publicKey.bytes), publicKeyKeyHex);
+        EXPECT_EQ(publicKey.bytes.size(), 32);
+    }
+    {
+        const auto publicKey = PublicKey(parse_hex(publicKeyKeyHex), TWPublicKeyTypeED25519Blake2b);
+        EXPECT_EQ(hex(publicKey.bytes), publicKeyKeyHex);
+    }
+}
+
 TEST(PublicKeyTests, CompressedExtended) {
     const Data key = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = PrivateKey(key);
@@ -65,36 +79,162 @@ TEST(PublicKeyTests, CompressedExtended) {
     EXPECT_EQ(compressed.isCompressed(), true);
     EXPECT_TRUE(PublicKey::isValid(compressed.bytes, TWPublicKeyTypeSECP256k1));
     EXPECT_EQ(hex(compressed.bytes), std::string("0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1"));
+
+    auto extended2 = extended.extended();
+    EXPECT_EQ(extended2.type, TWPublicKeyTypeSECP256k1Extended);
+    EXPECT_EQ(extended2.bytes.size(), 65);
+    EXPECT_EQ(extended2.isCompressed(), false);
+
+    auto compressed2 = compressed.compressed();
+    EXPECT_EQ(compressed2.type, TWPublicKeyTypeSECP256k1);
+    EXPECT_TRUE(compressed2 == publicKey);
+    EXPECT_EQ(compressed2.bytes.size(), 33);
+    EXPECT_EQ(compressed2.isCompressed(), true);
+}
+
+TEST(PublicKeyTests, CompressedExtendedNist) {
+    const Data key = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    auto privateKey = PrivateKey(key);
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
+    EXPECT_EQ(publicKey.type, TWPublicKeyTypeNIST256p1);
+    EXPECT_EQ(publicKey.bytes.size(), 33);
+    EXPECT_EQ(publicKey.isCompressed(), true);
+    EXPECT_TRUE(PublicKey::isValid(publicKey.bytes, TWPublicKeyTypeNIST256p1));
+    EXPECT_EQ(hex(publicKey.bytes), std::string("026d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab"));
+
+    auto extended = publicKey.extended();
+    EXPECT_EQ(extended.type, TWPublicKeyTypeNIST256p1Extended);
+    EXPECT_EQ(extended.bytes.size(), 65);
+    EXPECT_EQ(extended.isCompressed(), false);
+    EXPECT_TRUE(PublicKey::isValid(extended.bytes, TWPublicKeyTypeNIST256p1Extended));
+    EXPECT_EQ(hex(extended.bytes), std::string("046d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab918b4fe46ccbf56701fb210d67d91c5779468f6b3fdc7a63692b9b62543f47ae"));
+
+    auto compressed = extended.compressed();
+    EXPECT_EQ(compressed.type, TWPublicKeyTypeNIST256p1);
+    EXPECT_TRUE(compressed == publicKey);
+    EXPECT_EQ(compressed.bytes.size(), 33);
+    EXPECT_EQ(compressed.isCompressed(), true);
+    EXPECT_TRUE(PublicKey::isValid(compressed.bytes, TWPublicKeyTypeNIST256p1));
+    EXPECT_EQ(hex(compressed.bytes), std::string("026d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab"));
+
+    auto extended2 = extended.extended();
+    EXPECT_EQ(extended2.type, TWPublicKeyTypeNIST256p1Extended);
+    EXPECT_EQ(extended2.bytes.size(), 65);
+    EXPECT_EQ(extended2.isCompressed(), false);
+
+    auto compressed2 = compressed.compressed();
+    EXPECT_EQ(compressed2.type, TWPublicKeyTypeNIST256p1);
+    EXPECT_TRUE(compressed2 == publicKey);
+    EXPECT_EQ(compressed2.bytes.size(), 33);
+    EXPECT_EQ(compressed2.isCompressed(), true);
+}
+
+TEST(PublicKeyTests, CompressedExtendedED25519) {
+    const Data key = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
+    auto privateKey = PrivateKey(key);
+    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+    EXPECT_EQ(publicKey.type, TWPublicKeyTypeED25519);
+    EXPECT_EQ(publicKey.bytes.size(), 32);
+    EXPECT_EQ(publicKey.isCompressed(), true);
+    EXPECT_TRUE(PublicKey::isValid(publicKey.bytes, TWPublicKeyTypeED25519));
+    EXPECT_EQ(hex(publicKey.bytes), std::string("4870d56d074c50e891506d78faa4fb69ca039cc5f131eb491e166b975880e867"));
+
+    auto extended = publicKey.extended();
+    EXPECT_EQ(extended.type, TWPublicKeyTypeED25519);
+    EXPECT_TRUE(extended == publicKey);
+    EXPECT_EQ(extended.bytes.size(), 32);
+    EXPECT_EQ(extended.isCompressed(), true);
+
+    auto compressed = publicKey.compressed();
+    EXPECT_EQ(compressed.type, TWPublicKeyTypeED25519);
+    EXPECT_TRUE(compressed == publicKey);
+    EXPECT_EQ(compressed.bytes.size(), 32);
+    EXPECT_EQ(compressed.isCompressed(), true);
+}
+
+TEST(PublicKeyTests, IsValidWrongType) {
+    EXPECT_FALSE(PublicKey::isValid(parse_hex("deadbeef"), (enum TWPublicKeyType)99));
 }
 
 TEST(PublicKeyTests, Verify) {
-    const Data key = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
-    auto privateKey = PrivateKey(key);
-
-    const char* message = "Hello";
-    const Data messageData = TW::data(message);
-    const Data digest = Hash::keccak256(messageData);
-
-    auto signature = privateKey.sign(digest, TWCurveSECP256k1);
-
-    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    EXPECT_TRUE(publicKey.verify(signature, digest));
-}
-
-TEST(PublicKeyTests, VerifyEd25519) {
     const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
-    auto privateKey = PrivateKey(key);
+    const auto privateKey = PrivateKey(key);
 
     const char* message = "Hello";
     const Data messageData = TW::data(message);
     const Data digest = Hash::sha256(messageData);
 
-    auto signature = privateKey.sign(digest, TWCurveED25519);
-    auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+    {
+        const auto signature = privateKey.sign(digest, TWCurveSECP256k1);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        EXPECT_TRUE(publicKey.verify(signature, digest));
+        EXPECT_EQ(hex(signature), "0f5d5a9e5fc4b82a625312f3be5d3e8ad017d882de86c72c92fcefa924e894c12071772a14201a3a0debf381b5e8dea39fadb9bcabdc02ee71ab018f55bf717f01");
+    }
+    {
+        const auto signature = privateKey.sign(digest, TWCurveED25519);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+        EXPECT_TRUE(publicKey.verify(signature, digest));
+        EXPECT_EQ(hex(signature), "42848abf2641a731e18b8a1fb80eff341a5acebdc56faeccdcbadb960aef775192842fccec344679446daa4d02d264259c8f9aa364164ebe0ebea218581e2e03");
+    }
+    {
+        const auto signature = privateKey.sign(digest, TWCurveED25519Blake2bNano);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b);
+        EXPECT_TRUE(publicKey.verify(signature, digest));
+        EXPECT_EQ(hex(signature), "5c1473944cd0234ebc5a91b2966b9e707a33b936dadd149417a2e53b6b3fc97bef17b767b1690708c74d7b4c8fe48703fd44a6ef59d4cc5b9f88ba992db0a003");
+    }
+    {
+        const auto signature = privateKey.sign(digest, TWCurveNIST256p1);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1Extended);
+        EXPECT_TRUE(publicKey.verify(signature, digest));
+        EXPECT_EQ(hex(signature), "2e4655831f0c60729583595c103bf0d862af6313e4326f03f512682106c792822f5a9cd21e7d4a3316c2d337e5eee649b09c34f7b4407344f0d32e8d33167d8901");
+    }
+}
 
-    auto signature2 = privateKey.sign(digest, TWCurveED25519Blake2bNano);
-    auto publicKey2 = privateKey.getPublicKey(TWPublicKeyTypeED25519Blake2b);
+TEST(PublicKeyTests, VerifyEd25519Extended) {
+    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto privateKey = PrivateKey(key);
 
-    EXPECT_TRUE(publicKey.verify(signature, digest));
-    EXPECT_TRUE(publicKey2.verify(signature2, digest));
+    const Data messageData = TW::data("Hello");
+    const Data digest = Hash::sha256(messageData);
+
+    try {
+        privateKey.sign(digest, TWCurveED25519Extended);
+    } catch (const std::invalid_argument&) {
+        return; // OK, not implemented
+    }
+    FAIL() << "Missing expected exception";
+}
+
+TEST(PublicKeyTests, VerifySchnorr) {
+    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto privateKey = PrivateKey(key);
+
+    const Data messageData = TW::data("hello schnorr");
+    const Data digest = Hash::sha256(messageData);
+
+    const auto signature = privateKey.signSchnorr(digest, TWCurveSECP256k1);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+    EXPECT_TRUE(publicKey.verifySchnorr(signature, digest));
+    EXPECT_EQ(hex(signature), "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853");
+}
+
+TEST(PublicKeyTests, VerifySchnorrWrongType) {
+    const auto key = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const auto privateKey = PrivateKey(key);
+
+    const Data messageData = TW::data("hello schnorr");
+    const Data digest = Hash::sha256(messageData);
+
+    const auto signature = privateKey.signSchnorr(digest, TWCurveSECP256k1);
+    const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1);
+    EXPECT_FALSE(publicKey.verifySchnorr(signature, digest));
+}
+
+TEST(PublicKeyTests, Recover) {
+    const auto message = parse_hex("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
+    const auto signature = parse_hex("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
+    const auto publicKey = PublicKey::recover(signature, message);
+    EXPECT_EQ(publicKey.type, TWPublicKeyTypeSECP256k1Extended);
+    EXPECT_EQ(hex(publicKey.bytes), 
+        "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0");
 }

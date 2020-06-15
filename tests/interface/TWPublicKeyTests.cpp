@@ -18,6 +18,14 @@
 
 using namespace TW;
 
+TEST(TWPublicKeyTests, Create) {
+    const auto publicKeyHex = "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1";
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA(publicKeyHex).get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_TRUE(publicKey != nullptr);
+    const auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
+    EXPECT_EQ(hex(*((Data*)(publicKeyData.get()))), publicKeyHex);
+}
+
 TEST(TWPublicKeyTests, CreateFromPrivateSecp256k1) {
     const PrivateKey key(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
     const auto privateKey = WRAP(TWPrivateKey, new TWPrivateKey{ key });
@@ -31,6 +39,11 @@ TEST(TWPublicKeyTests, CreateFromPrivateSecp256k1) {
     EXPECT_TRUE(TWPublicKeyIsCompressed(publicKey));
 
     TWPublicKeyDelete(publicKey);
+}
+
+TEST(TWPublicKeyTests, CreateInvalid) {
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyCreateWithData(DATA("deadbeef").get(), TWPublicKeyTypeSECP256k1));
+    EXPECT_EQ(publicKey, nullptr);
 }
 
 TEST(TWPublicKeyTests, CompressedExtended) {
@@ -86,4 +99,21 @@ TEST(TWPublicKeyTests, VerifyEd25519) {
 
     ASSERT_TRUE(TWPublicKeyVerify(publicKey, signature.get(), digest.get()));
     ASSERT_TRUE(TWPublicKeyVerify(publicKey2, signature2.get(), digest.get()));
+}
+
+TEST(TWPublicKeyTests, Recover) {
+    const auto message = DATA("de4e9524586d6fce45667f9ff12f661e79870c4105fa0fb58af976619bb11432");
+    const auto signature = DATA("00000000000000000000000000000000000000000000000000000000000000020123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef80");
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyRecover(signature.get(), message.get()));
+    EXPECT_TRUE(publicKey.get() != nullptr);
+    EXPECT_EQ(TWPublicKeyKeyType(publicKey.get()), TWPublicKeyTypeSECP256k1Extended);
+    const auto publicKeyData = WRAPD(TWPublicKeyData(publicKey.get()));
+    EXPECT_EQ(hex(*((Data*)(publicKeyData.get()))), 
+        "0456d8089137b1fd0d890f8c7d4a04d0fd4520a30b19518ee87bd168ea12ed8090329274c4c6c0d9df04515776f2741eeffc30235d596065d718c3973e19711ad0");
+}
+
+TEST(TWPublicKeyTests, RecoverInvalid) {
+    const auto deadbeef = DATA("deadbeef");
+    const auto publicKey = WRAP(TWPublicKey, TWPublicKeyRecover(deadbeef.get(), deadbeef.get()));
+    EXPECT_EQ(publicKey.get(), nullptr);
 }

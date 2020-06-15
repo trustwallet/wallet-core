@@ -55,6 +55,43 @@ TEST(PrivateKey, InvalidSECP256k1) {
     }
 }
 
+string TestInvalidExtended(const Data& data, const Data& ext, const Data& chainCode) {
+    try {
+        auto privateKey = PrivateKey(data, ext, chainCode);
+        return hex(privateKey.bytes);
+    } catch (invalid_argument& ex) {
+        // expected exception
+        return string("EXCEPTION: ") + string(ex.what());
+    }
+}
+
+TEST(PrivateKey, CreateExtendedInvalid) {
+    {
+        string res = TestInvalidExtended(
+            parse_hex("deadbeed"),
+            parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
+            parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4")
+        );
+        EXPECT_EQ("EXCEPTION: Invalid private key or extended key data", res);
+    }
+    {
+        string res = TestInvalidExtended(
+            parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
+            parse_hex("deadbeed"),
+            parse_hex("bf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4")
+        );
+        EXPECT_EQ("EXCEPTION: Invalid private key or extended key data", res);
+    }
+    {
+        string res = TestInvalidExtended(
+            parse_hex("b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744"),
+            parse_hex("309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71eff"),
+            parse_hex("deadbeed")
+        );
+        EXPECT_EQ("EXCEPTION: Invalid private key or extended key data", res);
+    }
+}
+
 TEST(PrivateKey, Valid) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     EXPECT_TRUE(PrivateKey::isValid(privKeyData, TWCurveSECP256k1));
@@ -65,23 +102,30 @@ TEST(PrivateKey, PublicKey) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = PrivateKey(privKeyData);
     {
-        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeED25519);
         EXPECT_EQ(
             "4870d56d074c50e891506d78faa4fb69ca039cc5f131eb491e166b975880e867",
             hex(publicKey.bytes)
         );
     }
     {
-        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
         EXPECT_EQ(
             "0399c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c1",
             hex(publicKey.bytes)
         );
     }
     {
-        auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1Extended);
         EXPECT_EQ(
             "0499c6f51ad6f98c9c583f8e92bb7758ab2ca9a04110c0a1126ec43e5453d196c166b489a4b7c491e7688e6ebea3a71fc3a1a48d60f98d5ce84c93b65e423fde91",
+            hex(publicKey.bytes)
+        );
+    }
+    {
+        const auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeNIST256p1Extended);
+        EXPECT_EQ(
+            "046d786ab8fda678cf50f71d13641049a393b325063b8c0d4e5070de48a2caf9ab918b4fe46ccbf56701fb210d67d91c5779468f6b3fdc7a63692b9b62543f47ae",
             hex(publicKey.bytes)
         );
     }
@@ -151,7 +195,6 @@ TEST(PrivateKey, Sign) {
     Data privKeyData = parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5");
     auto privateKey = PrivateKey(privKeyData);
     Data messageData = TW::data("hello");
-    Data result(32);
     Data hash = Hash::keccak256(messageData);
     Data actual = privateKey.sign(hash, TWCurveSECP256k1);
 
@@ -159,4 +202,36 @@ TEST(PrivateKey, Sign) {
         "8720a46b5b3963790d94bcc61ad57ca02fd153584315bfa161ed3455e336ba624d68df010ed934b8792c5b6a57ba86c3da31d039f9612b44d1bf054132254de901",
         hex(actual)
     );
+}
+
+TEST(PrivateKey, SignExtended) {
+    const auto privateKeyExt = PrivateKey(parse_hex(
+        "b0884d248cb301edd1b34cf626ba6d880bb3ae8fd91b4696446999dc4f0b5744309941d56938e943980d11643c535e046653ca6f498c014b88f2ad9fd6e71effbf36a8fa9f5e11eb7a852c41e185e3969d518e66e6893c81d3fc7227009952d4"
+    ));
+    Data messageData = TW::data("hello");
+    Data hash = Hash::keccak256(messageData);
+    Data actual = privateKeyExt.sign(hash, TWCurveED25519Extended);
+
+    EXPECT_EQ(
+        "375df53b6a4931dcf41e062b1c64288ed4ff3307f862d5c1b1c71964ce3b14c99422d0fdfeb2807e9900a26d491d5e8a874c24f98eec141ed694d7a433a90f08",
+        hex(actual)
+    );
+}
+
+TEST(PrivateKey, SignSchnorr) {
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const Data messageData = TW::data("hello schnorr");
+    const Data digest = Hash::sha256(messageData);
+    const auto signature = privateKey.signSchnorr(digest, TWCurveSECP256k1);
+    EXPECT_EQ(hex(signature),
+        "b8118ccb99563fe014279c957b0a9d563c1666e00367e9896fe541765246964f64a53052513da4e6dc20fdaf69ef0d95b4ca51c87ad3478986cf053c2dd0b853"
+    );
+}
+
+TEST(PrivateKey, SignSchnorrWrongType) {
+    const auto privateKey = PrivateKey(parse_hex("afeefca74d9a325cf1d6b6911d61a65c32afa8e02bd5e78e2e4ac2910bab45f5"));
+    const Data messageData = TW::data("hello schnorr");
+    const Data digest = Hash::sha256(messageData);
+    const auto signature = privateKey.signSchnorr(digest, TWCurveNIST256p1);
+    EXPECT_EQ(signature.size(), 0);
 }

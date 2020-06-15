@@ -70,14 +70,10 @@ TWString *_Nonnull TWPublicKeyDescription(struct TWPublicKey *_Nonnull publicKey
 }
 
 struct TWPublicKey *_Nullable TWPublicKeyRecover(TWData *_Nonnull signature, TWData *_Nonnull message) {
-    auto signatureBytes = TWDataBytes(signature);
-    auto v = signatureBytes[64];
-    if (v >= 27) {
-        v -= 27;
-    }
-    TW::Data result(65);
-    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureBytes, TWDataBytes(message), v) != 0) {
+    try {
+        const PublicKey publicKey = PublicKey::recover(*((TW::Data*)signature), *((TW::Data*)message));
+        return new TWPublicKey{ publicKey };
+    } catch (...) {
         return nullptr;
     }
-    return new TWPublicKey{ PublicKey(result, TWPublicKeyTypeSECP256k1Extended) };
 }

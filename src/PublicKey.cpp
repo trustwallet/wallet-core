@@ -68,11 +68,8 @@ PublicKey::PublicKey(const Data& data, enum TWPublicKeyType type) : type(type) {
         break;
     case TWPublicKeyTypeED25519Blake2b:
         bytes.reserve(ed25519Size);
-        if (data.size() == ed25519Size + 1) {
-            std::copy(std::begin(data) + 1, std::end(data), std::back_inserter(bytes));
-        } else {
-            std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
-        }
+        assert(data.size() == ed25519Size); // ensured by isValid() above
+        std::copy(std::begin(data), std::end(data), std::back_inserter(bytes));
         break;
     case TWPublicKeyTypeED25519Extended:
         bytes.reserve(ed25519ExtendedSize);
@@ -86,17 +83,19 @@ PublicKey PublicKey::compressed() const {
     }
 
     Data newBytes(secp256k1Size);
+    assert(bytes.size() >= 65);
     newBytes[0] = 0x02 | (bytes[64] & 0x01);
 
+    assert(type == TWPublicKeyTypeSECP256k1Extended || type == TWPublicKeyTypeNIST256p1Extended);
     switch (type) {
     case TWPublicKeyTypeSECP256k1Extended:
         std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
         return PublicKey(newBytes, TWPublicKeyTypeSECP256k1);
+
     case TWPublicKeyTypeNIST256p1Extended:
+    default:
         std::copy(bytes.begin() + 1, bytes.begin() + secp256k1Size, newBytes.begin() + 1);
         return PublicKey(newBytes, TWPublicKeyTypeNIST256p1);
-    default:
-        return *this;
     }
 }
 
@@ -178,6 +177,21 @@ Data PublicKey::hash(const Data& prefix, Hash::Hasher hasher, bool skipTypeByte)
     append(result, prefix);
     append(result, hash);
     return result;
+}
+
+PublicKey PublicKey::recover(const Data& signature, const Data& message) {
+    if (signature.size() < 65) {
+        throw std::invalid_argument("signature too short");
+    }
+    auto v = signature[64];
+    if (v >= 27) {
+        v -= 27;
+    }
+    TW::Data result(65);
+    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signature.data(), message.data(), v) != 0) {
+        throw std::invalid_argument("recover failed");
+    }
+    return PublicKey(result, TWPublicKeyTypeSECP256k1Extended);
 }
 
 } // namespace TW
