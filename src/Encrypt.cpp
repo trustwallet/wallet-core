@@ -89,7 +89,7 @@ Data AESCTREncrypt(const Data& key, const Data& data, Data& iv) {
     }
 
     Data result(data.size());
-    aes_ctr_encrypt(data.data(), result.data(), data.size(), iv.data(), aes_ctr_cbuf_inc, &ctx);
+    aes_ctr_encrypt(data.data(), result.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
     return result;
 }
 
@@ -100,7 +100,7 @@ Data AESCTRDecrypt(const Data& key, const Data& data, Data& iv) {
     }
 
     Data result(data.size());
-    aes_ctr_decrypt(data.data(), result.data(), data.size(), iv.data(), aes_ctr_cbuf_inc, &ctx);
+    aes_ctr_decrypt(data.data(), result.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
     return result;
 }
 

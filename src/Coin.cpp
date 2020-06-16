@@ -111,8 +111,10 @@ void setupDispatchers() {
         for (auto c : dispCoins) {
             assert(dispatchMap.find(c) == dispatchMap.end()); // each coin must appear only once
             dispatchMap[c] = d;
-            auto setResult = coinTypes.emplace(c);
-            assert(setResult.second == true); // each coin must appear only once
+            if (coinTypes.emplace(c).second != true) {
+                // each coin must appear only once
+                abort();
+            };
         }
     }
     return;

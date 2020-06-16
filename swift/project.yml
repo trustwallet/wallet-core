@@ -6,7 +6,7 @@ settings:
   base:
     HEADER_SEARCH_PATHS: $(SRCROOT)/wallet-core ${SRCROOT}/trezor-crypto/src
     SYSTEM_HEADER_SEARCH_PATHS: ${SRCROOT}/include ${SRCROOT}/../build/local/include ${SRCROOT}/trezor-crypto/include $(SRCROOT)/protobuf /usr/local/include
-    CLANG_CXX_LANGUAGE_STANDARD: gnu++17
+    CLANG_CXX_LANGUAGE_STANDARD: c++17
     SWIFT_VERSION: 5.1
   configs:
     release:
@@ -47,6 +47,7 @@ targets:
       BUILD_LIBRARY_FOR_DISTRIBUTION: true
       INFOPLIST_FILE: 'Info.plist'
       CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION: YES_ERROR
+      OTHER_CFLAGS: $(inherited) -Wno-comma
     postCompileScripts:
       - script: ${PODS_ROOT}/SwiftLint/swiftlint --config ../.swiftlint.yml
         name: SwiftLint
@@ -205,4 +206,4 @@ targets:
       - protobuf/google/protobuf/wrappers.pb.cc
     settings:
       GCC_WARN_64_TO_32_BIT_CONVERSION: NO
-      OTHER_CFLAGS: -DHAVE_PTHREAD=1
+      OTHER_CFLAGS: $(inherited) -DHAVE_PTHREAD=1 -Wno-comma -Wno-unreachable-code
