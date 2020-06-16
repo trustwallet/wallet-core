@@ -89,4 +89,38 @@ class LitecoinTests: XCTestCase {
         XCTAssertEqual(SegwitAddress(hrp: .litecoin, publicKey: zpubAddr4).description, "ltc1qcgnevr9rp7aazy62m4gen0tfzlssa52axwytt6")
         XCTAssertEqual(SegwitAddress(hrp: .litecoin, publicKey: zpubAddr11).description, "ltc1qy072y8968nzp6mz3j292h8lp72d678fcmms6vl")
     }
+
+    func testSegwitFee() {
+        let address = "ltc1q0dvup9kzplv6yulzgzzxkge8d35axkq4n45hum"
+        let lockScript = BitcoinScript.buildForAddress(address: address, coin: .litecoin)
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.outPoint.hash = Data(Data(hexString: "a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407")!.reversed())
+                $0.outPoint.index = 0
+                $0.outPoint.sequence = UINT32_MAX
+                $0.script = lockScript.data
+                $0.amount = 3899774
+            }
+        ]
+
+        // redeem p2pwkh
+        let scriptHash = lockScript.matchPayToWitnessPublicKeyHash()!
+        let input = BitcoinSigningInput.with {
+            $0.toAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00"
+            $0.changeAddress = address
+            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.amount = 1200000
+            $0.coinType = CoinType.litecoin.rawValue
+            $0.byteFee = 1
+            $0.utxo = utxos
+            $0.useMaxAmount = false
+            $0.scripts = [
+                scriptHash.hexString: BitcoinScript.buildPayToPublicKeyHash(hash: scriptHash).data
+            ]
+        }
+
+        let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .litecoin)
+
+        XCTAssertEqual(plan.fee, 141)
+    }
 }
