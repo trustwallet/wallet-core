@@ -112,9 +112,9 @@ TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     auto input = buildInputP2PKH(true);
 
     {
-        // test plan (but do not reuse plan result)
+        // test plan (but do not reuse plan result). Plan works even with missing keys.
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 226));
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 225));
     }
 
     // Sign
@@ -585,9 +585,9 @@ TEST(BitcoinSigning, SignP2WSH_NegativeMissingKeys) {
     const auto input = buildInputP2WSH(TWBitcoinSigHashTypeAll, false, true);
 
     {
-        // test plan (but do not reuse plan result)
+        // test plan (but do not reuse plan result). Plan works even with missing keys.
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 226));
+        EXPECT_TRUE(verifyPlan(plan, {1'226}, 1'000, 147));
     }
 
     // Sign
@@ -723,9 +723,9 @@ TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitScript) {
 TEST(BitcoinSigning, SignP2SH_P2WPKH_NegativeOmitKeys) {
     auto input = buildInputP2SH_P2WPKH(false, true);
     {
-        // test plan (but do not reuse plan result)
+        // test plan (but do not reuse plan result). Plan works even with missing keys.
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {1'000'000'000}, 200'000'000, 226));
+        EXPECT_TRUE(verifyPlan(plan, {1'000'000'000}, 200'000'000, 170));
     }
 
     // Sign
