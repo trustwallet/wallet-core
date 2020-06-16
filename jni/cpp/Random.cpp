@@ -35,7 +35,7 @@ void random_buffer(uint8_t *buf, size_t len) {
     jobject random = env->NewObject(secureRandomClass, constructor);
 
     //byte array[] = new byte[len];
-    jbyteArray array = env->NewByteArray(len);
+    jbyteArray array = env->NewByteArray(static_cast<jsize>(len));
 
     //random.nextBytes(bytes);
     jmethodID nextBytes = env->GetMethodID(secureRandomClass, "nextBytes", "([B)V");

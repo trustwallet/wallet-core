@@ -10,8 +10,9 @@
 #include "TWJNIData.h"
 
 jbyteArray TWDataJByteArray(TWData *_Nonnull data, JNIEnv *env) {
-    jbyteArray array = env->NewByteArray(TWDataSize(data));
-    env->SetByteArrayRegion(array, 0, TWDataSize(data), (jbyte *) TWDataBytes(data));
+    jsize dataSize = static_cast<jsize>(TWDataSize(data));
+    jbyteArray array = env->NewByteArray(dataSize);
+    env->SetByteArrayRegion(array, 0, dataSize, (jbyte *) TWDataBytes(data));
     TWDataDelete(data);
     return array;
 }
