@@ -938,7 +938,7 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     ASSERT_FALSE(result);
 }
 
-TEST(BitcoinSigning, SignLitecoinReal_a85f) {    
+TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
     auto coin = TWCoinTypeLitecoin;
     auto ownAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00";
     auto ownPrivateKey = "b820f41f96c8b7442f3260acd23b3897e1450b8c7c6580136a3c2d3a14e34674";
@@ -1009,12 +1009,12 @@ TEST(BitcoinSigning, SignLitecoinReal_a85f) {
     );
 }
 
-TEST(BitcoinSigning, SignLitecoinReal_8435) {
+TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     auto coin = TWCoinTypeLitecoin;
     auto ownAddress = "ltc1q0dvup9kzplv6yulzgzzxkge8d35axkq4n45hum";
     auto ownPrivateKey = "690b34763f34e0226ad2a4d47098269322e0402f847c97166e8f39959fcaff5a";
 
-    // Setup input
+    // Setup input for Plan
     Proto::SigningInput input;
     input.set_coin_type(coin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
@@ -1023,9 +1023,6 @@ TEST(BitcoinSigning, SignLitecoinReal_8435) {
     input.set_byte_fee(1);
     input.set_to_address("ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00");
     input.set_change_address(ownAddress);
-
-    auto privKey = parse_hex(ownPrivateKey);
-    input.add_private_key(privKey.data(), privKey.size());
 
     auto utxo0Script = Script::buildForAddress(ownAddress, coin);
     Data keyHash0;
@@ -1045,11 +1042,14 @@ TEST(BitcoinSigning, SignLitecoinReal_8435) {
     utxo0->mutable_out_point()->set_index(0);
     utxo0->mutable_out_point()->set_sequence(UINT32_MAX);
 
-    {
-        // test plan (but do not reuse plan result)
-        auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {3'899'774}, 1'200'000, 141));
-    }
+    // Plan
+    auto plan = TransactionBuilder::plan(input);
+    EXPECT_TRUE(verifyPlan(plan, {3'899'774}, 1'200'000, 141));
+
+    // Extend input with keys and plan
+    auto privKey = parse_hex(ownPrivateKey);
+    input.add_private_key(privKey.data(), privKey.size());
+    *input.mutable_plan() = plan.proto();
 
     // Sign
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
