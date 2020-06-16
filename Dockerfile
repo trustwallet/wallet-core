@@ -66,7 +66,6 @@ COPY ./.git-credentials /root/.git-credentials
 COPY ./.gitconfig /root/.gitconfig
 RUN git clone https://github.com/binance-chain/wallet-core.git \
     && cd wallet-core \
-    && git checkout tss-new \
     && export PREFIX=/usr/local \
     && tools/install-dependencies
 
