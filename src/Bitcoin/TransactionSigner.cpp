@@ -96,16 +96,18 @@ Result<void> TransactionSigner<Transaction, TransactionBuilder>::sign(Script scr
     if (script.matchPayToWitnessPublicKeyHash(data)) {
         auto witnessScript = Script::buildPayToPublicKeyHash(results[0]);
         auto result = signStep(witnessScript, index, utxo, WITNESS_V0);
-        if (result) {
-            witnessStack = result.payload();
+        if (!result) {
+            return Result<void>::failure(result.error());
         }
+        witnessStack = result.payload();
         results.clear();
     } else if (script.matchPayToWitnessScriptHash(data)) {
         auto witnessScript = Script(results[0]);
         auto result = signStep(witnessScript, index, utxo, WITNESS_V0);
-        if (result) {
-            witnessStack = result.payload();
+        if (!result) {
+            return Result<void>::failure(result.error());
         }
+        witnessStack = result.payload();
         witnessStack.push_back(move(witnessScript.bytes));
         results.clear();
     } else if (script.isWitnessProgram()) {
