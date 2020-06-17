@@ -213,7 +213,7 @@ Result<std::vector<Data>> TransactionSigner<Transaction, TransactionBuilder>::si
         }
         if (key.empty() && estimationMode) {
             // estimation mode, key is missing: use placeholder for public key
-            return Result<std::vector<Data>>::success({signature, Data(32)});
+            return Result<std::vector<Data>>::success({signature, Data(PublicKey::secp256k1Size)});
         }
         auto pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
         return Result<std::vector<Data>>::success({signature, pubkey.bytes});

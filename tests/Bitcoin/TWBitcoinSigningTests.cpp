@@ -114,7 +114,7 @@ TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     {
         // test plan (but do not reuse plan result). Plan works even with missing keys.
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 225));
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 226));
     }
 
     // Sign
@@ -936,6 +936,66 @@ TEST(BitcoinSigning, Sign_NegativeInvalidAddress) {
     auto result = signer.sign();
 
     ASSERT_FALSE(result);
+}
+
+TEST(BitcoinSigning, Plan_10input_MaxAmount) {
+    auto ownAddress = "bc1q0yy3juscd3zfavw76g4h3eqdqzda7qyf58rj4m";
+    auto ownPrivateKey = "eb696a065ef48a2192da5b28b694f87544b30fae8327c4510137a922f32c6dcf";
+
+    Proto::SigningInput input;
+
+    for (int i = 0; i < 10; ++i) {
+        auto utxoScript = Script::buildForAddress(ownAddress, TWCoinTypeBitcoin);
+        Data keyHash;
+        EXPECT_TRUE(utxoScript.matchPayToWitnessPublicKeyHash(keyHash));
+        EXPECT_EQ(hex(keyHash), "79091972186c449eb1ded22b78e40d009bdf0089");
+
+        auto redeemScript = Script::buildPayToPublicKeyHash(keyHash);
+        auto scriptString = std::string(redeemScript.bytes.begin(), redeemScript.bytes.end());
+        (*input.mutable_scripts())[std::string(keyHash.begin(), keyHash.end())] = scriptString;
+
+        auto utxo = input.add_utxo();
+        utxo->set_script(utxoScript.bytes.data(), utxoScript.bytes.size());
+        utxo->set_amount(1'000'000 + i * 10'000);
+        auto hash = parse_hex("a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407");
+        std::reverse(hash.begin(), hash.end());
+        utxo->mutable_out_point()->set_hash(hash.data(), hash.size());
+        utxo->mutable_out_point()->set_index(0);
+        utxo->mutable_out_point()->set_sequence(UINT32_MAX);
+    }
+
+    input.set_coin_type(coin);
+    input.set_hash_type(TWBitcoinSigHashTypeAll);
+    input.set_use_max_amount(true);
+    input.set_amount(2'000'000);
+    input.set_byte_fee(1);
+    input.set_to_address("bc1qauwlpmzamwlf9tah6z4w0t8sunh6pnyyjgk0ne");
+    input.set_change_address(ownAddress);
+
+    // Plan.  
+    // Estimated size: witness size: 10 * (1 + 1 + 72 + 1 + 33) + 2 = 1082; base 451; raw 451 + 1082 = 1533; vsize 451 + 1082/4 --> 722
+    // Actual size:    witness size:                                  1078; base 451; raw 451 + 1078 = 1529; vsize 451 + 1078/4 --> 721
+    auto plan = TransactionBuilder::plan(input);
+    EXPECT_TRUE(verifyPlan(plan, {1'000'000, 1'010'000, 1'020'000, 1'030'000, 1'040'000, 1'050'000, 1'060'000, 1'070'000, 1'080'000, 1'090'000}, 10'449'278, 722));
+
+    // Extend input with keys, reuse plan, Sign
+    auto privKey = parse_hex(ownPrivateKey);
+    input.add_private_key(privKey.data(), privKey.size());
+    *input.mutable_plan() = plan.proto();
+
+    // Sign
+    auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(input));
+    auto result = signer.sign();
+
+    ASSERT_TRUE(result) << result.error();
+    auto signedTx = result.payload();
+
+    Data serialized;
+    signer.encodeTx(signedTx, serialized);
+    EXPECT_EQ(getEncodedTxSize(signedTx), (EncodedTxSize{1529, 451, 721}));
+    EXPECT_TRUE(validateEstimatedSize(signedTx, -1, 1));
+
+    ASSERT_EQ(serialized.size(), 1529);
 }
 
 TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
