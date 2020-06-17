@@ -114,7 +114,7 @@ TEST(BitcoinSigning, SignP2PKH_NegativeMissingKey) {
     {
         // test plan (but do not reuse plan result). Plan works even with missing keys.
         auto plan = TransactionBuilder::plan(input);
-        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 225));
+        EXPECT_TRUE(verifyPlan(plan, {625'000'000}, 335'790'000, 226));
     }
 
     // Sign
