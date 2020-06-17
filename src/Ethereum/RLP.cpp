@@ -222,7 +222,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     if (prefix <= 0xbf) {
         // long string
         auto lenOfStrLen = prefix - 0xb7;
-        auto strLen = decodeLength(subData(input, 1, lenOfStrLen));
+        auto strLen = static_cast<size_t>(decodeLength(subData(input, 1, lenOfStrLen)));
         if (inputLen < lenOfStrLen || inputLen < lenOfStrLen + strLen) {
             throw std::invalid_argument("Invalid rlp encoding length");
         }
@@ -254,7 +254,7 @@ RLP::DecodedItem RLP::decode(const Data& input) {
     } 
     if (prefix <= 0xff) {
         auto lenOfListLen = prefix - 0xf7;
-        auto listLen = decodeLength(subData(input, 1, lenOfListLen));
+        auto listLen = static_cast<size_t>(decodeLength(subData(input, 1, lenOfListLen)));
         if (inputLen < lenOfListLen || inputLen < lenOfListLen + listLen) {
             throw std::invalid_argument("Invalid rlp list length");
         }

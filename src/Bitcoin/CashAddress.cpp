@@ -78,7 +78,9 @@ CashAddress::CashAddress(const PublicKey& publicKey) {
 
     size_t outlen = 0;
     auto success = cash_addr_to_data(bytes.data(), &outlen, payload.data(), 21) != 0;
-    assert(success && outlen == CashAddress::size);
+    if (!success || outlen != CashAddress::size) {
+        throw std::invalid_argument("unable to cash_addr_to_data");
+    }
 }
 
 std::string CashAddress::string() const {

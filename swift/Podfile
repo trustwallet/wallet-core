@@ -9,3 +9,9 @@ target 'TrustWalletCore' do
 
   target 'TrustWalletCoreTests'
 end
+
+post_install do |installer|
+  installer.pods_project.build_configurations.each do |config|
+    config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+  end
+end

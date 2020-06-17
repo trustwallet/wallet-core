@@ -74,7 +74,7 @@ bool Util::fileR(const string& fileName, string& res) {
         ifstream infile(fileName,  std::ios::in | std::ios::binary);
         // get length of file:
         infile.seekg (0, infile.end);
-        int length = infile.tellg();
+        auto length = infile.tellg();
         infile.seekg (0, infile.beg);
         char* buffer = new char[length];
         if (!infile.read(buffer, length)) {
@@ -82,7 +82,7 @@ bool Util::fileR(const string& fileName, string& res) {
             delete[] buffer;
             return false;
         }
-        int red = infile.gcount();
+        auto red = infile.gcount();
         infile.close();
         res = string(TW::hex(data((const byte*)buffer, red)));
         delete[] buffer;

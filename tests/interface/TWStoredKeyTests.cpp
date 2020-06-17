@@ -156,7 +156,7 @@ TEST(TWStoredKey, storeAndImportJSON) {
     ifstream ifs(outFileName);
     // get length of file:
     ifs.seekg (0, ifs.end);
-    int length = ifs.tellg();
+    auto length = ifs.tellg();
     ifs.seekg (0, ifs.beg);
     EXPECT_TRUE(length > 20);
 

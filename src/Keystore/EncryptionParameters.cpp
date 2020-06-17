@@ -41,7 +41,7 @@ EncryptionParameters::EncryptionParameters(const Data& password, const Data& dat
 
     Data iv = cipherParams.iv;
     encrypted = Data(data.size());
-    aes_ctr_encrypt(data.data(), encrypted.data(), data.size(), iv.data(), aes_ctr_cbuf_inc, &ctx);
+    aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
 
     mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
 }
@@ -83,7 +83,7 @@ Data EncryptionParameters::decrypt(const Data& password) const {
         auto result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
         assert(result != EXIT_FAILURE);
 
-        aes_ctr_decrypt(encrypted.data(), decrypted.data(), encrypted.size(), iv.data(),
+        aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
     } else if (cipher == "aes-128-cbc") {
         aes_decrypt_ctx ctx;

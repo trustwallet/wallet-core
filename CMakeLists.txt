@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(TrustWalletCore)
 
+# Configure warnings
+set(TW_CXX_WARNINGS "-Wshorten-64-to-32 -Wtautological-constant-out-of-range-compare -Wshift-count-overflow")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ ${TW_CXX_WARNINGS}")
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -17,6 +19,13 @@ if ("$ENV{PREFIX}" STREQUAL "")
 else()
     set(PREFIX "$ENV{PREFIX}")
 endif()
+
+# Configure CCache if available
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
 
 include_directories(${PREFIX}/include)
 link_directories(${PREFIX}/lib)

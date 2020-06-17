@@ -45,7 +45,10 @@ inline std::string encode(const Data& val, const char* alphabet = nullptr) {
     }
     // perform the base32 encode
     char* retval = base32_encode(val.data(), inLen, buf, outLen, alphabet);
-    assert(retval != nullptr);
+    if (retval == nullptr) {
+        // return empty string if failed
+        return std::string();
+    }
     // make sure there is a terminator ath the end
     buf[outLen - 1] = '\0';
     return std::string(buf);

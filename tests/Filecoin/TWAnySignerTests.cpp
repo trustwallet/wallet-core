@@ -48,7 +48,7 @@ TEST(TWAnySignerFilecoin, Sign) {
               "befa485903f51d824659ba19c5bc969d7206de7afabfc4a0eec2dd34f15e58a064adf4ee9f72e64f01");
 
     Proto::SigningOutput output;
-    output.ParseFromArray(TWDataBytes(outputData), TWDataSize(outputData));
+    output.ParseFromArray(TWDataBytes(outputData), static_cast<int>(TWDataSize(outputData)));
 
     ASSERT_EQ(hex(output.encoded()),
               "8288583103a33d476e13eb8bde5d21becf2b86dd60642f0297cc6a5b914de86bb1d096861ba99bb13c57"
