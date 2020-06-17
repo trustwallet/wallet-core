@@ -336,7 +336,6 @@ TEST(DecredSigner, SignP2PKH_Noplan) {
     const auto result = signer.sign();
 
     ASSERT_TRUE(result);
-    std::cerr << "result.payload().inputs " << result.payload().inputs.size() << "\n";
     ASSERT_TRUE(result.payload().inputs.size() >= 1);
 
     const auto expectedSignature = "47304402201ac7bdf56a9d12f3bc09cf7b47cdfafc1348628f659e37b455d497cb6e7a748802202b3630eedee1bbc9248424e4a1b8671e14631a069f36ac8860dee0bb9ea1541f0121"

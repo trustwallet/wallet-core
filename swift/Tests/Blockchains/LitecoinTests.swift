@@ -89,4 +89,69 @@ class LitecoinTests: XCTestCase {
         XCTAssertEqual(SegwitAddress(hrp: .litecoin, publicKey: zpubAddr4).description, "ltc1qcgnevr9rp7aazy62m4gen0tfzlssa52axwytt6")
         XCTAssertEqual(SegwitAddress(hrp: .litecoin, publicKey: zpubAddr11).description, "ltc1qy072y8968nzp6mz3j292h8lp72d678fcmms6vl")
     }
+
+    func testPlanAndSign_8435() throws {
+        let address = "ltc1q0dvup9kzplv6yulzgzzxkge8d35axkq4n45hum"
+        let lockScript = BitcoinScript.buildForAddress(address: address, coin: .litecoin)
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.outPoint.hash = Data(Data(hexString: "a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407")!.reversed())
+                $0.outPoint.index = 0
+                $0.outPoint.sequence = UINT32_MAX
+                $0.script = lockScript.data
+                $0.amount = 3899774
+            }
+        ]
+
+        // redeem p2pwkh
+        let scriptHash = lockScript.matchPayToWitnessPublicKeyHash()!
+        var input = BitcoinSigningInput.with {
+            $0.toAddress = "ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00"
+            $0.changeAddress = address
+            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.amount = 1200000
+            $0.coinType = CoinType.litecoin.rawValue
+            $0.byteFee = 1
+            $0.utxo = utxos
+            $0.useMaxAmount = false
+            $0.scripts = [
+                scriptHash.hexString: BitcoinScript.buildPayToPublicKeyHash(hash: scriptHash).data
+            ]
+        }
+
+        // Plan
+        let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .litecoin)
+
+        XCTAssertEqual(plan.amount, 1200000)
+        XCTAssertEqual(plan.fee, 141)
+        XCTAssertEqual(plan.change, 2699633)
+
+        // Extend input with private key
+        input.privateKey = [Data(hexString: "690b34763f34e0226ad2a4d47098269322e0402f847c97166e8f39959fcaff5a")!]
+        input.plan = plan
+
+        // Sign
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .litecoin)
+        XCTAssertTrue(output.error.isEmpty)
+
+        // https://blockchair.com/litecoin/transaction/8435d205614ee70066060734adf03af4194d0c3bc66dd01bb124ab7fd25e2ef8
+        let txId = output.transactionID
+        XCTAssertEqual(txId, "8435d205614ee70066060734adf03af4194d0c3bc66dd01bb124ab7fd25e2ef8")
+
+        let encoded = output.encoded
+        XCTAssertEqual(encoded.hexString,
+            "01000000" + // version
+            "0001" + // marker & flag
+            "01" + // inputs
+                "07c42b969286be06fae38528c85f0a1ce508d4df837eb5ac4cf5f2a7a9d65fa8" + "00000000" + "00" + "ffffffff" +
+            "02" + // outputs
+                "804f120000000000" + "16" + "00145c74be45eb45a3459050667529022d9df8a1ecff" +
+                "7131290000000000" + "16" + "00147b59c096c20fd9a273e240846b23276c69d35815" +
+            // witness
+                "02" +
+                    "47" + "304402204139b82927dd80445f27a5d2c29fa4881dbd2911714452a4a706145bc43cc4bf022016fbdf4b09bc5a9c43e79edb1c1061759779a20c35535082bdc469a61ed0771f01" +
+                    "21" + "02499e327a05cc8bb4b3c34c8347ecfcb152517c9927c092fa273be5379fde3226" +
+            "00000000" // nLockTime
+        )
+    }
 }

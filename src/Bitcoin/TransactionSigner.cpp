@@ -96,16 +96,18 @@ Result<void> TransactionSigner<Transaction, TransactionBuilder>::sign(Script scr
     if (script.matchPayToWitnessPublicKeyHash(data)) {
         auto witnessScript = Script::buildPayToPublicKeyHash(results[0]);
         auto result = signStep(witnessScript, index, utxo, WITNESS_V0);
-        if (result) {
-            witnessStack = result.payload();
+        if (!result) {
+            return Result<void>::failure(result.error());
         }
+        witnessStack = result.payload();
         results.clear();
     } else if (script.matchPayToWitnessScriptHash(data)) {
         auto witnessScript = Script(results[0]);
         auto result = signStep(witnessScript, index, utxo, WITNESS_V0);
-        if (result) {
-            witnessStack = result.payload();
+        if (!result) {
+            return Result<void>::failure(result.error());
         }
+        witnessStack = result.payload();
         witnessStack.push_back(move(witnessScript.bytes));
         results.clear();
     } else if (script.isWitnessProgram()) {
@@ -166,7 +168,7 @@ Result<std::vector<Data>> TransactionSigner<Transaction, TransactionBuilder>::si
             }
             auto keyHash = TW::Hash::ripemd(TW::Hash::sha256(pubKey));
             auto key = keyForPublicKeyHash(keyHash);
-            if (key.empty()) {
+            if (key.empty() && !estimationMode) {
                 // Error: missing key
                 return Result<std::vector<Data>>::failure("Missing private key.");
             }
@@ -184,7 +186,7 @@ Result<std::vector<Data>> TransactionSigner<Transaction, TransactionBuilder>::si
     if (script.matchPayToPublicKey(data)) {
         auto keyHash = TW::Hash::ripemd(TW::Hash::sha256(data));
         auto key = keyForPublicKeyHash(keyHash);
-        if (key.empty()) {
+        if (key.empty() && !estimationMode) {
             // Error: Missing key
             return Result<std::vector<Data>>::failure("Missing private key.");
         }
@@ -198,18 +200,22 @@ Result<std::vector<Data>> TransactionSigner<Transaction, TransactionBuilder>::si
     }
     if (script.matchPayToPublicKeyHash(data)) {
         auto key = keyForPublicKeyHash(data);
-        if (key.empty()) {
+        if (key.empty() && !estimationMode) {
             // Error: Missing keys
             return Result<std::vector<Data>>::failure("Missing private key.");
         }
 
-        auto pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
         auto signature =
             createSignature(transactionToSign, script, key, index, utxo.amount(), version);
         if (signature.empty()) {
             // Error: Failed to sign
             return Result<std::vector<Data>>::failure("Failed to sign.");
         }
+        if (key.empty() && estimationMode) {
+            // estimation mode, key is missing: use placeholder for public key
+            return Result<std::vector<Data>>::success({signature, Data(32)});
+        }
+        auto pubkey = PrivateKey(key).getPublicKey(TWPublicKeyTypeSECP256k1);
         return Result<std::vector<Data>>::success({signature, pubkey.bytes});
     }
     // Error: Invalid output script

@@ -13,6 +13,7 @@ class BitcoinTransactionSignerTests: XCTestCase {
     }
 
     func testSignP2WSH() throws {
+        // set up input
         var input = BitcoinSigningInput.with {
             $0.hashType = BitcoinSigHashType.all.rawValue
             $0.amount = 1000
@@ -20,9 +21,6 @@ class BitcoinTransactionSignerTests: XCTestCase {
             $0.toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx"
             $0.changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"
         }
-
-        input.privateKey.append(Data(hexString: "ed00a0841cd53aedf89b0c616742d1d2a930f8ae2b0fb514765a17bb62c7521a")!)
-        input.privateKey.append(Data(hexString: "619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9")!)
 
         input.scripts["593128f9f90e38b706c18623151e37d2da05c229"] = Data(hexString: "2103596d3451025c19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac")!
 
@@ -36,12 +34,18 @@ class BitcoinTransactionSignerTests: XCTestCase {
         }
         input.utxo.append(utxo0)
 
+        // Plan
         let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .bitcoin)
 
         XCTAssertEqual(plan.amount, 1000)
         XCTAssertEqual(plan.fee, 147)
         XCTAssertEqual(plan.change, 79)
 
+        // Extend input with private key
+        input.privateKey.append(Data(hexString: "ed00a0841cd53aedf89b0c616742d1d2a930f8ae2b0fb514765a17bb62c7521a")!)
+        input.privateKey.append(Data(hexString: "619c335025c7f4012e556c2a58b2506e30b8511b53ade95ea316fd8c3286feb9")!)
+
+        // Sign
         let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
         XCTAssertTrue(output.error.isEmpty)
 
