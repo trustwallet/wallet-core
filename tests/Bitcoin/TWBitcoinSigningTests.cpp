@@ -1046,7 +1046,7 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     auto plan = TransactionBuilder::plan(input);
     EXPECT_TRUE(verifyPlan(plan, {3'899'774}, 1'200'000, 141));
 
-    // Extend input with keys and plan
+    // Extend input with keys and plan, for Sign
     auto privKey = parse_hex(ownPrivateKey);
     input.add_private_key(privKey.data(), privKey.size());
     *input.mutable_plan() = plan.proto();
