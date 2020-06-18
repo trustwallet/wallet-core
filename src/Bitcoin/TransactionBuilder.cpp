@@ -7,13 +7,26 @@
 #include "TransactionBuilder.h"
 #include "TransactionSigner.h"
 
+#include "../Coin.h"
+
 #include <algorithm>
 #include <cassert>
 
 namespace TW::Bitcoin {
 
+/// Estimate encoded size by simple formula
+int64_t estimateSimpleFee(FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, const Bitcoin::Proto::SigningInput& input) {
+    return feeCalculator.calculate(plan.utxos.size(), outputSize, input.byte_fee());
+}
+
 /// Estimate encoded size by invoking sign(sizeOnly), get actual size
 int64_t estimateSegwitFee(FeeCalculator& feeCalculator, const TransactionPlan& plan, int outputSize, const Bitcoin::Proto::SigningInput& input) {
+    TWPurpose coinPurpose = TW::purpose(static_cast<TWCoinType>(input.coin_type()));
+    if (coinPurpose != TWPurposeBIP84) {
+        // not segwit, return default simple estimate
+        return estimateSimpleFee(feeCalculator, plan, outputSize, input);
+    }
+
     // duplicate input, with the current plan
     auto inputWithPlan = std::move(input);
     *inputWithPlan.mutable_plan() = plan.proto();
@@ -21,8 +34,8 @@ int64_t estimateSegwitFee(FeeCalculator& feeCalculator, const TransactionPlan& p
     auto signer = TransactionSigner<Transaction, TransactionBuilder>(std::move(inputWithPlan), true);
     auto result = signer.sign();
     if (!result) {
-        // signing failed; return default estimate
-        return feeCalculator.calculate(plan.utxos.size(), outputSize, input.byte_fee());
+        // signing failed; return default simple estimate
+        return estimateSimpleFee(feeCalculator, plan, outputSize, input);
     }
 
     // Obtain the encoded size
