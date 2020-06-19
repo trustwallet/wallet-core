@@ -80,27 +80,27 @@ Data RLP::encodeHeader(uint64_t size, uint8_t smallTag, uint8_t largeTag) noexce
 
 Data RLP::putint(uint64_t i) noexcept {
     // clang-format off
-    if (i < (1l << 8))
+    if (i < (1ULL << 8))
         return {static_cast<uint8_t>(i)};
-    if (i < (1l << 16))
+    if (i < (1ULL << 16))
         return {
             static_cast<uint8_t>(i >> 8),
             static_cast<uint8_t>(i),
         };
-    if (i < (1l << 24))
+    if (i < (1ULL << 24))
         return {
             static_cast<uint8_t>(i >> 16),
             static_cast<uint8_t>(i >> 8),
             static_cast<uint8_t>(i),
         };
-    if (i < (1l << 32))
+    if (i < (1ULL << 32))
         return {
             static_cast<uint8_t>(i >> 24),
             static_cast<uint8_t>(i >> 16),
             static_cast<uint8_t>(i >> 8),
             static_cast<uint8_t>(i),
         };
-    if (i < (1l << 40))
+    if (i < (1ULL << 40))
         return {
             static_cast<uint8_t>(i >> 32),
             static_cast<uint8_t>(i >> 24),
@@ -108,7 +108,7 @@ Data RLP::putint(uint64_t i) noexcept {
             static_cast<uint8_t>(i >> 8),
             static_cast<uint8_t>(i),
         };
-    if (i < (1l << 48))
+    if (i < (1ULL << 48))
         return {
             static_cast<uint8_t>(i >> 40),
             static_cast<uint8_t>(i >> 32),
@@ -117,7 +117,7 @@ Data RLP::putint(uint64_t i) noexcept {
             static_cast<uint8_t>(i >> 8),
             static_cast<uint8_t>(i),
         };
-    if (i < (1l << 56))
+    if (i < (1ULL << 56))
         return {
             static_cast<uint8_t>(i >> 48),
             static_cast<uint8_t>(i >> 40),

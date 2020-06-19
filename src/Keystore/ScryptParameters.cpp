@@ -16,8 +16,10 @@ ScryptParameters::ScryptParameters() : salt(32) {
     random_buffer(salt.data(), salt.size());
 }
 
+#pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+
 std::optional<ScryptValidationError> ScryptParameters::validate() const {
-    if (desiredKeyLength > ((static_cast<uint64_t>(1) << 32) - 1) * 32) {
+    if (desiredKeyLength > ((1ULL << 32) - 1) * 32) { // depending on size_t size on platform, may be always false 
         return ScryptValidationError::desiredKeyLengthTooLarge;
     }
     if (static_cast<uint64_t>(r) * static_cast<uint64_t>(p) >= (1 << 30)) {

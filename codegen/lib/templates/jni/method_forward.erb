@@ -19,7 +19,9 @@
     }
 <%  end -%>
     result = TWDataJByteArray(resultData, env);
+<%  if method.return_type.is_nullable %>
 cleanup:
+<%  end -%>
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
 <%= render('jni/instance_release.erb', { entity: entity }) %>
@@ -36,7 +38,9 @@ cleanup:
     }
 <%  end -%>
     result = TWStringJString(resultString, env);
+<%  if method.return_type.is_nullable %>
 cleanup:
+<%  end -%>
 <%= render('jni/parameter_release.erb', { method: method }) -%>
 <%  if !method.static %>
 <%= render('jni/instance_release.erb', { entity: entity }) %>

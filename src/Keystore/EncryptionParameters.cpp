@@ -28,6 +28,8 @@ static Data computeMAC(Iter begin, Iter end, const Data& key) {
     return Hash::keccak256(data);
 }
 
+#pragma GCC diagnostic ignored "-Wunused-variable"
+
 EncryptionParameters::EncryptionParameters(const Data& password, const Data& data) : mac() {
     auto scryptParams = boost::get<ScryptParameters>(kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
