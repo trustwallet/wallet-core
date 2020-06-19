@@ -964,7 +964,7 @@ TEST(BitcoinSigning, Plan_10input_MaxAmount) {
         utxo->mutable_out_point()->set_sequence(UINT32_MAX);
     }
 
-    input.set_coin_type(coin);
+    input.set_coin_type(TWCoinTypeBitcoin);
     input.set_hash_type(TWBitcoinSigHashTypeAll);
     input.set_use_max_amount(true);
     input.set_amount(2'000'000);

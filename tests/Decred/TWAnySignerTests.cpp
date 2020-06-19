@@ -77,8 +77,8 @@ TEST(TWAnySignerDecred, Plan) {
 
     EXPECT_EQ(plan.amount(), 10000000);
     EXPECT_EQ(plan.available_amount(), 39900000);
-    EXPECT_EQ(plan.fee(), 226);
-    EXPECT_EQ(plan.change(), 29899774);
+    EXPECT_EQ(plan.fee(), 254);
+    EXPECT_EQ(plan.change(), 29899746);
     EXPECT_EQ(plan.utxos_size(), 1);
     EXPECT_EQ(plan.branch_id(), "");
 }
@@ -91,8 +91,8 @@ TEST(TWAnySignerDecred, PlanAndSign) {
 
     EXPECT_EQ(plan.amount(), 10000000);
     EXPECT_EQ(plan.available_amount(), 39900000);
-    EXPECT_EQ(plan.fee(), 226);
-    EXPECT_EQ(plan.change(), 29899774);
+    EXPECT_EQ(plan.fee(), 254);
+    EXPECT_EQ(plan.change(), 29899746);
     EXPECT_EQ(plan.utxos_size(), 1);
     EXPECT_EQ(plan.branch_id(), "");
     
@@ -103,7 +103,8 @@ TEST(TWAnySignerDecred, PlanAndSign) {
     ANY_SIGN(input, TWCoinTypeDecred);
 
     ASSERT_TRUE(output.error().empty());
-    ASSERT_EQ(hex(output.encoded()), "0100000001fdbfe9dd703f306794a467f175be5bd9748a7925033ea1cf9889d7cf4dd1155000000000000000000002809698000000000000001976a914989b1aecabf1c24e213cc0f2d8a22ffee25dd4e188acfe3bc8010000000000001976a9142a194fc92e27fef9cc2b057bc9060c580cbb484888ac000000000000000001000000000000000000000000ffffffff6a47304402201e9ac0063e57099241f117462a56d20df169fd727157cfae4299223261ef6e2902206b920a08953847167a29a2ec3721b5101a29aa6d728c5db30c7b459f7bb0eedb0121026cc34b92cefb3a4537b3edb0b6044c04af27c01583c577823ecc69a9a21119b6");
+    ASSERT_EQ(output.encoded().size(), 251);
+    ASSERT_EQ(hex(output.encoded()), "0100000001fdbfe9dd703f306794a467f175be5bd9748a7925033ea1cf9889d7cf4dd1155000000000000000000002809698000000000000001976a914989b1aecabf1c24e213cc0f2d8a22ffee25dd4e188ace23bc8010000000000001976a9142a194fc92e27fef9cc2b057bc9060c580cbb484888ac000000000000000001000000000000000000000000ffffffff6a47304402203e6ee9e16d6bc36bb4242f7a4cac333a1c2a150ea16143412b88b721f6ae16bf02201019affdf815a5c22e4b0fb7e4685c4707094922d6a41354f9055d3bb0f26e630121026cc34b92cefb3a4537b3edb0b6044c04af27c01583c577823ecc69a9a21119b6");
 }
 
 TEST(TWAnySignerDecred, SupportsJSON) {
