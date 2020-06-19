@@ -25,11 +25,11 @@ using namespace TW;
 using namespace TW::Bitcoin;
 
 TEST(TWBitcoinGoldScript, LockScriptTest) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("btg1q6572ulr0kmywle8a30lvagm9xsg9k9n5cmzfdj").get(), TWCoinTypeBitcoinGold));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("btg1q6572ulr0kmywle8a30lvagm9xsg9k9n5cmzfdj").get(), TWCoinTypeBitcoinGold));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "0014d53cae7c6fb6c8efe4fd8bfecea36534105b1674");
 
-    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("btg1qawhpp9gv3g662phqufjmj2ps2ge7sq4thy5g07").get(), TWCoinTypeBitcoinGold));
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("btg1qawhpp9gv3g662phqufjmj2ps2ge7sq4thy5g07").get(), TWCoinTypeBitcoinGold));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
     assertHexEqual(scriptData2, "0014ebae10950c8a35a506e0e265b928305233e802ab");
 }

@@ -945,7 +945,7 @@ TEST(BitcoinSigning, Plan_10input_MaxAmount) {
     Proto::SigningInput input;
 
     for (int i = 0; i < 10; ++i) {
-        auto utxoScript = Script::buildForAddress(ownAddress, TWCoinTypeBitcoin);
+        auto utxoScript = Script::lockScriptForAddress(ownAddress, TWCoinTypeBitcoin);
         Data keyHash;
         EXPECT_TRUE(utxoScript.matchPayToWitnessPublicKeyHash(keyHash));
         EXPECT_EQ(hex(keyHash), "79091972186c449eb1ded22b78e40d009bdf0089");
@@ -1016,7 +1016,7 @@ TEST(BitcoinSigning, Sign_LitecoinReal_a85f) {
     auto privKey = parse_hex(ownPrivateKey);
     input.add_private_key(privKey.data(), privKey.size());
 
-    auto utxo0Script = Script::buildForAddress(ownAddress, coin);
+    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin);
     Data keyHash0;
     EXPECT_TRUE(utxo0Script.matchPayToWitnessPublicKeyHash(keyHash0));
     EXPECT_EQ(hex(keyHash0), "5c74be45eb45a3459050667529022d9df8a1ecff");
@@ -1084,7 +1084,7 @@ TEST(BitcoinSigning, PlanAndSign_LitecoinReal_8435) {
     input.set_to_address("ltc1qt36tu30tgk35tyzsve6jjq3dnhu2rm8l8v5q00");
     input.set_change_address(ownAddress);
 
-    auto utxo0Script = Script::buildForAddress(ownAddress, coin);
+    auto utxo0Script = Script::lockScriptForAddress(ownAddress, coin);
     Data keyHash0;
     EXPECT_TRUE(utxo0Script.matchPayToWitnessPublicKeyHash(keyHash0));
     EXPECT_EQ(hex(keyHash0), "7b59c096c20fd9a273e240846b23276c69d35815");

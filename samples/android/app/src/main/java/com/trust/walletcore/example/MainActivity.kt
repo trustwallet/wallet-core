@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         val secretPrivateKeyBtc = wallet.getKeyForCoin(coinBtc)
         val toAddress = "1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tcx"
         val changeAddress = "1FQc5LdgGHMHEN9nwkjmz6tWkxhPpxBvBU"
-        val script = BitcoinScript.buildForAddress(addressBtc, coinBtc).data()
+        val script = BitcoinScript.lockScriptForAddress(addressBtc, coinBtc).data()
 
         val outPoint = Bitcoin.OutPoint.newBuilder().apply {
             this.hash = ByteString.copyFrom(utxoTxId)

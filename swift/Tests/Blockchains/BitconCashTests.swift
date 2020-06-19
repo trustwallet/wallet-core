@@ -44,11 +44,11 @@ class BitcoinCashTests: XCTestCase {
 
     func testLockScript() {
         let address = AnyAddress(string: "pzukqjmcyzrkh3gsqzdcy3e3d39cqxhl3g0f405k5l", coin: .bitcoinCash)!
-        let script = BitcoinScript.buildForAddress(address: address.description, coin: .bitcoinCash)
+        let script = BitcoinScript.lockScriptForAddress(address: address.description, coin: .bitcoinCash)
         XCTAssertEqual(script.data.hexString, "a914b9604b7820876bc510009b8247316c4b801aff8a87")
 
         let address2 = AnyAddress(string: "qphr8l8ns8wd99a8653ctfe5qcrxaumz5qpmqlk2ex", coin: .bitcoinCash)!
-        let script2 = BitcoinScript.buildForAddress(address: address2.description, coin: .bitcoinCash)
+        let script2 = BitcoinScript.lockScriptForAddress(address: address2.description, coin: .bitcoinCash)
         XCTAssertEqual(script2.data.hexString, "76a9146e33fcf381dcd297a7d52385a73406066ef362a088ac")
     }
 
@@ -61,7 +61,7 @@ class BitcoinCashTests: XCTestCase {
             $0.outPoint.index = 2                        // outpoint index of this this UTXO
             $0.outPoint.sequence = UINT32_MAX
             $0.amount = 5151                             // value of this UTXO
-            $0.script = BitcoinScript.buildForAddress(address: address, coin: .bitcoinCash).data // Build lock script from address or public key hash
+            $0.script = BitcoinScript.lockScriptForAddress(address: address, coin: .bitcoinCash).data // Build lock script from address or public key hash
         }
 
         let input = BitcoinSigningInput.with {

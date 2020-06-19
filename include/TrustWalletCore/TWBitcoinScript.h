@@ -110,8 +110,8 @@ struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToWitnessPubkeyHash(TWDa
 TW_EXPORT_STATIC_METHOD
 struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildPayToWitnessScriptHash(TWData *_Nonnull scriptHash);
 
-/// Builds a pay-to-public-key-hash (P2PKH) script appropriate for the given address.
+/// Builds a appropriate lock script for the given address.
 TW_EXPORT_STATIC_METHOD
-struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildForAddress(TWString *_Nonnull address, enum TWCoinType coin);
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_Nonnull address, enum TWCoinType coin);
 
 TW_EXTERN_C_END

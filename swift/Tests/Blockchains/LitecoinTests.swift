@@ -92,7 +92,7 @@ class LitecoinTests: XCTestCase {
 
     func testPlanAndSign_8435() throws {
         let address = "ltc1q0dvup9kzplv6yulzgzzxkge8d35axkq4n45hum"
-        let lockScript = BitcoinScript.buildForAddress(address: address, coin: .litecoin)
+        let lockScript = BitcoinScript.lockScriptForAddress(address: address, coin: .litecoin)
         let utxos = [
             BitcoinUnspentTransaction.with {
                 $0.outPoint.hash = Data(Data(hexString: "a85fd6a9a7f2f54cacb57e83dfd408e51c0a5fc82885e3fa06be8692962bc407")!.reversed())

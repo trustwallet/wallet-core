@@ -80,4 +80,45 @@ class BitcoinTransactionSignerTests: XCTestCase {
             "00000000" // nLockTime
         )
     }
+
+    func testSignP2SH_P2WPKH() {
+        let address = "3LGoLac9mtCwDy2q8PYyvwL8kMyrCWCYQW"
+        let lockScript = BitcoinScript.lockScriptForAddress(address: address, coin: .bitcoin)
+        let key = PrivateKey(data: Data(hexString: "e240ef3419d038577e48426c8c37c3c13bec1a0ed3f5270b82e7377bc48699dd")!)!
+        let pubkey = key.getPublicKeySecp256k1(compressed: true)
+        let utxos = [
+            BitcoinUnspentTransaction.with {
+                $0.outPoint.hash = Data(Data(hexString: "8b5f4861c6d4a4ea361aa4066d720067f73854d9a1b1d01e2b0e3c9e150bc5a3")!.reversed())
+                $0.outPoint.index = 0
+                $0.outPoint.sequence = UINT32_MAX
+                $0.script = lockScript.data
+                $0.amount = 54700
+            }
+        ]
+
+        let plan = BitcoinTransactionPlan.with {
+            $0.amount = 43980
+            $0.fee = 10720
+            $0.change = 0
+            $0.utxos = utxos
+        }
+
+        // redeem p2wpkh nested in p2sh
+        let scriptHash = lockScript.matchPayToScriptHash()!
+        let input = BitcoinSigningInput.with {
+            $0.toAddress = "3NqULUrjZ7NL36YtBGsSVzqr5q1x9CJWwu"
+            $0.hashType = BitcoinSigHashType.all.rawValue
+            $0.coinType = CoinType.bitcoin.rawValue
+            $0.scripts = [
+                scriptHash.hexString: BitcoinScript.buildPayToWitnessPubkeyHash(hash: pubkey.bitcoinKeyHash).data
+            ]
+            $0.privateKey = [key.data]
+            $0.plan = plan
+        }
+
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
+
+        // https://blockchair.com/bitcoin/transaction/da2a9ce5d71ff7490bc9025e2888ca109b68ec0bd0e7d26195e1783305c00117
+        XCTAssertEqual(output.encoded.hexString, "01000000000101a3c50b159e3c0e2b1ed0b1a1d95438f76700726d06a41a36eaa4d4c661485f8b00000000171600140a3cca78017f46ac23e463148adb7231aef81956ffffffff01ccab00000000000017a914e7f40472c54fc93078c5129568cf95c27be3b2c287024830450221008dc29a5430facd4078ad93e72517d87b298d7a73b55d2828acab040ccf713ed5022063a13e348655fa7cdcfff084380611629babf165607b529bcc35bf6ddfab1f8101210370386469db8302c3092955724f56bcca9a36f31df82655aa79be46b08744cd1200000000")
+    }
 }
