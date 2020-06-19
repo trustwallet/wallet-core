@@ -33,14 +33,14 @@ TEST(Viacoin, Address) {
     assertStringsEqual(string, "via1qytnqzjknvv03jwfgrsmzt0ycmwqgl0asu2r3d2");
 }
 
-TEST(Viacoin, BuildForAddressV) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Vw6bJFaF5Hyiveko7dpqRjVvcTAsjz7eYa").get(), TWCoinTypeViacoin));
+TEST(Viacoin, LockScriptForAddressV) {
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("Vw6bJFaF5Hyiveko7dpqRjVvcTAsjz7eYa").get(), TWCoinTypeViacoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a914e771c6695c5dd189ccc4ef00cd0f3db3096d79bd88ac");
 }
 
-TEST(Viacoin, BuildForAddressE) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("ESxRxvhJP6ZKtYaMGjj48As1kgCh6hXa6X").get(), TWCoinTypeViacoin));
+TEST(Viacoin, LockScriptForAddressE) {
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("ESxRxvhJP6ZKtYaMGjj48As1kgCh6hXa6X").get(), TWCoinTypeViacoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "a9146b85b3dac9340f36b9d32bbacf2ffcb0851ef17987");
 }
@@ -103,15 +103,15 @@ TEST(Viacoin, DeriveFromZpub) {
 }
 
 TEST(Viacoin, LockScripts) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("via1qs32zgdhe2tpzcnz55r7d9jvhce33063s8w4xre").get(), TWCoinTypeViacoin));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("via1qs32zgdhe2tpzcnz55r7d9jvhce33063s8w4xre").get(), TWCoinTypeViacoin));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "001484542436f952c22c4c54a0fcd2c997c66317ea30");
 
-    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("ESxRxvhJP6ZKtYaMGjj48As1kgCh6hXa6X").get(), TWCoinTypeViacoin));
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("ESxRxvhJP6ZKtYaMGjj48As1kgCh6hXa6X").get(), TWCoinTypeViacoin));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
     assertHexEqual(scriptData2, "a9146b85b3dac9340f36b9d32bbacf2ffcb0851ef17987");
 
-    auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("Vw6bJFaF5Hyiveko7dpqRjVvcTAsjz7eYa").get(), TWCoinTypeViacoin));
+    auto script3 = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("Vw6bJFaF5Hyiveko7dpqRjVvcTAsjz7eYa").get(), TWCoinTypeViacoin));
     auto scriptData3 = WRAPD(TWBitcoinScriptData(script3.get()));
     assertHexEqual(scriptData3, "76a914e771c6695c5dd189ccc4ef00cd0f3db3096d79bd88ac");
 }

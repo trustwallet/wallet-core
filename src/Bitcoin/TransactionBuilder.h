@@ -25,7 +25,7 @@ public:
     template <typename Transaction>
     static Transaction build(const TransactionPlan& plan, const std::string& toAddress,
                              const std::string& changeAddress, enum TWCoinType coin) {
-        auto lockingScriptTo = Script::buildForAddress(toAddress, coin);
+        auto lockingScriptTo = Script::lockScriptForAddress(toAddress, coin);
         if (lockingScriptTo.empty()) {
             return {};
         }
@@ -34,7 +34,7 @@ public:
         tx.outputs.push_back(TransactionOutput(plan.amount, lockingScriptTo));
 
         if (plan.change > 0) {
-            auto lockingScriptChange = Script::buildForAddress(changeAddress, coin);
+            auto lockingScriptChange = Script::lockScriptForAddress(changeAddress, coin);
             tx.outputs.push_back(TransactionOutput(plan.change, lockingScriptChange));
         }
 

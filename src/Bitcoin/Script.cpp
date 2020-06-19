@@ -252,7 +252,7 @@ void Script::encode(Data& data) const {
     std::copy(std::begin(bytes), std::end(bytes), std::back_inserter(data));
 }
 
-Script Script::buildForAddress(const std::string& string, enum TWCoinType coin) {
+Script Script::lockScriptForAddress(const std::string& string, enum TWCoinType coin) {
     if (Address::isValid(string)) {
         auto address = Address(string);
         auto p2pkh = TW::p2pkhPrefix(coin);
@@ -278,7 +278,7 @@ Script Script::buildForAddress(const std::string& string, enum TWCoinType coin) 
     } else if (CashAddress::isValid(string)) {
         auto address = CashAddress(string);
         auto bitcoinAddress = address.legacyAddress();
-        return buildForAddress(bitcoinAddress.string(), TWCoinTypeBitcoinCash);
+        return lockScriptForAddress(bitcoinAddress.string(), TWCoinTypeBitcoinCash);
     } else if (Decred::Address::isValid(string)) {
         auto bytes = Base58::bitcoin.decodeCheck(string, Hash::blake256d);
         if (bytes[1] == TW::p2pkhPrefix(TWCoinTypeDecred)) {

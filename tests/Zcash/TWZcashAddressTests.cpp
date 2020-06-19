@@ -77,11 +77,11 @@ TEST(TWZcash, DerivePubkeyFromXpub2) {
 }
 
 TEST(TWZcash, LockScripts) {
-    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("t1bjVPEY8NbpGxT2PgayX3HevfJ2YU5X2DS").get(), TWCoinTypeZcash));
+    auto script = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("t1bjVPEY8NbpGxT2PgayX3HevfJ2YU5X2DS").get(), TWCoinTypeZcash));
     auto scriptData = WRAPD(TWBitcoinScriptData(script.get()));
     assertHexEqual(scriptData, "76a914c3e968851fdb2bb943662befdb8b8573ecd4d08e88ac");
 
-    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptBuildForAddress(STRING("t3gQDEavk5VzAAHK8TrQu2BWDLxEiF1unBm").get(), TWCoinTypeZcash));
+    auto script2 = WRAP(TWBitcoinScript, TWBitcoinScriptLockScriptForAddress(STRING("t3gQDEavk5VzAAHK8TrQu2BWDLxEiF1unBm").get(), TWCoinTypeZcash));
     auto scriptData2 = WRAPD(TWBitcoinScriptData(script2.get()));
     assertHexEqual(scriptData2, "a914ef8b3e86db855eb48bcf0b7585a90b6b9ece75c087");
 }
