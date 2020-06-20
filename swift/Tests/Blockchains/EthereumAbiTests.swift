@@ -40,4 +40,17 @@ class EthereumAbiTests: XCTestCase {
         let data2 = EthereumAbiValueEncoder.encodeInt32(value: 69)
         XCTAssertEqual(data2.hexString, "0000000000000000000000000000000000000000000000000000000000000045")
     }
+
+    func testValueDecoder() {
+        let expected = "1234567890987654321"
+        let inputs = [
+            "112210f4b16c1cb1",
+            "000000000000000000000000000000000000000000000000112210f4b16c1cb1",
+            "000000000000000000000000000000000000000000000000112210f4b16c1cb10000000000000000000000000000000000000000000000000000000000000000"
+        ]
+        for input in inputs {
+            let data = Data(hexString: input)!
+            XCTAssertEqual(expected, EthereumAbiValueDecoder.decodeUInt256(input: data))
+        }
+    }
 }
