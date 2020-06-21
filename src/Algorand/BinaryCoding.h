@@ -11,6 +11,8 @@
 
 namespace TW::Algorand {
 
+#pragma GCC diagnostic ignored "-Wtautological-constant-out-of-range-compare"
+
 static inline void encodeString(std::string string, Data& data) {
     // encode string header
     auto bytes = Data(string.begin(), string.end());
@@ -25,7 +27,7 @@ static inline void encodeString(std::string string, Data& data) {
         // str 16
         data.push_back(static_cast<uint8_t>(0xda));
         encode16BE(static_cast<uint16_t>(bytes.size()), data);
-    } else if (bytes.size() < 0x100000000) {
+    } else if (bytes.size() < 0x100000000) { // depending on size_t size on platform, may be always true 
         // str 32
         data.push_back(static_cast<uint8_t>(0xdb));
         encode32BE(static_cast<uint32_t>(bytes.size()), data);

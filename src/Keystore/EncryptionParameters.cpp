@@ -36,14 +36,15 @@ EncryptionParameters::EncryptionParameters(const Data& password, const Data& dat
            scryptParams.desiredKeyLength);
 
     aes_encrypt_ctx ctx;
-    auto result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
-    assert(result != EXIT_FAILURE);
+    auto result = aes_encrypt_key128(derivedKey.data(), &ctx);
+    assert(result == EXIT_SUCCESS);
+    if (result == EXIT_SUCCESS) {
+        Data iv = cipherParams.iv;
+        encrypted = Data(data.size());
+        aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
 
-    Data iv = cipherParams.iv;
-    encrypted = Data(data.size());
-    aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
-
-    mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+        mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+    }
 }
 
 EncryptionParameters::~EncryptionParameters() {
