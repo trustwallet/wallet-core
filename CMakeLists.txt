@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 project(TrustWalletCore)
 
 # Configure warnings
-set(TW_CXX_WARNINGS "-Wshorten-64-to-32 -Wtautological-constant-out-of-range-compare -Wshift-count-overflow")
+set(TW_CXX_WARNINGS "-Wshorten-64-to-32")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ ${TW_CXX_WARNINGS}")
