@@ -59,3 +59,10 @@ TEST(TWBase58, Decode_InvalidChar) {
     auto result = WRAPS(TWBase58Decode(input.get()));
     ASSERT_EQ(result.get(), nullptr);
 }
+
+TEST(TWBase58, DecodeNoCheck_InvalidChar) {
+    // 0 is invalid
+    const auto input = STRING("1Bp9U1ogV3A14FMvKbRJms7ctyso4Z4Tc0");
+    auto result = WRAPS(TWBase58DecodeNoCheck(input.get()));
+    ASSERT_EQ(result.get(), nullptr);
+}
