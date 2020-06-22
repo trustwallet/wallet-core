@@ -19,11 +19,11 @@
 #define STRING(x) std::shared_ptr<TWString>(TWStringCreateWithUTF8Bytes(x), TWStringDelete)
 #define DATA(x) std::shared_ptr<TWData>(TWDataCreateWithHexString(STRING(x).get()), TWDataDelete)
 
-inline void assertStringsEqual(std::shared_ptr<TWString>& string, const char* expected) {
+inline void assertStringsEqual(const std::shared_ptr<TWString>& string, const char* expected) {
     ASSERT_STREQ(TWStringUTF8Bytes(string.get()), expected);
 }
 
-inline void assertHexEqual(std::shared_ptr<TWData>& data, const char* expected) {
+inline void assertHexEqual(const std::shared_ptr<TWData>& data, const char* expected) {
     auto hex = WRAPS(TWStringCreateWithHexData(data.get()));
     assertStringsEqual(hex, expected);
 }
